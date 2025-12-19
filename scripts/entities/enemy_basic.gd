@@ -17,6 +17,7 @@ var _flash_tween: Tween
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
+@onready var hurtbox: Area2D = $Hurtbox
 @onready var body_shape: CollisionShape2D = $CollisionShape2D
 @onready var sprite: Sprite2D = $Visual/Sprite2D
 
@@ -24,8 +25,9 @@ func _ready() -> void:
 	hp = max_hp
 	add_to_group("enemies")
 	body_shape.disabled = false
+	hurtbox.monitoring = true
 	_set_hitbox_active(false)
-	hitbox.body_entered.connect(_on_hitbox_body_entered)
+	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate
 
@@ -88,13 +90,16 @@ func _set_hitbox_active(active: bool) -> void:
 	hitbox.monitoring = active
 	hitbox_shape.disabled = not active
 
-func _on_hitbox_body_entered(body: Node) -> void:
+func _on_hitbox_area_entered(area: Area2D) -> void:
 	if not _is_attacking:
 		return
-	if body == self:
+	if area == self:
 		return
-	if body.has_method("take_damage"):
-		body.call("take_damage", GameConstants.ENEMY_ATTACK_DAMAGE, global_position)
+	var target: Node = area.get_parent()
+	if target == null:
+		return
+	if target.has_method("take_damage"):
+		target.call("take_damage", GameConstants.ENEMY_ATTACK_DAMAGE, global_position)
 
 func _flash_visual() -> void:
 	if _flash_tween:

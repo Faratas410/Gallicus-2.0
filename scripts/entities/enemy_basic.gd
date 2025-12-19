@@ -44,6 +44,7 @@ func _ready() -> void:
 	hitbox.collision_layer = 1 << 3
 	hitbox.collision_mask = 1 << 2
 	hitbox_shape.disabled = true
+	print("Enemy hitbox shape is null? ", hitbox_shape.shape == null)
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate
 	var bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")

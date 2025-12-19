@@ -44,6 +44,11 @@ func _ready() -> void:
 	hitbox.collision_layer = 1 << 3
 	hitbox.collision_mask = 1 << 2
 	hitbox_shape.disabled = true
+	if hitbox_shape.shape == null:
+		var s := RectangleShape2D.new()
+		s.size = Vector2(18, 18)
+		hitbox_shape.shape = s
+		print("Enemy hitbox shape auto-created")
 	print("Enemy hitbox shape is null? ", hitbox_shape.shape == null)
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate

@@ -2,8 +2,8 @@ extends CanvasLayer
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
-@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/PlayerHPBar")
-@onready var player_hp_label: Label = get_node_or_null("HUD/Panel/VBox/PlayerHPLabel")
+@onready var player_hp_bar: ProgressBar = $HUD/Panel/VBox/PlayerHPBar
+@onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
 @onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
@@ -82,11 +82,9 @@ func _on_bet_ui_closed() -> void:
 	get_viewport().gui_release_focus()
 
 func _on_player_health_changed(current: int, max: int) -> void:
-	if player_hp_bar != null:
-		player_hp_bar.max_value = max
-		player_hp_bar.value = current
-	if player_hp_label != null:
-		player_hp_label.text = "HP: %d/%d" % [current, max]
+	player_hp_bar.max_value = max
+	player_hp_bar.value = current
+	player_hp_label.text = "HP: %d/%d" % [current, max]
 
 func _update_bet_buttons() -> void:
 	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:

@@ -105,7 +105,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if _state == PlayerState.IDLE or _state == PlayerState.MOVE:
-		velocity = input_dir * Constants.PLAYER_SPEED
+		velocity = input_dir * GameConstants.PLAYER_MOVE_SPEED
 		move_and_slide()
 		_state = PlayerState.MOVE if input_dir != Vector2.ZERO else PlayerState.IDLE
 		return

@@ -79,6 +79,7 @@ func _physics_process(delta: float) -> void:
 				velocity = Vector2.ZERO
 				move_and_slide()
 				if _attack_cooldown <= 0.0:
+					print("ENEMY wants to attack. dist=", distance, " cd=", _attack_cooldown)
 					_begin_attack()
 		EnemyState.WINDUP, EnemyState.ATTACK, EnemyState.RECOVER:
 			velocity = Vector2.ZERO
@@ -129,6 +130,7 @@ func _attack_sequence() -> void:
 
 func _on_hitbox_body_entered(body: Node) -> void:
 	if body.is_in_group("player") and body.has_method("take_damage"):
+		print("ENEMY HIT player")
 		body.take_damage(ATTACK_DAMAGE, global_position)
 
 func _flash_visual() -> void:

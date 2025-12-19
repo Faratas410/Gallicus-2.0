@@ -59,6 +59,15 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if debug_input:
+		if Input.is_action_just_pressed("attack_light"):
+			print("ACTION attack_light")
+		if Input.is_action_just_pressed("attack_heavy"):
+			print("ACTION attack_heavy")
+		if Input.is_action_just_pressed("block"):
+			print("ACTION block")
+		if Input.is_action_just_pressed("dodge"):
+			print("ACTION dodge")
 	if input_dir != Vector2.ZERO:
 		_last_move_direction = input_dir.normalized()
 	if debug_input:

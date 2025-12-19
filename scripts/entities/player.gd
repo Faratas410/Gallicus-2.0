@@ -13,20 +13,7 @@ enum PlayerState {
 	DEAD,
 }
 
-const MOVE_SPEED := 140.0
-const LIGHT_ATTACK_DURATION := 0.18
-const LIGHT_ATTACK_DAMAGE := 1
-const LIGHT_ATTACK_COOLDOWN := 0.12
-const HEAVY_ATTACK_DURATION := 0.32
-const HEAVY_ATTACK_DAMAGE := 2
-const HEAVY_ATTACK_COOLDOWN := 0.25
-const HEAVY_ATTACK_WINDUP := 0.10
-const DODGE_DURATION := 0.14
-const DODGE_SPEED := 280.0
-const HITSTUN_DURATION := 0.12
-const KNOCKBACK_FORCE := 220.0
-
-@export var max_health: int = 10
+@export var max_health: int = GameConstants.PLAYER_MAX_HEALTH
 
 var is_blocking: bool = false
 
@@ -50,6 +37,7 @@ var _knockback_timer := 0.0
 
 func _ready() -> void:
 	_current_health = max_health
+	add_to_group("player")
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
@@ -63,7 +51,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if _state == PlayerState.DODGING:
-		velocity = _dodge_direction * DODGE_SPEED
+		velocity = _dodge_direction * GameConstants.PLAYER_DODGE_SPEED
 		move_and_slide()
 		return
 
@@ -105,7 +93,7 @@ func _physics_process(delta: float) -> void:
 	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if input_vector.length() > 0.01:
 		_last_move_direction = input_vector.normalized()
-		velocity = _last_move_direction * MOVE_SPEED
+		velocity = _last_move_direction * GameConstants.PLAYER_MOVE_SPEED
 		_state = PlayerState.MOVE
 	else:
 		velocity = Vector2.ZERO
@@ -128,8 +116,8 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 		GameEvents.player_damaged.emit()
 	if from != Vector2.ZERO:
 		var knockback_direction := (global_position - from).normalized()
-		_knockback_velocity = knockback_direction * KNOCKBACK_FORCE * knockback_scale
-		_knockback_timer = HITSTUN_DURATION
+		_knockback_velocity = knockback_direction * GameConstants.PLAYER_KNOCKBACK_FORCE * knockback_scale
+		_knockback_timer = GameConstants.PLAYER_HITSTUN_DURATION
 		_state = PlayerState.HITSTUN
 	if _current_health <= 0:
 		_state = PlayerState.DEAD
@@ -139,10 +127,20 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 		queue_free()
 
 func _start_light_attack() -> void:
-	_start_attack(LIGHT_ATTACK_DAMAGE, LIGHT_ATTACK_DURATION, 0.0, LIGHT_ATTACK_COOLDOWN)
+	_start_attack(
+		GameConstants.PLAYER_LIGHT_ATTACK_DAMAGE,
+		GameConstants.PLAYER_LIGHT_ATTACK_DURATION,
+		0.0,
+		GameConstants.PLAYER_LIGHT_ATTACK_COOLDOWN
+	)
 
 func _start_heavy_attack() -> void:
-	_start_attack(HEAVY_ATTACK_DAMAGE, HEAVY_ATTACK_DURATION, HEAVY_ATTACK_WINDUP, HEAVY_ATTACK_COOLDOWN)
+	_start_attack(
+		GameConstants.PLAYER_HEAVY_ATTACK_DAMAGE,
+		GameConstants.PLAYER_HEAVY_ATTACK_DURATION,
+		GameConstants.PLAYER_HEAVY_ATTACK_WINDUP,
+		GameConstants.PLAYER_HEAVY_ATTACK_COOLDOWN
+	)
 
 func _start_attack(damage: int, duration: float, windup: float, cooldown: float) -> void:
 	if _attack_in_progress:
@@ -178,7 +176,7 @@ func _start_dodge() -> void:
 	if _dodge_direction == Vector2.ZERO:
 		_dodge_direction = Vector2.RIGHT
 	_dodge_direction = _dodge_direction.normalized()
-	await get_tree().create_timer(DODGE_DURATION).timeout
+	await get_tree().create_timer(GameConstants.PLAYER_DODGE_DURATION).timeout
 	_is_invulnerable = false
 	_set_hurtbox_active(true)
 	if _state == PlayerState.DODGING:

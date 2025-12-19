@@ -2,15 +2,8 @@ extends CharacterBody2D
 
 signal died
 
-const CHASE_RANGE := 220.0
-const ATTACK_RANGE := 40.0
-const ATTACK_WINDUP := 0.12
-const ATTACK_ACTIVE := 0.10
-const ATTACK_RECOVERY := 0.25
-const FLASH_DURATION := 0.08
-
-@export var max_hp: int = 3
-@export var move_speed: float = 95.0
+@export var max_hp: int = GameConstants.ENEMY_MAX_HP
+@export var move_speed: float = GameConstants.ENEMY_MOVE_SPEED
 
 var hp: int
 var _target: Node2D
@@ -36,17 +29,19 @@ func _physics_process(_delta: float) -> void:
 		move_and_slide()
 		return
 	if _target == null:
+		_target = _find_player()
+	if _target == null:
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
 
 	var distance := global_position.distance_to(_target.global_position)
-	if distance <= ATTACK_RANGE:
+	if distance <= GameConstants.ENEMY_ATTACK_RANGE:
 		_start_attack()
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
-	if distance <= CHASE_RANGE:
+	if distance <= GameConstants.ENEMY_CHASE_RANGE:
 		var direction := (_target.global_position - global_position).normalized()
 		velocity = direction * move_speed
 		move_and_slide()
@@ -69,13 +64,13 @@ func _start_attack() -> void:
 	if _is_attacking:
 		return
 	_is_attacking = true
-	await get_tree().create_timer(ATTACK_WINDUP).timeout
+	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_WINDUP).timeout
 	if not is_inside_tree():
 		return
 	_set_hitbox_active(true)
-	await get_tree().create_timer(ATTACK_ACTIVE).timeout
+	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_ACTIVE).timeout
 	_set_hitbox_active(false)
-	await get_tree().create_timer(ATTACK_RECOVERY).timeout
+	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_RECOVERY).timeout
 	_is_attacking = false
 
 func _set_hitbox_active(active: bool) -> void:
@@ -88,14 +83,20 @@ func _on_hitbox_body_entered(body: Node) -> void:
 	if body == self:
 		return
 	if body.has_method("take_damage"):
-		body.call("take_damage", 1, global_position)
+		body.call("take_damage", GameConstants.ENEMY_ATTACK_DAMAGE, global_position)
 
 func _flash_visual() -> void:
 	if _flash_tween:
 		_flash_tween.kill()
 	sprite.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	_flash_tween = create_tween()
-	_flash_tween.tween_property(sprite, "modulate", _base_modulate, FLASH_DURATION)
+	_flash_tween.tween_property(sprite, "modulate", _base_modulate, GameConstants.ENEMY_FLASH_DURATION)
+
+func _find_player() -> Node2D:
+	var player := get_tree().get_first_node_in_group("player")
+	if player is Node2D:
+		return player
+	return null
 
 func _ensure_placeholder_sprite() -> void:
 	if sprite.texture:

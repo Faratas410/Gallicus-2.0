@@ -240,20 +240,12 @@ func _set_hurtbox_active(active: bool) -> void:
 	hurtbox_shape.disabled = not active
 
 func _on_hitbox_area_entered(area: Area2D) -> void:
-	if not _attack_in_progress:
-		return
-	if area == self:
-		return
-	var target: Node = area.get_parent()
+	var target := area.get_parent()
 	if target == null:
 		return
-	if _hit_targets.has(target):
-		return
-	_hit_targets[target] = true
-	print("HIT:", target.name)
 	if target.has_method("take_damage"):
-		target.call("take_damage", _attack_damage, global_position)
-	hit_confirmed.emit(target)
+		target.take_damage(_attack_damage, global_position)
+		hit_confirmed.emit(target)
 
 func _ensure_hitbox_viz() -> void:
 	var existing := hitbox.get_node_or_null("HitboxViz")

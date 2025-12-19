@@ -62,7 +62,10 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	if not _bets_by_id.has(bet_id):
 		button.text = bet_id
 		return
-	var bet := _bets_by_id[bet_id]
+	var bet: Dictionary = _bets_by_id.get(bet_id, {})
+	if bet.is_empty():
+		push_warning("Bet id not found: %s" % bet_id)
+		return
 	button.text = "%s x%.1f" % [bet.get("label", bet_id), float(bet.get("odds", 1.0))]
 
 func _place_bet(bet_id: String) -> void:

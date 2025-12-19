@@ -7,6 +7,10 @@ config/name="Gallicus"
 run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.5")
 
+[autoload]
+GameEvents="*res://scripts/systems/game_events.gd"
+SaveManager="*res://scripts/systems/save_manager.gd"
+
 [display]
 window/size/viewport_width=1280
 window/size/viewport_height=720
@@ -20,7 +24,7 @@ move_left={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":65},{"type
 move_right={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":68},{"type":"InputEventKey","keycode":16777233}]}
 attack_light={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":74}]}
 attack_heavy={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":75}]}
-block={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":32}]}
-dodge={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":16777237}]}
+block={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":76}]}
+dodge={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":32}]}
 interact={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":69}]}
 pause={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":16777217}]}

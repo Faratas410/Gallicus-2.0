@@ -23,6 +23,8 @@ const HEAVY_ATTACK_COOLDOWN := 0.25
 const HEAVY_ATTACK_WINDUP := 0.10
 const DODGE_DURATION := 0.14
 const DODGE_SPEED := 280.0
+const HITSTUN_DURATION := 0.12
+const KNOCKBACK_FORCE := 220.0
 
 @export var max_health: int = 10
 
@@ -37,6 +39,8 @@ var _is_invulnerable: bool = false
 var _last_move_direction := Vector2.DOWN
 var _dodge_direction := Vector2.ZERO
 var _hit_targets: Dictionary = {}
+var _knockback_velocity := Vector2.ZERO
+var _knockback_timer := 0.0
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -63,7 +67,16 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	if _state in [PlayerState.ATTACKING, PlayerState.HITSTUN]:
+	if _state == PlayerState.HITSTUN:
+		velocity = _knockback_velocity
+		_knockback_timer = max(_knockback_timer - delta, 0.0)
+		move_and_slide()
+		if _knockback_timer <= 0.0:
+			_state = PlayerState.IDLE
+			velocity = Vector2.ZERO
+		return
+
+	if _state == PlayerState.ATTACKING:
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
@@ -100,19 +113,27 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 	if _state == PlayerState.DEAD:
 		return
-	if _is_invulnerable:
+	if _is_invulnerable or _state == PlayerState.DODGING:
 		return
 	var final_damage := amount
+	var knockback_scale := 1.0
 	if is_blocking:
-		final_damage = max(1, int(ceil(amount * 0.5)))
+		final_damage = max(1, int(ceil(amount * 0.4)))
+		knockback_scale = 0.4
 	_current_health = max(_current_health - final_damage, 0)
+	if from != Vector2.ZERO:
+		var knockback_direction := (global_position - from).normalized()
+		_knockback_velocity = knockback_direction * KNOCKBACK_FORCE * knockback_scale
+		_knockback_timer = HITSTUN_DURATION
+		_state = PlayerState.HITSTUN
 	if _current_health <= 0:
 		_state = PlayerState.DEAD
 		velocity = Vector2.ZERO
 		died.emit()
+		GameEvents.run_failed.emit()
 		queue_free()
 
 func _start_light_attack() -> void:

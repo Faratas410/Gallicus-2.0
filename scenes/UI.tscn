@@ -1,0 +1,48 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/UI.gd" id="1"]
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1")
+
+[node name="HUD" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 320.0
+offset_bottom = 220.0
+
+[node name="VBox" type="VBoxContainer" parent="HUD/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+
+[node name="HealthLabel" type="Label" parent="HUD/Panel/VBox"]
+text = "HP: 0 / 0"
+
+[node name="GoldLabel" type="Label" parent="HUD/Panel/VBox"]
+text = "Gold: 0"
+
+[node name="BetLabel" type="Label" parent="HUD/Panel/VBox"]
+text = "Bet: 0"
+
+[node name="WaveLabel" type="Label" parent="HUD/Panel/VBox"]
+text = "Wave: 0"
+
+[node name="StateLabel" type="Label" parent="HUD/Panel/VBox"]
+text = "State: Betting"
+
+[node name="HintLabel" type="Label" parent="HUD/Panel/VBox"]
+text = "E: cycle bet | J: start wave"

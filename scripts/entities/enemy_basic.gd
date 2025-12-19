@@ -1,8 +1,9 @@
 extends CharacterBody2D
 
 signal died
+signal health_changed(current: int, max: int)
 
-@export var max_hp: int = GameConstants.ENEMY_MAX_HP
+@export var max_health: int = 5
 @export var move_speed: float = GameConstants.ENEMY_MOVE_SPEED
 
 const STOP_DISTANCE := 34.0
@@ -16,7 +17,7 @@ const SEPARATION_FORCE := 120.0
 
 enum EnemyState { CHASE, WINDUP, ATTACK, RECOVER, HITSTUN, DEAD }
 
-var hp: int
+var _hp: int
 var _target: Node2D
 var _base_modulate := Color.WHITE
 var _flash_tween: Tween
@@ -32,7 +33,7 @@ var _attack_cooldown: float = 0.0
 @onready var sprite: Sprite2D = $Visual/Sprite2D
 
 func _ready() -> void:
-	hp = max_hp
+	_hp = max_health
 	add_to_group("enemies")
 	body_shape.disabled = false
 	hurtbox.monitoring = true
@@ -40,6 +41,11 @@ func _ready() -> void:
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate
+	health_changed.emit(_hp, max_health)
+	var hb = preload("res://scenes/ui/EnemyHealthBar.tscn").instantiate()
+	add_child(hb)
+	hb.set_health(_hp, max_health)
+	health_changed.connect(hb.set_health)
 
 func _physics_process(delta: float) -> void:
 	if _attack_cooldown > 0.0:
@@ -87,14 +93,15 @@ func set_target(target: Node2D) -> void:
 	_target = target
 
 func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
-	hp = max(hp - amount, 0)
+	_hp = max(_hp - amount, 0)
+	health_changed.emit(_hp, max_health)
 	if from != Vector2.ZERO:
 		var dir := (global_position - from).normalized()
 		_knockback_velocity = dir * 140.0
 		_knockback_timer = 0.12
 		_state = EnemyState.HITSTUN
 	_flash_visual()
-	if hp <= 0:
+	if _hp <= 0:
 		_state = EnemyState.DEAD
 		died.emit()
 		queue_free()

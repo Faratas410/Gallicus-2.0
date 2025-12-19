@@ -2,11 +2,13 @@ extends Node2D
 
 @onready var fill: ColorRect = $Fill
 
-var _max: int = 1
+const BAR_W: float = 26.0
 
 func set_health(current: int, max: int) -> void:
-	_max = max
-	var ratio := 0.0
+	var ratio: float = 0.0
 	if max > 0:
 		ratio = float(current) / float(max)
-	fill.size.x = 26.0 * clamp(ratio, 0.0, 1.0)
+	ratio = clamp(ratio, 0.0, 1.0)
+	var s := fill.size
+	s.x = BAR_W * ratio
+	fill.size = s

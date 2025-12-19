@@ -17,7 +17,7 @@ const SEPARATION_FORCE := 120.0
 
 enum EnemyState { CHASE, WINDUP, ATTACK, RECOVER, HITSTUN, DEAD }
 
-var _hp: int
+var _hp: int = 0
 var _target: Node2D
 var _base_modulate := Color.WHITE
 var _flash_tween: Tween
@@ -25,6 +25,7 @@ var _knockback_velocity := Vector2.ZERO
 var _knockback_timer := 0.0
 var _state: EnemyState = EnemyState.CHASE
 var _attack_cooldown: float = 0.0
+var _hp_bar: Node2D = null
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -41,11 +42,11 @@ func _ready() -> void:
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate
+	var bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")
+	_hp_bar = bar_scene.instantiate() as Node2D
+	add_child(_hp_bar)
+	health_changed.connect(Callable(_hp_bar, "set_health"))
 	health_changed.emit(_hp, max_health)
-	var hb = preload("res://scenes/ui/EnemyHealthBar.tscn").instantiate()
-	add_child(hb)
-	hb.set_health(_hp, max_health)
-	health_changed.connect(hb.set_health)
 
 func _physics_process(delta: float) -> void:
 	if _attack_cooldown > 0.0:
@@ -141,7 +142,7 @@ func _flash_visual() -> void:
 	_flash_tween.tween_property(sprite, "modulate", _base_modulate, GameConstants.ENEMY_FLASH_DURATION)
 
 func _find_player() -> Node2D:
-	var player := get_tree().get_first_node_in_group("player")
+	var player: Node = get_tree().get_first_node_in_group("player")
 	if player is Node2D:
 		return player
 	return null

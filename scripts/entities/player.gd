@@ -124,6 +124,8 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 		final_damage = max(1, int(ceil(amount * 0.4)))
 		knockback_scale = 0.4
 	_current_health = max(_current_health - final_damage, 0)
+	if final_damage > 0:
+		GameEvents.player_damaged.emit()
 	if from != Vector2.ZERO:
 		var knockback_direction := (global_position - from).normalized()
 		_knockback_velocity = knockback_direction * KNOCKBACK_FORCE * knockback_scale

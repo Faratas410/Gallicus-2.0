@@ -65,3 +65,6 @@ func get_current_wave() -> int:
 
 func get_enemies_remaining() -> int:
 	return _enemies_remaining
+
+func get_player() -> Node2D:
+	return _player

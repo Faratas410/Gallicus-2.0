@@ -5,6 +5,10 @@ signal died
 @export var max_hp: int = GameConstants.ENEMY_MAX_HP
 @export var move_speed: float = GameConstants.ENEMY_MOVE_SPEED
 
+const STOP_DISTANCE := 34.0
+const PERSONAL_SPACE := 22.0
+const SEPARATION_FORCE := 120.0
+
 var hp: int
 var _target: Node2D
 var _is_attacking: bool = false
@@ -13,11 +17,13 @@ var _flash_tween: Tween
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
+@onready var body_shape: CollisionShape2D = $CollisionShape2D
 @onready var sprite: Sprite2D = $Visual/Sprite2D
 
 func _ready() -> void:
 	hp = max_hp
 	add_to_group("enemies")
+	body_shape.disabled = false
 	_set_hitbox_active(false)
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	_ensure_placeholder_sprite()
@@ -41,13 +47,15 @@ func _physics_process(_delta: float) -> void:
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
-	if distance <= GameConstants.ENEMY_CHASE_RANGE:
+	if distance > STOP_DISTANCE and distance <= GameConstants.ENEMY_CHASE_RANGE:
 		var direction := (_target.global_position - global_position).normalized()
 		velocity = direction * move_speed
-		move_and_slide()
-		return
+	else:
+		velocity = Vector2.ZERO
+	if distance < PERSONAL_SPACE:
+		var away := (global_position - _target.global_position).normalized()
+		velocity += away * SEPARATION_FORCE
 
-	velocity = Vector2.ZERO
 	move_and_slide()
 
 func set_target(target: Node2D) -> void:
@@ -64,12 +72,15 @@ func _start_attack() -> void:
 	if _is_attacking:
 		return
 	_is_attacking = true
+	velocity = Vector2.ZERO
 	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_WINDUP).timeout
 	if not is_inside_tree():
 		return
+	velocity = Vector2.ZERO
 	_set_hitbox_active(true)
 	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_ACTIVE).timeout
 	_set_hitbox_active(false)
+	velocity = Vector2.ZERO
 	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_RECOVERY).timeout
 	_is_attacking = false
 

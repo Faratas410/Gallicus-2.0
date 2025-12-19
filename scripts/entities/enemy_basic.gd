@@ -14,6 +14,8 @@ var _target: Node2D
 var _is_attacking: bool = false
 var _base_modulate := Color.WHITE
 var _flash_tween: Tween
+var _knockback_velocity := Vector2.ZERO
+var _knockback_timer := 0.0
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -32,6 +34,11 @@ func _ready() -> void:
 	_base_modulate = sprite.modulate
 
 func _physics_process(_delta: float) -> void:
+	if _knockback_timer > 0.0:
+		velocity = _knockback_velocity
+		_knockback_timer = max(_knockback_timer - _delta, 0.0)
+		move_and_slide()
+		return
 	if _is_attacking:
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -63,8 +70,12 @@ func _physics_process(_delta: float) -> void:
 func set_target(target: Node2D) -> void:
 	_target = target
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 	hp = max(hp - amount, 0)
+	if from != Vector2.ZERO:
+		var dir := (global_position - from).normalized()
+		_knockback_velocity = dir * 140.0
+		_knockback_timer = 0.12
 	_flash_visual()
 	if hp <= 0:
 		died.emit()

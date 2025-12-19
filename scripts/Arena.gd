@@ -16,9 +16,17 @@ var _enemies_remaining: int = 0
 var _player: Node2D
 
 func _ready() -> void:
+	print("Arena ready")
 	_rng.randomize()
 	add_to_group("arena")
+	queue_redraw()
 	_spawn_player()
+	_spawn_debug_enemy()
+
+func _draw() -> void:
+	var floor_size := Vector2(1024.0, 768.0)
+	var rect := Rect2(-floor_size * 0.5, floor_size)
+	draw_rect(rect, Color(0.15, 0.15, 0.2, 1.0))
 
 func start_next_wave() -> void:
 	if _enemies_remaining > 0:
@@ -30,12 +38,22 @@ func start_next_wave() -> void:
 func _spawn_player() -> void:
 	if _player != null:
 		return
+	var existing_player := get_tree().get_first_node_in_group("player")
+	if existing_player and existing_player is Node2D:
+		_player = existing_player
+		_player.global_position = global_position
+		player_spawned.emit(_player)
+		var player_callable := Callable(self, "_on_player_died")
+		if _player.has_signal("died") and not _player.is_connected("died", player_callable):
+			_player.connect("died", player_callable)
+		return
 	_player = player_scene.instantiate() as Node2D
 	add_child(_player)
 	_player.global_position = global_position
 	player_spawned.emit(_player)
-	if _player.has_signal("died"):
-		_player.connect("died", _on_player_died)
+	var died_callable := Callable(self, "_on_player_died")
+	if _player.has_signal("died") and not _player.is_connected("died", died_callable):
+		_player.connect("died", died_callable)
 
 func _spawn_enemies(count: int) -> void:
 	_enemies_remaining = count
@@ -48,6 +66,17 @@ func _spawn_enemies(count: int) -> void:
 		enemy.global_position = global_position + Vector2(cos(angle), sin(angle)) * radius
 		if enemy.has_signal("died"):
 			enemy.connect("died", _on_enemy_died)
+
+func _spawn_debug_enemy() -> void:
+	if enemy_scene == null:
+		return
+	await get_tree().create_timer(0.2).timeout
+	var enemy := enemy_scene.instantiate() as Node2D
+	add_child(enemy)
+	enemy.global_position = Vector2(120.0, 0.0)
+	print("Spawned enemy")
+	if enemy.has_signal("died"):
+		enemy.connect("died", _on_enemy_died)
 
 func _on_enemy_died() -> void:
 	_enemies_remaining = max(_enemies_remaining - 1, 0)

@@ -150,7 +150,7 @@ func _start_attack(damage: int, duration: float, windup: float, cooldown: float)
 	_state = PlayerState.ATTACKING
 	_attack_damage = damage
 	_set_hitbox_active(false)
-	var active_time := max(duration - windup, 0.0)
+	var active_time: float = maxf(duration - windup, 0.0)
 	if windup > 0.0:
 		await get_tree().create_timer(windup).timeout
 		if _state != PlayerState.ATTACKING:

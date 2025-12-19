@@ -14,6 +14,7 @@ enum PlayerState {
 }
 
 @export var max_health: int = GameConstants.PLAYER_MAX_HEALTH
+@export var debug_input: bool = true
 
 var is_blocking: bool = false
 
@@ -56,13 +57,8 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if (
-		Input.is_action_just_pressed("move_left")
-		or Input.is_action_just_pressed("move_right")
-		or Input.is_action_just_pressed("move_up")
-		or Input.is_action_just_pressed("move_down")
-	):
-		print("Input dir:", input_dir, " state:", _state)
+	if debug_input and input_dir != Vector2.ZERO:
+		print("Player input:", input_dir, " state:", _state)
 
 	if _state == PlayerState.DODGING:
 		velocity = _dodge_direction * GameConstants.PLAYER_DODGE_SPEED
@@ -109,13 +105,18 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if _state == PlayerState.IDLE or _state == PlayerState.MOVE:
-		velocity = input_dir * GameConstants.PLAYER_MOVE_SPEED
+		velocity = input_dir * Constants.PLAYER_SPEED
 		move_and_slide()
-		if input_dir != Vector2.ZERO:
-			_last_move_direction = input_dir.normalized()
-			_state = PlayerState.MOVE
-		else:
-			_state = PlayerState.IDLE
+		_state = PlayerState.MOVE if input_dir != Vector2.ZERO else PlayerState.IDLE
+		return
+
+	if debug_input and (
+		Input.is_action_pressed("move_left")
+		or Input.is_action_pressed("move_right")
+		or Input.is_action_pressed("move_up")
+		or Input.is_action_pressed("move_down")
+	) and input_dir == Vector2.ZERO:
+		print("Pressed move keys but input_dir is ZERO. Check InputMap.")
 
 func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 	if _state == PlayerState.DEAD:

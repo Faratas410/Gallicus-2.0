@@ -6,16 +6,24 @@ signal died
 @export var move_speed: float = GameConstants.ENEMY_MOVE_SPEED
 
 const STOP_DISTANCE := 34.0
+const WINDUP_TIME := 0.25
+const ACTIVE_TIME := 0.10
+const RECOVER_TIME := 0.25
+const ATTACK_COOLDOWN := 0.65
+const ATTACK_DAMAGE := 1
 const PERSONAL_SPACE := 22.0
 const SEPARATION_FORCE := 120.0
 
+enum EnemyState { CHASE, WINDUP, ATTACK, RECOVER, HITSTUN, DEAD }
+
 var hp: int
 var _target: Node2D
-var _is_attacking: bool = false
 var _base_modulate := Color.WHITE
 var _flash_tween: Tween
 var _knockback_velocity := Vector2.ZERO
 var _knockback_timer := 0.0
+var _state: EnemyState = EnemyState.CHASE
+var _attack_cooldown: float = 0.0
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -28,20 +36,21 @@ func _ready() -> void:
 	add_to_group("enemies")
 	body_shape.disabled = false
 	hurtbox.monitoring = true
-	_set_hitbox_active(false)
-	hitbox.area_entered.connect(_on_hitbox_area_entered)
+	hitbox_shape.disabled = true
+	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	if _attack_cooldown > 0.0:
+		_attack_cooldown = max(_attack_cooldown - delta, 0.0)
 	if _knockback_timer > 0.0:
+		_state = EnemyState.HITSTUN
 		velocity = _knockback_velocity
-		_knockback_timer = max(_knockback_timer - _delta, 0.0)
+		_knockback_timer = max(_knockback_timer - delta, 0.0)
 		move_and_slide()
-		return
-	if _is_attacking:
-		velocity = Vector2.ZERO
-		move_and_slide()
+		if _knockback_timer <= 0.0 and _state != EnemyState.DEAD:
+			_state = EnemyState.CHASE
 		return
 	if _target == null:
 		_target = _find_player()
@@ -51,21 +60,28 @@ func _physics_process(_delta: float) -> void:
 		return
 
 	var distance := global_position.distance_to(_target.global_position)
-	if distance <= GameConstants.ENEMY_ATTACK_RANGE:
-		_start_attack()
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	if distance > STOP_DISTANCE and distance <= GameConstants.ENEMY_CHASE_RANGE:
-		var direction := (_target.global_position - global_position).normalized()
-		velocity = direction * move_speed
-	else:
-		velocity = Vector2.ZERO
-	if distance < PERSONAL_SPACE:
-		var away := (global_position - _target.global_position).normalized()
-		velocity += away * SEPARATION_FORCE
-
-	move_and_slide()
+	match _state:
+		EnemyState.CHASE:
+			if distance > STOP_DISTANCE:
+				var direction := (_target.global_position - global_position).normalized()
+				velocity = direction * move_speed
+				if distance < PERSONAL_SPACE:
+					var away := (global_position - _target.global_position).normalized()
+					velocity += away * SEPARATION_FORCE
+				move_and_slide()
+			else:
+				velocity = Vector2.ZERO
+				move_and_slide()
+				if _attack_cooldown <= 0.0:
+					_begin_attack()
+		EnemyState.WINDUP, EnemyState.ATTACK, EnemyState.RECOVER:
+			velocity = Vector2.ZERO
+			move_and_slide()
+		EnemyState.HITSTUN:
+			velocity = Vector2.ZERO
+			move_and_slide()
+		EnemyState.DEAD:
+			velocity = Vector2.ZERO
 
 func set_target(target: Node2D) -> void:
 	_target = target
@@ -76,41 +92,37 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 		var dir := (global_position - from).normalized()
 		_knockback_velocity = dir * 140.0
 		_knockback_timer = 0.12
+		_state = EnemyState.HITSTUN
 	_flash_visual()
 	if hp <= 0:
+		_state = EnemyState.DEAD
 		died.emit()
 		queue_free()
 
-func _start_attack() -> void:
-	if _is_attacking:
+func _begin_attack() -> void:
+	if _state != EnemyState.CHASE:
 		return
-	_is_attacking = true
+	_state = EnemyState.WINDUP
 	velocity = Vector2.ZERO
-	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_WINDUP).timeout
-	if not is_inside_tree():
-		return
-	velocity = Vector2.ZERO
-	_set_hitbox_active(true)
-	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_ACTIVE).timeout
-	_set_hitbox_active(false)
-	velocity = Vector2.ZERO
-	await get_tree().create_timer(GameConstants.ENEMY_ATTACK_RECOVERY).timeout
-	_is_attacking = false
+	_attack_cooldown = ATTACK_COOLDOWN
+	call_deferred("_attack_sequence")
 
-func _set_hitbox_active(active: bool) -> void:
-	hitbox.monitoring = active
-	hitbox_shape.disabled = not active
+func _attack_sequence() -> void:
+	await get_tree().create_timer(WINDUP_TIME).timeout
+	if _state == EnemyState.DEAD:
+		return
+	_state = EnemyState.ATTACK
+	hitbox_shape.disabled = false
+	await get_tree().create_timer(ACTIVE_TIME).timeout
+	hitbox_shape.disabled = true
+	_state = EnemyState.RECOVER
+	await get_tree().create_timer(RECOVER_TIME).timeout
+	if _state != EnemyState.DEAD:
+		_state = EnemyState.CHASE
 
-func _on_hitbox_area_entered(area: Area2D) -> void:
-	if not _is_attacking:
-		return
-	if area == self:
-		return
-	var target: Node = area.get_parent()
-	if target == null:
-		return
-	if target.has_method("take_damage"):
-		target.call("take_damage", GameConstants.ENEMY_ATTACK_DAMAGE, global_position)
+func _on_hitbox_body_entered(body: Node) -> void:
+	if body.is_in_group("player") and body.has_method("take_damage"):
+		body.take_damage(ATTACK_DAMAGE, global_position)
 
 func _flash_visual() -> void:
 	if _flash_tween:

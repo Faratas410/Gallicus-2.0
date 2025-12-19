@@ -15,6 +15,7 @@ var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
 var _run_manager: Node
 var _arena: Node
+var _player: Node = null
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -39,9 +40,13 @@ func _ready() -> void:
 	if debug_overlay != null:
 		debug_overlay.visible = false
 
+	var arena: Node = get_tree().get_first_node_in_group("arena")
+	if arena != null and arena.has_signal("player_spawned"):
+		arena.player_spawned.connect(_on_player_spawned)
+
 	var p: Node = get_tree().get_first_node_in_group("player")
-	if p != null and p.has_signal("health_changed"):
-		p.health_changed.connect(_on_player_health_changed)
+	if p != null:
+		_bind_player(p)
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
 
@@ -85,6 +90,19 @@ func _on_player_health_changed(current: int, max: int) -> void:
 	player_hp_bar.max_value = max
 	player_hp_bar.value = current
 	player_hp_label.text = "HP: %d/%d" % [current, max]
+
+func _on_player_spawned(p: Node) -> void:
+	_bind_player(p)
+
+func _bind_player(p: Node) -> void:
+	if _player != null and _player.has_signal("health_changed"):
+		if _player.health_changed.is_connected(_on_player_health_changed):
+			_player.health_changed.disconnect(_on_player_health_changed)
+
+	_player = p
+
+	if _player != null and _player.has_signal("health_changed"):
+		_player.health_changed.connect(_on_player_health_changed)
 
 func _update_bet_buttons() -> void:
 	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:

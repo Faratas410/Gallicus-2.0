@@ -52,6 +52,11 @@ func _ready() -> void:
 	hurtbox.collision_layer = 1 << 2
 	hurtbox.collision_mask = 0
 	hurtbox.add_to_group("player_hurtbox")
+	if hurtbox_shape.shape == null:
+		var s := RectangleShape2D.new()
+		s.size = Vector2(18, 18)
+		hurtbox_shape.shape = s
+		print("Player hurtbox shape auto-created")
 	print("Player hurtbox shape is null? ", hurtbox_shape.shape == null)
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)

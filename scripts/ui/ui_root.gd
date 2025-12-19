@@ -2,6 +2,8 @@ extends CanvasLayer
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
+@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/PlayerHPBar") as ProgressBar
+@onready var player_hp_label: Label = get_node_or_null("HUD/Panel/VBox/PlayerHPLabel") as Label
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
 @onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
@@ -36,6 +38,15 @@ func _ready() -> void:
 
 	if debug_overlay != null:
 		debug_overlay.visible = false
+
+	var player := get_tree().get_first_node_in_group("player")
+	if player != null:
+		if player.has_signal("health_changed"):
+			player.health_changed.connect(_on_player_health_changed)
+		var current_health := player.get("_current_health")
+		var max_health := player.get("max_health")
+		if typeof(current_health) == TYPE_INT and typeof(max_health) == TYPE_INT:
+			_on_player_health_changed(current_health, max_health)
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
 
@@ -74,6 +85,13 @@ func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
 	get_viewport().gui_release_focus()
+
+func _on_player_health_changed(current: int, max: int) -> void:
+	if player_hp_bar != null:
+		player_hp_bar.max_value = max
+		player_hp_bar.value = current
+	if player_hp_label != null:
+		player_hp_label.text = "HP: %d/%d" % [current, max]
 
 func _update_bet_buttons() -> void:
 	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:

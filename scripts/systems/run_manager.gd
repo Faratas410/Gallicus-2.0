@@ -20,6 +20,12 @@ var _player: Node
 func _ready() -> void:
 	print("RunManager ready")
 	add_to_group("run_manager")
+	GameEvents.bet_placed.connect(_on_bet_placed)
+	GameEvents.run_failed.connect(_on_run_failed)
+	call_deferred("_boot")
+
+func _boot() -> void:
+	await get_tree().process_frame
 	_ensure_arena_and_player()
 	_arena = get_node_or_null(arena_path)
 	_bet_manager = get_node_or_null("BetManager")
@@ -27,8 +33,6 @@ func _ready() -> void:
 		_arena.connect("wave_started", _on_wave_started)
 		_arena.connect("wave_cleared", _on_wave_cleared)
 		_arena.connect("player_spawned", _on_player_spawned)
-	GameEvents.bet_placed.connect(_on_bet_placed)
-	GameEvents.run_failed.connect(_on_run_failed)
 	print("Starting new run")
 	start_new_run()
 

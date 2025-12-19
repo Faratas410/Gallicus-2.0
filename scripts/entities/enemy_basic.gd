@@ -80,7 +80,7 @@ func _physics_process(delta: float) -> void:
 				velocity = Vector2.ZERO
 				move_and_slide()
 				if _attack_cooldown <= 0.0:
-					print("ENEMY wants to attack. dist=", distance, " cd=", _attack_cooldown)
+					print("ENEMY begin_attack dist=", distance)
 					_begin_attack()
 		EnemyState.WINDUP, EnemyState.ATTACK, EnemyState.RECOVER:
 			velocity = Vector2.ZERO
@@ -112,19 +112,22 @@ func _begin_attack() -> void:
 	if _state != EnemyState.CHASE:
 		return
 	_state = EnemyState.WINDUP
-	velocity = Vector2.ZERO
 	_attack_cooldown = ATTACK_COOLDOWN
+	velocity = Vector2.ZERO
 	call_deferred("_attack_sequence")
 
 func _attack_sequence() -> void:
+	print("ENEMY windup")
 	await get_tree().create_timer(WINDUP_TIME).timeout
 	if _state == EnemyState.DEAD:
 		return
 	_state = EnemyState.ATTACK
+	print("ENEMY active")
 	hitbox_shape.disabled = false
 	await get_tree().create_timer(ACTIVE_TIME).timeout
 	hitbox_shape.disabled = true
 	_state = EnemyState.RECOVER
+	print("ENEMY recover")
 	await get_tree().create_timer(RECOVER_TIME).timeout
 	if _state != EnemyState.DEAD:
 		_state = EnemyState.CHASE

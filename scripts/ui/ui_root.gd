@@ -39,14 +39,14 @@ func _ready() -> void:
 	if debug_overlay != null:
 		debug_overlay.visible = false
 
-	var player := get_tree().get_first_node_in_group("player")
+	var player: Node = get_tree().get_first_node_in_group("player")
 	if player != null:
 		if player.has_signal("health_changed"):
 			player.health_changed.connect(_on_player_health_changed)
-		var current_health := player.get("_current_health")
-		var max_health := player.get("max_health")
-		if typeof(current_health) == TYPE_INT and typeof(max_health) == TYPE_INT:
-			_on_player_health_changed(current_health, max_health)
+		if player.has_method("get_health"):
+			var health: Array[int] = player.get_health()
+			if health.size() >= 2:
+				_on_player_health_changed(health[0], health[1])
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
 

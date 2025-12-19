@@ -165,6 +165,9 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 		GameEvents.run_failed.emit()
 		queue_free()
 
+func get_health() -> Array[int]:
+	return [_current_health, max_health]
+
 func _start_light_attack() -> void:
 	_start_attack(
 		1,

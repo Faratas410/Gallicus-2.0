@@ -47,6 +47,11 @@ func _ready() -> void:
 		if not InputMap.has_action(action):
 			push_error("Missing input action: %s" % action)
 	print("Player ready. Physics:", is_physics_processing())
+	hurtbox.monitoring = true
+	hurtbox.monitorable = true
+	hurtbox.collision_layer = 1 << 2
+	hurtbox.collision_mask = 0
+	hurtbox.add_to_group("player_hurtbox")
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)

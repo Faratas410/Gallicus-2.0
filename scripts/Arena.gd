@@ -6,7 +6,7 @@ signal wave_cleared(wave: int)
 signal enemy_count_changed(count: int)
 
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
-@export var enemy_scene: PackedScene = preload("res://scenes/Enemy.tscn")
+@export var enemy_scene: PackedScene = preload("res://scenes/enemies/EnemyBasic.tscn")
 @export var arena_radius: float = 280.0
 @export var base_enemy_count: int = 3
 

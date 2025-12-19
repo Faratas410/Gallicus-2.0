@@ -33,7 +33,7 @@ var _knockback_timer := 0.0
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var hurtbox_shape: CollisionShape2D = $Hurtbox/CollisionShape2D
-@onready var sprite: Sprite2D = $Visual/Sprite2D
+@onready var sprite: Sprite2D = $Visual
 
 func _ready() -> void:
 	_current_health = max_health
@@ -224,4 +224,4 @@ func _ensure_placeholder_sprite() -> void:
 	var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)
 	image.fill(Color(0.2, 0.6, 0.9, 1.0))
 	sprite.texture = ImageTexture.create_from_image(image)
-	sprite.scale = Vector2(24.0, 32.0)
+	sprite.scale = Vector2(24.0, 24.0)

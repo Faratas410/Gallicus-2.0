@@ -4,6 +4,8 @@ extends Node
 @export var player_path: NodePath
 @export var starting_coins: int = GameConstants.RUN_STARTING_COINS
 @export var arena_clear_reward: int = GameConstants.ARENA_CLEAR_REWARD
+@export var arena_scene: PackedScene = preload("res://scenes/Arena.tscn")
+@export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
 
 var run := {
 	"arena_index": 0,
@@ -16,7 +18,9 @@ var _waiting_for_bet: bool = false
 var _player: Node
 
 func _ready() -> void:
+	print("RunManager ready")
 	add_to_group("run_manager")
+	_ensure_arena_and_player()
 	_arena = get_node_or_null(arena_path)
 	_bet_manager = get_node_or_null("BetManager")
 	if _arena:
@@ -25,6 +29,7 @@ func _ready() -> void:
 		_arena.connect("player_spawned", _on_player_spawned)
 	GameEvents.bet_placed.connect(_on_bet_placed)
 	GameEvents.run_failed.connect(_on_run_failed)
+	print("Starting new run")
 	start_new_run()
 
 func start_new_run() -> void:
@@ -41,6 +46,38 @@ func _open_bet_ui() -> void:
 	_set_gameplay_active(false)
 	if _bet_manager and _bet_manager.has_method("open_bet_ui_before_arena"):
 		_bet_manager.open_bet_ui_before_arena()
+
+func _ensure_arena_and_player() -> void:
+	var main := get_parent()
+	if main == null:
+		return
+	var arena_node: Node = null
+	if arena_path != NodePath():
+		arena_node = get_node_or_null(arena_path)
+	if arena_node == null and arena_scene:
+		arena_node = arena_scene.instantiate()
+		arena_node.name = "Arena"
+		main.add_child(arena_node)
+		if arena_node is Node2D:
+			arena_node.global_position = Vector2.ZERO
+		arena_path = NodePath("../Arena")
+	_arena = arena_node
+
+	var existing_player: Node = null
+	if player_path != NodePath():
+		existing_player = get_node_or_null(player_path)
+	if existing_player == null:
+		existing_player = get_tree().get_first_node_in_group("player")
+	if existing_player == null and player_scene:
+		existing_player = player_scene.instantiate()
+		existing_player.name = "Player"
+		main.add_child(existing_player)
+		if existing_player is Node2D:
+			existing_player.global_position = Vector2.ZERO
+		player_path = NodePath("../Player")
+	_player = existing_player
+	if _player and _player is Node2D:
+		(_player as Node2D).global_position = Vector2.ZERO
 
 func _start_next_arena() -> void:
 	if _arena == null:

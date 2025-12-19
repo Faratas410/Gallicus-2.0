@@ -2,8 +2,8 @@ extends CanvasLayer
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
-@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/PlayerHPBar") as ProgressBar
-@onready var player_hp_label: Label = get_node_or_null("HUD/Panel/VBox/PlayerHPLabel") as Label
+@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/PlayerHPBar")
+@onready var player_hp_label: Label = get_node_or_null("HUD/Panel/VBox/PlayerHPLabel")
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
 @onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
@@ -39,14 +39,9 @@ func _ready() -> void:
 	if debug_overlay != null:
 		debug_overlay.visible = false
 
-	var player: Node = get_tree().get_first_node_in_group("player")
-	if player != null:
-		if player.has_signal("health_changed"):
-			player.health_changed.connect(_on_player_health_changed)
-		if player.has_method("get_health"):
-			var health: Array[int] = player.get_health()
-			if health.size() >= 2:
-				_on_player_health_changed(health[0], health[1])
+	var p: Node = get_tree().get_first_node_in_group("player")
+	if p != null and p.has_signal("health_changed"):
+		p.health_changed.connect(_on_player_health_changed)
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
 

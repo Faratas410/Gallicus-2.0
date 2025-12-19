@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 signal hit_confirmed(target: Node)
 signal died
+signal health_changed(current: int, max: int)
 
 enum PlayerState {
 	IDLE,
@@ -39,6 +40,7 @@ var hitbox_viz: ColorRect
 
 func _ready() -> void:
 	_current_health = max_health
+	health_changed.emit(_current_health, max_health)
 	add_to_group("player")
 	set_physics_process(true)
 	for action in ["move_left", "move_right", "move_up", "move_down"]:
@@ -148,6 +150,7 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 		final_damage = max(1, int(ceil(amount * 0.4)))
 		knockback_scale = 0.4
 	_current_health = max(_current_health - final_damage, 0)
+	health_changed.emit(_current_health, max_health)
 	if final_damage > 0:
 		GameEvents.player_damaged.emit()
 	if from != Vector2.ZERO:

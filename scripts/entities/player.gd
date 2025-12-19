@@ -47,7 +47,7 @@ func _ready() -> void:
 	print("Player ready. Physics:", is_physics_processing())
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
-	hitbox.body_entered.connect(_on_hitbox_body_entered)
+	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	_ensure_hitbox_viz()
 	_ensure_placeholder_sprite()
 
@@ -239,18 +239,21 @@ func _set_hurtbox_active(active: bool) -> void:
 	hurtbox.monitoring = active
 	hurtbox_shape.disabled = not active
 
-func _on_hitbox_body_entered(body: Node) -> void:
+func _on_hitbox_area_entered(area: Area2D) -> void:
 	if not _attack_in_progress:
 		return
-	if body == self:
+	if area == self:
 		return
-	if _hit_targets.has(body):
+	var target: Node = area.get_parent()
+	if target == null:
 		return
-	_hit_targets[body] = true
-	print("HIT:", body.name)
-	if body.has_method("take_damage"):
-		body.take_damage(_attack_damage, global_position)
-	hit_confirmed.emit(body)
+	if _hit_targets.has(target):
+		return
+	_hit_targets[target] = true
+	print("HIT:", target.name)
+	if target.has_method("take_damage"):
+		target.call("take_damage", _attack_damage, global_position)
+	hit_confirmed.emit(target)
 
 func _ensure_hitbox_viz() -> void:
 	var existing := hitbox.get_node_or_null("HitboxViz")

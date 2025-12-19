@@ -52,6 +52,7 @@ func _ready() -> void:
 	hurtbox.collision_layer = 1 << 2
 	hurtbox.collision_mask = 0
 	hurtbox.add_to_group("player_hurtbox")
+	print("Player hurtbox shape is null? ", hurtbox_shape.shape == null)
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)

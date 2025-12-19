@@ -38,8 +38,8 @@ func _ready() -> void:
 	add_to_group("enemies")
 	body_shape.disabled = false
 	hurtbox.monitoring = true
-	hitbox_shape.disabled = true
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
+	hitbox_shape.disabled = true
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate
 	var bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")
@@ -133,9 +133,10 @@ func _attack_sequence() -> void:
 		_state = EnemyState.CHASE
 
 func _on_hitbox_body_entered(body: Node) -> void:
-	if body.is_in_group("player") and body.has_method("take_damage"):
+	if body != null and body.is_in_group("player"):
 		print("ENEMY HIT player")
-		body.take_damage(ATTACK_DAMAGE, global_position)
+		if body.has_method("take_damage"):
+			body.take_damage(1, global_position)
 
 func _flash_visual() -> void:
 	if _flash_tween:

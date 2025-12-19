@@ -65,6 +65,17 @@ func resolve_bet() -> void:
 	active_bet = {}
 	_arena_active = false
 
+func reset_bet_state() -> void:
+	active_bet = {}
+	player_damage_taken = false
+	start_time = 0.0
+	end_time = 0.0
+	_arena_active = false
+	GameEvents.bet_ui_closed.emit()
+
+func is_bet_active() -> bool:
+	return not active_bet.is_empty()
+
 func _evaluate_bet(bet_id: String) -> bool:
 	match bet_id:
 		"WIN":

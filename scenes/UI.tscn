@@ -37,13 +37,13 @@ text = "Coins: 0"
 text = "Bet: -"
 
 [node name="PlayerHPBar" type="ProgressBar" parent="HUD/Panel/VBox"]
-custom_minimum_size = Vector2(240, 16)
+custom_minimum_size = Vector2(260, 16)
 min_value = 0.0
-max_value = 100.0
-value = 100.0
+max_value = 10.0
+value = 10.0
 
 [node name="PlayerHPLabel" type="Label" parent="HUD/Panel/VBox"]
-text = "HP: 100/100"
+text = "HP: -/-"
 
 [node name="BetPanel" type="Panel" parent="HUD"]
 visible = false

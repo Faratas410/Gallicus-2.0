@@ -38,7 +38,7 @@ func _ready() -> void:
 	add_to_group("enemies")
 	body_shape.disabled = false
 	hurtbox.monitoring = true
-	hitbox.body_entered.connect(_on_hitbox_body_entered)
+	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	hitbox_shape.disabled = true
 	_ensure_placeholder_sprite()
 	_base_modulate = sprite.modulate
@@ -123,8 +123,10 @@ func _attack_sequence() -> void:
 		return
 	_state = EnemyState.ATTACK
 	print("ENEMY active")
+	hitbox.monitoring = true
 	hitbox_shape.disabled = false
 	await get_tree().create_timer(ACTIVE_TIME).timeout
+	hitbox.monitoring = false
 	hitbox_shape.disabled = true
 	_state = EnemyState.RECOVER
 	print("ENEMY recover")
@@ -132,11 +134,13 @@ func _attack_sequence() -> void:
 	if _state != EnemyState.DEAD:
 		_state = EnemyState.CHASE
 
-func _on_hitbox_body_entered(body: Node) -> void:
-	if body != null and body.is_in_group("player"):
+func _on_hitbox_area_entered(area: Area2D) -> void:
+	if area == null:
+		return
+	var target := area.get_parent()
+	if target != null and target.is_in_group("player") and target.has_method("take_damage"):
 		print("ENEMY HIT player")
-		if body.has_method("take_damage"):
-			body.take_damage(1, global_position)
+		target.take_damage(1, global_position)
 
 func _flash_visual() -> void:
 	if _flash_tween:

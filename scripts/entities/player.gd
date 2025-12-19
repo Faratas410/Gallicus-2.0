@@ -29,6 +29,7 @@ var _dodge_direction := Vector2.ZERO
 var _hit_targets: Dictionary = {}
 var _knockback_velocity := Vector2.ZERO
 var _knockback_timer := 0.0
+var hitbox_viz: ColorRect
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -47,6 +48,7 @@ func _ready() -> void:
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
+	_ensure_hitbox_viz()
 	_ensure_placeholder_sprite()
 
 func _physics_process(delta: float) -> void:
@@ -57,6 +59,8 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if input_dir != Vector2.ZERO:
+		_last_move_direction = input_dir.normalized()
 	if debug_input:
 		if Input.is_anything_pressed():
 			print("ANYTHING pressed. input_dir=", input_dir, " state=", _state)
@@ -151,7 +155,7 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 
 func _start_light_attack() -> void:
 	_start_attack(
-		GameConstants.PLAYER_LIGHT_ATTACK_DAMAGE,
+		1,
 		GameConstants.PLAYER_LIGHT_ATTACK_DURATION,
 		0.0,
 		GameConstants.PLAYER_LIGHT_ATTACK_COOLDOWN
@@ -159,7 +163,7 @@ func _start_light_attack() -> void:
 
 func _start_heavy_attack() -> void:
 	_start_attack(
-		GameConstants.PLAYER_HEAVY_ATTACK_DAMAGE,
+		2,
 		GameConstants.PLAYER_HEAVY_ATTACK_DURATION,
 		GameConstants.PLAYER_HEAVY_ATTACK_WINDUP,
 		GameConstants.PLAYER_HEAVY_ATTACK_COOLDOWN
@@ -172,6 +176,10 @@ func _start_attack(damage: int, duration: float, windup: float, cooldown: float)
 	is_blocking = false
 	_state = PlayerState.ATTACKING
 	_attack_damage = damage
+	var direction := _last_move_direction
+	if direction == Vector2.ZERO:
+		direction = Vector2.RIGHT
+	hitbox.position = direction.normalized() * 16.0
 	_set_hitbox_active(false)
 	var active_time: float = maxf(duration - windup, 0.0)
 	if windup > 0.0:
@@ -222,6 +230,8 @@ func _update_attack_cooldown(delta: float) -> void:
 func _set_hitbox_active(active: bool) -> void:
 	hitbox.monitoring = active
 	hitbox_shape.disabled = not active
+	if hitbox_viz:
+		hitbox_viz.visible = active
 	if active:
 		_hit_targets.clear()
 
@@ -237,9 +247,24 @@ func _on_hitbox_body_entered(body: Node) -> void:
 	if _hit_targets.has(body):
 		return
 	_hit_targets[body] = true
+	print("HIT:", body.name)
 	if body.has_method("take_damage"):
-		body.call("take_damage", _attack_damage)
+		body.take_damage(_attack_damage, global_position)
 	hit_confirmed.emit(body)
+
+func _ensure_hitbox_viz() -> void:
+	var existing := hitbox.get_node_or_null("HitboxViz")
+	if existing:
+		hitbox_viz = existing
+		return
+	var rect := ColorRect.new()
+	rect.name = "HitboxViz"
+	rect.size = Vector2(26.0, 18.0)
+	rect.color = Color(1.0, 0.0, 0.0, 0.35)
+	rect.visible = false
+	rect.position = Vector2(-13.0, -9.0)
+	hitbox.add_child(rect)
+	hitbox_viz = rect
 
 func _ensure_placeholder_sprite() -> void:
 	if sprite.texture:

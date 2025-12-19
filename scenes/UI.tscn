@@ -34,3 +34,46 @@ text = "Coins: 0"
 
 [node name="BetInfoLabel" type="Label" parent="HUD/Panel/VBox"]
 text = "Bet: -"
+
+[node name="BetPanel" type="Panel" parent="HUD"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -140.0
+offset_right = 220.0
+offset_bottom = 140.0
+
+[node name="BetVBox" type="VBoxContainer" parent="HUD/BetPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+
+[node name="BetTitle" type="Label" parent="HUD/BetPanel/BetVBox"]
+text = "Scommessa Arena"
+
+[node name="StakeRow" type="HBoxContainer" parent="HUD/BetPanel/BetVBox"]
+
+[node name="StakeLabel" type="Label" parent="HUD/BetPanel/BetVBox/StakeRow"]
+text = "Stake"
+
+[node name="StakeInput" type="SpinBox" parent="HUD/BetPanel/BetVBox/StakeRow"]
+min_value = 0.0
+step = 5.0
+value = 10.0
+
+[node name="BetButtons" type="HBoxContainer" parent="HUD/BetPanel/BetVBox"]
+
+[node name="BetWinButton" type="Button" parent="HUD/BetPanel/BetVBox/BetButtons"]
+text = "WIN"
+
+[node name="BetNoHitButton" type="Button" parent="HUD/BetPanel/BetVBox/BetButtons"]
+text = "NO_HIT"
+
+[node name="BetFastButton" type="Button" parent="HUD/BetPanel/BetVBox/BetButtons"]
+text = "FAST"

@@ -88,14 +88,24 @@ func _ensure_arena_and_player() -> void:
 		(_player as Node2D).global_position = Vector2.ZERO
 
 func _ensure_input_map() -> void:
-	var mapping := {
+	var actions := {
+		# Movimento
 		"move_left": [KEY_A, KEY_LEFT],
 		"move_right": [KEY_D, KEY_RIGHT],
 		"move_up": [KEY_W, KEY_UP],
 		"move_down": [KEY_S, KEY_DOWN],
+
+		# Combattimento
+		"attack_light": [KEY_J],
+		"attack_heavy": [KEY_K],
+		"block": [KEY_L],
+		"dodge": [KEY_SPACE],
+
+		# Sistema
+		"pause": [KEY_ESCAPE],
 	}
 
-	for action_name in mapping.keys():
+	for action_name in actions.keys():
 		if not InputMap.has_action(action_name):
 			InputMap.add_action(action_name)
 
@@ -104,13 +114,13 @@ func _ensure_input_map() -> void:
 			if ev is InputEventKey:
 				existing[ev.keycode] = true
 
-		for keycode in mapping[action_name]:
+		for keycode in actions[action_name]:
 			if not existing.has(keycode):
 				var iev := InputEventKey.new()
 				iev.keycode = keycode
 				InputMap.action_add_event(action_name, iev)
 
-	print("InputMap ensured: movement keys bound")
+	print("InputMap ensured: movement + combat bindings ready")
 
 func _start_next_arena() -> void:
 	if _arena == null:

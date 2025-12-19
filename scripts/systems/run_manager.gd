@@ -22,6 +22,7 @@ func _ready() -> void:
 	add_to_group("run_manager")
 	GameEvents.bet_placed.connect(_on_bet_placed)
 	GameEvents.run_failed.connect(_on_run_failed)
+	_ensure_input_map()
 	call_deferred("_boot")
 
 func _boot() -> void:
@@ -85,6 +86,31 @@ func _ensure_arena_and_player() -> void:
 	_player = existing_player
 	if _player and _player is Node2D:
 		(_player as Node2D).global_position = Vector2.ZERO
+
+func _ensure_input_map() -> void:
+	var mapping := {
+		"move_left": [KEY_A, KEY_LEFT],
+		"move_right": [KEY_D, KEY_RIGHT],
+		"move_up": [KEY_W, KEY_UP],
+		"move_down": [KEY_S, KEY_DOWN],
+	}
+
+	for action_name in mapping.keys():
+		if not InputMap.has_action(action_name):
+			InputMap.add_action(action_name)
+
+		var existing: Dictionary = {}
+		for ev in InputMap.action_get_events(action_name):
+			if ev is InputEventKey:
+				existing[ev.keycode] = true
+
+		for keycode in mapping[action_name]:
+			if not existing.has(keycode):
+				var iev := InputEventKey.new()
+				iev.keycode = keycode
+				InputMap.action_add_event(action_name, iev)
+
+	print("InputMap ensured: movement keys bound")
 
 func _start_next_arena() -> void:
 	if _arena == null:

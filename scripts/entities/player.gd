@@ -57,6 +57,12 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if debug_input:
+		if Input.is_anything_pressed():
+			print("ANYTHING pressed. input_dir=", input_dir, " state=", _state)
+
+	if debug_input and Input.is_key_pressed(KEY_W):
+		print("KEY_W pressed (raw)")
 	if debug_input and input_dir != Vector2.ZERO:
 		print("Player input:", input_dir, " state:", _state)
 

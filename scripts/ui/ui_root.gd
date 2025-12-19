@@ -1,13 +1,13 @@
 extends CanvasLayer
 
-@onready var coins_label: Label = %CoinsLabel
-@onready var bet_info_label: Label = %BetInfoLabel
-@onready var bet_panel: Panel = %BetPanel
-@onready var stake_input: SpinBox = %StakeInput
-@onready var bet_win_button: Button = %BetWinButton
-@onready var bet_no_hit_button: Button = %BetNoHitButton
-@onready var bet_fast_button: Button = %BetFastButton
-@onready var debug_overlay: Label = %DebugOverlay
+@onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
+@onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
+@onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
+@onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
+@onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
+@onready var bet_no_hit_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
+@onready var bet_fast_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetFastButton") as Button
+@onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
@@ -22,28 +22,48 @@ func _ready() -> void:
 	GameEvents.bet_ui_opened.connect(_on_bet_ui_opened)
 	GameEvents.bet_ui_closed.connect(_on_bet_ui_closed)
 
-	bet_win_button.pressed.connect(func() -> void: _place_bet("WIN"))
-	bet_no_hit_button.pressed.connect(func() -> void: _place_bet("NO_HIT"))
-	bet_fast_button.pressed.connect(func() -> void: _place_bet("FAST"))
-	bet_panel.visible = false
-	debug_overlay.visible = false
+	if bet_panel == null:
+		push_warning("Bet UI missing, disabling betting panel.")
+	else:
+		bet_panel.visible = false
+		if stake_input == null or bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:
+			push_warning("Bet UI nodes incomplete, disabling betting panel.")
+			bet_panel.visible = false
+		else:
+			bet_win_button.pressed.connect(func() -> void: _place_bet("WIN"))
+			bet_no_hit_button.pressed.connect(func() -> void: _place_bet("NO_HIT"))
+			bet_fast_button.pressed.connect(func() -> void: _place_bet("FAST"))
+
+	if debug_overlay != null:
+		debug_overlay.visible = false
+
+	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
 
 func _on_run_started() -> void:
-	coins_label.text = "Coins: 0"
-	bet_info_label.text = "Bet: -"
-	bet_panel.visible = false
+	if coins_label != null:
+		coins_label.text = "Coins: 0"
+	if bet_info_label != null:
+		bet_info_label.text = "Bet: -"
+	if bet_panel != null:
+		bet_panel.visible = false
 
 func _on_run_failed() -> void:
-	bet_info_label.text = "Bet: -"
-	bet_panel.visible = false
+	if bet_info_label != null:
+		bet_info_label.text = "Bet: -"
+	if bet_panel != null:
+		bet_panel.visible = false
 
 func _on_coins_changed(coins: int) -> void:
-	coins_label.text = "Coins: %d" % coins
+	if coins_label != null:
+		coins_label.text = "Coins: %d" % coins
 
 func _on_bet_placed(bet_id: String, stake: int, odds: float) -> void:
-	bet_info_label.text = "Bet: %s | %d @ %.2f" % [bet_id, stake, odds]
+	if bet_info_label != null:
+		bet_info_label.text = "Bet: %s | %d @ %.2f" % [bet_id, stake, odds]
 
 func _on_bet_ui_opened(bets: Array) -> void:
+	if bet_panel == null:
+		return
 	_bets_by_id.clear()
 	for bet in bets:
 		_bets_by_id[bet.get("id", "")] = bet
@@ -51,9 +71,12 @@ func _on_bet_ui_opened(bets: Array) -> void:
 	bet_panel.visible = true
 
 func _on_bet_ui_closed() -> void:
-	bet_panel.visible = false
+	if bet_panel != null:
+		bet_panel.visible = false
 
 func _update_bet_buttons() -> void:
+	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:
+		return
 	_set_bet_button_text(bet_win_button, "WIN")
 	_set_bet_button_text(bet_no_hit_button, "NO_HIT")
 	_set_bet_button_text(bet_fast_button, "FAST")
@@ -70,13 +93,13 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 
 func _place_bet(bet_id: String) -> void:
 	var manager := _get_bet_manager()
-	if manager == null:
+	if manager == null or stake_input == null:
 		return
 	var stake := int(stake_input.value)
 	manager.place_bet(bet_id, stake)
 
 func _process(_delta: float) -> void:
-	if not debug_overlay.visible:
+	if debug_overlay == null or not debug_overlay.visible:
 		return
 	var fps := Engine.get_frames_per_second()
 	var arena_index := _get_arena_index()
@@ -91,7 +114,14 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F1:
-		debug_overlay.visible = not debug_overlay.visible
+		if debug_overlay != null:
+			debug_overlay.visible = not debug_overlay.visible
+
+func _req(path: String) -> Node:
+	var n := get_node_or_null(path)
+	if n == null:
+		push_error("UI missing node at path: %s" % path)
+	return n
 
 func _get_run_manager() -> Node:
 	if _run_manager and is_instance_valid(_run_manager):

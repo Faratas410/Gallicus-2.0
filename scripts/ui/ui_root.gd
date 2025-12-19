@@ -73,6 +73,7 @@ func _on_bet_ui_opened(bets: Array) -> void:
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
+	get_viewport().gui_release_focus()
 
 func _update_bet_buttons() -> void:
 	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:

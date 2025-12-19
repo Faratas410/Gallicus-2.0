@@ -104,6 +104,11 @@ func _bind_player(p: Node) -> void:
 	if _player != null and _player.has_signal("health_changed"):
 		_player.health_changed.connect(_on_player_health_changed)
 
+	if _player != null and _player.has_method("get_health"):
+		var h: Array = _player.call("get_health")
+		if h.size() >= 2:
+			_on_player_health_changed(int(h[0]), int(h[1]))
+
 func _update_bet_buttons() -> void:
 	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:
 		return

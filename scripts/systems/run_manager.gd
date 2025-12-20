@@ -54,7 +54,6 @@ func restart_run(open_bet: bool = true) -> void:
 		"arena_index": 0,
 		"coins": starting_coins,
 	}
-	GameEvents.coins_changed.emit(run.coins)
 
 	_waiting_for_bet = open_bet
 	if _bet_manager != null and _bet_manager.has_method("reset"):
@@ -73,6 +72,7 @@ func restart_run(open_bet: bool = true) -> void:
 		_arena = get_tree().get_first_node_in_group("arena")
 
 	GameEvents.run_started.emit()
+	GameEvents.coins_changed.emit(run.coins)
 	if _arena != null and _arena.has_method("restart_arena"):
 		_arena.call("restart_arena")
 

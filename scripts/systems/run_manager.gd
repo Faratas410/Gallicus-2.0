@@ -68,7 +68,13 @@ func restart_run(open_bet: bool = true) -> void:
 
 	_ensure_arena_and_player()
 
+	_arena = get_node_or_null(arena_path)
+	if _arena == null:
+		_arena = get_tree().get_first_node_in_group("arena")
+
 	GameEvents.run_started.emit()
+	if _arena != null and _arena.has_method("restart_arena"):
+		_arena.call("restart_arena")
 
 	if open_bet:
 		GameEvents.betting_opened.emit()

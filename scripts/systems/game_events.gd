@@ -8,4 +8,6 @@ signal coins_changed(coins: int)
 signal bet_placed(bet_id: String, stake: int, odds: float)
 signal bet_ui_opened(bets: Array)
 signal bet_ui_closed
+signal betting_opened
+signal betting_closed
 signal player_damaged

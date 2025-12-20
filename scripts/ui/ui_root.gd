@@ -74,6 +74,8 @@ func _on_run_started() -> void:
 		bet_panel.visible = false
 	if game_over_panel != null:
 		game_over_panel.visible = false
+	if next_bet_button != null:
+		next_bet_button.visible = true
 
 func _on_run_failed() -> void:
 	if bet_info_label != null:
@@ -82,6 +84,8 @@ func _on_run_failed() -> void:
 		bet_panel.visible = false
 	if game_over_panel != null:
 		game_over_panel.visible = true
+	if next_bet_button != null:
+		next_bet_button.visible = false
 
 func _on_run_started_controls() -> void:
 	if controls_hint_panel == null:
@@ -106,6 +110,8 @@ func _on_bet_placed(bet_id: String, stake: int, odds: float) -> void:
 
 func _on_bet_ui_opened(bets: Array) -> void:
 	if bet_panel == null:
+		return
+	if game_over_panel != null and game_over_panel.visible:
 		return
 	_bets_by_id.clear()
 	for bet in bets:
@@ -139,8 +145,8 @@ func _request_reset() -> void:
 		push_warning("RunManager not found or no restart method.")
 
 func _request_next_bet() -> void:
-	if game_over_panel != null:
-		game_over_panel.visible = false
+	if game_over_panel != null and game_over_panel.visible:
+		return
 
 	var rm: Node = get_tree().get_first_node_in_group("run_manager")
 	if rm != null and rm.has_method("restart_run"):

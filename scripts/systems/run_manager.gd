@@ -49,13 +49,20 @@ func start_new_run() -> void:
 	GameEvents.coins_changed.emit(run.coins)
 	_open_bet_ui()
 
-func restart_run(open_bet: bool = true) -> void:
+func reset_run() -> void:
+	run["coins"] = starting_coins
+	restart_run(true)
+
+func restart_run(preserve_coins: bool = true) -> void:
+	var coins_to_keep := run.get("coins", starting_coins)
 	run = {
 		"arena_index": 0,
 		"coins": starting_coins,
 	}
 
-	_waiting_for_bet = open_bet
+	if preserve_coins:
+		run["coins"] = coins_to_keep
+
 	if _bet_manager != null and _bet_manager.has_method("reset"):
 		_bet_manager.call("reset")
 
@@ -72,13 +79,10 @@ func restart_run(open_bet: bool = true) -> void:
 		_arena = get_tree().get_first_node_in_group("arena")
 
 	GameEvents.run_started.emit()
-	GameEvents.coins_changed.emit(run.coins)
 	if _arena != null and _arena.has_method("restart_arena"):
 		_arena.call("restart_arena")
-
-	if open_bet:
-		GameEvents.betting_opened.emit()
-		GameEvents.bet_opened.emit()
+	_open_bet_ui()
+	GameEvents.coins_changed.emit(run.coins)
 
 func _open_bet_ui() -> void:
 	_waiting_for_bet = true

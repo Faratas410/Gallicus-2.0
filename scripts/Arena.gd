@@ -100,6 +100,26 @@ func reset_arena() -> void:
 			e.queue_free()
 	# se hai proiettili/effects, puliscili qui
 
+func restart_arena() -> void:
+	set_process(false)
+	set_physics_process(false)
+	_current_wave = 0
+	_enemies_remaining = 0
+	enemy_count_changed.emit(_enemies_remaining)
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(e):
+			e.queue_free()
+	set_process(true)
+	set_physics_process(true)
+	if has_method("start_wave"):
+		call("start_wave", 0)
+	elif has_method("start_combat"):
+		call("start_combat")
+	elif has_method("begin"):
+		call("begin")
+	else:
+		start_next_wave()
+
 func _clear_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if enemy is Node and is_ancestor_of(enemy):

@@ -78,6 +78,7 @@ func restart_run(open_bet: bool = true) -> void:
 
 	if open_bet:
 		GameEvents.betting_opened.emit()
+		GameEvents.bet_opened.emit()
 
 func _open_bet_ui() -> void:
 	_waiting_for_bet = true

@@ -14,18 +14,22 @@ extends CanvasLayer
 @onready var restart_button: Button = $HUD/GameOverPanel/GameOverVBox/RestartButton
 @onready var next_bet_button: Button = $HUD/GameOverPanel/GameOverVBox/NextBetButton
 @onready var quit_button: Button = $HUD/GameOverPanel/GameOverVBox/QuitButton
+@onready var controls_hint_panel: Panel = $HUD/ControlsHintPanel
 
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
 var _run_manager: Node
 var _arena: Node
 var _player: Node = null
+var _has_seen_controls: bool = false
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
 	GameEvents.bet_placed.connect(_on_bet_placed)
 	GameEvents.run_started.connect(_on_run_started)
 	GameEvents.run_failed.connect(_on_run_failed)
+	GameEvents.run_started.connect(_on_run_started_controls)
+	GameEvents.run_failed.connect(_on_run_failed_controls)
 	GameEvents.bet_ui_opened.connect(_on_bet_ui_opened)
 	GameEvents.bet_ui_closed.connect(_on_bet_ui_closed)
 
@@ -78,6 +82,19 @@ func _on_run_failed() -> void:
 		bet_panel.visible = false
 	if game_over_panel != null:
 		game_over_panel.visible = true
+
+func _on_run_started_controls() -> void:
+	if controls_hint_panel == null:
+		return
+	if not _has_seen_controls:
+		controls_hint_panel.visible = true
+		_has_seen_controls = true
+	else:
+		controls_hint_panel.visible = false
+
+func _on_run_failed_controls() -> void:
+	if controls_hint_panel != null and _has_seen_controls:
+		controls_hint_panel.visible = false
 
 func _on_coins_changed(coins: int) -> void:
 	if coins_label != null:

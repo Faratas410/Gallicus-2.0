@@ -10,4 +10,6 @@ signal bet_ui_opened(bets: Array)
 signal bet_ui_closed
 signal betting_opened
 signal betting_closed
+signal bet_opened
+signal bet_closed
 signal player_damaged

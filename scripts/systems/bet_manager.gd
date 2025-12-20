@@ -31,6 +31,7 @@ func open_bet_ui_before_arena() -> void:
 	_arena_active = false
 	GameEvents.bet_ui_opened.emit(_bets)
 	GameEvents.betting_opened.emit()
+	GameEvents.bet_opened.emit()
 
 func place_bet(bet_id: String, stake: int) -> bool:
 	var bet := _get_bet_by_id(bet_id)
@@ -48,6 +49,7 @@ func place_bet(bet_id: String, stake: int) -> bool:
 	GameEvents.bet_placed.emit(bet_id, stake, float(bet["odds"]))
 	GameEvents.bet_ui_closed.emit()
 	GameEvents.betting_closed.emit()
+	GameEvents.bet_closed.emit()
 	return true
 
 func register_arena_start() -> void:
@@ -75,6 +77,7 @@ func reset_bet_state() -> void:
 	_arena_active = false
 	GameEvents.bet_ui_closed.emit()
 	GameEvents.betting_closed.emit()
+	GameEvents.bet_closed.emit()
 
 func is_bet_active() -> bool:
 	return not active_bet.is_empty()

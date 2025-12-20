@@ -10,6 +10,10 @@ extends CanvasLayer
 @onready var bet_no_hit_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
 @onready var bet_fast_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetFastButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
+@onready var game_over_panel: Panel = $HUD/GameOverPanel
+@onready var restart_button: Button = $HUD/GameOverPanel/GameOverVBox/RestartButton
+@onready var next_bet_button: Button = $HUD/GameOverPanel/GameOverVBox/NextBetButton
+@onready var quit_button: Button = $HUD/GameOverPanel/GameOverVBox/QuitButton
 
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
@@ -40,6 +44,13 @@ func _ready() -> void:
 	if debug_overlay != null:
 		debug_overlay.visible = false
 
+	if restart_button != null:
+		restart_button.pressed.connect(_on_restart_pressed)
+	if next_bet_button != null:
+		next_bet_button.pressed.connect(_on_next_bet_pressed)
+	if quit_button != null:
+		quit_button.pressed.connect(_on_quit_pressed)
+
 	var arena: Node = get_tree().get_first_node_in_group("arena")
 	if arena != null and arena.has_signal("player_spawned"):
 		arena.player_spawned.connect(_on_player_spawned)
@@ -57,12 +68,16 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	if game_over_panel != null:
+		game_over_panel.visible = false
 
 func _on_run_failed() -> void:
 	if bet_info_label != null:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	if game_over_panel != null:
+		game_over_panel.visible = true
 
 func _on_coins_changed(coins: int) -> void:
 	if coins_label != null:
@@ -85,6 +100,27 @@ func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
 	get_viewport().gui_release_focus()
+
+func _on_restart_pressed() -> void:
+	_request_restart(false)
+
+func _on_next_bet_pressed() -> void:
+	_request_restart(true)
+
+func _request_restart(open_bet: bool) -> void:
+	if game_over_panel != null:
+		game_over_panel.visible = false
+
+	var rm: Node = get_tree().get_first_node_in_group("run_manager")
+	if rm != null and rm.has_method("restart_run"):
+		rm.call("restart_run", open_bet)
+	elif rm != null and rm.has_method("start_new_run"):
+		rm.call("start_new_run")
+	else:
+		push_warning("RunManager not found or no restart method.")
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()
 
 func _on_player_health_changed(current: int, max: int) -> void:
 	player_hp_bar.max_value = max

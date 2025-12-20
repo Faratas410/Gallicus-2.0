@@ -93,6 +93,13 @@ func soft_reset() -> void:
 	_reset_player()
 	_current_wave = 0
 
+func reset_arena() -> void:
+	# elimina nemici
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(e):
+			e.queue_free()
+	# se hai proiettili/effects, puliscili qui
+
 func _clear_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if enemy is Node and is_ancestor_of(enemy):

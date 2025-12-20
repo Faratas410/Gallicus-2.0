@@ -16,6 +16,7 @@ var _arena: Node
 var _bet_manager: Node
 var _waiting_for_bet: bool = false
 var _player: Node
+var _run_failed_emitted: bool = false
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -30,6 +31,7 @@ func _boot() -> void:
 	_ensure_arena_and_player()
 	_arena = get_node_or_null(arena_path)
 	_player = get_tree().get_first_node_in_group("player")
+	_connect_player_signals()
 	_bet_manager = get_node_or_null("BetManager")
 	if _arena:
 		_arena.connect("wave_started", _on_wave_started)
@@ -45,6 +47,7 @@ func start_new_run() -> void:
 		"arena_index": 0,
 		"coins": starting_coins,
 	}
+	_run_failed_emitted = false
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(run.coins)
 	_open_bet_ui()
@@ -59,6 +62,7 @@ func restart_run(preserve_coins: bool = true) -> void:
 		"arena_index": 0,
 		"coins": starting_coins,
 	}
+	_run_failed_emitted = false
 
 	if preserve_coins:
 		run["coins"] = coins_to_keep
@@ -73,6 +77,10 @@ func restart_run(preserve_coins: bool = true) -> void:
 			_arena.call("clear_enemies")
 
 	_ensure_arena_and_player()
+	_player = _resolve_player()
+	_connect_player_signals()
+	if _player != null and _player.has_method("reset_for_new_round"):
+		_player.call("reset_for_new_round")
 
 	_arena = get_node_or_null(arena_path)
 	if _arena == null:
@@ -198,6 +206,7 @@ func _on_wave_cleared(_wave: int) -> void:
 
 func _on_player_spawned(player: Node) -> void:
 	_player = player
+	_connect_player_signals()
 	if _waiting_for_bet:
 		_set_gameplay_active(false)
 
@@ -217,8 +226,27 @@ func _resolve_player() -> Node:
 	_player = get_tree().get_first_node_in_group("player")
 	return _player
 
+func _connect_player_signals() -> void:
+	_player = _resolve_player()
+	if _player == null:
+		return
+	var died_callable := Callable(self, "_on_player_died")
+	if _player.has_signal("died") and not _player.is_connected("died", died_callable):
+		_player.connect("died", died_callable)
+
 func _on_run_failed() -> void:
-	_soft_reset()
+	_run_failed_emitted = true
+	_waiting_for_bet = false
+	_set_gameplay_active(false)
+
+func _on_player_died() -> void:
+	call_deferred("_emit_run_failed_if_needed")
+
+func _emit_run_failed_if_needed() -> void:
+	if _run_failed_emitted:
+		return
+	_run_failed_emitted = true
+	GameEvents.run_failed.emit()
 
 func _soft_reset() -> void:
 	if _arena and _arena.has_method("soft_reset"):

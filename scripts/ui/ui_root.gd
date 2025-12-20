@@ -119,20 +119,32 @@ func _on_bet_ui_closed() -> void:
 	get_viewport().gui_release_focus()
 
 func _on_restart_pressed() -> void:
-	_request_restart(false)
+	_request_reset()
 
 func _on_next_bet_pressed() -> void:
-	_request_restart(true)
+	_request_next_bet()
 
-func _request_restart(open_bet: bool) -> void:
+func _request_reset() -> void:
+	if game_over_panel != null:
+		game_over_panel.visible = false
+
+	var rm: Node = get_tree().get_first_node_in_group("run_manager")
+	if rm != null and rm.has_method("reset_run"):
+		rm.call("reset_run")
+	elif rm != null and rm.has_method("restart_run"):
+		rm.call("restart_run", false)
+	elif rm != null and rm.has_method("start_new_run"):
+		rm.call("start_new_run")
+	else:
+		push_warning("RunManager not found or no restart method.")
+
+func _request_next_bet() -> void:
 	if game_over_panel != null:
 		game_over_panel.visible = false
 
 	var rm: Node = get_tree().get_first_node_in_group("run_manager")
 	if rm != null and rm.has_method("restart_run"):
-		rm.call("restart_run", open_bet)
-	elif rm != null and rm.has_method("start_new_run"):
-		rm.call("start_new_run")
+		rm.call("restart_run", true)
 	else:
 		push_warning("RunManager not found or no restart method.")
 

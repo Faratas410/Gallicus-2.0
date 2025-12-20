@@ -54,7 +54,7 @@ func reset_run() -> void:
 	restart_run(true)
 
 func restart_run(preserve_coins: bool = true) -> void:
-	var coins_to_keep := run.get("coins", starting_coins)
+	var coins_to_keep: int = int(run.get("coins", starting_coins))
 	run = {
 		"arena_index": 0,
 		"coins": starting_coins,

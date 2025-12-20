@@ -49,6 +49,30 @@ func start_new_run() -> void:
 	GameEvents.coins_changed.emit(run.coins)
 	_open_bet_ui()
 
+func restart_run(open_bet: bool = true) -> void:
+	run = {
+		"arena_index": 0,
+		"coins": starting_coins,
+	}
+	GameEvents.coins_changed.emit(run.coins)
+
+	_waiting_for_bet = open_bet
+	if _bet_manager != null and _bet_manager.has_method("reset"):
+		_bet_manager.call("reset")
+
+	if _arena != null:
+		if _arena.has_method("reset_arena"):
+			_arena.call("reset_arena")
+		elif _arena.has_method("clear_enemies"):
+			_arena.call("clear_enemies")
+
+	_ensure_arena_and_player()
+
+	GameEvents.run_started.emit()
+
+	if open_bet:
+		GameEvents.betting_opened.emit()
+
 func _open_bet_ui() -> void:
 	_waiting_for_bet = true
 	_set_gameplay_active(false)

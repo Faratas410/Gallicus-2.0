@@ -53,10 +53,14 @@ func start_new_run() -> void:
 	_open_bet_ui()
 
 func reset_run() -> void:
+	get_tree().paused = false
+	Engine.time_scale = 1.0
 	run["coins"] = starting_coins
 	restart_run(true)
 
 func restart_run(preserve_coins: bool = true) -> void:
+	get_tree().paused = false
+	Engine.time_scale = 1.0
 	var coins_to_keep: int = int(run.get("coins", starting_coins))
 	run = {
 		"arena_index": 0,
@@ -79,8 +83,11 @@ func restart_run(preserve_coins: bool = true) -> void:
 	_ensure_arena_and_player()
 	_player = _resolve_player()
 	_connect_player_signals()
-	if _player != null and _player.has_method("reset_for_new_round"):
-		_player.call("reset_for_new_round")
+	if _player != null:
+		_player.set_physics_process(true)
+		_player.set_process(true)
+		if _player.has_method("reset_for_new_round"):
+			_player.call("reset_for_new_round")
 
 	_arena = get_node_or_null(arena_path)
 	if _arena == null:

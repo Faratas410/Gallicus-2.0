@@ -32,6 +32,7 @@ func _ready() -> void:
 	GameEvents.run_failed.connect(_on_run_failed_controls)
 	GameEvents.bet_ui_opened.connect(_on_bet_ui_opened)
 	GameEvents.bet_ui_closed.connect(_on_bet_ui_closed)
+	GameEvents.betting_opened.connect(_on_betting_opened)
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -86,6 +87,12 @@ func _on_run_failed() -> void:
 		game_over_panel.visible = true
 	if next_bet_button != null:
 		next_bet_button.visible = false
+
+func _on_betting_opened() -> void:
+	if game_over_panel != null and game_over_panel.visible:
+		if bet_panel != null:
+			bet_panel.visible = false
+		return
 
 func _on_run_started_controls() -> void:
 	if controls_hint_panel == null:

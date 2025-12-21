@@ -19,6 +19,8 @@ func _ready() -> void:
 	print("Arena ready")
 	_rng.randomize()
 	add_to_group("arena")
+	GameEvents.run_started.connect(_on_run_started)
+	GameEvents.run_failed.connect(_on_run_failed)
 	queue_redraw()
 	_spawn_player()
 	_spawn_debug_enemy()
@@ -119,6 +121,14 @@ func restart_arena() -> void:
 		call("begin")
 	else:
 		start_next_wave()
+
+func _on_run_started() -> void:
+	set_process(true)
+	set_physics_process(true)
+
+func _on_run_failed() -> void:
+	set_process(false)
+	set_physics_process(false)
 
 func _clear_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):

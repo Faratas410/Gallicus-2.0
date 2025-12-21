@@ -23,6 +23,7 @@ func _ready() -> void:
 	print("RunManager ready")
 	add_to_group("run_manager")
 	GameEvents.bet_placed.connect(_on_bet_placed)
+	GameEvents.betting_opened.connect(_on_betting_opened)
 	GameEvents.run_failed.connect(_on_run_failed)
 	_ensure_input_map()
 	call_deferred("_boot")
@@ -44,12 +45,14 @@ func _boot() -> void:
 	start_new_run()
 
 func start_new_run() -> void:
+	_run_failed_emitted = false
+	_is_game_over = false
+	if _force_game_over_if_dead():
+		return
 	run = {
 		"arena_index": 0,
 		"coins": starting_coins,
 	}
-	_run_failed_emitted = false
-	_is_game_over = false
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(run.coins)
 	_open_bet_ui()
@@ -61,6 +64,8 @@ func reset_run() -> void:
 	restart_run(true)
 
 func restart_run(preserve_coins: bool = true) -> void:
+	_run_failed_emitted = false
+	_is_game_over = false
 	if _force_game_over_if_dead():
 		return
 	get_tree().paused = false
@@ -70,9 +75,6 @@ func restart_run(preserve_coins: bool = true) -> void:
 		"arena_index": 0,
 		"coins": starting_coins,
 	}
-	_run_failed_emitted = false
-	_is_game_over = false
-
 	if preserve_coins:
 		run["coins"] = coins_to_keep
 
@@ -208,6 +210,9 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	_waiting_for_bet = false
 	_start_next_arena()
 
+func _on_betting_opened() -> void:
+	_force_game_over_if_dead()
+
 func _on_wave_started(_wave: int) -> void:
 	GameEvents.arena_started.emit(run.arena_index)
 	if _bet_manager and _bet_manager.has_method("register_arena_start"):
@@ -254,22 +259,10 @@ func _connect_player_signals() -> void:
 
 func _on_run_failed() -> void:
 	_run_failed_emitted = true
-	_is_game_over = true
-	_waiting_for_bet = false
-	_set_gameplay_active(false)
+	_enter_game_over()
 
 func _on_player_died() -> void:
-	_is_game_over = true
-	_waiting_for_bet = false
-	_set_gameplay_active(false)
-	call_deferred("_emit_run_failed_if_needed")
-
-func _emit_run_failed_if_needed() -> void:
-	if _run_failed_emitted:
-		return
-	_run_failed_emitted = true
-	_is_game_over = true
-	GameEvents.run_failed.emit()
+	_enter_game_over()
 
 func _soft_reset() -> void:
 	if _arena and _arena.has_method("soft_reset"):
@@ -285,22 +278,38 @@ func _force_game_over_if_dead() -> bool:
 	if p == null:
 		return false
 	var current_health := _get_player_health_value(p)
-	if current_health <= 0:
-		_is_game_over = true
-		_waiting_for_bet = false
-		_set_gameplay_active(false)
-		_emit_run_failed_if_needed()
+	if current_health <= 0 and current_health != -1:
+		_enter_game_over()
 		return true
 	return false
 
 func _get_player_health_value(p: Node) -> int:
 	if p.has_method("get_current_health"):
 		return int(p.call("get_current_health"))
+	if p.has_meta("current_health"):
+		return int(p.get_meta("current_health"))
 	if p.has_method("get_health"):
 		var h: Array = p.call("get_health")
 		if h.size() > 0:
 			return int(h[0])
-	return 1
+	return -1
+
+func _enter_game_over() -> void:
+	if _is_game_over:
+		return
+	_is_game_over = true
+	_waiting_for_bet = false
+	_set_gameplay_active(false)
+	if _arena != null:
+		_arena.set_physics_process(false)
+		_arena.set_process(false)
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if enemy is Node:
+			enemy.set_physics_process(false)
+			enemy.set_process(false)
+	if not _run_failed_emitted:
+		_run_failed_emitted = true
+		GameEvents.run_failed.emit()
 
 func get_arena() -> Node:
 	return _arena

@@ -18,6 +18,8 @@ var _waiting_for_bet: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _is_game_over: bool = false
+var _phase: String = "PREP"
+var _prep_sequence_id: int = 0
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -55,6 +57,7 @@ func start_new_run() -> void:
 	}
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(run.coins)
+	_begin_prep_phase()
 	_open_bet_ui()
 
 func reset_run() -> void:
@@ -91,8 +94,13 @@ func restart_run(preserve_coins: bool = true) -> void:
 	_player = _resolve_player()
 	_connect_player_signals()
 	if _player != null:
-		_player.set_physics_process(true)
-		_player.set_process(true)
+		if _player.has_method("reset_for_restart"):
+			_player.call("reset_for_restart")
+		else:
+			if _player is CharacterBody2D:
+				(_player as CharacterBody2D).velocity = Vector2.ZERO
+			_player.set_physics_process(true)
+			_player.set_process(true)
 		if _player.has_method("reset_for_new_round"):
 			_player.call("reset_for_new_round")
 
@@ -103,6 +111,7 @@ func restart_run(preserve_coins: bool = true) -> void:
 	GameEvents.run_started.emit()
 	if _arena != null and _arena.has_method("restart_arena"):
 		_arena.call("restart_arena")
+	_begin_prep_phase()
 	_open_bet_ui()
 	GameEvents.coins_changed.emit(run.coins)
 
@@ -112,7 +121,7 @@ func _open_bet_ui() -> void:
 	if _is_game_over:
 		return
 	_waiting_for_bet = true
-	_set_gameplay_active(false)
+	_apply_phase()
 	if _bet_manager and _bet_manager.has_method("open_bet_ui_before_arena"):
 		_bet_manager.open_bet_ui_before_arena()
 
@@ -208,6 +217,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	if _is_game_over:
 		return
 	_waiting_for_bet = false
+	_apply_phase()
 	_start_next_arena()
 
 func _on_betting_opened() -> void:
@@ -217,7 +227,7 @@ func _on_wave_started(_wave: int) -> void:
 	GameEvents.arena_started.emit(run.arena_index)
 	if _bet_manager and _bet_manager.has_method("register_arena_start"):
 		_bet_manager.register_arena_start()
-	_set_gameplay_active(true)
+	_apply_phase()
 
 func _on_wave_cleared(_wave: int) -> void:
 	GameEvents.arena_completed.emit(run.arena_index)
@@ -230,13 +240,14 @@ func _on_wave_cleared(_wave: int) -> void:
 func _on_player_spawned(player: Node) -> void:
 	_player = player
 	_connect_player_signals()
-	if _waiting_for_bet:
-		_set_gameplay_active(false)
+	_apply_phase()
 
 func _set_gameplay_active(active: bool) -> void:
 	_player = _resolve_player()
 	if _player and _player.has_method("set_physics_process"):
 		_player.set_physics_process(active)
+	if _player and _player.has_method("set_process"):
+		_player.set_process(active)
 
 func _resolve_player() -> Node:
 	if _player and is_instance_valid(_player):
@@ -299,14 +310,7 @@ func _enter_game_over() -> void:
 		return
 	_is_game_over = true
 	_waiting_for_bet = false
-	_set_gameplay_active(false)
-	if _arena != null:
-		_arena.set_physics_process(false)
-		_arena.set_process(false)
-	for enemy in get_tree().get_nodes_in_group("enemies"):
-		if enemy is Node:
-			enemy.set_physics_process(false)
-			enemy.set_process(false)
+	_set_phase("GAME_OVER")
 	if not _run_failed_emitted:
 		_run_failed_emitted = true
 		GameEvents.run_failed.emit()
@@ -316,3 +320,32 @@ func get_arena() -> Node:
 
 func get_arena_index() -> int:
 	return int(run.get("arena_index", 0))
+
+func _set_phase(p: String) -> void:
+	_phase = p
+	GameEvents.run_phase_changed.emit(_phase)
+	_apply_phase()
+
+func _apply_phase() -> void:
+	var active := _phase == "LIVE" and not _waiting_for_bet and not _is_game_over
+	_set_gameplay_active(active)
+	if _arena != null:
+		_arena.set_physics_process(active)
+		_arena.set_process(active)
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if enemy is Node:
+			enemy.set_physics_process(active)
+			enemy.set_process(active)
+
+func _begin_prep_phase() -> void:
+	_prep_sequence_id += 1
+	var current_id := _prep_sequence_id
+	_set_phase("PREP")
+	var timer := get_tree().create_timer(1.0)
+	timer.timeout.connect(func() -> void:
+		if current_id != _prep_sequence_id:
+			return
+		if _phase == "GAME_OVER":
+			return
+		_set_phase("LIVE")
+	)

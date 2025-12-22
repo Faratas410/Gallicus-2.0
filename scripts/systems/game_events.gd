@@ -13,3 +13,4 @@ signal betting_closed
 signal bet_opened
 signal bet_closed
 signal player_damaged
+signal run_phase_changed(phase: String)

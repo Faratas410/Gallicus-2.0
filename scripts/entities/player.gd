@@ -192,6 +192,21 @@ func reset_for_new_round() -> void:
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
 
+func reset_for_restart() -> void:
+	velocity = Vector2.ZERO
+	_attack_cooldown = 0.0
+	_attack_in_progress = false
+	_is_invulnerable = false
+	is_blocking = false
+	_knockback_velocity = Vector2.ZERO
+	_knockback_timer = 0.0
+	_hit_targets.clear()
+	_set_hitbox_active(false)
+	_set_hurtbox_active(true)
+	_state = PlayerState.IDLE
+	set_physics_process(true)
+	set_process(true)
+
 func _start_light_attack() -> void:
 	_start_attack(
 		1,

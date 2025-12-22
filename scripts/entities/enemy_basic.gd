@@ -26,7 +26,8 @@ var _knockback_timer := 0.0
 var _state: EnemyState = EnemyState.CHASE
 var _attack_cooldown: float = 0.0
 var _hp_bar: Node2D = null
-var _run_phase: String = "PREP"
+var _run_phase: int = 0
+var _run_manager: Node
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -37,6 +38,7 @@ var _run_phase: String = "PREP"
 func _ready() -> void:
 	_hp = max_health
 	add_to_group("enemies")
+	_run_manager = get_tree().get_first_node_in_group("run_manager")
 	if GameEvents.has_signal("run_phase_changed"):
 		GameEvents.run_phase_changed.connect(_on_run_phase_changed)
 	body_shape.disabled = false
@@ -67,8 +69,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if _attack_cooldown > 0.0:
 		_attack_cooldown = max(_attack_cooldown - delta, 0.0)
-	if _run_phase != "LIVE":
+	if not _is_run_live():
 		velocity = Vector2.ZERO
+		move_and_slide()
 		return
 	if _knockback_timer > 0.0:
 		_state = EnemyState.HITSTUN
@@ -192,5 +195,10 @@ func _ensure_placeholder_sprite() -> void:
 	sprite.texture = ImageTexture.create_from_image(image)
 	sprite.scale = Vector2(24.0, 24.0)
 
-func _on_run_phase_changed(phase: String) -> void:
+func _is_run_live() -> bool:
+	if _run_manager != null and _run_manager.has_method("is_live"):
+		return bool(_run_manager.call("is_live"))
+	return _run_phase == 1
+
+func _on_run_phase_changed(phase: int) -> void:
 	_run_phase = phase

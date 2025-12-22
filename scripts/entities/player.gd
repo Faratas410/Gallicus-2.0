@@ -31,7 +31,8 @@ var _hit_targets: Dictionary = {}
 var _knockback_velocity := Vector2.ZERO
 var _knockback_timer := 0.0
 var hitbox_viz: ColorRect
-var _run_phase: String = "PREP"
+var _run_phase: int = 0
+var _run_manager: Node
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -44,6 +45,7 @@ func _ready() -> void:
 	health_changed.emit(_current_health, max_health)
 	add_to_group("player")
 	set_physics_process(true)
+	_run_manager = get_tree().get_first_node_in_group("run_manager")
 	if GameEvents.has_signal("run_phase_changed"):
 		GameEvents.run_phase_changed.connect(_on_run_phase_changed)
 	for action in ["move_left", "move_right", "move_up", "move_down"]:
@@ -70,14 +72,15 @@ func _ready() -> void:
 	_ensure_placeholder_sprite()
 
 func _physics_process(delta: float) -> void:
-	_update_attack_cooldown(delta)
 	if _state == PlayerState.DEAD:
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
-	if _run_phase != "LIVE":
+	if not _is_run_live():
 		velocity = Vector2.ZERO
+		move_and_slide()
 		return
+	_update_attack_cooldown(delta)
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if debug_input:
@@ -218,6 +221,13 @@ func reset_for_restart() -> void:
 func reset_full_health() -> void:
 	_current_health = max_health
 	_state = PlayerState.IDLE
+	_attack_cooldown = 0.0
+	_attack_in_progress = false
+	_is_invulnerable = false
+	is_blocking = false
+	_knockback_velocity = Vector2.ZERO
+	_knockback_timer = 0.0
+	_hit_targets.clear()
 	velocity = Vector2.ZERO
 	health_changed.emit(_current_health, max_health)
 
@@ -341,5 +351,10 @@ func _ensure_placeholder_sprite() -> void:
 	sprite.texture = ImageTexture.create_from_image(image)
 	sprite.scale = Vector2(24.0, 24.0)
 
-func _on_run_phase_changed(phase: String) -> void:
+func _is_run_live() -> bool:
+	if _run_manager != null and _run_manager.has_method("is_live"):
+		return bool(_run_manager.call("is_live"))
+	return _run_phase == 1
+
+func _on_run_phase_changed(phase: int) -> void:
 	_run_phase = phase

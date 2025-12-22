@@ -67,6 +67,10 @@ func _ready() -> void:
 	health_changed.emit(_hp, max_health)
 
 func _physics_process(delta: float) -> void:
+	if not GameEvents.gameplay_enabled:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	if _attack_cooldown > 0.0:
 		_attack_cooldown = max(_attack_cooldown - delta, 0.0)
 	if not _is_run_live():

@@ -7,6 +7,8 @@ extends Node
 @export var arena_scene: PackedScene = preload("res://scenes/Arena.tscn")
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
 
+enum RunPhase { PREP, LIVE, GAME_OVER }
+
 var run := {
 	"arena_index": 0,
 	"coins": 0,
@@ -18,8 +20,9 @@ var _waiting_for_bet: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _is_game_over: bool = false
-var _phase: String = "PREP"
+var phase: RunPhase = RunPhase.PREP
 var _prep_sequence_id: int = 0
+var _has_started_run: bool = false
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -47,77 +50,59 @@ func _boot() -> void:
 	start_new_run()
 
 func start_new_run() -> void:
-	var was_game_over := _is_game_over
+	_prep_sequence_id += 1
+	var current_id := _prep_sequence_id
 	_run_failed_emitted = false
 	_is_game_over = false
+	_waiting_for_bet = false
+	set_phase(RunPhase.PREP)
+
+	_ensure_arena_and_player()
+	if _arena != null and _arena.has_method("soft_reset"):
+		_arena.call("soft_reset")
+	_reset_or_respawn_player_full()
+	_clear_enemies()
+	if _bet_manager != null and _bet_manager.has_method("reset_bet_state"):
+		_bet_manager.call("reset_bet_state")
+
+	if not _has_started_run:
+		run["coins"] = starting_coins
+		_has_started_run = true
+	run["arena_index"] = 0
+
+	GameEvents.run_started.emit()
+	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
+	GameEvents.countdown_requested.emit(3)
+	await get_tree().create_timer(3.0).timeout
+	if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
+		return
+	set_phase(RunPhase.LIVE)
+	_spawn_wave_or_enemies()
+
+func start_next_bet_round() -> void:
+	if _is_game_over:
+		return
 	if _force_game_over_if_dead():
 		return
-	run = {
-		"arena_index": 0,
-		"coins": starting_coins,
-	}
-	GameEvents.run_started.emit()
-	GameEvents.coins_changed.emit(run.coins)
-	_reset_player_health_if_needed(was_game_over)
-	_begin_prep_phase()
-	_open_bet_ui()
+	_waiting_for_bet = false
+	set_phase(RunPhase.LIVE)
+	_clear_enemies()
+	_spawn_wave_or_enemies()
 
 func reset_run() -> void:
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	run["coins"] = starting_coins
-	restart_run(true)
+	start_new_run()
 
 func restart_run(preserve_coins: bool = true) -> void:
-	var was_game_over := _is_game_over
-	_run_failed_emitted = false
-	_is_game_over = false
-	if _force_game_over_if_dead():
-		return
 	get_tree().paused = false
 	Engine.time_scale = 1.0
-	var coins_to_keep: int = int(run.get("coins", starting_coins))
-	run = {
-		"arena_index": 0,
-		"coins": starting_coins,
-	}
 	if preserve_coins:
-		run["coins"] = coins_to_keep
-
-	if _bet_manager != null and _bet_manager.has_method("reset"):
-		_bet_manager.call("reset")
-
-	if _arena != null:
-		if _arena.has_method("reset_arena"):
-			_arena.call("reset_arena")
-		elif _arena.has_method("clear_enemies"):
-			_arena.call("clear_enemies")
-
-	_ensure_arena_and_player()
-	_player = _resolve_player()
-	_connect_player_signals()
-	if _player != null:
-		if _player.has_method("reset_for_restart"):
-			_player.call("reset_for_restart")
-		else:
-			if _player is CharacterBody2D:
-				(_player as CharacterBody2D).velocity = Vector2.ZERO
-			_player.set_physics_process(true)
-			_player.set_process(true)
-		if _player.has_method("reset_for_new_round"):
-			_player.call("reset_for_new_round")
-
-	_arena = get_node_or_null(arena_path)
-	if _arena == null:
-		_arena = get_tree().get_first_node_in_group("arena")
-
-	GameEvents.run_started.emit()
-	_reset_player_health_if_needed(was_game_over)
-	if _arena != null and _arena.has_method("restart_arena"):
-		_arena.call("restart_arena")
-	_begin_prep_phase()
-	_open_bet_ui()
-	GameEvents.coins_changed.emit(run.coins)
+		start_new_run()
+	else:
+		run["coins"] = starting_coins
+		start_new_run()
 
 func _open_bet_ui() -> void:
 	if _force_game_over_if_dead():
@@ -125,7 +110,7 @@ func _open_bet_ui() -> void:
 	if _is_game_over:
 		return
 	_waiting_for_bet = true
-	_apply_phase()
+	set_phase(RunPhase.PREP)
 	if _bet_manager and _bet_manager.has_method("open_bet_ui_before_arena"):
 		_bet_manager.open_bet_ui_before_arena()
 
@@ -160,6 +145,33 @@ func _ensure_arena_and_player() -> void:
 	_player = existing_player
 	if _player and _player is Node2D:
 		(_player as Node2D).global_position = Vector2.ZERO
+
+func _reset_or_respawn_player_full() -> void:
+	_player = _resolve_player()
+	if _player == null or not _player.is_inside_tree():
+		var main := get_parent()
+		if main != null and player_scene:
+			_player = player_scene.instantiate()
+			_player.name = "Player"
+			main.add_child(_player)
+			if _player is Node2D:
+				(_player as Node2D).global_position = Vector2.ZERO
+			player_path = NodePath("../Player")
+	if _player != null and _player.has_method("reset_full_health"):
+		_player.call("reset_full_health")
+	_connect_player_signals()
+
+func _clear_enemies() -> void:
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if enemy is Node and is_instance_valid(enemy):
+			enemy.queue_free()
+
+func _spawn_wave_or_enemies() -> void:
+	if _arena == null:
+		_arena = get_node_or_null(arena_path)
+	if _arena == null:
+		_arena = get_tree().get_first_node_in_group("arena")
+	_start_next_arena()
 
 func _ensure_input_map() -> void:
 	var actions := {
@@ -221,7 +233,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	if _is_game_over:
 		return
 	_waiting_for_bet = false
-	_apply_phase()
+	set_phase(RunPhase.LIVE)
 	_start_next_arena()
 
 func _on_betting_opened() -> void:
@@ -314,7 +326,7 @@ func _enter_game_over() -> void:
 		return
 	_is_game_over = true
 	_waiting_for_bet = false
-	_set_phase("GAME_OVER")
+	set_phase(RunPhase.GAME_OVER)
 	if not _run_failed_emitted:
 		_run_failed_emitted = true
 		GameEvents.run_failed.emit()
@@ -325,37 +337,17 @@ func get_arena() -> Node:
 func get_arena_index() -> int:
 	return int(run.get("arena_index", 0))
 
-func _set_phase(p: String) -> void:
-	_phase = p
-	GameEvents.run_phase_changed.emit(_phase)
+func is_live() -> bool:
+	return phase == RunPhase.LIVE
+
+func set_phase(p: RunPhase) -> void:
+	phase = p
+	GameEvents.run_phase_changed.emit(int(phase))
 	_apply_phase()
 
 func _apply_phase() -> void:
-	var active := not _waiting_for_bet and not _is_game_over
+	var active := phase == RunPhase.LIVE
 	_set_gameplay_active(active)
 	if _arena != null:
 		_arena.set_physics_process(active)
 		_arena.set_process(active)
-	for enemy in get_tree().get_nodes_in_group("enemies"):
-		if enemy is Node:
-			enemy.set_physics_process(active)
-			enemy.set_process(active)
-
-func _begin_prep_phase() -> void:
-	_prep_sequence_id += 1
-	var current_id := _prep_sequence_id
-	_set_phase("PREP")
-	GameEvents.countdown_started.emit()
-	await get_tree().create_timer(3.0).timeout
-	if current_id != _prep_sequence_id:
-		return
-	if _phase == "GAME_OVER":
-		return
-	_set_phase("LIVE")
-
-func _reset_player_health_if_needed(was_game_over: bool) -> void:
-	if not was_game_over:
-		return
-	_player = _resolve_player()
-	if _player != null and _player.has_method("reset_full_health"):
-		_player.call("reset_full_health")

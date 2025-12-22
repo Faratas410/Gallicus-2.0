@@ -34,7 +34,7 @@ func _ready() -> void:
 	GameEvents.bet_ui_opened.connect(_on_bet_ui_opened)
 	GameEvents.bet_ui_closed.connect(_on_bet_ui_closed)
 	GameEvents.betting_opened.connect(_on_betting_opened)
-	GameEvents.countdown_started.connect(_on_countdown_started)
+	GameEvents.countdown_requested.connect(_on_countdown_requested)
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -75,7 +75,7 @@ func show_countdown(seconds: int = 3) -> void:
 	for i in range(seconds, 0, -1):
 		countdown_label.text = str(i)
 		await get_tree().create_timer(1.0).timeout
-	countdown_label.text = "GO!"
+	countdown_label.text = "GO"
 	await get_tree().create_timer(0.5).timeout
 	countdown_label.visible = false
 
@@ -107,8 +107,8 @@ func _on_betting_opened() -> void:
 			bet_panel.visible = false
 		return
 
-func _on_countdown_started() -> void:
-	await show_countdown()
+func _on_countdown_requested(seconds: int) -> void:
+	await show_countdown(seconds)
 
 func _on_run_started_controls() -> void:
 	if controls_hint_panel == null:
@@ -158,11 +158,7 @@ func _request_reset() -> void:
 		game_over_panel.visible = false
 
 	var rm: Node = get_tree().get_first_node_in_group("run_manager")
-	if rm != null and rm.has_method("reset_run"):
-		rm.call("reset_run")
-	elif rm != null and rm.has_method("restart_run"):
-		rm.call("restart_run", false)
-	elif rm != null and rm.has_method("start_new_run"):
+	if rm != null and rm.has_method("start_new_run"):
 		rm.call("start_new_run")
 	else:
 		push_warning("RunManager not found or no restart method.")
@@ -172,8 +168,8 @@ func _request_next_bet() -> void:
 		return
 
 	var rm: Node = get_tree().get_first_node_in_group("run_manager")
-	if rm != null and rm.has_method("restart_run"):
-		rm.call("restart_run", true)
+	if rm != null and rm.has_method("start_next_bet_round"):
+		rm.call("start_next_bet_round")
 	else:
 		push_warning("RunManager not found or no restart method.")
 

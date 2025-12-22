@@ -31,6 +31,7 @@ var _hit_targets: Dictionary = {}
 var _knockback_velocity := Vector2.ZERO
 var _knockback_timer := 0.0
 var hitbox_viz: ColorRect
+var _run_phase: String = "PREP"
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -43,6 +44,8 @@ func _ready() -> void:
 	health_changed.emit(_current_health, max_health)
 	add_to_group("player")
 	set_physics_process(true)
+	if GameEvents.has_signal("run_phase_changed"):
+		GameEvents.run_phase_changed.connect(_on_run_phase_changed)
 	for action in ["move_left", "move_right", "move_up", "move_down"]:
 		if not InputMap.has_action(action):
 			push_error("Missing input action: %s" % action)
@@ -71,6 +74,9 @@ func _physics_process(delta: float) -> void:
 	if _state == PlayerState.DEAD:
 		velocity = Vector2.ZERO
 		move_and_slide()
+		return
+	if _run_phase != "LIVE":
+		velocity = Vector2.ZERO
 		return
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -209,6 +215,12 @@ func reset_for_restart() -> void:
 	set_physics_process(true)
 	set_process(true)
 
+func reset_full_health() -> void:
+	_current_health = max_health
+	_state = PlayerState.IDLE
+	velocity = Vector2.ZERO
+	health_changed.emit(_current_health, max_health)
+
 func _start_light_attack() -> void:
 	_start_attack(
 		1,
@@ -328,3 +340,6 @@ func _ensure_placeholder_sprite() -> void:
 	image.fill(Color(0.2, 0.6, 0.9, 1.0))
 	sprite.texture = ImageTexture.create_from_image(image)
 	sprite.scale = Vector2(24.0, 24.0)
+
+func _on_run_phase_changed(phase: String) -> void:
+	_run_phase = phase

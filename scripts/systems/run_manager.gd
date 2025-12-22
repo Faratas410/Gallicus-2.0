@@ -47,6 +47,7 @@ func _boot() -> void:
 	start_new_run()
 
 func start_new_run() -> void:
+	var was_game_over := _is_game_over
 	_run_failed_emitted = false
 	_is_game_over = false
 	if _force_game_over_if_dead():
@@ -57,6 +58,7 @@ func start_new_run() -> void:
 	}
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(run.coins)
+	_reset_player_health_if_needed(was_game_over)
 	_begin_prep_phase()
 	_open_bet_ui()
 
@@ -67,6 +69,7 @@ func reset_run() -> void:
 	restart_run(true)
 
 func restart_run(preserve_coins: bool = true) -> void:
+	var was_game_over := _is_game_over
 	_run_failed_emitted = false
 	_is_game_over = false
 	if _force_game_over_if_dead():
@@ -109,6 +112,7 @@ func restart_run(preserve_coins: bool = true) -> void:
 		_arena = get_tree().get_first_node_in_group("arena")
 
 	GameEvents.run_started.emit()
+	_reset_player_health_if_needed(was_game_over)
 	if _arena != null and _arena.has_method("restart_arena"):
 		_arena.call("restart_arena")
 	_begin_prep_phase()
@@ -327,7 +331,7 @@ func _set_phase(p: String) -> void:
 	_apply_phase()
 
 func _apply_phase() -> void:
-	var active := _phase == "LIVE" and not _waiting_for_bet and not _is_game_over
+	var active := not _waiting_for_bet and not _is_game_over
 	_set_gameplay_active(active)
 	if _arena != null:
 		_arena.set_physics_process(active)
@@ -341,11 +345,17 @@ func _begin_prep_phase() -> void:
 	_prep_sequence_id += 1
 	var current_id := _prep_sequence_id
 	_set_phase("PREP")
-	var timer := get_tree().create_timer(1.0)
-	timer.timeout.connect(func() -> void:
-		if current_id != _prep_sequence_id:
-			return
-		if _phase == "GAME_OVER":
-			return
-		_set_phase("LIVE")
-	)
+	GameEvents.countdown_started.emit()
+	await get_tree().create_timer(3.0).timeout
+	if current_id != _prep_sequence_id:
+		return
+	if _phase == "GAME_OVER":
+		return
+	_set_phase("LIVE")
+
+func _reset_player_health_if_needed(was_game_over: bool) -> void:
+	if not was_game_over:
+		return
+	_player = _resolve_player()
+	if _player != null and _player.has_method("reset_full_health"):
+		_player.call("reset_full_health")

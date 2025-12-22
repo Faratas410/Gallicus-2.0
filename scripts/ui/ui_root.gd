@@ -15,6 +15,7 @@ extends CanvasLayer
 @onready var next_bet_button: Button = $HUD/GameOverPanel/GameOverVBox/NextBetButton
 @onready var quit_button: Button = $HUD/GameOverPanel/GameOverVBox/QuitButton
 @onready var controls_hint_panel: Panel = $HUD/ControlsHintPanel
+@onready var countdown_label: Label = get_node_or_null("HUD/CountdownLabel") as Label
 
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
@@ -33,6 +34,7 @@ func _ready() -> void:
 	GameEvents.bet_ui_opened.connect(_on_bet_ui_opened)
 	GameEvents.bet_ui_closed.connect(_on_bet_ui_closed)
 	GameEvents.betting_opened.connect(_on_betting_opened)
+	GameEvents.countdown_started.connect(_on_countdown_started)
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -66,6 +68,17 @@ func _ready() -> void:
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
 
+func show_countdown(seconds: int = 3) -> void:
+	if countdown_label == null:
+		return
+	countdown_label.visible = true
+	for i in range(seconds, 0, -1):
+		countdown_label.text = str(i)
+		await get_tree().create_timer(1.0).timeout
+	countdown_label.text = "GO!"
+	await get_tree().create_timer(0.5).timeout
+	countdown_label.visible = false
+
 func _on_run_started() -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: 0"
@@ -93,6 +106,9 @@ func _on_betting_opened() -> void:
 		if bet_panel != null:
 			bet_panel.visible = false
 		return
+
+func _on_countdown_started() -> void:
+	await show_countdown()
 
 func _on_run_started_controls() -> void:
 	if controls_hint_panel == null:

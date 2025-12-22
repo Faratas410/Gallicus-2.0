@@ -15,6 +15,9 @@ signal died
 @export var dodge_cooldown: float = 1.0
 @export var block_reduction: float = 0.6
 
+@export var arena_bounds_size: Vector2 = Vector2(1024.0, 768.0)
+@export var arena_bounds_margin: float = 16.0
+
 var _current_health: int
 var _attack_timer: float = 0.0
 var _dodge_timer: float = 0.0
@@ -44,6 +47,13 @@ func _physics_process(delta: float) -> void:
 		_try_attack(heavy_damage, heavy_range, heavy_cooldown)
 
 	move_and_slide()
+	_apply_bounds()
+
+func _apply_bounds() -> void:
+	var half := arena_bounds_size * 0.5
+	var margin := maxf(arena_bounds_margin, 0.0)
+	global_position.x = clampf(global_position.x, -half.x + margin, half.x - margin)
+	global_position.y = clampf(global_position.y, -half.y + margin, half.y - margin)
 
 func _try_attack(damage: int, range: float, cooldown: float) -> void:
 	if _attack_timer > 0.0:

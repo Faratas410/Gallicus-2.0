@@ -9,6 +9,7 @@ signal enemy_count_changed(count: int)
 @export var enemy_scene: PackedScene = preload("res://scenes/enemies/EnemyBasic.tscn")
 @export var arena_radius: float = GameConstants.ARENA_RADIUS
 @export var base_enemy_count: int = GameConstants.ARENA_BASE_ENEMY_COUNT
+@export var debug_spawn_enemy: bool = false
 
 var _rng := RandomNumberGenerator.new()
 var _current_wave: int = 0
@@ -22,8 +23,9 @@ func _ready() -> void:
 	GameEvents.run_started.connect(_on_run_started)
 	GameEvents.run_failed.connect(_on_run_failed)
 	queue_redraw()
-	_spawn_player()
-	_spawn_debug_enemy()
+	ensure_player()
+	if debug_spawn_enemy:
+		_spawn_debug_enemy()
 
 func _draw() -> void:
 	var floor_size := Vector2(1024.0, 768.0)
@@ -92,8 +94,10 @@ func _on_player_died() -> void:
 
 func soft_reset() -> void:
 	_clear_enemies()
-	_reset_player()
 	_current_wave = 0
+	_enemies_remaining = 0
+	enemy_count_changed.emit(_enemies_remaining)
+	ensure_player()
 
 func reset_arena() -> void:
 	# elimina nemici
@@ -142,6 +146,30 @@ func _reset_player() -> void:
 		_player.queue_free()
 	_player = null
 	_spawn_player()
+
+func ensure_player() -> Node2D:
+	if _player != null:
+		if not is_instance_valid(_player) or _player.is_queued_for_deletion() or not _player.is_inside_tree():
+			_player = null
+	var group_player := get_tree().get_first_node_in_group("player")
+	if _player == null and group_player and group_player is Node2D:
+		if group_player.is_inside_tree() and not group_player.is_queued_for_deletion():
+			_player = group_player
+	if _player == null:
+		if player_scene == null:
+			return null
+		_player = player_scene.instantiate() as Node2D
+		add_child(_player)
+	elif _player.get_parent() != self:
+		var pos := _player.global_position
+		_player.reparent(self)
+		_player.global_position = pos
+	_player.global_position = global_position
+	player_spawned.emit(_player)
+	var died_callable := Callable(self, "_on_player_died")
+	if _player.has_signal("died") and not _player.is_connected("died", died_callable):
+		_player.connect("died", died_callable)
+	return _player
 
 func get_current_wave() -> int:
 	return _current_wave

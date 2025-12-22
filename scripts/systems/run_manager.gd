@@ -78,6 +78,7 @@ func start_new_run() -> void:
 		return
 	set_phase(RunPhase.LIVE)
 	_spawn_wave_or_enemies()
+	_sanity_dump("after_new_run")
 
 func start_next_bet_round() -> void:
 	if _is_game_over:
@@ -88,6 +89,7 @@ func start_next_bet_round() -> void:
 	set_phase(RunPhase.LIVE)
 	_clear_enemies()
 	_spawn_wave_or_enemies()
+	_sanity_dump("after_next_bet")
 
 func reset_run() -> void:
 	get_tree().paused = false
@@ -138,7 +140,10 @@ func _ensure_arena_and_player() -> void:
 	if existing_player == null and player_scene:
 		existing_player = player_scene.instantiate()
 		existing_player.name = "Player"
-		main.add_child(existing_player)
+		if _arena:
+			_arena.add_child(existing_player)
+		else:
+			main.add_child(existing_player)
 		if existing_player is Node2D:
 			existing_player.global_position = Vector2.ZERO
 		player_path = NodePath("../Player")
@@ -147,19 +152,32 @@ func _ensure_arena_and_player() -> void:
 		(_player as Node2D).global_position = Vector2.ZERO
 
 func _reset_or_respawn_player_full() -> void:
+	if _arena == null:
+		_arena = get_node_or_null(arena_path)
 	_player = _resolve_player()
 	if _player == null or not _player.is_inside_tree():
 		var main := get_parent()
 		if main != null and player_scene:
 			_player = player_scene.instantiate()
 			_player.name = "Player"
-			main.add_child(_player)
+			if _arena:
+				_arena.add_child(_player)
+			else:
+				main.add_child(_player)
 			if _player is Node2D:
 				(_player as Node2D).global_position = Vector2.ZERO
 			player_path = NodePath("../Player")
+	elif _arena and _player.get_parent() != _arena:
+		var player_node := _player
+		if player_node is Node:
+			var pos := player_node is Node2D ? (player_node as Node2D).global_position : Vector2.ZERO
+			player_node.reparent(_arena)
+			if player_node is Node2D:
+				(player_node as Node2D).global_position = pos
 	if _player != null and _player.has_method("reset_full_health"):
 		_player.call("reset_full_health")
 	_connect_player_signals()
+	_position_player_after_respawn()
 
 func _clear_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
@@ -256,6 +274,7 @@ func _on_wave_cleared(_wave: int) -> void:
 func _on_player_spawned(player: Node) -> void:
 	_player = player
 	_connect_player_signals()
+	_position_player_after_respawn()
 	_apply_phase()
 
 func _set_gameplay_active(active: bool) -> void:
@@ -351,3 +370,52 @@ func _apply_phase() -> void:
 	if _arena != null:
 		_arena.set_physics_process(active)
 		_arena.set_process(active)
+
+func _position_player_after_respawn() -> void:
+	if _player == null or not (_player is Node2D):
+		return
+	var spawn_pos := _get_spawn_position()
+	(_player as Node2D).global_position = spawn_pos
+	var cam := get_viewport().get_camera_2d()
+	if cam:
+		cam.global_position = spawn_pos
+
+func _get_spawn_position() -> Vector2:
+	if _arena and _arena is Node:
+		var spawn_node := _find_spawn_node(_arena)
+		if spawn_node and spawn_node is Node2D:
+			return (spawn_node as Node2D).global_position
+		if _arena is Node2D:
+			return (_arena as Node2D).global_position
+	return Vector2.ZERO
+
+func _find_spawn_node(root: Node) -> Node:
+	var direct := root.get_node_or_null("Spawn")
+	if direct:
+		return direct
+	var named := root.find_child("Spawn", true, false)
+	if named:
+		return named
+	var player_spawn := root.find_child("PlayerSpawn", true, false)
+	if player_spawn:
+		return player_spawn
+	return root.find_child("PlayerSpawnPoint", true, false)
+
+func _sanity_dump(tag: String) -> void:
+	var arena_info := "null"
+	if _arena:
+		var arena_pos := _arena is Node2D ? (_arena as Node2D).global_position : Vector2.ZERO
+		arena_info = "%s pos=%s" % [_arena.name, arena_pos]
+	var player_info := "null"
+	if _player:
+		var player_pos := _player is Node2D ? (_player as Node2D).global_position : Vector2.ZERO
+		player_info = "%s in_tree=%s pos=%s" % [_player.name, _player.is_inside_tree(), player_pos]
+	var cam := get_viewport().get_camera_2d()
+	var cam_info := "null"
+	if cam:
+		cam_info = "%s pos=%s" % [cam.name, cam.global_position]
+	var enemies_count := get_tree().get_nodes_in_group("enemies").size()
+	print(
+		"[sanity:%s] phase=%s arena=%s player=%s cam=%s enemies=%s"
+		% [tag, phase, arena_info, player_info, cam_info, enemies_count]
+	)

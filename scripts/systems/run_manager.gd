@@ -174,7 +174,7 @@ func _reset_or_respawn_player_full() -> void:
 	elif _arena and _player.get_parent() != _arena:
 		var player_node := _player
 		if player_node is Node:
-			var pos := player_node is Node2D ? (player_node as Node2D).global_position : Vector2.ZERO
+			var pos: Vector2 = (player_node as Node2D).global_position if player_node is Node2D else Vector2.ZERO
 			player_node.reparent(_arena)
 			if player_node is Node2D:
 				(player_node as Node2D).global_position = pos
@@ -402,19 +402,19 @@ func _log_runtime_state(tag: String) -> void:
 	var player_exists := player_node != null
 	var player_in_tree := player_exists and player_node.is_inside_tree()
 	var player_physics := player_exists and player_node.is_physics_processing()
-	var player_process_mode := player_exists ? player_node.process_mode : -1
-	var player_pos := player_exists and player_node is Node2D ? (player_node as Node2D).global_position : Vector2.ZERO
+	var player_process_mode := player_node.process_mode if player_exists else -1
+	var player_pos := (player_node as Node2D).global_position if player_exists and player_node is Node2D else Vector2.ZERO
 
 	var enemies := get_tree().get_nodes_in_group("enemies")
 	var enemies_count := enemies.size()
-	var sample_enemy: Node = enemies_count > 0 ? enemies[0] : null
+	var sample_enemy: Node = enemies[0] if enemies_count > 0 else null
 	var enemy_physics := sample_enemy != null and sample_enemy.is_physics_processing()
-	var enemy_process_mode := sample_enemy != null ? sample_enemy.process_mode : -1
+	var enemy_process_mode := sample_enemy.process_mode if sample_enemy != null else -1
 
 	var cam := get_viewport().get_camera_2d()
 	var cam_exists := cam != null
 	var cam_current := cam_exists and cam.has_method("is_current") and cam.is_current()
-	var cam_pos := cam_exists ? cam.global_position : Vector2.ZERO
+	var cam_pos := cam.global_position if cam_exists else Vector2.ZERO
 
 	print(
 		"[runtime:%s] paused=%s gameplay_enabled=%s player_in_tree=%s player_physics=%s player_process_mode=%s player_pos=%s enemies=%s enemy_physics=%s enemy_process_mode=%s cam_exists=%s cam_current=%s cam_pos=%s"

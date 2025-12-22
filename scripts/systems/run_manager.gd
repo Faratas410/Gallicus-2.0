@@ -81,6 +81,13 @@ func start_new_run() -> void:
 			return
 	if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
 		return
+	var live_player := _resolve_player()
+	if live_player == null or not live_player.is_inside_tree():
+		_ensure_arena_and_player()
+		_reset_or_respawn_player_full()
+		live_player = _resolve_player()
+		if live_player == null or not live_player.is_inside_tree():
+			return
 	set_phase(RunPhase.LIVE)
 	_spawn_wave_or_enemies()
 	_log_runtime_state("after_countdown")
@@ -150,7 +157,16 @@ func _ensure_arena_and_player() -> void:
 			main.add_child(existing_player)
 		if existing_player is Node2D:
 			existing_player.global_position = Vector2.ZERO
-		player_path = NodePath("../Player")
+		if _arena:
+			player_path = NodePath("../Arena/Player")
+		else:
+			player_path = NodePath("../Player")
+	elif existing_player != null:
+		var player_parent := existing_player.get_parent()
+		if player_parent == _arena:
+			player_path = NodePath("../Arena/Player")
+		elif player_parent == main:
+			player_path = NodePath("../Player")
 	_player = existing_player
 	if _player and _player is Node2D:
 		(_player as Node2D).global_position = Vector2.ZERO
@@ -170,7 +186,10 @@ func _reset_or_respawn_player_full() -> void:
 				main.add_child(_player)
 			if _player is Node2D:
 				(_player as Node2D).global_position = Vector2.ZERO
-			player_path = NodePath("../Player")
+			if _arena:
+				player_path = NodePath("../Arena/Player")
+			else:
+				player_path = NodePath("../Player")
 	elif _arena and _player.get_parent() != _arena:
 		var player_node := _player
 		if player_node is Node:
@@ -178,6 +197,7 @@ func _reset_or_respawn_player_full() -> void:
 			player_node.reparent(_arena)
 			if player_node is Node2D:
 				(player_node as Node2D).global_position = pos
+			player_path = NodePath("../Arena/Player")
 	if _player != null and _player.has_method("reset_full_health"):
 		_player.call("reset_full_health")
 	_connect_player_signals()
@@ -282,7 +302,7 @@ func _on_player_spawned(player: Node) -> void:
 	_apply_phase()
 
 func _resolve_player() -> Node:
-	if _player and is_instance_valid(_player):
+	if _player and is_instance_valid(_player) and _player.is_inside_tree():
 		return _player
 	if player_path != NodePath():
 		var path_player := get_node_or_null(player_path)
@@ -290,6 +310,20 @@ func _resolve_player() -> Node:
 			_player = path_player
 			return _player
 	_player = get_tree().get_first_node_in_group("player")
+	if _player != null:
+		return _player
+	if player_scene:
+		var main := get_parent()
+		_player = player_scene.instantiate()
+		_player.name = "Player"
+		if _arena:
+			_arena.add_child(_player)
+			player_path = NodePath("../Arena/Player")
+		elif main:
+			main.add_child(_player)
+			player_path = NodePath("../Player")
+		if _player is Node2D:
+			(_player as Node2D).global_position = Vector2.ZERO
 	return _player
 
 func _connect_player_signals() -> void:
@@ -371,6 +405,11 @@ func _position_player_after_respawn() -> void:
 	var spawn_pos := _get_spawn_position()
 	(_player as Node2D).global_position = spawn_pos
 	var cam := get_viewport().get_camera_2d()
+	if cam == null:
+		var player_cam := _player.find_child("Camera2D", true, false)
+		if player_cam and player_cam is Camera2D:
+			cam = player_cam
+			cam.make_current()
 	if cam and cam.has_method("make_current"):
 		cam.make_current()
 	if cam:

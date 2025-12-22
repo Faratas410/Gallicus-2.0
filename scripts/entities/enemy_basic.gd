@@ -41,8 +41,10 @@ func _ready() -> void:
 	hitbox.monitoring = true
 	hitbox.monitorable = true
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
-	hitbox.collision_layer = 1 << 3
-	hitbox.collision_mask = 1 << 2
+	hitbox.collision_layer = 0
+	hitbox.collision_mask = 1 << (GameConstants.LAYER_PLAYER - 1)
+	hurtbox.collision_layer = 1 << (GameConstants.LAYER_ENEMY - 1)
+	hurtbox.collision_mask = 1 << (GameConstants.LAYER_PLAYER - 1)
 	hitbox_shape.disabled = true
 	if hitbox_shape.shape == null:
 		var s := RectangleShape2D.new()
@@ -153,7 +155,13 @@ func _on_hitbox_area_entered(area: Area2D) -> void:
 	if area.name != "Hurtbox" and not area.is_in_group("player_hurtbox"):
 		return
 	var target := area.get_parent()
-	if target != null and target.is_in_group("player") and target.has_method("take_damage"):
+	if target == null:
+		return
+	if target == self:
+		return
+	if target.is_in_group("enemy"):
+		return
+	if target.has_method("take_damage"):
 		print("ENEMY HIT player")
 		target.take_damage(1, global_position)
 

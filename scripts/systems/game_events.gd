@@ -15,3 +15,12 @@ signal bet_closed
 signal player_damaged
 signal run_phase_changed(phase: int)
 signal countdown_requested(seconds: int)
+signal gameplay_enabled_changed(enabled: bool)
+
+var gameplay_enabled: bool = true
+
+func set_gameplay_enabled(enabled: bool) -> void:
+	if gameplay_enabled == enabled:
+		return
+	gameplay_enabled = enabled
+	gameplay_enabled_changed.emit(enabled)

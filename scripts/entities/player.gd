@@ -72,6 +72,10 @@ func _ready() -> void:
 	_ensure_placeholder_sprite()
 
 func _physics_process(delta: float) -> void:
+	if not GameEvents.gameplay_enabled:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	if _state == PlayerState.DEAD:
 		velocity = Vector2.ZERO
 		move_and_slide()

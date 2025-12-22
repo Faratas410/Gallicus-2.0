@@ -179,3 +179,17 @@ offset_right = -16.0
 offset_bottom = 140.0
 horizontal_alignment = 2
 text = "FPS: 0\nArena: 0\nEnemies: 0\nBet active: false"
+
+[node name="CountdownLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -36.0
+offset_right = 120.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 48
+horizontal_alignment = 1
+visible = false
+text = ""

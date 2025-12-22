@@ -26,6 +26,7 @@ var _knockback_timer := 0.0
 var _state: EnemyState = EnemyState.CHASE
 var _attack_cooldown: float = 0.0
 var _hp_bar: Node2D = null
+var _run_phase: String = "PREP"
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -36,6 +37,8 @@ var _hp_bar: Node2D = null
 func _ready() -> void:
 	_hp = max_health
 	add_to_group("enemies")
+	if GameEvents.has_signal("run_phase_changed"):
+		GameEvents.run_phase_changed.connect(_on_run_phase_changed)
 	body_shape.disabled = false
 	hurtbox.monitoring = true
 	hitbox.monitoring = true
@@ -64,6 +67,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if _attack_cooldown > 0.0:
 		_attack_cooldown = max(_attack_cooldown - delta, 0.0)
+	if _run_phase != "LIVE":
+		velocity = Vector2.ZERO
+		return
 	if _knockback_timer > 0.0:
 		_state = EnemyState.HITSTUN
 		velocity = _knockback_velocity
@@ -185,3 +191,6 @@ func _ensure_placeholder_sprite() -> void:
 	image.fill(Color(0.85, 0.2, 0.2, 1.0))
 	sprite.texture = ImageTexture.create_from_image(image)
 	sprite.scale = Vector2(24.0, 24.0)
+
+func _on_run_phase_changed(phase: String) -> void:
+	_run_phase = phase

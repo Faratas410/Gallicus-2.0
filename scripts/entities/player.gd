@@ -49,8 +49,10 @@ func _ready() -> void:
 	print("Player ready. Physics:", is_physics_processing())
 	hurtbox.monitoring = true
 	hurtbox.monitorable = true
-	hurtbox.collision_layer = 1 << 2
-	hurtbox.collision_mask = 0
+	hitbox.collision_layer = 0
+	hitbox.collision_mask = 1 << (GameConstants.LAYER_ENEMY - 1)
+	hurtbox.collision_layer = 1 << (GameConstants.LAYER_PLAYER - 1)
+	hurtbox.collision_mask = 1 << (GameConstants.LAYER_ENEMY - 1)
 	hurtbox.add_to_group("player_hurtbox")
 	if hurtbox_shape.shape == null:
 		var s := RectangleShape2D.new()
@@ -296,6 +298,10 @@ func _set_hurtbox_active(active: bool) -> void:
 func _on_hitbox_area_entered(area: Area2D) -> void:
 	var target := area.get_parent()
 	if target == null:
+		return
+	if target == self:
+		return
+	if target.is_in_group("player"):
 		return
 	if target.has_method("take_damage"):
 		target.take_damage(_attack_damage, global_position)

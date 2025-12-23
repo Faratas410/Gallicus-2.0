@@ -33,6 +33,9 @@ var _knockback_timer := 0.0
 var hitbox_viz: ColorRect
 var _run_phase: int = 0
 var _run_manager: Node
+var coins: int = 0
+var _speed_multiplier: float = 1.0
+var _speed_boost_token: int = 0
 
 @onready var hitbox: Area2D = $Hitbox
 @onready var hitbox_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -152,7 +155,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if _state == PlayerState.IDLE or _state == PlayerState.MOVE:
-		velocity = input_dir * GameConstants.PLAYER_MOVE_SPEED
+		velocity = input_dir * get_effective_move_speed()
 		move_and_slide()
 		_state = PlayerState.MOVE if input_dir != Vector2.ZERO else PlayerState.IDLE
 		return
@@ -194,6 +197,30 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 func get_health() -> Array[int]:
 	return [_current_health, max_health]
 
+func heal(amount: int) -> void:
+	if amount <= 0:
+		return
+	_current_health = clampi(_current_health + amount, 0, max_health)
+	health_changed.emit(_current_health, max_health)
+
+func add_coins(amount: int) -> void:
+	if amount <= 0:
+		return
+	coins += amount
+
+func apply_speed_boost(mult: float, seconds: float) -> void:
+	if mult <= 0.0 or seconds <= 0.0:
+		return
+	_speed_multiplier = max(_speed_multiplier, mult)
+	_speed_boost_token += 1
+	var token := _speed_boost_token
+	await get_tree().create_timer(seconds).timeout
+	if token == _speed_boost_token:
+		_speed_multiplier = 1.0
+
+func get_effective_move_speed() -> float:
+	return GameConstants.PLAYER_MOVE_SPEED * _speed_multiplier
+
 func reset_for_new_round() -> void:
 	_state = PlayerState.IDLE
 	velocity = Vector2.ZERO
@@ -206,6 +233,8 @@ func reset_for_new_round() -> void:
 	_hit_targets.clear()
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
+	_speed_multiplier = 1.0
+	_speed_boost_token += 1
 
 func reset_for_restart() -> void:
 	velocity = Vector2.ZERO
@@ -219,6 +248,8 @@ func reset_for_restart() -> void:
 	_set_hitbox_active(false)
 	_set_hurtbox_active(true)
 	_state = PlayerState.IDLE
+	_speed_multiplier = 1.0
+	_speed_boost_token += 1
 	set_physics_process(true)
 	set_process(true)
 
@@ -234,6 +265,8 @@ func reset_full_health() -> void:
 	_hit_targets.clear()
 	velocity = Vector2.ZERO
 	health_changed.emit(_current_health, max_health)
+	_speed_multiplier = 1.0
+	_speed_boost_token += 1
 
 func _start_light_attack() -> void:
 	_start_attack(

@@ -22,18 +22,22 @@ var _current_health: int
 var _attack_timer: float = 0.0
 var _dodge_timer: float = 0.0
 var _is_blocking: bool = false
+var coins: int = 0
+var _speed_multiplier: float = 1.0
+var _speed_boost_token: int = 0
 
 func _ready() -> void:
 	_current_health = max_health
 	_emit_health()
 	_ensure_placeholder_sprite()
+	add_to_group("player")
 
 func _physics_process(delta: float) -> void:
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 	_dodge_timer = maxf(_dodge_timer - delta, 0.0)
 
 	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	velocity = input_vector * move_speed
+	velocity = input_vector * (move_speed * _speed_multiplier)
 
 	_is_blocking = Input.is_action_pressed("block")
 
@@ -82,6 +86,27 @@ func take_damage(amount: int) -> void:
 
 func _emit_health() -> void:
 	health_changed.emit(_current_health, max_health)
+
+func heal(amount: int) -> void:
+	if amount <= 0:
+		return
+	_current_health = clampi(_current_health + amount, 0, max_health)
+	_emit_health()
+
+func add_coins(amount: int) -> void:
+	if amount <= 0:
+		return
+	coins += amount
+
+func apply_speed_boost(mult: float, seconds: float) -> void:
+	if mult <= 0.0 or seconds <= 0.0:
+		return
+	_speed_multiplier = max(_speed_multiplier, mult)
+	_speed_boost_token += 1
+	var token := _speed_boost_token
+	await get_tree().create_timer(seconds).timeout
+	if token == _speed_boost_token:
+		_speed_multiplier = 1.0
 
 func _ensure_placeholder_sprite() -> void:
 	var sprite := $Sprite2D as Sprite2D

@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 signal health_changed(current: int, max: int)
+signal took_damage(amount: int)
 signal died
 
 const SWORD_TEX_IDLE := preload("res://assets/sprites/player/sword_idle_up_32.png")
@@ -12,6 +13,8 @@ const SWORD_TEX_SWING := preload("res://assets/sprites/player/sword_swing_horizo
 @export var heavy_damage: int = 10
 @export var light_range: float = 60.0
 @export var heavy_range: float = 90.0
+@export var light_cone_angle_deg: float = 90.0
+@export var heavy_cone_angle_deg: float = 120.0
 @export var light_cooldown: float = 0.30
 @export var heavy_cooldown: float = 0.75
 @export var dodge_speed: float = 480.0
@@ -57,9 +60,9 @@ func _physics_process(delta: float) -> void:
 		_dodge_timer = dodge_cooldown
 
 	if Input.is_action_just_pressed("attack_light"):
-		_try_attack(light_damage, light_range, light_cooldown)
+		_try_attack(light_damage, light_range, light_cooldown, light_cone_angle_deg)
 	elif Input.is_action_just_pressed("attack_heavy"):
-		_try_attack(heavy_damage, heavy_range, heavy_cooldown)
+		_try_attack(heavy_damage, heavy_range, heavy_cooldown, heavy_cone_angle_deg)
 
 	move_and_slide()
 	_apply_bounds()
@@ -70,12 +73,12 @@ func _apply_bounds() -> void:
 	global_position.x = clampf(global_position.x, -half.x + margin, half.x - margin)
 	global_position.y = clampf(global_position.y, -half.y + margin, half.y - margin)
 
-func _try_attack(damage: int, range: float, cooldown: float) -> void:
+func _try_attack(damage: int, range: float, cooldown: float, cone_angle_deg: float) -> void:
 	if _attack_timer > 0.0:
 		return
 	_attack_timer = cooldown
 	_play_sword_swing()
-	_perform_attack(damage, range)
+	_perform_attack(damage, range, cone_angle_deg)
 
 func _dir_to_cardinal(dir: Vector2) -> Vector2:
 	if absf(dir.x) > absf(dir.y):
@@ -107,7 +110,7 @@ func _update_sword_idle_pose() -> void:
 
 	var offset := Vector2(10, -10)
 	if card == Vector2.UP:
-		offset = Vector2(10, -10)
+		offset = Vector2(6, -18)
 	elif card == Vector2.RIGHT:
 		offset = Vector2(14, 0)
 	elif card == Vector2.DOWN:
@@ -149,19 +152,38 @@ func _play_sword_swing() -> void:
 		_update_sword_idle_pose()
 	)
 
-func _perform_attack(damage: int, range: float) -> void:
+func _perform_attack(damage: int, range: float, cone_angle_deg: float) -> void:
+	var aim := _last_aim_dir
+	if aim.length_squared() < 0.0001:
+		aim = Vector2.UP
+	aim = aim.normalized()
+
+	var cos_limit := cos(deg_to_rad(cone_angle_deg * 0.5))
+
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if not enemy is Node2D:
 			continue
 		var enemy_node := enemy as Node2D
-		if global_position.distance_to(enemy_node.global_position) <= range:
-			if enemy_node.has_method("take_damage"):
-				enemy_node.call("take_damage", damage)
+		var to_enemy: Vector2 = enemy_node.global_position - global_position
+		var dist: float = to_enemy.length()
+		if dist > range or dist <= 0.001:
+			continue
+
+		var dir := to_enemy / dist
+		if dir.dot(aim) < cos_limit:
+			continue
+
+		if enemy_node.has_method("take_damage"):
+			enemy_node.call("take_damage", damage)
 
 func take_damage(amount: int) -> void:
 	var final_damage := amount
 	if _is_blocking:
 		final_damage = int(round(amount * (1.0 - block_reduction)))
+	if final_damage > 0:
+		took_damage.emit(final_damage)
+		if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("player_damaged"):
+			GameEvents.player_damaged.emit()
 	_current_health = max(_current_health - final_damage, 0)
 	_emit_health()
 	if _current_health <= 0:

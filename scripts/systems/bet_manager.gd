@@ -196,8 +196,11 @@ func fail_current_bet() -> void:
 	_fast_start_time = 0.0
 	_fast_last_emitted = -1
 	_invalidate_fast_timer()
-	GameEvents.run_failed.emit()
-	GameEvents.set_gameplay_enabled(false)
+	if _run_manager != null and _run_manager.has_method("handle_bet_failed"):
+		_run_manager.handle_bet_failed()
+	else:
+		GameEvents.run_failed.emit()
+		GameEvents.set_gameplay_enabled(false)
 	_arena_active = false
 
 func win_current_bet() -> void:

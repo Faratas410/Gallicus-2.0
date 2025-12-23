@@ -6,12 +6,23 @@ extends Node
 @export var arena_clear_reward: int = GameConstants.ARENA_CLEAR_REWARD
 @export var arena_scene: PackedScene = preload("res://scenes/Arena.tscn")
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
+@export var upgrade_hp_bonus: int = 20
+@export var upgrade_hp_cost: int = 30
+@export var upgrade_light_bonus: int = 1
+@export var upgrade_light_cost: int = 25
+@export var upgrade_heavy_bonus: int = 1
+@export var upgrade_heavy_cost: int = 35
 
 enum RunPhase { PREP, LIVE, GAME_OVER }
 
 var run := {
 	"arena_index": 0,
 	"coins": 0,
+	"upgrades": {
+		"hp_bonus": 0,
+		"light_bonus": 0,
+		"heavy_bonus": 0,
+	},
 }
 
 var _arena: Node
@@ -23,6 +34,7 @@ var _is_game_over: bool = false
 var phase: RunPhase = RunPhase.PREP
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
+var _show_shop_next_bet: bool = false
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -56,6 +68,7 @@ func start_new_run() -> void:
 	_run_failed_emitted = false
 	_is_game_over = false
 	_waiting_for_bet = false
+	_show_shop_next_bet = false
 	set_phase(RunPhase.PREP)
 
 	_ensure_arena_and_player()
@@ -66,9 +79,9 @@ func start_new_run() -> void:
 	if _bet_manager != null and _bet_manager.has_method("reset_bet_state"):
 		_bet_manager.call("reset_bet_state")
 
-	if not _has_started_run:
-		run["coins"] = starting_coins
-		_has_started_run = true
+	run["coins"] = starting_coins
+	_reset_upgrades()
+	_has_started_run = true
 	run["arena_index"] = 0
 
 	GameEvents.run_started.emit()
@@ -99,6 +112,7 @@ func start_next_bet_round() -> void:
 	if _force_game_over_if_dead():
 		return
 	_waiting_for_bet = false
+	_show_shop_next_bet = false
 	set_phase(RunPhase.LIVE)
 	_clear_enemies()
 	_spawn_wave_or_enemies()
@@ -118,12 +132,13 @@ func restart_run(preserve_coins: bool = true) -> void:
 		run["coins"] = starting_coins
 		start_new_run()
 
-func _open_bet_ui() -> void:
+func _open_bet_ui(from_victory: bool = false) -> void:
 	if _force_game_over_if_dead():
 		return
 	if _is_game_over:
 		return
 	_waiting_for_bet = true
+	_show_shop_next_bet = from_victory
 	set_phase(RunPhase.PREP)
 	GameEvents.betting_opened.emit()
 	if _bet_manager and _bet_manager.has_method("open_bet_ui_before_arena"):
@@ -202,6 +217,7 @@ func _reset_or_respawn_player_full() -> void:
 			player_path = NodePath("../Arena/Player")
 	if _player != null and _player.has_method("reset_full_health"):
 		_player.call("reset_full_health")
+	_apply_run_upgrades_to_player()
 	_connect_player_signals()
 	_position_player_after_respawn()
 
@@ -298,10 +314,11 @@ func _on_wave_cleared(_wave: int) -> void:
 		_bet_manager.resolve_bet()
 	if arena_clear_reward > 0:
 		add_coins(arena_clear_reward)
-	_open_bet_ui()
+	_open_bet_ui(true)
 
 func _on_player_spawned(player: Node) -> void:
 	_player = player
+	_apply_run_upgrades_to_player()
 	_connect_player_signals()
 	_position_player_after_respawn()
 	_apply_phase()
@@ -357,7 +374,37 @@ func _soft_reset() -> void:
 		_bet_manager.reset_bet_state()
 	run.arena_index = 0
 	_player = _resolve_player()
-	_open_bet_ui()
+	_open_bet_ui(false)
+
+func handle_bet_failed() -> void:
+	if _is_game_over:
+		return
+	if _force_game_over_if_dead():
+		return
+	_show_shop_next_bet = false
+	_waiting_for_bet = false
+	set_phase(RunPhase.PREP)
+	GameEvents.set_gameplay_enabled(false)
+	if run.get("coins", 0) <= 0:
+		_enter_game_over()
+		return
+	GameEvents.bet_failed.emit(true)
+
+func retry_current_bet() -> void:
+	if _is_game_over:
+		return
+	_show_shop_next_bet = false
+	_waiting_for_bet = false
+	set_phase(RunPhase.PREP)
+	GameEvents.set_gameplay_enabled(false)
+	run.arena_index = max(int(run.get("arena_index", 0)) - 1, 0)
+	if _arena and _arena.has_method("soft_reset"):
+		_arena.call("soft_reset")
+	_clear_enemies()
+	if _bet_manager and _bet_manager.has_method("reset_bet_state"):
+		_bet_manager.reset_bet_state()
+	_reset_or_respawn_player_full()
+	_open_bet_ui(false)
 
 func _force_game_over_if_dead() -> bool:
 	var p := get_tree().get_first_node_in_group("player")
@@ -401,6 +448,46 @@ func get_arena() -> Node:
 func get_arena_index() -> int:
 	return int(run.get("arena_index", 0))
 
+func get_upgrade_state() -> Dictionary:
+	return run.get("upgrades", {})
+
+func get_upgrade_config() -> Dictionary:
+	return {
+		"hp_bonus": upgrade_hp_bonus,
+		"hp_cost": upgrade_hp_cost,
+		"light_bonus": upgrade_light_bonus,
+		"light_cost": upgrade_light_cost,
+		"heavy_bonus": upgrade_heavy_bonus,
+		"heavy_cost": upgrade_heavy_cost,
+	}
+
+func purchase_upgrade(upgrade_type: String) -> bool:
+	var upgrades: Dictionary = run.get("upgrades", {})
+	match upgrade_type:
+		"hp":
+			if not spend_coins(upgrade_hp_cost):
+				return false
+			upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + upgrade_hp_bonus
+		"light":
+			if not spend_coins(upgrade_light_cost):
+				return false
+			upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + upgrade_light_bonus
+		"heavy":
+			if not spend_coins(upgrade_heavy_cost):
+				return false
+			upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + upgrade_heavy_bonus
+		_:
+			return false
+	run["upgrades"] = upgrades
+	_apply_run_upgrades_to_player()
+	return true
+
+func should_show_upgrade_shop() -> bool:
+	return _show_shop_next_bet
+
+func consume_upgrade_shop() -> void:
+	_show_shop_next_bet = false
+
 func is_live() -> bool:
 	return phase == RunPhase.LIVE
 
@@ -428,6 +515,27 @@ func _position_player_after_respawn() -> void:
 		cam.make_current()
 	if cam:
 		cam.global_position = (_player as Node2D).global_position
+
+func _reset_upgrades() -> void:
+	run["upgrades"] = {
+		"hp_bonus": 0,
+		"light_bonus": 0,
+		"heavy_bonus": 0,
+	}
+
+func _apply_run_upgrades_to_player() -> void:
+	if _player == null:
+		_player = _resolve_player()
+	if _player == null:
+		return
+	var upgrades: Dictionary = run.get("upgrades", {})
+	if _player.has_method("apply_run_upgrades"):
+		_player.call(
+			"apply_run_upgrades",
+			int(upgrades.get("hp_bonus", 0)),
+			int(upgrades.get("light_bonus", 0)),
+			int(upgrades.get("heavy_bonus", 0))
+		)
 
 func _get_spawn_position() -> Vector2:
 	if _arena and _arena is Node:

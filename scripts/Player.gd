@@ -33,9 +33,15 @@ var _speed_multiplier: float = 1.0
 var _speed_boost_token: int = 0
 var _last_aim_dir: Vector2 = Vector2.UP
 var _is_swinging: bool = false
+var _base_max_health: int = 0
+var _base_light_damage: int = 0
+var _base_heavy_damage: int = 0
 @onready var sword_sprite: Sprite2D = get_node_or_null("SwordSprite") as Sprite2D
 
 func _ready() -> void:
+	_base_max_health = max_health
+	_base_light_damage = light_damage
+	_base_heavy_damage = heavy_damage
 	_current_health = max_health
 	_emit_health()
 	_ensure_placeholder_sprite()
@@ -192,6 +198,23 @@ func take_damage(amount: int) -> void:
 
 func _emit_health() -> void:
 	health_changed.emit(_current_health, max_health)
+
+func reset_full_health() -> void:
+	_current_health = max_health
+	_emit_health()
+
+func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -> void:
+	if _base_max_health <= 0:
+		_base_max_health = max_health
+	if _base_light_damage <= 0:
+		_base_light_damage = light_damage
+	if _base_heavy_damage <= 0:
+		_base_heavy_damage = heavy_damage
+	max_health = _base_max_health + max_hp_bonus
+	light_damage = _base_light_damage + light_bonus
+	heavy_damage = _base_heavy_damage + heavy_bonus
+	_current_health = max_health
+	_emit_health()
 
 func heal(amount: int) -> void:
 	if amount <= 0:

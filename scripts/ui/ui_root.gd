@@ -5,12 +5,23 @@ extends CanvasLayer
 @onready var player_hp_bar: ProgressBar = $HUD/Panel/VBox/PlayerHPBar
 @onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
+@onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
+@onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeCoinsLabel") as Label
+@onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPButton") as Button
+@onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightButton") as Button
+@onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow/UpgradeHeavyButton") as Button
+@onready var upgrade_hp_cost_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPCost") as Label
+@onready var upgrade_light_cost_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightCost") as Label
+@onready var upgrade_heavy_cost_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow/UpgradeHeavyCost") as Label
+@onready var upgrade_continue_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeContinueButton") as Button
 @onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
 @onready var bet_no_hit_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
 @onready var bet_fast_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetFastButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 @onready var game_over_panel: Panel = $HUD/GameOverPanel
+@onready var game_over_title: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverTitle") as Label
+@onready var game_over_hint: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverHint") as Label
 @onready var restart_button: Button = $HUD/GameOverPanel/GameOverVBox/RestartButton
 @onready var next_bet_button: Button = $HUD/GameOverPanel/GameOverVBox/NextBetButton
 @onready var quit_button: Button = $HUD/GameOverPanel/GameOverVBox/QuitButton
@@ -26,12 +37,14 @@ var _arena: Node
 var _player: Node = null
 var _has_seen_controls: bool = false
 var _fast_countdown_active: bool = false
+var _pending_bets: Array = []
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
 	GameEvents.bet_placed.connect(_on_bet_placed)
 	GameEvents.run_started.connect(_on_run_started)
 	GameEvents.run_failed.connect(_on_run_failed)
+	GameEvents.bet_failed.connect(_on_bet_failed)
 	GameEvents.run_started.connect(_on_run_started_controls)
 	GameEvents.run_failed.connect(_on_run_failed_controls)
 	GameEvents.bet_ui_opened.connect(_on_bet_ui_opened)
@@ -60,9 +73,20 @@ func _ready() -> void:
 	if restart_button != null:
 		restart_button.pressed.connect(_on_restart_pressed)
 	if next_bet_button != null:
-		next_bet_button.pressed.connect(_on_next_bet_pressed)
+		next_bet_button.pressed.connect(_on_retry_pressed)
 	if quit_button != null:
 		quit_button.pressed.connect(_on_quit_pressed)
+	if upgrade_panel != null:
+		upgrade_panel.visible = false
+	if upgrade_hp_button != null:
+		upgrade_hp_button.pressed.connect(func() -> void: _purchase_upgrade("hp"))
+	if upgrade_light_button != null:
+		upgrade_light_button.pressed.connect(func() -> void: _purchase_upgrade("light"))
+	if upgrade_heavy_button != null:
+		upgrade_heavy_button.pressed.connect(func() -> void: _purchase_upgrade("heavy"))
+	if upgrade_continue_button != null:
+		upgrade_continue_button.pressed.connect(_on_upgrade_continue_pressed)
+	_update_upgrade_costs()
 
 	var arena: Node = get_tree().get_first_node_in_group("arena")
 	if arena != null and arena.has_signal("player_spawned"):
@@ -92,6 +116,9 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	if upgrade_panel != null:
+		upgrade_panel.visible = false
+	_pending_bets = []
 	if game_over_panel != null:
 		game_over_panel.visible = false
 	if next_bet_button != null:
@@ -103,10 +130,18 @@ func _on_run_failed() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	if upgrade_panel != null:
+		upgrade_panel.visible = false
 	if game_over_panel != null:
 		game_over_panel.visible = true
 	if next_bet_button != null:
 		next_bet_button.visible = false
+	if game_over_title != null:
+		game_over_title.text = "RUN FAILED"
+	if game_over_hint != null:
+		game_over_hint.text = "Vuoi riprovare?"
+	if restart_button != null:
+		restart_button.text = "RESTART RUN"
 	_handle_fast_countdown(0)
 
 func _on_betting_opened() -> void:
@@ -114,6 +149,9 @@ func _on_betting_opened() -> void:
 		if bet_panel != null:
 			bet_panel.visible = false
 		return
+	var manager := _get_run_manager()
+	if manager != null and manager.has_method("should_show_upgrade_shop") and manager.should_show_upgrade_shop():
+		_show_upgrade_panel()
 
 func _on_countdown_requested(seconds: int) -> void:
 	if seconds > 3 or _fast_countdown_active:
@@ -139,6 +177,8 @@ func _on_run_failed_controls() -> void:
 func _on_coins_changed(coins: int) -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: %d" % coins
+	if upgrade_coins_label != null:
+		upgrade_coins_label.text = "Coins: %d" % coins
 
 func _on_bet_placed(bet_id: String, stake: int, odds: float) -> void:
 	if bet_info_label != null:
@@ -148,6 +188,9 @@ func _on_bet_ui_opened(bets: Array) -> void:
 	if bet_panel == null:
 		return
 	if game_over_panel != null and game_over_panel.visible:
+		return
+	if upgrade_panel != null and upgrade_panel.visible:
+		_pending_bets = bets
 		return
 	_bets_by_id.clear()
 	for bet in bets:
@@ -163,8 +206,8 @@ func _on_bet_ui_closed() -> void:
 func _on_restart_pressed() -> void:
 	_request_reset()
 
-func _on_next_bet_pressed() -> void:
-	_request_next_bet()
+func _on_retry_pressed() -> void:
+	_request_retry()
 
 func _request_reset() -> void:
 	if game_over_panel != null:
@@ -185,6 +228,15 @@ func _request_next_bet() -> void:
 		rm.call("start_next_bet_round")
 	else:
 		push_warning("RunManager not found or no restart method.")
+
+func _request_retry() -> void:
+	if game_over_panel != null:
+		game_over_panel.visible = false
+	var rm: Node = get_tree().get_first_node_in_group("run_manager")
+	if rm != null and rm.has_method("retry_current_bet"):
+		rm.call("retry_current_bet")
+	else:
+		push_warning("RunManager not found or no retry method.")
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
@@ -265,6 +317,68 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 		push_warning("Bet id not found: %s" % bet_id)
 		return
 	button.text = "%s x%.1f" % [bet.get("label", bet_id), float(bet.get("odds", 1.0))]
+
+func _on_bet_failed(can_retry: bool) -> void:
+	if bet_panel != null:
+		bet_panel.visible = false
+	if upgrade_panel != null:
+		upgrade_panel.visible = false
+	if game_over_panel != null:
+		game_over_panel.visible = true
+	if game_over_title != null:
+		game_over_title.text = "BET FAILED" if can_retry else "RUN FAILED"
+	if game_over_hint != null:
+		game_over_hint.text = "Riprova la scommessa?" if can_retry else "Vuoi riprovare?"
+	if next_bet_button != null:
+		next_bet_button.visible = can_retry
+		next_bet_button.text = "RETRY BET"
+	if restart_button != null:
+		restart_button.text = "RESTART RUN"
+	_handle_fast_countdown(0)
+
+func _show_upgrade_panel() -> void:
+	if upgrade_panel == null:
+		return
+	_pending_bets = []
+	if bet_panel != null:
+		bet_panel.visible = false
+	_update_upgrade_costs()
+	upgrade_panel.visible = true
+
+func _on_upgrade_continue_pressed() -> void:
+	if upgrade_panel != null:
+		upgrade_panel.visible = false
+	var manager := _get_run_manager()
+	if manager != null and manager.has_method("consume_upgrade_shop"):
+		manager.consume_upgrade_shop()
+	if _pending_bets.size() > 0:
+		_on_bet_ui_opened(_pending_bets)
+		_pending_bets = []
+
+func _purchase_upgrade(upgrade_type: String) -> void:
+	var manager := _get_run_manager()
+	if manager == null or not manager.has_method("purchase_upgrade"):
+		return
+	manager.purchase_upgrade(upgrade_type)
+	_update_upgrade_costs()
+
+func _update_upgrade_costs() -> void:
+	var manager := _get_run_manager()
+	if manager == null or not manager.has_method("get_upgrade_config"):
+		return
+	var config: Dictionary = manager.get_upgrade_config()
+	if upgrade_hp_button != null:
+		upgrade_hp_button.text = "HP +%d" % int(config.get("hp_bonus", 0))
+	if upgrade_hp_cost_label != null:
+		upgrade_hp_cost_label.text = "Cost: %d" % int(config.get("hp_cost", 0))
+	if upgrade_light_button != null:
+		upgrade_light_button.text = "LIGHT +%d" % int(config.get("light_bonus", 0))
+	if upgrade_light_cost_label != null:
+		upgrade_light_cost_label.text = "Cost: %d" % int(config.get("light_cost", 0))
+	if upgrade_heavy_button != null:
+		upgrade_heavy_button.text = "HEAVY +%d" % int(config.get("heavy_bonus", 0))
+	if upgrade_heavy_cost_label != null:
+		upgrade_heavy_cost_label.text = "Cost: %d" % int(config.get("heavy_cost", 0))
 
 func _place_bet(bet_id: String) -> void:
 	var manager := _get_bet_manager()

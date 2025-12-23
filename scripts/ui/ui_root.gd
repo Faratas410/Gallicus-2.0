@@ -6,6 +6,7 @@ extends CanvasLayer
 @onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
 @onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
+@onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
 @onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeCoinsLabel") as Label
 @onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPButton") as Button
 @onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightButton") as Button
@@ -343,6 +344,7 @@ func _show_upgrade_panel() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
 	_update_upgrade_costs()
+	_center_upgrade_panel_to_texture()
 	upgrade_panel.visible = true
 
 func _on_upgrade_continue_pressed() -> void:
@@ -354,6 +356,10 @@ func _on_upgrade_continue_pressed() -> void:
 	if _pending_bets.size() > 0:
 		_on_bet_ui_opened(_pending_bets)
 		_pending_bets = []
+	else:
+		var bet_manager := _get_bet_manager()
+		if bet_manager != null and bet_manager.has_method("open_bet_ui_before_arena"):
+			bet_manager.open_bet_ui_before_arena()
 
 func _purchase_upgrade(upgrade_type: String) -> void:
 	var manager := _get_run_manager()
@@ -386,6 +392,23 @@ func _place_bet(bet_id: String) -> void:
 		return
 	var stake := int(stake_input.value)
 	manager.place_bet(bet_id, stake)
+
+func _center_upgrade_panel_to_texture() -> void:
+	if upgrade_panel == null or upgrade_bg == null:
+		return
+	var bg_texture := upgrade_bg.texture
+	if bg_texture == null:
+		return
+	var size := bg_texture.get_size()
+	if size.x <= 0.0 or size.y <= 0.0:
+		return
+	upgrade_panel.custom_minimum_size = size
+	upgrade_panel.size = size
+	var half := size * 0.5
+	upgrade_panel.offset_left = -half.x
+	upgrade_panel.offset_top = -half.y
+	upgrade_panel.offset_right = half.x
+	upgrade_panel.offset_bottom = half.y
 
 func _process(_delta: float) -> void:
 	if debug_overlay == null or not debug_overlay.visible:

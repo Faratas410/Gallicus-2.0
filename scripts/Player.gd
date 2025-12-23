@@ -109,7 +109,11 @@ func apply_speed_boost(mult: float, seconds: float) -> void:
 		_speed_multiplier = 1.0
 
 func _ensure_placeholder_sprite() -> void:
-	var sprite := $Sprite2D as Sprite2D
+	var sprite := get_node_or_null("Sprite2D") as Sprite2D
+	if sprite == null:
+		sprite = find_child("Sprite2D", true, false) as Sprite2D
+	if sprite == null:
+		return
 	if sprite.texture:
 		return
 	var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)

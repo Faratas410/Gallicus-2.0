@@ -38,10 +38,10 @@ func _try_spawn() -> void:
 		(pickup as Node2D).global_position = global_position + offset
 
 func _pick_scene() -> PackedScene:
-	var total := max(weight_speed, 0.0) + max(weight_heal, 0.0) + max(weight_coins, 0.0)
+	var total: float = maxf(weight_speed, 0.0) + maxf(weight_heal, 0.0) + maxf(weight_coins, 0.0)
 	if total <= 0.0:
 		return speed_scene
-	var roll := _rng.randf() * total
+	var roll: float = _rng.randf() * total
 	if roll < weight_speed:
 		return speed_scene
 	roll -= weight_speed

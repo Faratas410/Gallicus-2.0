@@ -72,6 +72,7 @@ func start_new_run() -> void:
 	run["arena_index"] = 0
 
 	GameEvents.run_started.emit()
+	GameEvents.set_gameplay_enabled(true)
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
 	GameEvents.countdown_requested.emit(3)
 	_log_runtime_state("new_run_ready")
@@ -124,6 +125,7 @@ func _open_bet_ui() -> void:
 		return
 	_waiting_for_bet = true
 	set_phase(RunPhase.PREP)
+	GameEvents.betting_opened.emit()
 	if _bet_manager and _bet_manager.has_method("open_bet_ui_before_arena"):
 		_bet_manager.open_bet_ui_before_arena()
 
@@ -257,6 +259,8 @@ func _start_next_arena() -> void:
 	_arena.call("start_next_wave")
 
 func add_coins(amount: int) -> void:
+	if amount <= 0:
+		return
 	run.coins += amount
 	GameEvents.coins_changed.emit(run.coins)
 
@@ -275,6 +279,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	if _is_game_over:
 		return
 	_waiting_for_bet = false
+	GameEvents.betting_closed.emit()
 	set_phase(RunPhase.LIVE)
 	_start_next_arena()
 
@@ -335,10 +340,14 @@ func _connect_player_signals() -> void:
 		_player.connect("died", died_callable)
 
 func _on_run_failed() -> void:
+	if _run_failed_emitted:
+		return
 	_run_failed_emitted = true
+	GameEvents.set_gameplay_enabled(false)
 	_enter_game_over()
 
 func _on_player_died() -> void:
+	_emit_run_failed()
 	_enter_game_over()
 
 func _soft_reset() -> void:
@@ -377,9 +386,14 @@ func _enter_game_over() -> void:
 	_is_game_over = true
 	_waiting_for_bet = false
 	set_phase(RunPhase.GAME_OVER)
-	if not _run_failed_emitted:
-		_run_failed_emitted = true
-		GameEvents.run_failed.emit()
+	_emit_run_failed()
+
+func _emit_run_failed() -> void:
+	if _run_failed_emitted:
+		return
+	_run_failed_emitted = true
+	GameEvents.run_failed.emit()
+	GameEvents.set_gameplay_enabled(false)
 
 func get_arena() -> Node:
 	return _arena

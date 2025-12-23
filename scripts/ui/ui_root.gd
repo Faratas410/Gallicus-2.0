@@ -16,6 +16,8 @@ extends CanvasLayer
 @onready var quit_button: Button = $HUD/GameOverPanel/GameOverVBox/QuitButton
 @onready var controls_hint_panel: Panel = $HUD/ControlsHintPanel
 @onready var countdown_label: Label = get_node_or_null("HUD/CountdownLabel") as Label
+@onready var fast_countdown_label: Label = get_node_or_null("HUD/FastCountdownLabel") as Label
+@onready var fast_blink_timer: Timer = get_node_or_null("HUD/FastBlinkTimer") as Timer
 
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
@@ -23,6 +25,7 @@ var _run_manager: Node
 var _arena: Node
 var _player: Node = null
 var _has_seen_controls: bool = false
+var _fast_countdown_active: bool = false
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -50,6 +53,9 @@ func _ready() -> void:
 
 	if debug_overlay != null:
 		debug_overlay.visible = false
+
+	if fast_blink_timer != null:
+		fast_blink_timer.timeout.connect(_on_fast_blink_tick)
 
 	if restart_button != null:
 		restart_button.pressed.connect(_on_restart_pressed)
@@ -90,6 +96,7 @@ func _on_run_started() -> void:
 		game_over_panel.visible = false
 	if next_bet_button != null:
 		next_bet_button.visible = true
+	_handle_fast_countdown(0)
 
 func _on_run_failed() -> void:
 	if bet_info_label != null:
@@ -100,6 +107,7 @@ func _on_run_failed() -> void:
 		game_over_panel.visible = true
 	if next_bet_button != null:
 		next_bet_button.visible = false
+	_handle_fast_countdown(0)
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
@@ -108,6 +116,11 @@ func _on_betting_opened() -> void:
 		return
 
 func _on_countdown_requested(seconds: int) -> void:
+	if seconds > 3 or _fast_countdown_active:
+		_handle_fast_countdown(seconds)
+		return
+	if seconds <= 0:
+		return
 	await show_countdown(seconds)
 
 func _on_run_started_controls() -> void:
@@ -180,6 +193,43 @@ func _on_player_health_changed(current: int, max: int) -> void:
 	player_hp_bar.max_value = max
 	player_hp_bar.value = current
 	player_hp_label.text = "HP: %d/%d" % [current, max]
+
+func _handle_fast_countdown(seconds: int) -> void:
+	if fast_countdown_label == null:
+		return
+	if seconds <= 0:
+		fast_countdown_label.visible = false
+		_fast_countdown_active = false
+		_stop_fast_blink()
+		return
+	_fast_countdown_active = true
+	fast_countdown_label.visible = true
+	fast_countdown_label.text = "FAST: %ds" % seconds
+	if seconds <= 5:
+		_start_fast_blink()
+	else:
+		_stop_fast_blink()
+		fast_countdown_label.modulate.a = 1.0
+
+func _start_fast_blink() -> void:
+	if fast_blink_timer == null:
+		return
+	if not fast_blink_timer.is_stopped():
+		return
+	fast_blink_timer.start()
+
+func _stop_fast_blink() -> void:
+	if fast_blink_timer != null and not fast_blink_timer.is_stopped():
+		fast_blink_timer.stop()
+	if fast_countdown_label != null:
+		fast_countdown_label.modulate.a = 1.0
+		fast_countdown_label.visible = true
+
+func _on_fast_blink_tick() -> void:
+	if fast_countdown_label == null:
+		return
+	var next_alpha := 0.2 if fast_countdown_label.modulate.a > 0.6 else 1.0
+	fast_countdown_label.modulate.a = next_alpha
 
 func _on_player_spawned(p: Node) -> void:
 	_bind_player(p)

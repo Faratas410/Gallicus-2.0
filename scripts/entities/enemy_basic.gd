@@ -4,7 +4,7 @@ signal died
 signal health_changed(current: int, max: int)
 
 @export var move_speed: float = GameConstants.ENEMY_MOVE_SPEED
-@export var max_health: int = 5
+@export var max_health: int = 18
 @export var touch_damage: int = 1
 @export var touch_range: float = 56.0
 @export var touch_cooldown: float = 0.55

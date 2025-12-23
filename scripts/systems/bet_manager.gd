@@ -2,7 +2,7 @@ extends Node
 
 const BETS_PATH := "res://data/bets.gd"
 
-@export var fast_time_limit: float = 12.0
+@export var fast_time_limit: float = 15.0
 
 var active_bet: Dictionary = {}
 var player_damage_taken: bool = false
@@ -15,6 +15,8 @@ var _run_manager: Node
 var _fast_timer: SceneTreeTimer
 var _fast_active: bool = false
 var _fast_token: int = 0
+var _fast_start_time: float = 0.0
+var _fast_last_emitted: int = -1
 var _arena: Node
 
 func _ready() -> void:
@@ -40,6 +42,8 @@ func _try_connect_arena() -> void:
 		_arena.connect("wave_started", Callable(self, "_on_wave_started"))
 	if _arena.has_signal("wave_cleared") and not _arena.is_connected("wave_cleared", Callable(self, "_on_wave_cleared")):
 		_arena.connect("wave_cleared", Callable(self, "_on_wave_cleared"))
+	if _arena.has_signal("player_spawned") and not _arena.is_connected("player_spawned", Callable(self, "_on_player_spawned")):
+		_arena.connect("player_spawned", Callable(self, "_on_player_spawned"))
 
 func _load_bets() -> void:
 	var script := load(BETS_PATH)
@@ -54,9 +58,10 @@ func open_bet_ui_before_arena() -> void:
 	end_time = 0.0
 	_arena_active = false
 	_fast_active = false
+	_fast_start_time = 0.0
+	_fast_last_emitted = -1
 	_invalidate_fast_timer()
 	GameEvents.bet_ui_opened.emit(_bets)
-	GameEvents.betting_opened.emit()
 	GameEvents.bet_opened.emit()
 
 func place_bet(bet_id: String, stake: int) -> bool:
@@ -74,7 +79,6 @@ func place_bet(bet_id: String, stake: int) -> bool:
 	}
 	GameEvents.bet_placed.emit(bet_id, stake, float(bet["odds"]))
 	GameEvents.bet_ui_closed.emit()
-	GameEvents.betting_closed.emit()
 	GameEvents.bet_closed.emit()
 	return true
 
@@ -102,6 +106,8 @@ func resolve_bet() -> void:
 	active_bet = {}
 	_arena_active = false
 	_fast_active = false
+	_fast_start_time = 0.0
+	_fast_last_emitted = -1
 	_invalidate_fast_timer()
 
 func reset_bet_state() -> void:
@@ -111,9 +117,10 @@ func reset_bet_state() -> void:
 	end_time = 0.0
 	_arena_active = false
 	_fast_active = false
+	_fast_start_time = 0.0
+	_fast_last_emitted = -1
 	_invalidate_fast_timer()
 	GameEvents.bet_ui_closed.emit()
-	GameEvents.betting_closed.emit()
 	GameEvents.bet_closed.emit()
 
 func is_bet_active() -> bool:
@@ -141,21 +148,27 @@ func _get_bet_by_id(bet_id: String) -> Dictionary:
 func _on_player_damaged() -> void:
 	if _arena_active:
 		player_damage_taken = true
+		_handle_no_hit_failure()
 
 func _on_player_took_damage(_amount: int) -> void:
 	if _arena_active:
 		player_damage_taken = true
-	if active_bet.is_empty():
-		return
-	if active_bet.get("id", "") == "NO_HIT" and _arena_active:
-		fail_current_bet()
+	_handle_no_hit_failure()
+
+func _on_player_spawned(_player: Node) -> void:
+	_try_connect_player_damage()
 
 func _on_wave_started(_wave: int) -> void:
 	if active_bet.get("id", "") != "FAST" or not is_bet_active():
 		return
+	if not _arena_active:
+		return
 	_fast_active = true
 	_fast_token += 1
 	var token := _fast_token
+	_fast_start_time = Time.get_ticks_msec() / 1000.0
+	_fast_last_emitted = -1
+	_start_fast_countdown(token)
 	_fast_timer = get_tree().create_timer(fast_time_limit)
 	_fast_timer.timeout.connect(func() -> void:
 		_on_fast_timeout(token)
@@ -176,11 +189,16 @@ func _on_fast_timeout(token: int) -> void:
 		fail_current_bet()
 
 func fail_current_bet() -> void:
-	if active_bet.is_empty():
+	if active_bet.is_empty() or active_bet.get("failed", false) or not _arena_active:
 		return
 	active_bet["failed"] = true
 	_fast_active = false
+	_fast_start_time = 0.0
+	_fast_last_emitted = -1
 	_invalidate_fast_timer()
+	GameEvents.run_failed.emit()
+	GameEvents.set_gameplay_enabled(false)
+	_arena_active = false
 
 func win_current_bet() -> void:
 	if active_bet.is_empty():
@@ -190,3 +208,44 @@ func win_current_bet() -> void:
 func _invalidate_fast_timer() -> void:
 	_fast_token += 1
 	_fast_timer = null
+	_fast_active = false
+	_fast_start_time = 0.0
+	_fast_last_emitted = -1
+	GameEvents.countdown_requested.emit(0)
+
+func _start_fast_countdown(token: int) -> void:
+	if token != _fast_token:
+		return
+	_emit_fast_countdown()
+	_schedule_fast_tick(token)
+
+func _schedule_fast_tick(token: int) -> void:
+	if token != _fast_token or not _fast_active:
+		return
+	var timer := get_tree().create_timer(1.0)
+	timer.timeout.connect(func() -> void:
+		_on_fast_tick(token)
+	)
+
+func _on_fast_tick(token: int) -> void:
+	if token != _fast_token or not _fast_active:
+		return
+	_emit_fast_countdown()
+	_schedule_fast_tick(token)
+
+func _emit_fast_countdown() -> void:
+	if not _fast_active or _fast_start_time <= 0.0:
+		return
+	var elapsed := (Time.get_ticks_msec() / 1000.0) - _fast_start_time
+	var remaining := int(ceil(fast_time_limit - elapsed))
+	remaining = max(remaining, 0)
+	if remaining == _fast_last_emitted:
+		return
+	_fast_last_emitted = remaining
+	GameEvents.countdown_requested.emit(remaining)
+
+func _handle_no_hit_failure() -> void:
+	if active_bet.is_empty():
+		return
+	if active_bet.get("id", "") == "NO_HIT" and _arena_active:
+		fail_current_bet()

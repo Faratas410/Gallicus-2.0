@@ -29,6 +29,12 @@ func _on_body_entered(body: Node) -> void:
 			if body.has_method("heal"):
 				body.call("heal", amount)
 		PickupType.COINS:
-			if body.has_method("add_coins"):
-				body.call("add_coins", amount)
+			var rng := RandomNumberGenerator.new()
+			rng.randomize()
+			var value := rng.randi_range(1, 5)
+			var run_manager := get_tree().get_first_node_in_group("run_manager")
+			if run_manager != null and run_manager.has_method("add_coins"):
+				run_manager.call("add_coins", value)
+			elif body.has_method("add_coins"):
+				body.call("add_coins", value)
 	queue_free()

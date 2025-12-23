@@ -19,6 +19,10 @@ var _player_alive: bool = true
 var _countdown_active: bool = false
 
 func _ready() -> void:
+	var active_manager := get_tree().get_first_node_in_group("run_manager")
+	if active_manager != null and active_manager != self:
+		set_process(false)
+		return
 	_ensure_input_map()
 	_gold = starting_gold
 	_arena = get_node_or_null(arena_path)
@@ -27,6 +31,8 @@ func _ready() -> void:
 		_arena.connect("wave_started", _on_wave_started)
 		_arena.connect("player_spawned", _on_player_spawned)
 	gold_changed.emit(_gold)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.coins_changed.emit(_gold)
 	bet_changed.emit(get_current_bet())
 	state_changed.emit(_betting_open)
 
@@ -53,6 +59,10 @@ func start_new_run() -> void:
 		if _arena.has_method("ensure_player"):
 			_arena.call("ensure_player")
 	gold_changed.emit(_gold)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.run_started.emit()
+		GameEvents.set_gameplay_enabled(true)
+		GameEvents.coins_changed.emit(_gold)
 	bet_changed.emit(get_current_bet())
 	state_changed.emit(_betting_open)
 	_start_countdown()
@@ -62,6 +72,8 @@ func start_next_bet_round() -> void:
 		return
 	_betting_open = true
 	_bet_index = 0
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.betting_opened.emit()
 	bet_changed.emit(get_current_bet())
 	state_changed.emit(_betting_open)
 
@@ -77,13 +89,19 @@ func _try_start_wave() -> void:
 		return
 	_gold -= bet
 	gold_changed.emit(_gold)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.coins_changed.emit(_gold)
 	_betting_open = false
 	state_changed.emit(_betting_open)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.betting_closed.emit()
 	_arena.call("start_next_wave")
 
 func _on_wave_started(_wave: int) -> void:
 	_betting_open = false
 	state_changed.emit(_betting_open)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.betting_closed.emit()
 
 func _on_wave_cleared(_wave: int) -> void:
 	var bet := get_current_bet()
@@ -91,8 +109,12 @@ func _on_wave_cleared(_wave: int) -> void:
 		var payout := int(round(bet * payout_multiplier))
 		_gold += payout
 		gold_changed.emit(_gold)
+		if Engine.has_singleton("GameEvents") and GameEvents != null:
+			GameEvents.coins_changed.emit(_gold)
 	_betting_open = true
 	_bet_index = 0
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.betting_opened.emit()
 	bet_changed.emit(get_current_bet())
 	state_changed.emit(_betting_open)
 
@@ -107,6 +129,9 @@ func _on_player_died() -> void:
 	_betting_open = false
 	state_changed.emit(_betting_open)
 	run_over.emit()
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.run_failed.emit()
+		GameEvents.set_gameplay_enabled(false)
 
 func get_current_bet() -> int:
 	return bet_steps[_bet_index]
@@ -144,9 +169,8 @@ func _start_countdown() -> void:
 	_countdown_active = true
 	_betting_open = false
 	state_changed.emit(_betting_open)
-	var game_events := get_node_or_null("/root/GameEvents")
-	if game_events and game_events.has_signal("countdown_requested"):
-		game_events.emit_signal("countdown_requested", 3)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.countdown_requested.emit(3)
 	else:
 		countdown_requested.emit(3)
 	for _i in range(3):
@@ -154,3 +178,22 @@ func _start_countdown() -> void:
 	_countdown_active = false
 	_betting_open = true
 	state_changed.emit(_betting_open)
+
+func add_coins(amount: int) -> void:
+	if amount <= 0:
+		return
+	_gold += amount
+	gold_changed.emit(_gold)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.coins_changed.emit(_gold)
+
+func spend_coins(amount: int) -> bool:
+	if amount <= 0:
+		return true
+	if _gold < amount:
+		return false
+	_gold -= amount
+	gold_changed.emit(_gold)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.coins_changed.emit(_gold)
+	return true

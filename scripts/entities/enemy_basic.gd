@@ -59,13 +59,13 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	var to_target := _target.global_position - global_position
-	var dist := to_target.length()
+	var to_target: Vector2 = _target.global_position - global_position
+	var dist: float = to_target.length()
 	var effective_stop := maxf(stop_distance, touch_range - 6.0)
 	if dist <= effective_stop:
 		velocity = Vector2.ZERO
 	else:
-		var direction := to_target / max(dist, 0.001)
+		var direction: Vector2 = to_target / max(dist, 0.001)
 		velocity = direction * move_speed
 	move_and_slide()
 	_try_touch_damage(dist)

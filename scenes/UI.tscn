@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
-[ext_resource type="Texture2D" path="res://ui_upgrade_panel_gallicus.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_upgrade_panel_gallicus.png" id="2"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_panel_96x64.png" id="4"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]

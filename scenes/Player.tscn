@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/Player.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player_chick_32.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/sword_idle_up_32.png" id="3"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1"]
 radius = 10.0
@@ -26,6 +27,14 @@ modulate = Color(0.2, 0.6, 0.9, 1)
 texture = ExtResource("2")
 centered = true
 texture_filter = 1
+
+[node name="SwordSprite" type="Sprite2D" parent="."]
+position = Vector2(10, -10)
+texture = ExtResource("3")
+centered = true
+texture_filter = 1
+z_index = 10
+visible = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, 0)

@@ -365,6 +365,9 @@ func _on_upgrade_continue_pressed() -> void:
 		if bet_manager != null and bet_manager.has_method("open_bet_ui_before_arena"):
 			print("Upgrade continue: opening bet UI before arena")
 			bet_manager.open_bet_ui_before_arena()
+		elif Engine.has_singleton("GameEvents") and GameEvents != null:
+			print("Upgrade continue: emitting betting_opened fallback")
+			GameEvents.betting_opened.emit()
 		else:
 			push_warning("Upgrade continue: no pending bets and BetManager missing; bet UI may not open.")
 
@@ -406,8 +409,8 @@ func _place_bet(bet_id: String) -> void:
 func _center_upgrade_panel_to_texture() -> void:
 	if upgrade_panel == null or upgrade_bg == null:
 		return
-	var bg_texture := upgrade_bg.texture
 	var size := upgrade_panel.custom_minimum_size
+	var bg_texture := upgrade_bg.texture
 	if bg_texture != null:
 		var texture_size := bg_texture.get_size()
 		if texture_size.x > size.x:

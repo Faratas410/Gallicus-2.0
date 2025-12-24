@@ -39,6 +39,8 @@ var _player: Node = null
 var _has_seen_controls: bool = false
 var _fast_countdown_active: bool = false
 var _pending_bets: Array = []
+var _upgrade_center_pending: bool = false
+var _upgrade_panel_target_size: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -343,8 +345,9 @@ func _show_upgrade_panel() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
 	_update_upgrade_costs()
-	_center_upgrade_panel_to_texture()
 	upgrade_panel.visible = true
+	# Defer once to avoid redundant layout passes; _center_upgrade_panel_to_texture queues centering.
+	call_deferred("_center_upgrade_panel_to_texture")
 
 func _on_upgrade_continue_pressed() -> void:
 	if upgrade_panel != null:
@@ -419,10 +422,27 @@ func _center_upgrade_panel_to_texture() -> void:
 	size.y = min(size.y, max_size.y)
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
+	_upgrade_panel_target_size = size
 	upgrade_panel.custom_minimum_size = size
 	upgrade_panel.size = size
-	upgrade_panel.minimum_size_changed()
 	upgrade_panel.queue_sort()
+	_request_upgrade_panel_center()
+
+func _request_upgrade_panel_center() -> void:
+	if _upgrade_center_pending:
+		return
+	_upgrade_center_pending = true
+	call_deferred("_apply_upgrade_panel_center")
+
+func _apply_upgrade_panel_center() -> void:
+	_upgrade_center_pending = false
+	if upgrade_panel == null or not upgrade_panel.visible:
+		return
+	var size := upgrade_panel.size
+	if size.x <= 0.0 or size.y <= 0.0:
+		size = _upgrade_panel_target_size
+	if size.x <= 0.0 or size.y <= 0.0:
+		return
 	var half := size * 0.5
 	upgrade_panel.offset_left = -half.x
 	upgrade_panel.offset_top = -half.y

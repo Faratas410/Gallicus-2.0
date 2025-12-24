@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
 @onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
 @onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
+@onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeVBox") as VBoxContainer
 @onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeCoinsLabel") as Label
 @onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPLabel") as Label
 @onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightLabel") as Label
@@ -39,8 +40,11 @@ var _player: Node = null
 var _has_seen_controls: bool = false
 var _fast_countdown_active: bool = false
 var _pending_bets: Array = []
-var _upgrade_center_pending: bool = false
-var _upgrade_panel_target_size: Vector2 = Vector2.ZERO
+var _upgrade_modal_active: bool = false
+var _controls_hint_was_visible: bool = false
+var _countdown_was_visible: bool = false
+var _fast_countdown_was_visible: bool = false
+var _fast_blink_was_running: bool = false
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -121,6 +125,7 @@ func _on_run_started() -> void:
 		bet_panel.visible = false
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
+	_set_upgrade_modal(false)
 	_pending_bets = []
 	if game_over_panel != null:
 		game_over_panel.visible = false
@@ -135,6 +140,7 @@ func _on_run_failed() -> void:
 		bet_panel.visible = false
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
+	_set_upgrade_modal(false)
 	if game_over_panel != null:
 		game_over_panel.visible = true
 	if next_bet_button != null:
@@ -326,6 +332,7 @@ func _on_bet_failed(can_retry: bool) -> void:
 		bet_panel.visible = false
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
+	_set_upgrade_modal(false)
 	if game_over_panel != null:
 		game_over_panel.visible = true
 	if game_over_title != null:
@@ -345,6 +352,7 @@ func _show_upgrade_panel() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
 	_update_upgrade_costs()
+	_set_upgrade_modal(true)
 	upgrade_panel.visible = true
 	# Defer once to avoid redundant layout passes; _center_upgrade_panel_to_texture queues centering.
 	call_deferred("_center_upgrade_panel_to_texture")
@@ -352,6 +360,7 @@ func _show_upgrade_panel() -> void:
 func _on_upgrade_continue_pressed() -> void:
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
+	_set_upgrade_modal(false)
 	get_viewport().gui_release_focus()
 	var manager := _get_run_manager()
 	if manager != null and manager.has_method("consume_upgrade_shop"):
@@ -409,6 +418,11 @@ func _place_bet(bet_id: String) -> void:
 func _center_upgrade_panel_to_texture() -> void:
 	if upgrade_panel == null or upgrade_bg == null:
 		return
+	if upgrade_vbox != null:
+		upgrade_vbox.queue_sort()
+	await get_tree().process_frame
+	if upgrade_panel == null or not upgrade_panel.visible:
+		return
 	var size := upgrade_panel.custom_minimum_size
 	var bg_texture := upgrade_bg.texture
 	if bg_texture != null:
@@ -425,32 +439,43 @@ func _center_upgrade_panel_to_texture() -> void:
 	size.y = min(size.y, max_size.y)
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
-	_upgrade_panel_target_size = size
 	upgrade_panel.custom_minimum_size = size
 	upgrade_panel.size = size
-	upgrade_panel.queue_sort()
-	_request_upgrade_panel_center()
-
-func _request_upgrade_panel_center() -> void:
-	if _upgrade_center_pending:
-		return
-	_upgrade_center_pending = true
-	call_deferred("_apply_upgrade_panel_center")
-
-func _apply_upgrade_panel_center() -> void:
-	_upgrade_center_pending = false
-	if upgrade_panel == null or not upgrade_panel.visible:
-		return
-	var size := upgrade_panel.size
-	if size.x <= 0.0 or size.y <= 0.0:
-		size = _upgrade_panel_target_size
-	if size.x <= 0.0 or size.y <= 0.0:
-		return
+	upgrade_panel.reset_size()
 	var half := size * 0.5
 	upgrade_panel.offset_left = -half.x
 	upgrade_panel.offset_top = -half.y
 	upgrade_panel.offset_right = half.x
 	upgrade_panel.offset_bottom = half.y
+
+func _set_upgrade_modal(active: bool) -> void:
+	if active:
+		_controls_hint_was_visible = controls_hint_panel != null and controls_hint_panel.visible
+		_countdown_was_visible = countdown_label != null and countdown_label.visible
+		_fast_countdown_was_visible = fast_countdown_label != null and fast_countdown_label.visible
+		_fast_blink_was_running = fast_blink_timer != null and not fast_blink_timer.is_stopped()
+		_upgrade_modal_active = true
+		if controls_hint_panel != null:
+			controls_hint_panel.visible = false
+		if countdown_label != null:
+			countdown_label.visible = false
+		if fast_countdown_label != null:
+			fast_countdown_label.visible = false
+		if fast_blink_timer != null and _fast_blink_was_running:
+			fast_blink_timer.stop()
+	else:
+		if not _upgrade_modal_active:
+			return
+		if controls_hint_panel != null:
+			controls_hint_panel.visible = _controls_hint_was_visible
+		if countdown_label != null:
+			countdown_label.visible = _countdown_was_visible
+		if fast_countdown_label != null:
+			fast_countdown_label.visible = _fast_countdown_was_visible
+		if fast_blink_timer != null and _fast_blink_was_running and _fast_countdown_active:
+			fast_blink_timer.start()
+		_upgrade_modal_active = false
+	get_viewport().gui_release_focus()
 
 func _process(_delta: float) -> void:
 	if debug_overlay == null or not debug_overlay.visible:

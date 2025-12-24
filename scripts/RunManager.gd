@@ -27,9 +27,15 @@ func _ready() -> void:
 	_gold = starting_gold
 	_arena = get_node_or_null(arena_path)
 	if _arena:
-		_arena.connect("wave_cleared", _on_wave_cleared)
-		_arena.connect("wave_started", _on_wave_started)
-		_arena.connect("player_spawned", _on_player_spawned)
+		var wave_cleared_callable := Callable(self, "_on_wave_cleared")
+		if _arena.has_signal("wave_cleared") and not _arena.wave_cleared.is_connected(wave_cleared_callable):
+			_arena.wave_cleared.connect(wave_cleared_callable)
+		var wave_started_callable := Callable(self, "_on_wave_started")
+		if _arena.has_signal("wave_started") and not _arena.wave_started.is_connected(wave_started_callable):
+			_arena.wave_started.connect(wave_started_callable)
+		var player_spawned_callable := Callable(self, "_on_player_spawned")
+		if _arena.has_signal("player_spawned") and not _arena.player_spawned.is_connected(player_spawned_callable):
+			_arena.player_spawned.connect(player_spawned_callable)
 	gold_changed.emit(_gold)
 	if Engine.has_singleton("GameEvents") and GameEvents != null:
 		GameEvents.coins_changed.emit(_gold)
@@ -178,6 +184,8 @@ func _start_countdown() -> void:
 	_countdown_active = false
 	_betting_open = true
 	state_changed.emit(_betting_open)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.betting_opened.emit()
 
 func add_coins(amount: int) -> void:
 	if amount <= 0:

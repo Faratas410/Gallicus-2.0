@@ -343,8 +343,9 @@ func _show_upgrade_panel() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
 	_update_upgrade_costs()
-	_center_upgrade_panel_to_texture()
 	upgrade_panel.visible = true
+	# Defer once to let layout settle before centering.
+	call_deferred("_center_upgrade_panel_to_texture")
 
 func _on_upgrade_continue_pressed() -> void:
 	if upgrade_panel != null:
@@ -362,6 +363,9 @@ func _on_upgrade_continue_pressed() -> void:
 		if bet_manager != null and bet_manager.has_method("open_bet_ui_before_arena"):
 			print("Upgrade continue: opening bet UI before arena")
 			bet_manager.open_bet_ui_before_arena()
+		elif Engine.has_singleton("GameEvents") and GameEvents != null:
+			print("Upgrade continue: emitting betting_opened fallback")
+			GameEvents.betting_opened.emit()
 		else:
 			push_warning("Upgrade continue: no pending bets and BetManager missing; bet UI may not open.")
 
@@ -403,8 +407,8 @@ func _place_bet(bet_id: String) -> void:
 func _center_upgrade_panel_to_texture() -> void:
 	if upgrade_panel == null or upgrade_bg == null:
 		return
-	var bg_texture := upgrade_bg.texture
 	var size := upgrade_panel.custom_minimum_size
+	var bg_texture := upgrade_bg.texture
 	if bg_texture != null:
 		var texture_size := bg_texture.get_size()
 		if texture_size.x > size.x:
@@ -419,10 +423,14 @@ func _center_upgrade_panel_to_texture() -> void:
 	size.y = min(size.y, max_size.y)
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
-	upgrade_panel.custom_minimum_size = size
-	upgrade_panel.size = size
-	upgrade_panel.minimum_size_changed()
-	upgrade_panel.queue_sort()
+	upgrade_panel.set_deferred("custom_minimum_size", size)
+	upgrade_panel.set_deferred("size", size)
+	call_deferred("_apply_upgrade_panel_center", size)
+
+func _apply_upgrade_panel_center(size: Vector2) -> void:
+	if upgrade_panel == null or not upgrade_panel.visible:
+		return
+	await get_tree().process_frame
 	var half := size * 0.5
 	upgrade_panel.offset_left = -half.x
 	upgrade_panel.offset_top = -half.y

@@ -8,12 +8,12 @@ extends CanvasLayer
 @onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
 @onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
 @onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeCoinsLabel") as Label
+@onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPLabel") as Label
+@onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightLabel") as Label
+@onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow/UpgradeHeavyLabel") as Label
 @onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPButton") as Button
 @onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightButton") as Button
 @onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow/UpgradeHeavyButton") as Button
-@onready var upgrade_hp_cost_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPCost") as Label
-@onready var upgrade_light_cost_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightCost") as Label
-@onready var upgrade_heavy_cost_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow/UpgradeHeavyCost") as Label
 @onready var upgrade_continue_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeContinueButton") as Button
 @onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
@@ -340,7 +340,6 @@ func _on_bet_failed(can_retry: bool) -> void:
 func _show_upgrade_panel() -> void:
 	if upgrade_panel == null:
 		return
-	_pending_bets = []
 	if bet_panel != null:
 		bet_panel.visible = false
 	_update_upgrade_costs()
@@ -350,16 +349,21 @@ func _show_upgrade_panel() -> void:
 func _on_upgrade_continue_pressed() -> void:
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
+	get_viewport().gui_release_focus()
 	var manager := _get_run_manager()
 	if manager != null and manager.has_method("consume_upgrade_shop"):
 		manager.consume_upgrade_shop()
 	if _pending_bets.size() > 0:
+		print("Upgrade continue: reopening pending bets (%d)" % _pending_bets.size())
 		_on_bet_ui_opened(_pending_bets)
 		_pending_bets = []
 	else:
 		var bet_manager := _get_bet_manager()
 		if bet_manager != null and bet_manager.has_method("open_bet_ui_before_arena"):
+			print("Upgrade continue: opening bet UI before arena")
 			bet_manager.open_bet_ui_before_arena()
+		else:
+			push_warning("Upgrade continue: no pending bets and BetManager missing; bet UI may not open.")
 
 func _purchase_upgrade(upgrade_type: String) -> void:
 	var manager := _get_run_manager()
@@ -373,18 +377,21 @@ func _update_upgrade_costs() -> void:
 	if manager == null or not manager.has_method("get_upgrade_config"):
 		return
 	var config: Dictionary = manager.get_upgrade_config()
-	if upgrade_hp_button != null:
-		upgrade_hp_button.text = "HP +%d" % int(config.get("hp_bonus", 0))
-	if upgrade_hp_cost_label != null:
-		upgrade_hp_cost_label.text = "Cost: %d" % int(config.get("hp_cost", 0))
-	if upgrade_light_button != null:
-		upgrade_light_button.text = "LIGHT +%d" % int(config.get("light_bonus", 0))
-	if upgrade_light_cost_label != null:
-		upgrade_light_cost_label.text = "Cost: %d" % int(config.get("light_cost", 0))
-	if upgrade_heavy_button != null:
-		upgrade_heavy_button.text = "HEAVY +%d" % int(config.get("heavy_bonus", 0))
-	if upgrade_heavy_cost_label != null:
-		upgrade_heavy_cost_label.text = "Cost: %d" % int(config.get("heavy_cost", 0))
+	if upgrade_hp_label != null:
+		upgrade_hp_label.text = "HP +%d (Cost: %d)" % [
+			int(config.get("hp_bonus", 0)),
+			int(config.get("hp_cost", 0))
+		]
+	if upgrade_light_label != null:
+		upgrade_light_label.text = "LIGHT +%d (Cost: %d)" % [
+			int(config.get("light_bonus", 0)),
+			int(config.get("light_cost", 0))
+		]
+	if upgrade_heavy_label != null:
+		upgrade_heavy_label.text = "HEAVY +%d (Cost: %d)" % [
+			int(config.get("heavy_bonus", 0)),
+			int(config.get("heavy_cost", 0))
+		]
 
 func _place_bet(bet_id: String) -> void:
 	var manager := _get_bet_manager()
@@ -397,13 +404,25 @@ func _center_upgrade_panel_to_texture() -> void:
 	if upgrade_panel == null or upgrade_bg == null:
 		return
 	var bg_texture := upgrade_bg.texture
-	if bg_texture == null:
+	var size := upgrade_panel.custom_minimum_size
+	if bg_texture != null:
+		var texture_size := bg_texture.get_size()
+		if texture_size.x > size.x:
+			size.x = texture_size.x
+		if texture_size.y > size.y:
+			size.y = texture_size.y
+	var viewport_size := get_viewport().get_visible_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
-	var size := bg_texture.get_size()
+	var max_size := viewport_size * 0.95
+	size.x = min(size.x, max_size.x)
+	size.y = min(size.y, max_size.y)
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
 	upgrade_panel.custom_minimum_size = size
 	upgrade_panel.size = size
+	upgrade_panel.minimum_size_changed()
+	upgrade_panel.queue_sort()
 	var half := size * 0.5
 	upgrade_panel.offset_left = -half.x
 	upgrade_panel.offset_top = -half.y

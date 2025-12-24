@@ -211,12 +211,22 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 	if _base_heavy_damage <= 0:
 		_base_heavy_damage = heavy_damage
 	var previous_max := max_health
+	var previous_current := _current_health
+	print("Apply run upgrades: hp_bonus=%d light_bonus=%d heavy_bonus=%d prev_hp=%d/%d" % [
+		max_hp_bonus,
+		light_bonus,
+		heavy_bonus,
+		previous_current,
+		previous_max
+	])
 	max_health = _base_max_health + max_hp_bonus
 	light_damage = _base_light_damage + light_bonus
 	heavy_damage = _base_heavy_damage + heavy_bonus
 	if max_health != previous_max:
 		var delta := max_health - previous_max
-		_current_health = clampi(_current_health + delta, 0, max_health)
+		_current_health = clampi(previous_current + delta, 0, max_health)
+	else:
+		_current_health = clampi(previous_current, 0, max_health)
 	_emit_health()
 
 func heal(amount: int) -> void:

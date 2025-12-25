@@ -280,48 +280,84 @@ text = "UPGRADE SHOP"
 [node name="UpgradeCoinsLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox"]
 text = "Coins: 0"
 
-[node name="UpgradeHPRow" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeVBox"]
+[node name="UpgradeRows" type="VBoxContainer" parent="HUD/UpgradePanel/UpgradeVBox"]
+size_flags_horizontal = 3
 
-[node name="UpgradeHPIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow"]
+[node name="UpgradeHPRow" type="PanelContainer" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows"]
+custom_minimum_size = Vector2(0, 52)
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="UpgradeHPRowHBox" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+
+[node name="UpgradeHPIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox"]
 custom_minimum_size = Vector2(40, 40)
 expand_mode = 1
 stretch_mode = 5
 
-[node name="UpgradeHPLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow"]
+[node name="UpgradeHPLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox"]
 size_flags_horizontal = 3
 text = "HP +20 (Cost: 30)"
 
-[node name="UpgradeHPButton" type="Button" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow"]
+[node name="UpgradeHPButton" type="Button" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox"]
 custom_minimum_size = Vector2(96, 40)
 text = "BUY"
 
-[node name="UpgradeLightRow" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeVBox"]
+[node name="UpgradeLightRow" type="PanelContainer" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows"]
+custom_minimum_size = Vector2(0, 52)
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
-[node name="UpgradeLightIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow"]
+[node name="UpgradeLightRowHBox" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+
+[node name="UpgradeLightIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox"]
 custom_minimum_size = Vector2(40, 40)
 expand_mode = 1
 stretch_mode = 5
 
-[node name="UpgradeLightLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow"]
+[node name="UpgradeLightLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox"]
 size_flags_horizontal = 3
 text = "LIGHT +1 (Cost: 25)"
 
-[node name="UpgradeLightButton" type="Button" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow"]
+[node name="UpgradeLightButton" type="Button" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox"]
 custom_minimum_size = Vector2(96, 40)
 text = "BUY"
 
-[node name="UpgradeHeavyRow" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeVBox"]
+[node name="UpgradeHeavyRow" type="PanelContainer" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows"]
+custom_minimum_size = Vector2(0, 52)
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
-[node name="UpgradeHeavyIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow"]
+[node name="UpgradeHeavyRowHBox" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+
+[node name="UpgradeHeavyIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox"]
 custom_minimum_size = Vector2(40, 40)
 expand_mode = 1
 stretch_mode = 5
 
-[node name="UpgradeHeavyLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow"]
+[node name="UpgradeHeavyLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox"]
 size_flags_horizontal = 3
 text = "HEAVY +1 (Cost: 35)"
 
-[node name="UpgradeHeavyButton" type="Button" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow"]
+[node name="UpgradeHeavyButton" type="Button" parent="HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox"]
 custom_minimum_size = Vector2(96, 40)
 text = "BUY"
 

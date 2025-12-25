@@ -267,14 +267,16 @@ func _on_player_health_changed(current: int, max: int) -> void:
 func _handle_fast_countdown(seconds: int) -> void:
 	if fast_countdown_label == null:
 		return
+	if bet_panel == null or not bet_panel.visible:
+		_fast_countdown_active = false
+		_stop_fast_blink()
+		fast_countdown_label.visible = false
+		return
 	seconds = min(seconds, FAST_SELECTION_SECONDS)
 	if seconds <= 0:
 		_fast_countdown_active = false
 		_stop_fast_blink()
-		if bet_panel != null and bet_panel.visible:
-			_update_fast_selection_hint(true)
-		else:
-			fast_countdown_label.visible = false
+		_update_fast_selection_hint(true)
 		return
 	_fast_countdown_active = true
 	fast_countdown_label.visible = true
@@ -496,6 +498,10 @@ func _set_upgrade_modal(active: bool) -> void:
 
 func _update_fast_selection_hint(show: bool) -> void:
 	if fast_countdown_label == null:
+		return
+	if bet_panel == null or not bet_panel.visible:
+		_stop_fast_blink()
+		fast_countdown_label.visible = false
 		return
 	if _fast_countdown_active:
 		return

@@ -12,12 +12,12 @@ const FAST_SELECTION_SECONDS := 12
 @onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
 @onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeVBox") as VBoxContainer
 @onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeCoinsLabel") as Label
-@onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPLabel") as Label
-@onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightLabel") as Label
-@onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow/UpgradeHeavyLabel") as Label
-@onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHPRow/UpgradeHPButton") as Button
-@onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeLightRow/UpgradeLightButton") as Button
-@onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeHeavyRow/UpgradeHeavyButton") as Button
+@onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
+@onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
+@onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
+@onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPButton") as Button
+@onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightButton") as Button
+@onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyButton") as Button
 @onready var upgrade_continue_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeContinueButton") as Button
 @onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
@@ -42,6 +42,7 @@ var _arena: Node
 var _player: Node = null
 var _has_seen_controls: bool = false
 var _fast_countdown_active: bool = false
+var _selected_bet_id: String = ""
 var _pending_bets: Array = []
 var _upgrade_modal_active: bool = false
 var _controls_hint_was_visible: bool = false
@@ -128,7 +129,7 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
-	_update_fast_selection_hint(false)
+	_reset_fast_countdown()
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
@@ -137,14 +138,14 @@ func _on_run_started() -> void:
 		game_over_panel.visible = false
 	if next_bet_button != null:
 		next_bet_button.visible = true
-	_handle_fast_countdown(0)
+	_reset_fast_countdown()
 
 func _on_run_failed() -> void:
 	if bet_info_label != null:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
-	_update_fast_selection_hint(false)
+	_reset_fast_countdown()
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
@@ -158,7 +159,7 @@ func _on_run_failed() -> void:
 		game_over_hint.text = "Vuoi riprovare?"
 	if restart_button != null:
 		restart_button.text = "RESTART RUN"
-	_handle_fast_countdown(0)
+	_reset_fast_countdown()
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
@@ -170,10 +171,12 @@ func _on_betting_opened() -> void:
 		_show_upgrade_panel()
 
 func _on_countdown_requested(seconds: int) -> void:
-	if seconds > 3 or _fast_countdown_active:
-		_handle_fast_countdown(seconds)
+	if _fast_countdown_active:
+		_handle_fast_countdown(min(seconds, FAST_SELECTION_SECONDS))
 		return
 	if seconds <= 0:
+		return
+	if seconds > 3:
 		return
 	await show_countdown(seconds)
 
@@ -213,12 +216,12 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		_bets_by_id[bet.get("id", "")] = bet
 	_update_bet_buttons()
 	bet_panel.visible = true
-	_update_fast_selection_hint(true)
+	_reset_fast_countdown()
 
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
-	_update_fast_selection_hint(false)
+	_reset_fast_countdown()
 	get_viewport().gui_release_focus()
 
 func _on_restart_pressed() -> void:
@@ -267,18 +270,13 @@ func _on_player_health_changed(current: int, max: int) -> void:
 func _handle_fast_countdown(seconds: int) -> void:
 	if fast_countdown_label == null:
 		return
-	if bet_panel == null or not bet_panel.visible:
-		_fast_countdown_active = false
+	if not _fast_countdown_active:
 		_stop_fast_blink()
 		fast_countdown_label.visible = false
 		return
-	seconds = min(seconds, FAST_SELECTION_SECONDS)
 	if seconds <= 0:
-		_fast_countdown_active = false
-		_stop_fast_blink()
-		_update_fast_selection_hint(true)
+		_reset_fast_countdown()
 		return
-	_fast_countdown_active = true
 	fast_countdown_label.visible = true
 	fast_countdown_label.text = "FAST: %ds" % seconds
 	if seconds <= 5:
@@ -344,7 +342,7 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 func _on_bet_failed(can_retry: bool) -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
-	_update_fast_selection_hint(false)
+	_reset_fast_countdown()
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
@@ -359,14 +357,14 @@ func _on_bet_failed(can_retry: bool) -> void:
 		next_bet_button.text = "RETRY BET"
 	if restart_button != null:
 		restart_button.text = "RESTART RUN"
-	_handle_fast_countdown(0)
+	_reset_fast_countdown()
 
 func _show_upgrade_panel() -> void:
 	if upgrade_panel == null:
 		return
 	if bet_panel != null:
 		bet_panel.visible = false
-	_update_fast_selection_hint(false)
+	_reset_fast_countdown()
 	_update_upgrade_costs()
 	_set_upgrade_modal(true)
 	upgrade_panel.visible = true
@@ -428,7 +426,14 @@ func _place_bet(bet_id: String) -> void:
 	var manager := _get_bet_manager()
 	if manager == null or stake_input == null:
 		return
-	_update_fast_selection_hint(false)
+	_selected_bet_id = bet_id
+	if bet_id == "FAST":
+		_fast_countdown_active = true
+		if fast_countdown_label != null:
+			fast_countdown_label.visible = true
+			fast_countdown_label.text = "FAST: %ds" % FAST_SELECTION_SECONDS
+	else:
+		_reset_fast_countdown()
 	var stake := int(stake_input.value)
 	manager.place_bet(bet_id, stake)
 
@@ -496,21 +501,11 @@ func _set_upgrade_modal(active: bool) -> void:
 		_upgrade_modal_active = false
 	get_viewport().gui_release_focus()
 
-func _update_fast_selection_hint(show: bool) -> void:
-	if fast_countdown_label == null:
-		return
-	if bet_panel == null or not bet_panel.visible:
-		_stop_fast_blink()
-		fast_countdown_label.visible = false
-		return
-	if _fast_countdown_active:
-		return
-	if show:
-		_stop_fast_blink()
-		fast_countdown_label.visible = true
-		fast_countdown_label.text = "FAST: %ds" % FAST_SELECTION_SECONDS
-	else:
-		_stop_fast_blink()
+func _reset_fast_countdown() -> void:
+	_selected_bet_id = ""
+	_fast_countdown_active = false
+	_stop_fast_blink()
+	if fast_countdown_label != null:
 		fast_countdown_label.visible = false
 
 func _process(_delta: float) -> void:

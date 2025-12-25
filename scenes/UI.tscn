@@ -187,9 +187,9 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
 offset_left = -220.0
-offset_top = 176.0
+offset_top = 200.0
 offset_right = -16.0
-offset_bottom = 300.0
+offset_bottom = 324.0
 horizontal_alignment = 2
 text = "FPS: 0\nArena: 0\nEnemies: 0\nBet active: false"
 
@@ -229,7 +229,7 @@ autostart = false
 [node name="ModalDimmer" type="ColorRect" parent="HUD"]
 visible = false
 z_index = 90
-mouse_filter = 2
+mouse_filter = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.55)
@@ -275,7 +275,7 @@ offset_right = -24.0
 offset_bottom = -24.0
 
 [node name="UpgradeTitle" type="Label" parent="HUD/UpgradePanel/UpgradeVBox"]
-text = "UPGRADES"
+text = "UPGRADE SHOP"
 
 [node name="UpgradeCoinsLabel" type="Label" parent="HUD/UpgradePanel/UpgradeVBox"]
 text = "Coins: 0"

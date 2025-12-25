@@ -1,10 +1,13 @@
 extends CanvasLayer
 
+const FAST_SELECTION_SECONDS := 12
+
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
 @onready var player_hp_bar: ProgressBar = $HUD/Panel/VBox/PlayerHPBar
 @onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
+@onready var modal_dimmer: ColorRect = get_node_or_null("HUD/ModalDimmer") as ColorRect
 @onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
 @onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
 @onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeVBox") as VBoxContainer
@@ -85,6 +88,8 @@ func _ready() -> void:
 		quit_button.pressed.connect(_on_quit_pressed)
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
+	if modal_dimmer != null:
+		modal_dimmer.visible = false
 	if upgrade_hp_button != null:
 		upgrade_hp_button.pressed.connect(func() -> void: _purchase_upgrade("hp"))
 	if upgrade_light_button != null:
@@ -123,6 +128,7 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	_update_fast_selection_hint(false)
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
@@ -138,6 +144,7 @@ func _on_run_failed() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	_update_fast_selection_hint(false)
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
@@ -206,10 +213,12 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		_bets_by_id[bet.get("id", "")] = bet
 	_update_bet_buttons()
 	bet_panel.visible = true
+	_update_fast_selection_hint(true)
 
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
+	_update_fast_selection_hint(false)
 	get_viewport().gui_release_focus()
 
 func _on_restart_pressed() -> void:
@@ -258,10 +267,14 @@ func _on_player_health_changed(current: int, max: int) -> void:
 func _handle_fast_countdown(seconds: int) -> void:
 	if fast_countdown_label == null:
 		return
+	seconds = min(seconds, FAST_SELECTION_SECONDS)
 	if seconds <= 0:
-		fast_countdown_label.visible = false
 		_fast_countdown_active = false
 		_stop_fast_blink()
+		if bet_panel != null and bet_panel.visible:
+			_update_fast_selection_hint(true)
+		else:
+			fast_countdown_label.visible = false
 		return
 	_fast_countdown_active = true
 	fast_countdown_label.visible = true
@@ -284,7 +297,6 @@ func _stop_fast_blink() -> void:
 		fast_blink_timer.stop()
 	if fast_countdown_label != null:
 		fast_countdown_label.modulate.a = 1.0
-		fast_countdown_label.visible = true
 
 func _on_fast_blink_tick() -> void:
 	if fast_countdown_label == null:
@@ -330,6 +342,7 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 func _on_bet_failed(can_retry: bool) -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
+	_update_fast_selection_hint(false)
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
@@ -351,6 +364,7 @@ func _show_upgrade_panel() -> void:
 		return
 	if bet_panel != null:
 		bet_panel.visible = false
+	_update_fast_selection_hint(false)
 	_update_upgrade_costs()
 	_set_upgrade_modal(true)
 	upgrade_panel.visible = true
@@ -412,6 +426,7 @@ func _place_bet(bet_id: String) -> void:
 	var manager := _get_bet_manager()
 	if manager == null or stake_input == null:
 		return
+	_update_fast_selection_hint(false)
 	var stake := int(stake_input.value)
 	manager.place_bet(bet_id, stake)
 
@@ -449,6 +464,8 @@ func _center_upgrade_panel_to_texture() -> void:
 	upgrade_panel.offset_bottom = half.y
 
 func _set_upgrade_modal(active: bool) -> void:
+	if modal_dimmer != null:
+		modal_dimmer.visible = active
 	if active:
 		_controls_hint_was_visible = controls_hint_panel != null and controls_hint_panel.visible
 		_countdown_was_visible = countdown_label != null and countdown_label.visible
@@ -476,6 +493,19 @@ func _set_upgrade_modal(active: bool) -> void:
 			fast_blink_timer.start()
 		_upgrade_modal_active = false
 	get_viewport().gui_release_focus()
+
+func _update_fast_selection_hint(show: bool) -> void:
+	if fast_countdown_label == null:
+		return
+	if _fast_countdown_active:
+		return
+	if show:
+		_stop_fast_blink()
+		fast_countdown_label.visible = true
+		fast_countdown_label.text = "FAST: %ds" % FAST_SELECTION_SECONDS
+	else:
+		_stop_fast_blink()
+		fast_countdown_label.visible = false
 
 func _process(_delta: float) -> void:
 	if debug_overlay == null or not debug_overlay.visible:

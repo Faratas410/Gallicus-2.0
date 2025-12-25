@@ -187,9 +187,9 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
 offset_left = -220.0
-offset_top = 16.0
+offset_top = 176.0
 offset_right = -16.0
-offset_bottom = 140.0
+offset_bottom = 300.0
 horizontal_alignment = 2
 text = "FPS: 0\nArena: 0\nEnemies: 0\nBet active: false"
 
@@ -219,12 +219,20 @@ offset_bottom = 52.0
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 visible = false
-text = "FAST: 15s"
+text = "FAST: 12s"
 
 [node name="FastBlinkTimer" type="Timer" parent="HUD"]
 wait_time = 0.25
 one_shot = false
 autostart = false
+
+[node name="ModalDimmer" type="ColorRect" parent="HUD"]
+visible = false
+z_index = 90
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.55)
 
 [node name="UpgradePanel" type="Panel" parent="HUD"]
 visible = false

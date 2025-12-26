@@ -4,6 +4,9 @@ const FAST_SELECTION_SECONDS := 12
 const UPGRADE_FLASH_TIME := 0.10
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
+@onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelLabel") as Label
+@onready var xp_label: Label = get_node_or_null("HUD/Panel/VBox/XPLabel") as Label
+@onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensLabel") as Label
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
 @onready var player_hp_bar: ProgressBar = $HUD/Panel/VBox/PlayerHPBar
 @onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
@@ -69,6 +72,9 @@ func _ready() -> void:
 	GameEvents.betting_opened.connect(_on_betting_opened)
 	GameEvents.countdown_requested.connect(_on_countdown_requested)
 	GameEvents.coins_changed.connect(_on_ui_coins_refresh_upgrade)
+	GameEvents.player_level_changed.connect(_on_player_level_changed)
+	GameEvents.player_xp_changed.connect(_on_player_xp_changed)
+	GameEvents.upgrade_tokens_changed.connect(_on_upgrade_tokens_changed)
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -121,6 +127,19 @@ func _ready() -> void:
 func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
 	if upgrade_panel != null and upgrade_panel.visible:
 		_update_upgrade_costs()
+
+func _on_player_level_changed(level: int) -> void:
+	if level_label != null:
+		level_label.text = "LV: %d" % level
+
+func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
+	if xp_label != null:
+		var denom := max(xp_to_next, 1)
+		xp_label.text = "XP: %d/%d" % [xp, denom]
+
+func _on_upgrade_tokens_changed(tokens: int) -> void:
+	if tokens_label != null:
+		tokens_label.text = "TOKENS: %d" % tokens
 
 func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:

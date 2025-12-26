@@ -6,6 +6,13 @@ extends Node
 @export var arena_clear_reward: int = GameConstants.ARENA_CLEAR_REWARD
 @export var arena_scene: PackedScene = preload("res://scenes/Arena.tscn")
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
+
+# --- XP / Leveling ---
+@export var exp_per_enemy: int = 1
+@export var exp_curve: Array[int] = [5, 7, 10, 14, 19, 25] # xp necessario per passare al prossimo livello; dopo l'ultimo cresce linearmente.
+@export var exp_curve_tail_step: int = 8
+@export var tokens_per_level: int = 1
+
 @export var upgrade_hp_bonus: int = 20
 @export var upgrade_hp_cost: int = 30
 @export var upgrade_light_bonus: int = 1
@@ -19,6 +26,9 @@ enum RunPhase { PREP, LIVE, GAME_OVER }
 var run := {
 	"arena_index": 0,
 	"coins": 0,
+	"level": 1,
+	"xp": 0,
+	"upgrade_tokens": 0,
 	"upgrades": {
 		"hp_bonus": 0,
 		"light_bonus": 0,
@@ -43,6 +53,7 @@ func _ready() -> void:
 	GameEvents.bet_placed.connect(_on_bet_placed)
 	GameEvents.betting_opened.connect(_on_betting_opened)
 	GameEvents.run_failed.connect(_on_run_failed)
+	GameEvents.enemy_killed.connect(_on_enemy_killed)
 	_ensure_input_map()
 	call_deferred("_boot")
 
@@ -85,9 +96,15 @@ func start_new_run() -> void:
 	_has_started_run = true
 	run["arena_index"] = 0
 
+	# reset XP/level per run (puoi cambiare in "persistente" più avanti)
+	run["level"] = 1
+	run["xp"] = 0
+	run["upgrade_tokens"] = 0
+
 	GameEvents.run_started.emit()
 	GameEvents.set_gameplay_enabled(true)
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
+	_emit_xp_level_ui()
 	GameEvents.countdown_requested.emit(3)
 	_log_runtime_state("new_run_ready")
 	for _i in range(3, 0, -1):
@@ -307,6 +324,8 @@ func _on_wave_started(_wave: int) -> void:
 	GameEvents.arena_started.emit(run.arena_index)
 	if _bet_manager and _bet_manager.has_method("register_arena_start"):
 		_bet_manager.register_arena_start()
+	# la difficoltà dei nemici può dipendere dal livello
+	_apply_enemy_difficulty_to_arena()
 	_apply_phase()
 
 func _on_wave_cleared(_wave: int) -> void:
@@ -323,6 +342,69 @@ func _on_player_spawned(player: Node) -> void:
 	_connect_player_signals()
 	_position_player_after_respawn()
 	_apply_phase()
+
+func _on_enemy_killed(exp: int) -> void:
+	if _is_game_over:
+		return
+	if phase != RunPhase.LIVE:
+		return
+	var gained := exp if exp > 0 else exp_per_enemy
+	if gained <= 0:
+		return
+	run["xp"] = int(run.get("xp", 0)) + gained
+	_check_level_up()
+	_emit_xp_level_ui()
+
+func _xp_needed_for_next(level: int) -> int:
+	# level parte da 1. Per passare a level+1 usiamo exp_curve[level-1] se esiste.
+	var idx := max(level - 1, 0)
+	if idx < exp_curve.size():
+		return int(exp_curve[idx])
+	# tail lineare
+	var last := int(exp_curve[exp_curve.size() - 1]) if exp_curve.size() > 0 else 5
+	var extra := (idx - max(exp_curve.size() - 1, 0)) * max(exp_curve_tail_step, 1)
+	return last + extra
+
+func _check_level_up() -> void:
+	var lvl := int(run.get("level", 1))
+	var xp := int(run.get("xp", 0))
+	var needed := _xp_needed_for_next(lvl)
+	while xp >= needed and needed > 0:
+		xp -= needed
+		lvl += 1
+		run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + max(tokens_per_level, 0)
+		needed = _xp_needed_for_next(lvl)
+	run["level"] = lvl
+	run["xp"] = xp
+
+func _emit_xp_level_ui() -> void:
+	var lvl := int(run.get("level", 1))
+	var xp := int(run.get("xp", 0))
+	var needed := _xp_needed_for_next(lvl)
+	GameEvents.player_level_changed.emit(lvl)
+	GameEvents.player_xp_changed.emit(xp, needed)
+	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+
+func get_level() -> int:
+	return int(run.get("level", 1))
+
+func get_upgrade_tokens() -> int:
+	return int(run.get("upgrade_tokens", 0))
+
+func consume_upgrade_token() -> bool:
+	var t := int(run.get("upgrade_tokens", 0))
+	if t <= 0:
+		return false
+	run["upgrade_tokens"] = t - 1
+	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	return true
+
+func _apply_enemy_difficulty_to_arena() -> void:
+	# Hook opzionale: se Arena ha un metodo, passiamo livello per scalare stats nemici
+	if _arena == null:
+		_arena = get_node_or_null(arena_path)
+	if _arena != null and _arena.has_method("set_difficulty_level"):
+		_arena.call("set_difficulty_level", int(run.get("level", 1)))
 
 func _resolve_player() -> Node:
 	if _player and is_instance_valid(_player) and _player.is_inside_tree():
@@ -467,6 +549,8 @@ func get_upgrade_offer() -> Dictionary:
 	# Cost scaling opzionale: costo cresce in base al numero di acquisti per tipo.
 	var upgrades: Dictionary = run.get("upgrades", {})
 	var coins: int = int(run.get("coins", 0))
+	var tokens: int = int(run.get("upgrade_tokens", 0))
+	var has_token := tokens > 0
 
 	# Numero acquisti stimato per tipo = bonus_totale / bonus_base (se bonus_base > 0).
 	# (È sufficiente per scaling economico senza dover salvare contatori separati.)
@@ -500,48 +584,62 @@ func get_upgrade_offer() -> Dictionary:
 			"add": int(upgrade_hp_bonus),
 			"next_total": int(upgrades.get("hp_bonus", 0)) + int(upgrade_hp_bonus),
 			"cost": hp_cost,
-			"affordable": coins >= hp_cost,
+			"affordable": coins >= hp_cost or has_token,
 		},
 		"light": {
 			"current_total": int(upgrades.get("light_bonus", 0)),
 			"add": int(upgrade_light_bonus),
 			"next_total": int(upgrades.get("light_bonus", 0)) + int(upgrade_light_bonus),
 			"cost": light_cost,
-			"affordable": coins >= light_cost,
+			"affordable": coins >= light_cost or has_token,
 		},
 		"heavy": {
 			"current_total": int(upgrades.get("heavy_bonus", 0)),
 			"add": int(upgrade_heavy_bonus),
 			"next_total": int(upgrades.get("heavy_bonus", 0)) + int(upgrade_heavy_bonus),
 			"cost": heavy_cost,
-			"affordable": coins >= heavy_cost,
+			"affordable": coins >= heavy_cost or has_token,
 		},
 	}
 
 func purchase_upgrade(upgrade_type: String) -> bool:
 	var upgrades: Dictionary = run.get("upgrades", {})
+	var used_token := false
+	var tokens := int(run.get("upgrade_tokens", 0))
 	match upgrade_type:
 		"hp":
 			# usa costo scalato se abilitato
 			var offer := get_upgrade_offer()
 			var cost := int(offer.get("hp", {}).get("cost", upgrade_hp_cost))
-			if not spend_coins(cost):
+			if tokens > 0 and cost > 0:
+				used_token = true
+				tokens -= 1
+			if not used_token and not spend_coins(cost):
 				return false
 			upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + upgrade_hp_bonus
 		"light":
 			var offer := get_upgrade_offer()
 			var cost := int(offer.get("light", {}).get("cost", upgrade_light_cost))
-			if not spend_coins(cost):
+			if tokens > 0 and cost > 0:
+				used_token = true
+				tokens -= 1
+			if not used_token and not spend_coins(cost):
 				return false
 			upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + upgrade_light_bonus
 		"heavy":
 			var offer := get_upgrade_offer()
 			var cost := int(offer.get("heavy", {}).get("cost", upgrade_heavy_cost))
-			if not spend_coins(cost):
+			if tokens > 0 and cost > 0:
+				used_token = true
+				tokens -= 1
+			if not used_token and not spend_coins(cost):
 				return false
 			upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + upgrade_heavy_bonus
 		_:
 			return false
+	if used_token:
+		run["upgrade_tokens"] = tokens
+		GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
 	run["upgrades"] = upgrades
 	_apply_run_upgrades_to_player()
 	return true

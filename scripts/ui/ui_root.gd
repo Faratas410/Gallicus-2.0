@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const FAST_SELECTION_SECONDS := 12
+const UPGRADE_FLASH_TIME := 0.10
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
@@ -9,6 +10,7 @@ const FAST_SELECTION_SECONDS := 12
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
 @onready var modal_dimmer: ColorRect = get_node_or_null("HUD/ModalDimmer") as ColorRect
 @onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
+@onready var upgrade_root: Control = get_node_or_null("HUD/UpgradePanel") as Control
 @onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
 @onready var upgrade_content_area: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea") as Control
 @onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox") as VBoxContainer
@@ -16,6 +18,9 @@ const FAST_SELECTION_SECONDS := 12
 @onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
 @onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
 @onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
+@onready var upgrade_hp_row: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow") as Control
+@onready var upgrade_light_row: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow") as Control
+@onready var upgrade_heavy_row: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow") as Control
 @onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPButton") as Button
 @onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightButton") as Button
 @onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyButton") as Button
@@ -63,6 +68,7 @@ func _ready() -> void:
 	GameEvents.bet_ui_closed.connect(_on_bet_ui_closed)
 	GameEvents.betting_opened.connect(_on_betting_opened)
 	GameEvents.countdown_requested.connect(_on_countdown_requested)
+	GameEvents.coins_changed.connect(_on_ui_coins_refresh_upgrade)
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -111,6 +117,10 @@ func _ready() -> void:
 		_bind_player(p)
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
+
+func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
+	if upgrade_panel != null and upgrade_panel.visible:
+		_update_upgrade_costs()
 
 func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:
@@ -412,29 +422,81 @@ func _purchase_upgrade(upgrade_type: String) -> void:
 	var manager := _get_run_manager()
 	if manager == null or not manager.has_method("purchase_upgrade"):
 		return
-	manager.purchase_upgrade(upgrade_type)
+	# Safety: se bottone disabilitato non dovrebbe arrivare qui, ma teniamo fallback.
+	var ok := bool(manager.purchase_upgrade(upgrade_type))
+	if not ok:
+		_flash_upgrade_row(upgrade_type)
+		_update_upgrade_costs()
+		return
 	_update_upgrade_costs()
+
+func _flash_upgrade_row(upgrade_type: String) -> void:
+	var row: Control = null
+	match upgrade_type:
+		"hp": row = upgrade_hp_row
+		"light": row = upgrade_light_row
+		"heavy": row = upgrade_heavy_row
+		_: row = null
+	if row == null:
+		return
+	var base := row.modulate
+	row.modulate = Color(1, 0.35, 0.35, 1)
+	await get_tree().create_timer(UPGRADE_FLASH_TIME).timeout
+	if row != null and is_instance_valid(row):
+		row.modulate = base
 
 func _update_upgrade_costs() -> void:
 	var manager := _get_run_manager()
 	if manager == null or not manager.has_method("get_upgrade_config"):
 		return
+	# Preferisci l'API "offer" (UI-ready). Fallback su config vecchio se non presente.
+	if manager.has_method("get_upgrade_offer"):
+		var offer: Dictionary = manager.get_upgrade_offer()
+		var coins: int = int(offer.get("coins", 0))
+		if upgrade_coins_label != null:
+			upgrade_coins_label.text = "Coins: %d" % coins
+
+		var hp: Dictionary = offer.get("hp", {})
+		var light: Dictionary = offer.get("light", {})
+		var heavy: Dictionary = offer.get("heavy", {})
+
+		if upgrade_hp_label != null:
+			upgrade_hp_label.text = "HP +%d → +%d (Cost: %d)" % [
+				int(hp.get("current_total", 0)),
+				int(hp.get("next_total", 0)),
+				int(hp.get("cost", 0)),
+			]
+		if upgrade_light_label != null:
+			upgrade_light_label.text = "LIGHT +%d → +%d (Cost: %d)" % [
+				int(light.get("current_total", 0)),
+				int(light.get("next_total", 0)),
+				int(light.get("cost", 0)),
+			]
+		if upgrade_heavy_label != null:
+			upgrade_heavy_label.text = "HEAVY +%d → +%d (Cost: %d)" % [
+				int(heavy.get("current_total", 0)),
+				int(heavy.get("next_total", 0)),
+				int(heavy.get("cost", 0)),
+			]
+
+		if upgrade_hp_button != null:
+			upgrade_hp_button.disabled = not bool(hp.get("affordable", false))
+		if upgrade_light_button != null:
+			upgrade_light_button.disabled = not bool(light.get("affordable", false))
+		if upgrade_heavy_button != null:
+			upgrade_heavy_button.disabled = not bool(heavy.get("affordable", false))
+		return
+
+	# Fallback legacy
 	var config: Dictionary = manager.get_upgrade_config()
 	if upgrade_hp_label != null:
-		upgrade_hp_label.text = "HP +%d (Cost: %d)" % [
-			int(config.get("hp_bonus", 0)),
-			int(config.get("hp_cost", 0))
-		]
+		upgrade_hp_label.text = "HP +%d (Cost: %d)" % [int(config.get("hp_bonus", 0)), int(config.get("hp_cost", 0))]
 	if upgrade_light_label != null:
-		upgrade_light_label.text = "LIGHT +%d (Cost: %d)" % [
-			int(config.get("light_bonus", 0)),
-			int(config.get("light_cost", 0))
-		]
+		upgrade_light_label.text = "LIGHT +%d (Cost: %d)" % [int(config.get("light_bonus", 0)), int(config.get("light_cost", 0))]
 	if upgrade_heavy_label != null:
-		upgrade_heavy_label.text = "HEAVY +%d (Cost: %d)" % [
-			int(config.get("heavy_bonus", 0)),
-			int(config.get("heavy_cost", 0))
-		]
+		upgrade_heavy_label.text = "HEAVY +%d (Cost: %d)" % [int(config.get("heavy_bonus", 0)), int(config.get("heavy_cost", 0))]
+
+	# Se non abbiamo offer, non sappiamo affordability (manteniamo abilitati)
 
 func _place_bet(bet_id: String) -> void:
 	var manager := _get_bet_manager()

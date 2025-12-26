@@ -10,15 +10,16 @@ const FAST_SELECTION_SECONDS := 12
 @onready var modal_dimmer: ColorRect = get_node_or_null("HUD/ModalDimmer") as ColorRect
 @onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
 @onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
-@onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeVBox") as VBoxContainer
-@onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeCoinsLabel") as Label
-@onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
-@onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
-@onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
-@onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPButton") as Button
-@onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightButton") as Button
-@onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyButton") as Button
-@onready var upgrade_continue_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeVBox/UpgradeContinueButton") as Button
+@onready var upgrade_content_area: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea") as Control
+@onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox") as VBoxContainer
+@onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeCoinsLabel") as Label
+@onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
+@onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
+@onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
+@onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPButton") as Button
+@onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightButton") as Button
+@onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyButton") as Button
+@onready var upgrade_continue_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeContinueButton") as Button
 @onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
 @onready var bet_no_hit_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
@@ -129,7 +130,15 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
-	_reset_fast_countdown()
+	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
+	# countdown_requested will drive the actual seconds during the round.
+	if not _fast_countdown_active:
+		_reset_fast_countdown()
+	else:
+		if fast_countdown_label != null:
+			fast_countdown_label.visible = true
+			fast_countdown_label.text = "FAST: %ds" % FAST_SELECTION_SECONDS
+			fast_countdown_label.modulate.a = 1.0
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
@@ -138,7 +147,8 @@ func _on_run_started() -> void:
 		game_over_panel.visible = false
 	if next_bet_button != null:
 		next_bet_button.visible = true
-	_reset_fast_countdown()
+	if not _fast_countdown_active:
+		_reset_fast_countdown()
 
 func _on_run_failed() -> void:
 	if bet_info_label != null:
@@ -171,6 +181,7 @@ func _on_betting_opened() -> void:
 		_show_upgrade_panel()
 
 func _on_countdown_requested(seconds: int) -> void:
+	# FAST countdown must be visible during the round ONLY if the player selected FAST.
 	if _fast_countdown_active:
 		_handle_fast_countdown(min(seconds, FAST_SELECTION_SECONDS))
 		return
@@ -221,7 +232,10 @@ func _on_bet_ui_opened(bets: Array) -> void:
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
-	_reset_fast_countdown()
+	# If FAST was selected, keep the FAST countdown state for the round.
+	# The label is driven by countdown_requested during the round.
+	if not _fast_countdown_active:
+		_reset_fast_countdown()
 	get_viewport().gui_release_focus()
 
 func _on_restart_pressed() -> void:
@@ -429,9 +443,11 @@ func _place_bet(bet_id: String) -> void:
 	_selected_bet_id = bet_id
 	if bet_id == "FAST":
 		_fast_countdown_active = true
+		# Show immediately (so the player understands the rule), then it will keep updating during the round.
 		if fast_countdown_label != null:
 			fast_countdown_label.visible = true
 			fast_countdown_label.text = "FAST: %ds" % FAST_SELECTION_SECONDS
+			fast_countdown_label.modulate.a = 1.0
 	else:
 		_reset_fast_countdown()
 	var stake := int(stake_input.value)
@@ -469,6 +485,33 @@ func _center_upgrade_panel_to_texture() -> void:
 	upgrade_panel.offset_top = -half.y
 	upgrade_panel.offset_right = half.x
 	upgrade_panel.offset_bottom = half.y
+
+	# Keep the interactive widgets INSIDE the painted "box" area of the background.
+	# Use ratios so it scales with resolution/viewport.
+	if upgrade_content_area != null:
+		# These ratios are tuned for ui_upgrade_panel_gallicus.png:
+		# content box starts below the rooster and ends above the bottom frame.
+		var left_r := 0.14
+		var right_r := 0.86
+		var top_r := 0.33
+		var bottom_r := 0.92
+
+		var px_left := int(size.x * left_r)
+		var px_right := int(size.x * right_r)
+		var px_top := int(size.y * top_r)
+		var px_bottom := int(size.y * bottom_r)
+
+		upgrade_content_area.anchor_left = 0.0
+		upgrade_content_area.anchor_top = 0.0
+		upgrade_content_area.anchor_right = 0.0
+		upgrade_content_area.anchor_bottom = 0.0
+		upgrade_content_area.offset_left = px_left
+		upgrade_content_area.offset_top = px_top
+		upgrade_content_area.offset_right = px_right
+		upgrade_content_area.offset_bottom = px_bottom
+
+		if upgrade_vbox != null:
+			upgrade_vbox.queue_sort()
 
 func _set_upgrade_modal(active: bool) -> void:
 	if modal_dimmer != null:

@@ -12,6 +12,7 @@ extends Node
 @export var upgrade_light_cost: int = 25
 @export var upgrade_heavy_bonus: int = 1
 @export var upgrade_heavy_cost: int = 35
+@export var upgrade_cost_scaling_per_level: float = 0.0 # 0.0 = costi fissi (default). Es: 0.25 = +25% per livello acquistato.
 
 enum RunPhase { PREP, LIVE, GAME_OVER }
 
@@ -461,19 +462,82 @@ func get_upgrade_config() -> Dictionary:
 		"heavy_cost": upgrade_heavy_cost,
 	}
 
+func get_upgrade_offer() -> Dictionary:
+	# Ritorna dati "UI-ready" per mostrare preview e disabilitare BUY.
+	# Cost scaling opzionale: costo cresce in base al numero di acquisti per tipo.
+	var upgrades: Dictionary = run.get("upgrades", {})
+	var coins: int = int(run.get("coins", 0))
+
+	# Numero acquisti stimato per tipo = bonus_totale / bonus_base (se bonus_base > 0).
+	# (È sufficiente per scaling economico senza dover salvare contatori separati.)
+	var hp_levels := 0
+	var light_levels := 0
+	var heavy_levels := 0
+	if upgrade_hp_bonus > 0:
+		hp_levels = int(upgrades.get("hp_bonus", 0)) / int(upgrade_hp_bonus)
+	if upgrade_light_bonus > 0:
+		light_levels = int(upgrades.get("light_bonus", 0)) / int(upgrade_light_bonus)
+	if upgrade_heavy_bonus > 0:
+		heavy_levels = int(upgrades.get("heavy_bonus", 0)) / int(upgrade_heavy_bonus)
+
+	func scaled_cost(base_cost: int, level: int) -> int:
+		if base_cost <= 0:
+			return 0
+		if upgrade_cost_scaling_per_level <= 0.0:
+			return base_cost
+		# Esempio: level=0 => base, level=1 => base*(1+scale), level=2 => base*(1+2*scale)...
+		var mult := 1.0 + (float(level) * upgrade_cost_scaling_per_level)
+		return int(round(float(base_cost) * mult))
+
+	var hp_cost := scaled_cost(upgrade_hp_cost, hp_levels)
+	var light_cost := scaled_cost(upgrade_light_cost, light_levels)
+	var heavy_cost := scaled_cost(upgrade_heavy_cost, heavy_levels)
+
+	return {
+		"coins": coins,
+		"hp": {
+			"current_total": int(upgrades.get("hp_bonus", 0)),
+			"add": int(upgrade_hp_bonus),
+			"next_total": int(upgrades.get("hp_bonus", 0)) + int(upgrade_hp_bonus),
+			"cost": hp_cost,
+			"affordable": coins >= hp_cost,
+		},
+		"light": {
+			"current_total": int(upgrades.get("light_bonus", 0)),
+			"add": int(upgrade_light_bonus),
+			"next_total": int(upgrades.get("light_bonus", 0)) + int(upgrade_light_bonus),
+			"cost": light_cost,
+			"affordable": coins >= light_cost,
+		},
+		"heavy": {
+			"current_total": int(upgrades.get("heavy_bonus", 0)),
+			"add": int(upgrade_heavy_bonus),
+			"next_total": int(upgrades.get("heavy_bonus", 0)) + int(upgrade_heavy_bonus),
+			"cost": heavy_cost,
+			"affordable": coins >= heavy_cost,
+		},
+	}
+
 func purchase_upgrade(upgrade_type: String) -> bool:
 	var upgrades: Dictionary = run.get("upgrades", {})
 	match upgrade_type:
 		"hp":
-			if not spend_coins(upgrade_hp_cost):
+			# usa costo scalato se abilitato
+			var offer := get_upgrade_offer()
+			var cost := int(offer.get("hp", {}).get("cost", upgrade_hp_cost))
+			if not spend_coins(cost):
 				return false
 			upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + upgrade_hp_bonus
 		"light":
-			if not spend_coins(upgrade_light_cost):
+			var offer := get_upgrade_offer()
+			var cost := int(offer.get("light", {}).get("cost", upgrade_light_cost))
+			if not spend_coins(cost):
 				return false
 			upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + upgrade_light_bonus
 		"heavy":
-			if not spend_coins(upgrade_heavy_cost):
+			var offer := get_upgrade_offer()
+			var cost := int(offer.get("heavy", {}).get("cost", upgrade_heavy_cost))
+			if not spend_coins(cost):
 				return false
 			upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + upgrade_heavy_bonus
 		_:

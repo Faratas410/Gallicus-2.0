@@ -157,7 +157,40 @@ text = "FAST"
 [node name="BuyTokenButton" type="Button" parent="HUD/BetPanel/BetVBox"]
 custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
-text = "BUY TOKEN (100c)"
+text = "BUY TOKEN (100 COINS)"
+
+[node name="LevelUpPopup" type="Panel" parent="HUD"]
+visible = false
+z_index = 120
+mouse_filter = 2
+anchor_left = 0.5
+anchor_top = 0.25
+anchor_right = 0.5
+anchor_bottom = 0.25
+offset_left = -200.0
+offset_top = -40.0
+offset_right = 200.0
+offset_bottom = 40.0
+clip_contents = true
+custom_minimum_size = Vector2(400, 80)
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="PopupVBox" type="VBoxContainer" parent="HUD/LevelUpPopup"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = -12.0
+offset_bottom = -10.0
+
+[node name="PopupTitle" type="Label" parent="HUD/LevelUpPopup/PopupVBox"]
+horizontal_alignment = 1
+text = "LEVEL UP!"
+
+[node name="PopupBody" type="Label" parent="HUD/LevelUpPopup/PopupVBox"]
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "+1 TOKEN"
 
 [node name="GameOverPanel" type="Panel" parent="HUD"]
 visible = false

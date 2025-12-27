@@ -4,7 +4,8 @@ const FAST_SELECTION_SECONDS := 12
 const UPGRADE_FLASH_TIME := 0.10
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsLabel") as Label
-@onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelLabel") as Label
+@onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelRow/LevelLabel") as Label
+@onready var xp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/XPBar") as ProgressBar
 @onready var xp_label: Label = get_node_or_null("HUD/Panel/VBox/XPLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensLabel") as Label
 @onready var buy_token_button: Button = get_node_or_null("HUD/Panel/VBox/BuyTokenButton") as Button
@@ -61,6 +62,10 @@ var _controls_hint_was_visible: bool = false
 var _countdown_was_visible: bool = false
 var _fast_countdown_was_visible: bool = false
 var _fast_blink_was_running: bool = false
+var _xp_current: int = 0
+var _xp_to_next: int = 5
+var _level: int = 1
+var _tokens: int = 0
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -82,6 +87,7 @@ func _ready() -> void:
 	GameEvents.upgrade_tokens_changed.connect(_on_upgrade_tokens_changed)
 	GameEvents.tokens_changed.connect(_on_tokens_changed)
 	_ensure_token_icons()
+	_refresh_progression_ui()
 
 	if buy_token_button != null:
 		buy_token_button.pressed.connect(_on_buy_token_pressed)
@@ -140,24 +146,35 @@ func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
 		_update_upgrade_costs()
 
 func _on_player_level_changed(level: int) -> void:
-	if level_label != null:
-		level_label.text = "LV: %d" % level
+	_level = max(level, 1)
+	_refresh_progression_ui()
 
 func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
-	if xp_label != null:
-		var denom := max(xp_to_next, 1)
-		xp_label.text = "XP: %d/%d" % [xp, denom]
+	_xp_current = max(xp, 0)
+	_xp_to_next = max(xp_to_next, 1)
+	_refresh_progression_ui()
 
 func _on_upgrade_tokens_changed(tokens: int) -> void:
 	_on_tokens_changed(tokens)
 
 func _on_tokens_changed(tokens: int) -> void:
-	if tokens_label != null:
-		tokens_label.text = "TOKENS: %d" % tokens
+	_tokens = max(tokens, 0)
+	_refresh_progression_ui()
 	if upgrade_tokens_label != null:
 		upgrade_tokens_label.text = "Tokens: %d" % tokens
 	if upgrade_panel != null and upgrade_panel.visible:
 		_update_upgrade_costs()
+
+func _refresh_progression_ui() -> void:
+	if level_label != null:
+		level_label.text = "Level: %d" % _level
+	if tokens_label != null:
+		tokens_label.text = "Tokens: %d" % _tokens
+	if xp_bar != null:
+		xp_bar.max_value = float(_xp_to_next)
+		xp_bar.value = float(_xp_current)
+	if xp_label != null:
+		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
 
 func _refresh_buy_token_button() -> void:
 	if buy_token_button == null:

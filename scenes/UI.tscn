@@ -4,8 +4,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/ui_upgrade_panel_gallicus.png" id="2"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_panel_96x64.png" id="4"]
-[ext_resource type="Texture2D" path="res://icon_coin_16.png" id="5"]
-[ext_resource type="Texture2D" path="res://icon_token_16.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/icon_coin_16.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/icon_token_16.png" id="6"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
 texture_margin_left = 12.0
@@ -34,10 +34,10 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 offset_left = 16.0
 offset_top = 16.0
-offset_right = 320.0
-offset_bottom = 180.0
+offset_right = 360.0
+offset_bottom = 188.0
 clip_contents = true
-custom_minimum_size = Vector2(280, 180)
+custom_minimum_size = Vector2(320, 172)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="VBox" type="VBoxContainer" parent="HUD/Panel"]
@@ -52,35 +52,44 @@ offset_bottom = -12.0
 size_flags_horizontal = 3
 
 [node name="CoinsIcon" type="TextureRect" parent="HUD/Panel/VBox/CoinsRow"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("5")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="CoinsLabel" type="Label" parent="HUD/Panel/VBox/CoinsRow"]
 size_flags_horizontal = 3
-autowrap_mode = 2
 text = "Coins: 0"
-
-[node name="LevelLabel" type="Label" parent="HUD/Panel/VBox"]
-autowrap_mode = 2
-text = "LV: 1"
-
-[node name="XPLabel" type="Label" parent="HUD/Panel/VBox"]
-autowrap_mode = 2
-text = "XP: 0/5"
 
 [node name="TokensRow" type="HBoxContainer" parent="HUD/Panel/VBox"]
 size_flags_horizontal = 3
 
 [node name="TokensIcon" type="TextureRect" parent="HUD/Panel/VBox/TokensRow"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("6")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="TokensLabel" type="Label" parent="HUD/Panel/VBox/TokensRow"]
 size_flags_horizontal = 3
+text = "Tokens: 0"
+
+[node name="LevelRow" type="HBoxContainer" parent="HUD/Panel/VBox"]
+size_flags_horizontal = 3
+
+[node name="LevelLabel" type="Label" parent="HUD/Panel/VBox/LevelRow"]
+size_flags_horizontal = 3
+text = "Level: 1"
+
+[node name="XPBar" type="ProgressBar" parent="HUD/Panel/VBox"]
+custom_minimum_size = Vector2(260, 14)
+min_value = 0.0
+max_value = 5.0
+value = 0.0
+
+[node name="XPLabel" type="Label" parent="HUD/Panel/VBox"]
 autowrap_mode = 2
-text = "TOKENS: 0"
+text = "XP: 0/5"
 
 [node name="BuyTokenButton" type="Button" parent="HUD/Panel/VBox"]
 text = "BUY TOKEN (100)"

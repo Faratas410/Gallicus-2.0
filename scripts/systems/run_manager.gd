@@ -56,7 +56,7 @@ var _waiting_for_bet: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _is_game_over: bool = false
-var phase: RunPhase = RunPhase.PREP
+var phase: int = RunPhase.PREP
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
 var _show_shop_next_bet: bool = false
@@ -417,7 +417,7 @@ func _on_enemy_killed(exp: int) -> void:
 
 func _xp_needed_for_next(level: int) -> int:
 	# level parte da 1. Per passare a level+1 usiamo exp_curve[level-1] se esiste.
-	var idx := max(level - 1, 0)
+	var idx: int = maxi(level - 1, 0)
 	if idx < exp_curve.size():
 		return int(exp_curve[idx])
 	# tail lineare
@@ -712,7 +712,7 @@ func consume_upgrade_shop() -> void:
 func is_live() -> bool:
 	return phase == RunPhase.LIVE
 
-func set_phase(p: RunPhase) -> void:
+func set_phase(p: int) -> void:
 	phase = p
 	GameEvents.run_phase_changed.emit(int(phase))
 	_apply_phase()

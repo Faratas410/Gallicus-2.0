@@ -220,7 +220,7 @@ func _schedule_enemy_aggro_after_delay() -> void:
 	if delay <= 0.0:
 		_apply_enemy_targets_if_possible(my_id)
 		return
-	_call_deferred("_apply_enemy_targets_deferred", my_id, delay)
+	call_deferred("_apply_enemy_targets_deferred", my_id, delay)
 
 func _apply_enemy_targets_deferred(my_id: int, delay: float) -> void:
 	await get_tree().create_timer(delay).timeout

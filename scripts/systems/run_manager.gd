@@ -79,9 +79,15 @@ func _boot() -> void:
 	_connect_player_signals()
 	_bet_manager = get_node_or_null("BetManager")
 	if _arena:
-		_arena.connect("wave_started", Callable(self, "_on_wave_started"))
-		_arena.connect("wave_cleared", Callable(self, "_on_wave_cleared"))
-		_arena.connect("player_spawned", Callable(self, "_on_player_spawned"))
+		var wave_started_callable := Callable(self, "_on_wave_started")
+		if _arena.has_signal("wave_started") and not _arena.wave_started.is_connected(wave_started_callable):
+			_arena.wave_started.connect(wave_started_callable)
+		var wave_cleared_callable := Callable(self, "_on_wave_cleared")
+		if _arena.has_signal("wave_cleared") and not _arena.wave_cleared.is_connected(wave_cleared_callable):
+			_arena.wave_cleared.connect(wave_cleared_callable)
+		var player_spawned_callable := Callable(self, "_on_player_spawned")
+		if _arena.has_signal("player_spawned") and not _arena.player_spawned.is_connected(player_spawned_callable):
+			_arena.player_spawned.connect(player_spawned_callable)
 	print("Boot: arena=", _arena, " player=", _player)
 	print("Player in tree:", _player != null and _player.is_inside_tree())
 	print("Starting new run")
@@ -303,22 +309,22 @@ func _ensure_input_map() -> void:
 func _start_next_arena() -> void:
 	if _arena == null or _is_game_over:
 		return
-	run.arena_index += 1
+	run["arena_index"] = int(run.get("arena_index", 0)) + 1
 	_arena.call("start_next_wave")
 
 func add_coins(amount: int) -> void:
 	if amount <= 0:
 		return
-	run.coins += amount
-	GameEvents.coins_changed.emit(run.coins)
+	run["coins"] = int(run.get("coins", 0)) + amount
+	GameEvents.coins_changed.emit(int(run.get("coins", 0)))
 
 func spend_coins(amount: int) -> bool:
 	if amount <= 0:
 		return false
-	if run.coins < amount:
+	if int(run.get("coins", 0)) < amount:
 		return false
-	run.coins -= amount
-	GameEvents.coins_changed.emit(run.coins)
+	run["coins"] = int(run.get("coins", 0)) - amount
+	GameEvents.coins_changed.emit(int(run.get("coins", 0)))
 	return true
 
 func get_coins() -> int:
@@ -371,7 +377,7 @@ func _on_betting_opened() -> void:
 	_force_game_over_if_dead()
 
 func _on_wave_started(_wave: int) -> void:
-	GameEvents.arena_started.emit(run.arena_index)
+	GameEvents.arena_started.emit(int(run.get("arena_index", 0)))
 	if _bet_manager and _bet_manager.has_method("register_arena_start"):
 		_bet_manager.register_arena_start()
 	# la difficoltà dei nemici può dipendere dal livello
@@ -379,7 +385,7 @@ func _on_wave_started(_wave: int) -> void:
 	_apply_phase()
 
 func _on_wave_cleared(_wave: int) -> void:
-	GameEvents.arena_completed.emit(run.arena_index)
+	GameEvents.arena_completed.emit(int(run.get("arena_index", 0)))
 	if _bet_manager and _bet_manager.has_method("resolve_bet"):
 		_bet_manager.resolve_bet()
 	if arena_clear_reward > 0:
@@ -525,8 +531,8 @@ func _connect_player_signals() -> void:
 	if _player == null:
 		return
 	var died_callable := Callable(self, "_on_player_died")
-	if _player.has_signal("died") and not _player.is_connected("died", died_callable):
-		_player.connect("died", died_callable)
+	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
+		_player.died.connect(died_callable)
 
 func _on_run_failed() -> void:
 	if _run_failed_emitted:
@@ -544,7 +550,7 @@ func _soft_reset() -> void:
 		_arena.call("soft_reset")
 	if _bet_manager and _bet_manager.has_method("reset_bet_state"):
 		_bet_manager.reset_bet_state()
-	run.arena_index = 0
+	run["arena_index"] = 0
 	_player = _resolve_player()
 	_open_bet_ui(false)
 
@@ -569,7 +575,7 @@ func retry_current_bet() -> void:
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	GameEvents.set_gameplay_enabled(false)
-	run.arena_index = max(int(run.get("arena_index", 0)) - 1, 0)
+	run["arena_index"] = max(int(run.get("arena_index", 0)) - 1, 0)
 	if _arena and _arena.has_method("soft_reset"):
 		_arena.call("soft_reset")
 	_clear_enemies()

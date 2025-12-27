@@ -79,12 +79,12 @@ func _apply_bounds() -> void:
 	global_position.x = clampf(global_position.x, -half.x + margin, half.x - margin)
 	global_position.y = clampf(global_position.y, -half.y + margin, half.y - margin)
 
-func _try_attack(damage: int, range: float, cooldown: float, cone_angle_deg: float) -> void:
+func _try_attack(damage: int, attack_range: float, cooldown: float, cone_angle_deg: float) -> void:
 	if _attack_timer > 0.0:
 		return
 	_attack_timer = cooldown
 	_play_sword_swing()
-	_perform_attack(damage, range, cone_angle_deg)
+	_perform_attack(damage, attack_range, cone_angle_deg)
 
 func _dir_to_cardinal(dir: Vector2) -> Vector2:
 	if absf(dir.x) > absf(dir.y):
@@ -166,7 +166,7 @@ func _play_sword_swing() -> void:
 		_update_sword_idle_pose()
 	)
 
-func _perform_attack(damage: int, range: float, cone_angle_deg: float) -> void:
+func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) -> void:
 	var aim := _last_aim_dir
 	if aim.length_squared() < 0.0001:
 		aim = Vector2.UP
@@ -180,7 +180,7 @@ func _perform_attack(damage: int, range: float, cone_angle_deg: float) -> void:
 		var enemy_node := enemy as Node2D
 		var to_enemy: Vector2 = enemy_node.global_position - global_position
 		var dist: float = to_enemy.length()
-		if dist > range or dist <= 0.001:
+		if dist > attack_range or dist <= 0.001:
 			continue
 
 		var dir := to_enemy / dist

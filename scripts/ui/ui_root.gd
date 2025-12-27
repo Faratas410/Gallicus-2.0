@@ -7,6 +7,7 @@ const UPGRADE_FLASH_TIME := 0.10
 @onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelLabel") as Label
 @onready var xp_label: Label = get_node_or_null("HUD/Panel/VBox/XPLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensLabel") as Label
+@onready var buy_token_button: Button = get_node_or_null("HUD/Panel/VBox/BuyTokenButton") as Button
 @onready var coins_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsIcon") as TextureRect
 @onready var tokens_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensIcon") as TextureRect
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
@@ -19,9 +20,7 @@ const UPGRADE_FLASH_TIME := 0.10
 @onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
 @onready var upgrade_content_area: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea") as Control
 @onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox") as VBoxContainer
-@onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeCoinsLabel") as Label
-@onready var upgrade_tokens_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow/UpgradeTokensLabel") as Label
-@onready var upgrade_tokens_icon: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow/UpgradeTokensIcon") as TextureRect
+@onready var upgrade_tokens_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeCoinsLabel") as Label
 @onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
 @onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
 @onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
@@ -78,9 +77,15 @@ func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_ui_coins_refresh_upgrade)
 	GameEvents.player_level_changed.connect(_on_player_level_changed)
 	GameEvents.player_xp_changed.connect(_on_player_xp_changed)
+	GameEvents.level_changed.connect(_on_player_level_changed)
+	GameEvents.xp_changed.connect(_on_player_xp_changed)
 	GameEvents.upgrade_tokens_changed.connect(_on_upgrade_tokens_changed)
 	GameEvents.tokens_changed.connect(_on_tokens_changed)
 	_ensure_token_icons()
+
+	if buy_token_button != null:
+		buy_token_button.pressed.connect(_on_buy_token_pressed)
+		_refresh_buy_token_button()
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -151,14 +156,30 @@ func _on_tokens_changed(tokens: int) -> void:
 		tokens_label.text = "TOKENS: %d" % tokens
 	if upgrade_tokens_label != null:
 		upgrade_tokens_label.text = "Tokens: %d" % tokens
+	if upgrade_panel != null and upgrade_panel.visible:
+		_update_upgrade_costs()
+
+func _refresh_buy_token_button() -> void:
+	if buy_token_button == null:
+		return
+	var manager := _get_run_manager()
+	if manager == null:
+		return
+	var cost := int(manager.get("token_purchase_cost_coins"))
+	if cost > 0:
+		buy_token_button.text = "BUY TOKEN (%d)" % cost
+
+func _on_buy_token_pressed() -> void:
+	var manager := _get_run_manager()
+	if manager == null or not manager.has_method("purchase_token"):
+		return
+	manager.purchase_token()
 
 func _ensure_token_icons() -> void:
 	if coins_icon != null and coins_icon.texture == null:
 		coins_icon.texture = _make_solid_icon(Color(1.0, 0.85, 0.25, 1.0))
 	if tokens_icon != null and tokens_icon.texture == null:
 		tokens_icon.texture = _make_solid_icon(Color(0.55, 0.85, 1.0, 1.0))
-	if upgrade_tokens_icon != null and upgrade_tokens_icon.texture == null:
-		upgrade_tokens_icon.texture = _make_solid_icon(Color(0.55, 0.85, 1.0, 1.0))
 
 func _make_solid_icon(c: Color) -> Texture2D:
 	var image := Image.create(8, 8, false, Image.FORMAT_RGBA8)
@@ -189,6 +210,7 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	_refresh_buy_token_button()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
 	# countdown_requested will drive the actual seconds during the round.
 	if not _fast_countdown_active:
@@ -266,8 +288,6 @@ func _on_run_failed_controls() -> void:
 func _on_coins_changed(coins: int) -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: %d" % coins
-	if upgrade_coins_label != null:
-		upgrade_coins_label.text = "Coins: %d" % coins
 
 func _on_bet_placed(bet_id: String, stake: int, odds: float) -> void:
 	if bet_info_label != null:
@@ -501,28 +521,28 @@ func _update_upgrade_costs() -> void:
 	# Preferisci l'API "offer" (UI-ready). Fallback su config vecchio se non presente.
 	if manager.has_method("get_upgrade_offer"):
 		var offer: Dictionary = manager.get_upgrade_offer()
-		var coins: int = int(offer.get("coins", 0))
-		if upgrade_coins_label != null:
-			upgrade_coins_label.text = "Coins: %d" % coins
+		var tokens: int = int(offer.get("tokens", 0))
+		if upgrade_tokens_label != null:
+			upgrade_tokens_label.text = "Tokens: %d" % tokens
 
 		var hp: Dictionary = offer.get("hp", {})
 		var light: Dictionary = offer.get("light", {})
 		var heavy: Dictionary = offer.get("heavy", {})
 
 		if upgrade_hp_label != null:
-			upgrade_hp_label.text = "HP +%d → +%d (Cost: %d)" % [
+			upgrade_hp_label.text = "HP +%d → +%d (Cost: %dT)" % [
 				int(hp.get("current_total", 0)),
 				int(hp.get("next_total", 0)),
 				int(hp.get("cost", 0)),
 			]
 		if upgrade_light_label != null:
-			upgrade_light_label.text = "LIGHT +%d → +%d (Cost: %d)" % [
+			upgrade_light_label.text = "LIGHT +%d → +%d (Cost: %dT)" % [
 				int(light.get("current_total", 0)),
 				int(light.get("next_total", 0)),
 				int(light.get("cost", 0)),
 			]
 		if upgrade_heavy_label != null:
-			upgrade_heavy_label.text = "HEAVY +%d → +%d (Cost: %d)" % [
+			upgrade_heavy_label.text = "HEAVY +%d → +%d (Cost: %dT)" % [
 				int(heavy.get("current_total", 0)),
 				int(heavy.get("next_total", 0)),
 				int(heavy.get("cost", 0)),
@@ -539,11 +559,11 @@ func _update_upgrade_costs() -> void:
 	# Fallback legacy
 	var config: Dictionary = manager.get_upgrade_config()
 	if upgrade_hp_label != null:
-		upgrade_hp_label.text = "HP +%d (Cost: %d)" % [int(config.get("hp_bonus", 0)), int(config.get("hp_cost", 0))]
+		upgrade_hp_label.text = "HP +%d (Cost: %dT)" % [int(config.get("hp_bonus", 0)), int(config.get("hp_cost", 0))]
 	if upgrade_light_label != null:
-		upgrade_light_label.text = "LIGHT +%d (Cost: %d)" % [int(config.get("light_bonus", 0)), int(config.get("light_cost", 0))]
+		upgrade_light_label.text = "LIGHT +%d (Cost: %dT)" % [int(config.get("light_bonus", 0)), int(config.get("light_cost", 0))]
 	if upgrade_heavy_label != null:
-		upgrade_heavy_label.text = "HEAVY +%d (Cost: %d)" % [int(config.get("heavy_bonus", 0)), int(config.get("heavy_cost", 0))]
+		upgrade_heavy_label.text = "HEAVY +%d (Cost: %dT)" % [int(config.get("heavy_bonus", 0)), int(config.get("heavy_cost", 0))]
 
 	# Se non abbiamo offer, non sappiamo affordability (manteniamo abilitati)
 

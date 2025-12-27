@@ -20,12 +20,14 @@ extends Node
 @export var tier_multipliers: Array[float] = [1.00, 1.15, 1.35, 1.60, 1.90]
 
 @export var upgrade_hp_bonus: int = 20
-@export var upgrade_hp_cost: int = 30
 @export var upgrade_light_bonus: int = 1
-@export var upgrade_light_cost: int = 25
 @export var upgrade_heavy_bonus: int = 1
-@export var upgrade_heavy_cost: int = 35
-@export var upgrade_cost_scaling_per_level: float = 0.0 # 0.0 = costi fissi (default). Es: 0.25 = +25% per livello acquistato.
+
+# Upgrade shop ora usa TOKENS, con costo che cresce dopo ogni acquisto.
+@export var upgrade_hp_token_cost_start: int = 1
+@export var upgrade_light_token_cost_start: int = 1
+@export var upgrade_heavy_token_cost_start: int = 1
+@export var token_purchase_cost_coins: int = 100
 
 enum RunPhase { PREP, LIVE, GAME_OVER }
 
@@ -36,6 +38,11 @@ var run := {
 	"xp": 0,
 	"upgrade_tokens": 0,
 	"difficulty_tier": 0,
+	"upgrade_costs": {
+		"hp": 1,
+		"light": 1,
+		"heavy": 1,
+	},
 	"upgrades": {
 		"hp_bonus": 0,
 		"light_bonus": 0,
@@ -100,14 +107,11 @@ func start_new_run() -> void:
 
 	run["coins"] = starting_coins
 	_reset_upgrades()
+	_reset_upgrade_costs()
 	_has_started_run = true
 	run["arena_index"] = 0
 
-	# reset XP/level per run (puoi cambiare in "persistente" più avanti)
-	run["level"] = starting_level
-	run["xp"] = 0
-	run["upgrade_tokens"] = starting_tokens
-	_recompute_difficulty_tier(true)
+	_reset_progression()
 
 	GameEvents.run_started.emit()
 	GameEvents.set_gameplay_enabled(true)
@@ -315,6 +319,27 @@ func spend_coins(amount: int) -> bool:
 	GameEvents.coins_changed.emit(run.coins)
 	return true
 
+func spend_tokens(amount: int) -> bool:
+	if amount <= 0:
+		return true
+	if int(run.get("upgrade_tokens", 0)) < amount:
+		return false
+	run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) - amount
+	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	return true
+
+func purchase_token() -> bool:
+	# Compra 1 token pagando coins.
+	if token_purchase_cost_coins <= 0:
+		return false
+	if not spend_coins(token_purchase_cost_coins):
+		return false
+	run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + 1
+	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	return true
+
 func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	if not _waiting_for_bet:
 		return
@@ -396,6 +421,8 @@ func _emit_xp_level_ui() -> void:
 	var needed := _xp_needed_for_next(lvl)
 	GameEvents.player_level_changed.emit(lvl)
 	GameEvents.player_xp_changed.emit(xp, needed)
+	GameEvents.level_changed.emit(lvl)
+	GameEvents.xp_changed.emit(xp, needed)
 	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
 	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
 
@@ -576,112 +603,75 @@ func get_upgrade_state() -> Dictionary:
 	return run.get("upgrades", {})
 
 func get_upgrade_config() -> Dictionary:
+	var costs: Dictionary = run.get("upgrade_costs", {})
 	return {
 		"hp_bonus": upgrade_hp_bonus,
-		"hp_cost": upgrade_hp_cost,
+		"hp_cost": int(costs.get("hp", upgrade_hp_token_cost_start)),
 		"light_bonus": upgrade_light_bonus,
-		"light_cost": upgrade_light_cost,
+		"light_cost": int(costs.get("light", upgrade_light_token_cost_start)),
 		"heavy_bonus": upgrade_heavy_bonus,
-		"heavy_cost": upgrade_heavy_cost,
+		"heavy_cost": int(costs.get("heavy", upgrade_heavy_token_cost_start)),
 	}
 
 func get_upgrade_offer() -> Dictionary:
 	# Ritorna dati "UI-ready" per mostrare preview e disabilitare BUY.
-	# Cost scaling opzionale: costo cresce in base al numero di acquisti per tipo.
 	var upgrades: Dictionary = run.get("upgrades", {})
-	var coins: int = int(run.get("coins", 0))
 	var tokens: int = int(run.get("upgrade_tokens", 0))
-	var has_token := tokens > 0
-
-	# Numero acquisti stimato per tipo = bonus_totale / bonus_base (se bonus_base > 0).
-	# (È sufficiente per scaling economico senza dover salvare contatori separati.)
-	var hp_levels := 0
-	var light_levels := 0
-	var heavy_levels := 0
-	if upgrade_hp_bonus > 0:
-		hp_levels = int(upgrades.get("hp_bonus", 0)) / int(upgrade_hp_bonus)
-	if upgrade_light_bonus > 0:
-		light_levels = int(upgrades.get("light_bonus", 0)) / int(upgrade_light_bonus)
-	if upgrade_heavy_bonus > 0:
-		heavy_levels = int(upgrades.get("heavy_bonus", 0)) / int(upgrade_heavy_bonus)
-
-	func scaled_cost(base_cost: int, level: int) -> int:
-		if base_cost <= 0:
-			return 0
-		if upgrade_cost_scaling_per_level <= 0.0:
-			return base_cost
-		# Esempio: level=0 => base, level=1 => base*(1+scale), level=2 => base*(1+2*scale)...
-		var mult := 1.0 + (float(level) * upgrade_cost_scaling_per_level)
-		return int(round(float(base_cost) * mult))
-
-	var hp_cost := scaled_cost(upgrade_hp_cost, hp_levels)
-	var light_cost := scaled_cost(upgrade_light_cost, light_levels)
-	var heavy_cost := scaled_cost(upgrade_heavy_cost, heavy_levels)
+	var costs: Dictionary = run.get("upgrade_costs", {})
+	var hp_cost := int(costs.get("hp", upgrade_hp_token_cost_start))
+	var light_cost := int(costs.get("light", upgrade_light_token_cost_start))
+	var heavy_cost := int(costs.get("heavy", upgrade_heavy_token_cost_start))
 
 	return {
-		"coins": coins,
+		"tokens": tokens,
 		"hp": {
 			"current_total": int(upgrades.get("hp_bonus", 0)),
 			"add": int(upgrade_hp_bonus),
 			"next_total": int(upgrades.get("hp_bonus", 0)) + int(upgrade_hp_bonus),
 			"cost": hp_cost,
-			"affordable": coins >= hp_cost or has_token,
+			"affordable": tokens >= hp_cost,
 		},
 		"light": {
 			"current_total": int(upgrades.get("light_bonus", 0)),
 			"add": int(upgrade_light_bonus),
 			"next_total": int(upgrades.get("light_bonus", 0)) + int(upgrade_light_bonus),
 			"cost": light_cost,
-			"affordable": coins >= light_cost or has_token,
+			"affordable": tokens >= light_cost,
 		},
 		"heavy": {
 			"current_total": int(upgrades.get("heavy_bonus", 0)),
 			"add": int(upgrade_heavy_bonus),
 			"next_total": int(upgrades.get("heavy_bonus", 0)) + int(upgrade_heavy_bonus),
 			"cost": heavy_cost,
-			"affordable": coins >= heavy_cost or has_token,
+			"affordable": tokens >= heavy_cost,
 		},
 	}
 
 func purchase_upgrade(upgrade_type: String) -> bool:
 	var upgrades: Dictionary = run.get("upgrades", {})
-	var used_token := false
-	var tokens := int(run.get("upgrade_tokens", 0))
+	var costs: Dictionary = run.get("upgrade_costs", {})
 	match upgrade_type:
 		"hp":
-			# usa costo scalato se abilitato
-			var offer := get_upgrade_offer()
-			var cost := int(offer.get("hp", {}).get("cost", upgrade_hp_cost))
-			if tokens > 0 and cost > 0:
-				used_token = true
-				tokens -= 1
-			if not used_token and not spend_coins(cost):
+			var cost := int(costs.get("hp", upgrade_hp_token_cost_start))
+			if not spend_tokens(cost):
 				return false
 			upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + upgrade_hp_bonus
+			costs["hp"] = cost + 1
 		"light":
-			var offer := get_upgrade_offer()
-			var cost := int(offer.get("light", {}).get("cost", upgrade_light_cost))
-			if tokens > 0 and cost > 0:
-				used_token = true
-				tokens -= 1
-			if not used_token and not spend_coins(cost):
+			var cost := int(costs.get("light", upgrade_light_token_cost_start))
+			if not spend_tokens(cost):
 				return false
 			upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + upgrade_light_bonus
+			costs["light"] = cost + 1
 		"heavy":
-			var offer := get_upgrade_offer()
-			var cost := int(offer.get("heavy", {}).get("cost", upgrade_heavy_cost))
-			if tokens > 0 and cost > 0:
-				used_token = true
-				tokens -= 1
-			if not used_token and not spend_coins(cost):
+			var cost := int(costs.get("heavy", upgrade_heavy_token_cost_start))
+			if not spend_tokens(cost):
 				return false
 			upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + upgrade_heavy_bonus
+			costs["heavy"] = cost + 1
 		_:
 			return false
-	if used_token:
-		run["upgrade_tokens"] = tokens
-		GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-		GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	run["upgrade_costs"] = costs
 	run["upgrades"] = upgrades
 	_apply_run_upgrades_to_player()
 	return true
@@ -726,6 +716,20 @@ func _reset_upgrades() -> void:
 		"light_bonus": 0,
 		"heavy_bonus": 0,
 	}
+
+func _reset_upgrade_costs() -> void:
+	run["upgrade_costs"] = {
+		"hp": upgrade_hp_token_cost_start,
+		"light": upgrade_light_token_cost_start,
+		"heavy": upgrade_heavy_token_cost_start,
+	}
+
+func _reset_progression() -> void:
+	# reset XP/level per run (puoi cambiare in "persistente" più avanti)
+	run["level"] = starting_level
+	run["xp"] = 0
+	run["upgrade_tokens"] = starting_tokens
+	_recompute_difficulty_tier(true)
 
 func _apply_run_upgrades_to_player() -> void:
 	if _player == null:

@@ -57,7 +57,8 @@ func _ensure_placeholder_sprite() -> void:
 	sprite.scale = Vector2(28.0, 28.0)
 
 func _emit_exp_on_death() -> void:
-	GameEvents.enemy_killed.emit(exp_on_death)
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		GameEvents.enemy_killed.emit(exp_on_death)
 
 func _apply_tier_scaling_from_run_manager() -> void:
 	# Tier scaling "a scatti": the RunManager exposes get_difficulty_multiplier().

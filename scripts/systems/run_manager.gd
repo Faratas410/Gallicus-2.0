@@ -79,9 +79,9 @@ func _boot() -> void:
 	_connect_player_signals()
 	_bet_manager = get_node_or_null("BetManager")
 	if _arena:
-		_arena.connect("wave_started", _on_wave_started)
-		_arena.connect("wave_cleared", _on_wave_cleared)
-		_arena.connect("player_spawned", _on_player_spawned)
+		_arena.connect("wave_started", Callable(self, "_on_wave_started"))
+		_arena.connect("wave_cleared", Callable(self, "_on_wave_cleared"))
+		_arena.connect("player_spawned", Callable(self, "_on_player_spawned"))
 	print("Boot: arena=", _arena, " player=", _player)
 	print("Player in tree:", _player != null and _player.is_inside_tree())
 	print("Starting new run")
@@ -240,7 +240,9 @@ func _reset_or_respawn_player_full() -> void:
 	elif _arena and _player.get_parent() != _arena:
 		var player_node := _player
 		if player_node is Node:
-			var pos: Vector2 = (player_node as Node2D).global_position if player_node is Node2D else Vector2.ZERO
+			var pos := Vector2.ZERO
+			if player_node is Node2D:
+				pos = (player_node as Node2D).global_position
 			player_node.reparent(_arena)
 			if player_node is Node2D:
 				(player_node as Node2D).global_position = pos
@@ -396,7 +398,9 @@ func _on_enemy_killed(exp: int) -> void:
 		return
 	if phase != RunPhase.LIVE:
 		return
-	var gained := exp if exp > 0 else exp_per_enemy
+	var gained := exp_per_enemy
+	if exp > 0:
+		gained = exp
 	if gained <= 0:
 		return
 	run["xp"] = int(run.get("xp", 0)) + gained
@@ -411,7 +415,9 @@ func _xp_needed_for_next(level: int) -> int:
 	if idx < exp_curve.size():
 		return int(exp_curve[idx])
 	# tail lineare
-	var last := int(exp_curve[exp_curve.size() - 1]) if exp_curve.size() > 0 else 5
+	var last := 5
+	if exp_curve.size() > 0:
+		last = int(exp_curve[exp_curve.size() - 1])
 	var extra := (idx - max(exp_curve.size() - 1, 0)) * max(exp_curve_tail_step, 1)
 	return last + extra
 
@@ -786,19 +792,29 @@ func _log_runtime_state(tag: String) -> void:
 	var player_exists := player_node != null
 	var player_in_tree := player_exists and player_node.is_inside_tree()
 	var player_physics := player_exists and player_node.is_physics_processing()
-	var player_process_mode := player_node.process_mode if player_exists else -1
-	var player_pos := (player_node as Node2D).global_position if player_exists and player_node is Node2D else Vector2.ZERO
+	var player_process_mode := -1
+	if player_exists:
+		player_process_mode = player_node.process_mode
+	var player_pos := Vector2.ZERO
+	if player_exists and player_node is Node2D:
+		player_pos = (player_node as Node2D).global_position
 
 	var enemies := get_tree().get_nodes_in_group("enemies")
 	var enemies_count := enemies.size()
-	var sample_enemy: Node = enemies[0] if enemies_count > 0 else null
+	var sample_enemy: Node = null
+	if enemies_count > 0:
+		sample_enemy = enemies[0]
 	var enemy_physics := sample_enemy != null and sample_enemy.is_physics_processing()
-	var enemy_process_mode := sample_enemy.process_mode if sample_enemy != null else -1
+	var enemy_process_mode := -1
+	if sample_enemy != null:
+		enemy_process_mode = sample_enemy.process_mode
 
 	var cam := get_viewport().get_camera_2d()
 	var cam_exists := cam != null
 	var cam_current := cam_exists and cam.has_method("is_current") and cam.is_current()
-	var cam_pos := cam.global_position if cam_exists else Vector2.ZERO
+	var cam_pos := Vector2.ZERO
+	if cam_exists:
+		cam_pos = cam.global_position
 
 	print(
 		"[runtime:%s] paused=%s gameplay_enabled=%s player_in_tree=%s player_physics=%s player_process_mode=%s player_pos=%s enemies=%s enemy_physics=%s enemy_process_mode=%s cam_exists=%s cam_current=%s cam_pos=%s"

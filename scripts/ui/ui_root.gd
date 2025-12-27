@@ -2,21 +2,20 @@ extends CanvasLayer
 
 const FAST_SELECTION_SECONDS := 12
 const UPGRADE_FLASH_TIME := 0.10
-const LEVEL_UP_POPUP_TIME := 1.2
-const XP_SMOOTH_SPEED := 10.0
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsLabel") as Label
-@onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelRow/LevelLabel") as Label
+@onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensLabel") as Label
+@onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelLabel") as Label
+@onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
 @onready var xp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/XPBar") as ProgressBar
 @onready var xp_label: Label = get_node_or_null("HUD/Panel/VBox/XPLabel") as Label
-@onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensLabel") as Label
-@onready var buy_token_button: Button = get_node_or_null("HUD/BetPanel/BetVBox/BuyTokenButton") as Button
-@onready var coins_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsIcon") as TextureRect
-@onready var tokens_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensIcon") as TextureRect
-@onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
 @onready var player_hp_bar: ProgressBar = $HUD/Panel/VBox/PlayerHPBar
 @onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
 @onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
+@onready var buy_token_button: Button = get_node_or_null("HUD/BetPanel/BetVBox/BuyTokenRow/BuyTokenButton") as Button
+@onready var buy_token_info: Label = get_node_or_null("HUD/BetPanel/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
+@onready var coins_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinIcon") as TextureRect
+@onready var tokens_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/TokensRow/TokenIcon") as TextureRect
 @onready var modal_dimmer: ColorRect = get_node_or_null("HUD/ModalDimmer") as ColorRect
 @onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
 @onready var upgrade_root: Control = get_node_or_null("HUD/UpgradePanel") as Control
@@ -39,8 +38,10 @@ const XP_SMOOTH_SPEED := 10.0
 @onready var bet_no_hit_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
 @onready var bet_fast_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetFastButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
-@onready var level_up_popup: Panel = get_node_or_null("HUD/LevelUpPopup") as Panel
-@onready var level_up_body: Label = get_node_or_null("HUD/LevelUpPopup/PopupVBox/PopupBody") as Label
+@onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
+@onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
+@onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
+@onready var sfx_upgrade_buy: AudioStreamPlayer = get_node_or_null("SFX/SfxUpgradeBuy") as AudioStreamPlayer
 @onready var game_over_panel: Panel = $HUD/GameOverPanel
 @onready var game_over_title: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverTitle") as Label
 @onready var game_over_hint: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverHint") as Label
@@ -51,7 +52,10 @@ const XP_SMOOTH_SPEED := 10.0
 @onready var countdown_label: Label = get_node_or_null("HUD/CountdownLabel") as Label
 @onready var fast_countdown_label: Label = get_node_or_null("HUD/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("HUD/FastBlinkTimer") as Timer
-@onready var level_up_title: Label = get_node_or_null("HUD/LevelUpPopup/PopupVBox/PopupTitle") as Label
+
+@export var sfx_level_up_path: String = "res://assets/audio/ui/level_up.ogg"
+@export var sfx_buy_token_path: String = "res://assets/audio/ui/buy_token.ogg"
+@export var sfx_upgrade_buy_path: String = "res://assets/audio/ui/upgrade_buy.ogg"
 
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
@@ -68,19 +72,22 @@ var _countdown_was_visible: bool = false
 var _fast_countdown_was_visible: bool = false
 var _fast_blink_was_running: bool = false
 var _xp_current: int = 0
-var _xp_to_next: int = 5
+var _xp_to_next: int = 6
 var _level: int = 1
 var _tokens: int = 0
 var _coins: int = 0
-var _token_buy_cost: int = 100
-var _xp_target_value: float = 0.0
-var _xp_target_max: float = 1.0
 var _popup_tween: Tween = null
+var _last_level: int = 1
+var _last_tokens: int = 0
+var _xp_anim_tween: Tween
+var _xp_punch_tween: Tween
+var _last_xp_to_next: int = 0
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
 	GameEvents.bet_placed.connect(_on_bet_placed)
 	GameEvents.run_started.connect(_on_run_started)
+	GameEvents.run_started.connect(_on_run_started_ui)
 	GameEvents.run_failed.connect(_on_run_failed)
 	GameEvents.bet_failed.connect(_on_bet_failed)
 	GameEvents.run_started.connect(_on_run_started_controls)
@@ -99,10 +106,11 @@ func _ready() -> void:
 	_ensure_token_icons()
 	_refresh_progression_ui()
 
-	if buy_token_button != null:
-		buy_token_button.pressed.connect(_on_buy_token_pressed)
-		_token_buy_cost = _get_token_buy_cost()
-		_update_buy_token_button()
+	_wire_buy_token_button()
+	_refresh_buy_token_ui()
+	_wire_upgrade_buttons()
+	_try_load_sfx_streams()
+	_refresh_upgrade_shop_ui()
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -134,12 +142,6 @@ func _ready() -> void:
 		upgrade_panel.visible = false
 	if modal_dimmer != null:
 		modal_dimmer.visible = false
-	if upgrade_hp_button != null:
-		upgrade_hp_button.pressed.connect(func() -> void: _purchase_upgrade("hp"))
-	if upgrade_light_button != null:
-		upgrade_light_button.pressed.connect(func() -> void: _purchase_upgrade("light"))
-	if upgrade_heavy_button != null:
-		upgrade_heavy_button.pressed.connect(func() -> void: _purchase_upgrade("heavy"))
 	if upgrade_continue_button != null:
 		upgrade_continue_button.pressed.connect(_on_upgrade_continue_pressed)
 	_update_upgrade_costs()
@@ -159,27 +161,35 @@ func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
 		_update_upgrade_costs()
 
 func _on_player_level_changed(level: int) -> void:
-	var previous_level := _level
 	_level = max(level, 1)
-	_refresh_progression_ui()
-	if _level > previous_level:
-		_show_level_up_popup(_level, _level - previous_level)
+	if level_label != null:
+		level_label.text = "Level: %d" % _level
+	if _level > _last_level:
+		_show_level_up_popup("+1 TOKEN")
+		_play_sfx(sfx_level_up)
+	_last_level = _level
 
 func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
-	_xp_current = max(xp, 0)
-	_xp_to_next = max(xp_to_next, 1)
-	_xp_target_max = float(_xp_to_next)
-	_xp_target_value = float(min(_xp_current, _xp_to_next))
-	_refresh_progression_ui()
+	_animate_xp_bar(xp, xp_to_next)
+	if xp_label != null:
+		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
 
 func _on_upgrade_tokens_changed(tokens: int) -> void:
 	_on_tokens_changed(tokens)
 
 func _on_tokens_changed(tokens: int) -> void:
 	_tokens = max(tokens, 0)
-	_refresh_progression_ui()
+	if tokens_label != null:
+		tokens_label.text = "Tokens: %d" % _tokens
 	if upgrade_tokens_label != null:
-		upgrade_tokens_label.text = "Tokens: %d" % tokens
+		var coins := _coins
+		var rm := _get_run_manager()
+		if rm != null and rm.has_method("get_coins"):
+			coins = int(rm.call("get_coins"))
+		upgrade_tokens_label.text = "Coins: %d | Tokens: %d" % [coins, tokens]
+	_last_tokens = _tokens
+	_refresh_buy_token_ui()
+	_refresh_upgrade_shop_ui()
 	if upgrade_panel != null and upgrade_panel.visible:
 		_update_upgrade_costs()
 
@@ -189,70 +199,193 @@ func _refresh_progression_ui() -> void:
 	if tokens_label != null:
 		tokens_label.text = "Tokens: %d" % _tokens
 	if xp_bar != null:
-		xp_bar.max_value = _xp_target_max
+		xp_bar.max_value = float(max(_xp_to_next, 1))
 	if xp_label != null:
 		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
 
-func _process(delta: float) -> void:
-	if xp_bar == null:
-		return
-	var current := float(xp_bar.value)
-	var next := lerp(current, _xp_target_value, clamp(delta * XP_SMOOTH_SPEED, 0.0, 1.0))
-	if abs(next - _xp_target_value) < 0.05:
-		next = _xp_target_value
-	xp_bar.value = next
-
-func _update_buy_token_button() -> void:
+func _wire_buy_token_button() -> void:
 	if buy_token_button == null:
 		return
-	buy_token_button.text = "BUY TOKEN (%d COINS)" % _token_buy_cost
-	buy_token_button.disabled = _coins < _token_buy_cost
+	if not buy_token_button.pressed.is_connected(_on_buy_token_pressed):
+		buy_token_button.pressed.connect(_on_buy_token_pressed)
 
-func _get_token_buy_cost() -> int:
+func _refresh_buy_token_ui() -> void:
+	if buy_token_button == null:
+		return
 	var manager := _get_run_manager()
 	if manager == null:
-		return 100
+		buy_token_button.disabled = true
+		buy_token_button.text = "BUY TOKEN"
+		if buy_token_info != null:
+			buy_token_info.text = "-"
+		return
+
+	var cost := 100
 	if manager.has_method("get_token_buy_cost"):
-		return int(manager.call("get_token_buy_cost"))
-	if manager.has_variable("token_buy_cost"):
-		return int(manager.get("token_buy_cost"))
-	if manager.has_variable("token_purchase_cost_coins"):
-		return int(manager.get("token_purchase_cost_coins"))
-	return 100
+		cost = int(manager.call("get_token_buy_cost"))
+	elif manager.has_method("get_buy_token_cost"):
+		cost = int(manager.call("get_buy_token_cost"))
+	elif manager.has_method("get_token_purchase_cost"):
+		cost = int(manager.call("get_token_purchase_cost"))
+	elif manager.has_variable("token_buy_cost"):
+		cost = int(manager.get("token_buy_cost"))
+	elif manager.has_variable("token_purchase_cost_coins"):
+		cost = int(manager.get("token_purchase_cost_coins"))
 
-func _get_tokens_per_level() -> int:
-	var manager := _get_run_manager()
-	if manager == null:
-		return 1
-	if manager.has_variable("tokens_per_level"):
-		return int(manager.get("tokens_per_level"))
-	return 1
+	var coins := _coins
+	if manager.has_method("get_coins"):
+		coins = int(manager.call("get_coins"))
 
-func _show_level_up_popup(level: int, gained_levels: int) -> void:
+	buy_token_button.text = "BUY TOKEN (%dc)" % cost
+	buy_token_button.disabled = coins < cost
+	if buy_token_info != null:
+		buy_token_info.text = "Coins: %d" % coins
+
+func _wire_upgrade_buttons() -> void:
+	if upgrade_hp_button != null and not upgrade_hp_button.pressed.is_connected(_on_upgrade_hp_pressed):
+		upgrade_hp_button.pressed.connect(_on_upgrade_hp_pressed)
+	if upgrade_light_button != null and not upgrade_light_button.pressed.is_connected(_on_upgrade_light_pressed):
+		upgrade_light_button.pressed.connect(_on_upgrade_light_pressed)
+	if upgrade_heavy_button != null and not upgrade_heavy_button.pressed.is_connected(_on_upgrade_heavy_pressed):
+		upgrade_heavy_button.pressed.connect(_on_upgrade_heavy_pressed)
+
+func _on_upgrade_hp_pressed() -> void:
+	_try_purchase_upgrade("hp")
+
+func _on_upgrade_light_pressed() -> void:
+	_try_purchase_upgrade("light")
+
+func _on_upgrade_heavy_pressed() -> void:
+	_try_purchase_upgrade("heavy")
+
+func _try_purchase_upgrade(kind: String) -> void:
+	_purchase_upgrade(kind)
+
+func _refresh_upgrade_shop_ui() -> void:
+	var rm := _get_run_manager()
+	if rm == null or not rm.has_method("get_upgrade_offer"):
+		return
+	var offer: Dictionary = rm.call("get_upgrade_offer")
+	var tokens := int(offer.get("tokens", 0))
+	if upgrade_tokens_label != null:
+		var coins := _coins
+		if rm.has_method("get_coins"):
+			coins = int(rm.call("get_coins"))
+		upgrade_tokens_label.text = "Coins: %d | Tokens: %d" % [coins, tokens]
+	var hp: Dictionary = offer.get("hp", {})
+	var light: Dictionary = offer.get("light", {})
+	var heavy: Dictionary = offer.get("heavy", {})
+
+	if upgrade_hp_label != null:
+		upgrade_hp_label.text = "HP +%d | Total: %d → %d | Cost: %dT" % [
+			int(hp.get("add", 0)),
+			int(hp.get("current_total", 0)),
+			int(hp.get("next_total", 0)),
+			int(hp.get("cost", 1)),
+		]
+	if upgrade_light_label != null:
+		upgrade_light_label.text = "LIGHT +%d | Total: %d → %d | Cost: %dT" % [
+			int(light.get("add", 0)),
+			int(light.get("current_total", 0)),
+			int(light.get("next_total", 0)),
+			int(light.get("cost", 1)),
+		]
+	if upgrade_heavy_label != null:
+		upgrade_heavy_label.text = "HEAVY +%d | Total: %d → %d | Cost: %dT" % [
+			int(heavy.get("add", 0)),
+			int(heavy.get("current_total", 0)),
+			int(heavy.get("next_total", 0)),
+			int(heavy.get("cost", 1)),
+		]
+
+	if upgrade_hp_button != null:
+		upgrade_hp_button.disabled = not bool(hp.get("affordable", tokens >= int(hp.get("cost", 1))))
+	if upgrade_light_button != null:
+		upgrade_light_button.disabled = not bool(light.get("affordable", tokens >= int(light.get("cost", 1))))
+	if upgrade_heavy_button != null:
+		upgrade_heavy_button.disabled = not bool(heavy.get("affordable", tokens >= int(heavy.get("cost", 1))))
+
+func _animate_xp_bar(xp: int, xp_to_next: int) -> void:
+	if xp_bar == null:
+		return
+	_xp_current = max(xp, 0)
+	_xp_to_next = max(xp_to_next, 1)
+	var maxv := float(_xp_to_next)
+	xp_bar.max_value = maxv
+
+	var changed_curve := xp_to_next != _last_xp_to_next and _last_xp_to_next != 0
+	_last_xp_to_next = xp_to_next
+
+	var target := float(clamp(_xp_current, 0, _xp_to_next))
+	var current := float(xp_bar.value)
+
+	_kill_xp_tweens()
+
+	if target < current:
+		_xp_anim_tween = create_tween()
+		_xp_anim_tween.set_trans(Tween.TRANS_QUAD)
+		_xp_anim_tween.set_ease(Tween.EASE_OUT)
+		_xp_anim_tween.tween_property(xp_bar, "value", target, 0.10 if changed_curve else 0.14)
+		return
+
+	_xp_anim_tween = create_tween()
+	_xp_anim_tween.set_trans(Tween.TRANS_QUAD)
+	_xp_anim_tween.set_ease(Tween.EASE_OUT)
+	_xp_anim_tween.tween_property(xp_bar, "value", target, 0.18)
+
+	_xp_punch_tween = create_tween()
+	_xp_punch_tween.set_trans(Tween.TRANS_BACK)
+	_xp_punch_tween.set_ease(Tween.EASE_OUT)
+	_xp_punch_tween.tween_property(xp_bar, "scale", Vector2(1.02, 1.02), 0.08)
+	_xp_punch_tween.tween_property(xp_bar, "scale", Vector2.ONE, 0.10)
+
+func _kill_xp_tweens() -> void:
+	if _xp_anim_tween != null and is_instance_valid(_xp_anim_tween):
+		_xp_anim_tween.kill()
+	_xp_anim_tween = null
+	if _xp_punch_tween != null and is_instance_valid(_xp_punch_tween):
+		_xp_punch_tween.kill()
+	_xp_punch_tween = null
+
+func _try_load_sfx_streams() -> void:
+	_safe_assign_stream(sfx_level_up, sfx_level_up_path)
+	_safe_assign_stream(sfx_buy_token, sfx_buy_token_path)
+	_safe_assign_stream(sfx_upgrade_buy, sfx_upgrade_buy_path)
+
+func _safe_assign_stream(player: AudioStreamPlayer, path: String) -> void:
+	if player == null:
+		return
+	if path == "":
+		return
+	if ResourceLoader.exists(path):
+		var stream := load(path)
+		if stream is AudioStream:
+			player.stream = stream
+
+func _play_sfx(player: AudioStreamPlayer) -> void:
+	if player == null or player.stream == null:
+		return
+	player.stop()
+	player.play()
+
+func _show_level_up_popup(suffix: String) -> void:
 	if level_up_popup == null:
 		return
-	var tokens_per_level := _get_tokens_per_level()
-	var token_gain := tokens_per_level * gained_levels
-	if level_up_title != null:
-		level_up_title.text = "LEVEL UP!  (Lv %d)" % level
-	if level_up_body != null:
-		var token_label := "TOKEN" if token_gain == 1 else "TOKENS"
-		level_up_body.text = "+%d %s" % [token_gain, token_label]
 	level_up_popup.visible = true
+	level_up_popup.text = "LEVEL UP! %s" % suffix
 	level_up_popup.modulate.a = 0.0
 	level_up_popup.scale = Vector2(0.92, 0.92)
 	if _popup_tween != null and _popup_tween.is_valid():
 		_popup_tween.kill()
 	_popup_tween = create_tween()
-	_popup_tween.set_trans(Tween.TRANS_BACK)
+	_popup_tween.set_trans(Tween.TRANS_QUAD)
 	_popup_tween.set_ease(Tween.EASE_OUT)
 	_popup_tween.tween_property(level_up_popup, "modulate:a", 1.0, 0.12)
-	_popup_tween.tween_property(level_up_popup, "scale", Vector2(1.05, 1.05), 0.16)
-	_popup_tween.tween_property(level_up_popup, "scale", Vector2(1.0, 1.0), 0.10)
-	_popup_tween.tween_interval(LEVEL_UP_POPUP_TIME)
-	_popup_tween.set_trans(Tween.TRANS_SINE)
+	_popup_tween.parallel().tween_property(level_up_popup, "scale", Vector2(1.02, 1.02), 0.12)
+	_popup_tween.tween_interval(0.55)
 	_popup_tween.set_ease(Tween.EASE_IN)
-	_popup_tween.tween_property(level_up_popup, "modulate:a", 0.0, 0.18)
+	_popup_tween.tween_property(level_up_popup, "modulate:a", 0.0, 0.20)
+	_popup_tween.parallel().tween_property(level_up_popup, "scale", Vector2(0.98, 0.98), 0.20)
 	_popup_tween.tween_callback(Callable(self, "_hide_level_up_popup"))
 
 func _hide_level_up_popup() -> void:
@@ -260,10 +393,21 @@ func _hide_level_up_popup() -> void:
 		level_up_popup.visible = false
 
 func _on_buy_token_pressed() -> void:
-	var manager := _get_run_manager()
-	if manager == null or not manager.has_method("buy_token"):
+	var rm := _get_run_manager()
+	if rm == null:
 		return
-	manager.buy_token()
+	var ok := false
+	if rm.has_method("purchase_token"):
+		ok = bool(rm.call("purchase_token"))
+	elif rm.has_method("buy_token"):
+		ok = bool(rm.call("buy_token"))
+	elif rm.has_method("purchaseToken"):
+		ok = bool(rm.call("purchaseToken"))
+	if ok:
+		_show_level_up_popup("TOKEN +1")
+		_play_sfx(sfx_buy_token)
+	_refresh_buy_token_ui()
+	_refresh_upgrade_shop_ui()
 
 func _ensure_token_icons() -> void:
 	if coins_icon != null and coins_icon.texture == null:
@@ -302,8 +446,7 @@ func _on_run_started() -> void:
 		bet_panel.visible = false
 	if level_up_popup != null:
 		level_up_popup.visible = false
-	_token_buy_cost = _get_token_buy_cost()
-	_update_buy_token_button()
+	_refresh_buy_token_ui()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
 	# countdown_requested will drive the actual seconds during the round.
 	if not _fast_countdown_active:
@@ -323,6 +466,17 @@ func _on_run_started() -> void:
 		next_bet_button.visible = true
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
+
+func _on_run_started_ui() -> void:
+	_last_level = 1
+	_last_tokens = 0
+	_last_xp_to_next = 0
+	_kill_xp_tweens()
+	_xp_current = 0
+	if xp_bar != null:
+		xp_bar.value = 0
+	_refresh_buy_token_ui()
+	_refresh_upgrade_shop_ui()
 
 func _on_run_failed() -> void:
 	if bet_info_label != null:
@@ -384,7 +538,10 @@ func _on_coins_changed(coins: int) -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: %d" % coins
 	_coins = coins
-	_update_buy_token_button()
+	if upgrade_tokens_label != null:
+		upgrade_tokens_label.text = "Coins: %d | Tokens: %d" % [coins, _last_tokens]
+	_refresh_buy_token_ui()
+	_refresh_upgrade_shop_ui()
 
 func _on_bet_placed(bet_id: String, stake: int, odds: float) -> void:
 	if bet_info_label != null:
@@ -404,6 +561,8 @@ func _on_bet_ui_opened(bets: Array) -> void:
 	_update_bet_buttons()
 	bet_panel.visible = true
 	_reset_fast_countdown()
+	_refresh_buy_token_ui()
+	_refresh_upgrade_shop_ui()
 
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
@@ -594,7 +753,9 @@ func _purchase_upgrade(upgrade_type: String) -> void:
 		_flash_upgrade_row(upgrade_type)
 		_update_upgrade_costs()
 		return
+	_play_sfx(sfx_upgrade_buy)
 	_update_upgrade_costs()
+	_refresh_upgrade_shop_ui()
 
 func _flash_upgrade_row(upgrade_type: String) -> void:
 	var row: Control = null
@@ -613,46 +774,54 @@ func _flash_upgrade_row(upgrade_type: String) -> void:
 
 func _update_upgrade_costs() -> void:
 	var manager := _get_run_manager()
-	if manager == null or not manager.has_method("get_upgrade_config"):
+	if manager == null:
 		return
 	# Preferisci l'API "offer" (UI-ready). Fallback su config vecchio se non presente.
 	if manager.has_method("get_upgrade_offer"):
 		var offer: Dictionary = manager.get_upgrade_offer()
 		var tokens: int = int(offer.get("tokens", 0))
 		if upgrade_tokens_label != null:
-			upgrade_tokens_label.text = "Tokens: %d" % tokens
+			var coins := _coins
+			if manager.has_method("get_coins"):
+				coins = int(manager.call("get_coins"))
+			upgrade_tokens_label.text = "Coins: %d | Tokens: %d" % [coins, tokens]
 
 		var hp: Dictionary = offer.get("hp", {})
 		var light: Dictionary = offer.get("light", {})
 		var heavy: Dictionary = offer.get("heavy", {})
 
 		if upgrade_hp_label != null:
-			upgrade_hp_label.text = "HP +%d → +%d (Cost: %dT)" % [
+			upgrade_hp_label.text = "HP +%d | Total: %d → %d | Cost: %dT" % [
+				int(hp.get("add", 0)),
 				int(hp.get("current_total", 0)),
 				int(hp.get("next_total", 0)),
-				int(hp.get("cost", 0)),
+				int(hp.get("cost", 1)),
 			]
 		if upgrade_light_label != null:
-			upgrade_light_label.text = "LIGHT +%d → +%d (Cost: %dT)" % [
+			upgrade_light_label.text = "LIGHT +%d | Total: %d → %d | Cost: %dT" % [
+				int(light.get("add", 0)),
 				int(light.get("current_total", 0)),
 				int(light.get("next_total", 0)),
-				int(light.get("cost", 0)),
+				int(light.get("cost", 1)),
 			]
 		if upgrade_heavy_label != null:
-			upgrade_heavy_label.text = "HEAVY +%d → +%d (Cost: %dT)" % [
+			upgrade_heavy_label.text = "HEAVY +%d | Total: %d → %d | Cost: %dT" % [
+				int(heavy.get("add", 0)),
 				int(heavy.get("current_total", 0)),
 				int(heavy.get("next_total", 0)),
-				int(heavy.get("cost", 0)),
+				int(heavy.get("cost", 1)),
 			]
 
 		if upgrade_hp_button != null:
-			upgrade_hp_button.disabled = not bool(hp.get("affordable", false))
+			upgrade_hp_button.disabled = not bool(hp.get("affordable", tokens >= int(hp.get("cost", 1))))
 		if upgrade_light_button != null:
-			upgrade_light_button.disabled = not bool(light.get("affordable", false))
+			upgrade_light_button.disabled = not bool(light.get("affordable", tokens >= int(light.get("cost", 1))))
 		if upgrade_heavy_button != null:
-			upgrade_heavy_button.disabled = not bool(heavy.get("affordable", false))
+			upgrade_heavy_button.disabled = not bool(heavy.get("affordable", tokens >= int(heavy.get("cost", 1))))
 		return
 
+	if not manager.has_method("get_upgrade_config"):
+		return
 	# Fallback legacy
 	var config: Dictionary = manager.get_upgrade_config()
 	if upgrade_hp_label != null:

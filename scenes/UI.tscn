@@ -91,9 +91,6 @@ value = 0.0
 autowrap_mode = 2
 text = "XP: 0/5"
 
-[node name="BuyTokenButton" type="Button" parent="HUD/Panel/VBox"]
-text = "BUY TOKEN (100)"
-
 [node name="BetInfoLabel" type="Label" parent="HUD/Panel/VBox"]
 autowrap_mode = 2
 text = "Bet: -"
@@ -156,6 +153,11 @@ text = "NO_HIT"
 
 [node name="BetFastButton" type="Button" parent="HUD/BetPanel/BetVBox/BetButtons"]
 text = "FAST"
+
+[node name="BuyTokenButton" type="Button" parent="HUD/BetPanel/BetVBox"]
+custom_minimum_size = Vector2(0, 44)
+size_flags_horizontal = 3
+text = "BUY TOKEN (100c)"
 
 [node name="GameOverPanel" type="Panel" parent="HUD"]
 visible = false

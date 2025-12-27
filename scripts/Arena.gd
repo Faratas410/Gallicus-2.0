@@ -216,7 +216,7 @@ func ensure_player() -> Node2D:
 func _schedule_enemy_aggro_after_delay() -> void:
 	_aggro_sequence_id += 1
 	var my_id := _aggro_sequence_id
-	var delay := max(enemy_aggro_delay, 0.0)
+	var delay: float = maxf(enemy_aggro_delay, 0.0)
 	if delay <= 0.0:
 		_apply_enemy_targets_if_possible(my_id)
 		return

@@ -8,7 +8,7 @@ const UPGRADE_FLASH_TIME := 0.10
 @onready var xp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/XPBar") as ProgressBar
 @onready var xp_label: Label = get_node_or_null("HUD/Panel/VBox/XPLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensLabel") as Label
-@onready var buy_token_button: Button = get_node_or_null("HUD/Panel/VBox/BuyTokenButton") as Button
+@onready var buy_token_button: Button = get_node_or_null("HUD/BetPanel/BetVBox/BuyTokenButton") as Button
 @onready var coins_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsIcon") as TextureRect
 @onready var tokens_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensIcon") as TextureRect
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
@@ -66,6 +66,8 @@ var _xp_current: int = 0
 var _xp_to_next: int = 5
 var _level: int = 1
 var _tokens: int = 0
+var _coins: int = 0
+var _token_buy_cost: int = 100
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -91,7 +93,8 @@ func _ready() -> void:
 
 	if buy_token_button != null:
 		buy_token_button.pressed.connect(_on_buy_token_pressed)
-		_refresh_buy_token_button()
+		_token_buy_cost = _get_token_buy_cost()
+		_update_buy_token_button()
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -176,21 +179,29 @@ func _refresh_progression_ui() -> void:
 	if xp_label != null:
 		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
 
-func _refresh_buy_token_button() -> void:
+func _update_buy_token_button() -> void:
 	if buy_token_button == null:
 		return
+	buy_token_button.text = "BUY TOKEN (%dc)" % _token_buy_cost
+	buy_token_button.disabled = _coins < _token_buy_cost
+
+func _get_token_buy_cost() -> int:
 	var manager := _get_run_manager()
 	if manager == null:
-		return
-	var cost := int(manager.get("token_purchase_cost_coins"))
-	if cost > 0:
-		buy_token_button.text = "BUY TOKEN (%d)" % cost
+		return 100
+	if manager.has_method("get_token_buy_cost"):
+		return int(manager.call("get_token_buy_cost"))
+	if manager.has_variable("token_buy_cost"):
+		return int(manager.get("token_buy_cost"))
+	if manager.has_variable("token_purchase_cost_coins"):
+		return int(manager.get("token_purchase_cost_coins"))
+	return 100
 
 func _on_buy_token_pressed() -> void:
 	var manager := _get_run_manager()
-	if manager == null or not manager.has_method("purchase_token"):
+	if manager == null or not manager.has_method("buy_token"):
 		return
-	manager.purchase_token()
+	manager.buy_token()
 
 func _ensure_token_icons() -> void:
 	if coins_icon != null and coins_icon.texture == null:
@@ -227,7 +238,8 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
-	_refresh_buy_token_button()
+	_token_buy_cost = _get_token_buy_cost()
+	_update_buy_token_button()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
 	# countdown_requested will drive the actual seconds during the round.
 	if not _fast_countdown_active:
@@ -305,6 +317,8 @@ func _on_run_failed_controls() -> void:
 func _on_coins_changed(coins: int) -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: %d" % coins
+	_coins = coins
+	_update_buy_token_button()
 
 func _on_bet_placed(bet_id: String, stake: int, odds: float) -> void:
 	if bet_info_label != null:

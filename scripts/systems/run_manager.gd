@@ -319,6 +319,12 @@ func spend_coins(amount: int) -> bool:
 	GameEvents.coins_changed.emit(run.coins)
 	return true
 
+func get_token_buy_cost() -> int:
+	return token_purchase_cost_coins
+
+func buy_token() -> bool:
+	return purchase_token()
+
 func spend_tokens(amount: int) -> bool:
 	if amount <= 0:
 		return true

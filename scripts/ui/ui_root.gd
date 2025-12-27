@@ -3,10 +3,12 @@ extends CanvasLayer
 const FAST_SELECTION_SECONDS := 12
 const UPGRADE_FLASH_TIME := 0.10
 
-@onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsLabel") as Label
+@onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsLabel") as Label
 @onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelLabel") as Label
 @onready var xp_label: Label = get_node_or_null("HUD/Panel/VBox/XPLabel") as Label
-@onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensLabel") as Label
+@onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensLabel") as Label
+@onready var coins_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsIcon") as TextureRect
+@onready var tokens_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensIcon") as TextureRect
 @onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
 @onready var player_hp_bar: ProgressBar = $HUD/Panel/VBox/PlayerHPBar
 @onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
@@ -18,6 +20,8 @@ const UPGRADE_FLASH_TIME := 0.10
 @onready var upgrade_content_area: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea") as Control
 @onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox") as VBoxContainer
 @onready var upgrade_coins_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeCoinsLabel") as Label
+@onready var upgrade_tokens_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow/UpgradeTokensLabel") as Label
+@onready var upgrade_tokens_icon: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow/UpgradeTokensIcon") as TextureRect
 @onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
 @onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
 @onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
@@ -75,6 +79,8 @@ func _ready() -> void:
 	GameEvents.player_level_changed.connect(_on_player_level_changed)
 	GameEvents.player_xp_changed.connect(_on_player_xp_changed)
 	GameEvents.upgrade_tokens_changed.connect(_on_upgrade_tokens_changed)
+	GameEvents.tokens_changed.connect(_on_tokens_changed)
+	_ensure_token_icons()
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -138,8 +144,32 @@ func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
 		xp_label.text = "XP: %d/%d" % [xp, denom]
 
 func _on_upgrade_tokens_changed(tokens: int) -> void:
+	_on_tokens_changed(tokens)
+
+func _on_tokens_changed(tokens: int) -> void:
 	if tokens_label != null:
 		tokens_label.text = "TOKENS: %d" % tokens
+	if upgrade_tokens_label != null:
+		upgrade_tokens_label.text = "Tokens: %d" % tokens
+
+func _ensure_token_icons() -> void:
+	if coins_icon != null and coins_icon.texture == null:
+		coins_icon.texture = _make_solid_icon(Color(1.0, 0.85, 0.25, 1.0))
+	if tokens_icon != null and tokens_icon.texture == null:
+		tokens_icon.texture = _make_solid_icon(Color(0.55, 0.85, 1.0, 1.0))
+	if upgrade_tokens_icon != null and upgrade_tokens_icon.texture == null:
+		upgrade_tokens_icon.texture = _make_solid_icon(Color(0.55, 0.85, 1.0, 1.0))
+
+func _make_solid_icon(c: Color) -> Texture2D:
+	var image := Image.create(8, 8, false, Image.FORMAT_RGBA8)
+	image.fill(c)
+	for x in range(8):
+		image.set_pixel(x, 0, Color(0, 0, 0, 1))
+		image.set_pixel(x, 7, Color(0, 0, 0, 1))
+	for y in range(8):
+		image.set_pixel(0, y, Color(0, 0, 0, 1))
+		image.set_pixel(7, y, Color(0, 0, 0, 1))
+	return ImageTexture.create_from_image(image)
 
 func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:

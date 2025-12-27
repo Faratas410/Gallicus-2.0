@@ -46,7 +46,16 @@ offset_top = 12.0
 offset_right = -12.0
 offset_bottom = -12.0
 
-[node name="CoinsLabel" type="Label" parent="HUD/Panel/VBox"]
+[node name="CoinsRow" type="HBoxContainer" parent="HUD/Panel/VBox"]
+size_flags_horizontal = 3
+
+[node name="CoinsIcon" type="TextureRect" parent="HUD/Panel/VBox/CoinsRow"]
+custom_minimum_size = Vector2(18, 18)
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CoinsLabel" type="Label" parent="HUD/Panel/VBox/CoinsRow"]
+size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Coins: 0"
 
@@ -58,7 +67,16 @@ text = "LV: 1"
 autowrap_mode = 2
 text = "XP: 0/5"
 
-[node name="TokensLabel" type="Label" parent="HUD/Panel/VBox"]
+[node name="TokensRow" type="HBoxContainer" parent="HUD/Panel/VBox"]
+size_flags_horizontal = 3
+
+[node name="TokensIcon" type="TextureRect" parent="HUD/Panel/VBox/TokensRow"]
+custom_minimum_size = Vector2(18, 18)
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TokensLabel" type="Label" parent="HUD/Panel/VBox/TokensRow"]
+size_flags_horizontal = 3
 autowrap_mode = 2
 text = "TOKENS: 0"
 
@@ -310,6 +328,18 @@ text = "UPGRADE SHOP"
 
 [node name="UpgradeCoinsLabel" type="Label" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox"]
 text = "Coins: 0"
+
+[node name="UpgradeTokensRow" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox"]
+size_flags_horizontal = 3
+
+[node name="UpgradeTokensIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow"]
+custom_minimum_size = Vector2(18, 18)
+expand_mode = 1
+stretch_mode = 5
+
+[node name="UpgradeTokensLabel" type="Label" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow"]
+size_flags_horizontal = 3
+text = "Tokens: 0"
 
 [node name="UpgradeRows" type="VBoxContainer" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox"]
 size_flags_horizontal = 3

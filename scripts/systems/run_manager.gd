@@ -8,10 +8,16 @@ extends Node
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
 
 # --- XP / Leveling ---
+@export var starting_level: int = 1
+@export var starting_tokens: int = 0
 @export var exp_per_enemy: int = 1
 @export var exp_curve: Array[int] = [5, 7, 10, 14, 19, 25] # xp necessario per passare al prossimo livello; dopo l'ultimo cresce linearmente.
 @export var exp_curve_tail_step: int = 8
 @export var tokens_per_level: int = 1
+
+# --- Difficulty tiers ---
+@export var levels_per_tier: int = 3
+@export var tier_multipliers: Array[float] = [1.00, 1.15, 1.35, 1.60, 1.90]
 
 @export var upgrade_hp_bonus: int = 20
 @export var upgrade_hp_cost: int = 30
@@ -29,6 +35,7 @@ var run := {
 	"level": 1,
 	"xp": 0,
 	"upgrade_tokens": 0,
+	"difficulty_tier": 0,
 	"upgrades": {
 		"hp_bonus": 0,
 		"light_bonus": 0,
@@ -97,9 +104,10 @@ func start_new_run() -> void:
 	run["arena_index"] = 0
 
 	# reset XP/level per run (puoi cambiare in "persistente" più avanti)
-	run["level"] = 1
+	run["level"] = starting_level
 	run["xp"] = 0
-	run["upgrade_tokens"] = 0
+	run["upgrade_tokens"] = starting_tokens
+	_recompute_difficulty_tier(true)
 
 	GameEvents.run_started.emit()
 	GameEvents.set_gameplay_enabled(true)
@@ -352,7 +360,9 @@ func _on_enemy_killed(exp: int) -> void:
 	if gained <= 0:
 		return
 	run["xp"] = int(run.get("xp", 0)) + gained
-	_check_level_up()
+	var leveled := _check_level_up()
+	if leveled:
+		_recompute_difficulty_tier(false)
 	_emit_xp_level_ui()
 
 func _xp_needed_for_next(level: int) -> int:
@@ -365,17 +375,20 @@ func _xp_needed_for_next(level: int) -> int:
 	var extra := (idx - max(exp_curve.size() - 1, 0)) * max(exp_curve_tail_step, 1)
 	return last + extra
 
-func _check_level_up() -> void:
+func _check_level_up() -> bool:
 	var lvl := int(run.get("level", 1))
 	var xp := int(run.get("xp", 0))
 	var needed := _xp_needed_for_next(lvl)
+	var leveled := false
 	while xp >= needed and needed > 0:
 		xp -= needed
 		lvl += 1
 		run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + max(tokens_per_level, 0)
 		needed = _xp_needed_for_next(lvl)
+		leveled = true
 	run["level"] = lvl
 	run["xp"] = xp
+	return leveled
 
 func _emit_xp_level_ui() -> void:
 	var lvl := int(run.get("level", 1))
@@ -384,9 +397,21 @@ func _emit_xp_level_ui() -> void:
 	GameEvents.player_level_changed.emit(lvl)
 	GameEvents.player_xp_changed.emit(xp, needed)
 	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
 
 func get_level() -> int:
 	return int(run.get("level", 1))
+
+func get_difficulty_tier() -> int:
+	return int(run.get("difficulty_tier", 0))
+
+func get_difficulty_multiplier() -> float:
+	var tier := get_difficulty_tier()
+	if tier_multipliers.size() == 0:
+		return 1.0
+	if tier < tier_multipliers.size():
+		return float(tier_multipliers[tier])
+	return float(tier_multipliers[tier_multipliers.size() - 1])
 
 func get_upgrade_tokens() -> int:
 	return int(run.get("upgrade_tokens", 0))
@@ -397,13 +422,29 @@ func consume_upgrade_token() -> bool:
 		return false
 	run["upgrade_tokens"] = t - 1
 	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
 	return true
+
+func _recompute_difficulty_tier(force_emit: bool) -> void:
+	var lvl := int(run.get("level", 1))
+	var new_tier := 0
+	if levels_per_tier > 0:
+		new_tier = int(floor(float(max(lvl - 1, 0)) / float(levels_per_tier)))
+	var old_tier := int(run.get("difficulty_tier", 0))
+	run["difficulty_tier"] = new_tier
+	var mult := get_difficulty_multiplier()
+	if force_emit or new_tier != old_tier:
+		GameEvents.difficulty_tier_changed.emit(new_tier, mult)
+		if _arena != null and _arena.has_method("set_difficulty_tier"):
+			_arena.call("set_difficulty_tier", new_tier, mult)
 
 func _apply_enemy_difficulty_to_arena() -> void:
 	# Hook opzionale: se Arena ha un metodo, passiamo livello per scalare stats nemici
 	if _arena == null:
 		_arena = get_node_or_null(arena_path)
-	if _arena != null and _arena.has_method("set_difficulty_level"):
+	if _arena != null and _arena.has_method("set_difficulty_tier"):
+		_arena.call("set_difficulty_tier", get_difficulty_tier(), get_difficulty_multiplier())
+	elif _arena != null and _arena.has_method("set_difficulty_level"):
 		_arena.call("set_difficulty_level", int(run.get("level", 1)))
 
 func _resolve_player() -> Node:
@@ -640,6 +681,7 @@ func purchase_upgrade(upgrade_type: String) -> bool:
 	if used_token:
 		run["upgrade_tokens"] = tokens
 		GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+		GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
 	run["upgrades"] = upgrades
 	_apply_run_upgrades_to_player()
 	return true

@@ -12,6 +12,7 @@ var _target: Node2D
 var _is_dead: bool = false
 
 func _ready() -> void:
+	_apply_tier_scaling_from_run_manager()
 	_current_health = max_health
 	add_to_group("enemies")
 	_ensure_placeholder_sprite()
@@ -57,3 +58,25 @@ func _ensure_placeholder_sprite() -> void:
 
 func _emit_exp_on_death() -> void:
 	GameEvents.enemy_killed.emit(exp_on_death)
+
+func _apply_tier_scaling_from_run_manager() -> void:
+	# Tier scaling "a scatti": the RunManager exposes get_difficulty_multiplier().
+	# This makes scaling effective without needing Arena spawn changes.
+	var rm := get_tree().get_first_node_in_group("run_manager")
+	if rm == null:
+		return
+
+	var mult := 1.0
+	if rm.has_method("get_difficulty_multiplier"):
+		mult = float(rm.call("get_difficulty_multiplier"))
+	elif rm.has_method("get_difficulty_tier"):
+		var tier := int(rm.call("get_difficulty_tier"))
+		mult = 1.0 + (0.15 * float(tier))
+
+	if mult <= 1.0:
+		return
+
+	# Apply to exported stats (safe, deterministic).
+	max_health = int(round(float(max_health) * mult))
+	move_speed = move_speed * mult
+	touch_damage = int(round(float(touch_damage) * mult))

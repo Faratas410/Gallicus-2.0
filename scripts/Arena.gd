@@ -11,10 +11,19 @@ signal enemy_count_changed(count: int)
 @export var base_enemy_count: int = GameConstants.ARENA_BASE_ENEMY_COUNT
 @export var debug_spawn_enemy: bool = false
 
+var difficulty_tier: int = 0
+var difficulty_multiplier: float = 1.0
 var _rng := RandomNumberGenerator.new()
 var _current_wave: int = 0
 var _enemies_remaining: int = 0
 var _player: Node2D
+
+func set_difficulty_tier(tier: int, mult: float = 1.0) -> void:
+	difficulty_tier = tier
+	difficulty_multiplier = mult
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if enemy != null and is_instance_valid(enemy) and enemy.has_method("_apply_tier_scaling_from_run_manager"):
+			enemy.call("_apply_tier_scaling_from_run_manager")
 
 func _ready() -> void:
 	print("Arena ready")

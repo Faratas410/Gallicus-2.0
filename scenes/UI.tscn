@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/ui_upgrade_panel_gallicus.png" id="2"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_panel_96x64.png" id="4"]
+[ext_resource type="Texture2D" path="res://icon_coin_16.png" id="5"]
+[ext_resource type="Texture2D" path="res://icon_token_16.png" id="6"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
 texture_margin_left = 12.0
@@ -79,6 +81,9 @@ stretch_mode = 5
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "TOKENS: 0"
+
+[node name="BuyTokenButton" type="Button" parent="HUD/Panel/VBox"]
+text = "BUY TOKEN (100)"
 
 [node name="BetInfoLabel" type="Label" parent="HUD/Panel/VBox"]
 autowrap_mode = 2
@@ -327,18 +332,6 @@ size_flags_vertical = 3
 text = "UPGRADE SHOP"
 
 [node name="UpgradeCoinsLabel" type="Label" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox"]
-text = "Coins: 0"
-
-[node name="UpgradeTokensRow" type="HBoxContainer" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox"]
-size_flags_horizontal = 3
-
-[node name="UpgradeTokensIcon" type="TextureRect" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow"]
-custom_minimum_size = Vector2(18, 18)
-expand_mode = 1
-stretch_mode = 5
-
-[node name="UpgradeTokensLabel" type="Label" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeTokensRow"]
-size_flags_horizontal = 3
 text = "Tokens: 0"
 
 [node name="UpgradeRows" type="VBoxContainer" parent="HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox"]

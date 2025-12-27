@@ -10,6 +10,7 @@ signal enemy_count_changed(count: int)
 @export var arena_radius: float = GameConstants.ARENA_RADIUS
 @export var base_enemy_count: int = GameConstants.ARENA_BASE_ENEMY_COUNT
 @export var debug_spawn_enemy: bool = false
+@export var enemy_aggro_delay: float = 0.85 # secondi prima che i nemici inizino a inseguire (bilanciamento)
 
 var difficulty_tier: int = 0
 var difficulty_multiplier: float = 1.0
@@ -17,6 +18,7 @@ var _rng := RandomNumberGenerator.new()
 var _current_wave: int = 0
 var _enemies_remaining: int = 0
 var _player: Node2D
+var _aggro_sequence_id: int = 0
 
 func set_difficulty_tier(tier: int, mult: float = 1.0) -> void:
 	difficulty_tier = tier
@@ -52,6 +54,8 @@ func start_next_wave() -> void:
 	_current_wave += 1
 	_spawn_enemies(base_enemy_count + (_current_wave - 1) * GameConstants.ARENA_ENEMY_INCREMENT)
 	wave_started.emit(_current_wave)
+	# Non inseguono subito: dopo un delay settiamo target + (opzionale) scaling
+	_schedule_enemy_aggro_after_delay()
 
 func _spawn_player() -> void:
 	if _player != null:
@@ -85,11 +89,7 @@ func _spawn_enemies(count: int) -> void:
 		var radius := _rng.randf_range(arena_radius * 0.5, arena_radius)
 		enemy.global_position = global_position + Vector2(cos(angle), sin(angle)) * radius
 
-		# Target player (if supported)
-		if _player != null and is_instance_valid(_player) and enemy.has_method("set_target"):
-			enemy.call("set_target", _player)
-
-		# Apply difficulty immediately for newly spawned enemies
+		# Apply difficulty immediately for newly spawned enemies (senza target)
 		_apply_difficulty_to_enemy(enemy)
 
 		if enemy.has_signal("died"):
@@ -114,13 +114,11 @@ func _spawn_debug_enemy() -> void:
 	add_child(enemy)
 	enemy.global_position = Vector2(120.0, 0.0)
 	print("Spawned enemy")
-	if _player == null or not is_instance_valid(_player):
-		ensure_player()
-	if _player != null and is_instance_valid(_player) and enemy.has_method("set_target"):
-		enemy.call("set_target", _player)
 	_apply_difficulty_to_enemy(enemy)
 	if enemy.has_signal("died"):
 		enemy.connect("died", _on_enemy_died)
+	# stesso comportamento: non aggro immediato
+	_schedule_enemy_aggro_after_delay()
 
 func _on_enemy_died() -> void:
 	_enemies_remaining = max(_enemies_remaining - 1, 0)
@@ -131,6 +129,8 @@ func _on_enemy_died() -> void:
 func _on_player_died() -> void:
 	_enemies_remaining = 0
 	enemy_count_changed.emit(_enemies_remaining)
+	# cancella eventuale aggro pending
+	_aggro_sequence_id += 1
 
 func soft_reset() -> void:
 	_clear_enemies()
@@ -138,6 +138,7 @@ func soft_reset() -> void:
 	_enemies_remaining = 0
 	enemy_count_changed.emit(_enemies_remaining)
 	ensure_player()
+	_aggro_sequence_id += 1
 
 func reset_arena() -> void:
 	# elimina nemici
@@ -173,6 +174,7 @@ func _on_run_started() -> void:
 func _on_run_failed() -> void:
 	set_process(false)
 	set_physics_process(false)
+	_aggro_sequence_id += 1
 
 func _clear_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
@@ -210,6 +212,33 @@ func ensure_player() -> Node2D:
 	if _player.has_signal("died") and not _player.is_connected("died", died_callable):
 		_player.connect("died", died_callable)
 	return _player
+
+func _schedule_enemy_aggro_after_delay() -> void:
+	_aggro_sequence_id += 1
+	var my_id := _aggro_sequence_id
+	var delay := max(enemy_aggro_delay, 0.0)
+	if delay <= 0.0:
+		_apply_enemy_targets_if_possible(my_id)
+		return
+	_call_deferred("_apply_enemy_targets_deferred", my_id, delay)
+
+func _apply_enemy_targets_deferred(my_id: int, delay: float) -> void:
+	await get_tree().create_timer(delay).timeout
+	_apply_enemy_targets_if_possible(my_id)
+
+func _apply_enemy_targets_if_possible(my_id: int) -> void:
+	# Se nel frattempo è cambiata wave/reset/gameover -> abort
+	if my_id != _aggro_sequence_id:
+		return
+	if _player == null or not is_instance_valid(_player) or not _player.is_inside_tree():
+		_player = get_tree().get_first_node_in_group("player") as Node2D
+	if _player == null or not is_instance_valid(_player):
+		return
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if enemy == null or not is_instance_valid(enemy):
+			continue
+		if enemy.has_method("set_target"):
+			enemy.call("set_target", _player)
 
 func get_current_wave() -> int:
 	return _current_wave

@@ -8,7 +8,7 @@
 
 [node name="Main" type="Node2D"]
 
-[node name="RunManager" type="Node" parent="."]
+[node name="RunManager" type="Node" parent="." groups=["run_manager"]]
 script = ExtResource("1")
 arena_path = NodePath("../Arena")
 

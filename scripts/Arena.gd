@@ -31,10 +31,15 @@ func _ready() -> void:
 	add_to_group("arena")
 	GameEvents.run_started.connect(_on_run_started)
 	GameEvents.run_failed.connect(_on_run_failed)
+	if GameEvents.has_signal("difficulty_tier_changed"):
+		GameEvents.difficulty_tier_changed.connect(_on_difficulty_tier_changed)
 	queue_redraw()
 	ensure_player()
 	if debug_spawn_enemy:
 		_spawn_debug_enemy()
+
+func _on_difficulty_tier_changed(tier: int, mult: float) -> void:
+	set_difficulty_tier(tier, mult)
 
 func _draw() -> void:
 	var floor_size := Vector2(1024.0, 768.0)
@@ -71,14 +76,35 @@ func _spawn_player() -> void:
 func _spawn_enemies(count: int) -> void:
 	_enemies_remaining = count
 	enemy_count_changed.emit(_enemies_remaining)
+	if _player == null or not is_instance_valid(_player):
+		ensure_player()
 	for i in range(count):
 		var enemy := enemy_scene.instantiate() as Node2D
 		add_child(enemy)
 		var angle := _rng.randf_range(0.0, TAU)
 		var radius := _rng.randf_range(arena_radius * 0.5, arena_radius)
 		enemy.global_position = global_position + Vector2(cos(angle), sin(angle)) * radius
+
+		# Target player (if supported)
+		if _player != null and is_instance_valid(_player) and enemy.has_method("set_target"):
+			enemy.call("set_target", _player)
+
+		# Apply difficulty immediately for newly spawned enemies
+		_apply_difficulty_to_enemy(enemy)
+
 		if enemy.has_signal("died"):
 			enemy.connect("died", _on_enemy_died)
+
+func _apply_difficulty_to_enemy(enemy: Node) -> void:
+	if enemy == null or not is_instance_valid(enemy):
+		return
+	# Prefer explicit API if present
+	if enemy.has_method("apply_difficulty"):
+		enemy.call("apply_difficulty", difficulty_multiplier)
+		return
+	# Fallback to existing method name used in your codebase
+	if enemy.has_method("_apply_tier_scaling_from_run_manager"):
+		enemy.call("_apply_tier_scaling_from_run_manager")
 
 func _spawn_debug_enemy() -> void:
 	if enemy_scene == null:
@@ -88,6 +114,11 @@ func _spawn_debug_enemy() -> void:
 	add_child(enemy)
 	enemy.global_position = Vector2(120.0, 0.0)
 	print("Spawned enemy")
+	if _player == null or not is_instance_valid(_player):
+		ensure_player()
+	if _player != null and is_instance_valid(_player) and enemy.has_method("set_target"):
+		enemy.call("set_target", _player)
+	_apply_difficulty_to_enemy(enemy)
 	if enemy.has_signal("died"):
 		enemy.connect("died", _on_enemy_died)
 

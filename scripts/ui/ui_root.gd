@@ -3,6 +3,7 @@ extends CanvasLayer
 const FAST_SELECTION_SECONDS := 12
 const UPGRADE_FLASH_TIME := 0.10
 const LEVEL_UP_POPUP_TIME := 1.2
+const XP_SMOOTH_SPEED := 10.0
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsLabel") as Label
 @onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelRow/LevelLabel") as Label
@@ -50,6 +51,7 @@ const LEVEL_UP_POPUP_TIME := 1.2
 @onready var countdown_label: Label = get_node_or_null("HUD/CountdownLabel") as Label
 @onready var fast_countdown_label: Label = get_node_or_null("HUD/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("HUD/FastBlinkTimer") as Timer
+@onready var level_up_title: Label = get_node_or_null("HUD/LevelUpPopup/PopupVBox/PopupTitle") as Label
 
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
@@ -71,7 +73,9 @@ var _level: int = 1
 var _tokens: int = 0
 var _coins: int = 0
 var _token_buy_cost: int = 100
-var _level_up_popup_id: int = 0
+var _xp_target_value: float = 0.0
+var _xp_target_max: float = 1.0
+var _popup_tween: Tween = null
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -159,11 +163,13 @@ func _on_player_level_changed(level: int) -> void:
 	_level = max(level, 1)
 	_refresh_progression_ui()
 	if _level > previous_level:
-		_show_level_up_popup()
+		_show_level_up_popup(_level, _level - previous_level)
 
 func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
 	_xp_current = max(xp, 0)
 	_xp_to_next = max(xp_to_next, 1)
+	_xp_target_max = float(_xp_to_next)
+	_xp_target_value = float(min(_xp_current, _xp_to_next))
 	_refresh_progression_ui()
 
 func _on_upgrade_tokens_changed(tokens: int) -> void:
@@ -183,10 +189,18 @@ func _refresh_progression_ui() -> void:
 	if tokens_label != null:
 		tokens_label.text = "Tokens: %d" % _tokens
 	if xp_bar != null:
-		xp_bar.max_value = float(_xp_to_next)
-		xp_bar.value = float(_xp_current)
+		xp_bar.max_value = _xp_target_max
 	if xp_label != null:
 		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
+
+func _process(delta: float) -> void:
+	if xp_bar == null:
+		return
+	var current := float(xp_bar.value)
+	var next := lerp(current, _xp_target_value, clamp(delta * XP_SMOOTH_SPEED, 0.0, 1.0))
+	if abs(next - _xp_target_value) < 0.05:
+		next = _xp_target_value
+	xp_bar.value = next
 
 func _update_buy_token_button() -> void:
 	if buy_token_button == null:
@@ -214,21 +228,36 @@ func _get_tokens_per_level() -> int:
 		return int(manager.get("tokens_per_level"))
 	return 1
 
-func _show_level_up_popup() -> void:
+func _show_level_up_popup(level: int, gained_levels: int) -> void:
 	if level_up_popup == null:
 		return
-	_level_up_popup_id += 1
-	var popup_id := _level_up_popup_id
 	var tokens_per_level := _get_tokens_per_level()
+	var token_gain := tokens_per_level * gained_levels
+	if level_up_title != null:
+		level_up_title.text = "LEVEL UP!  (Lv %d)" % level
 	if level_up_body != null:
-		var token_label := "TOKEN" if tokens_per_level == 1 else "TOKENS"
-		level_up_body.text = "+%d %s" % [tokens_per_level, token_label]
+		var token_label := "TOKEN" if token_gain == 1 else "TOKENS"
+		level_up_body.text = "+%d %s" % [token_gain, token_label]
 	level_up_popup.visible = true
-	level_up_popup.modulate.a = 1.0
-	await get_tree().create_timer(LEVEL_UP_POPUP_TIME).timeout
-	if popup_id != _level_up_popup_id:
-		return
-	level_up_popup.visible = false
+	level_up_popup.modulate.a = 0.0
+	level_up_popup.scale = Vector2(0.92, 0.92)
+	if _popup_tween != null and _popup_tween.is_valid():
+		_popup_tween.kill()
+	_popup_tween = create_tween()
+	_popup_tween.set_trans(Tween.TRANS_BACK)
+	_popup_tween.set_ease(Tween.EASE_OUT)
+	_popup_tween.tween_property(level_up_popup, "modulate:a", 1.0, 0.12)
+	_popup_tween.tween_property(level_up_popup, "scale", Vector2(1.05, 1.05), 0.16)
+	_popup_tween.tween_property(level_up_popup, "scale", Vector2(1.0, 1.0), 0.10)
+	_popup_tween.tween_interval(LEVEL_UP_POPUP_TIME)
+	_popup_tween.set_trans(Tween.TRANS_SINE)
+	_popup_tween.set_ease(Tween.EASE_IN)
+	_popup_tween.tween_property(level_up_popup, "modulate:a", 0.0, 0.18)
+	_popup_tween.tween_callback(Callable(self, "_hide_level_up_popup"))
+
+func _hide_level_up_popup() -> void:
+	if level_up_popup != null:
+		level_up_popup.visible = false
 
 func _on_buy_token_pressed() -> void:
 	var manager := _get_run_manager()

@@ -11,13 +11,13 @@ extends Node
 @export var starting_level: int = 1
 @export var starting_tokens: int = 0
 @export var exp_per_enemy: int = 1
-@export var exp_curve: Array[int] = [5, 7, 10, 14, 19, 25] # xp necessario per passare al prossimo livello; dopo l'ultimo cresce linearmente.
+@export var exp_curve: Array[int] = [6, 8, 11, 15, 20, 26] # xp necessario per passare al prossimo livello; dopo l'ultimo cresce linearmente.
 @export var exp_curve_tail_step: int = 8
 @export var tokens_per_level: int = 1
 
 # --- Difficulty tiers ---
 @export var levels_per_tier: int = 3
-@export var tier_multipliers: Array[float] = [1.00, 1.15, 1.35, 1.60, 1.90]
+@export var tier_multipliers: Array[float] = [1.00, 1.13, 1.32, 1.56, 1.84]
 
 @export var upgrade_hp_bonus: int = 20
 @export var upgrade_light_bonus: int = 1
@@ -312,12 +312,21 @@ func add_coins(amount: int) -> void:
 
 func spend_coins(amount: int) -> bool:
 	if amount <= 0:
-		return true
+		return false
 	if run.coins < amount:
 		return false
 	run.coins -= amount
 	GameEvents.coins_changed.emit(run.coins)
 	return true
+
+func get_coins() -> int:
+	return int(run.get("coins", 0))
+
+func get_tokens() -> int:
+	return int(run.get("upgrade_tokens", 0))
+
+func get_buy_token_cost() -> int:
+	return token_purchase_cost_coins
 
 func get_token_buy_cost() -> int:
 	return token_purchase_cost_coins

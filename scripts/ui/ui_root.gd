@@ -2,6 +2,7 @@ extends CanvasLayer
 
 const FAST_SELECTION_SECONDS := 12
 const UPGRADE_FLASH_TIME := 0.10
+const LEVEL_UP_POPUP_TIME := 1.2
 
 @onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsLabel") as Label
 @onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelRow/LevelLabel") as Label
@@ -37,6 +38,8 @@ const UPGRADE_FLASH_TIME := 0.10
 @onready var bet_no_hit_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
 @onready var bet_fast_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetFastButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
+@onready var level_up_popup: Panel = get_node_or_null("HUD/LevelUpPopup") as Panel
+@onready var level_up_body: Label = get_node_or_null("HUD/LevelUpPopup/PopupVBox/PopupBody") as Label
 @onready var game_over_panel: Panel = $HUD/GameOverPanel
 @onready var game_over_title: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverTitle") as Label
 @onready var game_over_hint: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverHint") as Label
@@ -68,6 +71,7 @@ var _level: int = 1
 var _tokens: int = 0
 var _coins: int = 0
 var _token_buy_cost: int = 100
+var _level_up_popup_id: int = 0
 
 func _ready() -> void:
 	GameEvents.coins_changed.connect(_on_coins_changed)
@@ -110,6 +114,8 @@ func _ready() -> void:
 
 	if debug_overlay != null:
 		debug_overlay.visible = false
+	if level_up_popup != null:
+		level_up_popup.visible = false
 
 	if fast_blink_timer != null:
 		fast_blink_timer.timeout.connect(_on_fast_blink_tick)
@@ -149,8 +155,11 @@ func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
 		_update_upgrade_costs()
 
 func _on_player_level_changed(level: int) -> void:
+	var previous_level := _level
 	_level = max(level, 1)
 	_refresh_progression_ui()
+	if _level > previous_level:
+		_show_level_up_popup()
 
 func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
 	_xp_current = max(xp, 0)
@@ -182,7 +191,7 @@ func _refresh_progression_ui() -> void:
 func _update_buy_token_button() -> void:
 	if buy_token_button == null:
 		return
-	buy_token_button.text = "BUY TOKEN (%dc)" % _token_buy_cost
+	buy_token_button.text = "BUY TOKEN (%d COINS)" % _token_buy_cost
 	buy_token_button.disabled = _coins < _token_buy_cost
 
 func _get_token_buy_cost() -> int:
@@ -196,6 +205,30 @@ func _get_token_buy_cost() -> int:
 	if manager.has_variable("token_purchase_cost_coins"):
 		return int(manager.get("token_purchase_cost_coins"))
 	return 100
+
+func _get_tokens_per_level() -> int:
+	var manager := _get_run_manager()
+	if manager == null:
+		return 1
+	if manager.has_variable("tokens_per_level"):
+		return int(manager.get("tokens_per_level"))
+	return 1
+
+func _show_level_up_popup() -> void:
+	if level_up_popup == null:
+		return
+	_level_up_popup_id += 1
+	var popup_id := _level_up_popup_id
+	var tokens_per_level := _get_tokens_per_level()
+	if level_up_body != null:
+		var token_label := "TOKEN" if tokens_per_level == 1 else "TOKENS"
+		level_up_body.text = "+%d %s" % [tokens_per_level, token_label]
+	level_up_popup.visible = true
+	level_up_popup.modulate.a = 1.0
+	await get_tree().create_timer(LEVEL_UP_POPUP_TIME).timeout
+	if popup_id != _level_up_popup_id:
+		return
+	level_up_popup.visible = false
 
 func _on_buy_token_pressed() -> void:
 	var manager := _get_run_manager()
@@ -238,6 +271,8 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	if level_up_popup != null:
+		level_up_popup.visible = false
 	_token_buy_cost = _get_token_buy_cost()
 	_update_buy_token_button()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
@@ -265,6 +300,8 @@ func _on_run_failed() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	if level_up_popup != null:
+		level_up_popup.visible = false
 	_reset_fast_countdown()
 	if upgrade_panel != null:
 		upgrade_panel.visible = false

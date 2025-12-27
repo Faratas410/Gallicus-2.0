@@ -88,8 +88,12 @@ func _try_attack(damage: int, range: float, cooldown: float, cone_angle_deg: flo
 
 func _dir_to_cardinal(dir: Vector2) -> Vector2:
 	if absf(dir.x) > absf(dir.y):
-		return Vector2.RIGHT if dir.x > 0.0 else Vector2.LEFT
-	return Vector2.DOWN if dir.y > 0.0 else Vector2.UP
+		if dir.x > 0.0:
+			return Vector2.RIGHT
+		return Vector2.LEFT
+	if dir.y > 0.0:
+		return Vector2.DOWN
+	return Vector2.UP
 
 func _update_sword_idle_pose() -> void:
 	if sword_sprite == null:
@@ -100,7 +104,9 @@ func _update_sword_idle_pose() -> void:
 		sword_sprite.texture = SWORD_TEX_IDLE
 
 	var card := _dir_to_cardinal(_last_aim_dir)
-	sword_sprite.z_index = -1 if card == Vector2.UP else 10
+	sword_sprite.z_index = 10
+	if card == Vector2.UP:
+		sword_sprite.z_index = -1
 
 	var base_rot := 0.0
 	if card == Vector2.UP:
@@ -145,7 +151,9 @@ func _play_sword_swing() -> void:
 	_is_swinging = true
 	sword_sprite.texture = SWORD_TEX_SWING
 	sword_sprite.rotation = base_rot
-	sword_sprite.z_index = -1 if card == Vector2.UP else 10
+	sword_sprite.z_index = 10
+	if card == Vector2.UP:
+		sword_sprite.z_index = -1
 
 	var swing_a := deg_to_rad(-35)
 	var swing_b := deg_to_rad(35)

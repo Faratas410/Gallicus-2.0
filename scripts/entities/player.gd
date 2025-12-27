@@ -157,7 +157,10 @@ func _physics_process(delta: float) -> void:
 	if _state == PlayerState.IDLE or _state == PlayerState.MOVE:
 		velocity = input_dir * get_effective_move_speed()
 		move_and_slide()
-		_state = PlayerState.MOVE if input_dir != Vector2.ZERO else PlayerState.IDLE
+		if input_dir != Vector2.ZERO:
+			_state = PlayerState.MOVE
+		else:
+			_state = PlayerState.IDLE
 		return
 
 	if debug_input and (

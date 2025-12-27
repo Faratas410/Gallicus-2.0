@@ -325,7 +325,10 @@ func _animate_xp_bar(xp: int, xp_to_next: int) -> void:
 		_xp_anim_tween = create_tween()
 		_xp_anim_tween.set_trans(Tween.TRANS_QUAD)
 		_xp_anim_tween.set_ease(Tween.EASE_OUT)
-		_xp_anim_tween.tween_property(xp_bar, "value", target, 0.10 if changed_curve else 0.14)
+		var anim_duration := 0.14
+		if changed_curve:
+			anim_duration = 0.10
+		_xp_anim_tween.tween_property(xp_bar, "value", target, anim_duration)
 		return
 
 	_xp_anim_tween = create_tween()
@@ -650,7 +653,9 @@ func _stop_fast_blink() -> void:
 func _on_fast_blink_tick() -> void:
 	if fast_countdown_label == null:
 		return
-	var next_alpha := 0.2 if fast_countdown_label.modulate.a > 0.6 else 1.0
+	var next_alpha := 1.0
+	if fast_countdown_label.modulate.a > 0.6:
+		next_alpha = 0.2
 	fast_countdown_label.modulate.a = next_alpha
 
 func _on_player_spawned(p: Node) -> void:
@@ -698,9 +703,13 @@ func _on_bet_failed(can_retry: bool) -> void:
 	if game_over_panel != null:
 		game_over_panel.visible = true
 	if game_over_title != null:
-		game_over_title.text = "BET FAILED" if can_retry else "RUN FAILED"
+		game_over_title.text = "RUN FAILED"
+		if can_retry:
+			game_over_title.text = "BET FAILED"
 	if game_over_hint != null:
-		game_over_hint.text = "Riprova la scommessa?" if can_retry else "Vuoi riprovare?"
+		game_over_hint.text = "Vuoi riprovare?"
+		if can_retry:
+			game_over_hint.text = "Riprova la scommessa?"
 	if next_bet_button != null:
 		next_bet_button.visible = can_retry
 		next_bet_button.text = "RETRY BET"

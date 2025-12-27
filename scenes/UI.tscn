@@ -20,6 +20,17 @@ pause_mode = 2
 script = ExtResource("1")
 theme = ExtResource("3")
 
+[node name="SFX" type="Node" parent="."]
+
+[node name="SfxLevelUp" type="AudioStreamPlayer" parent="SFX"]
+bus = "Master"
+
+[node name="SfxBuyToken" type="AudioStreamPlayer" parent="SFX"]
+bus = "Master"
+
+[node name="SfxUpgradeBuy" type="AudioStreamPlayer" parent="SFX"]
+bus = "Master"
+
 [node name="HUD" type="Control" parent="."]
 mouse_filter = 2
 anchor_right = 1.0
@@ -51,45 +62,44 @@ offset_bottom = -12.0
 [node name="CoinsRow" type="HBoxContainer" parent="HUD/Panel/VBox"]
 size_flags_horizontal = 3
 
-[node name="CoinsIcon" type="TextureRect" parent="HUD/Panel/VBox/CoinsRow"]
+[node name="CoinIcon" type="TextureRect" parent="HUD/Panel/VBox/CoinsRow"]
 custom_minimum_size = Vector2(16, 16)
 texture = ExtResource("5")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="CoinsLabel" type="Label" parent="HUD/Panel/VBox/CoinsRow"]
+autowrap_mode = 2
 size_flags_horizontal = 3
 text = "Coins: 0"
 
 [node name="TokensRow" type="HBoxContainer" parent="HUD/Panel/VBox"]
 size_flags_horizontal = 3
 
-[node name="TokensIcon" type="TextureRect" parent="HUD/Panel/VBox/TokensRow"]
+[node name="TokenIcon" type="TextureRect" parent="HUD/Panel/VBox/TokensRow"]
 custom_minimum_size = Vector2(16, 16)
 texture = ExtResource("6")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="TokensLabel" type="Label" parent="HUD/Panel/VBox/TokensRow"]
+autowrap_mode = 2
 size_flags_horizontal = 3
 text = "Tokens: 0"
 
-[node name="LevelRow" type="HBoxContainer" parent="HUD/Panel/VBox"]
-size_flags_horizontal = 3
-
-[node name="LevelLabel" type="Label" parent="HUD/Panel/VBox/LevelRow"]
-size_flags_horizontal = 3
+[node name="LevelLabel" type="Label" parent="HUD/Panel/VBox"]
+autowrap_mode = 2
 text = "Level: 1"
 
 [node name="XPBar" type="ProgressBar" parent="HUD/Panel/VBox"]
 custom_minimum_size = Vector2(260, 14)
 min_value = 0.0
-max_value = 5.0
+max_value = 6.0
 value = 0.0
 
 [node name="XPLabel" type="Label" parent="HUD/Panel/VBox"]
 autowrap_mode = 2
-text = "XP: 0/5"
+text = "XP: 0/6"
 
 [node name="BetInfoLabel" type="Label" parent="HUD/Panel/VBox"]
 autowrap_mode = 2
@@ -154,43 +164,32 @@ text = "NO_HIT"
 [node name="BetFastButton" type="Button" parent="HUD/BetPanel/BetVBox/BetButtons"]
 text = "FAST"
 
-[node name="BuyTokenButton" type="Button" parent="HUD/BetPanel/BetVBox"]
-custom_minimum_size = Vector2(0, 44)
+[node name="BuyTokenRow" type="HBoxContainer" parent="HUD/BetPanel/BetVBox"]
 size_flags_horizontal = 3
-text = "BUY TOKEN (100 COINS)"
 
-[node name="LevelUpPopup" type="Panel" parent="HUD"]
+[node name="BuyTokenButton" type="Button" parent="HUD/BetPanel/BetVBox/BuyTokenRow"]
+custom_minimum_size = Vector2(0, 40)
+size_flags_horizontal = 3
+text = "BUY TOKEN (100c)"
+
+[node name="BuyTokenInfo" type="Label" parent="HUD/BetPanel/BetVBox/BuyTokenRow"]
+autowrap_mode = 2
+text = "x1"
+
+[node name="LevelUpPopup" type="Label" parent="HUD"]
 visible = false
-z_index = 120
-mouse_filter = 2
+z_index = 110
 anchor_left = 0.5
 anchor_top = 0.25
 anchor_right = 0.5
 anchor_bottom = 0.25
-offset_left = -200.0
-offset_top = -40.0
-offset_right = 200.0
-offset_bottom = 40.0
-clip_contents = true
-custom_minimum_size = Vector2(400, 80)
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
-
-[node name="PopupVBox" type="VBoxContainer" parent="HUD/LevelUpPopup"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 10.0
-offset_right = -12.0
-offset_bottom = -10.0
-
-[node name="PopupTitle" type="Label" parent="HUD/LevelUpPopup/PopupVBox"]
-horizontal_alignment = 1
-text = "LEVEL UP!"
-
-[node name="PopupBody" type="Label" parent="HUD/LevelUpPopup/PopupVBox"]
+offset_left = -240.0
+offset_top = -20.0
+offset_right = 240.0
+offset_bottom = 20.0
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "+1 TOKEN"
+text = "LEVEL UP! +1 TOKEN"
 
 [node name="GameOverPanel" type="Panel" parent="HUD"]
 visible = false

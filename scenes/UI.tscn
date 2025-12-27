@@ -4,8 +4,6 @@
 [ext_resource type="Texture2D" path="res://assets/ui/ui_upgrade_panel_gallicus.png" id="2"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_panel_96x64.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/icon_coin_16.png" id="5"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/icon_token_16.png" id="6"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
 texture_margin_left = 12.0
@@ -64,7 +62,6 @@ size_flags_horizontal = 3
 
 [node name="CoinIcon" type="TextureRect" parent="HUD/Panel/VBox/CoinsRow"]
 custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("5")
 expand_mode = 1
 stretch_mode = 5
 
@@ -78,7 +75,6 @@ size_flags_horizontal = 3
 
 [node name="TokenIcon" type="TextureRect" parent="HUD/Panel/VBox/TokensRow"]
 custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("6")
 expand_mode = 1
 stretch_mode = 5
 

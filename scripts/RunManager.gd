@@ -127,8 +127,8 @@ func _on_wave_cleared(_wave: int) -> void:
 func _on_player_spawned(player: Node) -> void:
 	if player and player.has_signal("died"):
 		var died_callable := Callable(self, "_on_player_died")
-		if not player.is_connected("died", died_callable):
-			player.connect("died", died_callable)
+		if not player.died.is_connected(died_callable):
+			player.died.connect(died_callable)
 
 func _on_player_died() -> void:
 	_player_alive = false

@@ -10,8 +10,8 @@ const DAMAGE_INVULN_SECONDS: float = 0.25
 
 @export var move_speed: float = 220.0
 @export var max_health: int = 100
-@export var light_damage: int = 6
-@export var heavy_damage: int = 10
+@export var light_damage: int = 12
+@export var heavy_damage: int = 25
 @export var light_range: float = 60.0
 @export var heavy_range: float = 90.0
 @export var light_cone_angle_deg: float = 90.0

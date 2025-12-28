@@ -1,28 +1,56 @@
-extends Node2D
+extends Control
 
-@export var y_offset: float = -24.0
-@export var bar_width: float = 28.0
-@export var bar_height: float = 4.0
-@export var background_color: Color = Color(0.1, 0.1, 0.1, 0.9)
-@export var fill_color: Color = Color(0.9, 0.2, 0.2, 0.95)
-@export var border_color: Color = Color(0.0, 0.0, 0.0, 1.0)
+@onready var bar: ProgressBar = $Bar
 
-var _current: int = 0
-var _max: int = 1
+var _target: Node2D = null
+var _anchor: Node2D = null
+
+func _ready() -> void:
+	top_level = true
+	z_index = 200
+
+func set_target(target: Node2D, anchor: Node2D) -> void:
+	_target = target
+	_anchor = anchor
 
 func set_health(current: int, maxh: int) -> void:
 	var safe_max: int = maxi(maxh, 1)
-	var safe_current: int = mini(maxi(current, 0), safe_max)
-	_current = safe_current
-	_max = safe_max
-	queue_redraw()
+	var safe_current: int = clampi(current, 0, safe_max)
+	if bar == null:
+		return
+	bar.max_value = float(safe_max)
+	bar.value = float(safe_current)
 
-func _draw() -> void:
-	var top_left: Vector2 = Vector2(-bar_width * 0.5, y_offset)
-	var bg_rect: Rect2 = Rect2(top_left, Vector2(bar_width, bar_height))
-	draw_rect(bg_rect, background_color)
-	var fill_ratio: float = float(_current) / float(_max)
-	var fill_width: float = bar_width * fill_ratio
-	var fill_rect: Rect2 = Rect2(top_left, Vector2(fill_width, bar_height))
-	draw_rect(fill_rect, fill_color)
-	draw_rect(bg_rect, border_color, false, 1.0)
+func _process(_delta: float) -> void:
+	if _target == null or not is_instance_valid(_target):
+		queue_free()
+		return
+
+	var anchor: Node2D = _target
+	if _anchor != null and is_instance_valid(_anchor):
+		anchor = _anchor
+
+	var cam: Camera2D = get_viewport().get_camera_2d() as Camera2D
+	if cam == null:
+		var cams: Array = get_tree().get_nodes_in_group("cameras")
+		for c: Node in cams:
+			if c is Camera2D and (c as Camera2D).is_current():
+				cam = c as Camera2D
+				break
+	if cam == null:
+		var any_cam: Node = get_tree().get_first_node_in_group("camera_2d")
+		if any_cam is Camera2D:
+			cam = any_cam as Camera2D
+	if cam == null:
+		return
+
+	var world_pos: Vector2 = anchor.global_position
+	var screen_pos: Vector2 = cam.unproject_position(world_pos)
+	var half: Vector2 = size * 0.5
+	var pos: Vector2 = screen_pos - half
+	var viewport_rect: Rect2 = get_viewport().get_visible_rect()
+	var vp_size: Vector2 = viewport_rect.size
+	var pad: float = 2.0
+	pos.x = clampf(pos.x, viewport_rect.position.x + pad, viewport_rect.position.x + vp_size.x - size.x - pad)
+	pos.y = clampf(pos.y, viewport_rect.position.y + pad, viewport_rect.position.y + vp_size.y - size.y - pad)
+	position = pos

@@ -1,3 +1,4 @@
+; DEPRECATED: use res://scenes/enemies/EnemyBasic.tscn
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/entities/enemy_basic.gd" id="1"]

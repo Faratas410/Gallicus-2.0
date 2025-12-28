@@ -7,6 +7,8 @@ extends Node
 @export var arena_scene: PackedScene = preload("res://scenes/Arena.tscn")
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
 
+const DEBUG_RUNTIME_LOGS: bool = false
+
 # --- XP / Leveling ---
 @export var starting_level: int = 1
 @export var starting_tokens: int = 0
@@ -804,6 +806,8 @@ func _find_spawn_node(root: Node) -> Node:
 	return root.find_child("PlayerSpawnPoint", true, false)
 
 func _log_runtime_state(tag: String) -> void:
+	if not DEBUG_RUNTIME_LOGS:
+		return
 	var player_node := _resolve_player()
 	var player_exists := player_node != null
 	var player_in_tree := player_exists and player_node.is_inside_tree()

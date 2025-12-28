@@ -3,60 +3,62 @@ extends CanvasLayer
 const FAST_SELECTION_SECONDS := 12
 const UPGRADE_FLASH_TIME := 0.10
 
-@onready var coins_label: Label = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinsLabel") as Label
-@onready var tokens_label: Label = get_node_or_null("HUD/Panel/VBox/TokensRow/TokensLabel") as Label
-@onready var level_label: Label = get_node_or_null("HUD/Panel/VBox/LevelLabel") as Label
-@onready var bet_info_label: Label = get_node_or_null("HUD/Panel/VBox/BetInfoLabel") as Label
-@onready var xp_bar: ProgressBar = get_node_or_null("HUD/Panel/VBox/XPBar") as ProgressBar
-@onready var xp_label: Label = get_node_or_null("HUD/Panel/VBox/XPLabel") as Label
-@onready var player_hp_bar: ProgressBar = $HUD/Panel/VBox/PlayerHPBar
-@onready var player_hp_label: Label = $HUD/Panel/VBox/PlayerHPLabel
-@onready var bet_panel: Panel = _req("HUD/BetPanel") as Panel
-@onready var buy_token_button: Button = get_node_or_null("HUD/BetPanel/BetVBox/BuyTokenRow/BuyTokenButton") as Button
-@onready var buy_token_info: Label = get_node_or_null("HUD/BetPanel/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
-@onready var coins_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/CoinsRow/CoinIcon") as TextureRect
-@onready var tokens_icon: TextureRect = get_node_or_null("HUD/Panel/VBox/TokensRow/TokenIcon") as TextureRect
-@onready var modal_dimmer: ColorRect = get_node_or_null("HUD/ModalDimmer") as ColorRect
-@onready var upgrade_panel: Panel = get_node_or_null("HUD/UpgradePanel") as Panel
-@onready var upgrade_root: Control = get_node_or_null("HUD/UpgradePanel") as Control
-@onready var upgrade_bg: TextureRect = get_node_or_null("HUD/UpgradePanel/UpgradeBG") as TextureRect
-@onready var upgrade_content_area: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea") as Control
-@onready var upgrade_vbox: VBoxContainer = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox") as VBoxContainer
-@onready var upgrade_tokens_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeCoinsLabel") as Label
-@onready var upgrade_hp_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
-@onready var upgrade_light_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
-@onready var upgrade_heavy_label: Label = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
-@onready var upgrade_hp_row: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow") as Control
-@onready var upgrade_light_row: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow") as Control
-@onready var upgrade_heavy_row: Control = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow") as Control
-@onready var upgrade_hp_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPButton") as Button
-@onready var upgrade_light_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightButton") as Button
-@onready var upgrade_heavy_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyButton") as Button
-@onready var upgrade_continue_button: Button = get_node_or_null("HUD/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeContinueButton") as Button
-@onready var stake_input: SpinBox = _req("HUD/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
-@onready var bet_win_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
-@onready var bet_no_hit_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
-@onready var bet_fast_button: Button = _req("HUD/BetPanel/BetVBox/BetButtons/BetFastButton") as Button
+@onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/CoinsRow/CoinsLabel") as Label
+@onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/TokensRow/TokensLabel") as Label
+@onready var level_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/LevelRow/LevelLabel") as Label
+@onready var bet_info_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/BetRow/BetInfoLabel") as Label
+@onready var xp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/HUDVBox/XPRow/XPBar") as ProgressBar
+@onready var xp_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/XPRow/XPLabel") as Label
+@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/HUDVBox/PlayerHPRow/PlayerHPBar") as ProgressBar
+@onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/PlayerHPRow/PlayerHPLabel") as Label
+@onready var bet_panel: Panel = _req("Modals/BetPanel") as Panel
+@onready var buy_token_button: Button = get_node_or_null("Modals/BetPanel/BetVBox/BuyTokenRow/BuyTokenButton") as Button
+@onready var buy_token_info: Label = get_node_or_null("Modals/BetPanel/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
+@onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/HUDVBox/CoinsRow/CoinIcon") as TextureRect
+@onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/HUDVBox/TokensRow/TokenIcon") as TextureRect
+@onready var modal_dimmer: ColorRect = get_node_or_null("Modals/ModalDimmer") as ColorRect
+@onready var upgrade_panel: Panel = get_node_or_null("Modals/UpgradePanel") as Panel
+@onready var upgrade_root: Control = get_node_or_null("Modals/UpgradePanel") as Control
+@onready var upgrade_bg: TextureRect = get_node_or_null("Modals/UpgradePanel/UpgradeBG") as TextureRect
+@onready var upgrade_content_area: Control = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea") as Control
+@onready var upgrade_vbox: VBoxContainer = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox") as VBoxContainer
+@onready var upgrade_tokens_label: Label = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeCoinsLabel") as Label
+@onready var upgrade_hp_label: Label = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPLabel") as Label
+@onready var upgrade_light_label: Label = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightLabel") as Label
+@onready var upgrade_heavy_label: Label = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyLabel") as Label
+@onready var upgrade_hp_row: Control = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow") as Control
+@onready var upgrade_light_row: Control = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow") as Control
+@onready var upgrade_heavy_row: Control = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow") as Control
+@onready var upgrade_hp_button: Button = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHPRow/UpgradeHPRowHBox/UpgradeHPButton") as Button
+@onready var upgrade_light_button: Button = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightButton") as Button
+@onready var upgrade_heavy_button: Button = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyButton") as Button
+@onready var upgrade_continue_button: Button = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeContinueButton") as Button
+@onready var stake_input: SpinBox = _req("Modals/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
+@onready var bet_win_button: Button = _req("Modals/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
+@onready var bet_no_hit_button: Button = _req("Modals/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
+@onready var bet_fast_button: Button = _req("Modals/BetPanel/BetVBox/BetButtons/BetFastButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var sfx_upgrade_buy: AudioStreamPlayer = get_node_or_null("SFX/SfxUpgradeBuy") as AudioStreamPlayer
-@onready var game_over_panel: Panel = $HUD/GameOverPanel
-@onready var game_over_title: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverTitle") as Label
-@onready var game_over_hint: Label = get_node_or_null("HUD/GameOverPanel/GameOverVBox/GameOverHint") as Label
-@onready var restart_button: Button = $HUD/GameOverPanel/GameOverVBox/RestartButton
-@onready var next_bet_button: Button = $HUD/GameOverPanel/GameOverVBox/NextBetButton
-@onready var quit_button: Button = $HUD/GameOverPanel/GameOverVBox/QuitButton
-@onready var controls_hint_panel: Panel = $HUD/ControlsHintPanel
-@onready var countdown_label: Label = get_node_or_null("HUD/CountdownLabel") as Label
-@onready var fast_countdown_label: Label = get_node_or_null("HUD/FastCountdownLabel") as Label
-@onready var fast_blink_timer: Timer = get_node_or_null("HUD/FastBlinkTimer") as Timer
+@onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverPanel") as Panel
+@onready var game_over_title: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverTitle") as Label
+@onready var game_over_hint: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverHint") as Label
+@onready var restart_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/RestartButton") as Button
+@onready var next_bet_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/NextBetButton") as Button
+@onready var quit_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/QuitButton") as Button
+@onready var controls_hint_panel: Panel = get_node_or_null("HUD/ControlsHintPanel") as Panel
+@onready var countdown_label: Label = get_node_or_null("Modals/CountdownLabel") as Label
+@onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
+@onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
+@onready var enemy_bars: Control = get_node_or_null("WorldUI/EnemyBars") as Control
 
 @export var sfx_level_up_path: String = "res://assets/audio/ui/level_up.ogg"
 @export var sfx_buy_token_path: String = "res://assets/audio/ui/buy_token.ogg"
 @export var sfx_upgrade_buy_path: String = "res://assets/audio/ui/upgrade_buy.ogg"
 
+var _enemy_bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")
 var _bets_by_id: Dictionary = {}
 var _bet_manager: Node
 var _run_manager: Node
@@ -82,8 +84,10 @@ var _last_tokens: int = 0
 var _xp_anim_tween: Tween
 var _xp_punch_tween: Tween
 var _last_xp_to_next: int = 0
+var _enemy_bar_nodes: Dictionary = {}
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	GameEvents.coins_changed.connect(_on_coins_changed)
 	GameEvents.bet_placed.connect(_on_bet_placed)
 	GameEvents.run_started.connect(_on_run_started)
@@ -142,6 +146,7 @@ func _ready() -> void:
 		upgrade_panel.visible = false
 	if modal_dimmer != null:
 		modal_dimmer.visible = false
+		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if upgrade_continue_button != null:
 		upgrade_continue_button.pressed.connect(_on_upgrade_continue_pressed)
 	_update_upgrade_costs()
@@ -149,12 +154,64 @@ func _ready() -> void:
 	var arena: Node = get_tree().get_first_node_in_group("arena")
 	if arena != null and arena.has_signal("player_spawned"):
 		arena.player_spawned.connect(_on_player_spawned)
+		if arena.has_signal("enemy_spawned"):
+			arena.enemy_spawned.connect(_on_enemy_spawned)
+		if arena.has_signal("enemy_despawned"):
+			arena.enemy_despawned.connect(_on_enemy_despawned)
+		_sync_enemy_bars()
 
 	var p: Node = get_tree().get_first_node_in_group("player")
 	if p != null:
 		_bind_player(p)
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
+
+func _sync_enemy_bars() -> void:
+	if enemy_bars == null:
+		return
+	for enemy_node: Node in get_tree().get_nodes_in_group("enemies"):
+		if enemy_node is Node2D:
+			_ensure_enemy_bar(enemy_node)
+
+func _on_enemy_spawned(enemy: Node2D) -> void:
+	_ensure_enemy_bar(enemy)
+
+func _on_enemy_despawned(enemy: Node2D) -> void:
+	_remove_enemy_bar(enemy)
+
+func _on_enemy_tree_exited(enemy: Node2D) -> void:
+	_remove_enemy_bar(enemy)
+
+func _ensure_enemy_bar(enemy: Node2D) -> void:
+	if enemy_bars == null:
+		return
+	if _enemy_bar_nodes.has(enemy):
+		return
+	var bar: Control = _enemy_bar_scene.instantiate() as Control
+	if bar == null:
+		return
+	enemy_bars.add_child(bar)
+	var anchor: Node2D = _get_enemy_anchor(enemy)
+	if bar.has_method("set_target"):
+		bar.call("set_target", enemy, anchor)
+	_enemy_bar_nodes[enemy] = bar
+	var exit_callable: Callable = Callable(self, "_on_enemy_tree_exited").bind(enemy)
+	if not enemy.tree_exited.is_connected(exit_callable):
+		enemy.tree_exited.connect(exit_callable)
+
+func _remove_enemy_bar(enemy: Node2D) -> void:
+	if not _enemy_bar_nodes.has(enemy):
+		return
+	var bar: Control = _enemy_bar_nodes[enemy] as Control
+	_enemy_bar_nodes.erase(enemy)
+	if bar != null and is_instance_valid(bar):
+		bar.queue_free()
+
+func _get_enemy_anchor(enemy: Node2D) -> Node2D:
+	var anchor: Node2D = enemy.get_node_or_null("HpAnchor") as Node2D
+	if anchor != null:
+		return anchor
+	return enemy
 
 func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
 	if upgrade_panel != null and upgrade_panel.visible:
@@ -172,7 +229,7 @@ func _on_player_level_changed(level: int) -> void:
 func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
 	_animate_xp_bar(xp, xp_to_next)
 	if xp_label != null:
-		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
+		xp_label.text = "XP: %d/%d" % [xp, xp_to_next]
 
 func _on_upgrade_tokens_changed(tokens: int) -> void:
 	_on_tokens_changed(tokens)
@@ -925,6 +982,8 @@ func _center_upgrade_panel_to_texture() -> void:
 func _set_upgrade_modal(active: bool) -> void:
 	if modal_dimmer != null:
 		modal_dimmer.visible = active
+	if upgrade_panel != null:
+		upgrade_panel.visible = active
 	if active:
 		_controls_hint_was_visible = controls_hint_panel != null and controls_hint_panel.visible
 		_countdown_was_visible = countdown_label != null and countdown_label.visible

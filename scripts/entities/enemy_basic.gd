@@ -1,10 +1,11 @@
 extends CharacterBody2D
 
+signal health_changed(current: int, max: int)
 signal died
 
 # --- Base stats (these are the "tier 0" reference values) ---
 @export var base_move_speed: float = 150.0
-@export var base_max_health: int = 40
+@export var base_max_health: int = 35
 @export var base_touch_damage: int = 8
 @export var exp_on_death: int = 1
 
@@ -24,10 +25,12 @@ var _target: Node2D = null
 var _is_dead: bool = false
 var _last_mult: float = 1.0
 var _touch_cd: float = 0.0
+var _health_bar: Node = null
 
 func _ready() -> void:
 	add_to_group("enemies")
 	_reset_to_base()
+	_emit_health()
 
 func _physics_process(delta: float) -> void:
 	if _is_dead:
@@ -56,6 +59,7 @@ func take_damage(amount: int) -> void:
 	if amount <= 0:
 		return
 	_current_health = maxi(_current_health - amount, 0)
+	_emit_health()
 	if _current_health <= 0:
 		_die()
 
@@ -90,7 +94,7 @@ func apply_difficulty(mult: float) -> void:
 	# Scale stats
 	move_speed = base_move_speed * (_last_mult * speed_scale)
 	max_health = int(round(float(base_max_health) * (_last_mult * hp_scale)))
-	touch_damage = int(round(float(base_touch_damage) * (_last_mult * damage_scale)))
+	touch_damage = int(round(float(base_touch_damage) * (sqrt(_last_mult) * damage_scale)))
 
 	# Clamp & keep current health consistent:
 	if max_health < 1:
@@ -105,6 +109,7 @@ func apply_difficulty(mult: float) -> void:
 		_current_health = max_health
 	else:
 		_current_health = mini(_current_health, max_health)
+	_emit_health()
 
 # Backward-compat hook: some code may still call this name.
 func _apply_tier_scaling_from_run_manager() -> void:
@@ -117,7 +122,17 @@ func _reset_to_base() -> void:
 	touch_damage = base_touch_damage
 	_current_health = max_health
 	_last_mult = 1.0
+	_emit_health()
 
 func get_health() -> Array[int]:
 	var health: Array[int] = [_current_health, max_health]
 	return health
+
+func _emit_health() -> void:
+	if _health_bar == null:
+		var health_bar_node: Node = get_node_or_null("HealthBar")
+		if health_bar_node != null and health_bar_node.has_method("set_health"):
+			_health_bar = health_bar_node
+	if _health_bar != null:
+		_health_bar.call("set_health", _current_health, max_health)
+	health_changed.emit(_current_health, max_health)

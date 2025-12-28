@@ -161,7 +161,7 @@ func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
 		_update_upgrade_costs()
 
 func _on_player_level_changed(level: int) -> void:
-	_level = max(level, 1)
+	_level = maxi(level, 1)
 	if level_label != null:
 		level_label.text = "Level: %d" % _level
 	if _level > _last_level:
@@ -178,7 +178,7 @@ func _on_upgrade_tokens_changed(tokens: int) -> void:
 	_on_tokens_changed(tokens)
 
 func _on_tokens_changed(tokens: int) -> void:
-	_tokens = max(tokens, 0)
+	_tokens = maxi(tokens, 0)
 	if tokens_label != null:
 		tokens_label.text = "Tokens: %d" % _tokens
 	if upgrade_tokens_label != null:
@@ -199,7 +199,7 @@ func _refresh_progression_ui() -> void:
 	if tokens_label != null:
 		tokens_label.text = "Tokens: %d" % _tokens
 	if xp_bar != null:
-		xp_bar.max_value = float(max(_xp_to_next, 1))
+		xp_bar.max_value = float(maxi(_xp_to_next, 1))
 	if xp_label != null:
 		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
 
@@ -308,8 +308,8 @@ func _refresh_upgrade_shop_ui() -> void:
 func _animate_xp_bar(xp: int, xp_to_next: int) -> void:
 	if xp_bar == null:
 		return
-	_xp_current = max(xp, 0)
-	_xp_to_next = max(xp_to_next, 1)
+	_xp_current = maxi(xp, 0)
+	_xp_to_next = maxi(xp_to_next, 1)
 	var maxv := float(_xp_to_next)
 	xp_bar.max_value = maxv
 
@@ -480,6 +480,9 @@ func _on_run_started_ui() -> void:
 		xp_bar.value = 0
 	_refresh_buy_token_ui()
 	_refresh_upgrade_shop_ui()
+	var player_node: Node = get_tree().get_first_node_in_group("player")
+	if player_node != null:
+		_bind_player(player_node)
 
 func _on_run_failed() -> void:
 	if bet_info_label != null:
@@ -516,7 +519,7 @@ func _on_betting_opened() -> void:
 func _on_countdown_requested(seconds: int) -> void:
 	# FAST countdown must be visible during the round ONLY if the player selected FAST.
 	if _fast_countdown_active:
-		_handle_fast_countdown(min(seconds, FAST_SELECTION_SECONDS))
+		_handle_fast_countdown(mini(seconds, FAST_SELECTION_SECONDS))
 		return
 	if seconds <= 0:
 		return
@@ -879,8 +882,8 @@ func _center_upgrade_panel_to_texture() -> void:
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
 	var max_size := viewport_size * 0.95
-	size.x = min(size.x, max_size.x)
-	size.y = min(size.y, max_size.y)
+	size.x = minf(size.x, max_size.x)
+	size.y = minf(size.y, max_size.y)
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
 	upgrade_panel.custom_minimum_size = size

@@ -33,7 +33,7 @@ func set_target(target: Node2D) -> void:
 func take_damage(amount: int) -> void:
 	if _is_dead:
 		return
-	_current_health = max(_current_health - amount, 0)
+	_current_health = maxi(_current_health - amount, 0)
 	if _current_health <= 0:
 		_is_dead = true
 		_emit_exp_on_death()

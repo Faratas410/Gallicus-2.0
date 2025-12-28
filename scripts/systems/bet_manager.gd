@@ -68,7 +68,7 @@ func place_bet(bet_id: String, stake: int) -> bool:
 	var bet := _get_bet_by_id(bet_id)
 	if bet.is_empty():
 		return false
-	stake = max(stake, 0)
+	stake = maxi(stake, 0)
 	if stake > 0 and _run_manager and _run_manager.has_method("spend_coins"):
 		if not _run_manager.spend_coins(stake):
 			return false
@@ -241,7 +241,7 @@ func _emit_fast_countdown() -> void:
 		return
 	var elapsed := (Time.get_ticks_msec() / 1000.0) - _fast_start_time
 	var remaining := int(ceil(fast_time_limit - elapsed))
-	remaining = max(remaining, 0)
+	remaining = maxi(remaining, 0)
 	if remaining == _fast_last_emitted:
 		return
 	_fast_last_emitted = remaining

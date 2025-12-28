@@ -51,7 +51,7 @@ func take_damage(amount: int) -> void:
 		return
 	if amount <= 0:
 		return
-	_current_health = max(_current_health - amount, 0)
+	_current_health = maxi(_current_health - amount, 0)
 	if _current_health <= 0:
 		_die()
 
@@ -79,7 +79,7 @@ func _try_touch_damage() -> void:
 # --- Difficulty scaling API ---
 # Preferred: Arena calls this immediately after instantiation.
 func apply_difficulty(mult: float) -> void:
-	_last_mult = max(mult, 0.05)
+	_last_mult = maxf(mult, 0.05)
 
 	# Scale stats
 	move_speed = base_move_speed * (_last_mult * speed_scale)
@@ -98,7 +98,7 @@ func apply_difficulty(mult: float) -> void:
 	if _current_health <= 0:
 		_current_health = max_health
 	else:
-		_current_health = min(_current_health, max_health)
+		_current_health = mini(_current_health, max_health)
 
 # Backward-compat hook: some code may still call this name.
 func _apply_tier_scaling_from_run_manager() -> void:

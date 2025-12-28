@@ -121,7 +121,7 @@ func _spawn_debug_enemy() -> void:
 	_schedule_enemy_aggro_after_delay()
 
 func _on_enemy_died() -> void:
-	_enemies_remaining = max(_enemies_remaining - 1, 0)
+	_enemies_remaining = maxi(_enemies_remaining - 1, 0)
 	enemy_count_changed.emit(_enemies_remaining)
 	if _enemies_remaining == 0:
 		wave_cleared.emit(_current_wave)

@@ -6,6 +6,7 @@ signal died
 
 const SWORD_TEX_IDLE := preload("res://assets/sprites/player/sword_idle_up_32.png")
 const SWORD_TEX_SWING := preload("res://assets/sprites/player/sword_swing_horizontal_32.png")
+const DAMAGE_INVULN_SECONDS: float = 0.25
 
 @export var move_speed: float = 220.0
 @export var max_health: int = 100
@@ -36,6 +37,7 @@ var _is_swinging: bool = false
 var _base_max_health: int = 0
 var _base_light_damage: int = 0
 var _base_heavy_damage: int = 0
+var _damage_invuln: float = 0.0
 @onready var sword_sprite: Sprite2D = get_node_or_null("SwordSprite") as Sprite2D
 
 func _ready() -> void:
@@ -52,6 +54,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 	_dodge_timer = maxf(_dodge_timer - delta, 0.0)
+	_damage_invuln = maxf(_damage_invuln - delta, 0.0)
 
 	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if input_vector.length_squared() > 0.001:
@@ -191,14 +194,17 @@ func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) ->
 			enemy_node.call("take_damage", damage)
 
 func take_damage(amount: int) -> void:
+	if _damage_invuln > 0.0:
+		return
 	var final_damage := amount
 	if _is_blocking:
 		final_damage = int(round(amount * (1.0 - block_reduction)))
 	if final_damage > 0:
+		_damage_invuln = DAMAGE_INVULN_SECONDS
 		took_damage.emit(final_damage)
 		if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("player_damaged"):
 			GameEvents.player_damaged.emit()
-	_current_health = max(_current_health - final_damage, 0)
+	_current_health = maxi(_current_health - final_damage, 0)
 	_emit_health()
 	if _current_health <= 0:
 		died.emit()
@@ -251,7 +257,7 @@ func add_coins(amount: int) -> void:
 func apply_speed_boost(mult: float, seconds: float) -> void:
 	if mult <= 0.0 or seconds <= 0.0:
 		return
-	_speed_multiplier = max(_speed_multiplier, mult)
+	_speed_multiplier = maxf(_speed_multiplier, mult)
 	_speed_boost_token += 1
 	var token := _speed_boost_token
 	await get_tree().create_timer(seconds).timeout

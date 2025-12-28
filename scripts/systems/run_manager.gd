@@ -532,6 +532,12 @@ func _resolve_player() -> Node:
 
 func _connect_player_signals() -> void:
 	_player = _resolve_player()
+	if OS.is_debug_build() and _player != null:
+		var player_script: Script = _player.get_script()
+		var player_script_path: String = ""
+		if player_script != null:
+			player_script_path = player_script.resource_path
+		print("Runtime Player script:", player_script_path)
 	if _player == null:
 		return
 	var died_callable := Callable(self, "_on_player_died")

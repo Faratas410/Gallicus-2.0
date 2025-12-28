@@ -1,3 +1,4 @@
+# DEPRECATED: runtime Player is res://scripts/Player.gd via scenes/Player.tscn. Do not edit.
 extends CharacterBody2D
 
 signal hit_confirmed(target: Node)

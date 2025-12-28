@@ -85,6 +85,12 @@ func _spawn_enemies(count: int) -> void:
 	for i in range(count):
 		var enemy := enemy_scene.instantiate() as Node2D
 		add_child(enemy)
+		if OS.is_debug_build() and i == 0:
+			var enemy_script: Script = enemy.get_script()
+			var enemy_script_path: String = ""
+			if enemy_script != null:
+				enemy_script_path = enemy_script.resource_path
+			print("Spawned enemy script:", enemy_script_path)
 		var angle := _rng.randf_range(0.0, TAU)
 		var radius := _rng.randf_range(arena_radius * 0.5, arena_radius)
 		enemy.global_position = global_position + Vector2(cos(angle), sin(angle)) * radius

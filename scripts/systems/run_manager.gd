@@ -424,7 +424,7 @@ func _xp_needed_for_next(level: int) -> int:
 	var last := 5
 	if exp_curve.size() > 0:
 		last = int(exp_curve[exp_curve.size() - 1])
-	var extra := (idx - max(exp_curve.size() - 1, 0)) * max(exp_curve_tail_step, 1)
+	var extra: int = (idx - maxi(exp_curve.size() - 1, 0)) * maxi(exp_curve_tail_step, 1)
 	return last + extra
 
 func _check_level_up() -> bool:

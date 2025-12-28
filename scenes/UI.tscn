@@ -44,9 +44,9 @@ anchor_bottom = 0.0
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 360.0
-offset_bottom = 188.0
+offset_bottom = 236.0
 clip_contents = true
-custom_minimum_size = Vector2(320, 172)
+custom_minimum_size = Vector2(320, 220)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="VBox" type="VBoxContainer" parent="HUD/Panel"]
@@ -189,6 +189,7 @@ text = "LEVEL UP! +1 TOKEN"
 
 [node name="GameOverPanel" type="Panel" parent="HUD"]
 visible = false
+z_index = 95
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -303,7 +304,7 @@ autostart = false
 [node name="ModalDimmer" type="ColorRect" parent="HUD"]
 visible = false
 z_index = 90
-mouse_filter = 1
+mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.55)

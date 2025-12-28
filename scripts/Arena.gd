@@ -85,6 +85,7 @@ func _spawn_enemies(count: int) -> void:
 	for i in range(count):
 		var enemy := enemy_scene.instantiate() as Node2D
 		add_child(enemy)
+		enemy.add_to_group("enemies")
 		if OS.is_debug_build() and i == 0:
 			var enemy_script: Script = enemy.get_script()
 			var enemy_script_path: String = ""
@@ -118,6 +119,7 @@ func _spawn_debug_enemy() -> void:
 	await get_tree().create_timer(0.2).timeout
 	var enemy := enemy_scene.instantiate() as Node2D
 	add_child(enemy)
+	enemy.add_to_group("enemies")
 	enemy.global_position = Vector2(120.0, 0.0)
 	print("Spawned enemy")
 	_apply_difficulty_to_enemy(enemy)

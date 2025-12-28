@@ -17,16 +17,19 @@ var move_speed: float
 var max_health: int
 var touch_damage: int
 
+const TOUCH_COOLDOWN: float = 0.6
+
 var _current_health: int = 0
 var _target: Node2D = null
 var _is_dead: bool = false
 var _last_mult: float = 1.0
+var _touch_cd: float = 0.0
 
 func _ready() -> void:
 	add_to_group("enemies")
 	_reset_to_base()
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if _is_dead:
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -37,7 +40,8 @@ func _physics_process(_delta: float) -> void:
 		move_and_slide()
 		return
 
-	var dir := (_target.global_position - global_position).normalized()
+	_touch_cd = maxf(_touch_cd - delta, 0.0)
+	var dir: Vector2 = (_target.global_position - global_position).normalized()
 	velocity = dir * move_speed
 	move_and_slide()
 	_try_touch_damage()
@@ -71,10 +75,12 @@ func _die() -> void:
 func _try_touch_damage() -> void:
 	if _target == null or not is_instance_valid(_target):
 		return
-	# Keep it simple for now (no hit-cooldown): your player can handle invuln frames if needed
+	if _touch_cd > 0.0:
+		return
 	if global_position.distance_to(_target.global_position) <= 28.0:
 		if _target.has_method("take_damage"):
 			_target.call("take_damage", touch_damage)
+			_touch_cd = TOUCH_COOLDOWN
 
 # --- Difficulty scaling API ---
 # Preferred: Arena calls this immediately after instantiation.

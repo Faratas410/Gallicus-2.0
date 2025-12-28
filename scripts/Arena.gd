@@ -4,6 +4,8 @@ signal player_spawned(player: Node2D)
 signal wave_started(wave: int)
 signal wave_cleared(wave: int)
 signal enemy_count_changed(count: int)
+signal enemy_spawned(enemy: Node2D)
+signal enemy_despawned(enemy: Node2D)
 
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
 @export var enemy_scene: PackedScene = preload("res://scenes/enemies/EnemyBasic.tscn")
@@ -100,7 +102,8 @@ func _spawn_enemies(count: int) -> void:
 		_apply_difficulty_to_enemy(enemy)
 
 		if enemy.has_signal("died"):
-			enemy.connect("died", _on_enemy_died)
+			enemy.died.connect(_on_enemy_died.bind(enemy))
+		enemy_spawned.emit(enemy)
 
 func _apply_difficulty_to_enemy(enemy: Node) -> void:
 	if enemy == null or not is_instance_valid(enemy):
@@ -124,13 +127,15 @@ func _spawn_debug_enemy() -> void:
 	print("Spawned enemy")
 	_apply_difficulty_to_enemy(enemy)
 	if enemy.has_signal("died"):
-		enemy.connect("died", _on_enemy_died)
+		enemy.died.connect(_on_enemy_died.bind(enemy))
+	enemy_spawned.emit(enemy)
 	# stesso comportamento: non aggro immediato
 	_schedule_enemy_aggro_after_delay()
 
-func _on_enemy_died() -> void:
+func _on_enemy_died(enemy: Node2D) -> void:
 	_enemies_remaining = maxi(_enemies_remaining - 1, 0)
 	enemy_count_changed.emit(_enemies_remaining)
+	enemy_despawned.emit(enemy)
 	if _enemies_remaining == 0:
 		wave_cleared.emit(_current_wave)
 
@@ -187,6 +192,8 @@ func _on_run_failed() -> void:
 func _clear_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if enemy is Node and is_ancestor_of(enemy):
+			if enemy is Node2D:
+				enemy_despawned.emit(enemy)
 			enemy.queue_free()
 	_enemies_remaining = 0
 	enemy_count_changed.emit(_enemies_remaining)

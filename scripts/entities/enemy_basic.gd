@@ -117,3 +117,7 @@ func _reset_to_base() -> void:
 	touch_damage = base_touch_damage
 	_current_health = max_health
 	_last_mult = 1.0
+
+func get_health() -> Array[int]:
+	var health: Array[int] = [_current_health, max_health]
+	return health

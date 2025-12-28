@@ -95,6 +95,10 @@ func _boot() -> void:
 	_log_runtime_state("boot_complete")
 
 func start_new_run() -> void:
+	get_tree().paused = false
+	Engine.time_scale = 1.0
+	if GameEvents != null and GameEvents.has_method("set_gameplay_enabled"):
+		GameEvents.set_gameplay_enabled(true)
 	_prep_sequence_id += 1
 	var current_id := _prep_sequence_id
 	_run_failed_emitted = false
@@ -435,7 +439,7 @@ func _check_level_up() -> bool:
 	while xp >= needed and needed > 0:
 		xp -= needed
 		lvl += 1
-		run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + max(tokens_per_level, 0)
+		run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + maxi(tokens_per_level, 0)
 		needed = _xp_needed_for_next(lvl)
 		leveled = true
 	run["level"] = lvl
@@ -483,7 +487,7 @@ func _recompute_difficulty_tier(force_emit: bool) -> void:
 	var lvl := int(run.get("level", 1))
 	var new_tier := 0
 	if levels_per_tier > 0:
-		new_tier = int(floor(float(max(lvl - 1, 0)) / float(levels_per_tier)))
+		new_tier = int(floor(float(maxi(lvl - 1, 0)) / float(levels_per_tier)))
 	var old_tier := int(run.get("difficulty_tier", 0))
 	run["difficulty_tier"] = new_tier
 	var mult := get_difficulty_multiplier()
@@ -575,7 +579,7 @@ func retry_current_bet() -> void:
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	GameEvents.set_gameplay_enabled(false)
-	run["arena_index"] = max(int(run.get("arena_index", 0)) - 1, 0)
+	run["arena_index"] = maxi(int(run.get("arena_index", 0)) - 1, 0)
 	if _arena and _arena.has_method("soft_reset"):
 		_arena.call("soft_reset")
 	_clear_enemies()

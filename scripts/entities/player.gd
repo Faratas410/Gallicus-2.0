@@ -117,7 +117,7 @@ func _physics_process(delta: float) -> void:
 
 	if _state == PlayerState.HITSTUN:
 		velocity = _knockback_velocity
-		_knockback_timer = max(_knockback_timer - delta, 0.0)
+		_knockback_timer = maxf(_knockback_timer - delta, 0.0)
 		move_and_slide()
 		if _knockback_timer <= 0.0:
 			_state = PlayerState.IDLE
@@ -179,9 +179,9 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 	var final_damage := amount
 	var knockback_scale := 1.0
 	if is_blocking:
-		final_damage = max(1, int(ceil(amount * 0.4)))
+		final_damage = maxi(1, int(ceil(amount * 0.4)))
 		knockback_scale = 0.4
-	_current_health = max(_current_health - final_damage, 0)
+	_current_health = maxi(_current_health - final_damage, 0)
 	health_changed.emit(_current_health, max_health)
 	if final_damage > 0:
 		GameEvents.player_damaged.emit()
@@ -214,7 +214,7 @@ func add_coins(amount: int) -> void:
 func apply_speed_boost(mult: float, seconds: float) -> void:
 	if mult <= 0.0 or seconds <= 0.0:
 		return
-	_speed_multiplier = max(_speed_multiplier, mult)
+	_speed_multiplier = maxf(_speed_multiplier, mult)
 	_speed_boost_token += 1
 	var token := _speed_boost_token
 	await get_tree().create_timer(seconds).timeout
@@ -343,7 +343,7 @@ func _update_block_state() -> void:
 
 func _update_attack_cooldown(delta: float) -> void:
 	if _attack_cooldown > 0.0:
-		_attack_cooldown = max(_attack_cooldown - delta, 0.0)
+		_attack_cooldown = maxf(_attack_cooldown - delta, 0.0)
 
 func _set_hitbox_active(active: bool) -> void:
 	hitbox.monitoring = active

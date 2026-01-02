@@ -22,10 +22,12 @@ func set_health(current: int, maxh: int) -> void:
 	bar.value = float(safe_current)
 
 func _world_to_screen(world_pos: Vector2) -> Vector2:
-	# Godot 4.x: Transform2D.xform() non è più disponibile come in 3.x.
-	# get_screen_transform() converte coordinate canvas->screen in modo corretto con Camera2D/zoom.
-	var t: Transform2D = get_viewport().get_screen_transform()
-	return t * world_pos
+	var viewport: Viewport = get_viewport()
+	var cam: Camera2D = viewport.get_camera_2d()
+	if cam != null:
+		return cam.get_screen_position(world_pos)
+	var fallback_transform: Transform2D = viewport.get_canvas_transform().affine_inverse()
+	return fallback_transform * world_pos
 
 func _process(_delta: float) -> void:
 	if _target == null or not is_instance_valid(_target):
@@ -38,11 +40,17 @@ func _process(_delta: float) -> void:
 
 	var world_pos: Vector2 = anchor.global_position
 	var screen_pos: Vector2 = _world_to_screen(world_pos)
-	var half: Vector2 = size * 0.5
-	var pos: Vector2 = screen_pos - half
+	var bar_size: Vector2 = size
+	if bar_size == Vector2.ZERO:
+		if bar != null and bar.size != Vector2.ZERO:
+			bar_size = bar.size
+		elif custom_minimum_size != Vector2.ZERO:
+			bar_size = custom_minimum_size
+	var offset: Vector2 = -(bar_size * 0.5)
+	var pos: Vector2 = screen_pos + offset
 	var viewport_rect: Rect2 = get_viewport().get_visible_rect()
 	var vp_size: Vector2 = viewport_rect.size
 	var pad: float = 2.0
-	pos.x = clampf(pos.x, viewport_rect.position.x + pad, viewport_rect.position.x + vp_size.x - size.x - pad)
-	pos.y = clampf(pos.y, viewport_rect.position.y + pad, viewport_rect.position.y + vp_size.y - size.y - pad)
-	position = pos
+	pos.x = clampf(pos.x, pad, vp_size.x - bar_size.x - pad)
+	pos.y = clampf(pos.y, pad, vp_size.y - bar_size.y - pad)
+	global_position = pos

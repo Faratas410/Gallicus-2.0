@@ -66,6 +66,7 @@ var _arena: Node
 var _player: Node = null
 var _has_seen_controls: bool = false
 var _fast_countdown_active: bool = false
+var _controls_first_run_active: bool = true
 var _selected_bet_id: String = ""
 var _pending_bets: Array = []
 var _upgrade_modal_active: bool = false
@@ -88,6 +89,10 @@ var _enemy_bar_nodes: Dictionary = {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	if controls_hint_panel != null:
+		controls_hint_panel.visible = true
+		_has_seen_controls = false
+		_controls_first_run_active = true
 	var coins_changed_callable: Callable = Callable(self, "_on_coins_changed")
 	if not GameEvents.coins_changed.is_connected(coins_changed_callable):
 		GameEvents.coins_changed.connect(coins_changed_callable)
@@ -645,11 +650,7 @@ func _on_countdown_requested(seconds: int) -> void:
 func _on_run_started_controls() -> void:
 	if controls_hint_panel == null:
 		return
-	if not _has_seen_controls:
-		controls_hint_panel.visible = true
-		_has_seen_controls = true
-	else:
-		controls_hint_panel.visible = false
+	controls_hint_panel.visible = _controls_first_run_active and (not _has_seen_controls)
 
 func _on_run_failed_controls() -> void:
 	if controls_hint_panel != null and _has_seen_controls:
@@ -1083,6 +1084,18 @@ func _process(_delta: float) -> void:
 	]
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _controls_first_run_active and (not _has_seen_controls) and controls_hint_panel != null and controls_hint_panel.visible:
+		var should_dismiss: bool = false
+		if event is InputEventKey and event.pressed and not event.echo:
+			should_dismiss = true
+		elif event is InputEventMouseButton and event.pressed:
+			should_dismiss = true
+		elif event is InputEventJoypadButton and event.pressed:
+			should_dismiss = true
+		if should_dismiss:
+			_has_seen_controls = true
+			_controls_first_run_active = false
+			controls_hint_panel.visible = false
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F1:
 		if debug_overlay != null:
 			debug_overlay.visible = not debug_overlay.visible

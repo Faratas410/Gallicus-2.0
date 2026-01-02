@@ -6,7 +6,6 @@ var _target: Node2D = null
 var _anchor: Node2D = null
 
 func _ready() -> void:
-	top_level = true
 	z_index = 200
 
 func set_target(target: Node2D, anchor: Node2D) -> void:
@@ -25,9 +24,9 @@ func _world_to_screen(world_pos: Vector2) -> Vector2:
 	var viewport: Viewport = get_viewport()
 	var cam: Camera2D = viewport.get_camera_2d()
 	if cam != null:
-		var cam_transform: Transform2D = cam.get_canvas_transform().affine_inverse()
+		var cam_transform: Transform2D = cam.get_canvas_transform()
 		return cam_transform * world_pos
-	var fallback_transform: Transform2D = viewport.get_canvas_transform().affine_inverse()
+	var fallback_transform: Transform2D = viewport.get_canvas_transform()
 	return fallback_transform * world_pos
 
 func _process(_delta: float) -> void:
@@ -55,4 +54,4 @@ func _process(_delta: float) -> void:
 		var pad: float = 2.0
 		pos.x = clampf(pos.x, pad, vp_size.x - bar_size.x - pad)
 		pos.y = clampf(pos.y, pad, vp_size.y - bar_size.y - pad)
-	global_position = pos
+	position = pos

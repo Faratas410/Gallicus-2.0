@@ -26,6 +26,7 @@ var _is_dead: bool = false
 var _last_mult: float = 1.0
 var _touch_cd: float = 0.0
 var _health_bar: Node = null
+var ai_locked: bool = false
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -33,6 +34,10 @@ func _ready() -> void:
 	_emit_health()
 
 func _physics_process(delta: float) -> void:
+	if ai_locked:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	if _is_dead:
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -52,6 +57,9 @@ func _physics_process(delta: float) -> void:
 # Called by Arena when spawning enemies
 func set_target(target: Node2D) -> void:
 	_target = target
+
+func set_ai_locked(locked: bool) -> void:
+	ai_locked = locked
 
 func take_damage(amount: int) -> void:
 	if _is_dead:

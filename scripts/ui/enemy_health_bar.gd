@@ -34,20 +34,6 @@ func _process(_delta: float) -> void:
 	if _anchor != null and is_instance_valid(_anchor):
 		anchor = _anchor
 
-	var cam: Camera2D = get_viewport().get_camera_2d() as Camera2D
-	if cam == null:
-		var cams: Array = get_tree().get_nodes_in_group("cameras")
-		for c: Node in cams:
-			if c is Camera2D and (c as Camera2D).is_current():
-				cam = c as Camera2D
-				break
-	if cam == null:
-		var any_cam: Node = get_tree().get_first_node_in_group("camera_2d")
-		if any_cam is Camera2D:
-			cam = any_cam as Camera2D
-	if cam == null:
-		return
-
 	var world_pos: Vector2 = anchor.global_position
 	var screen_pos: Vector2 = _world_to_screen(world_pos)
 	var half: Vector2 = size * 0.5

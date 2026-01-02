@@ -22,8 +22,10 @@ func set_health(current: int, maxh: int) -> void:
 	bar.value = float(safe_current)
 
 func _world_to_screen(world_pos: Vector2) -> Vector2:
-	var canvas_transform: Transform2D = get_viewport().get_canvas_transform()
-	return canvas_transform.xform(world_pos)
+	# Godot 4.x: Transform2D.xform() non è più disponibile come in 3.x.
+	# get_screen_transform() converte coordinate canvas->screen in modo corretto con Camera2D/zoom.
+	var t: Transform2D = get_viewport().get_screen_transform()
+	return t * world_pos
 
 func _process(_delta: float) -> void:
 	if _target == null or not is_instance_valid(_target):

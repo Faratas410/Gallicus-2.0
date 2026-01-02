@@ -202,7 +202,7 @@ expand_mode = 2
 stretch_mode = 5
 
 # Content area that will be kept inside the "box" region of the upgrade background (positioned in code).
-[node name="UpgradeContentArea" type="Control" parent="Modals/UpgradePanel"]
+[node name="UpgradeContentArea" type="MarginContainer" parent="Modals/UpgradePanel"]
 mouse_filter = 2
 clip_contents = true
 anchor_left = 0.0
@@ -213,6 +213,10 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
 offset_bottom = 0.0
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
 
 [node name="UpgradeVBox" type="VBoxContainer" parent="Modals/UpgradePanel/UpgradeContentArea"]
 anchor_right = 1.0

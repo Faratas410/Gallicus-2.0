@@ -247,6 +247,14 @@ func _ensure_enemy_bar(enemy: Node2D) -> void:
 	var anchor: Node2D = _get_enemy_anchor(enemy)
 	if bar.has_method("set_target"):
 		bar.call("set_target", enemy, anchor)
+	if enemy.has_signal("health_changed") and bar.has_method("set_health"):
+		var health_callable: Callable = Callable(bar, "set_health")
+		if not enemy.health_changed.is_connected(health_callable):
+			enemy.health_changed.connect(health_callable)
+	if enemy.has_method("get_health") and bar.has_method("set_health"):
+		var health: Array = enemy.call("get_health") as Array
+		if health.size() >= 2:
+			bar.call("set_health", int(health[0]), int(health[1]))
 	_enemy_bar_nodes[enemy] = bar
 	var exit_callable: Callable = Callable(self, "_on_enemy_tree_exited").bind(enemy)
 	if not enemy.tree_exited.is_connected(exit_callable):

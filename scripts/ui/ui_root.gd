@@ -266,7 +266,8 @@ func _get_enemy_anchor(enemy: Node2D) -> Node2D:
 		return anchor
 	return enemy
 
-func _on_ui_coins_refresh_upgrade(_coins: int) -> void:
+@warning_ignore("unused_parameter")
+func _on_ui_coins_refresh_upgrade(coins_amount: int) -> void:
 	if upgrade_panel != null and upgrade_panel.visible:
 		_update_upgrade_costs()
 
@@ -723,10 +724,10 @@ func _request_retry() -> void:
 func _on_quit_pressed() -> void:
 	get_tree().quit()
 
-func _on_player_health_changed(current: int, max: int) -> void:
-	player_hp_bar.max_value = max
+func _on_player_health_changed(current: int, max_value: int) -> void:
+	player_hp_bar.max_value = max_value
 	player_hp_bar.value = current
-	player_hp_label.text = "HP: %d/%d" % [current, max]
+	player_hp_label.text = "HP: %d/%d" % [current, max_value]
 
 func _handle_fast_countdown(seconds: int) -> void:
 	if fast_countdown_label == null:

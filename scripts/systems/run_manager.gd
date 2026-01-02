@@ -58,7 +58,7 @@ var _waiting_for_bet: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _is_game_over: bool = false
-var phase: int = RunPhase.PREP
+var phase: RunPhase = RunPhase.PREP
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
 var _show_shop_next_bet: bool = false
@@ -456,14 +456,14 @@ func _on_player_spawned(player: Node) -> void:
 	_position_player_after_respawn()
 	_apply_phase()
 
-func _on_enemy_killed(exp: int) -> void:
+func _on_enemy_killed(exp_value: int) -> void:
 	if _is_game_over:
 		return
 	if phase != RunPhase.LIVE:
 		return
 	var gained: int = exp_per_enemy
-	if exp > 0:
-		gained = exp
+	if exp_value > 0:
+		gained = exp_value
 	if gained <= 0:
 		return
 	run["xp"] = int(run.get("xp", 0)) + gained
@@ -775,7 +775,7 @@ func consume_upgrade_shop() -> void:
 func is_live() -> bool:
 	return phase == RunPhase.LIVE
 
-func set_phase(p: int) -> void:
+func set_phase(p: RunPhase) -> void:
 	phase = p
 	GameEvents.run_phase_changed.emit(int(phase))
 	_apply_phase()

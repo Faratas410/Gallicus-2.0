@@ -21,6 +21,10 @@ func set_health(current: int, maxh: int) -> void:
 	bar.max_value = float(safe_max)
 	bar.value = float(safe_current)
 
+func _world_to_screen(world_pos: Vector2) -> Vector2:
+	var canvas_transform: Transform2D = get_viewport().get_canvas_transform()
+	return canvas_transform.xform(world_pos)
+
 func _process(_delta: float) -> void:
 	if _target == null or not is_instance_valid(_target):
 		queue_free()
@@ -45,7 +49,7 @@ func _process(_delta: float) -> void:
 		return
 
 	var world_pos: Vector2 = anchor.global_position
-	var screen_pos: Vector2 = cam.unproject_position(world_pos)
+	var screen_pos: Vector2 = _world_to_screen(world_pos)
 	var half: Vector2 = size * 0.5
 	var pos: Vector2 = screen_pos - half
 	var viewport_rect: Rect2 = get_viewport().get_visible_rect()

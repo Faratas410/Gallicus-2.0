@@ -33,7 +33,7 @@ const DEBUG_RUNTIME_LOGS: bool = false
 
 enum RunPhase { PREP, LIVE, GAME_OVER }
 
-var run := {
+var run: Dictionary = {
 	"arena_index": 0,
 	"coins": 0,
 	"level": 1,
@@ -66,10 +66,39 @@ var _show_shop_next_bet: bool = false
 func _ready() -> void:
 	print("RunManager ready")
 	add_to_group("run_manager")
-	GameEvents.bet_placed.connect(_on_bet_placed)
-	GameEvents.betting_opened.connect(_on_betting_opened)
-	GameEvents.run_failed.connect(_on_run_failed)
-	GameEvents.enemy_killed.connect(_on_enemy_killed)
+	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
+	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
+		GameEvents.bet_placed.connect(bet_placed_callable)
+	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
+	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
+		GameEvents.betting_opened.connect(betting_opened_callable)
+	var run_failed_callable: Callable = Callable(self, "_on_run_failed")
+	if not GameEvents.run_failed.is_connected(run_failed_callable):
+		GameEvents.run_failed.connect(run_failed_callable)
+	var enemy_killed_callable: Callable = Callable(self, "_on_enemy_killed")
+	if not GameEvents.enemy_killed.is_connected(enemy_killed_callable):
+		GameEvents.enemy_killed.connect(enemy_killed_callable)
+	var request_purchase_callable: Callable = Callable(self, "_on_request_purchase_upgrade")
+	if GameEvents.has_signal("request_purchase_upgrade") and not GameEvents.request_purchase_upgrade.is_connected(request_purchase_callable):
+		GameEvents.request_purchase_upgrade.connect(request_purchase_callable)
+	var request_purchase_token_callable: Callable = Callable(self, "_on_request_purchase_token")
+	if GameEvents.has_signal("request_purchase_token") and not GameEvents.request_purchase_token.is_connected(request_purchase_token_callable):
+		GameEvents.request_purchase_token.connect(request_purchase_token_callable)
+	var request_consume_shop_callable: Callable = Callable(self, "_on_request_consume_upgrade_shop")
+	if GameEvents.has_signal("request_consume_upgrade_shop") and not GameEvents.request_consume_upgrade_shop.is_connected(request_consume_shop_callable):
+		GameEvents.request_consume_upgrade_shop.connect(request_consume_shop_callable)
+	var request_reset_callable: Callable = Callable(self, "_on_request_reset_run")
+	if GameEvents.has_signal("request_reset_run") and not GameEvents.request_reset_run.is_connected(request_reset_callable):
+		GameEvents.request_reset_run.connect(request_reset_callable)
+	var request_retry_callable: Callable = Callable(self, "_on_request_retry_run")
+	if GameEvents.has_signal("request_retry_run") and not GameEvents.request_retry_run.is_connected(request_retry_callable):
+		GameEvents.request_retry_run.connect(request_retry_callable)
+	var request_next_bet_callable: Callable = Callable(self, "_on_request_next_bet")
+	if GameEvents.has_signal("request_next_bet") and not GameEvents.request_next_bet.is_connected(request_next_bet_callable):
+		GameEvents.request_next_bet.connect(request_next_bet_callable)
+	var request_add_coins_callable: Callable = Callable(self, "_on_request_add_coins")
+	if GameEvents.has_signal("request_add_coins") and not GameEvents.request_add_coins.is_connected(request_add_coins_callable):
+		GameEvents.request_add_coins.connect(request_add_coins_callable)
 	_ensure_input_map()
 	call_deferred("_boot")
 
@@ -81,13 +110,13 @@ func _boot() -> void:
 	_connect_player_signals()
 	_bet_manager = get_node_or_null("BetManager")
 	if _arena:
-		var wave_started_callable := Callable(self, "_on_wave_started")
+		var wave_started_callable: Callable = Callable(self, "_on_wave_started")
 		if _arena.has_signal("wave_started") and not _arena.wave_started.is_connected(wave_started_callable):
 			_arena.wave_started.connect(wave_started_callable)
-		var wave_cleared_callable := Callable(self, "_on_wave_cleared")
+		var wave_cleared_callable: Callable = Callable(self, "_on_wave_cleared")
 		if _arena.has_signal("wave_cleared") and not _arena.wave_cleared.is_connected(wave_cleared_callable):
 			_arena.wave_cleared.connect(wave_cleared_callable)
-		var player_spawned_callable := Callable(self, "_on_player_spawned")
+		var player_spawned_callable: Callable = Callable(self, "_on_player_spawned")
 		if _arena.has_signal("player_spawned") and not _arena.player_spawned.is_connected(player_spawned_callable):
 			_arena.player_spawned.connect(player_spawned_callable)
 	print("Boot: arena=", _arena, " player=", _player)
@@ -102,7 +131,7 @@ func start_new_run() -> void:
 	if GameEvents != null and GameEvents.has_method("set_gameplay_enabled"):
 		GameEvents.set_gameplay_enabled(true)
 	_prep_sequence_id += 1
-	var current_id := _prep_sequence_id
+	var current_id: int = _prep_sequence_id
 	_run_failed_emitted = false
 	_is_game_over = false
 	_waiting_for_bet = false
@@ -137,7 +166,7 @@ func start_new_run() -> void:
 			return
 	if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
 		return
-	var live_player := _resolve_player()
+	var live_player: Node = _resolve_player()
 	if live_player == null or not live_player.is_inside_tree():
 		_ensure_arena_and_player()
 		_reset_or_respawn_player_full()
@@ -187,7 +216,7 @@ func _open_bet_ui(from_victory: bool = false) -> void:
 		_bet_manager.open_bet_ui_before_arena()
 
 func _ensure_arena_and_player() -> void:
-	var main := get_parent()
+	var main: Node = get_parent()
 	if main == null:
 		return
 	var arena_node: Node = null
@@ -221,7 +250,7 @@ func _ensure_arena_and_player() -> void:
 		else:
 			player_path = NodePath("../Player")
 	elif existing_player != null:
-		var player_parent := existing_player.get_parent()
+		var player_parent: Node = existing_player.get_parent()
 		if player_parent == _arena:
 			player_path = NodePath("../Arena/Player")
 		elif player_parent == main:
@@ -235,7 +264,7 @@ func _reset_or_respawn_player_full() -> void:
 		_arena = get_node_or_null(arena_path)
 	_player = _resolve_player()
 	if _player == null or not _player.is_inside_tree():
-		var main := get_parent()
+		var main: Node = get_parent()
 		if main != null and player_scene:
 			_player = player_scene.instantiate()
 			_player.name = "Player"
@@ -250,9 +279,9 @@ func _reset_or_respawn_player_full() -> void:
 			else:
 				player_path = NodePath("../Player")
 	elif _arena and _player.get_parent() != _arena:
-		var player_node := _player
+		var player_node: Node = _player
 		if player_node is Node:
-			var pos := Vector2.ZERO
+			var pos: Vector2 = Vector2.ZERO
 			if player_node is Node2D:
 				pos = (player_node as Node2D).global_position
 			player_node.reparent(_arena)
@@ -278,7 +307,7 @@ func _spawn_wave_or_enemies() -> void:
 	_start_next_arena()
 
 func _ensure_input_map() -> void:
-	var actions := {
+	var actions: Dictionary = {
 		# Movimento
 		"move_left": [KEY_A, KEY_LEFT],
 		"move_right": [KEY_D, KEY_RIGHT],
@@ -295,18 +324,19 @@ func _ensure_input_map() -> void:
 		"pause": [KEY_ESCAPE],
 	}
 
-	for action_name in actions.keys():
+	for action_name: String in actions.keys():
 		if not InputMap.has_action(action_name):
 			InputMap.add_action(action_name)
 
 		var existing: Dictionary = {}
-		for ev in InputMap.action_get_events(action_name):
+		for ev: InputEvent in InputMap.action_get_events(action_name):
 			if ev is InputEventKey:
 				existing[ev.keycode] = true
 
-		for keycode in actions[action_name]:
+		var keycodes: Array = actions[action_name] as Array
+		for keycode: int in keycodes:
 			if not existing.has(keycode):
-				var iev := InputEventKey.new()
+				var iev: InputEventKey = InputEventKey.new()
 				iev.keycode = keycode
 				InputMap.action_add_event(action_name, iev)
 
@@ -317,6 +347,27 @@ func _start_next_arena() -> void:
 		return
 	run["arena_index"] = int(run.get("arena_index", 0)) + 1
 	_arena.call("start_next_wave")
+
+func _on_request_purchase_upgrade(upgrade_key: String) -> void:
+	purchase_upgrade(upgrade_key)
+
+func _on_request_purchase_token() -> void:
+	purchase_token()
+
+func _on_request_consume_upgrade_shop() -> void:
+	consume_upgrade_shop()
+
+func _on_request_reset_run() -> void:
+	start_new_run()
+
+func _on_request_retry_run() -> void:
+	retry_current_bet()
+
+func _on_request_next_bet() -> void:
+	start_next_bet_round()
+
+func _on_request_add_coins(amount: int) -> void:
+	add_coins(amount)
 
 func add_coins(amount: int) -> void:
 	if amount <= 0:
@@ -410,13 +461,13 @@ func _on_enemy_killed(exp: int) -> void:
 		return
 	if phase != RunPhase.LIVE:
 		return
-	var gained := exp_per_enemy
+	var gained: int = exp_per_enemy
 	if exp > 0:
 		gained = exp
 	if gained <= 0:
 		return
 	run["xp"] = int(run.get("xp", 0)) + gained
-	var leveled := _check_level_up()
+	var leveled: bool = _check_level_up()
 	if leveled:
 		_recompute_difficulty_tier(false)
 	_emit_xp_level_ui()
@@ -427,17 +478,17 @@ func _xp_needed_for_next(level: int) -> int:
 	if idx < exp_curve.size():
 		return int(exp_curve[idx])
 	# tail lineare
-	var last := 5
+	var last: int = 5
 	if exp_curve.size() > 0:
 		last = int(exp_curve[exp_curve.size() - 1])
 	var extra: int = (idx - maxi(exp_curve.size() - 1, 0)) * maxi(exp_curve_tail_step, 1)
 	return last + extra
 
 func _check_level_up() -> bool:
-	var lvl := int(run.get("level", 1))
-	var xp := int(run.get("xp", 0))
-	var needed := _xp_needed_for_next(lvl)
-	var leveled := false
+	var lvl: int = int(run.get("level", 1))
+	var xp: int = int(run.get("xp", 0))
+	var needed: int = _xp_needed_for_next(lvl)
+	var leveled: bool = false
 	while xp >= needed and needed > 0:
 		xp -= needed
 		lvl += 1
@@ -449,9 +500,9 @@ func _check_level_up() -> bool:
 	return leveled
 
 func _emit_xp_level_ui() -> void:
-	var lvl := int(run.get("level", 1))
-	var xp := int(run.get("xp", 0))
-	var needed := _xp_needed_for_next(lvl)
+	var lvl: int = int(run.get("level", 1))
+	var xp: int = int(run.get("xp", 0))
+	var needed: int = _xp_needed_for_next(lvl)
 	GameEvents.player_level_changed.emit(lvl)
 	GameEvents.player_xp_changed.emit(xp, needed)
 	GameEvents.level_changed.emit(lvl)
@@ -466,7 +517,7 @@ func get_difficulty_tier() -> int:
 	return int(run.get("difficulty_tier", 0))
 
 func get_difficulty_multiplier() -> float:
-	var tier := get_difficulty_tier()
+	var tier: int = get_difficulty_tier()
 	if tier_multipliers.size() == 0:
 		return 1.0
 	if tier < tier_multipliers.size():
@@ -477,7 +528,7 @@ func get_upgrade_tokens() -> int:
 	return int(run.get("upgrade_tokens", 0))
 
 func consume_upgrade_token() -> bool:
-	var t := int(run.get("upgrade_tokens", 0))
+	var t: int = int(run.get("upgrade_tokens", 0))
 	if t <= 0:
 		return false
 	run["upgrade_tokens"] = t - 1
@@ -486,13 +537,13 @@ func consume_upgrade_token() -> bool:
 	return true
 
 func _recompute_difficulty_tier(force_emit: bool) -> void:
-	var lvl := int(run.get("level", 1))
-	var new_tier := 0
+	var lvl: int = int(run.get("level", 1))
+	var new_tier: int = 0
 	if levels_per_tier > 0:
 		new_tier = int(floor(float(maxi(lvl - 1, 0)) / float(levels_per_tier)))
-	var old_tier := int(run.get("difficulty_tier", 0))
+	var old_tier: int = int(run.get("difficulty_tier", 0))
 	run["difficulty_tier"] = new_tier
-	var mult := get_difficulty_multiplier()
+	var mult: float = get_difficulty_multiplier()
 	if force_emit or new_tier != old_tier:
 		GameEvents.difficulty_tier_changed.emit(new_tier, mult)
 		if _arena != null and _arena.has_method("set_difficulty_tier"):
@@ -511,7 +562,7 @@ func _resolve_player() -> Node:
 	if _player and is_instance_valid(_player) and _player.is_inside_tree():
 		return _player
 	if player_path != NodePath():
-		var path_player := get_node_or_null(player_path)
+		var path_player: Node = get_node_or_null(player_path)
 		if path_player:
 			_player = path_player
 			return _player
@@ -519,7 +570,7 @@ func _resolve_player() -> Node:
 	if _player != null:
 		return _player
 	if player_scene:
-		var main := get_parent()
+		var main: Node = get_parent()
 		_player = player_scene.instantiate()
 		_player.name = "Player"
 		if _arena:
@@ -542,7 +593,7 @@ func _connect_player_signals() -> void:
 		print("Runtime Player script:", player_script_path)
 	if _player == null:
 		return
-	var died_callable := Callable(self, "_on_player_died")
+	var died_callable: Callable = Callable(self, "_on_player_died")
 	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
 		_player.died.connect(died_callable)
 
@@ -575,7 +626,7 @@ func handle_bet_failed() -> void:
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	GameEvents.set_gameplay_enabled(false)
-	if run.get("coins", 0) <= 0:
+	if int(run.get("coins", 0)) <= 0:
 		_enter_game_over()
 		return
 	GameEvents.bet_failed.emit(true)
@@ -597,10 +648,10 @@ func retry_current_bet() -> void:
 	_open_bet_ui(false)
 
 func _force_game_over_if_dead() -> bool:
-	var p := get_tree().get_first_node_in_group("player")
+	var p: Node = get_tree().get_first_node_in_group("player")
 	if p == null:
 		return false
-	var current_health := _get_player_health_value(p)
+	var current_health: int = _get_player_health_value(p)
 	if current_health <= 0 and current_health != -1:
 		_enter_game_over()
 		return true
@@ -639,10 +690,10 @@ func get_arena_index() -> int:
 	return int(run.get("arena_index", 0))
 
 func get_upgrade_state() -> Dictionary:
-	return run.get("upgrades", {})
+	return run.get("upgrades", {}) as Dictionary
 
 func get_upgrade_config() -> Dictionary:
-	var costs: Dictionary = run.get("upgrade_costs", {})
+	var costs: Dictionary = run.get("upgrade_costs", {}) as Dictionary
 	return {
 		"hp_bonus": upgrade_hp_bonus,
 		"hp_cost": int(costs.get("hp", upgrade_hp_token_cost_start)),
@@ -654,12 +705,12 @@ func get_upgrade_config() -> Dictionary:
 
 func get_upgrade_offer() -> Dictionary:
 	# Ritorna dati "UI-ready" per mostrare preview e disabilitare BUY.
-	var upgrades: Dictionary = run.get("upgrades", {})
+	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
 	var tokens: int = int(run.get("upgrade_tokens", 0))
-	var costs: Dictionary = run.get("upgrade_costs", {})
-	var hp_cost := int(costs.get("hp", upgrade_hp_token_cost_start))
-	var light_cost := int(costs.get("light", upgrade_light_token_cost_start))
-	var heavy_cost := int(costs.get("heavy", upgrade_heavy_token_cost_start))
+	var costs: Dictionary = run.get("upgrade_costs", {}) as Dictionary
+	var hp_cost: int = int(costs.get("hp", upgrade_hp_token_cost_start))
+	var light_cost: int = int(costs.get("light", upgrade_light_token_cost_start))
+	var heavy_cost: int = int(costs.get("heavy", upgrade_heavy_token_cost_start))
 
 	return {
 		"tokens": tokens,
@@ -687,23 +738,23 @@ func get_upgrade_offer() -> Dictionary:
 	}
 
 func purchase_upgrade(upgrade_type: String) -> bool:
-	var upgrades: Dictionary = run.get("upgrades", {})
-	var costs: Dictionary = run.get("upgrade_costs", {})
+	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
+	var costs: Dictionary = run.get("upgrade_costs", {}) as Dictionary
 	match upgrade_type:
 		"hp":
-			var cost := int(costs.get("hp", upgrade_hp_token_cost_start))
+			var cost: int = int(costs.get("hp", upgrade_hp_token_cost_start))
 			if not spend_tokens(cost):
 				return false
 			upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + upgrade_hp_bonus
 			costs["hp"] = cost + 1
 		"light":
-			var cost := int(costs.get("light", upgrade_light_token_cost_start))
+			var cost: int = int(costs.get("light", upgrade_light_token_cost_start))
 			if not spend_tokens(cost):
 				return false
 			upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + upgrade_light_bonus
 			costs["light"] = cost + 1
 		"heavy":
-			var cost := int(costs.get("heavy", upgrade_heavy_token_cost_start))
+			var cost: int = int(costs.get("heavy", upgrade_heavy_token_cost_start))
 			if not spend_tokens(cost):
 				return false
 			upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + upgrade_heavy_bonus
@@ -736,11 +787,11 @@ func _apply_phase() -> void:
 func _position_player_after_respawn() -> void:
 	if _player == null or not (_player is Node2D):
 		return
-	var spawn_pos := _get_spawn_position()
+	var spawn_pos: Vector2 = _get_spawn_position()
 	(_player as Node2D).global_position = spawn_pos
-	var cam := get_viewport().get_camera_2d()
+	var cam: Camera2D = get_viewport().get_camera_2d()
 	if cam == null:
-		var player_cam := _player.find_child("Camera2D", true, false)
+		var player_cam: Node = _player.find_child("Camera2D", true, false)
 		if player_cam and player_cam is Camera2D:
 			cam = player_cam
 			cam.make_current()
@@ -775,7 +826,7 @@ func _apply_run_upgrades_to_player() -> void:
 		_player = _resolve_player()
 	if _player == null:
 		return
-	var upgrades: Dictionary = run.get("upgrades", {})
+	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
 	if _player.has_method("apply_run_upgrades"):
 		_player.call(
 			"apply_run_upgrades",
@@ -786,7 +837,7 @@ func _apply_run_upgrades_to_player() -> void:
 
 func _get_spawn_position() -> Vector2:
 	if _arena and _arena is Node:
-		var spawn_node := _find_spawn_node(_arena)
+		var spawn_node: Node = _find_spawn_node(_arena)
 		if spawn_node and spawn_node is Node2D:
 			return (spawn_node as Node2D).global_position
 		if _arena is Node2D:
@@ -794,13 +845,13 @@ func _get_spawn_position() -> Vector2:
 	return Vector2.ZERO
 
 func _find_spawn_node(root: Node) -> Node:
-	var direct := root.get_node_or_null("Spawn")
+	var direct: Node = root.get_node_or_null("Spawn")
 	if direct:
 		return direct
-	var named := root.find_child("Spawn", true, false)
+	var named: Node = root.find_child("Spawn", true, false)
 	if named:
 		return named
-	var player_spawn := root.find_child("PlayerSpawn", true, false)
+	var player_spawn: Node = root.find_child("PlayerSpawn", true, false)
 	if player_spawn:
 		return player_spawn
 	return root.find_child("PlayerSpawnPoint", true, false)
@@ -808,31 +859,31 @@ func _find_spawn_node(root: Node) -> Node:
 func _log_runtime_state(tag: String) -> void:
 	if not DEBUG_RUNTIME_LOGS:
 		return
-	var player_node := _resolve_player()
-	var player_exists := player_node != null
-	var player_in_tree := player_exists and player_node.is_inside_tree()
-	var player_physics := player_exists and player_node.is_physics_processing()
-	var player_process_mode := -1
+	var player_node: Node = _resolve_player()
+	var player_exists: bool = player_node != null
+	var player_in_tree: bool = player_exists and player_node.is_inside_tree()
+	var player_physics: bool = player_exists and player_node.is_physics_processing()
+	var player_process_mode: int = -1
 	if player_exists:
 		player_process_mode = player_node.process_mode
-	var player_pos := Vector2.ZERO
+	var player_pos: Vector2 = Vector2.ZERO
 	if player_exists and player_node is Node2D:
 		player_pos = (player_node as Node2D).global_position
 
-	var enemies := get_tree().get_nodes_in_group("enemies")
-	var enemies_count := enemies.size()
+	var enemies: Array = get_tree().get_nodes_in_group("enemies")
+	var enemies_count: int = enemies.size()
 	var sample_enemy: Node = null
 	if enemies_count > 0:
-		sample_enemy = enemies[0]
-	var enemy_physics := sample_enemy != null and sample_enemy.is_physics_processing()
-	var enemy_process_mode := -1
+		sample_enemy = enemies[0] as Node
+	var enemy_physics: bool = sample_enemy != null and sample_enemy.is_physics_processing()
+	var enemy_process_mode: int = -1
 	if sample_enemy != null:
 		enemy_process_mode = sample_enemy.process_mode
 
-	var cam := get_viewport().get_camera_2d()
-	var cam_exists := cam != null
-	var cam_current := cam_exists and cam.has_method("is_current") and cam.is_current()
-	var cam_pos := Vector2.ZERO
+	var cam: Camera2D = get_viewport().get_camera_2d()
+	var cam_exists: bool = cam != null
+	var cam_current: bool = cam_exists and cam.has_method("is_current") and cam.is_current()
+	var cam_pos: Vector2 = Vector2.ZERO
 	if cam_exists:
 		cam_pos = cam.global_position
 

@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-const FAST_SELECTION_SECONDS := 12
-const UPGRADE_FLASH_TIME := 0.10
+const FAST_SELECTION_SECONDS: int = 12
+const UPGRADE_FLASH_TIME: float = 0.10
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/CoinsRow/CoinsLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/TokensRow/TokensLabel") as Label
@@ -81,32 +81,70 @@ var _coins: int = 0
 var _popup_tween: Tween = null
 var _last_level: int = 1
 var _last_tokens: int = 0
-var _xp_anim_tween: Tween
-var _xp_punch_tween: Tween
+var _xp_anim_tween: Tween = null
+var _xp_punch_tween: Tween = null
 var _last_xp_to_next: int = 0
 var _enemy_bar_nodes: Dictionary = {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	GameEvents.coins_changed.connect(_on_coins_changed)
-	GameEvents.bet_placed.connect(_on_bet_placed)
-	GameEvents.run_started.connect(_on_run_started)
-	GameEvents.run_started.connect(_on_run_started_ui)
-	GameEvents.run_failed.connect(_on_run_failed)
-	GameEvents.bet_failed.connect(_on_bet_failed)
-	GameEvents.run_started.connect(_on_run_started_controls)
-	GameEvents.run_failed.connect(_on_run_failed_controls)
-	GameEvents.bet_ui_opened.connect(_on_bet_ui_opened)
-	GameEvents.bet_ui_closed.connect(_on_bet_ui_closed)
-	GameEvents.betting_opened.connect(_on_betting_opened)
-	GameEvents.countdown_requested.connect(_on_countdown_requested)
-	GameEvents.coins_changed.connect(_on_ui_coins_refresh_upgrade)
-	GameEvents.player_level_changed.connect(_on_player_level_changed)
-	GameEvents.player_xp_changed.connect(_on_player_xp_changed)
-	GameEvents.level_changed.connect(_on_player_level_changed)
-	GameEvents.xp_changed.connect(_on_player_xp_changed)
-	GameEvents.upgrade_tokens_changed.connect(_on_upgrade_tokens_changed)
-	GameEvents.tokens_changed.connect(_on_tokens_changed)
+	var coins_changed_callable: Callable = Callable(self, "_on_coins_changed")
+	if not GameEvents.coins_changed.is_connected(coins_changed_callable):
+		GameEvents.coins_changed.connect(coins_changed_callable)
+	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
+	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
+		GameEvents.bet_placed.connect(bet_placed_callable)
+	var run_started_callable: Callable = Callable(self, "_on_run_started")
+	if not GameEvents.run_started.is_connected(run_started_callable):
+		GameEvents.run_started.connect(run_started_callable)
+	var run_started_ui_callable: Callable = Callable(self, "_on_run_started_ui")
+	if not GameEvents.run_started.is_connected(run_started_ui_callable):
+		GameEvents.run_started.connect(run_started_ui_callable)
+	var run_failed_callable: Callable = Callable(self, "_on_run_failed")
+	if not GameEvents.run_failed.is_connected(run_failed_callable):
+		GameEvents.run_failed.connect(run_failed_callable)
+	var bet_failed_callable: Callable = Callable(self, "_on_bet_failed")
+	if not GameEvents.bet_failed.is_connected(bet_failed_callable):
+		GameEvents.bet_failed.connect(bet_failed_callable)
+	var run_started_controls_callable: Callable = Callable(self, "_on_run_started_controls")
+	if not GameEvents.run_started.is_connected(run_started_controls_callable):
+		GameEvents.run_started.connect(run_started_controls_callable)
+	var run_failed_controls_callable: Callable = Callable(self, "_on_run_failed_controls")
+	if not GameEvents.run_failed.is_connected(run_failed_controls_callable):
+		GameEvents.run_failed.connect(run_failed_controls_callable)
+	var bet_ui_opened_callable: Callable = Callable(self, "_on_bet_ui_opened")
+	if not GameEvents.bet_ui_opened.is_connected(bet_ui_opened_callable):
+		GameEvents.bet_ui_opened.connect(bet_ui_opened_callable)
+	var bet_ui_closed_callable: Callable = Callable(self, "_on_bet_ui_closed")
+	if not GameEvents.bet_ui_closed.is_connected(bet_ui_closed_callable):
+		GameEvents.bet_ui_closed.connect(bet_ui_closed_callable)
+	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
+	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
+		GameEvents.betting_opened.connect(betting_opened_callable)
+	var countdown_callable: Callable = Callable(self, "_on_countdown_requested")
+	if not GameEvents.countdown_requested.is_connected(countdown_callable):
+		GameEvents.countdown_requested.connect(countdown_callable)
+	var coins_refresh_callable: Callable = Callable(self, "_on_ui_coins_refresh_upgrade")
+	if not GameEvents.coins_changed.is_connected(coins_refresh_callable):
+		GameEvents.coins_changed.connect(coins_refresh_callable)
+	var player_level_callable: Callable = Callable(self, "_on_player_level_changed")
+	if not GameEvents.player_level_changed.is_connected(player_level_callable):
+		GameEvents.player_level_changed.connect(player_level_callable)
+	var player_xp_callable: Callable = Callable(self, "_on_player_xp_changed")
+	if not GameEvents.player_xp_changed.is_connected(player_xp_callable):
+		GameEvents.player_xp_changed.connect(player_xp_callable)
+	var level_changed_callable: Callable = Callable(self, "_on_player_level_changed")
+	if not GameEvents.level_changed.is_connected(level_changed_callable):
+		GameEvents.level_changed.connect(level_changed_callable)
+	var xp_changed_callable: Callable = Callable(self, "_on_player_xp_changed")
+	if not GameEvents.xp_changed.is_connected(xp_changed_callable):
+		GameEvents.xp_changed.connect(xp_changed_callable)
+	var upgrade_tokens_callable: Callable = Callable(self, "_on_upgrade_tokens_changed")
+	if not GameEvents.upgrade_tokens_changed.is_connected(upgrade_tokens_callable):
+		GameEvents.upgrade_tokens_changed.connect(upgrade_tokens_callable)
+	var tokens_changed_callable: Callable = Callable(self, "_on_tokens_changed")
+	if not GameEvents.tokens_changed.is_connected(tokens_changed_callable):
+		GameEvents.tokens_changed.connect(tokens_changed_callable)
 	_ensure_token_icons()
 	_refresh_progression_ui()
 
@@ -124,9 +162,12 @@ func _ready() -> void:
 			push_warning("Bet UI nodes incomplete, disabling betting panel.")
 			bet_panel.visible = false
 		else:
-			bet_win_button.pressed.connect(func() -> void: _place_bet("WIN"))
-			bet_no_hit_button.pressed.connect(func() -> void: _place_bet("NO_HIT"))
-			bet_fast_button.pressed.connect(func() -> void: _place_bet("FAST"))
+			if not bet_win_button.pressed.is_connected(Callable(self, "_on_bet_win_pressed")):
+				bet_win_button.pressed.connect(Callable(self, "_on_bet_win_pressed"))
+			if not bet_no_hit_button.pressed.is_connected(Callable(self, "_on_bet_no_hit_pressed")):
+				bet_no_hit_button.pressed.connect(Callable(self, "_on_bet_no_hit_pressed"))
+			if not bet_fast_button.pressed.is_connected(Callable(self, "_on_bet_fast_pressed")):
+				bet_fast_button.pressed.connect(Callable(self, "_on_bet_fast_pressed"))
 
 	if debug_overlay != null:
 		debug_overlay.visible = false
@@ -134,30 +175,42 @@ func _ready() -> void:
 		level_up_popup.visible = false
 
 	if fast_blink_timer != null:
-		fast_blink_timer.timeout.connect(_on_fast_blink_tick)
+		var blink_callable: Callable = Callable(self, "_on_fast_blink_tick")
+		if not fast_blink_timer.timeout.is_connected(blink_callable):
+			fast_blink_timer.timeout.connect(blink_callable)
 
 	if restart_button != null:
-		restart_button.pressed.connect(_on_restart_pressed)
+		if not restart_button.pressed.is_connected(Callable(self, "_on_restart_pressed")):
+			restart_button.pressed.connect(Callable(self, "_on_restart_pressed"))
 	if next_bet_button != null:
-		next_bet_button.pressed.connect(_on_retry_pressed)
+		if not next_bet_button.pressed.is_connected(Callable(self, "_on_retry_pressed")):
+			next_bet_button.pressed.connect(Callable(self, "_on_retry_pressed"))
 	if quit_button != null:
-		quit_button.pressed.connect(_on_quit_pressed)
+		if not quit_button.pressed.is_connected(Callable(self, "_on_quit_pressed")):
+			quit_button.pressed.connect(Callable(self, "_on_quit_pressed"))
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	if modal_dimmer != null:
 		modal_dimmer.visible = false
 		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if upgrade_continue_button != null:
-		upgrade_continue_button.pressed.connect(_on_upgrade_continue_pressed)
+		if not upgrade_continue_button.pressed.is_connected(Callable(self, "_on_upgrade_continue_pressed")):
+			upgrade_continue_button.pressed.connect(Callable(self, "_on_upgrade_continue_pressed"))
 	_update_upgrade_costs()
 
 	var arena: Node = get_tree().get_first_node_in_group("arena")
 	if arena != null and arena.has_signal("player_spawned"):
-		arena.player_spawned.connect(_on_player_spawned)
+		var arena_player_callable: Callable = Callable(self, "_on_player_spawned")
+		if not arena.player_spawned.is_connected(arena_player_callable):
+			arena.player_spawned.connect(arena_player_callable)
 		if arena.has_signal("enemy_spawned"):
-			arena.enemy_spawned.connect(_on_enemy_spawned)
+			var enemy_spawn_callable: Callable = Callable(self, "_on_enemy_spawned")
+			if not arena.enemy_spawned.is_connected(enemy_spawn_callable):
+				arena.enemy_spawned.connect(enemy_spawn_callable)
 		if arena.has_signal("enemy_despawned"):
-			arena.enemy_despawned.connect(_on_enemy_despawned)
+			var enemy_despawn_callable: Callable = Callable(self, "_on_enemy_despawned")
+			if not arena.enemy_despawned.is_connected(enemy_despawn_callable):
+				arena.enemy_despawned.connect(enemy_despawn_callable)
 		_sync_enemy_bars()
 
 	var p: Node = get_tree().get_first_node_in_group("player")
@@ -239,8 +292,8 @@ func _on_tokens_changed(tokens: int) -> void:
 	if tokens_label != null:
 		tokens_label.text = "Tokens: %d" % _tokens
 	if upgrade_tokens_label != null:
-		var coins := _coins
-		var rm := _get_run_manager()
+		var coins: int = _coins
+		var rm: Node = _get_run_manager()
 		if rm != null and rm.has_method("get_coins"):
 			coins = int(rm.call("get_coins"))
 		upgrade_tokens_label.text = "Coins: %d | Tokens: %d" % [coins, tokens]
@@ -263,13 +316,14 @@ func _refresh_progression_ui() -> void:
 func _wire_buy_token_button() -> void:
 	if buy_token_button == null:
 		return
-	if not buy_token_button.pressed.is_connected(_on_buy_token_pressed):
-		buy_token_button.pressed.connect(_on_buy_token_pressed)
+	var buy_token_callable: Callable = Callable(self, "_on_buy_token_pressed")
+	if not buy_token_button.pressed.is_connected(buy_token_callable):
+		buy_token_button.pressed.connect(buy_token_callable)
 
 func _refresh_buy_token_ui() -> void:
 	if buy_token_button == null:
 		return
-	var manager := _get_run_manager()
+	var manager: Node = _get_run_manager()
 	if manager == null:
 		buy_token_button.disabled = true
 		buy_token_button.text = "BUY TOKEN"
@@ -277,7 +331,7 @@ func _refresh_buy_token_ui() -> void:
 			buy_token_info.text = "-"
 		return
 
-	var cost := 100
+	var cost: int = 100
 	if manager.has_method("get_token_buy_cost"):
 		cost = int(manager.call("get_token_buy_cost"))
 	elif manager.has_method("get_buy_token_cost"):
@@ -289,7 +343,7 @@ func _refresh_buy_token_ui() -> void:
 	elif manager.has_variable("token_purchase_cost_coins"):
 		cost = int(manager.get("token_purchase_cost_coins"))
 
-	var coins := _coins
+	var coins: int = _coins
 	if manager.has_method("get_coins"):
 		coins = int(manager.call("get_coins"))
 
@@ -299,12 +353,18 @@ func _refresh_buy_token_ui() -> void:
 		buy_token_info.text = "Coins: %d" % coins
 
 func _wire_upgrade_buttons() -> void:
-	if upgrade_hp_button != null and not upgrade_hp_button.pressed.is_connected(_on_upgrade_hp_pressed):
-		upgrade_hp_button.pressed.connect(_on_upgrade_hp_pressed)
-	if upgrade_light_button != null and not upgrade_light_button.pressed.is_connected(_on_upgrade_light_pressed):
-		upgrade_light_button.pressed.connect(_on_upgrade_light_pressed)
-	if upgrade_heavy_button != null and not upgrade_heavy_button.pressed.is_connected(_on_upgrade_heavy_pressed):
-		upgrade_heavy_button.pressed.connect(_on_upgrade_heavy_pressed)
+	if upgrade_hp_button != null:
+		var upgrade_hp_callable: Callable = Callable(self, "_on_upgrade_hp_pressed")
+		if not upgrade_hp_button.pressed.is_connected(upgrade_hp_callable):
+			upgrade_hp_button.pressed.connect(upgrade_hp_callable)
+	if upgrade_light_button != null:
+		var upgrade_light_callable: Callable = Callable(self, "_on_upgrade_light_pressed")
+		if not upgrade_light_button.pressed.is_connected(upgrade_light_callable):
+			upgrade_light_button.pressed.connect(upgrade_light_callable)
+	if upgrade_heavy_button != null:
+		var upgrade_heavy_callable: Callable = Callable(self, "_on_upgrade_heavy_pressed")
+		if not upgrade_heavy_button.pressed.is_connected(upgrade_heavy_callable):
+			upgrade_heavy_button.pressed.connect(upgrade_heavy_callable)
 
 func _on_upgrade_hp_pressed() -> void:
 	_try_purchase_upgrade("hp")
@@ -319,19 +379,19 @@ func _try_purchase_upgrade(kind: String) -> void:
 	_purchase_upgrade(kind)
 
 func _refresh_upgrade_shop_ui() -> void:
-	var rm := _get_run_manager()
+	var rm: Node = _get_run_manager()
 	if rm == null or not rm.has_method("get_upgrade_offer"):
 		return
-	var offer: Dictionary = rm.call("get_upgrade_offer")
-	var tokens := int(offer.get("tokens", 0))
+	var offer: Dictionary = rm.call("get_upgrade_offer") as Dictionary
+	var tokens: int = int(offer.get("tokens", 0))
 	if upgrade_tokens_label != null:
-		var coins := _coins
+		var coins: int = _coins
 		if rm.has_method("get_coins"):
 			coins = int(rm.call("get_coins"))
 		upgrade_tokens_label.text = "Coins: %d | Tokens: %d" % [coins, tokens]
-	var hp: Dictionary = offer.get("hp", {})
-	var light: Dictionary = offer.get("light", {})
-	var heavy: Dictionary = offer.get("heavy", {})
+	var hp: Dictionary = offer.get("hp", {}) as Dictionary
+	var light: Dictionary = offer.get("light", {}) as Dictionary
+	var heavy: Dictionary = offer.get("heavy", {}) as Dictionary
 
 	if upgrade_hp_label != null:
 		upgrade_hp_label.text = "HP +%d | Total: %d → %d | Cost: %dT" % [
@@ -367,14 +427,14 @@ func _animate_xp_bar(xp: int, xp_to_next: int) -> void:
 		return
 	_xp_current = maxi(xp, 0)
 	_xp_to_next = maxi(xp_to_next, 1)
-	var maxv := float(_xp_to_next)
+	var maxv: float = float(_xp_to_next)
 	xp_bar.max_value = maxv
 
-	var changed_curve := xp_to_next != _last_xp_to_next and _last_xp_to_next != 0
+	var changed_curve: bool = xp_to_next != _last_xp_to_next and _last_xp_to_next != 0
 	_last_xp_to_next = xp_to_next
 
-	var target := float(clamp(_xp_current, 0, _xp_to_next))
-	var current := float(xp_bar.value)
+	var target: float = float(clamp(_xp_current, 0, _xp_to_next))
+	var current: float = float(xp_bar.value)
 
 	_kill_xp_tweens()
 
@@ -382,7 +442,7 @@ func _animate_xp_bar(xp: int, xp_to_next: int) -> void:
 		_xp_anim_tween = create_tween()
 		_xp_anim_tween.set_trans(Tween.TRANS_QUAD)
 		_xp_anim_tween.set_ease(Tween.EASE_OUT)
-		var anim_duration := 0.14
+		var anim_duration: float = 0.14
 		if changed_curve:
 			anim_duration = 0.10
 		_xp_anim_tween.tween_property(xp_bar, "value", target, anim_duration)
@@ -418,7 +478,7 @@ func _safe_assign_stream(player: AudioStreamPlayer, path: String) -> void:
 	if path == "":
 		return
 	if ResourceLoader.exists(path):
-		var stream := load(path)
+		var stream: Resource = load(path)
 		if stream is AudioStream:
 			player.stream = stream
 
@@ -453,21 +513,8 @@ func _hide_level_up_popup() -> void:
 		level_up_popup.visible = false
 
 func _on_buy_token_pressed() -> void:
-	var rm := _get_run_manager()
-	if rm == null:
-		return
-	var ok := false
-	if rm.has_method("purchase_token"):
-		ok = bool(rm.call("purchase_token"))
-	elif rm.has_method("buy_token"):
-		ok = bool(rm.call("buy_token"))
-	elif rm.has_method("purchaseToken"):
-		ok = bool(rm.call("purchaseToken"))
-	if ok:
-		_show_level_up_popup("TOKEN +1")
-		_play_sfx(sfx_buy_token)
-	_refresh_buy_token_ui()
-	_refresh_upgrade_shop_ui()
+	if GameEvents.has_signal("request_purchase_token"):
+		GameEvents.request_purchase_token.emit()
 
 func _ensure_token_icons() -> void:
 	if coins_icon != null and coins_icon.texture == null:
@@ -476,7 +523,7 @@ func _ensure_token_icons() -> void:
 		tokens_icon.texture = _make_solid_icon(Color(0.55, 0.85, 1.0, 1.0))
 
 func _make_solid_icon(c: Color) -> Texture2D:
-	var image := Image.create(8, 8, false, Image.FORMAT_RGBA8)
+	var image: Image = Image.create(8, 8, false, Image.FORMAT_RGBA8)
 	image.fill(c)
 	for x in range(8):
 		image.set_pixel(x, 0, Color(0, 0, 0, 1))
@@ -569,7 +616,7 @@ func _on_betting_opened() -> void:
 		if bet_panel != null:
 			bet_panel.visible = false
 		return
-	var manager := _get_run_manager()
+	var manager: Node = _get_run_manager()
 	if manager != null and manager.has_method("should_show_upgrade_shop") and manager.should_show_upgrade_shop():
 		_show_upgrade_panel()
 
@@ -619,8 +666,10 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		_pending_bets = bets
 		return
 	_bets_by_id.clear()
-	for bet in bets:
-		_bets_by_id[bet.get("id", "")] = bet
+	for bet_value: Dictionary in bets:
+		var bet: Dictionary = bet_value as Dictionary
+		var bet_id: String = str(bet.get("id", ""))
+		_bets_by_id[bet_id] = bet
 	_update_bet_buttons()
 	bet_panel.visible = true
 	_reset_fast_countdown()
@@ -636,6 +685,15 @@ func _on_bet_ui_closed() -> void:
 		_reset_fast_countdown()
 	get_viewport().gui_release_focus()
 
+func _on_bet_win_pressed() -> void:
+	_place_bet("WIN")
+
+func _on_bet_no_hit_pressed() -> void:
+	_place_bet("NO_HIT")
+
+func _on_bet_fast_pressed() -> void:
+	_place_bet("FAST")
+
 func _on_restart_pressed() -> void:
 	_request_reset()
 
@@ -646,30 +704,21 @@ func _request_reset() -> void:
 	if game_over_panel != null:
 		game_over_panel.visible = false
 
-	var rm: Node = get_tree().get_first_node_in_group("run_manager")
-	if rm != null and rm.has_method("start_new_run"):
-		rm.call("start_new_run")
-	else:
-		push_warning("RunManager not found or no restart method.")
+	if GameEvents.has_signal("request_reset_run"):
+		GameEvents.request_reset_run.emit()
 
 func _request_next_bet() -> void:
 	if game_over_panel != null and game_over_panel.visible:
 		return
 
-	var rm: Node = get_tree().get_first_node_in_group("run_manager")
-	if rm != null and rm.has_method("start_next_bet_round"):
-		rm.call("start_next_bet_round")
-	else:
-		push_warning("RunManager not found or no restart method.")
+	if GameEvents.has_signal("request_next_bet"):
+		GameEvents.request_next_bet.emit()
 
 func _request_retry() -> void:
 	if game_over_panel != null:
 		game_over_panel.visible = false
-	var rm: Node = get_tree().get_first_node_in_group("run_manager")
-	if rm != null and rm.has_method("retry_current_bet"):
-		rm.call("retry_current_bet")
-	else:
-		push_warning("RunManager not found or no retry method.")
+	if GameEvents.has_signal("request_retry_run"):
+		GameEvents.request_retry_run.emit()
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
@@ -713,7 +762,7 @@ func _stop_fast_blink() -> void:
 func _on_fast_blink_tick() -> void:
 	if fast_countdown_label == null:
 		return
-	var next_alpha := 1.0
+	var next_alpha: float = 1.0
 	if fast_countdown_label.modulate.a > 0.6:
 		next_alpha = 0.2
 	fast_countdown_label.modulate.a = next_alpha
@@ -723,13 +772,16 @@ func _on_player_spawned(p: Node) -> void:
 
 func _bind_player(p: Node) -> void:
 	if _player != null and _player.has_signal("health_changed"):
-		if _player.health_changed.is_connected(_on_player_health_changed):
-			_player.health_changed.disconnect(_on_player_health_changed)
+		var health_callable: Callable = Callable(self, "_on_player_health_changed")
+		if _player.health_changed.is_connected(health_callable):
+			_player.health_changed.disconnect(health_callable)
 
 	_player = p
 
 	if _player != null and _player.has_signal("health_changed"):
-		_player.health_changed.connect(_on_player_health_changed)
+		var health_callable: Callable = Callable(self, "_on_player_health_changed")
+		if not _player.health_changed.is_connected(health_callable):
+			_player.health_changed.connect(health_callable)
 
 	if _player != null and _player.has_method("get_health"):
 		var h: Array = _player.call("get_health")
@@ -747,11 +799,13 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	if not _bets_by_id.has(bet_id):
 		button.text = bet_id
 		return
-	var bet: Dictionary = _bets_by_id.get(bet_id, {})
+	var bet: Dictionary = _bets_by_id.get(bet_id, {}) as Dictionary
 	if bet.is_empty():
 		push_warning("Bet id not found: %s" % bet_id)
 		return
-	button.text = "%s x%.1f" % [bet.get("label", bet_id), float(bet.get("odds", 1.0))]
+	var label_text: String = str(bet.get("label", bet_id))
+	var odds_value: float = float(bet.get("odds", 1.0))
+	button.text = "%s x%.1f" % [label_text, odds_value]
 
 func _on_bet_failed(can_retry: bool) -> void:
 	if bet_panel != null:
@@ -794,18 +848,16 @@ func _on_upgrade_continue_pressed() -> void:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
 	get_viewport().gui_release_focus()
-	var manager := _get_run_manager()
-	if manager != null and manager.has_method("consume_upgrade_shop"):
-		manager.consume_upgrade_shop()
+	if GameEvents.has_signal("request_consume_upgrade_shop"):
+		GameEvents.request_consume_upgrade_shop.emit()
 	if _pending_bets.size() > 0:
 		print("Upgrade continue: reopening pending bets (%d)" % _pending_bets.size())
 		_on_bet_ui_opened(_pending_bets)
 		_pending_bets = []
 	else:
-		var bet_manager := _get_bet_manager()
-		if bet_manager != null and bet_manager.has_method("open_bet_ui_before_arena"):
+		if GameEvents.has_signal("request_open_bet_ui"):
 			print("Upgrade continue: opening bet UI before arena")
-			bet_manager.open_bet_ui_before_arena()
+			GameEvents.request_open_bet_ui.emit()
 		elif Engine.has_singleton("GameEvents") and GameEvents != null:
 			print("Upgrade continue: emitting betting_opened fallback")
 			GameEvents.betting_opened.emit()
@@ -813,18 +865,8 @@ func _on_upgrade_continue_pressed() -> void:
 			push_warning("Upgrade continue: no pending bets and BetManager missing; bet UI may not open.")
 
 func _purchase_upgrade(upgrade_type: String) -> void:
-	var manager := _get_run_manager()
-	if manager == null or not manager.has_method("purchase_upgrade"):
-		return
-	# Safety: se bottone disabilitato non dovrebbe arrivare qui, ma teniamo fallback.
-	var ok := bool(manager.purchase_upgrade(upgrade_type))
-	if not ok:
-		_flash_upgrade_row(upgrade_type)
-		_update_upgrade_costs()
-		return
-	_play_sfx(sfx_upgrade_buy)
-	_update_upgrade_costs()
-	_refresh_upgrade_shop_ui()
+	if GameEvents.has_signal("request_purchase_upgrade"):
+		GameEvents.request_purchase_upgrade.emit(upgrade_type)
 
 func _flash_upgrade_row(upgrade_type: String) -> void:
 	var row: Control = null
@@ -835,29 +877,29 @@ func _flash_upgrade_row(upgrade_type: String) -> void:
 		_: row = null
 	if row == null:
 		return
-	var base := row.modulate
+	var base: Color = row.modulate
 	row.modulate = Color(1, 0.35, 0.35, 1)
 	await get_tree().create_timer(UPGRADE_FLASH_TIME).timeout
 	if row != null and is_instance_valid(row):
 		row.modulate = base
 
 func _update_upgrade_costs() -> void:
-	var manager := _get_run_manager()
+	var manager: Node = _get_run_manager()
 	if manager == null:
 		return
 	# Preferisci l'API "offer" (UI-ready). Fallback su config vecchio se non presente.
 	if manager.has_method("get_upgrade_offer"):
-		var offer: Dictionary = manager.get_upgrade_offer()
+		var offer: Dictionary = manager.get_upgrade_offer() as Dictionary
 		var tokens: int = int(offer.get("tokens", 0))
 		if upgrade_tokens_label != null:
-			var coins := _coins
+			var coins: int = _coins
 			if manager.has_method("get_coins"):
 				coins = int(manager.call("get_coins"))
 			upgrade_tokens_label.text = "Coins: %d | Tokens: %d" % [coins, tokens]
 
-		var hp: Dictionary = offer.get("hp", {})
-		var light: Dictionary = offer.get("light", {})
-		var heavy: Dictionary = offer.get("heavy", {})
+		var hp: Dictionary = offer.get("hp", {}) as Dictionary
+		var light: Dictionary = offer.get("light", {}) as Dictionary
+		var heavy: Dictionary = offer.get("heavy", {}) as Dictionary
 
 		if upgrade_hp_label != null:
 			upgrade_hp_label.text = "HP +%d | Total: %d → %d | Cost: %dT" % [
@@ -892,7 +934,7 @@ func _update_upgrade_costs() -> void:
 	if not manager.has_method("get_upgrade_config"):
 		return
 	# Fallback legacy
-	var config: Dictionary = manager.get_upgrade_config()
+	var config: Dictionary = manager.get_upgrade_config() as Dictionary
 	if upgrade_hp_label != null:
 		upgrade_hp_label.text = "HP +%d (Cost: %dT)" % [int(config.get("hp_bonus", 0)), int(config.get("hp_cost", 0))]
 	if upgrade_light_label != null:
@@ -903,8 +945,7 @@ func _update_upgrade_costs() -> void:
 	# Se non abbiamo offer, non sappiamo affordability (manteniamo abilitati)
 
 func _place_bet(bet_id: String) -> void:
-	var manager := _get_bet_manager()
-	if manager == null or stake_input == null:
+	if stake_input == null:
 		return
 	_selected_bet_id = bet_id
 	if bet_id == "FAST":
@@ -916,8 +957,9 @@ func _place_bet(bet_id: String) -> void:
 			fast_countdown_label.modulate.a = 1.0
 	else:
 		_reset_fast_countdown()
-	var stake := int(stake_input.value)
-	manager.place_bet(bet_id, stake)
+	var stake: int = int(stake_input.value)
+	if GameEvents.has_signal("request_place_bet"):
+		GameEvents.request_place_bet.emit(bet_id, stake)
 
 func _center_upgrade_panel_to_texture() -> void:
 	if upgrade_panel == null or upgrade_bg == null:
@@ -927,18 +969,18 @@ func _center_upgrade_panel_to_texture() -> void:
 	await get_tree().process_frame
 	if upgrade_panel == null or not upgrade_panel.visible:
 		return
-	var size := upgrade_panel.custom_minimum_size
-	var bg_texture := upgrade_bg.texture
+	var size: Vector2 = upgrade_panel.custom_minimum_size
+	var bg_texture: Texture2D = upgrade_bg.texture
 	if bg_texture != null:
-		var texture_size := bg_texture.get_size()
+		var texture_size: Vector2 = bg_texture.get_size()
 		if texture_size.x > size.x:
 			size.x = texture_size.x
 		if texture_size.y > size.y:
 			size.y = texture_size.y
-	var viewport_size := get_viewport().get_visible_rect().size
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
-	var max_size := viewport_size * 0.95
+	var max_size: Vector2 = viewport_size * 0.95
 	size.x = minf(size.x, max_size.x)
 	size.y = minf(size.y, max_size.y)
 	if size.x <= 0.0 or size.y <= 0.0:
@@ -946,7 +988,7 @@ func _center_upgrade_panel_to_texture() -> void:
 	upgrade_panel.custom_minimum_size = size
 	upgrade_panel.size = size
 	upgrade_panel.reset_size()
-	var half := size * 0.5
+	var half: Vector2 = size * 0.5
 	upgrade_panel.offset_left = -half.x
 	upgrade_panel.offset_top = -half.y
 	upgrade_panel.offset_right = half.x
@@ -957,15 +999,15 @@ func _center_upgrade_panel_to_texture() -> void:
 	if upgrade_content_area != null:
 		# These ratios are tuned for ui_upgrade_panel_gallicus.png:
 		# content box starts below the rooster and ends above the bottom frame.
-		var left_r := 0.14
-		var right_r := 0.86
-		var top_r := 0.33
-		var bottom_r := 0.92
+		var left_r: float = 0.14
+		var right_r: float = 0.86
+		var top_r: float = 0.33
+		var bottom_r: float = 0.92
 
-		var px_left := int(size.x * left_r)
-		var px_right := int(size.x * right_r)
-		var px_top := int(size.y * top_r)
-		var px_bottom := int(size.y * bottom_r)
+		var px_left: int = int(size.x * left_r)
+		var px_right: int = int(size.x * right_r)
+		var px_top: int = int(size.y * top_r)
+		var px_bottom: int = int(size.y * bottom_r)
 
 		upgrade_content_area.anchor_left = 0.0
 		upgrade_content_area.anchor_top = 0.0
@@ -1022,10 +1064,10 @@ func _reset_fast_countdown() -> void:
 func _process(_delta: float) -> void:
 	if debug_overlay == null or not debug_overlay.visible:
 		return
-	var fps := Engine.get_frames_per_second()
-	var arena_index := _get_arena_index()
-	var enemies_alive := _get_enemies_alive()
-	var bet_active := _is_bet_active()
+	var fps: int = Engine.get_frames_per_second()
+	var arena_index: int = _get_arena_index()
+	var enemies_alive: int = _get_enemies_alive()
+	var bet_active: bool = _is_bet_active()
 	debug_overlay.text = "FPS: %d\nArena: %d\nEnemies: %d\nBet active: %s" % [
 		fps,
 		arena_index,
@@ -1039,7 +1081,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			debug_overlay.visible = not debug_overlay.visible
 
 func _req(path: String) -> Node:
-	var n := get_node_or_null(path)
+	var n: Node = get_node_or_null(path)
 	if n == null:
 		push_error("UI missing node at path: %s" % path)
 	return n
@@ -1053,7 +1095,7 @@ func _get_run_manager() -> Node:
 func _get_arena() -> Node:
 	if _arena and is_instance_valid(_arena):
 		return _arena
-	var manager := _get_run_manager()
+	var manager: Node = _get_run_manager()
 	if manager and manager.has_method("get_arena"):
 		_arena = manager.get_arena()
 	if _arena:
@@ -1062,19 +1104,19 @@ func _get_arena() -> Node:
 	return _arena
 
 func _get_arena_index() -> int:
-	var manager := _get_run_manager()
+	var manager: Node = _get_run_manager()
 	if manager and manager.has_method("get_arena_index"):
 		return manager.get_arena_index()
 	return 0
 
 func _get_enemies_alive() -> int:
-	var arena := _get_arena()
+	var arena: Node = _get_arena()
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
 
 func _is_bet_active() -> bool:
-	var manager := _get_bet_manager()
+	var manager: Node = _get_bet_manager()
 	if manager and manager.has_method("is_bet_active"):
 		return manager.is_bet_active()
 	return false

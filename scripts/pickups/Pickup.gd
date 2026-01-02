@@ -9,7 +9,9 @@ enum PickupType { SPEED, HEAL, COINS }
 @export var despawn_time: float = 0.0
 
 func _ready() -> void:
-	body_entered.connect(_on_body_entered)
+	var body_callable: Callable = Callable(self, "_on_body_entered")
+	if not body_entered.is_connected(body_callable):
+		body_entered.connect(body_callable)
 	if despawn_time > 0.0:
 		_despawn_after(despawn_time)
 
@@ -29,12 +31,9 @@ func _on_body_entered(body: Node) -> void:
 			if body.has_method("heal"):
 				body.call("heal", amount)
 		PickupType.COINS:
-			var rng := RandomNumberGenerator.new()
+			var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 			rng.randomize()
-			var value := rng.randi_range(1, 5)
-			var run_manager := get_tree().get_first_node_in_group("run_manager")
-			if run_manager != null and run_manager.has_method("add_coins"):
-				run_manager.call("add_coins", value)
-			elif body.has_method("add_coins"):
-				body.call("add_coins", value)
+			var value: int = rng.randi_range(1, 5)
+			if GameEvents.has_signal("request_add_coins"):
+				GameEvents.request_add_coins.emit(value)
 	queue_free()

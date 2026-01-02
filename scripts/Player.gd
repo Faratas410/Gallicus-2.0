@@ -4,8 +4,8 @@ signal health_changed(current: int, max: int)
 signal took_damage(amount: int)
 signal died
 
-const SWORD_TEX_IDLE := preload("res://assets/sprites/player/sword_idle_up_32.png")
-const SWORD_TEX_SWING := preload("res://assets/sprites/player/sword_swing_horizontal_32.png")
+const SWORD_TEX_IDLE: Texture2D = preload("res://assets/sprites/player/sword_idle_up_32.png")
+const SWORD_TEX_SWING: Texture2D = preload("res://assets/sprites/player/sword_swing_horizontal_32.png")
 const DAMAGE_INVULN_SECONDS: float = 0.25
 
 @export var move_speed: float = 220.0
@@ -29,7 +29,6 @@ var _current_health: int
 var _attack_timer: float = 0.0
 var _dodge_timer: float = 0.0
 var _is_blocking: bool = false
-var coins: int = 0
 var _speed_multiplier: float = 1.0
 var _speed_boost_token: int = 0
 var _last_aim_dir: Vector2 = Vector2.UP
@@ -56,7 +55,7 @@ func _physics_process(delta: float) -> void:
 	_dodge_timer = maxf(_dodge_timer - delta, 0.0)
 	_damage_invuln = maxf(_damage_invuln - delta, 0.0)
 
-	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	var input_vector: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if input_vector.length_squared() > 0.001:
 		_last_aim_dir = input_vector.normalized()
 	_update_sword_idle_pose()
@@ -77,8 +76,8 @@ func _physics_process(delta: float) -> void:
 	_apply_bounds()
 
 func _apply_bounds() -> void:
-	var half := arena_bounds_size * 0.5
-	var margin := maxf(arena_bounds_margin, 0.0)
+	var half: Vector2 = arena_bounds_size * 0.5
+	var margin: float = maxf(arena_bounds_margin, 0.0)
 	global_position.x = clampf(global_position.x, -half.x + margin, half.x - margin)
 	global_position.y = clampf(global_position.y, -half.y + margin, half.y - margin)
 
@@ -106,12 +105,12 @@ func _update_sword_idle_pose() -> void:
 	if sword_sprite.texture != SWORD_TEX_IDLE:
 		sword_sprite.texture = SWORD_TEX_IDLE
 
-	var card := _dir_to_cardinal(_last_aim_dir)
+	var card: Vector2 = _dir_to_cardinal(_last_aim_dir)
 	sword_sprite.z_index = 10
 	if card == Vector2.UP:
 		sword_sprite.z_index = -1
 
-	var base_rot := 0.0
+	var base_rot: float = 0.0
 	if card == Vector2.UP:
 		base_rot = 0.0
 	elif card == Vector2.RIGHT:
@@ -123,7 +122,7 @@ func _update_sword_idle_pose() -> void:
 
 	sword_sprite.rotation = base_rot
 
-	var offset := Vector2(10, -10)
+	var offset: Vector2 = Vector2(10, -10)
 	if card == Vector2.UP:
 		offset = Vector2(6, -18)
 	elif card == Vector2.RIGHT:
@@ -139,9 +138,9 @@ func _play_sword_swing() -> void:
 	if sword_sprite == null:
 		return
 
-	var card := _dir_to_cardinal(_last_aim_dir)
+	var card: Vector2 = _dir_to_cardinal(_last_aim_dir)
 
-	var base_rot := 0.0
+	var base_rot: float = 0.0
 	if card == Vector2.UP:
 		base_rot = 0.0
 	elif card == Vector2.RIGHT:
@@ -158,10 +157,10 @@ func _play_sword_swing() -> void:
 	if card == Vector2.UP:
 		sword_sprite.z_index = -1
 
-	var swing_a := deg_to_rad(-35)
-	var swing_b := deg_to_rad(35)
+	var swing_a: float = deg_to_rad(-35)
+	var swing_b: float = deg_to_rad(35)
 
-	var tween := create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(sword_sprite, "rotation", base_rot + swing_b, 0.10).from(base_rot + swing_a)
 	tween.tween_interval(0.02)
 	tween.tween_callback(func() -> void:
@@ -170,23 +169,23 @@ func _play_sword_swing() -> void:
 	)
 
 func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) -> void:
-	var aim := _last_aim_dir
+	var aim: Vector2 = _last_aim_dir
 	if aim.length_squared() < 0.0001:
 		aim = Vector2.UP
 	aim = aim.normalized()
 
-	var cos_limit := cos(deg_to_rad(cone_angle_deg * 0.5))
+	var cos_limit: float = cos(deg_to_rad(cone_angle_deg * 0.5))
 
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if not enemy is Node2D:
 			continue
-		var enemy_node := enemy as Node2D
+		var enemy_node: Node2D = enemy as Node2D
 		var to_enemy: Vector2 = enemy_node.global_position - global_position
 		var dist: float = to_enemy.length()
 		if dist > attack_range or dist <= 0.001:
 			continue
 
-		var dir := to_enemy / dist
+		var dir: Vector2 = to_enemy / dist
 		if dir.dot(aim) < cos_limit:
 			continue
 
@@ -196,7 +195,7 @@ func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) ->
 func take_damage(amount: int) -> void:
 	if _damage_invuln > 0.0:
 		return
-	var final_damage := amount
+	var final_damage: int = amount
 	if _is_blocking:
 		final_damage = int(round(amount * (1.0 - block_reduction)))
 	if final_damage > 0:
@@ -224,8 +223,8 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 		_base_light_damage = light_damage
 	if _base_heavy_damage <= 0:
 		_base_heavy_damage = heavy_damage
-	var previous_max := max_health
-	var previous_current := _current_health
+	var previous_max: int = max_health
+	var previous_current: int = _current_health
 	print("Apply run upgrades: hp_bonus=%d light_bonus=%d heavy_bonus=%d prev_hp=%d/%d" % [
 		max_hp_bonus,
 		light_bonus,
@@ -237,7 +236,7 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 	light_damage = _base_light_damage + light_bonus
 	heavy_damage = _base_heavy_damage + heavy_bonus
 	if max_health != previous_max:
-		var delta := max_health - previous_max
+		var delta: int = max_health - previous_max
 		_current_health = clampi(previous_current + delta, 0, max_health)
 	else:
 		_current_health = clampi(previous_current, 0, max_health)
@@ -249,30 +248,25 @@ func heal(amount: int) -> void:
 	_current_health = clampi(_current_health + amount, 0, max_health)
 	_emit_health()
 
-func add_coins(amount: int) -> void:
-	if amount <= 0:
-		return
-	coins += amount
-
 func apply_speed_boost(mult: float, seconds: float) -> void:
 	if mult <= 0.0 or seconds <= 0.0:
 		return
 	_speed_multiplier = maxf(_speed_multiplier, mult)
 	_speed_boost_token += 1
-	var token := _speed_boost_token
+	var token: int = _speed_boost_token
 	await get_tree().create_timer(seconds).timeout
 	if token == _speed_boost_token:
 		_speed_multiplier = 1.0
 
 func _ensure_placeholder_sprite() -> void:
-	var sprite := get_node_or_null("Sprite2D") as Sprite2D
+	var sprite: Sprite2D = get_node_or_null("Sprite2D") as Sprite2D
 	if sprite == null:
 		sprite = find_child("Sprite2D", true, false) as Sprite2D
 	if sprite == null:
 		return
 	if sprite.texture:
 		return
-	var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)
+	var image: Image = Image.create(1, 1, false, Image.FORMAT_RGBA8)
 	image.fill(Color(0.2, 0.9, 0.2, 1.0))
 	sprite.texture = ImageTexture.create_from_image(image)
 	sprite.scale = Vector2(32.0, 32.0)

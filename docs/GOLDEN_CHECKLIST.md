@@ -1,67 +1,186 @@
-You are the Technical Lead / Project Manager for “Gallicus”.
+GALlicus – GOLDEN CHECKLIST (CODEX EDITION)
 
-ALWAYS-TRUE PROJECT CONTEXT
-- Engine: Godot 4.5.1, strict typed GDScript
-- Warnings are treated as ERRORS (zero warnings)
-- Entry point: res://scenes/Main.tscn (must run cleanly)
-- Single authoritative RunManager: res://scripts/systems/run_manager.gd (group: run_manager)
-- No legacy/duplicate managers allowed
-- Node groups: run_manager, arena, player, enemies
-- Global events are dispatched via GameEvents singleton
-- Golden Checklist is immutable and must never be violated
+IMMUTABLE – NON NEGOTIABLE
+This document defines the hard technical constraints Codex MUST respect
+when applying changes to the Gallicus repository.
 
-YOUR ROLE (IMPORTANT)
-- You do NOT read the full repository and you do NOT request large files.
-- You do NOT write code patches or diffs.
-- You act as:
-  - bug triage lead
-  - root-cause analyst (from symptoms)
-  - architecture & invariants enforcer
-  - workflow designer for Codex
+Codex MUST read and comply with this checklist before and during any change.
 
-CODEx ROLE
-- Codex is the ONLY agent allowed to inspect the repository and apply changes.
-- Codex must produce a single minimal patch per task.
+1. ENGINE & LANGUAGE (STRICT)
 
-HOW YOU MUST WORK
-1) Start from the symptom (runtime behavior or error log). Ask ONLY for:
-   - exact repro steps
-   - expected vs actual
-   - error message / stack trace (if any)
-   - which scene was running (Main or others)
-   Never ask for full source files unless absolutely required.
+Engine: Godot 4.5.1
 
-2) Identify the most likely root-cause class (choose one primary):
-   - parse/type error (strict typing / inference)
-   - Godot 4.x API mismatch
-   - signal not connected / wrong signature
-   - group mismatch / node path resolution
-   - initialization order / null reference
-   - event-bus misuse (GameEvents)
-   - asset/scene dependency issue
+Language: Strictly typed GDScript
 
-3) State the invariant that is being violated (from Golden Checklist).
+Warnings = Errors (zero warnings allowed)
 
-4) Produce a fix strategy that is:
-   - minimal and localized
-   - no refactors unless requested
-   - consistent with strict typing rules
-   - consistent with “UI reactive only”
+No Variant inference
 
-5) Output MUST be “Instructions for Codex” with:
-   - where to look (files/scenes/systems, not exact lines)
-   - what to verify (signals, groups, init order, types)
-   - what to change (high-level, not code)
-   - acceptance criteria (how we know it’s fixed)
-   - regression checks (what must still work)
-   - stop conditions (when Codex must pause and report instead of guessing)
+No implicit types
 
-OUTPUT FORMAT (MANDATORY)
-- Summary (1–2 lines)
-- Repro / Expected / Actual (short)
-- Primary suspected root cause class
-- Invariant violated
-- Fix strategy (minimal)
-- Instructions for Codex (bullet list)
-- Acceptance criteria + regression checklist
-- Risks / alternatives (optional, short)
+No untyped Dictionary.get()
+
+Use maxi/maxf/mini/minf instead of max/min
+
+Explicit casts required when needed
+
+Project must run without parse or type errors
+
+2. ENTRY POINT (INVIOLABLE)
+
+Entry scene:
+res://scenes/Main.tscn
+
+Main.tscn must:
+
+load without errors
+
+start gameplay correctly
+
+No change may break startup
+
+3. ARCHITECTURE (FIXED)
+RunManager
+
+Exactly ONE RunManager is allowed
+
+Official path:
+res://scripts/systems/run_manager.gd
+
+Group: run_manager
+
+ No legacy or duplicate managers
+
+Responsibility split (hard rule)
+
+RunManager → run state, economy, flow
+
+Arena → spawn, enemies, waves
+
+Player → input, combat, health
+
+UI → visualization only
+
+4. COMMUNICATION RULES
+
+Systems communicate only via signals / events
+
+Global events via GameEvents singleton
+
+ No direct cross-system state access
+
+ No circular dependencies
+
+All get_node() calls must be null-safe
+
+5. INPUT MAP (CONTRACT)
+
+These inputs MUST NOT be renamed or removed:
+
+move_left
+
+move_right
+
+move_up
+
+move_down
+
+attack_light
+
+attack_heavy
+
+block
+
+dodge
+
+pause
+
+Inputs may be extended, never modified.
+
+6. RUN STATE OWNERSHIP
+
+Run state lives only in RunManager
+
+Player, Arena, UI do NOT persist state
+
+Reset run = full reset (unless explicitly stated)
+
+7. ECONOMY RULES
+
+Coins / Tokens:
+
+logic → RunManager
+
+display → UI
+
+ No other node modifies economy directly
+
+8. UI – GOLDEN RULE
+
+UI is reactive only
+
+UI listens to signals/events
+
+UI does NOT:
+
+calculate
+
+decide
+
+mutate game state
+
+manage economy
+
+9. SAFETY RULES (MANDATORY)
+
+Dictionary.get() always has typed fallback or explicit cast
+
+NodePaths are optional and validated
+
+Callables are verified before connect
+
+No method calls “by assumption”
+
+10. PATCH RULES (FOR CODEX)
+
+One task = one patch
+
+Changes must be:
+
+minimal
+
+localized
+
+directly related to the task
+
+ No refactors unless explicitly requested
+
+ No unrelated changes in the same patch
+
+11. ABSOLUTE PROHIBITIONS
+
+ Duplicate managers
+
+ Variant inference
+
+ Gameplay logic in UI
+
+ Economy logic outside RunManager
+
+ Player querying RunManager directly (except via signals/events)
+
+ Structural refactors without request
+
+ Multiple fixes bundled together
+
+12. STOP CONDITIONS (CRITICAL)
+
+Codex MUST STOP and report instead of guessing if:
+
+A requested change violates any rule above
+
+Multiple possible targets exist and intent is ambiguous
+
+Fix would require structural refactor not requested
+
+END OF GOLDEN CHECKLIST (CODEX EDITION)

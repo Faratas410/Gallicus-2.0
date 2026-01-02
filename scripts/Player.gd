@@ -37,6 +37,7 @@ var _base_max_health: int = 0
 var _base_light_damage: int = 0
 var _base_heavy_damage: int = 0
 var _damage_invuln: float = 0.0
+var input_locked: bool = false
 @onready var sword_sprite: Sprite2D = get_node_or_null("SwordSprite") as Sprite2D
 
 func _ready() -> void:
@@ -51,6 +52,10 @@ func _ready() -> void:
 	add_to_group("player")
 
 func _physics_process(delta: float) -> void:
+	if input_locked:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 	_dodge_timer = maxf(_dodge_timer - delta, 0.0)
 	_damage_invuln = maxf(_damage_invuln - delta, 0.0)
@@ -74,6 +79,9 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_apply_bounds()
+
+func set_input_locked(locked: bool) -> void:
+	input_locked = locked
 
 func _apply_bounds() -> void:
 	var half: Vector2 = arena_bounds_size * 0.5

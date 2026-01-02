@@ -21,6 +21,8 @@ signal player_damaged
 signal run_phase_changed(phase: int)
 signal countdown_requested(seconds: int)
 signal gameplay_enabled_changed(enabled: bool)
+signal modal_opened(kind: String)
+signal modal_closed(kind: String)
 
 # --- Progression / Difficulty ---
 signal difficulty_tier_changed(tier: int, multiplier: float)

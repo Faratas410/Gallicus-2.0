@@ -1012,6 +1012,12 @@ func _center_upgrade_panel_to_texture() -> void:
 func _set_upgrade_modal(active: bool) -> void:
 	if upgrade_panel != null:
 		upgrade_panel.visible = active
+	if active:
+		if GameEvents.has_signal("modal_opened"):
+			GameEvents.modal_opened.emit("upgrade")
+	else:
+		if GameEvents.has_signal("modal_closed"):
+			GameEvents.modal_closed.emit("upgrade")
 	_refresh_modal_dimmer()
 	if active:
 		_controls_hint_was_visible = controls_hint_panel != null and controls_hint_panel.visible

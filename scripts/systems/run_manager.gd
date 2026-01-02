@@ -62,6 +62,7 @@ var phase: RunPhase = RunPhase.PREP
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
 var _show_shop_next_bet: bool = false
+var _modal_lock_count: int = 0
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -99,6 +100,12 @@ func _ready() -> void:
 	var request_add_coins_callable: Callable = Callable(self, "_on_request_add_coins")
 	if GameEvents.has_signal("request_add_coins") and not GameEvents.request_add_coins.is_connected(request_add_coins_callable):
 		GameEvents.request_add_coins.connect(request_add_coins_callable)
+	var modal_opened_callable: Callable = Callable(self, "_on_modal_opened")
+	if GameEvents.has_signal("modal_opened") and not GameEvents.modal_opened.is_connected(modal_opened_callable):
+		GameEvents.modal_opened.connect(modal_opened_callable)
+	var modal_closed_callable: Callable = Callable(self, "_on_modal_closed")
+	if GameEvents.has_signal("modal_closed") and not GameEvents.modal_closed.is_connected(modal_closed_callable):
+		GameEvents.modal_closed.connect(modal_closed_callable)
 	_ensure_input_map()
 	call_deferred("_boot")
 
@@ -368,6 +375,32 @@ func _on_request_next_bet() -> void:
 
 func _on_request_add_coins(amount: int) -> void:
 	add_coins(amount)
+
+func _on_modal_opened(_kind: String) -> void:
+	_modal_lock_count += 1
+	_apply_modal_lock()
+
+func _on_modal_closed(_kind: String) -> void:
+	_modal_lock_count = maxi(_modal_lock_count - 1, 0)
+	_apply_modal_lock()
+
+func _apply_modal_lock() -> void:
+	var locked: bool = _modal_lock_count > 0
+	var player: Node = get_tree().get_first_node_in_group("player") as Node
+	if player != null:
+		if player.has_method("set_input_locked"):
+			player.call("set_input_locked", locked)
+		elif "input_locked" in player:
+			player.set("input_locked", locked)
+
+	var enemies: Array = get_tree().get_nodes_in_group("enemies")
+	for enemy: Node in enemies:
+		if enemy == null or not is_instance_valid(enemy):
+			continue
+		if enemy.has_method("set_ai_locked"):
+			enemy.call("set_ai_locked", locked)
+		elif "ai_locked" in enemy:
+			enemy.set("ai_locked", locked)
 
 func add_coins(amount: int) -> void:
 	if amount <= 0:

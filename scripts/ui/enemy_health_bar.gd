@@ -25,7 +25,8 @@ func _world_to_screen(world_pos: Vector2) -> Vector2:
 	var viewport: Viewport = get_viewport()
 	var cam: Camera2D = viewport.get_camera_2d()
 	if cam != null:
-		return cam.get_screen_position(world_pos)
+		var cam_transform: Transform2D = cam.get_canvas_transform().affine_inverse()
+		return cam_transform * world_pos
 	var fallback_transform: Transform2D = viewport.get_canvas_transform().affine_inverse()
 	return fallback_transform * world_pos
 

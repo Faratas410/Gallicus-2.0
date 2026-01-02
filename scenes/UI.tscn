@@ -48,79 +48,87 @@ offset_top = 16.0
 offset_right = -16.0
 offset_bottom = -16.0
 
-[node name="HUDVBox" type="VBoxContainer" parent="HUD/SafeMargin"]
+[node name="TopRow" type="HBoxContainer" parent="HUD/SafeMargin"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 
-[node name="CoinsRow" type="HBoxContainer" parent="HUD/SafeMargin/HUDVBox"]
+[node name="LeftColumn" type="VBoxContainer" parent="HUD/SafeMargin/TopRow"]
+custom_minimum_size = Vector2(360, 0)
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="PlayerHPRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 size_flags_horizontal = 3
 
-[node name="CoinIcon" type="TextureRect" parent="HUD/SafeMargin/HUDVBox/CoinsRow"]
-custom_minimum_size = Vector2(16, 16)
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CoinsLabel" type="Label" parent="HUD/SafeMargin/HUDVBox/CoinsRow"]
-autowrap_mode = 2
-size_flags_horizontal = 3
-text = "Coins: 0"
-
-[node name="PlayerHPRow" type="HBoxContainer" parent="HUD/SafeMargin/HUDVBox"]
-size_flags_horizontal = 3
-
-[node name="PlayerHPBar" type="ProgressBar" parent="HUD/SafeMargin/HUDVBox/PlayerHPRow"]
+[node name="PlayerHPBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow"]
 custom_minimum_size = Vector2(260, 16)
 min_value = 0.0
 max_value = 10.0
 value = 10.0
 
-[node name="PlayerHPLabel" type="Label" parent="HUD/SafeMargin/HUDVBox/PlayerHPRow"]
+[node name="PlayerHPLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow"]
 autowrap_mode = 2
 size_flags_horizontal = 3
 text = "HP: -/-"
 
-[node name="LevelRow" type="HBoxContainer" parent="HUD/SafeMargin/HUDVBox"]
+[node name="CoinsRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 size_flags_horizontal = 3
 
-[node name="LevelLabel" type="Label" parent="HUD/SafeMargin/HUDVBox/LevelRow"]
-autowrap_mode = 2
-text = "Level: 1"
-
-[node name="TokensRow" type="HBoxContainer" parent="HUD/SafeMargin/HUDVBox"]
-size_flags_horizontal = 3
-
-[node name="TokenIcon" type="TextureRect" parent="HUD/SafeMargin/HUDVBox/TokensRow"]
+[node name="CoinIcon" type="TextureRect" parent="HUD/SafeMargin/TopRow/LeftColumn/CoinsRow"]
 custom_minimum_size = Vector2(16, 16)
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TokensLabel" type="Label" parent="HUD/SafeMargin/HUDVBox/TokensRow"]
+[node name="CoinsLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/CoinsRow"]
+autowrap_mode = 2
+size_flags_horizontal = 3
+text = "Coins: 0"
+
+[node name="LevelRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
+size_flags_horizontal = 3
+
+[node name="LevelLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/LevelRow"]
+autowrap_mode = 2
+text = "Level: 1"
+
+[node name="TokensRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
+size_flags_horizontal = 3
+
+[node name="TokenIcon" type="TextureRect" parent="HUD/SafeMargin/TopRow/LeftColumn/TokensRow"]
+custom_minimum_size = Vector2(16, 16)
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TokensLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/TokensRow"]
 autowrap_mode = 2
 size_flags_horizontal = 3
 text = "Tokens: 0"
 
-[node name="XPRow" type="HBoxContainer" parent="HUD/SafeMargin/HUDVBox"]
+[node name="XPRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 size_flags_horizontal = 3
 
-[node name="XPBar" type="ProgressBar" parent="HUD/SafeMargin/HUDVBox/XPRow"]
+[node name="XPBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/XPRow"]
 custom_minimum_size = Vector2(260, 14)
 min_value = 0.0
 max_value = 6.0
 value = 0.0
 
-[node name="XPLabel" type="Label" parent="HUD/SafeMargin/HUDVBox/XPRow"]
+[node name="XPLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/XPRow"]
 autowrap_mode = 2
 text = "XP: 0/6"
 
-[node name="BetRow" type="HBoxContainer" parent="HUD/SafeMargin/HUDVBox"]
+[node name="BetRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 size_flags_horizontal = 3
 
-[node name="BetInfoLabel" type="Label" parent="HUD/SafeMargin/HUDVBox/BetRow"]
+[node name="BetInfoLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetRow"]
 autowrap_mode = 2
 text = "Bet: -"
+
+[node name="RightColumn" type="VBoxContainer" parent="HUD/SafeMargin/TopRow"]
+size_flags_horizontal = 8
 
 [node name="LevelUpPopup" type="Label" parent="HUD"]
 visible = false
@@ -216,10 +224,10 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
 offset_bottom = 0.0
-theme_override_constants/margin_left = 0
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 0
-theme_override_constants/margin_bottom = 0
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 190
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
 
 [node name="UpgradeVBox" type="VBoxContainer" parent="Modals/ModalCenter/UpgradePanel/UpgradeContentArea"]
 anchor_right = 1.0
@@ -230,6 +238,7 @@ offset_right = 0.0
 offset_bottom = 0.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 10
 
 [node name="UpgradeTitle" type="Label" parent="Modals/ModalCenter/UpgradePanel/UpgradeContentArea/UpgradeVBox"]
 text = "UPGRADE SHOP"
@@ -239,6 +248,7 @@ text = "Tokens: 0"
 
 [node name="UpgradeRows" type="VBoxContainer" parent="Modals/ModalCenter/UpgradePanel/UpgradeContentArea/UpgradeVBox"]
 size_flags_horizontal = 3
+theme_override_constants/separation = 8
 
 [node name="UpgradeHPRow" type="PanelContainer" parent="Modals/ModalCenter/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows"]
 custom_minimum_size = Vector2(0, 52)
@@ -439,22 +449,14 @@ wait_time = 0.25
 one_shot = false
 autostart = false
 
-[node name="ControlsHintPanel" type="Panel" parent="HUD"]
+[node name="ControlsHintPanel" type="Panel" parent="HUD/SafeMargin/TopRow/RightColumn"]
 visible = true
 mouse_filter = 2
-anchor_left = 1.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-offset_left = -320.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = 160.0
 clip_contents = true
 custom_minimum_size = Vector2(280, 160)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
-[node name="ControlsVBox" type="VBoxContainer" parent="HUD/ControlsHintPanel"]
+[node name="ControlsVBox" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 10.0
@@ -462,10 +464,10 @@ offset_top = 10.0
 offset_right = -10.0
 offset_bottom = -10.0
 
-[node name="ControlsTitle" type="Label" parent="HUD/ControlsHintPanel/ControlsVBox"]
+[node name="ControlsTitle" type="Label" parent="HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel/ControlsVBox"]
 autowrap_mode = 2
 text = "CONTROLS"
 
-[node name="ControlsText" type="Label" parent="HUD/ControlsHintPanel/ControlsVBox"]
+[node name="ControlsText" type="Label" parent="HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel/ControlsVBox"]
 autowrap_mode = 2
 text = "MOVE: WASD / Arrows\nLIGHT: J\nHEAVY: K\nDODGE: Space\nBLOCK: Shift"

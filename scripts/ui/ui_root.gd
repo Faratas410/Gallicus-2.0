@@ -3,19 +3,19 @@ extends CanvasLayer
 const FAST_SELECTION_SECONDS: int = 12
 const UPGRADE_FLASH_TIME: float = 0.10
 
-@onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/CoinsRow/CoinsLabel") as Label
-@onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/TokensRow/TokensLabel") as Label
-@onready var level_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/LevelRow/LevelLabel") as Label
-@onready var bet_info_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/BetRow/BetInfoLabel") as Label
-@onready var xp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/HUDVBox/XPRow/XPBar") as ProgressBar
-@onready var xp_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/XPRow/XPLabel") as Label
-@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/HUDVBox/PlayerHPRow/PlayerHPBar") as ProgressBar
-@onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/HUDVBox/PlayerHPRow/PlayerHPLabel") as Label
+@onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsLabel") as Label
+@onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokensLabel") as Label
+@onready var level_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/LevelRow/LevelLabel") as Label
+@onready var bet_info_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetRow/BetInfoLabel") as Label
+@onready var xp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPBar") as ProgressBar
+@onready var xp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPLabel") as Label
+@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPBar") as ProgressBar
+@onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPLabel") as Label
 @onready var bet_panel: Panel = _req("Modals/ModalCenter/BetPanel") as Panel
 @onready var buy_token_button: Button = get_node_or_null("Modals/ModalCenter/BetPanel/BetVBox/BuyTokenRow/BuyTokenButton") as Button
 @onready var buy_token_info: Label = get_node_or_null("Modals/ModalCenter/BetPanel/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
-@onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/HUDVBox/CoinsRow/CoinIcon") as TextureRect
-@onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/HUDVBox/TokensRow/TokenIcon") as TextureRect
+@onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinIcon") as TextureRect
+@onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokenIcon") as TextureRect
 @onready var modal_dimmer: ColorRect = get_node_or_null("Modals/ModalDimmer") as ColorRect
 @onready var upgrade_panel: Panel = get_node_or_null("Modals/ModalCenter/UpgradePanel") as Panel
 @onready var upgrade_root: Control = get_node_or_null("Modals/ModalCenter/UpgradePanel") as Control
@@ -48,7 +48,7 @@ const UPGRADE_FLASH_TIME: float = 0.10
 @onready var restart_button: Button = get_node_or_null("Modals/ModalCenter/GameOverPanel/GameOverVBox/RestartButton") as Button
 @onready var next_bet_button: Button = get_node_or_null("Modals/ModalCenter/GameOverPanel/GameOverVBox/NextBetButton") as Button
 @onready var quit_button: Button = get_node_or_null("Modals/ModalCenter/GameOverPanel/GameOverVBox/QuitButton") as Button
-@onready var controls_hint_panel: Panel = get_node_or_null("HUD/ControlsHintPanel") as Panel
+@onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
 @onready var countdown_label: Label = get_node_or_null("Modals/CountdownLabel") as Label
 @onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
@@ -582,6 +582,7 @@ func _on_run_started() -> void:
 		next_bet_button.visible = true
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
+	_refresh_modal_dimmer()
 
 func _on_run_started_ui() -> void:
 	_last_level = 1
@@ -619,6 +620,7 @@ func _on_run_failed() -> void:
 	if restart_button != null:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
+	_refresh_modal_dimmer()
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
@@ -684,6 +686,7 @@ func _on_bet_ui_opened(bets: Array) -> void:
 	_reset_fast_countdown()
 	_refresh_buy_token_ui()
 	_refresh_upgrade_shop_ui()
+	_refresh_modal_dimmer()
 
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
@@ -693,6 +696,7 @@ func _on_bet_ui_closed() -> void:
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
 	get_viewport().gui_release_focus()
+	_refresh_modal_dimmer()
 
 func _on_bet_win_pressed() -> void:
 	_place_bet("WIN")
@@ -715,6 +719,7 @@ func _request_reset() -> void:
 
 	if GameEvents.has_signal("request_reset_run"):
 		GameEvents.request_reset_run.emit()
+	_refresh_modal_dimmer()
 
 func _request_next_bet() -> void:
 	if game_over_panel != null and game_over_panel.visible:
@@ -728,6 +733,7 @@ func _request_retry() -> void:
 		game_over_panel.visible = false
 	if GameEvents.has_signal("request_retry_run"):
 		GameEvents.request_retry_run.emit()
+	_refresh_modal_dimmer()
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
@@ -1003,38 +1009,10 @@ func _center_upgrade_panel_to_texture() -> void:
 	upgrade_panel.offset_right = half.x
 	upgrade_panel.offset_bottom = half.y
 
-	# Keep the interactive widgets INSIDE the painted "box" area of the background.
-	# Use ratios so it scales with resolution/viewport.
-	if upgrade_content_area != null:
-		# These ratios are tuned for ui_upgrade_panel_gallicus.png:
-		# content box starts below the rooster and ends above the bottom frame.
-		var left_r: float = 0.14
-		var right_r: float = 0.86
-		var top_r: float = 0.33
-		var bottom_r: float = 0.92
-
-		var px_left: int = int(size.x * left_r)
-		var px_right: int = int(size.x * right_r)
-		var px_top: int = int(size.y * top_r)
-		var px_bottom: int = int(size.y * bottom_r)
-
-		upgrade_content_area.anchor_left = 0.0
-		upgrade_content_area.anchor_top = 0.0
-		upgrade_content_area.anchor_right = 0.0
-		upgrade_content_area.anchor_bottom = 0.0
-		upgrade_content_area.offset_left = px_left
-		upgrade_content_area.offset_top = px_top
-		upgrade_content_area.offset_right = px_right
-		upgrade_content_area.offset_bottom = px_bottom
-
-		if upgrade_vbox != null:
-			upgrade_vbox.queue_sort()
-
 func _set_upgrade_modal(active: bool) -> void:
-	if modal_dimmer != null:
-		modal_dimmer.visible = active
 	if upgrade_panel != null:
 		upgrade_panel.visible = active
+	_refresh_modal_dimmer()
 	if active:
 		_controls_hint_was_visible = controls_hint_panel != null and controls_hint_panel.visible
 		_countdown_was_visible = countdown_label != null and countdown_label.visible
@@ -1061,7 +1039,21 @@ func _set_upgrade_modal(active: bool) -> void:
 		if fast_blink_timer != null and _fast_blink_was_running and _fast_countdown_active:
 			fast_blink_timer.start()
 		_upgrade_modal_active = false
+	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+
+func _refresh_modal_dimmer() -> void:
+	if modal_dimmer == null:
+		return
+	var active: bool = false
+	if upgrade_panel != null and upgrade_panel.visible:
+		active = true
+	if bet_panel != null and bet_panel.visible:
+		active = true
+	if game_over_panel != null and game_over_panel.visible:
+		active = true
+	modal_dimmer.visible = active
+	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
 
 func _reset_fast_countdown() -> void:
 	_selected_bet_id = ""

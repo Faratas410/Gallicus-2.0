@@ -49,9 +49,10 @@ func _process(_delta: float) -> void:
 			bar_size = custom_minimum_size
 	var offset: Vector2 = -(bar_size * 0.5)
 	var pos: Vector2 = screen_pos + offset
-	var viewport_rect: Rect2 = get_viewport().get_visible_rect()
-	var vp_size: Vector2 = viewport_rect.size
-	var pad: float = 2.0
-	pos.x = clampf(pos.x, pad, vp_size.x - bar_size.x - pad)
-	pos.y = clampf(pos.y, pad, vp_size.y - bar_size.y - pad)
+	if bar_size != Vector2.ZERO:
+		var viewport_rect: Rect2 = get_viewport().get_visible_rect()
+		var vp_size: Vector2 = viewport_rect.size
+		var pad: float = 2.0
+		pos.x = clampf(pos.x, pad, vp_size.x - bar_size.x - pad)
+		pos.y = clampf(pos.y, pad, vp_size.y - bar_size.y - pad)
 	global_position = pos

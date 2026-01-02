@@ -1,6 +1,6 @@
 extends Node
 
-const BETS_PATH := "res://data/bets.gd"
+const BETS_PATH: String = "res://data/bets.gd"
 
 @export var fast_time_limit: float = 15.0
 
@@ -23,14 +23,24 @@ func _ready() -> void:
 	_run_manager = get_parent()
 	_load_bets()
 	add_to_group("bet_manager")
-	GameEvents.player_damaged.connect(_on_player_damaged)
+	var player_damaged_callable: Callable = Callable(self, "_on_player_damaged")
+	if not GameEvents.player_damaged.is_connected(player_damaged_callable):
+		GameEvents.player_damaged.connect(player_damaged_callable)
+	var request_place_bet_callable: Callable = Callable(self, "_on_request_place_bet")
+	if GameEvents.has_signal("request_place_bet") and not GameEvents.request_place_bet.is_connected(request_place_bet_callable):
+		GameEvents.request_place_bet.connect(request_place_bet_callable)
+	var request_open_bet_callable: Callable = Callable(self, "_on_request_open_bet_ui")
+	if GameEvents.has_signal("request_open_bet_ui") and not GameEvents.request_open_bet_ui.is_connected(request_open_bet_callable):
+		GameEvents.request_open_bet_ui.connect(request_open_bet_callable)
 	_try_connect_player_damage()
 	_try_connect_arena()
 
 func _try_connect_player_damage() -> void:
-	var player := get_tree().get_first_node_in_group("player")
-	if player and player.has_signal("took_damage") and not player.is_connected("took_damage", Callable(self, "_on_player_took_damage")):
-		player.connect("took_damage", Callable(self, "_on_player_took_damage"))
+	var player: Node = get_tree().get_first_node_in_group("player")
+	if player and player.has_signal("took_damage"):
+		var took_damage_callable: Callable = Callable(self, "_on_player_took_damage")
+		if not player.took_damage.is_connected(took_damage_callable):
+			player.took_damage.connect(took_damage_callable)
 
 func _try_connect_arena() -> void:
 	if _arena != null and is_instance_valid(_arena):
@@ -38,17 +48,23 @@ func _try_connect_arena() -> void:
 	_arena = get_tree().get_first_node_in_group("arena")
 	if _arena == null:
 		return
-	if _arena.has_signal("wave_started") and not _arena.is_connected("wave_started", Callable(self, "_on_wave_started")):
-		_arena.connect("wave_started", Callable(self, "_on_wave_started"))
-	if _arena.has_signal("wave_cleared") and not _arena.is_connected("wave_cleared", Callable(self, "_on_wave_cleared")):
-		_arena.connect("wave_cleared", Callable(self, "_on_wave_cleared"))
-	if _arena.has_signal("player_spawned") and not _arena.is_connected("player_spawned", Callable(self, "_on_player_spawned")):
-		_arena.connect("player_spawned", Callable(self, "_on_player_spawned"))
+	if _arena.has_signal("wave_started"):
+		var wave_started_callable: Callable = Callable(self, "_on_wave_started")
+		if not _arena.wave_started.is_connected(wave_started_callable):
+			_arena.wave_started.connect(wave_started_callable)
+	if _arena.has_signal("wave_cleared"):
+		var wave_cleared_callable: Callable = Callable(self, "_on_wave_cleared")
+		if not _arena.wave_cleared.is_connected(wave_cleared_callable):
+			_arena.wave_cleared.connect(wave_cleared_callable)
+	if _arena.has_signal("player_spawned"):
+		var player_spawned_callable: Callable = Callable(self, "_on_player_spawned")
+		if not _arena.player_spawned.is_connected(player_spawned_callable):
+			_arena.player_spawned.connect(player_spawned_callable)
 
 func _load_bets() -> void:
-	var script := load(BETS_PATH)
+	var script: Script = load(BETS_PATH) as Script
 	if script:
-		var bets_value = script.get("BETS")
+		var bets_value: Variant = script.get("BETS")
 		if bets_value is Array:
 			_bets = bets_value
 
@@ -65,7 +81,7 @@ func open_bet_ui_before_arena() -> void:
 	GameEvents.bet_opened.emit()
 
 func place_bet(bet_id: String, stake: int) -> bool:
-	var bet := _get_bet_by_id(bet_id)
+	var bet: Dictionary = _get_bet_by_id(bet_id)
 	if bet.is_empty():
 		return false
 	stake = maxi(stake, 0)
@@ -82,6 +98,12 @@ func place_bet(bet_id: String, stake: int) -> bool:
 	GameEvents.bet_closed.emit()
 	return true
 
+func _on_request_place_bet(bet_id: String, stake: int) -> void:
+	place_bet(bet_id, stake)
+
+func _on_request_open_bet_ui() -> void:
+	open_bet_ui_before_arena()
+
 func register_arena_start() -> void:
 	_arena_active = true
 	player_damage_taken = false
@@ -93,14 +115,14 @@ func resolve_bet() -> void:
 	if active_bet.is_empty():
 		return
 	end_time = Time.get_ticks_msec() / 1000.0
-	var won := false
-	if not active_bet.get("failed", false):
-		if active_bet.get("forced_win", false):
+	var won: bool = false
+	if not bool(active_bet.get("failed", false)):
+		if bool(active_bet.get("forced_win", false)):
 			won = true
 		else:
-			won = _evaluate_bet(active_bet["id"])
+			won = _evaluate_bet(str(active_bet["id"]))
 	if won:
-		var payout := int(active_bet["stake"] * float(active_bet["odds"]))
+		var payout: int = int(active_bet["stake"] * float(active_bet["odds"]))
 		if _run_manager and _run_manager.has_method("add_coins"):
 			_run_manager.add_coins(payout)
 	active_bet = {}
@@ -140,8 +162,9 @@ func _evaluate_bet(bet_id: String) -> bool:
 			return false
 
 func _get_bet_by_id(bet_id: String) -> Dictionary:
-	for bet in _bets:
-		if bet.get("id", "") == bet_id:
+	for bet_value: Dictionary in _bets:
+		var bet: Dictionary = bet_value as Dictionary
+		if str(bet.get("id", "")) == bet_id:
 			return bet
 	return {}
 
@@ -159,13 +182,13 @@ func _on_player_spawned(_player: Node) -> void:
 	_try_connect_player_damage()
 
 func _on_wave_started(_wave: int) -> void:
-	if active_bet.get("id", "") != "FAST" or not is_bet_active():
+	if str(active_bet.get("id", "")) != "FAST" or not is_bet_active():
 		return
 	if not _arena_active:
 		return
 	_fast_active = true
 	_fast_token += 1
-	var token := _fast_token
+	var token: int = _fast_token
 	_fast_start_time = Time.get_ticks_msec() / 1000.0
 	_fast_last_emitted = -1
 	_start_fast_countdown(token)
@@ -175,7 +198,7 @@ func _on_wave_started(_wave: int) -> void:
 	)
 
 func _on_wave_cleared(_wave: int) -> void:
-	if active_bet.get("id", "") != "FAST" or not is_bet_active():
+	if str(active_bet.get("id", "")) != "FAST" or not is_bet_active():
 		return
 	_fast_active = false
 	end_time = Time.get_ticks_msec() / 1000.0
@@ -185,7 +208,7 @@ func _on_wave_cleared(_wave: int) -> void:
 func _on_fast_timeout(token: int) -> void:
 	if token != _fast_token:
 		return
-	if active_bet.get("id", "") == "FAST" and is_bet_active() and _fast_active:
+	if str(active_bet.get("id", "")) == "FAST" and is_bet_active() and _fast_active:
 		fail_current_bet()
 
 func fail_current_bet() -> void:
@@ -225,7 +248,7 @@ func _start_fast_countdown(token: int) -> void:
 func _schedule_fast_tick(token: int) -> void:
 	if token != _fast_token or not _fast_active:
 		return
-	var timer := get_tree().create_timer(1.0)
+	var timer: SceneTreeTimer = get_tree().create_timer(1.0)
 	timer.timeout.connect(func() -> void:
 		_on_fast_tick(token)
 	)
@@ -239,8 +262,8 @@ func _on_fast_tick(token: int) -> void:
 func _emit_fast_countdown() -> void:
 	if not _fast_active or _fast_start_time <= 0.0:
 		return
-	var elapsed := (Time.get_ticks_msec() / 1000.0) - _fast_start_time
-	var remaining := int(ceil(fast_time_limit - elapsed))
+	var elapsed: float = (Time.get_ticks_msec() / 1000.0) - _fast_start_time
+	var remaining: int = int(ceil(fast_time_limit - elapsed))
 	remaining = maxi(remaining, 0)
 	if remaining == _fast_last_emitted:
 		return
@@ -250,5 +273,5 @@ func _emit_fast_countdown() -> void:
 func _handle_no_hit_failure() -> void:
 	if active_bet.is_empty():
 		return
-	if active_bet.get("id", "") == "NO_HIT" and _arena_active:
+	if str(active_bet.get("id", "")) == "NO_HIT" and _arena_active:
 		fail_current_bet()

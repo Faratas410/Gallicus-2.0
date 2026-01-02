@@ -27,6 +27,15 @@ signal difficulty_tier_changed(tier: int, multiplier: float)
 signal player_xp_changed(xp: int, xp_to_next: int)
 signal player_level_changed(level: int)
 signal upgrade_tokens_changed(tokens: int)
+signal request_purchase_upgrade(upgrade_key: String)
+signal request_purchase_token
+signal request_place_bet(bet_id: String, stake: int)
+signal request_open_bet_ui
+signal request_consume_upgrade_shop
+signal request_reset_run
+signal request_retry_run
+signal request_next_bet
+signal request_add_coins(amount: int)
 
 var gameplay_enabled: bool = true
 

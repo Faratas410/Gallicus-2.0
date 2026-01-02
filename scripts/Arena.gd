@@ -16,16 +16,16 @@ signal enemy_despawned(enemy: Node2D)
 
 var difficulty_tier: int = 0
 var difficulty_multiplier: float = 1.0
-var _rng := RandomNumberGenerator.new()
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _current_wave: int = 0
 var _enemies_remaining: int = 0
-var _player: Node2D
+var _player: Node2D = null
 var _aggro_sequence_id: int = 0
 
 func set_difficulty_tier(tier: int, mult: float = 1.0) -> void:
 	difficulty_tier = tier
 	difficulty_multiplier = mult
-	for enemy in get_tree().get_nodes_in_group("enemies"):
+	for enemy: Node in get_tree().get_nodes_in_group("enemies"):
 		if enemy != null and is_instance_valid(enemy) and enemy.has_method("_apply_tier_scaling_from_run_manager"):
 			enemy.call("_apply_tier_scaling_from_run_manager")
 
@@ -33,10 +33,16 @@ func _ready() -> void:
 	print("Arena ready")
 	_rng.randomize()
 	add_to_group("arena")
-	GameEvents.run_started.connect(_on_run_started)
-	GameEvents.run_failed.connect(_on_run_failed)
+	var run_started_callable: Callable = Callable(self, "_on_run_started")
+	if not GameEvents.run_started.is_connected(run_started_callable):
+		GameEvents.run_started.connect(run_started_callable)
+	var run_failed_callable: Callable = Callable(self, "_on_run_failed")
+	if not GameEvents.run_failed.is_connected(run_failed_callable):
+		GameEvents.run_failed.connect(run_failed_callable)
 	if GameEvents.has_signal("difficulty_tier_changed"):
-		GameEvents.difficulty_tier_changed.connect(_on_difficulty_tier_changed)
+		var tier_callable: Callable = Callable(self, "_on_difficulty_tier_changed")
+		if not GameEvents.difficulty_tier_changed.is_connected(tier_callable):
+			GameEvents.difficulty_tier_changed.connect(tier_callable)
 	queue_redraw()
 	ensure_player()
 	if debug_spawn_enemy:
@@ -46,8 +52,8 @@ func _on_difficulty_tier_changed(tier: int, mult: float) -> void:
 	set_difficulty_tier(tier, mult)
 
 func _draw() -> void:
-	var floor_size := Vector2(1024.0, 768.0)
-	var rect := Rect2(-floor_size * 0.5, floor_size)
+	var floor_size: Vector2 = Vector2(1024.0, 768.0)
+	var rect: Rect2 = Rect2(-floor_size * 0.5, floor_size)
 	draw_rect(rect, Color(0.15, 0.15, 0.2, 1.0))
 
 func start_next_wave() -> void:
@@ -62,22 +68,22 @@ func start_next_wave() -> void:
 func _spawn_player() -> void:
 	if _player != null:
 		return
-	var existing_player := get_tree().get_first_node_in_group("player")
+	var existing_player: Node = get_tree().get_first_node_in_group("player")
 	if existing_player and existing_player is Node2D:
 		_player = existing_player
 		_player.global_position = global_position
 		player_spawned.emit(_player)
-		var player_callable := Callable(self, "_on_player_died")
-		if _player.has_signal("died") and not _player.is_connected("died", player_callable):
-			_player.connect("died", player_callable)
+		var player_callable: Callable = Callable(self, "_on_player_died")
+		if _player.has_signal("died") and not _player.died.is_connected(player_callable):
+			_player.died.connect(player_callable)
 		return
 	_player = player_scene.instantiate() as Node2D
 	add_child(_player)
 	_player.global_position = global_position
 	player_spawned.emit(_player)
-	var died_callable := Callable(self, "_on_player_died")
-	if _player.has_signal("died") and not _player.is_connected("died", died_callable):
-		_player.connect("died", died_callable)
+	var died_callable: Callable = Callable(self, "_on_player_died")
+	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
+		_player.died.connect(died_callable)
 
 func _spawn_enemies(count: int) -> void:
 	_enemies_remaining = count
@@ -85,7 +91,7 @@ func _spawn_enemies(count: int) -> void:
 	if _player == null or not is_instance_valid(_player):
 		ensure_player()
 	for i in range(count):
-		var enemy := enemy_scene.instantiate() as Node2D
+		var enemy: Node2D = enemy_scene.instantiate() as Node2D
 		add_child(enemy)
 		enemy.add_to_group("enemies")
 		if OS.is_debug_build() and i == 0:
@@ -94,8 +100,8 @@ func _spawn_enemies(count: int) -> void:
 			if enemy_script != null:
 				enemy_script_path = enemy_script.resource_path
 			print("Spawned enemy script:", enemy_script_path)
-		var angle := _rng.randf_range(0.0, TAU)
-		var radius := _rng.randf_range(arena_radius * 0.5, arena_radius)
+		var angle: float = _rng.randf_range(0.0, TAU)
+		var radius: float = _rng.randf_range(arena_radius * 0.5, arena_radius)
 		enemy.global_position = global_position + Vector2(cos(angle), sin(angle)) * radius
 
 		# Apply difficulty immediately for newly spawned enemies (senza target)
@@ -120,7 +126,7 @@ func _spawn_debug_enemy() -> void:
 	if enemy_scene == null:
 		return
 	await get_tree().create_timer(0.2).timeout
-	var enemy := enemy_scene.instantiate() as Node2D
+	var enemy: Node2D = enemy_scene.instantiate() as Node2D
 	add_child(enemy)
 	enemy.add_to_group("enemies")
 	enemy.global_position = Vector2(120.0, 0.0)
@@ -208,7 +214,7 @@ func ensure_player() -> Node2D:
 	if _player != null:
 		if not is_instance_valid(_player) or _player.is_queued_for_deletion() or not _player.is_inside_tree():
 			_player = null
-	var group_player := get_tree().get_first_node_in_group("player")
+	var group_player: Node = get_tree().get_first_node_in_group("player")
 	if _player == null and group_player and group_player is Node2D:
 		if group_player.is_inside_tree() and not group_player.is_queued_for_deletion():
 			_player = group_player
@@ -218,19 +224,19 @@ func ensure_player() -> Node2D:
 		_player = player_scene.instantiate() as Node2D
 		add_child(_player)
 	elif _player.get_parent() != self:
-		var pos := _player.global_position
+		var pos: Vector2 = _player.global_position
 		_player.reparent(self)
 		_player.global_position = pos
 	_player.global_position = global_position
 	player_spawned.emit(_player)
-	var died_callable := Callable(self, "_on_player_died")
-	if _player.has_signal("died") and not _player.is_connected("died", died_callable):
-		_player.connect("died", died_callable)
+	var died_callable: Callable = Callable(self, "_on_player_died")
+	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
+		_player.died.connect(died_callable)
 	return _player
 
 func _schedule_enemy_aggro_after_delay() -> void:
 	_aggro_sequence_id += 1
-	var my_id := _aggro_sequence_id
+	var my_id: int = _aggro_sequence_id
 	var delay: float = maxf(enemy_aggro_delay, 0.0)
 	if delay <= 0.0:
 		_apply_enemy_targets_if_possible(my_id)
@@ -249,7 +255,7 @@ func _apply_enemy_targets_if_possible(my_id: int) -> void:
 		_player = get_tree().get_first_node_in_group("player") as Node2D
 	if _player == null or not is_instance_valid(_player):
 		return
-	for enemy in get_tree().get_nodes_in_group("enemies"):
+	for enemy: Node in get_tree().get_nodes_in_group("enemies"):
 		if enemy == null or not is_instance_valid(enemy):
 			continue
 		if enemy.has_method("set_target"):

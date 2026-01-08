@@ -1,0 +1,288 @@
+🩸 GALLICUS
+Risk-Driven Design Bible
+
+(Documento Costituzionale – Versione 1.0)
+
+0. COS’È QUESTO DOCUMENTO (E COSA NON È)
+Questo documento:
+
+è la fonte di verità unica sul design
+
+governa tutte le decisioni future
+
+ha autorità superiore al GDD
+
+serve a dire NO, non a giustificare cose
+
+Questo documento NON è:
+
+un GDD tradizionale
+
+una roadmap
+
+una lista di feature
+
+un documento “ispirazionale”
+
+👉 È una costituzione.
+
+1. FRASE TIRANNA (LEGGE SUPREMA)
+
+“Gallicus non ti chiede di giocare meglio.
+Ti chiede di rischiare di più.”
+
+Regola assoluta
+
+Se una feature:
+
+non aumenta il rischio percepito
+
+non rende la scelta più pesante
+
+non crea tensione decisionale
+
+👉 è illegale.
+
+Non va bilanciata.
+Non va migliorata.
+Va rimossa.
+
+2. TESI CENTRALE DEL GIOCO
+
+Gallicus non è:
+
+un power fantasy
+
+un roguelike di crescita
+
+un gioco di mastery progressiva
+
+Gallicus è:
+
+un gioco sulla tentazione di osare troppo
+
+Il giocatore non è premiato perché è bravo.
+È premiato perché accetta il rischio.
+
+3. PRINCIPI NON NEGOZIABILI (CORE DOGMA)
+
+Questi principi sono più importanti di qualsiasi feature.
+
+3.1 Ogni scelta deve mettere qualcosa in pericolo
+
+HP
+
+futuro della run
+
+identità della build
+
+sopravvivenza stessa
+
+Se non c’è una perdita potenziale → non è una scelta.
+
+3.2 Nessuna ricompensa è neutra
+
+Vietati:
+
+“+X%”
+
+“migliora un po’”
+
+“più efficiente”
+
+Consentiti solo:
+
+scambi violenti
+
+trasformazioni
+
+effetti che cambiano il modo di giocare
+
+3.3 La perdita deve sembrare colpa tua
+
+Il giocatore deve poter dire:
+
+“Ho esagerato.”
+
+Se dice:
+
+“Il gioco è stato ingiusto.”
+
+👉 design fallito.
+
+3.4 La tensione vale più dell’equilibrio
+
+Gallicus non deve essere bilanciato.
+Deve essere:
+
+instabile
+
+pericoloso
+
+sbilanciato per scelta
+
+4. IL LOOP REALE (NON QUELLO APPARENTE)
+Loop vietato
+
+entro → combatto → miglioro → ripeto
+
+Loop corretto
+
+scommetto → combatto sotto pressione → pago o divento qualcosa di diverso
+
+La run non è una sequenza di arene.
+È una spirale di rischio crescente.
+
+5. LA SCOMMESSA (CUORE ASSOLUTO)
+
+La scommessa non è un sistema.
+È la legge fisica del mondo di gioco.
+
+5.1 Cos’è una scommessa in Gallicus
+
+Una scommessa è:
+
+una dichiarazione di intenti
+
+una firma sul futuro della run
+
+un atto di arroganza
+
+5.2 Tipi di scommesse (tassonomia)
+A) Scommesse di Potere
+
+“Divento mostruoso, ma fragile”
+
+Esempi concettuali:
+
+raddoppio danni → dimezzo HP max
+
+attacchi devastanti → niente difesa
+
+B) Scommesse di Sopravvivenza
+
+“Vivo di più, ma rischio di diventare mediocre”
+
+più HP → meno danni
+
+più sicurezza → meno possibilità di esplodere
+
+C) Scommesse di Destino
+
+“Se perdo, è finita”
+
+condizioni irreversibili
+
+morte se fallisci
+
+perdita totale della run
+
+⚠️ Obbligatorie nel gioco.
+Senza queste, Gallicus perde l’anima.
+
+6. PROGRESSIONE = TRASFORMAZIONE
+Vietato
+
+scaling lineare
+
+crescita cumulativa
+
+“run più lunga = run migliore”
+
+Consentito
+
+identità di build nette
+
+run che diventano “altre cose”
+
+trasformazioni leggibili in 5 minuti
+
+Il player deve poter dire:
+
+“Questa run è quella folle.”
+“Questa è quella suicida.”
+“Questa è quella che è andata troppo oltre.”
+
+7. UPGRADE: POCHI, DEVASTANTI, LEGGIBILI
+Regola d’oro
+
+Meglio:
+
+6 upgrade memorabili
+
+che:
+
+30 upgrade dimenticabili
+
+Ogni upgrade deve:
+
+cambiare comportamento
+
+creare paura
+
+suggerire una storia
+
+8. UI COME ARMA PSICOLOGICA
+
+La UI non serve a chiarire.
+Serve a far pesare la decisione.
+
+Ogni scelta deve sembrare:
+
+“Se clicco qui, firmo qualcosa.”
+
+Linee guida:
+
+evidenziare cosa perdi
+
+mostrare il rischio prima del beneficio
+
+mai minimizzare la perdita
+
+9. COSA TAGLIARE SENZA PIETÀ (KILL LIST)
+
+Queste cose non devono mai entrare:
+
+skill tree estesi
+
+loot neutro
+
+progressione sicura
+
+retry senza costo
+
+sistemi che “aggiungono comfort”
+
+Se una feature:
+
+rende il gioco più comodo
+👉 è sospetta
+👉 probabilmente va rimossa
+
+10. METRICA DI SUCCESSO (UNICA)
+
+Gallicus funziona se, a fine run, il player dice:
+
+“Ho osato troppo.”
+
+Non:
+
+“sono stato sfortunato”
+
+“non ero pronto”
+
+“devo grindare di più”
+
+11. VERDETTO FINALE
+
+Gallicus non deve piacere a tutti.
+Deve essere:
+
+ricordato
+
+discusso
+
+temuto
+
+Se il player non ha paura di scegliere,
+Gallicus non esiste.

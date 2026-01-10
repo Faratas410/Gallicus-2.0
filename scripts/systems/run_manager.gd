@@ -82,6 +82,12 @@ var _scars: Array[Dictionary] = []
 var _scar_heal_multiplier: float = 1.0
 var _scar_dodge_cooldown_multiplier: float = 1.0
 var _scar_dodge_speed_multiplier: float = 1.0
+var _push_luck_cashouts: int = 0
+var _push_luck_doubles: int = 0
+var _max_push_luck_chain: int = 1
+var _failed_high_risk_bets: int = 0
+var _run_end_reason: String = ""
+var _run_finale_emitted: bool = false
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -169,6 +175,12 @@ func start_new_run() -> void:
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_show_shop_next_bet = false
+	_push_luck_cashouts = 0
+	_push_luck_doubles = 0
+	_max_push_luck_chain = 1
+	_failed_high_risk_bets = 0
+	_run_end_reason = ""
+	_run_finale_emitted = false
 	_reset_bet_chain()
 	_reset_scars()
 	set_phase(RunPhase.PREP)
@@ -414,6 +426,7 @@ func _on_request_push_luck_cashout() -> void:
 	var bet_id: String = _current_bet_id
 	_waiting_for_push_luck = false
 	GameEvents.push_luck_closed.emit()
+	_push_luck_cashouts += 1
 	if bet_id != "":
 		_apply_bet_reward_scaled(bet_id, _bet_chain_level)
 	_reset_bet_chain()
@@ -429,6 +442,8 @@ func _on_request_push_luck_double() -> void:
 		_open_bet_ui(true)
 		return
 	_bet_chain_level = maxi(_bet_chain_level + 1, 1)
+	_push_luck_doubles += 1
+	_max_push_luck_chain = maxi(_max_push_luck_chain, _bet_chain_level)
 	_try_apply_cracked_bones_scar(bet_id, _bet_chain_level)
 	if _bet_manager and _bet_manager.has_method("set_chain_bet"):
 		_bet_manager.call("set_chain_bet", bet_id)
@@ -706,11 +721,12 @@ func _on_run_failed() -> void:
 	if _run_failed_emitted:
 		return
 	_run_failed_emitted = true
+	_register_run_end("RUN_FAILED")
 	GameEvents.set_gameplay_enabled(false)
 	_enter_game_over()
 
 func _on_player_died() -> void:
-	_emit_run_failed()
+	_register_run_end("PLAYER_DIED")
 	_enter_game_over()
 
 func _soft_reset() -> void:
@@ -727,10 +743,13 @@ func handle_bet_failed(bet_id: String) -> void:
 	if _is_game_over:
 		return
 	if bet_id == BET_DOUBLE_OR_DIE:
+		_failed_high_risk_bets += 1
+		_register_run_end("DOUBLE_OR_DIE")
 		_reset_bet_chain()
 		_enter_game_over()
 		return
 	if bet_id == BET_PURE_BLOOD:
+		_failed_high_risk_bets += 1
 		var chain_level: int = _bet_chain_level
 		_apply_pure_bet_penalty(chain_level)
 	_reset_bet_chain()
@@ -890,6 +909,7 @@ func _force_game_over_if_dead() -> bool:
 		return false
 	var current_health: int = _get_player_health_value(p)
 	if current_health <= 0 and current_health != -1:
+		_register_run_end("PLAYER_DIED")
 		_enter_game_over()
 		return true
 	return false
@@ -922,6 +942,7 @@ func _enter_game_over() -> void:
 	_is_game_over = true
 	_waiting_for_bet = false
 	set_phase(RunPhase.GAME_OVER)
+	_emit_run_finale()
 	_emit_run_failed()
 
 func _emit_run_failed() -> void:
@@ -930,6 +951,57 @@ func _emit_run_failed() -> void:
 	_run_failed_emitted = true
 	GameEvents.run_failed.emit()
 	GameEvents.set_gameplay_enabled(false)
+
+func _register_run_end(reason: String) -> void:
+	if reason == "":
+		return
+	if _run_end_reason == "":
+		_run_end_reason = reason
+
+func _emit_run_finale() -> void:
+	if _run_finale_emitted:
+		return
+	_run_finale_emitted = true
+	var finale: Dictionary = _select_run_finale()
+	GameEvents.run_finale_selected.emit(finale)
+
+func _select_run_finale() -> Dictionary:
+	var scars_copy: Array = _scars.duplicate(true)
+	var scar_count: int = scars_copy.size()
+	var bet_penalty: int = int(run.get("bet_hp_penalty", 0))
+	var hp_reduction: int = maxi(-bet_penalty, 0)
+	var has_open_wound: bool = _has_scar(SCAR_OPEN_WOUND)
+	var has_cracked_bones: bool = _has_scar(SCAR_CRACKED_BONES)
+	var has_mixed_scars: bool = has_open_wound and has_cracked_bones
+	var pushed_too_far: bool = _max_push_luck_chain >= 3 or _push_luck_doubles >= 2
+	var frequent_cashout: bool = _push_luck_cashouts >= 2
+	var many_physical_scars: bool = scar_count >= 2 and hp_reduction >= 20
+	var few_scars: bool = scar_count <= 1
+
+	var title: String = "FINE SILENZIOSA"
+	var text: String = "Ha lasciato l'arena senza clamore.\nLe cicatrici dicono abbastanza."
+
+	if _run_end_reason == "DOUBLE_OR_DIE":
+		title = "DESTINO COMPIUTO"
+		text = "Ha firmato la fine con le proprie mani.\nE non ha distolto lo sguardo."
+	elif _failed_high_risk_bets > 0 and pushed_too_far:
+		title = "L'ARROGANTE"
+		text = "Non ha mai indietreggiato.\nNon perché fosse coraggioso,\nma perché non sapeva fermarsi."
+	elif many_physical_scars:
+		title = "IL POLLO SPEZZATO"
+		text = "Ha continuato a combattere anche quando il corpo\naveva già deciso di fermarsi.\nL'arena se lo ricorderà come carne resistente."
+	elif few_scars and frequent_cashout:
+		title = "IL SOPRAVVISSUTO"
+		text = "Non diventerà una leggenda.\nMa oggi è ancora vivo.\nE questo, per un Pollo, è già qualcosa."
+	elif has_mixed_scars or scar_count > 0:
+		title = "IL MARCHIATO"
+		text = "L'arena lo ha cambiato.\nNon abbastanza da salvarlo.\nAbbastanza da ricordarlo."
+
+	return {
+		"title": title,
+		"text": text,
+		"scars": scars_copy,
+	}
 
 func get_arena() -> Node:
 	return _arena

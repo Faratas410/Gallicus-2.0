@@ -533,6 +533,29 @@ wait_time = 0.25
 one_shot = false
 autostart = false
 
+[node name="ScarsPanel" type="Panel" parent="HUD/SafeMargin/TopRow/RightColumn"]
+mouse_filter = 2
+clip_contents = true
+custom_minimum_size = Vector2(280, 180)
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ScarsVBox" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/RightColumn/ScarsPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+theme_override_constants/separation = 6
+
+[node name="ScarsTitle" type="Label" parent="HUD/SafeMargin/TopRow/RightColumn/ScarsPanel/ScarsVBox"]
+autowrap_mode = 2
+text = "CICATRICI"
+
+[node name="ScarsLabel" type="Label" parent="HUD/SafeMargin/TopRow/RightColumn/ScarsPanel/ScarsVBox"]
+autowrap_mode = 2
+text = "Nessuna cicatrice."
+
 [node name="ControlsHintPanel" type="Panel" parent="HUD/SafeMargin/TopRow/RightColumn"]
 visible = true
 mouse_filter = 2

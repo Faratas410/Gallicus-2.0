@@ -37,6 +37,9 @@ var _base_max_health: int = 0
 var _base_light_damage: int = 0
 var _base_heavy_damage: int = 0
 var _damage_invuln: float = 0.0
+var _heal_multiplier: float = 1.0
+var _dodge_cooldown_multiplier: float = 1.0
+var _dodge_speed_multiplier: float = 1.0
 var input_locked: bool = false
 @onready var sword_sprite: Sprite2D = get_node_or_null("SwordSprite") as Sprite2D
 
@@ -69,8 +72,10 @@ func _physics_process(delta: float) -> void:
 	_is_blocking = Input.is_action_pressed("block")
 
 	if Input.is_action_just_pressed("dodge") and _dodge_timer <= 0.0:
-		velocity += input_vector.normalized() * dodge_speed
-		_dodge_timer = dodge_cooldown
+		var dodge_speed_value: float = maxf(dodge_speed * _dodge_speed_multiplier, 0.0)
+		var dodge_cooldown_value: float = maxf(dodge_cooldown * _dodge_cooldown_multiplier, 0.05)
+		velocity += input_vector.normalized() * dodge_speed_value
+		_dodge_timer = dodge_cooldown_value
 
 	if Input.is_action_just_pressed("attack_light"):
 		_try_attack(light_damage, light_range, light_cooldown, light_cone_angle_deg)
@@ -250,13 +255,21 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 		_current_health = clampi(previous_current, 0, max_health)
 	_emit_health()
 
+func apply_scar_modifiers(heal_multiplier: float, dodge_cooldown_multiplier: float, dodge_speed_multiplier: float) -> void:
+	_heal_multiplier = maxf(heal_multiplier, 0.0)
+	_dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 0.1)
+	_dodge_speed_multiplier = maxf(dodge_speed_multiplier, 0.1)
+
 func get_damage_values() -> Array[int]:
 	return [light_damage, heavy_damage]
 
 func heal(amount: int) -> void:
 	if amount <= 0:
 		return
-	_current_health = clampi(_current_health + amount, 0, max_health)
+	var scaled: int = int(round(float(amount) * _heal_multiplier))
+	if scaled <= 0:
+		return
+	_current_health = clampi(_current_health + scaled, 0, max_health)
 	_emit_health()
 
 func apply_speed_boost(mult: float, seconds: float) -> void:

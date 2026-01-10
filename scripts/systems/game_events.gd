@@ -17,6 +17,8 @@ signal betting_opened
 signal betting_closed
 signal bet_opened
 signal bet_closed
+signal push_luck_opened(payload: Dictionary)
+signal push_luck_closed
 signal player_damaged
 signal run_phase_changed(phase: int)
 signal countdown_requested(seconds: int)
@@ -38,6 +40,8 @@ signal request_reset_run
 signal request_retry_run
 signal request_next_bet
 signal request_add_coins(amount: int)
+signal request_push_luck_cashout
+signal request_push_luck_double
 
 var gameplay_enabled: bool = true
 

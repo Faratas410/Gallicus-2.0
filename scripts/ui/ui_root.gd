@@ -44,6 +44,12 @@ const UPGRADE_FLASH_TIME: float = 0.10
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var sfx_upgrade_buy: AudioStreamPlayer = get_node_or_null("SFX/SfxUpgradeBuy") as AudioStreamPlayer
 @onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverPanel") as Panel
+@onready var push_luck_panel: Panel = get_node_or_null("Modals/PushLuckPanel") as Panel
+@onready var push_luck_title: Label = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckTitle") as Label
+@onready var push_luck_info: Label = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckInfo") as Label
+@onready var push_luck_details: Label = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckDetails") as Label
+@onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutButton") as Button
+@onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleButton") as Button
 @onready var game_over_title: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverTitle") as Label
 @onready var game_over_hint: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverHint") as Label
 @onready var restart_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/RestartButton") as Button
@@ -127,6 +133,12 @@ func _ready() -> void:
 	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
 	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
 		GameEvents.betting_opened.connect(betting_opened_callable)
+	var push_luck_opened_callable: Callable = Callable(self, "_on_push_luck_opened")
+	if GameEvents.has_signal("push_luck_opened") and not GameEvents.push_luck_opened.is_connected(push_luck_opened_callable):
+		GameEvents.push_luck_opened.connect(push_luck_opened_callable)
+	var push_luck_closed_callable: Callable = Callable(self, "_on_push_luck_closed")
+	if GameEvents.has_signal("push_luck_closed") and not GameEvents.push_luck_closed.is_connected(push_luck_closed_callable):
+		GameEvents.push_luck_closed.connect(push_luck_closed_callable)
 	var countdown_callable: Callable = Callable(self, "_on_countdown_requested")
 	if not GameEvents.countdown_requested.is_connected(countdown_callable):
 		GameEvents.countdown_requested.connect(countdown_callable)
@@ -200,6 +212,8 @@ func _ready() -> void:
 			quit_button.pressed.connect(Callable(self, "_on_quit_pressed"))
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
+	if push_luck_panel != null:
+		push_luck_panel.visible = false
 	if modal_dimmer != null:
 		modal_dimmer.visible = false
 		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -207,6 +221,7 @@ func _ready() -> void:
 		if not upgrade_continue_button.pressed.is_connected(Callable(self, "_on_upgrade_continue_pressed")):
 			upgrade_continue_button.pressed.connect(Callable(self, "_on_upgrade_continue_pressed"))
 	_update_upgrade_costs()
+	_wire_push_luck_buttons()
 
 	var arena: Node = get_tree().get_first_node_in_group("arena")
 	if arena != null and arena.has_signal("player_spawned"):
@@ -585,6 +600,7 @@ func _on_run_started() -> void:
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
+	_set_push_luck_modal(false)
 	_pending_bets = []
 	if game_over_panel != null:
 		game_over_panel.visible = false
@@ -619,6 +635,7 @@ func _on_run_failed() -> void:
 	if upgrade_panel != null:
 		upgrade_panel.visible = false
 	_set_upgrade_modal(false)
+	_set_push_luck_modal(false)
 	if game_over_panel != null:
 		game_over_panel.visible = true
 	if next_bet_button != null:
@@ -636,6 +653,8 @@ func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
 		if bet_panel != null:
 			bet_panel.visible = false
+		return
+	if push_luck_panel != null and push_luck_panel.visible:
 		return
 	var manager: Node = _get_run_manager()
 	if manager != null and manager.has_method("should_show_upgrade_shop") and manager.should_show_upgrade_shop():
@@ -679,6 +698,9 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		return
 	if game_over_panel != null and game_over_panel.visible:
 		return
+	if push_luck_panel != null and push_luck_panel.visible:
+		_pending_bets = bets
+		return
 	if upgrade_panel != null and upgrade_panel.visible:
 		_pending_bets = bets
 		return
@@ -703,6 +725,56 @@ func _on_bet_ui_closed() -> void:
 		_reset_fast_countdown()
 	get_viewport().gui_release_focus()
 	_refresh_modal_dimmer()
+
+func _on_push_luck_opened(payload: Dictionary) -> void:
+	if push_luck_panel == null:
+		return
+	if bet_panel != null:
+		bet_panel.visible = false
+	if upgrade_panel != null:
+		upgrade_panel.visible = false
+	_set_upgrade_modal(false)
+	var bet_name: String = str(payload.get("bet_name", ""))
+	var current_level: int = int(payload.get("current_level", 1))
+	var next_level: int = int(payload.get("next_level", 2))
+	if push_luck_title != null:
+		push_luck_title.text = "PUSH YOUR LUCK — %s" % bet_name
+	if push_luck_info != null:
+		push_luck_info.text = "Vittoria x%d → Rischio x%d" % [current_level, next_level]
+	var doom_text: String = str(payload.get("next_doom", ""))
+	var condition_text: String = str(payload.get("condition", ""))
+	var pact_text: String = str(payload.get("next_pact", ""))
+	var lines: Array[String] = []
+	if doom_text != "":
+		lines.append("❌ Condanna futura: %s" % doom_text)
+	if condition_text != "":
+		lines.append("⚠️ Condizione: %s" % condition_text)
+	if pact_text != "":
+		lines.append("✅ Patto potenziato: %s" % pact_text)
+	if push_luck_details != null:
+		push_luck_details.text = "\n".join(lines)
+	_set_push_luck_modal(true)
+
+func _on_push_luck_closed() -> void:
+	_set_push_luck_modal(false)
+
+func _wire_push_luck_buttons() -> void:
+	if push_luck_cashout_button != null:
+		var cashout_callable: Callable = Callable(self, "_on_push_luck_cashout_pressed")
+		if not push_luck_cashout_button.pressed.is_connected(cashout_callable):
+			push_luck_cashout_button.pressed.connect(cashout_callable)
+	if push_luck_double_button != null:
+		var double_callable: Callable = Callable(self, "_on_push_luck_double_pressed")
+		if not push_luck_double_button.pressed.is_connected(double_callable):
+			push_luck_double_button.pressed.connect(double_callable)
+
+func _on_push_luck_cashout_pressed() -> void:
+	if GameEvents.has_signal("request_push_luck_cashout"):
+		GameEvents.request_push_luck_cashout.emit()
+
+func _on_push_luck_double_pressed() -> void:
+	if GameEvents.has_signal("request_push_luck_double"):
+		GameEvents.request_push_luck_double.emit()
 
 func _on_bet_win_pressed() -> void:
 	_place_bet("COWARD")
@@ -1062,6 +1134,18 @@ func _set_upgrade_modal(active: bool) -> void:
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
+func _set_push_luck_modal(active: bool) -> void:
+	if push_luck_panel != null:
+		push_luck_panel.visible = active
+	if active:
+		if GameEvents.has_signal("modal_opened"):
+			GameEvents.modal_opened.emit("push_luck")
+	else:
+		if GameEvents.has_signal("modal_closed"):
+			GameEvents.modal_closed.emit("push_luck")
+	_refresh_modal_dimmer()
+	get_viewport().gui_release_focus()
+
 func _refresh_modal_dimmer() -> void:
 	if modal_dimmer == null:
 		return
@@ -1069,6 +1153,8 @@ func _refresh_modal_dimmer() -> void:
 	if upgrade_panel != null and upgrade_panel.visible:
 		active = true
 	if bet_panel != null and bet_panel.visible:
+		active = true
+	if push_luck_panel != null and push_luck_panel.visible:
 		active = true
 	if game_over_panel != null and game_over_panel.visible:
 		active = true

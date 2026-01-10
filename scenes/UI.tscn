@@ -418,6 +418,50 @@ text = "BUY TOKEN (100c)"
 autowrap_mode = 2
 text = "x1"
 
+[node name="PushLuckPanel" type="Panel" parent="Modals"]
+visible = false
+focus_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -140.0
+offset_right = 200.0
+offset_bottom = 140.0
+clip_contents = true
+custom_minimum_size = Vector2(400, 280)
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="PushLuckVBox" type="VBoxContainer" parent="Modals/PushLuckPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+
+[node name="PushLuckTitle" type="Label" parent="Modals/PushLuckPanel/PushLuckVBox"]
+text = "PUSH YOUR LUCK"
+
+[node name="PushLuckInfo" type="Label" parent="Modals/PushLuckPanel/PushLuckVBox"]
+autowrap_mode = 2
+text = "Incassa ora o raddoppia il rischio"
+
+[node name="PushLuckDetails" type="Label" parent="Modals/PushLuckPanel/PushLuckVBox"]
+autowrap_mode = 2
+text = ""
+
+[node name="PushLuckButtons" type="HBoxContainer" parent="Modals/PushLuckPanel/PushLuckVBox"]
+
+[node name="PushLuckCashoutButton" type="Button" parent="Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+size_flags_horizontal = 3
+text = "INCASSA ORA"
+
+[node name="PushLuckDoubleButton" type="Button" parent="Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+size_flags_horizontal = 3
+text = "RADDOPPIA"
+
 [node name="GameOverPanel" type="Panel" parent="Modals"]
 visible = false
 z_index = 95

@@ -1222,7 +1222,7 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 		"id": SCAR_CRACKED_BONES,
 		"name": "OSSA INCRINATE",
 		"origin": origin_text,
-		"effect": "Schivata meno efficace e recupero più lento.",
+		"effect": "Movimento rallentato e blocco meno efficace.",
 		"story": "Ogni passo fa male.",
 	}
 	_add_scar(scar)

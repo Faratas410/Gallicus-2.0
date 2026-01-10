@@ -40,6 +40,7 @@ var run: Dictionary = {
 	"xp": 0,
 	"upgrade_tokens": 0,
 	"difficulty_tier": 0,
+	"bet_hp_penalty": 0,
 	"upgrade_costs": {
 		"hp": 1,
 		"light": 1,
@@ -154,6 +155,7 @@ func start_new_run() -> void:
 		_bet_manager.call("reset_bet_state")
 
 	run["coins"] = starting_coins
+	run["bet_hp_penalty"] = 0
 	_reset_upgrades()
 	_reset_upgrade_costs()
 	_has_started_run = true
@@ -650,19 +652,23 @@ func _soft_reset() -> void:
 	_player = _resolve_player()
 	_open_bet_ui(false)
 
-func handle_bet_failed() -> void:
+func handle_bet_failed(bet_id: String) -> void:
 	if _is_game_over:
 		return
-	if _force_game_over_if_dead():
-		return
-	_show_shop_next_bet = false
-	_waiting_for_bet = false
-	set_phase(RunPhase.PREP)
-	GameEvents.set_gameplay_enabled(false)
-	if int(run.get("coins", 0)) <= 0:
+	if bet_id == "DESTINY":
 		_enter_game_over()
 		return
-	GameEvents.bet_failed.emit(true)
+	if bet_id == "RISK":
+		_apply_risk_bet_penalty()
+
+func _apply_risk_bet_penalty() -> void:
+	var penalty: int = 10
+	var current_penalty: int = int(run.get("bet_hp_penalty", 0))
+	var max_health: int = _get_player_max_health_value(_resolve_player())
+	if max_health > 0:
+		penalty = mini(penalty, maxi(max_health - 1, 0))
+	run["bet_hp_penalty"] = current_penalty - penalty
+	_apply_run_upgrades_to_player()
 
 func retry_current_bet() -> void:
 	if _is_game_over:
@@ -699,6 +705,17 @@ func _get_player_health_value(p: Node) -> int:
 		var h: Array = p.call("get_health")
 		if h.size() > 0:
 			return int(h[0])
+	return -1
+
+func _get_player_max_health_value(p: Node) -> int:
+	if p == null:
+		return -1
+	if p.has_method("get_health"):
+		var h: Array = p.call("get_health")
+		if h.size() > 1:
+			return int(h[1])
+	if p.has_meta("max_health"):
+		return int(p.get_meta("max_health"))
 	return -1
 
 func _enter_game_over() -> void:
@@ -864,10 +881,11 @@ func _apply_run_upgrades_to_player() -> void:
 	if _player == null:
 		return
 	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
+	var bet_hp_penalty: int = int(run.get("bet_hp_penalty", 0))
 	if _player.has_method("apply_run_upgrades"):
 		_player.call(
 			"apply_run_upgrades",
-			int(upgrades.get("hp_bonus", 0)),
+			int(upgrades.get("hp_bonus", 0)) + bet_hp_penalty,
 			int(upgrades.get("light_bonus", 0)),
 			int(upgrades.get("heavy_bonus", 0))
 		)

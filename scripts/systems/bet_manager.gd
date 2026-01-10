@@ -61,6 +61,17 @@ func open_bet_ui_before_arena() -> void:
 	GameEvents.bet_ui_opened.emit(_bets)
 	GameEvents.bet_opened.emit()
 
+func set_chain_bet(bet_id: String) -> bool:
+	var bet: Dictionary = _get_bet_by_id(bet_id)
+	if bet.is_empty():
+		return false
+	active_bet = {
+		"id": bet_id,
+	}
+	player_damage_taken = false
+	_arena_active = false
+	return true
+
 func place_bet(bet_id: String, _stake: int) -> bool:
 	var bet: Dictionary = _get_bet_by_id(bet_id)
 	if bet.is_empty():
@@ -127,6 +138,9 @@ func _get_bet_by_id(bet_id: String) -> Dictionary:
 		if str(bet.get("id", "")) == bet_id:
 			return bet
 	return {}
+
+func get_bet_data(bet_id: String) -> Dictionary:
+	return _get_bet_by_id(bet_id)
 
 func _on_player_damaged() -> void:
 	if _arena_active:

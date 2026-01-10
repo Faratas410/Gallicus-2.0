@@ -65,6 +65,7 @@ var run: Dictionary = {
 var _arena: Node
 var _bet_manager: Node
 var _waiting_for_bet: bool = false
+var _waiting_for_push_luck: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _is_game_over: bool = false
@@ -73,6 +74,8 @@ var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
 var _show_shop_next_bet: bool = false
 var _modal_lock_count: int = 0
+var _bet_chain_level: int = 1
+var _current_bet_id: String = ""
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -110,6 +113,12 @@ func _ready() -> void:
 	var request_add_coins_callable: Callable = Callable(self, "_on_request_add_coins")
 	if GameEvents.has_signal("request_add_coins") and not GameEvents.request_add_coins.is_connected(request_add_coins_callable):
 		GameEvents.request_add_coins.connect(request_add_coins_callable)
+	var request_cashout_callable: Callable = Callable(self, "_on_request_push_luck_cashout")
+	if GameEvents.has_signal("request_push_luck_cashout") and not GameEvents.request_push_luck_cashout.is_connected(request_cashout_callable):
+		GameEvents.request_push_luck_cashout.connect(request_cashout_callable)
+	var request_double_callable: Callable = Callable(self, "_on_request_push_luck_double")
+	if GameEvents.has_signal("request_push_luck_double") and not GameEvents.request_push_luck_double.is_connected(request_double_callable):
+		GameEvents.request_push_luck_double.connect(request_double_callable)
 	var modal_opened_callable: Callable = Callable(self, "_on_modal_opened")
 	if GameEvents.has_signal("modal_opened") and not GameEvents.modal_opened.is_connected(modal_opened_callable):
 		GameEvents.modal_opened.connect(modal_opened_callable)
@@ -152,7 +161,9 @@ func start_new_run() -> void:
 	_run_failed_emitted = false
 	_is_game_over = false
 	_waiting_for_bet = false
+	_waiting_for_push_luck = false
 	_show_shop_next_bet = false
+	_reset_bet_chain()
 	set_phase(RunPhase.PREP)
 
 	_ensure_arena_and_player()
@@ -200,6 +211,8 @@ func start_next_bet_round() -> void:
 		return
 	if _force_game_over_if_dead():
 		return
+	if _waiting_for_push_luck:
+		return
 	_waiting_for_bet = false
 	_show_shop_next_bet = false
 	set_phase(RunPhase.LIVE)
@@ -227,6 +240,7 @@ func _open_bet_ui(from_victory: bool = false) -> void:
 	if _is_game_over:
 		return
 	_waiting_for_bet = true
+	_waiting_for_push_luck = false
 	_show_shop_next_bet = from_victory
 	set_phase(RunPhase.PREP)
 	GameEvents.betting_opened.emit()
@@ -387,6 +401,33 @@ func _on_request_next_bet() -> void:
 func _on_request_add_coins(amount: int) -> void:
 	add_coins(amount)
 
+func _on_request_push_luck_cashout() -> void:
+	if not _waiting_for_push_luck:
+		return
+	var bet_id: String = _current_bet_id
+	_waiting_for_push_luck = false
+	GameEvents.push_luck_closed.emit()
+	if bet_id != "":
+		_apply_bet_reward_scaled(bet_id, _bet_chain_level)
+	_reset_bet_chain()
+	_open_bet_ui(true)
+
+func _on_request_push_luck_double() -> void:
+	if not _waiting_for_push_luck:
+		return
+	var bet_id: String = _current_bet_id
+	_waiting_for_push_luck = false
+	GameEvents.push_luck_closed.emit()
+	if bet_id == "":
+		_open_bet_ui(true)
+		return
+	_bet_chain_level = maxi(_bet_chain_level + 1, 1)
+	if _bet_manager and _bet_manager.has_method("set_chain_bet"):
+		_bet_manager.call("set_chain_bet", bet_id)
+	set_phase(RunPhase.LIVE)
+	_clear_enemies()
+	_spawn_wave_or_enemies()
+
 func _on_modal_opened(_kind: String) -> void:
 	_modal_lock_count += 1
 	_apply_modal_lock()
@@ -470,6 +511,9 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	if _is_game_over:
 		return
 	_waiting_for_bet = false
+	_waiting_for_push_luck = false
+	_current_bet_id = _bet_id
+	_bet_chain_level = 1
 	GameEvents.betting_closed.emit()
 	set_phase(RunPhase.LIVE)
 	_start_next_arena()
@@ -487,11 +531,19 @@ func _on_wave_started(_wave: int) -> void:
 
 func _on_wave_cleared(_wave: int) -> void:
 	GameEvents.arena_completed.emit(int(run.get("arena_index", 0)))
+	var bet_result: Dictionary = {}
 	if _bet_manager and _bet_manager.has_method("resolve_bet"):
-		var bet_result: Dictionary = _bet_manager.resolve_bet() as Dictionary
-		_apply_bet_result(bet_result)
+		bet_result = _bet_manager.resolve_bet() as Dictionary
 	if arena_clear_reward > 0:
 		add_coins(arena_clear_reward)
+	if not bet_result.is_empty():
+		var bet_id: String = str(bet_result.get("id", ""))
+		var won: bool = bool(bet_result.get("won", false))
+		if won and bet_id != "":
+			_current_bet_id = bet_id
+			_open_push_luck_choice(bet_id)
+			return
+	_reset_bet_chain()
 	_open_bet_ui(true)
 
 func _on_player_spawned(player: Node) -> void:
@@ -660,19 +712,24 @@ func _soft_reset() -> void:
 		_bet_manager.reset_bet_state()
 	run["arena_index"] = 0
 	_player = _resolve_player()
+	_reset_bet_chain()
 	_open_bet_ui(false)
 
 func handle_bet_failed(bet_id: String) -> void:
 	if _is_game_over:
 		return
 	if bet_id == BET_DOUBLE_OR_DIE:
+		_reset_bet_chain()
 		_enter_game_over()
 		return
 	if bet_id == BET_PURE_BLOOD:
-		_apply_pure_bet_penalty()
+		var chain_level: int = _bet_chain_level
+		_apply_pure_bet_penalty(chain_level)
+	_reset_bet_chain()
 
-func _apply_pure_bet_penalty() -> void:
-	var penalty: int = 10
+func _apply_pure_bet_penalty(chain_level: int) -> void:
+	var scale: int = _get_bet_chain_doom_scale(chain_level)
+	var penalty: int = 10 * scale
 	var current_penalty: int = int(run.get("bet_hp_penalty", 0))
 	var max_health: int = _get_player_max_health_value(_resolve_player())
 	if max_health > 0:
@@ -687,29 +744,99 @@ func _apply_bet_result(result: Dictionary) -> void:
 	var won: bool = bool(result.get("won", false))
 	if not won:
 		return
-	_apply_bet_reward(bet_id)
+	_apply_bet_reward_scaled(bet_id, 1)
 
-func _apply_bet_reward(bet_id: String) -> void:
+func _reset_bet_chain() -> void:
+	_bet_chain_level = 1
+	_current_bet_id = ""
+	_waiting_for_push_luck = false
+
+func _open_push_luck_choice(bet_id: String) -> void:
+	_waiting_for_push_luck = true
+	_show_shop_next_bet = false
+	set_phase(RunPhase.PREP)
+	var bet_data: Dictionary = _get_bet_data(bet_id)
+	var bet_name: String = bet_id
+	var condition_text: String = ""
+	if not bet_data.is_empty():
+		bet_name = str(bet_data.get("name", bet_id))
+		condition_text = str(bet_data.get("condition", ""))
+	var next_level: int = _bet_chain_level + 1
+	var payload: Dictionary = {
+		"bet_id": bet_id,
+		"bet_name": bet_name,
+		"current_level": _bet_chain_level,
+		"next_level": next_level,
+		"condition": condition_text,
+		"next_pact": _build_bet_pact_text(bet_id, next_level),
+		"next_doom": _build_bet_doom_text(bet_id, next_level),
+	}
+	GameEvents.push_luck_opened.emit(payload)
+
+func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
+	var reward_scale: int = _get_bet_chain_reward_scale(chain_level)
 	match bet_id:
 		BET_COWARD:
 			if bet_coward_coin_reward > 0:
-				add_coins(bet_coward_coin_reward)
+				add_coins(bet_coward_coin_reward * reward_scale)
 		BET_PURE_BLOOD:
-			_apply_pure_bet_reward()
+			_apply_pure_bet_reward_scaled(reward_scale)
 		BET_DOUBLE_OR_DIE:
-			_apply_double_or_die_reward()
+			_apply_double_or_die_reward_scaled(reward_scale)
 		_:
 			pass
 
-func _apply_pure_bet_reward() -> void:
+func _apply_pure_bet_reward_scaled(scale: int) -> void:
 	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + bet_pure_hp_bonus
-	upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + bet_pure_light_bonus
-	upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + bet_pure_heavy_bonus
+	var reward_scale: int = maxi(scale, 1)
+	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + bet_pure_hp_bonus * reward_scale
+	upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + bet_pure_light_bonus * reward_scale
+	upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + bet_pure_heavy_bonus * reward_scale
 	run["upgrades"] = upgrades
 	_apply_run_upgrades_to_player()
 
-func _apply_double_or_die_reward() -> void:
+func _get_bet_chain_reward_scale(chain_level: int) -> int:
+	return maxi(chain_level, 1)
+
+func _get_bet_chain_doom_scale(chain_level: int) -> int:
+	return 1 + maxi(chain_level - 1, 0) * 2
+
+func _build_bet_pact_text(bet_id: String, chain_level: int) -> String:
+	var reward_scale: int = _get_bet_chain_reward_scale(chain_level)
+	match bet_id:
+		BET_COWARD:
+			return "Ricompensa minore: +%d monete" % (bet_coward_coin_reward * reward_scale)
+		BET_PURE_BLOOD:
+			return "Upgrade forte: +%d HP max, +%d danni leggeri, +%d danni pesanti" % [
+				bet_pure_hp_bonus * reward_scale,
+				bet_pure_light_bonus * reward_scale,
+				bet_pure_heavy_bonus * reward_scale,
+			]
+		BET_DOUBLE_OR_DIE:
+			return "Raddoppio danni per la run x%d" % reward_scale
+		_:
+			return bet_id
+
+func _build_bet_doom_text(bet_id: String, chain_level: int) -> String:
+	match bet_id:
+		BET_COWARD:
+			return "Nessuna penalità extra"
+		BET_PURE_BLOOD:
+			var doom_scale: int = _get_bet_chain_doom_scale(chain_level)
+			return "HP massimo -%d permanente per la run" % (10 * doom_scale)
+		BET_DOUBLE_OR_DIE:
+			return "MORTE IMMEDIATA: run terminata"
+		_:
+			return ""
+
+func _get_bet_data(bet_id: String) -> Dictionary:
+	if _bet_manager == null or not is_instance_valid(_bet_manager):
+		_bet_manager = get_node_or_null("BetManager")
+	if _bet_manager and _bet_manager.has_method("get_bet_data"):
+		return _bet_manager.call("get_bet_data", bet_id) as Dictionary
+	return {}
+
+func _apply_double_or_die_reward_scaled(scale: int) -> void:
 	var p: Node = _resolve_player()
 	if p == null:
 		return
@@ -722,9 +849,11 @@ func _apply_double_or_die_reward() -> void:
 	var heavy_bonus: int = int(damage_values[1])
 	if light_bonus <= 0 and heavy_bonus <= 0:
 		return
+	var reward_scale: int = maxi(scale, 1)
 	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + light_bonus
-	upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + heavy_bonus
+	for _i in range(reward_scale):
+		upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + light_bonus
+		upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + heavy_bonus
 	run["upgrades"] = upgrades
 	_apply_run_upgrades_to_player()
 
@@ -733,6 +862,8 @@ func retry_current_bet() -> void:
 		return
 	_show_shop_next_bet = false
 	_waiting_for_bet = false
+	_waiting_for_push_luck = false
+	_reset_bet_chain()
 	set_phase(RunPhase.PREP)
 	GameEvents.set_gameplay_enabled(false)
 	run["arena_index"] = maxi(int(run.get("arena_index", 0)) - 1, 0)

@@ -700,13 +700,13 @@ func _on_bet_ui_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_bet_win_pressed() -> void:
-	_place_bet("WIN")
+	_place_bet("SAFE")
 
 func _on_bet_no_hit_pressed() -> void:
-	_place_bet("NO_HIT")
+	_place_bet("RISK")
 
 func _on_bet_fast_pressed() -> void:
-	_place_bet("FAST")
+	_place_bet("DESTINY")
 
 func _on_restart_pressed() -> void:
 	_request_reset()
@@ -807,9 +807,9 @@ func _bind_player(p: Node) -> void:
 func _update_bet_buttons() -> void:
 	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:
 		return
-	_set_bet_button_text(bet_win_button, "WIN")
-	_set_bet_button_text(bet_no_hit_button, "NO_HIT")
-	_set_bet_button_text(bet_fast_button, "FAST")
+	_set_bet_button_text(bet_win_button, "SAFE")
+	_set_bet_button_text(bet_no_hit_button, "RISK")
+	_set_bet_button_text(bet_fast_button, "DESTINY")
 
 func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	if not _bets_by_id.has(bet_id):
@@ -820,8 +820,25 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 		push_warning("Bet id not found: %s" % bet_id)
 		return
 	var label_text: String = str(bet.get("label", bet_id))
+	var condition_text: String = str(bet.get("condition", ""))
+	var benefit_text: String = str(bet.get("benefit", ""))
+	var failure_text: String = str(bet.get("failure", ""))
+	var warning_text: String = str(bet.get("warning", ""))
 	var odds_value: float = float(bet.get("odds", 1.0))
-	button.text = "%s x%.1f" % [label_text, odds_value]
+	var lines: Array[String] = []
+	if label_text != "":
+		lines.append(label_text)
+	if warning_text != "":
+		lines.append(warning_text)
+	if failure_text != "":
+		lines.append("Failure: %s" % failure_text)
+	if condition_text != "":
+		lines.append("Condition: %s" % condition_text)
+	if benefit_text != "":
+		lines.append("Reward: %s (x%.1f)" % [benefit_text, odds_value])
+	else:
+		lines.append("Reward: x%.1f" % odds_value)
+	button.text = "\n".join(lines)
 
 func _on_bet_failed(can_retry: bool) -> void:
 	if bet_panel != null:
@@ -964,15 +981,7 @@ func _place_bet(bet_id: String) -> void:
 	if stake_input == null:
 		return
 	_selected_bet_id = bet_id
-	if bet_id == "FAST":
-		_fast_countdown_active = true
-		# Show immediately (so the player understands the rule), then it will keep updating during the round.
-		if fast_countdown_label != null:
-			fast_countdown_label.visible = true
-			fast_countdown_label.text = "FAST: %ds" % FAST_SELECTION_SECONDS
-			fast_countdown_label.modulate.a = 1.0
-	else:
-		_reset_fast_countdown()
+	_reset_fast_countdown()
 	var stake: int = int(stake_input.value)
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(bet_id, stake)

@@ -4,6 +4,10 @@ const BETS_PATH: String = "res://data/bets.gd"
 
 @export var fast_time_limit: float = 15.0
 
+const BET_SAFE: String = "SAFE"
+const BET_RISK: String = "RISK"
+const BET_DESTINY: String = "DESTINY"
+
 var active_bet: Dictionary = {}
 var player_damage_taken: bool = false
 var start_time: float = 0.0
@@ -150,14 +154,10 @@ func is_bet_active() -> bool:
 
 func _evaluate_bet(bet_id: String) -> bool:
 	match bet_id:
-		"WIN":
+		BET_SAFE:
 			return true
-		"NO_HIT":
+		BET_RISK, BET_DESTINY:
 			return not player_damage_taken
-		"FAST":
-			if start_time <= 0.0:
-				return false
-			return (end_time - start_time) <= fast_time_limit
 		_:
 			return false
 
@@ -219,11 +219,13 @@ func fail_current_bet() -> void:
 	_fast_start_time = 0.0
 	_fast_last_emitted = -1
 	_invalidate_fast_timer()
+	var bet_id: String = str(active_bet.get("id", ""))
 	if _run_manager != null and _run_manager.has_method("handle_bet_failed"):
-		_run_manager.handle_bet_failed()
+		_run_manager.handle_bet_failed(bet_id)
 	else:
-		GameEvents.run_failed.emit()
-		GameEvents.set_gameplay_enabled(false)
+		if bet_id == BET_DESTINY:
+			GameEvents.run_failed.emit()
+			GameEvents.set_gameplay_enabled(false)
 	_arena_active = false
 
 func win_current_bet() -> void:
@@ -273,5 +275,6 @@ func _emit_fast_countdown() -> void:
 func _handle_no_hit_failure() -> void:
 	if active_bet.is_empty():
 		return
-	if str(active_bet.get("id", "")) == "NO_HIT" and _arena_active:
+	var bet_id: String = str(active_bet.get("id", ""))
+	if (bet_id == BET_RISK or bet_id == BET_DESTINY) and _arena_active:
 		fail_current_bet()

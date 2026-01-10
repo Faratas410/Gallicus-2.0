@@ -33,6 +33,7 @@ const UPGRADE_FLASH_TIME: float = 0.10
 @onready var upgrade_light_button: Button = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeLightRow/UpgradeLightRowHBox/UpgradeLightButton") as Button
 @onready var upgrade_heavy_button: Button = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeRows/UpgradeHeavyRow/UpgradeHeavyRowHBox/UpgradeHeavyButton") as Button
 @onready var upgrade_continue_button: Button = get_node_or_null("Modals/UpgradePanel/UpgradeContentArea/UpgradeVBox/UpgradeContinueButton") as Button
+@onready var stake_row: Control = get_node_or_null("Modals/BetPanel/BetVBox/StakeRow") as Control
 @onready var stake_input: SpinBox = _req("Modals/BetPanel/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_win_button: Button = _req("Modals/BetPanel/BetVBox/BetButtons/BetWinButton") as Button
 @onready var bet_no_hit_button: Button = _req("Modals/BetPanel/BetVBox/BetButtons/BetNoHitButton") as Button
@@ -167,6 +168,10 @@ func _ready() -> void:
 			push_warning("Bet UI nodes incomplete, disabling betting panel.")
 			bet_panel.visible = false
 		else:
+			if stake_row != null:
+				stake_row.visible = false
+			stake_input.editable = false
+			stake_input.value = 0
 			if not bet_win_button.pressed.is_connected(Callable(self, "_on_bet_win_pressed")):
 				bet_win_button.pressed.connect(Callable(self, "_on_bet_win_pressed"))
 			if not bet_no_hit_button.pressed.is_connected(Callable(self, "_on_bet_no_hit_pressed")):
@@ -665,9 +670,9 @@ func _on_coins_changed(coins: int) -> void:
 	_refresh_buy_token_ui()
 	_refresh_upgrade_shop_ui()
 
-func _on_bet_placed(bet_id: String, stake: int, odds: float) -> void:
+func _on_bet_placed(bet_id: String, _stake: int, _odds: float) -> void:
 	if bet_info_label != null:
-		bet_info_label.text = "Bet: %s | %d @ %.2f" % [bet_id, stake, odds]
+		bet_info_label.text = "Bet: %s" % _get_bet_name(bet_id)
 
 func _on_bet_ui_opened(bets: Array) -> void:
 	if bet_panel == null:
@@ -700,13 +705,13 @@ func _on_bet_ui_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_bet_win_pressed() -> void:
-	_place_bet("SAFE")
+	_place_bet("COWARD")
 
 func _on_bet_no_hit_pressed() -> void:
-	_place_bet("RISK")
+	_place_bet("PURE_BLOOD")
 
 func _on_bet_fast_pressed() -> void:
-	_place_bet("DESTINY")
+	_place_bet("DOUBLE_OR_DIE")
 
 func _on_restart_pressed() -> void:
 	_request_reset()
@@ -807,9 +812,9 @@ func _bind_player(p: Node) -> void:
 func _update_bet_buttons() -> void:
 	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:
 		return
-	_set_bet_button_text(bet_win_button, "SAFE")
-	_set_bet_button_text(bet_no_hit_button, "RISK")
-	_set_bet_button_text(bet_fast_button, "DESTINY")
+	_set_bet_button_text(bet_win_button, "COWARD")
+	_set_bet_button_text(bet_no_hit_button, "PURE_BLOOD")
+	_set_bet_button_text(bet_fast_button, "DOUBLE_OR_DIE")
 
 func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	if not _bets_by_id.has(bet_id):
@@ -819,25 +824,19 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	if bet.is_empty():
 		push_warning("Bet id not found: %s" % bet_id)
 		return
-	var label_text: String = str(bet.get("label", bet_id))
+	var name_text: String = str(bet.get("name", bet_id))
 	var condition_text: String = str(bet.get("condition", ""))
-	var benefit_text: String = str(bet.get("benefit", ""))
-	var failure_text: String = str(bet.get("failure", ""))
-	var warning_text: String = str(bet.get("warning", ""))
-	var odds_value: float = float(bet.get("odds", 1.0))
+	var pact_text: String = str(bet.get("pact", ""))
+	var doom_text: String = str(bet.get("doom", ""))
 	var lines: Array[String] = []
-	if label_text != "":
-		lines.append(label_text)
-	if warning_text != "":
-		lines.append(warning_text)
-	if failure_text != "":
-		lines.append("Failure: %s" % failure_text)
-	if condition_text != "":
-		lines.append("Condition: %s" % condition_text)
-	if benefit_text != "":
-		lines.append("Reward: %s (x%.1f)" % [benefit_text, odds_value])
+	if doom_text != "":
+		lines.append("❌ %s — %s" % [name_text, doom_text])
 	else:
-		lines.append("Reward: x%.1f" % odds_value)
+		lines.append("❌ %s" % name_text)
+	if condition_text != "":
+		lines.append("⚠️ Condizione: %s" % condition_text)
+	if pact_text != "":
+		lines.append("✅ Patto: %s" % pact_text)
 	button.text = "\n".join(lines)
 
 func _on_bet_failed(can_retry: bool) -> void:
@@ -978,13 +977,18 @@ func _update_upgrade_costs() -> void:
 	# Se non abbiamo offer, non sappiamo affordability (manteniamo abilitati)
 
 func _place_bet(bet_id: String) -> void:
-	if stake_input == null:
-		return
 	_selected_bet_id = bet_id
 	_reset_fast_countdown()
-	var stake: int = int(stake_input.value)
 	if GameEvents.has_signal("request_place_bet"):
-		GameEvents.request_place_bet.emit(bet_id, stake)
+		GameEvents.request_place_bet.emit(bet_id, 0)
+
+func _get_bet_name(bet_id: String) -> String:
+	if not _bets_by_id.has(bet_id):
+		return bet_id
+	var bet: Dictionary = _bets_by_id.get(bet_id, {}) as Dictionary
+	if bet.is_empty():
+		return bet_id
+	return str(bet.get("name", bet_id))
 
 func _center_upgrade_panel_to_texture() -> void:
 	if upgrade_panel == null or upgrade_bg == null:

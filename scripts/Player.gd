@@ -20,7 +20,7 @@ const DAMAGE_INVULN_SECONDS: float = 0.25
 @export var heavy_cooldown: float = 0.75
 @export var dodge_speed: float = 480.0
 @export var dodge_cooldown: float = 1.0
-@export var block_reduction: float = 0.6
+@export var block_reduction: float = 0.5
 
 @export var arena_bounds_size: Vector2 = Vector2(1024.0, 768.0)
 @export var arena_bounds_margin: float = 16.0
@@ -67,15 +67,9 @@ func _physics_process(delta: float) -> void:
 	if input_vector.length_squared() > 0.001:
 		_last_aim_dir = input_vector.normalized()
 	_update_sword_idle_pose()
-	velocity = input_vector * (move_speed * _speed_multiplier)
+	velocity = input_vector * (move_speed * _speed_multiplier * _dodge_speed_multiplier)
 
 	_is_blocking = Input.is_action_pressed("block")
-
-	if Input.is_action_just_pressed("dodge") and _dodge_timer <= 0.0:
-		var dodge_speed_value: float = maxf(dodge_speed * _dodge_speed_multiplier, 0.0)
-		var dodge_cooldown_value: float = maxf(dodge_cooldown * _dodge_cooldown_multiplier, 0.05)
-		velocity += input_vector.normalized() * dodge_speed_value
-		_dodge_timer = dodge_cooldown_value
 
 	if Input.is_action_just_pressed("attack_light"):
 		_try_attack(light_damage, light_range, light_cooldown, light_cone_angle_deg)
@@ -210,7 +204,9 @@ func take_damage(amount: int) -> void:
 		return
 	var final_damage: int = amount
 	if _is_blocking:
-		final_damage = int(round(amount * (1.0 - block_reduction)))
+		var effective_reduction: float = block_reduction / maxf(_dodge_cooldown_multiplier, 0.1)
+		effective_reduction = clampf(effective_reduction, 0.0, 1.0)
+		final_damage = int(round(amount * (1.0 - effective_reduction)))
 	if final_damage > 0:
 		_damage_invuln = DAMAGE_INVULN_SECONDS
 		took_damage.emit(final_damage)

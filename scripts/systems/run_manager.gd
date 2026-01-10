@@ -31,6 +31,15 @@ const DEBUG_RUNTIME_LOGS: bool = false
 @export var upgrade_heavy_token_cost_start: int = 1
 @export var token_purchase_cost_coins: int = 100
 
+@export var bet_coward_coin_reward: int = 20
+@export var bet_pure_hp_bonus: int = 30
+@export var bet_pure_light_bonus: int = 2
+@export var bet_pure_heavy_bonus: int = 2
+
+const BET_COWARD: String = "COWARD"
+const BET_PURE_BLOOD: String = "PURE_BLOOD"
+const BET_DOUBLE_OR_DIE: String = "DOUBLE_OR_DIE"
+
 enum RunPhase { PREP, LIVE, GAME_OVER }
 
 var run: Dictionary = {
@@ -182,9 +191,9 @@ func start_new_run() -> void:
 		live_player = _resolve_player()
 		if live_player == null or not live_player.is_inside_tree():
 			return
-	set_phase(RunPhase.LIVE)
-	_spawn_wave_or_enemies()
-	_log_runtime_state("after_countdown")
+	set_phase(RunPhase.PREP)
+	_open_bet_ui(false)
+	_log_runtime_state("waiting_for_bet")
 
 func start_next_bet_round() -> void:
 	if _is_game_over:
@@ -479,7 +488,8 @@ func _on_wave_started(_wave: int) -> void:
 func _on_wave_cleared(_wave: int) -> void:
 	GameEvents.arena_completed.emit(int(run.get("arena_index", 0)))
 	if _bet_manager and _bet_manager.has_method("resolve_bet"):
-		_bet_manager.resolve_bet()
+		var bet_result: Dictionary = _bet_manager.resolve_bet() as Dictionary
+		_apply_bet_result(bet_result)
 	if arena_clear_reward > 0:
 		add_coins(arena_clear_reward)
 	_open_bet_ui(true)
@@ -655,19 +665,67 @@ func _soft_reset() -> void:
 func handle_bet_failed(bet_id: String) -> void:
 	if _is_game_over:
 		return
-	if bet_id == "DESTINY":
+	if bet_id == BET_DOUBLE_OR_DIE:
 		_enter_game_over()
 		return
-	if bet_id == "RISK":
-		_apply_risk_bet_penalty()
+	if bet_id == BET_PURE_BLOOD:
+		_apply_pure_bet_penalty()
 
-func _apply_risk_bet_penalty() -> void:
+func _apply_pure_bet_penalty() -> void:
 	var penalty: int = 10
 	var current_penalty: int = int(run.get("bet_hp_penalty", 0))
 	var max_health: int = _get_player_max_health_value(_resolve_player())
 	if max_health > 0:
 		penalty = mini(penalty, maxi(max_health - 1, 0))
 	run["bet_hp_penalty"] = current_penalty - penalty
+	_apply_run_upgrades_to_player()
+
+func _apply_bet_result(result: Dictionary) -> void:
+	if result.is_empty():
+		return
+	var bet_id: String = str(result.get("id", ""))
+	var won: bool = bool(result.get("won", false))
+	if not won:
+		return
+	_apply_bet_reward(bet_id)
+
+func _apply_bet_reward(bet_id: String) -> void:
+	match bet_id:
+		BET_COWARD:
+			if bet_coward_coin_reward > 0:
+				add_coins(bet_coward_coin_reward)
+		BET_PURE_BLOOD:
+			_apply_pure_bet_reward()
+		BET_DOUBLE_OR_DIE:
+			_apply_double_or_die_reward()
+		_:
+			pass
+
+func _apply_pure_bet_reward() -> void:
+	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
+	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + bet_pure_hp_bonus
+	upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + bet_pure_light_bonus
+	upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + bet_pure_heavy_bonus
+	run["upgrades"] = upgrades
+	_apply_run_upgrades_to_player()
+
+func _apply_double_or_die_reward() -> void:
+	var p: Node = _resolve_player()
+	if p == null:
+		return
+	if not p.has_method("get_damage_values"):
+		return
+	var damage_values: Array = p.call("get_damage_values") as Array
+	if damage_values.size() < 2:
+		return
+	var light_bonus: int = int(damage_values[0])
+	var heavy_bonus: int = int(damage_values[1])
+	if light_bonus <= 0 and heavy_bonus <= 0:
+		return
+	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
+	upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + light_bonus
+	upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + heavy_bonus
+	run["upgrades"] = upgrades
 	_apply_run_upgrades_to_player()
 
 func retry_current_bet() -> void:

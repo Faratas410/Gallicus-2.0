@@ -250,6 +250,9 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 		_current_health = clampi(previous_current, 0, max_health)
 	_emit_health()
 
+func get_damage_values() -> Array[int]:
+	return [light_damage, heavy_damage]
+
 func heal(amount: int) -> void:
 	if amount <= 0:
 		return

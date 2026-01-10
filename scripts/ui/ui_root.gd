@@ -56,6 +56,8 @@ const UPGRADE_FLASH_TIME: float = 0.10
 @onready var next_bet_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/NextBetButton") as Button
 @onready var quit_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/QuitButton") as Button
 @onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
+@onready var scars_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel") as Panel
+@onready var scars_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel/ScarsVBox/ScarsLabel") as Label
 @onready var countdown_label: Label = get_node_or_null("Modals/CountdownLabel") as Label
 @onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
@@ -163,8 +165,12 @@ func _ready() -> void:
 	var tokens_changed_callable: Callable = Callable(self, "_on_tokens_changed")
 	if not GameEvents.tokens_changed.is_connected(tokens_changed_callable):
 		GameEvents.tokens_changed.connect(tokens_changed_callable)
+	var scars_updated_callable: Callable = Callable(self, "_on_scars_updated")
+	if GameEvents.has_signal("scars_updated") and not GameEvents.scars_updated.is_connected(scars_updated_callable):
+		GameEvents.scars_updated.connect(scars_updated_callable)
 	_ensure_token_icons()
 	_refresh_progression_ui()
+	_refresh_scars_ui([])
 
 	_wire_buy_token_button()
 	_refresh_buy_token_ui()
@@ -719,6 +725,36 @@ func _on_bet_ui_opened(bets: Array) -> void:
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
+
+func _on_scars_updated(scars: Array) -> void:
+	_refresh_scars_ui(scars)
+
+func _refresh_scars_ui(scars: Array) -> void:
+	if scars_label == null:
+		return
+	if scars_panel != null:
+		scars_panel.visible = true
+	if scars.is_empty():
+		scars_label.text = "Nessuna cicatrice."
+		return
+	var lines: Array[String] = []
+	for scar_value: Dictionary in scars:
+		var scar: Dictionary = scar_value as Dictionary
+		var name: String = str(scar.get("name", "Cicatrice"))
+		var story: String = str(scar.get("story", ""))
+		var origin: String = str(scar.get("origin", ""))
+		var effect: String = str(scar.get("effect", ""))
+		lines.append("• %s" % name)
+		if story != "":
+			lines.append("  %s" % story)
+		if origin != "":
+			lines.append("  Origine: %s" % origin)
+		if effect != "":
+			lines.append("  Effetto: %s" % effect)
+		lines.append("")
+	if lines.size() > 0 and lines[lines.size() - 1] == "":
+		lines.remove_at(lines.size() - 1)
+	scars_label.text = "\n".join(lines)
 	# If FAST was selected, keep the FAST countdown state for the round.
 	# The label is driven by countdown_requested during the round.
 	if not _fast_countdown_active:

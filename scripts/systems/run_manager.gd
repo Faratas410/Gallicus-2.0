@@ -39,6 +39,8 @@ const DEBUG_RUNTIME_LOGS: bool = false
 const BET_COWARD: String = "COWARD"
 const BET_PURE_BLOOD: String = "PURE_BLOOD"
 const BET_DOUBLE_OR_DIE: String = "DOUBLE_OR_DIE"
+const SCAR_OPEN_WOUND: String = "OPEN_WOUND"
+const SCAR_CRACKED_BONES: String = "CRACKED_BONES"
 
 enum RunPhase { PREP, LIVE, GAME_OVER }
 
@@ -76,6 +78,10 @@ var _show_shop_next_bet: bool = false
 var _modal_lock_count: int = 0
 var _bet_chain_level: int = 1
 var _current_bet_id: String = ""
+var _scars: Array[Dictionary] = []
+var _scar_heal_multiplier: float = 1.0
+var _scar_dodge_cooldown_multiplier: float = 1.0
+var _scar_dodge_speed_multiplier: float = 1.0
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -164,6 +170,7 @@ func start_new_run() -> void:
 	_waiting_for_push_luck = false
 	_show_shop_next_bet = false
 	_reset_bet_chain()
+	_reset_scars()
 	set_phase(RunPhase.PREP)
 
 	_ensure_arena_and_player()
@@ -422,6 +429,7 @@ func _on_request_push_luck_double() -> void:
 		_open_bet_ui(true)
 		return
 	_bet_chain_level = maxi(_bet_chain_level + 1, 1)
+	_try_apply_cracked_bones_scar(bet_id, _bet_chain_level)
 	if _bet_manager and _bet_manager.has_method("set_chain_bet"):
 		_bet_manager.call("set_chain_bet", bet_id)
 	set_phase(RunPhase.LIVE)
@@ -736,6 +744,7 @@ func _apply_pure_bet_penalty(chain_level: int) -> void:
 		penalty = mini(penalty, maxi(max_health - 1, 0))
 	run["bet_hp_penalty"] = current_penalty - penalty
 	_apply_run_upgrades_to_player()
+	_try_apply_open_wound_scar(chain_level)
 
 func _apply_bet_result(result: Dictionary) -> void:
 	if result.is_empty():
@@ -1064,6 +1073,88 @@ func _reset_progression() -> void:
 	run["upgrade_tokens"] = starting_tokens
 	_recompute_difficulty_tier(true)
 
+func _reset_scars() -> void:
+	_scars = []
+	_scar_heal_multiplier = 1.0
+	_scar_dodge_cooldown_multiplier = 1.0
+	_scar_dodge_speed_multiplier = 1.0
+	_emit_scars_updated()
+
+func _emit_scars_updated() -> void:
+	var scars_copy: Array = _scars.duplicate(true)
+	GameEvents.scars_updated.emit(scars_copy)
+
+func _has_scar(scar_id: String) -> bool:
+	for scar: Dictionary in _scars:
+		if str(scar.get("id", "")) == scar_id:
+			return true
+	return false
+
+func _add_scar(scar: Dictionary) -> void:
+	var scar_id: String = str(scar.get("id", ""))
+	if scar_id == "":
+		return
+	if _has_scar(scar_id):
+		return
+	_scars.append(scar)
+	_recompute_scar_modifiers()
+	_emit_scars_updated()
+
+func _recompute_scar_modifiers() -> void:
+	var heal_multiplier: float = 1.0
+	var dodge_cooldown_multiplier: float = 1.0
+	var dodge_speed_multiplier: float = 1.0
+	for scar: Dictionary in _scars:
+		var scar_id: String = str(scar.get("id", ""))
+		match scar_id:
+			SCAR_OPEN_WOUND:
+				heal_multiplier = minf(heal_multiplier, 0.6)
+			SCAR_CRACKED_BONES:
+				dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 1.4)
+				dodge_speed_multiplier = minf(dodge_speed_multiplier, 0.85)
+			_:
+				pass
+	_scar_heal_multiplier = heal_multiplier
+	_scar_dodge_cooldown_multiplier = dodge_cooldown_multiplier
+	_scar_dodge_speed_multiplier = dodge_speed_multiplier
+	_apply_scar_modifiers_to_player()
+
+func _get_bet_display_name(bet_id: String) -> String:
+	var bet_data: Dictionary = _get_bet_data(bet_id)
+	if bet_data.is_empty():
+		return bet_id
+	return str(bet_data.get("name", bet_id))
+
+func _try_apply_open_wound_scar(chain_level: int) -> void:
+	if _has_scar(SCAR_OPEN_WOUND):
+		return
+	var bet_name: String = _get_bet_display_name(BET_PURE_BLOOD)
+	var origin_text: String = "Condanna: %s (catena %d)" % [bet_name, chain_level]
+	var scar: Dictionary = {
+		"id": SCAR_OPEN_WOUND,
+		"name": "FERITA APERTA",
+		"origin": origin_text,
+		"effect": "HP massimo ridotto e cure meno efficaci.",
+		"story": "Il sangue non si è mai fermato.",
+	}
+	_add_scar(scar)
+
+func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
+	if chain_level < 2:
+		return
+	if _has_scar(SCAR_CRACKED_BONES):
+		return
+	var bet_name: String = _get_bet_display_name(bet_id)
+	var origin_text: String = "Push Your Luck: %s (x%d)" % [bet_name, chain_level]
+	var scar: Dictionary = {
+		"id": SCAR_CRACKED_BONES,
+		"name": "OSSA INCRINATE",
+		"origin": origin_text,
+		"effect": "Schivata meno efficace e recupero più lento.",
+		"story": "Ogni passo fa male.",
+	}
+	_add_scar(scar)
+
 func _apply_run_upgrades_to_player() -> void:
 	if _player == null:
 		_player = _resolve_player()
@@ -1077,6 +1168,18 @@ func _apply_run_upgrades_to_player() -> void:
 			int(upgrades.get("hp_bonus", 0)) + bet_hp_penalty,
 			int(upgrades.get("light_bonus", 0)),
 			int(upgrades.get("heavy_bonus", 0))
+		)
+	_apply_scar_modifiers_to_player()
+
+func _apply_scar_modifiers_to_player() -> void:
+	if _player == null:
+		return
+	if _player.has_method("apply_scar_modifiers"):
+		_player.call(
+			"apply_scar_modifiers",
+			_scar_heal_multiplier,
+			_scar_dodge_cooldown_multiplier,
+			_scar_dodge_speed_multiplier
 		)
 
 func _get_spawn_position() -> Vector2:

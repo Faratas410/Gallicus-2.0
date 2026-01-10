@@ -51,6 +51,8 @@ const UPGRADE_FLASH_TIME: float = 0.10
 @onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutButton") as Button
 @onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleButton") as Button
 @onready var game_over_title: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverTitle") as Label
+@onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverEpilogue") as Label
+@onready var game_over_scars: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverScars") as Label
 @onready var game_over_hint: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverHint") as Label
 @onready var restart_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/RestartButton") as Button
 @onready var next_bet_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/NextBetButton") as Button
@@ -95,6 +97,9 @@ var _xp_anim_tween: Tween = null
 var _xp_punch_tween: Tween = null
 var _last_xp_to_next: int = 0
 var _enemy_bar_nodes: Dictionary = {}
+var _last_finale_title: String = "RUN FAILED"
+var _last_finale_text: String = ""
+var _last_finale_scars: Array = []
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -117,6 +122,9 @@ func _ready() -> void:
 	var run_failed_callable: Callable = Callable(self, "_on_run_failed")
 	if not GameEvents.run_failed.is_connected(run_failed_callable):
 		GameEvents.run_failed.connect(run_failed_callable)
+	var run_finale_callable: Callable = Callable(self, "_on_run_finale_selected")
+	if GameEvents.has_signal("run_finale_selected") and not GameEvents.run_finale_selected.is_connected(run_finale_callable):
+		GameEvents.run_finale_selected.connect(run_finale_callable)
 	var bet_failed_callable: Callable = Callable(self, "_on_bet_failed")
 	if not GameEvents.bet_failed.is_connected(bet_failed_callable):
 		GameEvents.bet_failed.connect(bet_failed_callable)
@@ -612,6 +620,10 @@ func _on_run_started() -> void:
 		game_over_panel.visible = false
 	if next_bet_button != null:
 		next_bet_button.visible = true
+	_last_finale_title = "RUN FAILED"
+	_last_finale_text = ""
+	_last_finale_scars = []
+	_refresh_game_over_scars()
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
 	_refresh_modal_dimmer()
@@ -630,6 +642,25 @@ func _on_run_started_ui() -> void:
 	if player_node != null:
 		_bind_player(player_node)
 
+func _on_run_finale_selected(payload: Dictionary) -> void:
+	if payload.has("title"):
+		_last_finale_title = str(payload["title"])
+	else:
+		_last_finale_title = "RUN FAILED"
+	if payload.has("text"):
+		_last_finale_text = str(payload["text"])
+	else:
+		_last_finale_text = ""
+	if payload.has("scars"):
+		_last_finale_scars = (payload["scars"] as Array).duplicate(true)
+	else:
+		_last_finale_scars = []
+	_refresh_game_over_scars()
+	if game_over_title != null:
+		game_over_title.text = _last_finale_title
+	if game_over_epilogue != null:
+		game_over_epilogue.text = _last_finale_text
+
 func _on_run_failed() -> void:
 	if bet_info_label != null:
 		bet_info_label.text = "Bet: -"
@@ -647,7 +678,10 @@ func _on_run_failed() -> void:
 	if next_bet_button != null:
 		next_bet_button.visible = false
 	if game_over_title != null:
-		game_over_title.text = "RUN FAILED"
+		game_over_title.text = _last_finale_title
+	if game_over_epilogue != null:
+		game_over_epilogue.text = _last_finale_text
+	_refresh_game_over_scars()
 	if game_over_hint != null:
 		game_over_hint.text = "Vuoi riprovare?"
 	if restart_button != null:
@@ -761,6 +795,24 @@ func _refresh_scars_ui(scars: Array) -> void:
 		_reset_fast_countdown()
 	get_viewport().gui_release_focus()
 	_refresh_modal_dimmer()
+
+func _refresh_game_over_scars() -> void:
+	if game_over_scars == null:
+		return
+	if _last_finale_scars.is_empty():
+		game_over_scars.text = ""
+		game_over_scars.visible = false
+		return
+	var lines: Array[String] = []
+	lines.append("Cicatrici rilevanti:")
+	for scar_value: Dictionary in _last_finale_scars:
+		var scar: Dictionary = scar_value as Dictionary
+		var name: String = "Cicatrice"
+		if scar.has("name"):
+			name = str(scar["name"])
+		lines.append("• %s" % name)
+	game_over_scars.text = "\n".join(lines)
+	game_over_scars.visible = true
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
 	if push_luck_panel == null:
@@ -979,6 +1031,11 @@ func _on_bet_failed(can_retry: bool) -> void:
 		game_over_title.text = "RUN FAILED"
 		if can_retry:
 			game_over_title.text = "BET FAILED"
+	if game_over_epilogue != null:
+		game_over_epilogue.text = ""
+	_last_finale_text = ""
+	_last_finale_scars = []
+	_refresh_game_over_scars()
 	if game_over_hint != null:
 		game_over_hint.text = "Vuoi riprovare?"
 		if can_retry:

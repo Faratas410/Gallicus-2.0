@@ -4,6 +4,7 @@ signal run_started
 signal arena_started(arena_index: int)
 signal arena_completed(arena_index: int)
 signal run_failed
+signal run_finale_selected(payload: Dictionary)
 signal bet_failed(can_retry: bool)
 signal coins_changed(coins: int)
 signal tokens_changed(tokens: int)

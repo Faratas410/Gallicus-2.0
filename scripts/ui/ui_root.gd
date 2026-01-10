@@ -887,6 +887,9 @@ func _update_bet_buttons() -> void:
 	_set_bet_button_text(bet_win_button, "COWARD")
 	_set_bet_button_text(bet_no_hit_button, "PURE_BLOOD")
 	_set_bet_button_text(bet_fast_button, "DOUBLE_OR_DIE")
+	_apply_bet_button_style(bet_win_button, "COWARD")
+	_apply_bet_button_style(bet_no_hit_button, "PURE_BLOOD")
+	_apply_bet_button_style(bet_fast_button, "DOUBLE_OR_DIE")
 
 func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	if not _bets_by_id.has(bet_id):
@@ -902,14 +905,30 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	var doom_text: String = str(bet.get("doom", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
-		lines.append("❌ %s — %s" % [name_text, doom_text])
+		lines.append("❌ %s — Condanna: %s" % [name_text, doom_text])
 	else:
-		lines.append("❌ %s" % name_text)
+		lines.append("❌ %s — Condanna" % name_text)
 	if condition_text != "":
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":
 		lines.append("✅ Patto: %s" % pact_text)
 	button.text = "\n".join(lines)
+
+func _apply_bet_button_style(button: Button, bet_id: String) -> void:
+	if button == null:
+		return
+	if bet_id == "COWARD":
+		button.modulate = Color(0.72, 0.72, 0.72, 0.92)
+		button.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.85, 0.85, 0.85, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.85, 0.85, 0.85, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.9, 0.9, 1.0))
+		return
+	button.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	button.remove_theme_color_override("font_color")
+	button.remove_theme_color_override("font_hover_color")
+	button.remove_theme_color_override("font_focus_color")
+	button.remove_theme_color_override("font_pressed_color")
 
 func _on_bet_failed(can_retry: bool) -> void:
 	if bet_panel != null:

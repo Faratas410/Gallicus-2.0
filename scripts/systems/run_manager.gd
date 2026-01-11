@@ -74,6 +74,7 @@ var _is_game_over: bool = false
 var phase: RunPhase = RunPhase.PREP
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
+var _boot_countdown_skipped: bool = false
 var _show_shop_next_bet: bool = false
 var _modal_lock_count: int = 0
 var _bet_chain_level: int = 1
@@ -206,14 +207,17 @@ func start_new_run() -> void:
 	GameEvents.set_gameplay_enabled(true)
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
 	_emit_xp_level_ui()
-	GameEvents.countdown_requested.emit(3)
-	_log_runtime_state("new_run_ready")
-	for _i in range(3, 0, -1):
-		await get_tree().create_timer(1.0).timeout
+	if not _boot_countdown_skipped:
+		_boot_countdown_skipped = true
+	else:
+		GameEvents.countdown_requested.emit(3)
+		_log_runtime_state("new_run_ready")
+		for _i in range(3, 0, -1):
+			await get_tree().create_timer(1.0).timeout
+			if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
+				return
 		if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
 			return
-	if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
-		return
 	var live_player: Node = _resolve_player()
 	if live_player == null or not live_player.is_inside_tree():
 		_ensure_arena_and_player()

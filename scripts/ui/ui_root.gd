@@ -3,18 +3,18 @@ extends CanvasLayer
 const FAST_SELECTION_SECONDS: int = 12
 const UPGRADE_FLASH_TIME: float = 0.10
 
-@onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsLabel") as Label
+@onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokensLabel") as Label
 @onready var level_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/LevelRow/LevelLabel") as Label
-@onready var bet_info_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetRow/BetInfoLabel") as Label
+@onready var bet_info_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetRow/BetContent/BetInfoLabel") as Label
 @onready var xp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPBar") as ProgressBar
 @onready var xp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPLabel") as Label
-@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPBar") as ProgressBar
-@onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPLabel") as Label
+@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
+@onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
 @onready var bet_panel: Panel = _req("Modals/BetPanel") as Panel
 @onready var buy_token_button: Button = get_node_or_null("Modals/BetPanel/BetVBox/BuyTokenRow/BuyTokenButton") as Button
 @onready var buy_token_info: Label = get_node_or_null("Modals/BetPanel/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
-@onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinIcon") as TextureRect
+@onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinIcon") as TextureRect
 @onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokenIcon") as TextureRect
 @onready var modal_dimmer: ColorRect = get_node_or_null("Modals/ModalDimmer") as ColorRect
 @onready var upgrade_panel: Panel = get_node_or_null("Modals/UpgradePanel") as Panel

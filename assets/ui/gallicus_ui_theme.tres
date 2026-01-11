@@ -4,13 +4,13 @@
 
 [resource]
 default_font = ExtResource("1")
-default_font_size = 18
+default_font_size = 22
 theme_types/Label = {
 "fonts": {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 18
+"font_size": 22
 },
 "styles": {}
 }
@@ -19,7 +19,7 @@ theme_types/Button = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 18
+"font_size": 22
 },
 "styles": {}
 }
@@ -28,7 +28,7 @@ theme_types/LineEdit = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 18
+"font_size": 22
 },
 "styles": {}
 }
@@ -37,7 +37,7 @@ theme_types/SpinBox = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 18
+"font_size": 22
 },
 "styles": {}
 }
@@ -46,7 +46,7 @@ theme_types/ProgressBar = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 18
+"font_size": 22
 },
 "styles": {}
 }

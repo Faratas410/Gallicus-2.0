@@ -41,6 +41,7 @@ const BET_PURE_BLOOD: String = "PURE_BLOOD"
 const BET_DOUBLE_OR_DIE: String = "DOUBLE_OR_DIE"
 const SCAR_OPEN_WOUND: String = "OPEN_WOUND"
 const SCAR_CRACKED_BONES: String = "CRACKED_BONES"
+const SCAR_OPEN_WOUND_HP_PENALTY: int = 10
 
 enum RunPhase { PREP, LIVE, GAME_OVER }
 
@@ -83,6 +84,7 @@ var _scars: Array[Dictionary] = []
 var _scar_heal_multiplier: float = 1.0
 var _scar_dodge_cooldown_multiplier: float = 1.0
 var _scar_dodge_speed_multiplier: float = 1.0
+var _scar_max_hp_penalty: int = 0
 var _push_luck_cashouts: int = 0
 var _push_luck_doubles: int = 0
 var _max_push_luck_chain: int = 1
@@ -1154,6 +1156,7 @@ func _reset_scars() -> void:
 	_scar_heal_multiplier = 1.0
 	_scar_dodge_cooldown_multiplier = 1.0
 	_scar_dodge_speed_multiplier = 1.0
+	_scar_max_hp_penalty = 0
 	_emit_scars_updated()
 
 func _emit_scars_updated() -> void:
@@ -1180,11 +1183,13 @@ func _recompute_scar_modifiers() -> void:
 	var heal_multiplier: float = 1.0
 	var dodge_cooldown_multiplier: float = 1.0
 	var dodge_speed_multiplier: float = 1.0
+	var max_hp_penalty: int = 0
 	for scar: Dictionary in _scars:
 		var scar_id: String = str(scar.get("id", ""))
 		match scar_id:
 			SCAR_OPEN_WOUND:
 				heal_multiplier = minf(heal_multiplier, 0.6)
+				max_hp_penalty -= SCAR_OPEN_WOUND_HP_PENALTY
 			SCAR_CRACKED_BONES:
 				dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 1.4)
 				dodge_speed_multiplier = minf(dodge_speed_multiplier, 0.85)
@@ -1193,7 +1198,8 @@ func _recompute_scar_modifiers() -> void:
 	_scar_heal_multiplier = heal_multiplier
 	_scar_dodge_cooldown_multiplier = dodge_cooldown_multiplier
 	_scar_dodge_speed_multiplier = dodge_speed_multiplier
-	_apply_scar_modifiers_to_player()
+	_scar_max_hp_penalty = max_hp_penalty
+	_apply_run_upgrades_to_player()
 
 func _get_bet_display_name(bet_id: String) -> String:
 	var bet_data: Dictionary = _get_bet_data(bet_id)
@@ -1241,13 +1247,15 @@ func _apply_run_upgrades_to_player() -> void:
 	if _player.has_method("apply_run_upgrades"):
 		_player.call(
 			"apply_run_upgrades",
-			int(upgrades.get("hp_bonus", 0)) + bet_hp_penalty,
+			int(upgrades.get("hp_bonus", 0)) + bet_hp_penalty + _scar_max_hp_penalty,
 			int(upgrades.get("light_bonus", 0)),
 			int(upgrades.get("heavy_bonus", 0))
 		)
 	_apply_scar_modifiers_to_player()
 
 func _apply_scar_modifiers_to_player() -> void:
+	if _player == null:
+		_player = _resolve_player()
 	if _player == null:
 		return
 	if _player.has_method("apply_scar_modifiers"):

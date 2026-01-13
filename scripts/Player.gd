@@ -53,6 +53,12 @@ func _ready() -> void:
 	if sword_sprite != null:
 		sword_sprite.texture = SWORD_TEX_IDLE
 	add_to_group("player")
+	if Engine.has_singleton("GameEvents") and GameEvents != null:
+		if GameEvents.has_signal("gameplay_enabled_changed"):
+			var gameplay_callable: Callable = Callable(self, "_on_gameplay_enabled_changed")
+			if not GameEvents.gameplay_enabled_changed.is_connected(gameplay_callable):
+				GameEvents.gameplay_enabled_changed.connect(gameplay_callable)
+		input_locked = not GameEvents.gameplay_enabled
 
 func _physics_process(delta: float) -> void:
 	if input_locked:
@@ -81,6 +87,9 @@ func _physics_process(delta: float) -> void:
 
 func set_input_locked(locked: bool) -> void:
 	input_locked = locked
+
+func _on_gameplay_enabled_changed(enabled: bool) -> void:
+	set_input_locked(not enabled)
 
 func _apply_bounds() -> void:
 	var half: Vector2 = arena_bounds_size * 0.5

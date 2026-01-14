@@ -339,6 +339,7 @@ func _ensure_arena_layout_container() -> void:
 	if _arena == null:
 		_arena = get_node_or_null(arena_path)
 	if _arena == null:
+		push_error("RunManager: Arena container missing; cannot prepare arena layout container.")
 		return
 	if _arena_layout_container != null and is_instance_valid(_arena_layout_container):
 		return
@@ -367,15 +368,18 @@ func load_next_arena() -> void:
 	if _arena == null:
 		_arena = get_node_or_null(arena_path)
 	if _arena == null:
+		push_error("RunManager: Arena container missing; cannot load next arena layout.")
 		return
 	_ensure_arena_layout_container()
 	if _arena_layout_container == null:
+		push_error("RunManager: Arena layout container missing; cannot load next arena layout.")
 		return
 	_remove_default_arena_layout()
 	if _current_arena_layout != null and is_instance_valid(_current_arena_layout):
 		_current_arena_layout.queue_free()
 	var next_scene: PackedScene = pick_next_arena_scene()
 	if next_scene == null:
+		push_error("RunManager: Missing arena scene; cannot instantiate arena layout.")
 		return
 	var layout_instance: Node = next_scene.instantiate()
 	_current_arena_layout = layout_instance

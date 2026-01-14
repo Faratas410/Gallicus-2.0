@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/arenas/iron_corridor.png" id="1"]
+
+[node name="ArenaRoot" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+centered = false
+position = Vector2(0, 0)
+
+[node name="Bounds" type="StaticBody2D" parent="."]
+[node name="Col_00" type="CollisionShape2D" parent="Bounds"]
+shape = RectangleShape2D.new()
+position = Vector2(640.00, 16.00)
+shape.size = Vector2(1280.00, 32.00)
+
+[node name="Col_01" type="CollisionShape2D" parent="Bounds"]
+shape = RectangleShape2D.new()
+position = Vector2(640.00, 704.00)
+shape.size = Vector2(1280.00, 32.00)
+
+[node name="Col_02" type="CollisionShape2D" parent="Bounds"]
+shape = RectangleShape2D.new()
+position = Vector2(16.00, 360.00)
+shape.size = Vector2(32.00, 720.00)
+
+[node name="Col_03" type="CollisionShape2D" parent="Bounds"]
+shape = RectangleShape2D.new()
+position = Vector2(1264.00, 360.00)
+shape.size = Vector2(32.00, 720.00)
+
+[node name="Col_04" type="CollisionShape2D" parent="Bounds"]
+shape = RectangleShape2D.new()
+position = Vector2(640.00, 360.00)
+shape.size = Vector2(520.00, 70.00)
+
+[node name="Col_05" type="CollisionShape2D" parent="Bounds"]
+shape = RectangleShape2D.new()
+position = Vector2(640.00, 220.00)
+shape.size = Vector2(70.00, 220.00)
+
+[node name="Col_06" type="CollisionShape2D" parent="Bounds"]
+shape = RectangleShape2D.new()
+position = Vector2(640.00, 500.00)
+shape.size = Vector2(70.00, 220.00)

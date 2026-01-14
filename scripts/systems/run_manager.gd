@@ -6,6 +6,15 @@ extends Node
 @export var arena_clear_reward: int = GameConstants.ARENA_CLEAR_REWARD
 @export var arena_scene: PackedScene = preload("res://scenes/Arena.tscn")
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
+@export var arena_layout_offset: Vector2 = Vector2(-640.0, -360.0)
+
+var _arena_scenes: Array[PackedScene] = [
+	preload("res://scenes/arenas/Arena_01_TrainingYard.tscn"),
+	preload("res://scenes/arenas/Arena_02_OwlSanctum.tscn"),
+	preload("res://scenes/arenas/Arena_03_SandPit.tscn"),
+	preload("res://scenes/arenas/Arena_04_IronCorridor.tscn"),
+]
+var _arena_layout_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 const DEBUG_RUNTIME_LOGS: bool = false
 
@@ -66,6 +75,9 @@ var run: Dictionary = {
 }
 
 var _arena: Node
+var _arena_layout_container: Node2D = null
+var _current_arena_layout: Node = null
+var _current_arena_path: String = ""
 var _bet_manager: Node
 var _waiting_for_bet: bool = false
 var _waiting_for_push_luck: bool = false
@@ -95,6 +107,7 @@ var _run_finale_emitted: bool = false
 func _ready() -> void:
 	print("RunManager ready")
 	add_to_group("run_manager")
+	_arena_layout_rng.randomize()
 	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
 	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
 		GameEvents.bet_placed.connect(bet_placed_callable)
@@ -315,6 +328,61 @@ func _ensure_arena_and_player() -> void:
 	_player = existing_player
 	if _player and _player is Node2D:
 		(_player as Node2D).global_position = Vector2.ZERO
+
+func pick_next_arena_scene() -> PackedScene:
+	if _arena_scenes.size() == 0:
+		return arena_scene
+	var idx: int = _arena_layout_rng.randi_range(0, _arena_scenes.size() - 1)
+	return _arena_scenes[idx]
+
+func _ensure_arena_layout_container() -> void:
+	if _arena == null:
+		_arena = get_node_or_null(arena_path)
+	if _arena == null:
+		return
+	if _arena_layout_container != null and is_instance_valid(_arena_layout_container):
+		return
+	var existing: Node = _arena.get_node_or_null("ArenaLayoutRoot")
+	if existing != null and existing is Node2D:
+		_arena_layout_container = existing as Node2D
+		_arena_layout_container.position = arena_layout_offset
+		return
+	var new_container: Node2D = Node2D.new()
+	new_container.name = "ArenaLayoutRoot"
+	new_container.position = arena_layout_offset
+	_arena.add_child(new_container)
+	_arena_layout_container = new_container
+
+func _remove_default_arena_layout() -> void:
+	if _arena == null:
+		return
+	var ground: Node = _arena.get_node_or_null("Ground")
+	if ground != null:
+		ground.queue_free()
+	var walls: Node = _arena.get_node_or_null("Walls")
+	if walls != null:
+		walls.queue_free()
+
+func load_next_arena() -> void:
+	if _arena == null:
+		_arena = get_node_or_null(arena_path)
+	if _arena == null:
+		return
+	_ensure_arena_layout_container()
+	if _arena_layout_container == null:
+		return
+	_remove_default_arena_layout()
+	if _current_arena_layout != null and is_instance_valid(_current_arena_layout):
+		_current_arena_layout.queue_free()
+	var next_scene: PackedScene = pick_next_arena_scene()
+	if next_scene == null:
+		return
+	var layout_instance: Node = next_scene.instantiate()
+	_current_arena_layout = layout_instance
+	_current_arena_path = next_scene.resource_path
+	_arena_layout_container.add_child(layout_instance)
+	if layout_instance is Node2D:
+		(layout_instance as Node2D).position = Vector2.ZERO
 
 func _reset_or_respawn_player_full() -> void:
 	if _arena == null:
@@ -545,6 +613,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	_bet_chain_level = 1
 	GameEvents.betting_closed.emit()
 	set_phase(RunPhase.LIVE)
+	load_next_arena()
 	_start_next_arena()
 
 func _on_betting_opened() -> void:

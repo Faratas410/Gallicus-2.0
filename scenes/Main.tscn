@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://scripts/systems/run_manager.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/Arena.tscn" id="3"]
 [ext_resource type="Script" path="res://scripts/systems/bet_manager.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/pickups/PickupSpawner.gd" id="5"]
 
@@ -14,8 +13,6 @@ arena_path = NodePath("../Arena")
 
 [node name="BetManager" type="Node" parent="RunManager"]
 script = ExtResource("4")
-
-[node name="Arena" parent="." instance=ExtResource("3")]
 
 [node name="PickupSpawner" type="Node2D" parent="."]
 script = ExtResource("5")

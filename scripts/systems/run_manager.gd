@@ -1044,13 +1044,19 @@ func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _scars.duplicate(true)
 	var scar_count: int = scars_copy.size()
 	var bet_penalty: int = int(run.get("bet_hp_penalty", 0))
-	var hp_reduction: int = maxi(-bet_penalty, 0)
+	var scar_hp_penalty: int = maxi(-_scar_max_hp_penalty, 0)
+	var hp_reduction: int = maxi(-bet_penalty, 0) + scar_hp_penalty
 	var has_open_wound: bool = _has_scar(SCAR_OPEN_WOUND)
 	var has_cracked_bones: bool = _has_scar(SCAR_CRACKED_BONES)
 	var has_mixed_scars: bool = has_open_wound and has_cracked_bones
+	var physical_scar_count: int = 0
+	for scar: Dictionary in _scars:
+		var scar_id: String = str(scar.get("id", ""))
+		if scar_id == SCAR_OPEN_WOUND or scar_id == SCAR_CRACKED_BONES:
+			physical_scar_count += 1
 	var pushed_too_far: bool = _max_push_luck_chain >= 3 or _push_luck_doubles >= 2
 	var frequent_cashout: bool = _push_luck_cashouts >= 2
-	var many_physical_scars: bool = scar_count >= 2 and hp_reduction >= 20
+	var many_physical_scars: bool = physical_scar_count >= 2 and hp_reduction >= 20
 	var few_scars: bool = scar_count <= 1
 
 	var title: String = "FINE SILENZIOSA"

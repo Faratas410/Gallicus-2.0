@@ -4,8 +4,8 @@ signal health_changed(current: int, max: int)
 signal took_damage(amount: int)
 signal died
 
-const SWORD_TEX_IDLE: Texture2D = preload("res://assets/sprites/weapons/weapon_sword.png")
-const SWORD_TEX_SWING: Texture2D = preload("res://assets/sprites/weapons/weapon_sword.png")
+const SWORD_TEX_IDLE: Texture2D = preload("res://assets/sprites/weapon_sword.png")
+const SWORD_TEX_SWING: Texture2D = preload("res://assets/sprites/weapon_sword.png")
 const DAMAGE_INVULN_SECONDS: float = 0.25
 
 @export var move_speed: float = 220.0

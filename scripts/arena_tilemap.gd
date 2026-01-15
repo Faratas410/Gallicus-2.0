@@ -19,8 +19,6 @@ var _wall_source_id: int = -1
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	z_index = -10
-	collision_layer = 2
-	collision_mask = 0
 	_setup_tileset()
 	_build_layout()
 
@@ -28,8 +26,14 @@ func _setup_tileset() -> void:
 	var new_tile_set: TileSet = TileSet.new()
 	new_tile_set.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
 
-	var ground_texture: Texture2D = preload("res://assets/tiles/tile_ground_16.png")
-	var wall_texture: Texture2D = preload("res://assets/tiles/tile_wall_16.png")
+	var ground_texture: Texture2D = load("res://assets/tiles/tile_ground_16.png") as Texture2D
+	if ground_texture == null:
+		push_error("Missing tile texture: res://assets/tiles/tile_ground_16.png")
+		return
+	var wall_texture: Texture2D = load("res://assets/tiles/tile_wall_16.png") as Texture2D
+	if wall_texture == null:
+		push_error("Missing tile texture: res://assets/tiles/tile_wall_16.png")
+		return
 
 	var ground_source: TileSetAtlasSource = _make_source(ground_texture)
 	_ground_source_id = new_tile_set.add_source(ground_source)
@@ -61,6 +65,9 @@ func _make_source(texture: Texture2D) -> TileSetAtlasSource:
 	return source
 
 func _build_layout() -> void:
+	if _ground_source_id < 0 or _wall_source_id < 0:
+		push_error("Tile sources not ready for layout build.")
+		return
 	clear()
 	_fill_ground()
 	_paint_border()

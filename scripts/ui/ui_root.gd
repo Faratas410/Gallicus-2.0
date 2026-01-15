@@ -631,11 +631,11 @@ func _refresh_scars_ui(scars: Array) -> void:
 	var lines: Array[String] = []
 	for scar_value: Dictionary in scars:
 		var scar: Dictionary = scar_value as Dictionary
-		var name: String = str(scar.get("name", "Cicatrice"))
+		var scar_name: String = str(scar.get("name", "Cicatrice"))
 		var story: String = str(scar.get("story", ""))
 		var origin: String = str(scar.get("origin", ""))
 		var effect: String = str(scar.get("effect", ""))
-		lines.append("• %s" % name)
+		lines.append("• %s" % scar_name)
 		if story != "":
 			lines.append("  %s" % story)
 		if origin != "":
@@ -664,10 +664,10 @@ func _refresh_game_over_scars() -> void:
 	lines.append("Cicatrici rilevanti:")
 	for scar_value: Dictionary in _last_finale_scars:
 		var scar: Dictionary = scar_value as Dictionary
-		var name: String = "Cicatrice"
+		var scar_name: String = "Cicatrice"
 		if scar.has("name"):
-			name = str(scar["name"])
-		lines.append("• %s" % name)
+			scar_name = str(scar["name"])
+		lines.append("• %s" % scar_name)
 	game_over_scars.text = "\n".join(lines)
 	game_over_scars.visible = true
 

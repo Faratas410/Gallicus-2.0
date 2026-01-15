@@ -30,6 +30,8 @@ script = ExtResource("1")
 layout_id = 3
 
 [node name="Bounds" type="StaticBody2D" parent="."]
+collision_layer = 0
+collision_mask = 0
 [node name="Col_00" type="CollisionShape2D" parent="Bounds"]
 shape = SubResource("RectangleShape2D_1")
 position = Vector2(640.00, 16.00)

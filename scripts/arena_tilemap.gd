@@ -45,7 +45,7 @@ func _setup_tileset() -> void:
 	tile_set = new_tile_set
 
 func _apply_wall_collision(source: TileSetAtlasSource) -> void:
-	var tile_data: TileData = source.get_tile_data(ATLAS_COORDS)
+	var tile_data: TileData = source.get_tile_data(ATLAS_COORDS, 0)
 	if tile_data == null:
 		return
 	tile_data.set_collision_polygons_count(0, 1)

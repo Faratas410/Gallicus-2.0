@@ -27,6 +27,7 @@ modulate = Color(0.2, 0.6, 0.9, 1)
 texture = ExtResource("2")
 centered = true
 texture_filter = 2
+z_index = 5
 
 [node name="SwordSprite" type="Sprite2D" parent="."]
 position = Vector2(10, -10)

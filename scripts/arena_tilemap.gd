@@ -18,6 +18,9 @@ var _wall_source_id: int = -1
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	z_index = -10
+	collision_layer = 2
+	collision_mask = 0
 	_setup_tileset()
 	_build_layout()
 
@@ -33,8 +36,22 @@ func _setup_tileset() -> void:
 
 	var wall_source: TileSetAtlasSource = _make_source(wall_texture)
 	_wall_source_id = new_tile_set.add_source(wall_source)
+	_apply_wall_collision(wall_source)
 
 	tile_set = new_tile_set
+
+func _apply_wall_collision(source: TileSetAtlasSource) -> void:
+	var tile_data: TileData = source.get_tile_data(ATLAS_COORDS)
+	if tile_data == null:
+		return
+	tile_data.set_collision_polygons_count(0, 1)
+	var points: PackedVector2Array = PackedVector2Array([
+		Vector2(0.0, 0.0),
+		Vector2(TILE_SIZE, 0.0),
+		Vector2(TILE_SIZE, TILE_SIZE),
+		Vector2(0.0, TILE_SIZE)
+	])
+	tile_data.set_collision_polygon(0, 0, points)
 
 func _make_source(texture: Texture2D) -> TileSetAtlasSource:
 	var source: TileSetAtlasSource = TileSetAtlasSource.new()

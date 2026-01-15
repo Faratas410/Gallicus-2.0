@@ -109,6 +109,7 @@ custom_minimum_size = Vector2(16, 16)
 expand_mode = 1
 stretch_mode = 5
 texture = ExtResource("5")
+texture_filter = 2
 
 [node name="CoinsLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent"]
 autowrap_mode = 2

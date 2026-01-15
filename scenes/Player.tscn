@@ -26,13 +26,13 @@ shape = SubResource("CapsuleShape2D_1")
 modulate = Color(0.2, 0.6, 0.9, 1)
 texture = ExtResource("2")
 centered = true
-texture_filter = 1
+texture_filter = 2
 
 [node name="SwordSprite" type="Sprite2D" parent="."]
 position = Vector2(10, -10)
 texture = ExtResource("3")
 centered = true
-texture_filter = 1
+texture_filter = 2
 z_index = 10
 visible = true
 

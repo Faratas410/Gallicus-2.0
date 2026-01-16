@@ -189,6 +189,21 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "LEVEL UP! +1 TOKEN"
 
+[node name="ScarPopup" type="Label" parent="HUD"]
+visible = false
+z_index = 111
+anchor_left = 0.5
+anchor_top = 0.32
+anchor_right = 0.5
+anchor_bottom = 0.32
+offset_left = -260.0
+offset_top = -24.0
+offset_right = 260.0
+offset_bottom = 24.0
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "CICATRICE APPLICATA"
+
 [node name="DebugOverlay" type="Label" parent="HUD"]
 anchor_left = 1.0
 anchor_top = 0.0
@@ -284,19 +299,19 @@ theme_override_constants/separation = 8
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
-text = "INCASSA E VAI"
+text = "CONDANNA — RADDOPPI O MUORI"
 
 [node name="BetNoHitButton" type="Button" parent="Modals/BetPanel/BetScroll/BetVBox/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
-text = "SANGUE INTEGRO"
+text = "CONDIZIONE — SANGUE INTEGRO"
 
 [node name="BetFastButton" type="Button" parent="Modals/BetPanel/BetScroll/BetVBox/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
-text = "RADDOPPI O MUORI"
+text = "PATTO — INCASSA E VAI"
 
 [node name="BuyTokenRow" type="HBoxContainer" parent="Modals/BetPanel/BetScroll/BetVBox"]
 size_flags_horizontal = 3

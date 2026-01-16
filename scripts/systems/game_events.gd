@@ -27,6 +27,7 @@ signal gameplay_enabled_changed(enabled: bool)
 signal modal_opened(kind: String)
 signal modal_closed(kind: String)
 signal scars_updated(scars: Array)
+signal scar_applied(scar: Dictionary)
 
 # --- Progression / Difficulty ---
 signal difficulty_tier_changed(tier: int, multiplier: float)

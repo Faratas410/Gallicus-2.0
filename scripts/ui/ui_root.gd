@@ -23,6 +23,7 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var bet_fast_button: Button = _req("Modals/BetPanel/BetScroll/BetVBox/BetButtons/BetFastButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
+@onready var scar_popup: Label = get_node_or_null("HUD/ScarPopup") as Label
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverPanel") as Panel
@@ -67,6 +68,7 @@ var _level: int = 1
 var _tokens: int = 0
 var _coins: int = 0
 var _popup_tween: Tween = null
+var _scar_popup_tween: Tween = null
 var _last_level: int = 1
 var _last_tokens: int = 0
 var _xp_anim_tween: Tween = null
@@ -146,6 +148,9 @@ func _ready() -> void:
 	var scars_updated_callable: Callable = Callable(self, "_on_scars_updated")
 	if GameEvents.has_signal("scars_updated") and not GameEvents.scars_updated.is_connected(scars_updated_callable):
 		GameEvents.scars_updated.connect(scars_updated_callable)
+	var scar_applied_callable: Callable = Callable(self, "_on_scar_applied")
+	if GameEvents.has_signal("scar_applied") and not GameEvents.scar_applied.is_connected(scar_applied_callable):
+		GameEvents.scar_applied.connect(scar_applied_callable)
 	_ensure_token_icons()
 	_refresh_progression_ui()
 	_refresh_scars_ui([])
@@ -177,6 +182,8 @@ func _ready() -> void:
 		debug_overlay.visible = false
 	if level_up_popup != null:
 		level_up_popup.visible = false
+	if scar_popup != null:
+		scar_popup.visible = false
 
 	if fast_blink_timer != null:
 		var blink_callable: Callable = Callable(self, "_on_fast_blink_tick")
@@ -434,6 +441,35 @@ func _hide_level_up_popup() -> void:
 	if level_up_popup != null:
 		level_up_popup.visible = false
 
+func _show_scar_popup(scar: Dictionary) -> void:
+	if scar_popup == null:
+		return
+	var scar_name: String = str(scar.get("name", "Cicatrice"))
+	var scar_story: String = str(scar.get("story", ""))
+	var text_lines: Array[String] = ["CICATRICE: %s" % scar_name]
+	if scar_story != "":
+		text_lines.append(scar_story)
+	scar_popup.text = "\n".join(text_lines)
+	scar_popup.visible = true
+	scar_popup.modulate.a = 0.0
+	scar_popup.scale = Vector2(0.96, 0.96)
+	if _scar_popup_tween != null and _scar_popup_tween.is_valid():
+		_scar_popup_tween.kill()
+	_scar_popup_tween = create_tween()
+	_scar_popup_tween.set_trans(Tween.TRANS_QUAD)
+	_scar_popup_tween.set_ease(Tween.EASE_OUT)
+	_scar_popup_tween.tween_property(scar_popup, "modulate:a", 1.0, 0.15)
+	_scar_popup_tween.parallel().tween_property(scar_popup, "scale", Vector2(1.02, 1.02), 0.15)
+	_scar_popup_tween.tween_interval(1.0)
+	_scar_popup_tween.set_ease(Tween.EASE_IN)
+	_scar_popup_tween.tween_property(scar_popup, "modulate:a", 0.0, 0.25)
+	_scar_popup_tween.parallel().tween_property(scar_popup, "scale", Vector2(0.98, 0.98), 0.25)
+	_scar_popup_tween.tween_callback(Callable(self, "_hide_scar_popup"))
+
+func _hide_scar_popup() -> void:
+	if scar_popup != null:
+		scar_popup.visible = false
+
 func _on_buy_token_pressed() -> void:
 	if GameEvents.has_signal("request_purchase_token"):
 		GameEvents.request_purchase_token.emit()
@@ -620,6 +656,9 @@ func _on_bet_ui_closed() -> void:
 func _on_scars_updated(scars: Array) -> void:
 	_refresh_scars_ui(scars)
 
+func _on_scar_applied(scar: Dictionary) -> void:
+	_show_scar_popup(scar)
+
 func _refresh_scars_ui(scars: Array) -> void:
 	if scars_label == null:
 		return
@@ -719,13 +758,13 @@ func _on_push_luck_double_pressed() -> void:
 		GameEvents.request_push_luck_double.emit()
 
 func _on_bet_win_pressed() -> void:
-	_place_bet("COWARD")
+	_place_bet("DOUBLE_OR_DIE")
 
 func _on_bet_no_hit_pressed() -> void:
-	_place_bet("PURE_BLOOD")
+	_place_bet("FLAWLESS_BLOOD")
 
 func _on_bet_fast_pressed() -> void:
-	_place_bet("DOUBLE_OR_DIE")
+	_place_bet("CASH_OUT")
 
 func _on_restart_pressed() -> void:
 	_request_reset()
@@ -832,12 +871,12 @@ func _update_bet_buttons() -> void:
 	bet_win_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	bet_no_hit_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	bet_fast_button.mouse_filter = Control.MOUSE_FILTER_STOP
-	_set_bet_button_text(bet_win_button, "COWARD")
-	_set_bet_button_text(bet_no_hit_button, "PURE_BLOOD")
-	_set_bet_button_text(bet_fast_button, "DOUBLE_OR_DIE")
-	_apply_bet_button_style(bet_win_button, "COWARD")
-	_apply_bet_button_style(bet_no_hit_button, "PURE_BLOOD")
-	_apply_bet_button_style(bet_fast_button, "DOUBLE_OR_DIE")
+	_set_bet_button_text(bet_win_button, "DOUBLE_OR_DIE")
+	_set_bet_button_text(bet_no_hit_button, "FLAWLESS_BLOOD")
+	_set_bet_button_text(bet_fast_button, "CASH_OUT")
+	_apply_bet_button_style(bet_win_button, "DOUBLE_OR_DIE")
+	_apply_bet_button_style(bet_no_hit_button, "FLAWLESS_BLOOD")
+	_apply_bet_button_style(bet_fast_button, "CASH_OUT")
 
 func _set_bet_button_text(button: Button, bet_id: String) -> void:
 	if not _bets_by_id.has(bet_id):
@@ -865,12 +904,19 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 	if button == null:
 		return
-	if bet_id == "COWARD":
-		button.modulate = Color(0.72, 0.72, 0.72, 0.92)
-		button.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.85, 0.85, 0.85, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.85, 0.85, 0.85, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.9, 0.9, 1.0))
+	if bet_id == "DOUBLE_OR_DIE":
+		button.modulate = Color(1.0, 0.75, 0.75, 1.0)
+		button.add_theme_color_override("font_color", Color(0.75, 0.05, 0.05, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.9, 0.2, 0.2, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.9, 0.2, 0.2, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.35, 0.35, 1.0))
+		return
+	if bet_id == "FLAWLESS_BLOOD":
+		button.modulate = Color(1.0, 0.95, 0.8, 1.0)
+		button.add_theme_color_override("font_color", Color(0.6, 0.45, 0.0, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.75, 0.55, 0.1, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.75, 0.55, 0.1, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.65, 0.15, 1.0))
 		return
 	button.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	button.remove_theme_color_override("font_color")

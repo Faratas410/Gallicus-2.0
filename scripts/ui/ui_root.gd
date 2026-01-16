@@ -36,6 +36,7 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var game_over_title: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverTitle") as Label
 @onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverEpilogue") as Label
 @onready var game_over_scars: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverScars") as Label
+@onready var game_over_meta: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverMeta") as Label
 @onready var game_over_hint: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverHint") as Label
 @onready var restart_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/RestartButton") as Button
 @onready var next_bet_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/NextBetButton") as Button
@@ -78,6 +79,13 @@ var _enemy_bar_nodes: Dictionary = {}
 var _last_finale_title: String = "RUN FAILED"
 var _last_finale_text: String = ""
 var _last_finale_scars: Array = []
+var _last_finale_ending_id: String = ""
+var _last_finale_seed: int = 0
+var _debug_seed: int = 0
+var _debug_arena_index: int = 0
+var _debug_escalation: int = 0
+var _debug_active_bet: String = ""
+var _debug_scars: Array[String] = []
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -103,6 +111,9 @@ func _ready() -> void:
 	var run_finale_callable: Callable = Callable(self, "_on_run_finale_selected")
 	if GameEvents.has_signal("run_finale_selected") and not GameEvents.run_finale_selected.is_connected(run_finale_callable):
 		GameEvents.run_finale_selected.connect(run_finale_callable)
+	var run_debug_callable: Callable = Callable(self, "_on_run_debug_state_updated")
+	if GameEvents.has_signal("run_debug_state_updated") and not GameEvents.run_debug_state_updated.is_connected(run_debug_callable):
+		GameEvents.run_debug_state_updated.connect(run_debug_callable)
 	var bet_failed_callable: Callable = Callable(self, "_on_bet_failed")
 	if not GameEvents.bet_failed.is_connected(bet_failed_callable):
 		GameEvents.bet_failed.connect(bet_failed_callable)
@@ -530,7 +541,10 @@ func _on_run_started() -> void:
 	_last_finale_title = "RUN FAILED"
 	_last_finale_text = ""
 	_last_finale_scars = []
+	_last_finale_ending_id = ""
+	_last_finale_seed = 0
 	_refresh_game_over_scars()
+	_refresh_game_over_meta()
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
 	_refresh_modal_dimmer()
@@ -561,7 +575,16 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 		_last_finale_scars = (payload["scars"] as Array).duplicate(true)
 	else:
 		_last_finale_scars = []
+	if payload.has("ending_id"):
+		_last_finale_ending_id = str(payload["ending_id"])
+	else:
+		_last_finale_ending_id = ""
+	if payload.has("seed"):
+		_last_finale_seed = int(payload["seed"])
+	else:
+		_last_finale_seed = 0
 	_refresh_game_over_scars()
+	_refresh_game_over_meta()
 	if game_over_title != null:
 		game_over_title.text = _last_finale_title
 	if game_over_epilogue != null:
@@ -585,12 +608,24 @@ func _on_run_failed() -> void:
 	if game_over_epilogue != null:
 		game_over_epilogue.text = _last_finale_text
 	_refresh_game_over_scars()
+	_refresh_game_over_meta()
 	if game_over_hint != null:
 		game_over_hint.text = "Vuoi riprovare?"
 	if restart_button != null:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
 	_refresh_modal_dimmer()
+
+func _on_run_debug_state_updated(payload: Dictionary) -> void:
+	_debug_seed = int(payload.get("seed", 0))
+	_debug_arena_index = int(payload.get("arena_index", 0))
+	_debug_escalation = int(payload.get("escalation_level", 0))
+	_debug_active_bet = str(payload.get("active_bet_id", ""))
+	var scars_value: Array = payload.get("scars", []) as Array
+	_debug_scars = []
+	for scar_value in scars_value:
+		_debug_scars.append(str(scar_value))
+	_refresh_debug_overlay()
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
@@ -709,6 +744,21 @@ func _refresh_game_over_scars() -> void:
 		lines.append("• %s" % scar_name)
 	game_over_scars.text = "\n".join(lines)
 	game_over_scars.visible = true
+
+func _refresh_game_over_meta() -> void:
+	if game_over_meta == null:
+		return
+	var lines: Array[String] = []
+	if _last_finale_ending_id != "":
+		lines.append("Ending ID: %s" % _last_finale_ending_id)
+	if _last_finale_ending_id != "" or _last_finale_seed != 0:
+		lines.append("Seed: %d" % _last_finale_seed)
+	if lines.is_empty():
+		game_over_meta.text = ""
+		game_over_meta.visible = false
+		return
+	game_over_meta.text = "\n".join(lines)
+	game_over_meta.visible = true
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
 	if push_luck_panel == null:
@@ -996,19 +1046,24 @@ func _reset_fast_countdown() -> void:
 	if fast_countdown_label != null:
 		fast_countdown_label.visible = false
 
+func _refresh_debug_overlay() -> void:
+	if debug_overlay == null:
+		return
+	var scars_text: String = "-"
+	if _debug_scars.size() > 0:
+		scars_text = ", ".join(_debug_scars)
+	debug_overlay.text = "Seed: %d\nArena: %d\nEscalation: %d\nActive Bet: %s\nScars: [%s]" % [
+		_debug_seed,
+		_debug_arena_index,
+		_debug_escalation,
+		_debug_active_bet,
+		scars_text
+	]
+
 func _process(_delta: float) -> void:
 	if debug_overlay == null or not debug_overlay.visible:
 		return
-	var fps: int = Engine.get_frames_per_second()
-	var arena_index: int = _get_arena_index()
-	var enemies_alive: int = _get_enemies_alive()
-	var bet_active: bool = _is_bet_active()
-	debug_overlay.text = "FPS: %d\nArena: %d\nEnemies: %d\nBet active: %s" % [
-		fps,
-		arena_index,
-		enemies_alive,
-		str(bet_active)
-	]
+	_refresh_debug_overlay()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _controls_first_run_active and (not _has_seen_controls) and controls_hint_panel != null and controls_hint_panel.visible:
@@ -1023,9 +1078,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			_has_seen_controls = true
 			_controls_first_run_active = false
 			controls_hint_panel.visible = false
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F1:
-		if debug_overlay != null:
-			debug_overlay.visible = not debug_overlay.visible
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F1:
+			if debug_overlay != null:
+				debug_overlay.visible = not debug_overlay.visible
+				_refresh_debug_overlay()
+		if OS.is_debug_build():
+			if event.keycode == KEY_F2:
+				DisplayServer.clipboard_set(str(_debug_seed))
+			if event.keycode == KEY_F3:
+				var clipboard_text: String = DisplayServer.clipboard_get()
+				if clipboard_text.is_valid_int() and GameEvents.has_signal("request_set_run_seed"):
+					GameEvents.request_set_run_seed.emit(int(clipboard_text))
 
 func _req(path: String) -> Node:
 	var n: Node = get_node_or_null(path)

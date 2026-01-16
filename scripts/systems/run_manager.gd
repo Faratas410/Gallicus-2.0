@@ -150,6 +150,8 @@ var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
 var _run_finale_emitted: bool = false
 var _forced_ending_id: StringName = &""
+var _debug_seed_override_active: bool = false
+var _debug_seed_override: int = 0
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -197,6 +199,9 @@ func _ready() -> void:
 	var request_double_callable: Callable = Callable(self, "_on_request_push_luck_double")
 	if GameEvents.has_signal("request_push_luck_double") and not GameEvents.request_push_luck_double.is_connected(request_double_callable):
 		GameEvents.request_push_luck_double.connect(request_double_callable)
+	var request_seed_callable: Callable = Callable(self, "_on_request_set_run_seed")
+	if GameEvents.has_signal("request_set_run_seed") and not GameEvents.request_set_run_seed.is_connected(request_seed_callable):
+		GameEvents.request_set_run_seed.connect(request_seed_callable)
 	var modal_opened_callable: Callable = Callable(self, "_on_modal_opened")
 	if GameEvents.has_signal("modal_opened") and not GameEvents.modal_opened.is_connected(modal_opened_callable):
 		GameEvents.modal_opened.connect(modal_opened_callable)
@@ -315,15 +320,17 @@ func _start_level3_run() -> void:
 	_level3_next_loss_hp_penalty = 0
 	_current_bet_id = ""
 	_bet_chain_level = 1
+	_has_started_run = true
 
 	_run_state = RunState.new()
-	_run_state.run_seed = int(Time.get_unix_time_from_system())
+	_run_state.run_seed = _get_run_seed_value()
 	_run_state.arena_index = 0
 	_run_state.escalation_level = 0
 	_run_state.active_bet_id = &""
 	_run_state.scars = []
 	_run_state.max_hp_modifier = 0
 	_run_state.run_is_over = false
+	_arena_layout_rng.seed = _run_state.run_seed
 
 	_reset_scars()
 	run["coins"] = starting_coins
@@ -338,6 +345,7 @@ func _start_level3_run() -> void:
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
 	set_phase(RunPhase.PREP)
+	_emit_run_debug_state()
 	start_arena()
 
 func start_arena() -> void:
@@ -348,6 +356,7 @@ func start_arena() -> void:
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
 	load_next_arena()
+	_emit_run_debug_state()
 	_open_level3_bet_ui()
 
 func select_bet(bet_id: StringName) -> void:
@@ -359,6 +368,7 @@ func select_bet(bet_id: StringName) -> void:
 	_waiting_for_push_luck = false
 	_run_state.active_bet_id = bet_id
 	_current_bet_id = String(bet_id)
+	_emit_run_debug_state()
 	GameEvents.bet_placed.emit(String(bet_id), 0, 1.0)
 	GameEvents.bet_ui_closed.emit()
 	GameEvents.bet_closed.emit()
@@ -374,13 +384,16 @@ func resolve_arena() -> void:
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var bet_id: StringName = _run_state.active_bet_id
 	var failed: bool = not result.won
+	var scars_applied: Array[StringName] = []
 	if bet_id == BET_FLAWLESS_BLOOD and result.took_damage:
 		failed = true
 	if failed:
-		_handle_level3_loss(bet_id, result)
+		scars_applied = _handle_level3_loss(bet_id, result)
 	else:
 		_handle_level3_win(bet_id, result)
+	_log_level3_arena_result(bet_id, result, scars_applied)
 	_run_state.active_bet_id = &""
+	_emit_run_debug_state()
 
 func apply_scar(scar_id: StringName) -> void:
 	_apply_level3_scar(scar_id, "")
@@ -450,6 +463,54 @@ func _open_level3_bet_ui() -> void:
 	GameEvents.bet_ui_opened.emit(LEVEL3_BETS)
 	GameEvents.bet_opened.emit()
 
+func _get_run_seed_value() -> int:
+	if _debug_seed_override_active:
+		return _debug_seed_override
+	return int(Time.get_unix_time_from_system())
+
+func _compute_level3_seed(bet_id: StringName) -> int:
+	var seed_value: int = _run_state.run_seed
+	seed_value += _run_state.arena_index * 31
+	seed_value += _run_state.escalation_level * 13
+	seed_value += String(bet_id).hash() * 7
+	var scars_hash: int = 0
+	for scar_name: StringName in _run_state.scars:
+		scars_hash += String(scar_name).hash() * 3
+	seed_value += scars_hash
+	return seed_value
+
+func _emit_run_debug_state() -> void:
+	if not GameEvents.has_signal("run_debug_state_updated"):
+		return
+	var scars_copy: Array = _run_state.scars.duplicate()
+	var payload: Dictionary = {
+		"seed": _run_state.run_seed,
+		"arena_index": _run_state.arena_index,
+		"escalation_level": _run_state.escalation_level,
+		"active_bet_id": String(_run_state.active_bet_id),
+		"scars": scars_copy,
+	}
+	GameEvents.run_debug_state_updated.emit(payload)
+
+func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
+	var scar_names: Array[String] = []
+	for scar_name: StringName in scars_applied:
+		scar_names.append(String(scar_name))
+	print(
+		"Level3 Arena Result | seed=",
+		_run_state.run_seed,
+		" arena=",
+		_run_state.arena_index,
+		" bet=",
+		String(bet_id),
+		" won=",
+		result.won,
+		" took_damage=",
+		result.took_damage,
+		" scars_applied=",
+		scar_names
+	)
+
 func _resolve_level3_arena() -> ArenaResult:
 	var result: ArenaResult = ArenaResult.new()
 	var base_win: float = 0.65
@@ -465,7 +526,7 @@ func _resolve_level3_arena() -> ArenaResult:
 	var win_chance: float = clampf(base_win - escalation_penalty, 0.1, 0.9)
 	var damage_chance: float = clampf(base_damage + escalation_damage, 0.1, 0.9)
 
-	_level3_rng.seed = _run_state.run_seed + _run_state.arena_index * 31 + _run_state.escalation_level * 13
+	_level3_rng.seed = _compute_level3_seed(_run_state.active_bet_id)
 	var win_roll: float = _level3_rng.randf()
 	result.won = win_roll <= win_chance
 	var damage_roll: float = _level3_rng.randf()
@@ -479,19 +540,22 @@ func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
 	_current_bet_id = String(bet_id)
 	_open_push_luck_choice(StringName(bet_id))
 
-func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> void:
+func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[StringName]:
 	_waiting_for_push_luck = false
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
+	var scars_applied: Array[StringName] = []
 	if bet_id == BET_DOUBLE_OR_DIE:
 		_register_run_end("DOUBLE_OR_DIE")
 		end_run(&"THE_FOOL")
-		return
+		return scars_applied
 	if bet_id == BET_FLAWLESS_BLOOD:
 		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY)
 		_apply_level3_scar(SCAR_OPEN_WOUND, "Condanna: Sangue Integro")
+		scars_applied.append(SCAR_OPEN_WOUND)
 	else:
 		_apply_level3_scar(SCAR_CRACKED_BONES, "Sconfitta in arena")
+		scars_applied.append(SCAR_CRACKED_BONES)
 	if _level3_next_loss_hp_penalty > 0:
 		_apply_max_hp_loss(_level3_next_loss_hp_penalty)
 	_level3_next_loss_hp_penalty = 0
@@ -499,6 +563,7 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> void:
 	_run_state.escalation_level = 0
 	_current_bet_id = ""
 	start_arena()
+	return scars_applied
 
 func _apply_max_hp_loss(amount: int) -> void:
 	if amount <= 0:
@@ -791,6 +856,7 @@ func _on_request_push_luck_cashout() -> void:
 		_level3_next_loss_hp_penalty = 0
 		_run_state.escalation_level = 0
 		_current_bet_id = ""
+		_emit_run_debug_state()
 		end_run(_determine_level3_ending_id())
 		return
 	var bet_id: String = _current_bet_id
@@ -811,6 +877,7 @@ func _on_request_push_luck_double() -> void:
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
 		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
 		_level3_next_loss_hp_penalty = 30
+		_emit_run_debug_state()
 		start_arena()
 		return
 	var bet_id: String = _current_bet_id
@@ -828,6 +895,13 @@ func _on_request_push_luck_double() -> void:
 	set_phase(RunPhase.LIVE)
 	_clear_enemies()
 	_spawn_wave_or_enemies()
+
+func _on_request_set_run_seed(seed: int) -> void:
+	_debug_seed_override_active = true
+	_debug_seed_override = seed
+	print("Debug seed override set:", seed)
+	if _has_started_run:
+		start_new_run()
 
 func _on_modal_opened(_kind: String) -> void:
 	_modal_lock_count += 1
@@ -1378,6 +1452,8 @@ func _emit_run_finale() -> void:
 		return
 	_run_finale_emitted = true
 	var finale: Dictionary = _select_run_finale()
+	if finale.has("ending_id"):
+		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
 
 func _select_run_finale() -> Dictionary:
@@ -1415,6 +1491,8 @@ func _select_run_finale() -> Dictionary:
 		"title": title,
 		"text": text,
 		"scars": scars_copy,
+		"ending_id": String(ending_id),
+		"seed": _run_state.run_seed,
 	}
 
 func get_arena() -> Node:
@@ -1589,6 +1667,7 @@ func _add_scar(scar: Dictionary) -> void:
 	_run_state.scars.append(scar_id)
 	_recompute_scar_modifiers()
 	_emit_scars_updated()
+	_emit_run_debug_state()
 	if GameEvents.has_signal("scar_applied"):
 		GameEvents.scar_applied.emit(scar)
 

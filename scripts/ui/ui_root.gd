@@ -18,9 +18,10 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var modal_dimmer: ColorRect = get_node_or_null("Modals/ModalDimmer") as ColorRect
 @onready var stake_row: Control = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/StakeRow") as Control
 @onready var stake_input: SpinBox = _req("Modals/BetPanel/BetScroll/BetVBox/StakeRow/StakeInput") as SpinBox
-@onready var bet_win_button: Button = _req("Modals/BetPanel/BetScroll/BetVBox/BetButtons/BetWinButton") as Button
-@onready var bet_no_hit_button: Button = _req("Modals/BetPanel/BetScroll/BetVBox/BetButtons/BetNoHitButton") as Button
-@onready var bet_fast_button: Button = _req("Modals/BetPanel/BetScroll/BetVBox/BetButtons/BetFastButton") as Button
+@onready var bet_buttons_container: VBoxContainer = _req("Modals/BetPanel/BetScroll/BetVBox/BetButtons") as VBoxContainer
+@onready var bet_confirm_row: Control = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow") as Control
+@onready var bet_confirm_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmLabel") as Label
+@onready var bet_confirm_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
 @onready var scar_popup: Label = get_node_or_null("HUD/ScarPopup") as Label
@@ -62,7 +63,10 @@ var _has_seen_controls: bool = false
 var _fast_countdown_active: bool = false
 var _controls_first_run_active: bool = true
 var _selected_bet_id: String = ""
+var _pending_confirm_bet_id: String = ""
 var _pending_bets: Array = []
+var _current_bet_offer: Array[Dictionary] = []
+var _bet_buttons: Array[Button] = []
 var _xp_current: int = 0
 var _xp_to_next: int = 6
 var _level: int = 1
@@ -81,10 +85,12 @@ var _last_finale_text: String = ""
 var _last_finale_scars: Array = []
 var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
+var _last_finale_stats: Dictionary = {}
 var _debug_seed: int = 0
 var _debug_arena_index: int = 0
 var _debug_escalation: int = 0
 var _debug_active_bet: String = ""
+var _debug_enemy_profile: String = ""
 var _debug_scars: Array[String] = []
 
 func _ready() -> void:
@@ -174,7 +180,7 @@ func _ready() -> void:
 		push_warning("Bet UI missing, disabling betting panel.")
 	else:
 		bet_panel.visible = false
-		if stake_input == null or bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:
+		if stake_input == null or bet_buttons_container == null:
 			push_warning("Bet UI nodes incomplete, disabling betting panel.")
 			bet_panel.visible = false
 		else:
@@ -182,12 +188,12 @@ func _ready() -> void:
 				stake_row.visible = false
 			stake_input.editable = false
 			stake_input.value = 0
-			if not bet_win_button.pressed.is_connected(Callable(self, "_on_bet_win_pressed")):
-				bet_win_button.pressed.connect(Callable(self, "_on_bet_win_pressed"))
-			if not bet_no_hit_button.pressed.is_connected(Callable(self, "_on_bet_no_hit_pressed")):
-				bet_no_hit_button.pressed.connect(Callable(self, "_on_bet_no_hit_pressed"))
-			if not bet_fast_button.pressed.is_connected(Callable(self, "_on_bet_fast_pressed")):
-				bet_fast_button.pressed.connect(Callable(self, "_on_bet_fast_pressed"))
+			_clear_bet_buttons()
+			_reset_bet_confirmation()
+			if bet_confirm_button != null:
+				var confirm_callable: Callable = Callable(self, "_on_bet_confirm_pressed")
+				if not bet_confirm_button.pressed.is_connected(confirm_callable):
+					bet_confirm_button.pressed.connect(confirm_callable)
 
 	if debug_overlay != null:
 		debug_overlay.visible = false
@@ -520,6 +526,8 @@ func _on_run_started() -> void:
 		bet_info_label.text = "Bet: -"
 	if bet_panel != null:
 		bet_panel.visible = false
+	_reset_bet_confirmation()
+	_reset_bet_confirmation()
 	if level_up_popup != null:
 		level_up_popup.visible = false
 	_refresh_buy_token_ui()
@@ -543,6 +551,7 @@ func _on_run_started() -> void:
 	_last_finale_scars = []
 	_last_finale_ending_id = ""
 	_last_finale_seed = 0
+	_last_finale_stats = {}
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	if not _fast_countdown_active:
@@ -583,6 +592,10 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 		_last_finale_seed = int(payload["seed"])
 	else:
 		_last_finale_seed = 0
+	if payload.has("stats"):
+		_last_finale_stats = payload["stats"] as Dictionary
+	else:
+		_last_finale_stats = {}
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	if game_over_title != null:
@@ -621,6 +634,7 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_arena_index = int(payload.get("arena_index", 0))
 	_debug_escalation = int(payload.get("escalation_level", 0))
 	_debug_active_bet = str(payload.get("active_bet_id", ""))
+	_debug_enemy_profile = str(payload.get("enemy_profile", ""))
 	var scars_value: Array = payload.get("scars", []) as Array
 	_debug_scars = []
 	for scar_value in scars_value:
@@ -674,11 +688,14 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		_pending_bets = bets
 		return
 	_bets_by_id.clear()
+	_current_bet_offer = []
 	for bet_value: Dictionary in bets:
 		var bet: Dictionary = bet_value as Dictionary
 		var bet_id: String = str(bet.get("id", ""))
 		_bets_by_id[bet_id] = bet
-	_update_bet_buttons()
+		_current_bet_offer.append(bet)
+	_build_bet_buttons(_current_bet_offer)
+	_reset_bet_confirmation()
 	bet_panel.visible = true
 	_reset_fast_countdown()
 	_refresh_buy_token_ui()
@@ -687,6 +704,7 @@ func _on_bet_ui_opened(bets: Array) -> void:
 func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
+	_reset_bet_confirmation()
 
 func _on_scars_updated(scars: Array) -> void:
 	_refresh_scars_ui(scars)
@@ -701,15 +719,25 @@ func _refresh_scars_ui(scars: Array) -> void:
 		scars_panel.visible = true
 	if scars.is_empty():
 		scars_label.text = "Nessuna cicatrice."
+		scars_label.tooltip_text = ""
+		if scars_panel != null:
+			scars_panel.tooltip_text = ""
 		return
 	var lines: Array[String] = []
 	for scar_value: Dictionary in scars:
 		var scar: Dictionary = scar_value as Dictionary
 		var scar_name: String = str(scar.get("name", "Cicatrice"))
+		var visual_tag: String = str(scar.get("visual_tag", ""))
+		var short_desc: String = str(scar.get("short_desc", ""))
 		var story: String = str(scar.get("story", ""))
 		var origin: String = str(scar.get("origin", ""))
 		var effect: String = str(scar.get("effect", ""))
-		lines.append("• %s" % scar_name)
+		if visual_tag != "":
+			lines.append("• %s %s" % [visual_tag, scar_name])
+		else:
+			lines.append("• %s" % scar_name)
+		if short_desc != "":
+			lines.append("  %s" % short_desc)
 		if story != "":
 			lines.append("  %s" % story)
 		if origin != "":
@@ -719,7 +747,11 @@ func _refresh_scars_ui(scars: Array) -> void:
 		lines.append("")
 	if lines.size() > 0 and lines[lines.size() - 1] == "":
 		lines.remove_at(lines.size() - 1)
-	scars_label.text = "\n".join(lines)
+	var scars_text: String = "\n".join(lines)
+	scars_label.text = scars_text
+	scars_label.tooltip_text = scars_text
+	if scars_panel != null:
+		scars_panel.tooltip_text = scars_text
 	# If FAST was selected, keep the FAST countdown state for the round.
 	# The label is driven by countdown_requested during the round.
 	if not _fast_countdown_active:
@@ -753,6 +785,21 @@ func _refresh_game_over_meta() -> void:
 		lines.append("Ending ID: %s" % _last_finale_ending_id)
 	if _last_finale_ending_id != "" or _last_finale_seed != 0:
 		lines.append("Seed: %d" % _last_finale_seed)
+	if not _last_finale_stats.is_empty():
+		var cashouts: int = int(_last_finale_stats.get("cashouts", 0))
+		var doubles: int = int(_last_finale_stats.get("doubles", 0))
+		var max_escalation: int = int(_last_finale_stats.get("max_escalation", 0))
+		var arena_target: int = int(_last_finale_stats.get("arena_target", 0))
+		var arena_count: int = int(_last_finale_stats.get("arena_count", 0))
+		lines.append("Cashout: %d | Double: %d | Escalation max: %d" % [cashouts, doubles, max_escalation])
+		if arena_target > 0:
+			lines.append("Arene: %d/%d" % [arena_count, arena_target])
+		var bet_list: Array = _last_finale_stats.get("bets", []) as Array
+		if not bet_list.is_empty():
+			var bet_names: Array[String] = []
+			for bet_name_value in bet_list:
+				bet_names.append(str(bet_name_value))
+			lines.append("Bets: %s" % ", ".join(bet_names))
 	if lines.is_empty():
 		game_over_meta.text = ""
 		game_over_meta.visible = false
@@ -768,13 +815,22 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	var bet_name: String = str(payload.get("bet_name", ""))
 	var current_level: int = int(payload.get("current_level", 1))
 	var next_level: int = int(payload.get("next_level", 2))
+	var arena_index: int = int(payload.get("arena_index", 0))
+	var arena_target: int = int(payload.get("arena_target", 0))
 	if push_luck_title != null:
 		push_luck_title.text = "PUSH YOUR LUCK — %s" % bet_name
 	if push_luck_info != null:
-		push_luck_info.text = "Vittoria x%d → Rischio x%d" % [current_level, next_level]
+		var info_line: String = "Vittoria x%d → Rischio x%d" % [current_level, next_level]
+		if arena_target > 0:
+			info_line += "  |  Arena %d/%d" % [arena_index, arena_target]
+		push_luck_info.text = info_line
 	var doom_text: String = str(payload.get("next_doom", ""))
 	var condition_text: String = str(payload.get("condition", ""))
 	var pact_text: String = str(payload.get("next_pact", ""))
+	var cashout_locked: bool = bool(payload.get("cashout_locked", false))
+	var cashout_reason: String = str(payload.get("cashout_lock_reason", ""))
+	var double_locked: bool = bool(payload.get("double_locked", false))
+	var double_reason: String = str(payload.get("double_lock_reason", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append("❌ Condanna futura: %s" % doom_text)
@@ -782,8 +838,16 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":
 		lines.append("✅ Patto potenziato: %s" % pact_text)
+	if cashout_locked and cashout_reason != "":
+		lines.append("⛔ Incasso bloccato: %s" % cashout_reason)
+	if double_locked and double_reason != "":
+		lines.append("⛔ Raddoppio bloccato: %s" % double_reason)
 	if push_luck_details != null:
 		push_luck_details.text = "\n".join(lines)
+	if push_luck_cashout_button != null:
+		push_luck_cashout_button.disabled = cashout_locked
+	if push_luck_double_button != null:
+		push_luck_double_button.disabled = double_locked
 	_set_push_luck_modal(true)
 
 func _on_push_luck_closed() -> void:
@@ -912,30 +976,34 @@ func _bind_player(p: Node) -> void:
 		if h.size() >= 2:
 			_on_player_health_changed(int(h[0]), int(h[1]))
 
-func _update_bet_buttons() -> void:
-	if bet_win_button == null or bet_no_hit_button == null or bet_fast_button == null:
+func _build_bet_buttons(bets: Array[Dictionary]) -> void:
+	if bet_buttons_container == null:
 		return
-	bet_win_button.disabled = false
-	bet_no_hit_button.disabled = false
-	bet_fast_button.disabled = false
-	bet_win_button.mouse_filter = Control.MOUSE_FILTER_STOP
-	bet_no_hit_button.mouse_filter = Control.MOUSE_FILTER_STOP
-	bet_fast_button.mouse_filter = Control.MOUSE_FILTER_STOP
-	_set_bet_button_text(bet_win_button, "DOUBLE_OR_DIE")
-	_set_bet_button_text(bet_no_hit_button, "FLAWLESS_BLOOD")
-	_set_bet_button_text(bet_fast_button, "CASH_OUT")
-	_apply_bet_button_style(bet_win_button, "DOUBLE_OR_DIE")
-	_apply_bet_button_style(bet_no_hit_button, "FLAWLESS_BLOOD")
-	_apply_bet_button_style(bet_fast_button, "CASH_OUT")
+	_clear_bet_buttons()
+	for bet_value: Dictionary in bets:
+		var bet: Dictionary = bet_value as Dictionary
+		var bet_id: String = str(bet.get("id", ""))
+		if bet_id == "":
+			continue
+		var button: Button = _create_bet_button(bet_id, bet)
+		bet_buttons_container.add_child(button)
+		_bet_buttons.append(button)
 
-func _set_bet_button_text(button: Button, bet_id: String) -> void:
-	if not _bets_by_id.has(bet_id):
-		button.text = bet_id
-		return
-	var bet: Dictionary = _bets_by_id.get(bet_id, {}) as Dictionary
-	if bet.is_empty():
-		push_warning("Bet id not found: %s" % bet_id)
-		return
+func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
+	var button: Button = Button.new()
+	button.custom_minimum_size = Vector2(0, 64)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.text = _format_bet_button_text(bet_id, bet)
+	button.disabled = false
+	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	var pressed_callable: Callable = Callable(self, "_on_bet_choice_pressed").bind(bet_id)
+	if not button.pressed.is_connected(pressed_callable):
+		button.pressed.connect(pressed_callable)
+	_apply_bet_button_style(button, bet_id)
+	return button
+
+func _format_bet_button_text(bet_id: String, bet: Dictionary) -> String:
 	var name_text: String = str(bet.get("name", bet_id))
 	var condition_text: String = str(bet.get("condition", ""))
 	var pact_text: String = str(bet.get("pact", ""))
@@ -949,7 +1017,15 @@ func _set_bet_button_text(button: Button, bet_id: String) -> void:
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":
 		lines.append("✅ Patto: %s" % pact_text)
-	button.text = "\n".join(lines)
+	return "\n".join(lines)
+
+func _clear_bet_buttons() -> void:
+	_bet_buttons.clear()
+	if bet_buttons_container == null:
+		return
+	for child in bet_buttons_container.get_children():
+		if child is Node:
+			child.queue_free()
 
 func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 	if button == null:
@@ -961,12 +1037,40 @@ func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 		button.add_theme_color_override("font_focus_color", Color(0.9, 0.2, 0.2, 1.0))
 		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.35, 0.35, 1.0))
 		return
+	if bet_id == "LAST_BREATH":
+		button.modulate = Color(1.0, 0.78, 0.7, 1.0)
+		button.add_theme_color_override("font_color", Color(0.6, 0.12, 0.12, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.8, 0.2, 0.2, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.8, 0.2, 0.2, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.25, 0.25, 1.0))
+		return
 	if bet_id == "FLAWLESS_BLOOD":
 		button.modulate = Color(1.0, 0.95, 0.8, 1.0)
 		button.add_theme_color_override("font_color", Color(0.6, 0.45, 0.0, 1.0))
 		button.add_theme_color_override("font_hover_color", Color(0.75, 0.55, 0.1, 1.0))
 		button.add_theme_color_override("font_focus_color", Color(0.75, 0.55, 0.1, 1.0))
 		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.65, 0.15, 1.0))
+		return
+	if bet_id == "BLOOD_TAX":
+		button.modulate = Color(1.0, 0.9, 0.82, 1.0)
+		button.add_theme_color_override("font_color", Color(0.55, 0.2, 0.1, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.7, 0.3, 0.15, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.7, 0.3, 0.15, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(0.85, 0.4, 0.2, 1.0))
+		return
+	if bet_id == "DEBT_CHAIN":
+		button.modulate = Color(0.95, 0.9, 1.0, 1.0)
+		button.add_theme_color_override("font_color", Color(0.3, 0.2, 0.55, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.45, 0.3, 0.7, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.45, 0.3, 0.7, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(0.55, 0.35, 0.8, 1.0))
+		return
+	if bet_id == "CROW_PLEASER":
+		button.modulate = Color(1.0, 0.98, 0.86, 1.0)
+		button.add_theme_color_override("font_color", Color(0.45, 0.35, 0.0, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.6, 0.45, 0.1, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.6, 0.45, 0.1, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(0.75, 0.55, 0.2, 1.0))
 		return
 	button.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	button.remove_theme_color_override("font_color")
@@ -977,6 +1081,7 @@ func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 func _on_bet_failed(can_retry: bool) -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
+	_reset_bet_confirmation()
 	_reset_fast_countdown()
 	if game_over_panel != null:
 		game_over_panel.visible = true
@@ -1000,9 +1105,23 @@ func _on_bet_failed(can_retry: bool) -> void:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
 
+func _on_bet_choice_pressed(bet_id: String) -> void:
+	_pending_confirm_bet_id = bet_id
+	if bet_confirm_label != null:
+		bet_confirm_label.text = "Selezione: %s" % _get_bet_name(bet_id)
+	if bet_confirm_row != null:
+		bet_confirm_row.visible = true
+	get_viewport().gui_release_focus()
+
+func _on_bet_confirm_pressed() -> void:
+	if _pending_confirm_bet_id == "":
+		return
+	_place_bet(_pending_confirm_bet_id)
+
 func _place_bet(bet_id: String) -> void:
 	_selected_bet_id = bet_id
 	_reset_fast_countdown()
+	_reset_bet_confirmation()
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(bet_id, 0)
 
@@ -1025,6 +1144,13 @@ func _set_push_luck_modal(active: bool) -> void:
 			GameEvents.modal_closed.emit("push_luck")
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+
+func _reset_bet_confirmation() -> void:
+	_pending_confirm_bet_id = ""
+	if bet_confirm_label != null:
+		bet_confirm_label.text = "Selezione: -"
+	if bet_confirm_row != null:
+		bet_confirm_row.visible = false
 
 func _refresh_modal_dimmer() -> void:
 	if modal_dimmer == null:
@@ -1052,10 +1178,11 @@ func _refresh_debug_overlay() -> void:
 	var scars_text: String = "-"
 	if _debug_scars.size() > 0:
 		scars_text = ", ".join(_debug_scars)
-	debug_overlay.text = "Seed: %d\nArena: %d\nEscalation: %d\nActive Bet: %s\nScars: [%s]" % [
+	debug_overlay.text = "Seed: %d\nArena: %d\nEscalation: %d\nEnemy: %s\nActive Bet: %s\nScars: [%s]" % [
 		_debug_seed,
 		_debug_arena_index,
 		_debug_escalation,
+		_debug_enemy_profile,
 		_debug_active_bet,
 		scars_text
 	]

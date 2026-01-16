@@ -11,12 +11,31 @@ extends Node
 const LEVEL3_ENABLED: bool = true
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_FLAWLESS_BLOOD: StringName = &"FLAWLESS_BLOOD"
+const BET_DOUBLE_OR_DIE_L3: StringName = &"DOUBLE_OR_DIE"
+const BET_DEBT_CHAIN: StringName = &"DEBT_CHAIN"
+const BET_BLOOD_TAX: StringName = &"BLOOD_TAX"
+const BET_CROW_PLEASER: StringName = &"CROW_PLEASER"
+const BET_LAST_BREATH: StringName = &"LAST_BREATH"
+
+const SCAR_OPEN_WOUND: StringName = &"OPEN_WOUND"
+const SCAR_CRACKED_BONES: StringName = &"CRACKED_BONES"
+const SCAR_SHAME_MARK: StringName = &"SHAME_MARK"
+const SCAR_RUSTED_ARMOR: StringName = &"RUSTED_ARMOR"
+const SCAR_DEBT_BRAND: StringName = &"DEBT_BRAND"
+const SCAR_ONE_EYE: StringName = &"ONE_EYE"
+
+const ENEMY_BRUISER: StringName = &"BRUISER"
+const ENEMY_DUELIST: StringName = &"DUELIST"
+const ENEMY_SWARM: StringName = &"SWARM"
+const ENEMY_EXECUTIONER: StringName = &"EXECUTIONER"
+const ENEMY_TRICKSTER: StringName = &"TRICKSTER"
 
 class RunState:
 	var run_seed: int = 0
 	var arena_index: int = 0
 	var escalation_level: int = 0
 	var active_bet_id: StringName = &""
+	var enemy_profile: StringName = &""
 	var scars: Array[StringName] = []
 	var max_hp_modifier: int = 0
 	var run_is_over: bool = false
@@ -30,23 +49,172 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CASH_OUT",
 		"name": "INCASSA E VAI",
-		"pact": "Ricompensa bassa (placeholder)",
+		"pact": "Ricompensa bassa",
 		"condition": "Vinci l'arena",
-		"doom": "Nessuna condanna extra",
+		"doom": "Fallimento → cicatrice OSSA INCRINATE",
+		"weight": 5,
+		"blocked_scars": [],
+		"requires_scars": [],
 	},
 	{
 		"id": "FLAWLESS_BLOOD",
 		"name": "SANGUE INTEGRO",
-		"pact": "Ricompensa alta (placeholder)",
+		"pact": "Ricompensa alta",
 		"condition": "Vinci l'arena senza subire danni",
 		"doom": "HP massimo -20 (min 1) + cicatrice FERITA APERTA",
+		"weight": 4,
+		"blocked_scars": [],
+		"requires_scars": [],
 	},
 	{
 		"id": "DOUBLE_OR_DIE",
 		"name": "RADDOPPI O MUORI",
-		"pact": "Ricompensa devastante (placeholder)",
+		"pact": "Ricompensa devastante",
 		"condition": "Vinci l'arena",
 		"doom": "MORTE IMMEDIATA: run terminata",
+		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "DEBT_CHAIN",
+		"name": "CATENA DI DEBITO",
+		"pact": "Ricompensa media",
+		"condition": "Vinci l'arena",
+		"doom": "Fallimento → cicatrice MARCHIO DEL DEBITO",
+		"weight": 4,
+		"blocked_scars": [SCAR_DEBT_BRAND],
+		"requires_scars": [],
+	},
+	{
+		"id": "BLOOD_TAX",
+		"name": "DECIMA DI SANGUE",
+		"pact": "Ricompensa alta",
+		"condition": "Vinci l'arena",
+		"doom": "Fallimento → HP massimo -25 + incasso bloccato per 1 arena",
+		"weight": 3,
+		"blocked_scars": [SCAR_OPEN_WOUND],
+		"requires_scars": [],
+	},
+	{
+		"id": "CROW_PLEASER",
+		"name": "PIACERE AL PUBBLICO",
+		"pact": "Ricompensa narrativa + bonus lieve",
+		"condition": "Vinci l'arena",
+		"doom": "Fallimento → cicatrice MARCHIO DELLA VERGOGNA",
+		"weight": 4,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "LAST_BREATH",
+		"name": "ULTIMO RESPIRO",
+		"pact": "Ricompensa altissima",
+		"condition": "Vinci l'arena",
+		"doom": "Fallimento → cicatrice GRAVE (non mortale)",
+		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [SCAR_CRACKED_BONES],
+	},
+]
+
+const LEVEL3_SCARS: Array[Dictionary] = [
+	{
+		"id": SCAR_OPEN_WOUND,
+		"name": "FERITA APERTA",
+		"short_desc": "HP massimo ridotto.",
+		"effect": "HP massimo ridotto e cure meno efficaci.",
+		"story": "Il sangue non si è mai fermato.",
+		"visual_tag": "🩸",
+		"tags": [&"physical"],
+	},
+	{
+		"id": SCAR_CRACKED_BONES,
+		"name": "OSSA INCRINATE",
+		"short_desc": "Rischio aumentato nelle arene.",
+		"effect": "Movimento rallentato e schivate meno affidabili.",
+		"story": "Ogni passo fa male.",
+		"visual_tag": "🦴",
+		"tags": [&"physical"],
+	},
+	{
+		"id": SCAR_SHAME_MARK,
+		"name": "MARCHIO DELLA VERGOGNA",
+		"short_desc": "Il pubblico ti giudica.",
+		"effect": "Aumenta la probabilità di subire danni.",
+		"story": "Il boato è diventato un sibilo.",
+		"visual_tag": "🎭",
+		"tags": [&"social"],
+	},
+	{
+		"id": SCAR_RUSTED_ARMOR,
+		"name": "ARMATURA ARRUGGINITA",
+		"short_desc": "Protezione compromessa.",
+		"effect": "I danni sono più probabili.",
+		"story": "Le crepe non si chiudono più.",
+		"visual_tag": "🛡️",
+		"tags": [&"physical"],
+	},
+	{
+		"id": SCAR_DEBT_BRAND,
+		"name": "MARCHIO DEL DEBITO",
+		"short_desc": "Escalation più severa.",
+		"effect": "Le escalation puniscono di più.",
+		"story": "Ogni vittoria ha un prezzo.",
+		"visual_tag": "⛓️",
+		"tags": [&"risk"],
+	},
+	{
+		"id": SCAR_ONE_EYE,
+		"name": "OCCHIO PERDUTO",
+		"short_desc": "Il perfetto è più raro.",
+		"effect": "Peggiora le chance di outcome puliti.",
+		"story": "La profondità si è spenta.",
+		"visual_tag": "👁️",
+		"tags": [&"physical"],
+	},
+]
+
+const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
+	{
+		"id": ENEMY_BRUISER,
+		"name": "BRUISER",
+		"desc": "Colpi pesanti e scambi lunghi.",
+		"win_mod": -0.05,
+		"damage_mod": 0.12,
+		"weight": 3,
+	},
+	{
+		"id": ENEMY_DUELIST,
+		"name": "DUELIST",
+		"desc": "Duello teso: o pulito o disastro.",
+		"win_mod": 0.05,
+		"damage_mod": 0.08,
+		"weight": 3,
+	},
+	{
+		"id": ENEMY_SWARM,
+		"name": "SWARM",
+		"desc": "Troppi nemici per restare intatti.",
+		"win_mod": -0.02,
+		"damage_mod": 0.16,
+		"weight": 3,
+	},
+	{
+		"id": ENEMY_EXECUTIONER,
+		"name": "EXECUTIONER",
+		"desc": "Condanne più dure.",
+		"win_mod": -0.08,
+		"damage_mod": 0.1,
+		"weight": 2,
+	},
+	{
+		"id": ENEMY_TRICKSTER,
+		"name": "TRICKSTER",
+		"desc": "Volatilità estrema.",
+		"win_mod": 0.0,
+		"damage_mod": 0.0,
+		"weight": 2,
 	},
 ]
 
@@ -90,8 +258,6 @@ const DEBUG_RUNTIME_LOGS: bool = false
 const BET_COWARD: String = "COWARD"
 const BET_PURE_BLOOD: String = "PURE_BLOOD"
 const BET_DOUBLE_OR_DIE: String = "DOUBLE_OR_DIE"
-const SCAR_OPEN_WOUND: StringName = &"OPEN_WOUND"
-const SCAR_CRACKED_BONES: StringName = &"CRACKED_BONES"
 const SCAR_OPEN_WOUND_HP_PENALTY: int = 20
 
 enum RunPhase { PREP, LIVE, GAME_OVER }
@@ -139,6 +305,19 @@ var _run_state: RunState = RunState.new()
 var _level3_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _level3_reward_tier: int = 1
 var _level3_next_loss_hp_penalty: int = 0
+var _level3_target_arenas: int = 0
+var _level3_min_cashout_arenas: int = 5
+var _cashout_lock_remaining: int = 0
+var _last_selected_bet_id: StringName = &""
+var _last_bet_offers: Array[StringName] = []
+var _last_enemy_profile: StringName = &""
+var _level3_cashouts: int = 0
+var _level3_doubles: int = 0
+var _level3_bets_used: Array[StringName] = []
+var _level3_max_escalation: int = 0
+var _level3_cashout_streak: int = 0
+var _level3_cashout_streak_max: int = 0
+var _level3_cashed_after_high_escalation: bool = false
 var _scar_heal_multiplier: float = 1.0
 var _scar_dodge_cooldown_multiplier: float = 1.0
 var _scar_dodge_speed_multiplier: float = 1.0
@@ -318,6 +497,18 @@ func _start_level3_run() -> void:
 	_forced_ending_id = &""
 	_level3_reward_tier = 1
 	_level3_next_loss_hp_penalty = 0
+	_level3_target_arenas = 0
+	_cashout_lock_remaining = 0
+	_last_selected_bet_id = &""
+	_last_bet_offers = []
+	_last_enemy_profile = &""
+	_level3_cashouts = 0
+	_level3_doubles = 0
+	_level3_bets_used = []
+	_level3_max_escalation = 0
+	_level3_cashout_streak = 0
+	_level3_cashout_streak_max = 0
+	_level3_cashed_after_high_escalation = false
 	_current_bet_id = ""
 	_bet_chain_level = 1
 	_has_started_run = true
@@ -327,10 +518,14 @@ func _start_level3_run() -> void:
 	_run_state.arena_index = 0
 	_run_state.escalation_level = 0
 	_run_state.active_bet_id = &""
+	_run_state.enemy_profile = &""
 	_run_state.scars = []
 	_run_state.max_hp_modifier = 0
 	_run_state.run_is_over = false
 	_arena_layout_rng.seed = _run_state.run_seed
+	_level3_rng.seed = _run_state.run_seed
+	_level3_target_arenas = _level3_rng.randi_range(5, 8)
+	_level3_min_cashout_arenas = 5
 
 	_reset_scars()
 	run["coins"] = starting_coins
@@ -355,6 +550,7 @@ func start_arena() -> void:
 	_clear_enemies()
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
+	_select_enemy_profile()
 	load_next_arena()
 	_emit_run_debug_state()
 	_open_level3_bet_ui()
@@ -368,6 +564,13 @@ func select_bet(bet_id: StringName) -> void:
 	_waiting_for_push_luck = false
 	_run_state.active_bet_id = bet_id
 	_current_bet_id = String(bet_id)
+	_last_selected_bet_id = bet_id
+	_level3_bets_used.append(bet_id)
+	if bet_id == BET_CASH_OUT:
+		_level3_cashout_streak += 1
+		_level3_cashout_streak_max = maxi(_level3_cashout_streak_max, _level3_cashout_streak)
+	else:
+		_level3_cashout_streak = 0
 	_emit_run_debug_state()
 	GameEvents.bet_placed.emit(String(bet_id), 0, 1.0)
 	GameEvents.bet_ui_closed.emit()
@@ -460,8 +663,97 @@ func _open_level3_bet_ui() -> void:
 	_waiting_for_push_luck = false
 	set_phase(RunPhase.PREP)
 	GameEvents.betting_opened.emit()
-	GameEvents.bet_ui_opened.emit(LEVEL3_BETS)
+	var offer: Array[Dictionary] = _build_level3_bet_offer()
+	GameEvents.bet_ui_opened.emit(offer)
 	GameEvents.bet_opened.emit()
+
+func _build_level3_bet_offer() -> Array[Dictionary]:
+	var available: Array[Dictionary] = _get_available_level3_bets()
+	var desired_count: int = 4
+	var filtered: Array[Dictionary] = _filter_recent_bets(available, desired_count)
+	_level3_rng.seed = _compute_level3_offer_seed()
+	var picks: Array[Dictionary] = _pick_weighted_bets(filtered, desired_count)
+	_last_bet_offers = []
+	for bet_value: Dictionary in picks:
+		var bet_id: StringName = StringName(str(bet_value.get("id", "")))
+		if bet_id != &"":
+			_last_bet_offers.append(bet_id)
+	return picks
+
+func _get_available_level3_bets() -> Array[Dictionary]:
+	var available: Array[Dictionary] = []
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		if _is_level3_bet_allowed(bet):
+			available.append(bet)
+	if available.is_empty():
+		return LEVEL3_BETS.duplicate()
+	return available
+
+func _is_level3_bet_allowed(bet: Dictionary) -> bool:
+	var bet_id: StringName = StringName(str(bet.get("id", "")))
+	if bet_id == &"":
+		return false
+	if bet_id == BET_DOUBLE_OR_DIE_L3 and _last_selected_bet_id == BET_DOUBLE_OR_DIE_L3:
+		return false
+	var blocked_scars: Array = bet.get("blocked_scars", []) as Array
+	for scar_value in blocked_scars:
+		if _has_scar(StringName(scar_value)):
+			return false
+	var required_scars: Array = bet.get("requires_scars", []) as Array
+	for scar_value in required_scars:
+		if not _has_scar(StringName(scar_value)):
+			return false
+	return true
+
+func _filter_recent_bets(bets: Array[Dictionary], desired_count: int) -> Array[Dictionary]:
+	if bets.size() <= desired_count:
+		return bets
+	if _last_bet_offers.is_empty():
+		return bets
+	var filtered: Array[Dictionary] = []
+	for bet_value: Dictionary in bets:
+		var bet_id: StringName = StringName(str(bet_value.get("id", "")))
+		if bet_id == &"":
+			continue
+		if _last_bet_offers.has(bet_id):
+			continue
+		filtered.append(bet_value)
+	if filtered.size() < desired_count:
+		return bets
+	return filtered
+
+func _pick_weighted_bets(bets: Array[Dictionary], desired_count: int) -> Array[Dictionary]:
+	var picks: Array[Dictionary] = []
+	if bets.is_empty():
+		return picks
+	var pool: Array[Dictionary] = bets.duplicate()
+	var count: int = mini(desired_count, pool.size())
+	for _i in range(count):
+		var idx: int = _weighted_pick_index(pool)
+		if idx < 0 or idx >= pool.size():
+			break
+		picks.append(pool[idx])
+		pool.remove_at(idx)
+	return picks
+
+func _weighted_pick_index(pool: Array[Dictionary]) -> int:
+	var total_weight: int = 0
+	for bet_value: Dictionary in pool:
+		var weight: int = int(bet_value.get("weight", 1))
+		weight = maxi(weight, 0)
+		total_weight += weight
+	if total_weight <= 0:
+		return 0
+	var roll: int = _level3_rng.randi_range(1, total_weight)
+	var running: int = 0
+	for idx in range(pool.size()):
+		var weight: int = int(pool[idx].get("weight", 1))
+		weight = maxi(weight, 0)
+		running += weight
+		if roll <= running:
+			return idx
+	return maxi(pool.size() - 1, 0)
 
 func _get_run_seed_value() -> int:
 	if _debug_seed_override_active:
@@ -477,6 +769,15 @@ func _compute_level3_seed(bet_id: StringName) -> int:
 	for scar_name: StringName in _run_state.scars:
 		scars_hash += String(scar_name).hash() * 3
 	seed_value += scars_hash
+	seed_value += String(_run_state.enemy_profile).hash() * 5
+	return seed_value
+
+func _compute_level3_offer_seed() -> int:
+	var seed_value: int = _run_state.run_seed
+	seed_value += _run_state.arena_index * 43
+	seed_value += _run_state.escalation_level * 17
+	seed_value += _run_state.scars.size() * 11
+	seed_value += String(_last_selected_bet_id).hash() * 5
 	return seed_value
 
 func _emit_run_debug_state() -> void:
@@ -488,9 +789,62 @@ func _emit_run_debug_state() -> void:
 		"arena_index": _run_state.arena_index,
 		"escalation_level": _run_state.escalation_level,
 		"active_bet_id": String(_run_state.active_bet_id),
+		"enemy_profile": String(_run_state.enemy_profile),
 		"scars": scars_copy,
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
+
+func _select_enemy_profile() -> void:
+	if LEVEL3_ENEMY_PROFILES.is_empty():
+		_run_state.enemy_profile = &""
+		return
+	var pool: Array[Dictionary] = LEVEL3_ENEMY_PROFILES.duplicate()
+	if _last_enemy_profile != &"" and pool.size() > 1:
+		var filtered: Array[Dictionary] = []
+		for profile_value: Dictionary in pool:
+			var profile_id: StringName = StringName(str(profile_value.get("id", "")))
+			if profile_id != _last_enemy_profile:
+				filtered.append(profile_value)
+		if filtered.size() > 0:
+			pool = filtered
+	_level3_rng.seed = _compute_level3_enemy_seed()
+	var idx: int = _weighted_pick_enemy_index(pool)
+	var chosen: Dictionary = pool[idx] as Dictionary
+	var chosen_id: StringName = StringName(str(chosen.get("id", "")))
+	_run_state.enemy_profile = chosen_id
+	_last_enemy_profile = chosen_id
+
+func _weighted_pick_enemy_index(pool: Array[Dictionary]) -> int:
+	var total_weight: int = 0
+	for profile_value: Dictionary in pool:
+		var weight: int = int(profile_value.get("weight", 1))
+		weight = maxi(weight, 0)
+		total_weight += weight
+	if total_weight <= 0:
+		return 0
+	var roll: int = _level3_rng.randi_range(1, total_weight)
+	var running: int = 0
+	for idx in range(pool.size()):
+		var weight: int = int(pool[idx].get("weight", 1))
+		weight = maxi(weight, 0)
+		running += weight
+		if roll <= running:
+			return idx
+	return maxi(pool.size() - 1, 0)
+
+func _compute_level3_enemy_seed() -> int:
+	var seed_value: int = _run_state.run_seed
+	seed_value += _run_state.arena_index * 19
+	seed_value += _run_state.escalation_level * 7
+	seed_value += String(_last_enemy_profile).hash() * 3
+	return seed_value
+
+func _get_enemy_profile_def(profile_id: StringName) -> Dictionary:
+	for profile_value: Dictionary in LEVEL3_ENEMY_PROFILES:
+		var profile: Dictionary = profile_value as Dictionary
+		if StringName(str(profile.get("id", ""))) == profile_id:
+			return profile
+	return {}
 
 func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
 	var scar_names: Array[String] = []
@@ -503,6 +857,8 @@ func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_app
 		_run_state.arena_index,
 		" bet=",
 		String(bet_id),
+		" enemy=",
+		String(_run_state.enemy_profile),
 		" won=",
 		result.won,
 		" took_damage=",
@@ -523,6 +879,27 @@ func _resolve_level3_arena() -> ArenaResult:
 	if _has_scar(SCAR_OPEN_WOUND):
 		base_win -= 0.05
 		base_damage += 0.1
+	if _has_scar(SCAR_SHAME_MARK):
+		base_win -= 0.06
+		base_damage += 0.12
+	if _has_scar(SCAR_RUSTED_ARMOR):
+		base_damage += 0.15
+	if _has_scar(SCAR_DEBT_BRAND):
+		escalation_penalty += 0.05
+		escalation_damage += 0.04
+	if _has_scar(SCAR_ONE_EYE):
+		base_damage += 0.1
+		base_win -= 0.03
+
+	var profile: Dictionary = _get_enemy_profile_def(_run_state.enemy_profile)
+	if not profile.is_empty():
+		var win_mod: float = float(profile.get("win_mod", 0.0))
+		var damage_mod: float = float(profile.get("damage_mod", 0.0))
+		base_win += win_mod
+		base_damage += damage_mod
+		if _run_state.enemy_profile == ENEMY_TRICKSTER:
+			base_win = 0.5 + (base_win - 0.5) * 1.35
+			base_damage = 0.5 + (base_damage - 0.5) * 1.25
 	var win_chance: float = clampf(base_win - escalation_penalty, 0.1, 0.9)
 	var damage_chance: float = clampf(base_damage + escalation_damage, 0.1, 0.9)
 
@@ -533,6 +910,8 @@ func _resolve_level3_arena() -> ArenaResult:
 	result.took_damage = damage_roll <= damage_chance
 	if result.took_damage:
 		result.notes.append(&"TOOK_DAMAGE")
+	if _run_state.enemy_profile != &"":
+		result.notes.append(StringName("ENEMY_" + String(_run_state.enemy_profile)))
 	return result
 
 func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
@@ -545,15 +924,35 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
-	if bet_id == BET_DOUBLE_OR_DIE:
+	var executioner_bonus: int = 0
+	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
+		executioner_bonus = 10
+	if bet_id == BET_DOUBLE_OR_DIE_L3:
 		_register_run_end("DOUBLE_OR_DIE")
 		end_run(&"THE_FOOL")
 		return scars_applied
 	if bet_id == BET_FLAWLESS_BLOOD:
-		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY)
+		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY + executioner_bonus)
 		_apply_level3_scar(SCAR_OPEN_WOUND, "Condanna: Sangue Integro")
 		scars_applied.append(SCAR_OPEN_WOUND)
+	elif bet_id == BET_DEBT_CHAIN:
+		_apply_level3_scar(SCAR_DEBT_BRAND, "Condanna: Catena di Debito")
+		scars_applied.append(SCAR_DEBT_BRAND)
+	elif bet_id == BET_BLOOD_TAX:
+		_apply_max_hp_loss(25 + executioner_bonus)
+		_cashout_lock_remaining = maxi(_cashout_lock_remaining, 1)
+		_apply_level3_scar(SCAR_RUSTED_ARMOR, "Condanna: Decima di Sangue")
+		scars_applied.append(SCAR_RUSTED_ARMOR)
+	elif bet_id == BET_CROW_PLEASER:
+		_apply_level3_scar(SCAR_SHAME_MARK, "Condanna: Piacere al Pubblico")
+		scars_applied.append(SCAR_SHAME_MARK)
+	elif bet_id == BET_LAST_BREATH:
+		_apply_max_hp_loss(15 + executioner_bonus)
+		_apply_level3_scar(SCAR_ONE_EYE, "Condanna: Ultimo Respiro")
+		scars_applied.append(SCAR_ONE_EYE)
 	else:
+		if executioner_bonus > 0:
+			_apply_max_hp_loss(executioner_bonus)
 		_apply_level3_scar(SCAR_CRACKED_BONES, "Sconfitta in arena")
 		scars_applied.append(SCAR_CRACKED_BONES)
 	if _level3_next_loss_hp_penalty > 0:
@@ -584,32 +983,41 @@ func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
 			add_coins(10 * tier)
 		BET_FLAWLESS_BLOOD:
 			add_coins(20 * tier)
-		BET_DOUBLE_OR_DIE:
+		BET_DOUBLE_OR_DIE_L3:
 			add_coins(30 * tier)
+		BET_DEBT_CHAIN:
+			add_coins(18 * tier)
+		BET_BLOOD_TAX:
+			add_coins(26 * tier)
+		BET_CROW_PLEASER:
+			add_coins(14 * tier)
+		BET_LAST_BREATH:
+			add_coins(28 * tier)
 		_:
 			pass
 
 func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
-	var scar: Dictionary = {}
-	if scar_id == SCAR_OPEN_WOUND:
-		scar = {
-			"id": scar_id,
-			"name": "FERITA APERTA",
-			"origin": origin,
-			"effect": "HP massimo ridotto.",
-			"story": "Il sangue non si è mai fermato.",
-		}
-	elif scar_id == SCAR_CRACKED_BONES:
-		scar = {
-			"id": scar_id,
-			"name": "OSSA INCRINATE",
-			"origin": origin,
-			"effect": "Rischio aumentato nelle arene.",
-			"story": "Ogni passo fa male.",
-		}
-	if scar.is_empty():
+	var scar_def: Dictionary = _get_scar_def(scar_id)
+	if scar_def.is_empty():
 		return
+	var scar: Dictionary = {
+		"id": scar_id,
+		"name": str(scar_def.get("name", "")),
+		"origin": origin,
+		"effect": str(scar_def.get("effect", "")),
+		"story": str(scar_def.get("story", "")),
+		"short_desc": str(scar_def.get("short_desc", "")),
+		"visual_tag": str(scar_def.get("visual_tag", "")),
+		"tags": scar_def.get("tags", []) as Array,
+	}
 	_add_scar(scar)
+
+func _get_scar_def(scar_id: StringName) -> Dictionary:
+	for scar_value: Dictionary in LEVEL3_SCARS:
+		var scar: Dictionary = scar_value as Dictionary
+		if StringName(str(scar.get("id", ""))) == scar_id:
+			return scar
+	return {}
 
 func _determine_level3_ending_id() -> StringName:
 	var scar_count: int = _run_state.scars.size()
@@ -847,17 +1255,24 @@ func _on_request_push_luck_cashout() -> void:
 	if not _waiting_for_push_luck:
 		return
 	if LEVEL3_ENABLED:
+		var lock_reason: String = _get_cashout_lock_reason()
+		if lock_reason != "":
+			return
 		var bet_id_name: StringName = StringName(_current_bet_id)
 		_waiting_for_push_luck = false
 		GameEvents.push_luck_closed.emit()
 		if bet_id_name != &"":
 			_apply_level3_reward(bet_id_name, _level3_reward_tier)
+		_level3_cashouts += 1
+		if _run_state.escalation_level >= 2:
+			_level3_cashed_after_high_escalation = true
 		_level3_reward_tier = 1
 		_level3_next_loss_hp_penalty = 0
 		_run_state.escalation_level = 0
 		_current_bet_id = ""
 		_emit_run_debug_state()
-		end_run(_determine_level3_ending_id())
+		_register_run_end("CASH_OUT")
+		end_run(&"")
 		return
 	var bet_id: String = _current_bet_id
 	_waiting_for_push_luck = false
@@ -872,10 +1287,17 @@ func _on_request_push_luck_double() -> void:
 	if not _waiting_for_push_luck:
 		return
 	if LEVEL3_ENABLED:
+		var lock_reason: String = _get_double_lock_reason()
+		if lock_reason != "":
+			return
 		_waiting_for_push_luck = false
 		GameEvents.push_luck_closed.emit()
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
 		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
+		_level3_doubles += 1
+		_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
+		if _cashout_lock_remaining > 0:
+			_cashout_lock_remaining = maxi(_cashout_lock_remaining - 1, 0)
 		_level3_next_loss_hp_penalty = 30
 		_emit_run_debug_state()
 		start_arena()
@@ -1256,6 +1678,11 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 	var next_reward_tier: int = _get_bet_chain_reward_scale(next_level)
 	if LEVEL3_ENABLED:
 		next_reward_tier = maxi(_level3_reward_tier + 1, 1)
+	var cashout_lock_reason: String = ""
+	var double_lock_reason: String = ""
+	if LEVEL3_ENABLED:
+		cashout_lock_reason = _get_cashout_lock_reason()
+		double_lock_reason = _get_double_lock_reason()
 	var payload: Dictionary = {
 		"bet_id": String(bet_id),
 		"bet_name": bet_name,
@@ -1264,8 +1691,28 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 		"condition": condition_text,
 		"next_pact": _build_bet_pact_text(String(bet_id), next_reward_tier),
 		"next_doom": _build_bet_doom_text(String(bet_id), next_level),
+		"cashout_locked": cashout_lock_reason != "",
+		"cashout_lock_reason": cashout_lock_reason,
+		"double_locked": double_lock_reason != "",
+		"double_lock_reason": double_lock_reason,
+		"arena_index": _run_state.arena_index,
+		"arena_target": _level3_target_arenas,
 	}
 	GameEvents.push_luck_opened.emit(payload)
+
+func _get_cashout_lock_reason() -> String:
+	if _run_state.arena_index >= _level3_target_arenas and _level3_target_arenas > 0:
+		return ""
+	if _cashout_lock_remaining > 0:
+		return "Decima di Sangue: incasso bloccato (%d arena)" % _cashout_lock_remaining
+	if _run_state.arena_index < _level3_min_cashout_arenas:
+		return "Incasso disponibile dopo arena %d" % _level3_min_cashout_arenas
+	return ""
+
+func _get_double_lock_reason() -> String:
+	if _run_state.arena_index >= _level3_target_arenas and _level3_target_arenas > 0:
+		return "Fine run: incassa ora"
+	return ""
 
 func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 	var reward_scale: int = _get_bet_chain_reward_scale(chain_level)
@@ -1298,15 +1745,12 @@ func _get_bet_chain_doom_scale(chain_level: int) -> int:
 func _build_bet_pact_text(bet_id: String, chain_level: int) -> String:
 	if LEVEL3_ENABLED:
 		var tier: int = maxi(chain_level, 1)
-		match bet_id:
-			"CASH_OUT":
-				return "Ricompensa bassa x%d (placeholder)" % tier
-			"FLAWLESS_BLOOD":
-				return "Ricompensa alta x%d (placeholder)" % tier
-			"DOUBLE_OR_DIE":
-				return "Ricompensa devastante x%d (placeholder)" % tier
-			_:
-				return bet_id
+		var bet_data: Dictionary = _get_bet_data(bet_id)
+		if not bet_data.is_empty():
+			var pact_base: String = str(bet_data.get("pact", ""))
+			if pact_base != "":
+				return "%s x%d" % [pact_base, tier]
+		return bet_id
 	var reward_scale: int = _get_bet_chain_reward_scale(chain_level)
 	match bet_id:
 		BET_COWARD:
@@ -1324,10 +1768,12 @@ func _build_bet_pact_text(bet_id: String, chain_level: int) -> String:
 
 func _build_bet_doom_text(bet_id: String, chain_level: int) -> String:
 	if LEVEL3_ENABLED:
-		var next_penalty: int = 30
-		if bet_id == "DOUBLE_OR_DIE":
-			return "MORTE IMMEDIATA + HP massimo -%d" % next_penalty
-		return "Perdita futura: HP massimo -%d" % next_penalty
+		var bet_data: Dictionary = _get_bet_data(bet_id)
+		if not bet_data.is_empty():
+			var doom_text: String = str(bet_data.get("doom", ""))
+			if doom_text != "":
+				return doom_text
+		return ""
 	match bet_id:
 		BET_COWARD:
 			return "Nessuna penalità extra"
@@ -1463,12 +1909,28 @@ func _select_run_finale() -> Dictionary:
 	if ending_id == &"":
 		if _run_end_reason == "DOUBLE_OR_DIE":
 			ending_id = &"THE_FOOL"
-		elif scar_count <= 0:
-			ending_id = &"THE_SURVIVOR"
-		elif scar_count == 1:
-			ending_id = &"THE_MARKED"
 		else:
-			ending_id = &"THE_BROKEN"
+			var physical_scars: int = _count_scars_with_tag(&"physical")
+			var used_double_or_die: bool = _has_used_bet(BET_DOUBLE_OR_DIE_L3)
+			var cashout_streak: bool = _level3_cashout_streak_max >= 3
+			if _level3_cashed_after_high_escalation:
+				ending_id = &"THE_HIGH_ROLLER"
+			elif used_double_or_die:
+				ending_id = &"THE_GAMBLER"
+			elif physical_scars >= 2:
+				ending_id = &"THE_BRUISED"
+			elif _has_scar(SCAR_SHAME_MARK):
+				ending_id = &"THE_SHOWMAN"
+			elif cashout_streak:
+				ending_id = &"THE_PRUDENT"
+			elif scar_count <= 0:
+				ending_id = &"THE_SURVIVOR"
+			elif scar_count == 1:
+				ending_id = &"THE_MARKED"
+			elif scar_count == 2:
+				ending_id = &"THE_HARDENED"
+			else:
+				ending_id = &"THE_BROKEN"
 
 	var title: String = "THE SURVIVOR"
 	var text: String = "Ha attraversato l'arena senza lasciarsi spezzare.\nIl sangue è rimasto suo.\nIl prezzo, minimo."
@@ -1476,16 +1938,46 @@ func _select_run_finale() -> Dictionary:
 	match ending_id:
 		&"THE_FOOL":
 			title = "THE FOOL"
-			text = "Ha raddoppiato fino a firmare la propria fine.\nL'arena non dimentica la superbia."
+			text = "Ha raddoppiato fino a firmare la propria fine.\nL'arena non dimentica la superbia.\nIl patto si è chiuso nel silenzio."
 		&"THE_MARKED":
 			title = "THE MARKED"
 			text = "Una sola cicatrice basta a ricordare il patto.\nNon è più lo stesso.\nMa è ancora in piedi."
+		&"THE_HARDENED":
+			title = "THE HARDENED"
+			text = "Due ferite hanno inciso la pelle.\nNon c'è spazio per la paura.\nSolo per il passo successivo."
 		&"THE_BROKEN":
 			title = "THE BROKEN"
 			text = "Le cicatrici hanno preso tutto il posto.\nIl corpo resiste, l'anima no.\nEppure cammina."
 		&"THE_SURVIVOR":
 			title = "THE SURVIVOR"
 			text = "Ha attraversato l'arena senza lasciarsi spezzare.\nIl sangue è rimasto suo.\nIl prezzo, minimo."
+		&"THE_GAMBLER":
+			title = "THE GAMBLER"
+			text = "Ha guardato la condanna negli occhi.\nHa vinto abbastanza per restare.\nIl debito lo aspetta comunque."
+		&"THE_HIGH_ROLLER":
+			title = "THE HIGH ROLLER"
+			text = "Ha spinto l'escalation oltre la soglia.\nHa incassato quando l'arena tremava.\nOra tutti conoscono il suo nome."
+		&"THE_SHOWMAN":
+			title = "THE SHOWMAN"
+			text = "Il pubblico lo ha inciso con vergogna.\nHa trasformato i fischi in applausi.\nMa il marchio resta."
+		&"THE_BRUISED":
+			title = "THE BRUISED"
+			text = "Le ossa hanno retto a fatica.\nOgni arena è stata un tributo.\nEppure non si è fermato."
+		&"THE_PRUDENT":
+			title = "THE PRUDENT"
+			text = "Ha scelto la via più sicura.\nHa evitato il baratro tre volte di fila.\nLa folla non dimentica la prudenza."
+
+	var bet_names: Array[String] = []
+	for bet_id: StringName in _level3_bets_used:
+		bet_names.append(_get_bet_display_name(String(bet_id)))
+	var stats_payload: Dictionary = {
+		"cashouts": _level3_cashouts,
+		"doubles": _level3_doubles,
+		"bets": bet_names,
+		"max_escalation": _level3_max_escalation,
+		"arena_target": _level3_target_arenas,
+		"arena_count": _run_state.arena_index,
+	}
 
 	return {
 		"title": title,
@@ -1493,7 +1985,24 @@ func _select_run_finale() -> Dictionary:
 		"scars": scars_copy,
 		"ending_id": String(ending_id),
 		"seed": _run_state.run_seed,
+		"stats": stats_payload,
 	}
+
+func _has_used_bet(bet_id: StringName) -> bool:
+	for used_bet: StringName in _level3_bets_used:
+		if used_bet == bet_id:
+			return true
+	return false
+
+func _count_scars_with_tag(tag: StringName) -> int:
+	var count: int = 0
+	for scar_value: Dictionary in _scars:
+		var tags: Array = scar_value.get("tags", []) as Array
+		for tag_value in tags:
+			if StringName(tag_value) == tag:
+				count += 1
+				break
+	return count
 
 func get_arena() -> Node:
 	return _arena
@@ -1704,12 +2213,16 @@ func _try_apply_open_wound_scar(chain_level: int) -> void:
 		return
 	var bet_name: String = _get_bet_display_name(BET_PURE_BLOOD)
 	var origin_text: String = "Condanna: %s (catena %d)" % [bet_name, chain_level]
+	var scar_def: Dictionary = _get_scar_def(SCAR_OPEN_WOUND)
 	var scar: Dictionary = {
 		"id": SCAR_OPEN_WOUND,
-		"name": "FERITA APERTA",
+		"name": str(scar_def.get("name", "FERITA APERTA")),
 		"origin": origin_text,
-		"effect": "HP massimo ridotto e cure meno efficaci.",
-		"story": "Il sangue non si è mai fermato.",
+		"effect": str(scar_def.get("effect", "HP massimo ridotto e cure meno efficaci.")),
+		"story": str(scar_def.get("story", "Il sangue non si è mai fermato.")),
+		"short_desc": str(scar_def.get("short_desc", "")),
+		"visual_tag": str(scar_def.get("visual_tag", "")),
+		"tags": scar_def.get("tags", []) as Array,
 	}
 	_add_scar(scar)
 
@@ -1720,12 +2233,16 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 		return
 	var bet_name: String = _get_bet_display_name(bet_id)
 	var origin_text: String = "Push Your Luck: %s (x%d)" % [bet_name, chain_level]
+	var scar_def: Dictionary = _get_scar_def(SCAR_CRACKED_BONES)
 	var scar: Dictionary = {
 		"id": SCAR_CRACKED_BONES,
-		"name": "OSSA INCRINATE",
+		"name": str(scar_def.get("name", "OSSA INCRINATE")),
 		"origin": origin_text,
-		"effect": "Movimento rallentato e blocco meno efficace.",
-		"story": "Ogni passo fa male.",
+		"effect": str(scar_def.get("effect", "Movimento rallentato e blocco meno efficace.")),
+		"story": str(scar_def.get("story", "Ogni passo fa male.")),
+		"short_desc": str(scar_def.get("short_desc", "")),
+		"visual_tag": str(scar_def.get("visual_tag", "")),
+		"tags": scar_def.get("tags", []) as Array,
 	}
 	_add_scar(scar)
 

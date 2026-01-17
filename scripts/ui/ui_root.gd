@@ -1343,7 +1343,7 @@ func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_size_override("font_size", 20)
 	button.text = _format_bet_button_text(bet_id, bet)
-	button.text_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	button.text_alignment = HorizontalAlignment.HORIZONTAL_ALIGNMENT_LEFT
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
 	var pressed_callable: Callable = Callable(self, "_on_bet_choice_pressed").bind(bet_id)

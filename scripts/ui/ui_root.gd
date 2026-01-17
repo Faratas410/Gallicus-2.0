@@ -1298,11 +1298,11 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 
 func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	var button: Button = Button.new()
-	button.custom_minimum_size = Vector2(0, 120)
+	button.custom_minimum_size = Vector2(0, 136)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	button.add_theme_font_size_override("font_size", 14)
+	button.add_theme_font_size_override("font_size", 16)
 	button.text = _format_bet_button_text(bet_id, bet)
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1320,7 +1320,7 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary) -> String:
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append("❌ CONDANNA — %s" % name_text)
-		lines.append("   %s" % doom_text)
+		lines.append("%s" % doom_text)
 	else:
 		lines.append("❌ CONDANNA — %s" % name_text)
 	if condition_text != "":

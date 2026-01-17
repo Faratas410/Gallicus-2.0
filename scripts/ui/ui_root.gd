@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const FAST_SELECTION_SECONDS: int = 12
+const MODAL_FADE_SECONDS: float = 0.2
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokensLabel") as Label
@@ -13,8 +14,9 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var seed_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/SeedRow/SeedLabel") as Label
 @onready var bet_modal: Control = _req("Modals/BetModal") as Control
 @onready var bet_panel: Panel = _req("Modals/BetModal/BetPanel") as Panel
-@onready var buy_token_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenButton") as Button
+@onready var buy_token_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenButton") as Button
 @onready var buy_token_info: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
+@onready var buy_token_note: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenNote") as Label
 @onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinIcon") as TextureRect
 @onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokenIcon") as TextureRect
 @onready var modal_dimmer: ColorRect = get_node_or_null("Modals/ModalDimmer") as ColorRect
@@ -47,8 +49,10 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var push_luck_title: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckTitle") as Label
 @onready var push_luck_info: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckInfo") as Label
 @onready var push_luck_details: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckDetails") as Label
-@onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutButton") as Button
-@onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleButton") as Button
+@onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutButton") as Button
+@onready var push_luck_cashout_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutNote") as Label
+@onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleButton") as Button
+@onready var push_luck_double_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleNote") as Label
 @onready var game_over_title: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverTitle") as Label
 @onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverEpilogue") as Label
 @onready var game_over_scars: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScars") as Label
@@ -96,6 +100,10 @@ var _coins: int = 0
 var _popup_tween: Tween = null
 var _scar_popup_tween: Tween = null
 var _arena_resolution_tween: Tween = null
+var _bet_modal_fade_tween: Tween = null
+var _onboarding_modal_fade_tween: Tween = null
+var _push_luck_modal_fade_tween: Tween = null
+var _game_over_modal_fade_tween: Tween = null
 var _last_level: int = 1
 var _last_tokens: int = 0
 var _xp_anim_tween: Tween = null
@@ -413,6 +421,8 @@ func _refresh_buy_token_ui() -> void:
 		buy_token_button.text = "BUY TOKEN"
 		if buy_token_info != null:
 			buy_token_info.text = "-"
+		if buy_token_note != null:
+			buy_token_note.visible = false
 		return
 
 	var cost: int = 100
@@ -432,9 +442,16 @@ func _refresh_buy_token_ui() -> void:
 		coins = int(manager.call("get_coins"))
 
 	buy_token_button.text = "BUY TOKEN (%dc)" % cost
-	buy_token_button.disabled = coins < cost
+	var disabled: bool = coins < cost
+	buy_token_button.disabled = disabled
 	if buy_token_info != null:
 		buy_token_info.text = "Coins: %d" % coins
+	if buy_token_note != null:
+		if disabled:
+			buy_token_note.text = "Disponibile con %dc." % cost
+			buy_token_note.visible = true
+		else:
+			buy_token_note.visible = false
 
 func _animate_xp_bar(xp: int, xp_to_next: int) -> void:
 	if xp_bar == null:
@@ -1045,12 +1062,15 @@ func _refresh_game_over_meta() -> void:
 		var arena_target: int = int(_last_finale_stats.get("arena_target", 0))
 		var arena_count: int = int(_last_finale_stats.get("arena_count", 0))
 		var scar_count: int = _last_finale_scars.size()
-		lines.append("Arene: %d | Cashout: %d | Double: %d | Cicatrici: %d" % [
+		lines.append("Hai affrontato %d arene, hai raddoppiato %d volte e hai scelto di incassare %d volte." % [
 			arena_count,
-			cashouts,
 			doubles,
-			scar_count,
+			cashouts,
 		])
+		lines.append("Arene: %d" % arena_count)
+		lines.append("Raddoppi: %d" % doubles)
+		lines.append("Incassi: %d" % cashouts)
+		lines.append("Cicatrici: %d" % scar_count)
 		lines.append("Escalation max: %d" % max_escalation)
 		if arena_target > 0:
 			lines.append("Arene: %d/%d" % [arena_count, arena_target])
@@ -1109,12 +1129,30 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 			push_luck_cashout_button.tooltip_text = "Disponibile dopo %s" % cashout_reason
 		else:
 			push_luck_cashout_button.tooltip_text = ""
+	if push_luck_cashout_note != null:
+		if cashout_locked:
+			var note_text: String = "Disponibile dopo questa arena."
+			if cashout_reason != "":
+				note_text = "Disponibile dopo %s." % cashout_reason
+			push_luck_cashout_note.text = note_text
+			push_luck_cashout_note.visible = true
+		else:
+			push_luck_cashout_note.visible = false
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
 		if double_locked and double_reason != "":
 			push_luck_double_button.tooltip_text = "Disponibile dopo %s" % double_reason
 		else:
 			push_luck_double_button.tooltip_text = ""
+	if push_luck_double_note != null:
+		if double_locked:
+			var note_text: String = "Disponibile dopo questa arena."
+			if double_reason != "":
+				note_text = "Disponibile dopo %s." % double_reason
+			push_luck_double_note.text = note_text
+			push_luck_double_note.visible = true
+		else:
+			push_luck_double_note.visible = false
 	_set_push_luck_modal(true)
 
 func _on_push_luck_closed() -> void:
@@ -1307,7 +1345,7 @@ func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	button.add_theme_font_size_override("font_size", 18)
+	button.add_theme_font_size_override("font_size", 22)
 	button.text = _format_bet_button_text(bet_id, bet)
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1449,11 +1487,44 @@ func _get_bet_name(bet_id: String) -> String:
 		return bet_id
 	return str(bet.get("name", bet_id))
 
+func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) -> Tween:
+	if panel == null or modal == null:
+		if modal != null:
+			modal.visible = active
+		if panel != null:
+			panel.visible = active
+		return tween
+	if tween != null and tween.is_valid():
+		tween.kill()
+	if active:
+		modal.visible = true
+		panel.visible = true
+		panel.modulate.a = 0.0
+		tween = create_tween()
+		tween.set_trans(Tween.TRANS_LINEAR)
+		tween.set_ease(Tween.EASE_IN_OUT)
+		tween.tween_property(panel, "modulate:a", 1.0, MODAL_FADE_SECONDS)
+	else:
+		if not panel.visible:
+			modal.visible = false
+			return tween
+		tween = create_tween()
+		tween.set_trans(Tween.TRANS_LINEAR)
+		tween.set_ease(Tween.EASE_IN_OUT)
+		tween.tween_property(panel, "modulate:a", 0.0, MODAL_FADE_SECONDS)
+		tween.tween_callback(Callable(self, "_on_modal_fade_out_complete").bind(panel, modal))
+	return tween
+
+func _on_modal_fade_out_complete(panel: CanvasItem, modal: Control) -> void:
+	if panel != null:
+		panel.visible = false
+		panel.modulate.a = 1.0
+	if modal != null:
+		modal.visible = false
+	_refresh_modal_dimmer()
+
 func _set_bet_modal(active: bool) -> void:
-	if bet_modal != null:
-		bet_modal.visible = active
-	if bet_panel != null:
-		bet_panel.visible = active
+	_bet_modal_fade_tween = _fade_modal(bet_panel, bet_modal, active, _bet_modal_fade_tween)
 	if active:
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("bet")
@@ -1464,18 +1535,12 @@ func _set_bet_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_onboarding_modal(active: bool) -> void:
-	if onboarding_modal != null:
-		onboarding_modal.visible = active
-	if onboarding_panel != null:
-		onboarding_panel.visible = active
+	_onboarding_modal_fade_tween = _fade_modal(onboarding_panel, onboarding_modal, active, _onboarding_modal_fade_tween)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
 func _set_push_luck_modal(active: bool) -> void:
-	if push_luck_modal != null:
-		push_luck_modal.visible = active
-	if push_luck_panel != null:
-		push_luck_panel.visible = active
+	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween)
 	if active:
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("push_luck")
@@ -1486,10 +1551,7 @@ func _set_push_luck_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_game_over_modal(active: bool) -> void:
-	if game_over_modal != null:
-		game_over_modal.visible = active
-	if game_over_panel != null:
-		game_over_panel.visible = active
+	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween)
 	if active:
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("ending")

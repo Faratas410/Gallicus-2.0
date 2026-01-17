@@ -11,22 +11,23 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
 @onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
 @onready var seed_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/SeedRow/SeedLabel") as Label
-@onready var bet_panel: Panel = _req("Modals/BetPanel") as Panel
-@onready var buy_token_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenButton") as Button
-@onready var buy_token_info: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
+@onready var bet_modal: Control = _req("Modals/BetModal") as Control
+@onready var bet_panel: Panel = _req("Modals/BetModal/BetPanel") as Panel
+@onready var buy_token_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenButton") as Button
+@onready var buy_token_info: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
 @onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinIcon") as TextureRect
 @onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokenIcon") as TextureRect
 @onready var modal_dimmer: ColorRect = get_node_or_null("Modals/ModalDimmer") as ColorRect
-@onready var stake_row: Control = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/StakeRow") as Control
-@onready var stake_input: SpinBox = _req("Modals/BetPanel/BetScroll/BetVBox/StakeRow/StakeInput") as SpinBox
-@onready var bet_buttons_container: VBoxContainer = _req("Modals/BetPanel/BetScroll/BetVBox/BetButtons") as VBoxContainer
-@onready var special_arena_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/SpecialArenaLabel") as Label
-@onready var condanna_focus_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/CondannaFocusLabel") as Label
-@onready var bet_confirm_row: Control = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow") as Control
-@onready var bet_confirm_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmLabel") as Label
-@onready var bet_confirm_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmButton") as Button
-@onready var seed_input: LineEdit = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/SeedRow/SeedInput") as LineEdit
-@onready var seed_apply_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/SeedRow/SeedButton") as Button
+@onready var stake_row: Control = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/StakeRow") as Control
+@onready var stake_input: SpinBox = _req("Modals/BetModal/BetPanel/BetScroll/BetVBox/StakeRow/StakeInput") as SpinBox
+@onready var bet_buttons_container: VBoxContainer = _req("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons") as VBoxContainer
+@onready var special_arena_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/SpecialArenaLabel") as Label
+@onready var condanna_focus_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/CondannaFocusLabel") as Label
+@onready var bet_confirm_row: Control = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow") as Control
+@onready var bet_confirm_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmLabel") as Label
+@onready var bet_confirm_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmButton") as Button
+@onready var seed_input: LineEdit = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/SeedRow/SeedInput") as LineEdit
+@onready var seed_apply_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/SeedRow/SeedButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 @onready var debug_tools_panel: Panel = get_node_or_null("HUD/DebugTools") as Panel
 @onready var debug_seed_input: LineEdit = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedInput") as LineEdit
@@ -39,12 +40,13 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverPanel") as Panel
-@onready var push_luck_panel: Panel = get_node_or_null("Modals/PushLuckPanel") as Panel
-@onready var push_luck_title: Label = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckTitle") as Label
-@onready var push_luck_info: Label = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckInfo") as Label
-@onready var push_luck_details: Label = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckDetails") as Label
-@onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutButton") as Button
-@onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleButton") as Button
+@onready var push_luck_modal: Control = get_node_or_null("Modals/PushLuckModal") as Control
+@onready var push_luck_panel: Panel = get_node_or_null("Modals/PushLuckModal/PushLuckPanel") as Panel
+@onready var push_luck_title: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckTitle") as Label
+@onready var push_luck_info: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckInfo") as Label
+@onready var push_luck_details: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckDetails") as Label
+@onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutButton") as Button
+@onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleButton") as Button
 @onready var game_over_title: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverTitle") as Label
 @onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverEpilogue") as Label
 @onready var game_over_scars: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverScars") as Label
@@ -60,8 +62,9 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
 @onready var enemy_bars: Control = get_node_or_null("WorldUI/EnemyBars") as Control
-@onready var onboarding_panel: Panel = get_node_or_null("Modals/OnboardingPanel") as Panel
-@onready var onboarding_button: Button = get_node_or_null("Modals/OnboardingPanel/OnboardingVBox/OnboardingButton") as Button
+@onready var onboarding_modal: Control = get_node_or_null("Modals/OnboardingModal") as Control
+@onready var onboarding_panel: Panel = get_node_or_null("Modals/OnboardingModal/OnboardingPanel") as Panel
+@onready var onboarding_button: Button = get_node_or_null("Modals/OnboardingModal/OnboardingPanel/OnboardingVBox/OnboardingButton") as Button
 @onready var scars_detail_panel: Panel = get_node_or_null("Modals/ScarsDetailPanel") as Panel
 @onready var scars_detail_text: Label = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailText") as Label
 @onready var scars_detail_close: Button = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
@@ -211,10 +214,10 @@ func _ready() -> void:
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
 	else:
-		bet_panel.visible = false
+		_set_bet_modal(false)
 		if stake_input == null or bet_buttons_container == null:
 			push_warning("Bet UI nodes incomplete, disabling betting panel.")
-			bet_panel.visible = false
+			_set_bet_modal(false)
 		else:
 			if stake_row != null:
 				stake_row.visible = false
@@ -253,7 +256,7 @@ func _ready() -> void:
 		if not quit_button.pressed.is_connected(Callable(self, "_on_quit_pressed")):
 			quit_button.pressed.connect(Callable(self, "_on_quit_pressed"))
 	if push_luck_panel != null:
-		push_luck_panel.visible = false
+		_set_push_luck_modal(false)
 	if modal_dimmer != null:
 		modal_dimmer.visible = false
 		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -262,7 +265,7 @@ func _ready() -> void:
 		if not scars_panel.gui_input.is_connected(scars_gui_callable):
 			scars_panel.gui_input.connect(scars_gui_callable)
 	if onboarding_panel != null:
-		onboarding_panel.visible = false
+		_set_onboarding_modal(false)
 		if onboarding_button != null:
 			var onboarding_callable: Callable = Callable(self, "_on_onboarding_dismissed")
 			if not onboarding_button.pressed.is_connected(onboarding_callable):
@@ -597,8 +600,7 @@ func _on_run_started() -> void:
 		coins_label.text = "Coins: 0"
 	if bet_info_label != null:
 		bet_info_label.text = "Bet: -"
-	if bet_panel != null:
-		bet_panel.visible = false
+	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	_reset_bet_confirmation()
 	if level_up_popup != null:
@@ -690,8 +692,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 func _on_run_failed() -> void:
 	if bet_info_label != null:
 		bet_info_label.text = "Bet: -"
-	if bet_panel != null:
-		bet_panel.visible = false
+	_set_bet_modal(false)
 	if level_up_popup != null:
 		level_up_popup.visible = false
 	if special_arena_label != null:
@@ -744,8 +745,7 @@ func _on_special_arena_started(payload: Dictionary) -> void:
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
-		if bet_panel != null:
-			bet_panel.visible = false
+		_set_bet_modal(false)
 		return
 	if push_luck_panel != null and push_luck_panel.visible:
 		return
@@ -807,7 +807,7 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		_current_bet_offer.append(bet)
 	_build_bet_buttons(_current_bet_offer)
 	_reset_bet_confirmation()
-	bet_panel.visible = true
+	_set_bet_modal(true)
 	_update_special_arena_ui()
 	_update_condanna_focus()
 	_maybe_show_onboarding()
@@ -816,8 +816,7 @@ func _on_bet_ui_opened(bets: Array) -> void:
 	_refresh_modal_dimmer()
 
 func _on_bet_ui_closed() -> void:
-	if bet_panel != null:
-		bet_panel.visible = false
+	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	if special_arena_label != null:
 		special_arena_label.visible = false
@@ -832,7 +831,7 @@ func _maybe_show_onboarding() -> void:
 	if _onboarding_visible:
 		return
 	_onboarding_visible = true
-	onboarding_panel.visible = true
+	_set_onboarding_modal(true)
 	if GameEvents.has_signal("modal_opened"):
 		GameEvents.modal_opened.emit("onboarding")
 	_refresh_modal_dimmer()
@@ -843,7 +842,7 @@ func _hide_onboarding_panel() -> void:
 	if not _onboarding_visible and not onboarding_panel.visible:
 		return
 	_onboarding_visible = false
-	onboarding_panel.visible = false
+	_set_onboarding_modal(false)
 	if GameEvents.has_signal("modal_closed"):
 		GameEvents.modal_closed.emit("onboarding")
 	_refresh_modal_dimmer()
@@ -1024,8 +1023,7 @@ func _refresh_game_over_meta() -> void:
 func _on_push_luck_opened(payload: Dictionary) -> void:
 	if push_luck_panel == null:
 		return
-	if bet_panel != null:
-		bet_panel.visible = false
+	_set_bet_modal(false)
 	var bet_name: String = str(payload.get("bet_name", ""))
 	var current_level: int = int(payload.get("current_level", 1))
 	var next_level: int = int(payload.get("next_level", 2))
@@ -1252,8 +1250,9 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 
 func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	var button: Button = Button.new()
-	button.custom_minimum_size = Vector2(0, 84)
+	button.custom_minimum_size = Vector2(0, 120)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_size_override("font_size", 14)
 	button.text = _format_bet_button_text(bet_id, bet)
@@ -1342,8 +1341,7 @@ func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 	button.remove_theme_color_override("font_pressed_color")
 
 func _on_bet_failed(can_retry: bool) -> void:
-	if bet_panel != null:
-		bet_panel.visible = false
+	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	_reset_fast_countdown()
 	if game_over_panel != null:
@@ -1399,7 +1397,31 @@ func _get_bet_name(bet_id: String) -> String:
 		return bet_id
 	return str(bet.get("name", bet_id))
 
+func _set_bet_modal(active: bool) -> void:
+	if bet_modal != null:
+		bet_modal.visible = active
+	if bet_panel != null:
+		bet_panel.visible = active
+	if active:
+		if GameEvents.has_signal("modal_opened"):
+			GameEvents.modal_opened.emit("bet")
+	else:
+		if GameEvents.has_signal("modal_closed"):
+			GameEvents.modal_closed.emit("bet")
+	_refresh_modal_dimmer()
+	get_viewport().gui_release_focus()
+
+func _set_onboarding_modal(active: bool) -> void:
+	if onboarding_modal != null:
+		onboarding_modal.visible = active
+	if onboarding_panel != null:
+		onboarding_panel.visible = active
+	_refresh_modal_dimmer()
+	get_viewport().gui_release_focus()
+
 func _set_push_luck_modal(active: bool) -> void:
+	if push_luck_modal != null:
+		push_luck_modal.visible = active
 	if push_luck_panel != null:
 		push_luck_panel.visible = active
 	if active:
@@ -1422,13 +1444,13 @@ func _refresh_modal_dimmer() -> void:
 	if modal_dimmer == null:
 		return
 	var active: bool = false
-	if bet_panel != null and bet_panel.visible:
+	if bet_modal != null and bet_modal.visible:
 		active = true
-	if push_luck_panel != null and push_luck_panel.visible:
+	if push_luck_modal != null and push_luck_modal.visible:
 		active = true
 	if game_over_panel != null and game_over_panel.visible:
 		active = true
-	if onboarding_panel != null and onboarding_panel.visible:
+	if onboarding_modal != null and onboarding_modal.visible:
 		active = true
 	if scars_detail_panel != null and scars_detail_panel.visible:
 		active = true

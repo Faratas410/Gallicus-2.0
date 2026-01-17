@@ -250,7 +250,7 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 		previous_current,
 		previous_max
 	])
-	max_health = _base_max_health + max_hp_bonus
+	max_health = maxi(_base_max_health + max_hp_bonus, 1)
 	light_damage = _base_light_damage + light_bonus
 	heavy_damage = _base_heavy_damage + heavy_bonus
 	if max_health != previous_max:

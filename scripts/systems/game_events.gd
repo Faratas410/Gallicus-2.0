@@ -6,6 +6,8 @@ signal arena_completed(arena_index: int)
 signal run_failed
 signal run_finale_selected(payload: Dictionary)
 signal run_debug_state_updated(payload: Dictionary)
+signal run_log_ready(log_text: String)
+signal special_arena_started(payload: Dictionary)
 signal bet_failed(can_retry: bool)
 signal coins_changed(coins: int)
 signal tokens_changed(tokens: int)
@@ -47,6 +49,7 @@ signal request_add_coins(amount: int)
 signal request_push_luck_cashout
 signal request_push_luck_double
 signal request_set_run_seed(seed: int)
+signal request_skip_arena_resolution
 
 var gameplay_enabled: bool = true
 

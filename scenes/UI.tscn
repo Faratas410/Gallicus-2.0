@@ -217,6 +217,56 @@ offset_bottom = 156.0
 horizontal_alignment = 0
 text = "Seed: 0\nArena: 0\nEscalation: 0\nActive Bet: -\nScars: [-]"
 
+[node name="DebugTools" type="Panel" parent="HUD"]
+visible = false
+z_index = 120
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -160.0
+offset_right = 316.0
+offset_bottom = -16.0
+custom_minimum_size = Vector2(300, 144)
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="DebugToolsVBox" type="VBoxContainer" parent="HUD/DebugTools"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+theme_override_constants/separation = 6
+
+[node name="DebugToolsTitle" type="Label" parent="HUD/DebugTools/DebugToolsVBox"]
+text = "DEBUG TOOLS"
+
+[node name="SeedRow" type="HBoxContainer" parent="HUD/DebugTools/DebugToolsVBox"]
+theme_override_constants/separation = 6
+
+[node name="SeedInput" type="LineEdit" parent="HUD/DebugTools/DebugToolsVBox/SeedRow"]
+size_flags_horizontal = 3
+placeholder_text = "Run seed"
+
+[node name="SeedButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox/SeedRow"]
+text = "SET"
+
+[node name="DebugButtons" type="HBoxContainer" parent="HUD/DebugTools/DebugToolsVBox"]
+theme_override_constants/separation = 6
+
+[node name="RestartRunButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox/DebugButtons"]
+size_flags_horizontal = 3
+text = "RESTART"
+
+[node name="SkipArenaButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox/DebugButtons"]
+size_flags_horizontal = 3
+text = "SKIP"
+
+[node name="CopyLogButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox"]
+text = "COPY RUN LOG"
+
 [node name="WorldUI" type="Control" parent="."]
 mouse_filter = 2
 anchor_right = 1.0
@@ -242,6 +292,40 @@ mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.55)
+
+[node name="OnboardingPanel" type="Panel" parent="Modals"]
+visible = false
+z_index = 96
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -140.0
+offset_right = 220.0
+offset_bottom = 140.0
+clip_contents = true
+custom_minimum_size = Vector2(440, 280)
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="OnboardingVBox" type="VBoxContainer" parent="Modals/OnboardingPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+theme_override_constants/separation = 10
+
+[node name="OnboardingTitle" type="Label" parent="Modals/OnboardingPanel/OnboardingVBox"]
+text = "PRIMA DEL PATTO"
+
+[node name="OnboardingText" type="Label" parent="Modals/OnboardingPanel/OnboardingVBox"]
+autowrap_mode = 2
+text = "Scegli un patto. Vedi prima la condanna.\nLe cicatrici restano fino a fine run.\nRaddoppi = più reward, più condanna."
+
+[node name="OnboardingButton" type="Button" parent="Modals/OnboardingPanel/OnboardingVBox"]
+text = "CAPITO"
 
 [node name="BetPanel" type="Panel" parent="Modals"]
 visible = false
@@ -279,6 +363,16 @@ offset_bottom = -4.0
 
 [node name="BetTitle" type="Label" parent="Modals/BetPanel/BetScroll/BetVBox"]
 text = "Scommessa Arena"
+
+[node name="SpecialArenaLabel" type="Label" parent="Modals/BetPanel/BetScroll/BetVBox"]
+visible = false
+autowrap_mode = 2
+text = "ARENA SPECIALE"
+
+[node name="CondannaFocusLabel" type="Label" parent="Modals/BetPanel/BetScroll/BetVBox"]
+visible = false
+autowrap_mode = 2
+text = "FOCUS: Leggi prima la CONDANNA."
 
 [node name="StakeRow" type="HBoxContainer" parent="Modals/BetPanel/BetScroll/BetVBox"]
 
@@ -385,6 +479,40 @@ text = "INCASSA ORA"
 size_flags_horizontal = 3
 text = "RADDOPPIA"
 
+[node name="ScarsDetailPanel" type="Panel" parent="Modals"]
+visible = false
+z_index = 95
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -180.0
+offset_right = 220.0
+offset_bottom = 180.0
+clip_contents = true
+custom_minimum_size = Vector2(440, 360)
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ScarsDetailVBox" type="VBoxContainer" parent="Modals/ScarsDetailPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+theme_override_constants/separation = 8
+
+[node name="ScarsDetailTitle" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
+text = "DETTAGLIO CICATRICI"
+
+[node name="ScarsDetailText" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
+autowrap_mode = 2
+text = ""
+
+[node name="ScarsDetailClose" type="Button" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
+text = "CHIUDI"
+
 [node name="GameOverPanel" type="Panel" parent="Modals"]
 visible = false
 z_index = 95
@@ -409,7 +537,7 @@ offset_right = -12.0
 offset_bottom = -12.0
 
 [node name="GameOverTitle" type="Label" parent="Modals/GameOverPanel/GameOverVBox"]
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 text = "RUN FAILED"
 
 [node name="GameOverEpilogue" type="Label" parent="Modals/GameOverPanel/GameOverVBox"]

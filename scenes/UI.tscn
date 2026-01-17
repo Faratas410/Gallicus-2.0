@@ -359,10 +359,12 @@ offset_bottom = -12.0
 theme_override_constants/separation = 10
 
 [node name="OnboardingTitle" type="Label" parent="Modals/OnboardingModal/OnboardingPanel/OnboardingVBox"]
+theme_override_font_sizes/font_size = 28
 text = "PRIMA DEL PATTO"
 
 [node name="OnboardingText" type="Label" parent="Modals/OnboardingModal/OnboardingPanel/OnboardingVBox"]
 autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "Scegli un patto. Vedi prima la condanna.\nLe cicatrici restano fino a fine run.\nRaddoppi = più reward, più condanna."
 
 [node name="OnboardingButton" type="Button" parent="Modals/OnboardingModal/OnboardingPanel/OnboardingVBox"]
@@ -419,13 +421,16 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
 offset_bottom = 0.0
+theme_override_constants/separation = 12
 
 [node name="BetTitle" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+theme_override_font_sizes/font_size = 28
 text = "Scommessa Arena"
 
 [node name="SpecialArenaLabel" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
 visible = false
 autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "ARENA SPECIALE"
 
 [node name="CondannaFocusLabel" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
@@ -434,7 +439,7 @@ autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = false
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 24
 text = "FOCUS: Leggi prima la CONDANNA."
 
 [node name="SeedRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
@@ -464,7 +469,7 @@ shortcut_keys_enabled = false
 
 [node name="BetButtons" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
 [node name="BetWinButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
@@ -500,14 +505,28 @@ text = "CONFERMA"
 
 [node name="BuyTokenRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
 size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
-[node name="BuyTokenButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow"]
+[node name="BuyTokenVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="BuyTokenButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
 custom_minimum_size = Vector2(0, 40)
 size_flags_horizontal = 3
 text = "BUY TOKEN (100c)"
 
+[node name="BuyTokenNote" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
+visible = false
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+modulate = Color(0.75, 0.72, 0.6, 1)
+text = "Disponibile dopo questa arena."
+
 [node name="BuyTokenInfo" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow"]
 autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "x1"
 
 [node name="PushLuckModal" type="Control" parent="Modals"]
@@ -549,13 +568,15 @@ offset_left = 12.0
 offset_top = 12.0
 offset_right = -12.0
 offset_bottom = -12.0
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
 [node name="PushLuckTitle" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+theme_override_font_sizes/font_size = 28
 text = "PUSH YOUR LUCK"
 
 [node name="PushLuckInfo" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
 autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "Incassa ora o raddoppia il rischio"
 
 [node name="PushLuckDetails" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
@@ -563,21 +584,46 @@ autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = true
+theme_override_font_sizes/font_size = 18
 text = ""
 
 [node name="PushLuckButtons" type="HBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="PushLuckCashoutButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+[node name="PushLuckCashoutBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="PushLuckCashoutButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox"]
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "INCASSA ORA"
 
-[node name="PushLuckDoubleButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+[node name="PushLuckCashoutNote" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox"]
+visible = false
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+modulate = Color(0.75, 0.72, 0.6, 1)
+text = "Disponibile dopo questa arena."
+
+[node name="PushLuckDoubleBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="PushLuckDoubleButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox"]
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "RADDOPPIA"
+
+[node name="PushLuckDoubleNote" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox"]
+visible = false
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+modulate = Color(0.75, 0.72, 0.6, 1)
+text = "Disponibile dopo questa arena."
 
 [node name="ScarsDetailPanel" type="Panel" parent="Modals"]
 visible = false
@@ -604,6 +650,7 @@ offset_bottom = -12.0
 theme_override_constants/separation = 8
 
 [node name="ScarsDetailTitle" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
+theme_override_font_sizes/font_size = 28
 text = "DETTAGLIO CICATRICI"
 
 [node name="ScarsDetailText" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
@@ -651,9 +698,10 @@ offset_left = 12.0
 offset_top = 12.0
 offset_right = -12.0
 offset_bottom = -12.0
+theme_override_constants/separation = 10
 
 [node name="GameOverTitle" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 28
 text = "RUN FAILED"
 
 [node name="GameOverEpilogue" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
@@ -668,9 +716,11 @@ text = ""
 [node name="GameOverMeta" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 visible = false
 autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
 text = ""
 
 [node name="GameOverHint" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+theme_override_font_sizes/font_size = 18
 text = "Vuoi riprovare?"
 
 [node name="RestartButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]

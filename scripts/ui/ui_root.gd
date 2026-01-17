@@ -19,10 +19,18 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var stake_row: Control = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/StakeRow") as Control
 @onready var stake_input: SpinBox = _req("Modals/BetPanel/BetScroll/BetVBox/StakeRow/StakeInput") as SpinBox
 @onready var bet_buttons_container: VBoxContainer = _req("Modals/BetPanel/BetScroll/BetVBox/BetButtons") as VBoxContainer
+@onready var special_arena_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/SpecialArenaLabel") as Label
+@onready var condanna_focus_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/CondannaFocusLabel") as Label
 @onready var bet_confirm_row: Control = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow") as Control
 @onready var bet_confirm_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmLabel") as Label
 @onready var bet_confirm_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
+@onready var debug_tools_panel: Panel = get_node_or_null("HUD/DebugTools") as Panel
+@onready var debug_seed_input: LineEdit = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedInput") as LineEdit
+@onready var debug_seed_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedButton") as Button
+@onready var debug_restart_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/RestartRunButton") as Button
+@onready var debug_skip_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/SkipArenaButton") as Button
+@onready var debug_copy_log_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/CopyLogButton") as Button
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
 @onready var scar_popup: Label = get_node_or_null("HUD/ScarPopup") as Label
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
@@ -49,6 +57,11 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
 @onready var enemy_bars: Control = get_node_or_null("WorldUI/EnemyBars") as Control
+@onready var onboarding_panel: Panel = get_node_or_null("Modals/OnboardingPanel") as Panel
+@onready var onboarding_button: Button = get_node_or_null("Modals/OnboardingPanel/OnboardingVBox/OnboardingButton") as Button
+@onready var scars_detail_panel: Panel = get_node_or_null("Modals/ScarsDetailPanel") as Panel
+@onready var scars_detail_text: Label = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailText") as Label
+@onready var scars_detail_close: Button = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
 
 @export var sfx_level_up_path: String = "res://assets/audio/ui/level_up.ogg"
 @export var sfx_buy_token_path: String = "res://assets/audio/ui/buy_token.ogg"
@@ -86,12 +99,19 @@ var _last_finale_scars: Array = []
 var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
 var _last_finale_stats: Dictionary = {}
+var _special_arena_payload: Dictionary = {}
+var _onboarding_pending: bool = false
+var _onboarding_visible: bool = false
+var _require_bet_confirm: bool = false
+var _scars_detail_text: String = ""
+var _debug_run_log: String = ""
 var _debug_seed: int = 0
 var _debug_arena_index: int = 0
 var _debug_escalation: int = 0
 var _debug_active_bet: String = ""
 var _debug_enemy_profile: String = ""
 var _debug_scars: Array[String] = []
+var _debug_special_arena: String = ""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -120,6 +140,12 @@ func _ready() -> void:
 	var run_debug_callable: Callable = Callable(self, "_on_run_debug_state_updated")
 	if GameEvents.has_signal("run_debug_state_updated") and not GameEvents.run_debug_state_updated.is_connected(run_debug_callable):
 		GameEvents.run_debug_state_updated.connect(run_debug_callable)
+	var run_log_callable: Callable = Callable(self, "_on_run_log_ready")
+	if GameEvents.has_signal("run_log_ready") and not GameEvents.run_log_ready.is_connected(run_log_callable):
+		GameEvents.run_log_ready.connect(run_log_callable)
+	var special_arena_callable: Callable = Callable(self, "_on_special_arena_started")
+	if GameEvents.has_signal("special_arena_started") and not GameEvents.special_arena_started.is_connected(special_arena_callable):
+		GameEvents.special_arena_started.connect(special_arena_callable)
 	var bet_failed_callable: Callable = Callable(self, "_on_bet_failed")
 	if not GameEvents.bet_failed.is_connected(bet_failed_callable):
 		GameEvents.bet_failed.connect(bet_failed_callable)
@@ -135,6 +161,9 @@ func _ready() -> void:
 	var bet_ui_closed_callable: Callable = Callable(self, "_on_bet_ui_closed")
 	if not GameEvents.bet_ui_closed.is_connected(bet_ui_closed_callable):
 		GameEvents.bet_ui_closed.connect(bet_ui_closed_callable)
+	var arena_started_callable: Callable = Callable(self, "_on_arena_started")
+	if not GameEvents.arena_started.is_connected(arena_started_callable):
+		GameEvents.arena_started.connect(arena_started_callable)
 	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
 	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
 		GameEvents.betting_opened.connect(betting_opened_callable)
@@ -197,6 +226,9 @@ func _ready() -> void:
 
 	if debug_overlay != null:
 		debug_overlay.visible = false
+	if debug_tools_panel != null:
+		debug_tools_panel.visible = OS.is_debug_build()
+		_wire_debug_tools()
 	if level_up_popup != null:
 		level_up_popup.visible = false
 	if scar_popup != null:
@@ -221,6 +253,22 @@ func _ready() -> void:
 	if modal_dimmer != null:
 		modal_dimmer.visible = false
 		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if scars_panel != null:
+		var scars_gui_callable: Callable = Callable(self, "_on_scars_panel_gui_input")
+		if not scars_panel.gui_input.is_connected(scars_gui_callable):
+			scars_panel.gui_input.connect(scars_gui_callable)
+	if onboarding_panel != null:
+		onboarding_panel.visible = false
+		if onboarding_button != null:
+			var onboarding_callable: Callable = Callable(self, "_on_onboarding_dismissed")
+			if not onboarding_button.pressed.is_connected(onboarding_callable):
+				onboarding_button.pressed.connect(onboarding_callable)
+	if scars_detail_panel != null:
+		scars_detail_panel.visible = false
+		if scars_detail_close != null:
+			var close_callable: Callable = Callable(self, "_on_scars_detail_closed")
+			if not scars_detail_close.pressed.is_connected(close_callable):
+				scars_detail_close.pressed.connect(close_callable)
 	_wire_push_luck_buttons()
 
 	var arena: Node = get_tree().get_first_node_in_group("arena")
@@ -552,11 +600,22 @@ func _on_run_started() -> void:
 	_last_finale_ending_id = ""
 	_last_finale_seed = 0
 	_last_finale_stats = {}
+	_special_arena_payload = {}
+	_onboarding_pending = true
+	_onboarding_visible = false
+	_debug_run_log = ""
+	_debug_special_arena = ""
+	if special_arena_label != null:
+		special_arena_label.visible = false
+	if condanna_focus_label != null:
+		condanna_focus_label.visible = false
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
 	_refresh_modal_dimmer()
+	_hide_onboarding_panel()
+	_hide_scars_detail()
 
 func _on_run_started_ui() -> void:
 	_last_level = 1
@@ -610,6 +669,10 @@ func _on_run_failed() -> void:
 		bet_panel.visible = false
 	if level_up_popup != null:
 		level_up_popup.visible = false
+	if special_arena_label != null:
+		special_arena_label.visible = false
+	if condanna_focus_label != null:
+		condanna_focus_label.visible = false
 	_reset_fast_countdown()
 	_set_push_luck_modal(false)
 	if game_over_panel != null:
@@ -628,6 +691,8 @@ func _on_run_failed() -> void:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
 	_refresh_modal_dimmer()
+	_hide_onboarding_panel()
+	_hide_scars_detail()
 
 func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_seed = int(payload.get("seed", 0))
@@ -635,11 +700,20 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_escalation = int(payload.get("escalation_level", 0))
 	_debug_active_bet = str(payload.get("active_bet_id", ""))
 	_debug_enemy_profile = str(payload.get("enemy_profile", ""))
+	_debug_special_arena = str(payload.get("special_arena_id", ""))
 	var scars_value: Array = payload.get("scars", []) as Array
 	_debug_scars = []
 	for scar_value in scars_value:
 		_debug_scars.append(str(scar_value))
 	_refresh_debug_overlay()
+
+func _on_run_log_ready(log_text: String) -> void:
+	_debug_run_log = log_text
+
+func _on_special_arena_started(payload: Dictionary) -> void:
+	_special_arena_payload = payload.duplicate(true)
+	if bet_panel != null and bet_panel.visible:
+		_update_special_arena_ui()
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
@@ -648,6 +722,15 @@ func _on_betting_opened() -> void:
 		return
 	if push_luck_panel != null and push_luck_panel.visible:
 		return
+
+func _on_arena_started(arena_index: int) -> void:
+	if arena_index >= 1:
+		_onboarding_pending = false
+		_hide_onboarding_panel()
+	if not _special_arena_payload.is_empty():
+		var special_index: int = int(_special_arena_payload.get("arena_index", -1))
+		if arena_index >= special_index and special_index > 0:
+			_special_arena_payload = {}
 
 func _on_countdown_requested(seconds: int) -> void:
 	# FAST countdown must be visible during the round ONLY if the player selected FAST.
@@ -689,6 +772,7 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		return
 	_bets_by_id.clear()
 	_current_bet_offer = []
+	_require_bet_confirm = false
 	for bet_value: Dictionary in bets:
 		var bet: Dictionary = bet_value as Dictionary
 		var bet_id: String = str(bet.get("id", ""))
@@ -697,6 +781,9 @@ func _on_bet_ui_opened(bets: Array) -> void:
 	_build_bet_buttons(_current_bet_offer)
 	_reset_bet_confirmation()
 	bet_panel.visible = true
+	_update_special_arena_ui()
+	_update_condanna_focus()
+	_maybe_show_onboarding()
 	_reset_fast_countdown()
 	_refresh_buy_token_ui()
 	_refresh_modal_dimmer()
@@ -705,6 +792,58 @@ func _on_bet_ui_closed() -> void:
 	if bet_panel != null:
 		bet_panel.visible = false
 	_reset_bet_confirmation()
+	if special_arena_label != null:
+		special_arena_label.visible = false
+	if condanna_focus_label != null:
+		condanna_focus_label.visible = false
+
+func _maybe_show_onboarding() -> void:
+	if not _onboarding_pending:
+		return
+	if onboarding_panel == null:
+		return
+	if _onboarding_visible:
+		return
+	_onboarding_visible = true
+	onboarding_panel.visible = true
+	if GameEvents.has_signal("modal_opened"):
+		GameEvents.modal_opened.emit("onboarding")
+	_refresh_modal_dimmer()
+
+func _hide_onboarding_panel() -> void:
+	if onboarding_panel == null:
+		return
+	if not _onboarding_visible and not onboarding_panel.visible:
+		return
+	_onboarding_visible = false
+	onboarding_panel.visible = false
+	if GameEvents.has_signal("modal_closed"):
+		GameEvents.modal_closed.emit("onboarding")
+	_refresh_modal_dimmer()
+
+func _on_onboarding_dismissed() -> void:
+	_onboarding_pending = false
+	_hide_onboarding_panel()
+
+func _update_special_arena_ui() -> void:
+	if special_arena_label == null:
+		return
+	if _special_arena_payload.is_empty():
+		special_arena_label.visible = false
+		return
+	var title: String = str(_special_arena_payload.get("title", "Arena speciale"))
+	var desc: String = str(_special_arena_payload.get("description", ""))
+	if desc != "":
+		special_arena_label.text = "%s\n%s" % [title, desc]
+	else:
+		special_arena_label.text = title
+	special_arena_label.visible = true
+
+func _update_condanna_focus() -> void:
+	if condanna_focus_label == null:
+		return
+	var arena_index: int = _get_arena_index()
+	condanna_focus_label.visible = _onboarding_pending or arena_index <= 1
 
 func _on_scars_updated(scars: Array) -> void:
 	_refresh_scars_ui(scars)
@@ -722,8 +861,10 @@ func _refresh_scars_ui(scars: Array) -> void:
 		scars_label.tooltip_text = ""
 		if scars_panel != null:
 			scars_panel.tooltip_text = ""
+		_scars_detail_text = ""
 		return
-	var lines: Array[String] = []
+	var summary_lines: Array[String] = []
+	var detail_lines: Array[String] = []
 	for scar_value: Dictionary in scars:
 		var scar: Dictionary = scar_value as Dictionary
 		var scar_name: String = str(scar.get("name", "Cicatrice"))
@@ -733,30 +874,69 @@ func _refresh_scars_ui(scars: Array) -> void:
 		var origin: String = str(scar.get("origin", ""))
 		var effect: String = str(scar.get("effect", ""))
 		if visual_tag != "":
-			lines.append("• %s %s" % [visual_tag, scar_name])
+			summary_lines.append("• %s %s" % [visual_tag, scar_name])
+			detail_lines.append("• %s %s" % [visual_tag, scar_name])
 		else:
-			lines.append("• %s" % scar_name)
+			summary_lines.append("• %s" % scar_name)
+			detail_lines.append("• %s" % scar_name)
 		if short_desc != "":
-			lines.append("  %s" % short_desc)
+			summary_lines.append("  %s" % short_desc)
+			detail_lines.append("  %s" % short_desc)
 		if story != "":
-			lines.append("  %s" % story)
+			detail_lines.append("  %s" % story)
 		if origin != "":
-			lines.append("  Origine: %s" % origin)
+			detail_lines.append("  Origine: %s" % origin)
 		if effect != "":
-			lines.append("  Effetto: %s" % effect)
-		lines.append("")
-	if lines.size() > 0 and lines[lines.size() - 1] == "":
-		lines.remove_at(lines.size() - 1)
-	var scars_text: String = "\n".join(lines)
-	scars_label.text = scars_text
-	scars_label.tooltip_text = scars_text
+			detail_lines.append("  Effetto: %s" % effect)
+		summary_lines.append("")
+		detail_lines.append("")
+	if summary_lines.size() > 0 and summary_lines[summary_lines.size() - 1] == "":
+		summary_lines.remove_at(summary_lines.size() - 1)
+	if detail_lines.size() > 0 and detail_lines[detail_lines.size() - 1] == "":
+		detail_lines.remove_at(detail_lines.size() - 1)
+	var summary_text: String = "\n".join(summary_lines)
+	var detail_text: String = "\n".join(detail_lines)
+	scars_label.text = summary_text
+	scars_label.tooltip_text = summary_text
+	_scars_detail_text = detail_text
 	if scars_panel != null:
-		scars_panel.tooltip_text = scars_text
+		scars_panel.tooltip_text = summary_text
 	# If FAST was selected, keep the FAST countdown state for the round.
 	# The label is driven by countdown_requested during the round.
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
 	get_viewport().gui_release_focus()
+	_refresh_modal_dimmer()
+
+func _on_scars_panel_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_show_scars_detail()
+
+func _show_scars_detail() -> void:
+	if scars_detail_panel == null or scars_detail_text == null:
+		return
+	if _scars_detail_text == "":
+		return
+	scars_detail_panel.visible = true
+	scars_detail_text.text = _scars_detail_text
+	_set_scars_detail_modal(true)
+
+func _hide_scars_detail() -> void:
+	if scars_detail_panel == null:
+		return
+	scars_detail_panel.visible = false
+	_set_scars_detail_modal(false)
+
+func _on_scars_detail_closed() -> void:
+	_hide_scars_detail()
+
+func _set_scars_detail_modal(active: bool) -> void:
+	if active:
+		if GameEvents.has_signal("modal_opened"):
+			GameEvents.modal_opened.emit("scars_detail")
+	else:
+		if GameEvents.has_signal("modal_closed"):
+			GameEvents.modal_closed.emit("scars_detail")
 	_refresh_modal_dimmer()
 
 func _refresh_game_over_scars() -> void:
@@ -791,7 +971,14 @@ func _refresh_game_over_meta() -> void:
 		var max_escalation: int = int(_last_finale_stats.get("max_escalation", 0))
 		var arena_target: int = int(_last_finale_stats.get("arena_target", 0))
 		var arena_count: int = int(_last_finale_stats.get("arena_count", 0))
-		lines.append("Cashout: %d | Double: %d | Escalation max: %d" % [cashouts, doubles, max_escalation])
+		var scar_count: int = _last_finale_scars.size()
+		lines.append("Arene: %d | Cashout: %d | Double: %d | Cicatrici: %d" % [
+			arena_count,
+			cashouts,
+			doubles,
+			scar_count,
+		])
+		lines.append("Escalation max: %d" % max_escalation)
 		if arena_target > 0:
 			lines.append("Arene: %d/%d" % [arena_count, arena_target])
 		var bet_list: Array = _last_finale_stats.get("bets", []) as Array
@@ -863,6 +1050,49 @@ func _wire_push_luck_buttons() -> void:
 		if not push_luck_double_button.pressed.is_connected(double_callable):
 			push_luck_double_button.pressed.connect(double_callable)
 
+func _wire_debug_tools() -> void:
+	if not OS.is_debug_build():
+		return
+	if debug_seed_button != null:
+		var seed_callable: Callable = Callable(self, "_on_debug_seed_pressed")
+		if not debug_seed_button.pressed.is_connected(seed_callable):
+			debug_seed_button.pressed.connect(seed_callable)
+	if debug_restart_button != null:
+		var restart_callable: Callable = Callable(self, "_on_debug_restart_pressed")
+		if not debug_restart_button.pressed.is_connected(restart_callable):
+			debug_restart_button.pressed.connect(restart_callable)
+	if debug_skip_button != null:
+		var skip_callable: Callable = Callable(self, "_on_debug_skip_pressed")
+		if not debug_skip_button.pressed.is_connected(skip_callable):
+			debug_skip_button.pressed.connect(skip_callable)
+	if debug_copy_log_button != null:
+		var copy_callable: Callable = Callable(self, "_on_debug_copy_log_pressed")
+		if not debug_copy_log_button.pressed.is_connected(copy_callable):
+			debug_copy_log_button.pressed.connect(copy_callable)
+
+func _on_debug_seed_pressed() -> void:
+	if debug_seed_input == null:
+		return
+	var text_value: String = debug_seed_input.text.strip_edges()
+	if not text_value.is_valid_int():
+		return
+	var seed_value: int = int(text_value)
+	if GameEvents.has_signal("request_set_run_seed"):
+		GameEvents.request_set_run_seed.emit(seed_value)
+
+func _on_debug_restart_pressed() -> void:
+	if GameEvents.has_signal("request_reset_run"):
+		GameEvents.request_reset_run.emit()
+
+func _on_debug_skip_pressed() -> void:
+	if GameEvents.has_signal("request_skip_arena_resolution"):
+		GameEvents.request_skip_arena_resolution.emit()
+
+func _on_debug_copy_log_pressed() -> void:
+	if _debug_run_log == "":
+		return
+	DisplayServer.clipboard_set(_debug_run_log)
+
 func _on_push_luck_cashout_pressed() -> void:
 	if GameEvents.has_signal("request_push_luck_cashout"):
 		GameEvents.request_push_luck_cashout.emit()
@@ -892,6 +1122,8 @@ func _request_reset() -> void:
 
 	if GameEvents.has_signal("request_reset_run"):
 		GameEvents.request_reset_run.emit()
+	_hide_onboarding_panel()
+	_hide_scars_detail()
 	_refresh_modal_dimmer()
 
 func _request_next_bet() -> void:
@@ -906,6 +1138,8 @@ func _request_retry() -> void:
 		game_over_panel.visible = false
 	if GameEvents.has_signal("request_retry_run"):
 		GameEvents.request_retry_run.emit()
+	_hide_onboarding_panel()
+	_hide_scars_detail()
 	_refresh_modal_dimmer()
 
 func _on_quit_pressed() -> void:
@@ -991,9 +1225,10 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 
 func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	var button: Button = Button.new()
-	button.custom_minimum_size = Vector2(0, 64)
+	button.custom_minimum_size = Vector2(0, 84)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.add_theme_font_size_override("font_size", 14)
 	button.text = _format_bet_button_text(bet_id, bet)
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1010,9 +1245,10 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary) -> String:
 	var doom_text: String = str(bet.get("doom", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
-		lines.append("❌ %s — Condanna: %s" % [name_text, doom_text])
+		lines.append("❌ CONDANNA — %s" % name_text)
+		lines.append("   %s" % doom_text)
 	else:
-		lines.append("❌ %s — Condanna" % name_text)
+		lines.append("❌ CONDANNA — %s" % name_text)
 	if condition_text != "":
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":
@@ -1106,12 +1342,15 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_reset_fast_countdown()
 
 func _on_bet_choice_pressed(bet_id: String) -> void:
-	_pending_confirm_bet_id = bet_id
-	if bet_confirm_label != null:
-		bet_confirm_label.text = "Selezione: %s" % _get_bet_name(bet_id)
-	if bet_confirm_row != null:
-		bet_confirm_row.visible = true
-	get_viewport().gui_release_focus()
+	if _require_bet_confirm:
+		_pending_confirm_bet_id = bet_id
+		if bet_confirm_label != null:
+			bet_confirm_label.text = "Selezione: %s" % _get_bet_name(bet_id)
+		if bet_confirm_row != null:
+			bet_confirm_row.visible = true
+		get_viewport().gui_release_focus()
+		return
+	_place_bet(bet_id)
 
 func _on_bet_confirm_pressed() -> void:
 	if _pending_confirm_bet_id == "":
@@ -1162,6 +1401,10 @@ func _refresh_modal_dimmer() -> void:
 		active = true
 	if game_over_panel != null and game_over_panel.visible:
 		active = true
+	if onboarding_panel != null and onboarding_panel.visible:
+		active = true
+	if scars_detail_panel != null and scars_detail_panel.visible:
+		active = true
 	modal_dimmer.visible = active
 	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
@@ -1186,6 +1429,8 @@ func _refresh_debug_overlay() -> void:
 		_debug_active_bet,
 		scars_text
 	]
+	if _debug_special_arena != "":
+		debug_overlay.text += "\nSpecial: %s" % _debug_special_arena
 
 func _process(_delta: float) -> void:
 	if debug_overlay == null or not debug_overlay.visible:
@@ -1217,6 +1462,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				var clipboard_text: String = DisplayServer.clipboard_get()
 				if clipboard_text.is_valid_int() and GameEvents.has_signal("request_set_run_seed"):
 					GameEvents.request_set_run_seed.emit(int(clipboard_text))
+			if event.keycode == KEY_F5:
+				if GameEvents.has_signal("request_reset_run"):
+					GameEvents.request_reset_run.emit()
+			if event.keycode == KEY_F6:
+				if GameEvents.has_signal("request_skip_arena_resolution"):
+					GameEvents.request_skip_arena_resolution.emit()
 
 func _req(path: String) -> Node:
 	var n: Node = get_node_or_null(path)

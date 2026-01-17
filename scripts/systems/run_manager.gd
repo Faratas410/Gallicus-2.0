@@ -29,6 +29,8 @@ const ENEMY_DUELIST: StringName = &"DUELIST"
 const ENEMY_SWARM: StringName = &"SWARM"
 const ENEMY_EXECUTIONER: StringName = &"EXECUTIONER"
 const ENEMY_TRICKSTER: StringName = &"TRICKSTER"
+const SPECIAL_ARENA_SILENCE: StringName = &"ARENA_OF_SILENCE"
+const SPECIAL_ARENA_ASH: StringName = &"ARENA_OF_ASH"
 
 class RunState:
 	var run_seed: int = 0
@@ -311,6 +313,11 @@ var _cashout_lock_remaining: int = 0
 var _last_selected_bet_id: StringName = &""
 var _last_bet_offers: Array[StringName] = []
 var _last_enemy_profile: StringName = &""
+var _level3_current_offer: Array[Dictionary] = []
+var _special_arena_index: int = 0
+var _special_arena_id: StringName = &""
+var _special_arena_active: bool = false
+var _special_arena_effect_applied: bool = false
 var _level3_cashouts: int = 0
 var _level3_doubles: int = 0
 var _level3_bets_used: Array[StringName] = []
@@ -381,6 +388,9 @@ func _ready() -> void:
 	var request_seed_callable: Callable = Callable(self, "_on_request_set_run_seed")
 	if GameEvents.has_signal("request_set_run_seed") and not GameEvents.request_set_run_seed.is_connected(request_seed_callable):
 		GameEvents.request_set_run_seed.connect(request_seed_callable)
+	var request_skip_callable: Callable = Callable(self, "_on_request_skip_arena_resolution")
+	if GameEvents.has_signal("request_skip_arena_resolution") and not GameEvents.request_skip_arena_resolution.is_connected(request_skip_callable):
+		GameEvents.request_skip_arena_resolution.connect(request_skip_callable)
 	var modal_opened_callable: Callable = Callable(self, "_on_modal_opened")
 	if GameEvents.has_signal("modal_opened") and not GameEvents.modal_opened.is_connected(modal_opened_callable):
 		GameEvents.modal_opened.connect(modal_opened_callable)
@@ -502,6 +512,11 @@ func _start_level3_run() -> void:
 	_last_selected_bet_id = &""
 	_last_bet_offers = []
 	_last_enemy_profile = &""
+	_level3_current_offer = []
+	_special_arena_index = 0
+	_special_arena_id = &""
+	_special_arena_active = false
+	_special_arena_effect_applied = false
 	_level3_cashouts = 0
 	_level3_doubles = 0
 	_level3_bets_used = []
@@ -526,6 +541,7 @@ func _start_level3_run() -> void:
 	_level3_rng.seed = _run_state.run_seed
 	_level3_target_arenas = _level3_rng.randi_range(5, 8)
 	_level3_min_cashout_arenas = 5
+	_special_arena_index = _pick_special_arena_index(_level3_target_arenas)
 
 	_reset_scars()
 	run["coins"] = starting_coins
@@ -550,6 +566,7 @@ func start_arena() -> void:
 	_clear_enemies()
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
+	_maybe_activate_special_arena()
 	_select_enemy_profile()
 	load_next_arena()
 	_emit_run_debug_state()
@@ -566,6 +583,7 @@ func select_bet(bet_id: StringName) -> void:
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
 	_level3_bets_used.append(bet_id)
+	_level3_current_offer = []
 	if bet_id == BET_CASH_OUT:
 		_level3_cashout_streak += 1
 		_level3_cashout_streak_max = maxi(_level3_cashout_streak_max, _level3_cashout_streak)
@@ -583,6 +601,7 @@ func resolve_arena() -> void:
 		return
 	set_phase(RunPhase.LIVE)
 	GameEvents.arena_started.emit(_run_state.arena_index)
+	_apply_special_arena_pre_resolution()
 	var result: ArenaResult = _resolve_level3_arena()
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var bet_id: StringName = _run_state.active_bet_id
@@ -594,6 +613,7 @@ func resolve_arena() -> void:
 		scars_applied = _handle_level3_loss(bet_id, result)
 	else:
 		_handle_level3_win(bet_id, result)
+	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
 	_run_state.active_bet_id = &""
 	_emit_run_debug_state()
@@ -664,6 +684,7 @@ func _open_level3_bet_ui() -> void:
 	set_phase(RunPhase.PREP)
 	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
+	_level3_current_offer = offer.duplicate(true)
 	GameEvents.bet_ui_opened.emit(offer)
 	GameEvents.bet_opened.emit()
 
@@ -715,6 +736,8 @@ func _filter_recent_bets(bets: Array[Dictionary], desired_count: int) -> Array[D
 	for bet_value: Dictionary in bets:
 		var bet_id: StringName = StringName(str(bet_value.get("id", "")))
 		if bet_id == &"":
+			continue
+		if bet_id == _last_selected_bet_id:
 			continue
 		if _last_bet_offers.has(bet_id):
 			continue
@@ -791,8 +814,102 @@ func _emit_run_debug_state() -> void:
 		"active_bet_id": String(_run_state.active_bet_id),
 		"enemy_profile": String(_run_state.enemy_profile),
 		"scars": scars_copy,
+		"special_arena_id": String(_special_arena_id),
+		"special_arena_active": _special_arena_active,
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
+
+func _pick_special_arena_index(target_arenas: int) -> int:
+	if target_arenas <= 0:
+		return 0
+	var min_index: int = 2
+	var max_index: int = maxi(target_arenas, min_index)
+	_level3_rng.seed = _run_state.run_seed + 117
+	return _level3_rng.randi_range(min_index, max_index)
+
+func _maybe_activate_special_arena() -> void:
+	_special_arena_active = false
+	_special_arena_effect_applied = false
+	if _special_arena_index <= 0:
+		return
+	if _special_arena_id != &"":
+		return
+	if _run_state.arena_index != _special_arena_index:
+		return
+	var options: Array[StringName] = [SPECIAL_ARENA_SILENCE, SPECIAL_ARENA_ASH]
+	_level3_rng.seed = _run_state.run_seed + _run_state.arena_index * 23
+	var pick_idx: int = _level3_rng.randi_range(0, options.size() - 1)
+	_special_arena_id = options[pick_idx]
+	_special_arena_active = true
+	_emit_special_arena_started()
+
+func _emit_special_arena_started() -> void:
+	if not GameEvents.has_signal("special_arena_started"):
+		return
+	if _special_arena_id == &"":
+		return
+	var payload: Dictionary = {
+		"id": String(_special_arena_id),
+		"title": _get_special_arena_title(_special_arena_id),
+		"description": _get_special_arena_description(_special_arena_id),
+		"arena_index": _run_state.arena_index,
+	}
+	GameEvents.special_arena_started.emit(payload)
+
+func _get_special_arena_title(arena_id: StringName) -> String:
+	match arena_id:
+		SPECIAL_ARENA_SILENCE:
+			return "Arena of Silence"
+		SPECIAL_ARENA_ASH:
+			return "Arena of Ash"
+		_:
+			return "Arena"
+
+func _get_special_arena_description(arena_id: StringName) -> String:
+	match arena_id:
+		SPECIAL_ARENA_SILENCE:
+			return "L'escalation sale subito. Il rischio cresce, le ricompense restano."
+		SPECIAL_ARENA_ASH:
+			return "Ricompensa extra, ma una cicatrice è garantita."
+		_:
+			return ""
+
+func _apply_special_arena_pre_resolution() -> void:
+	if not _special_arena_active:
+		return
+	if _special_arena_effect_applied:
+		return
+	if _special_arena_id == SPECIAL_ARENA_SILENCE:
+		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+		_special_arena_effect_applied = true
+		_emit_run_debug_state()
+
+func _apply_special_arena_post_resolution(result: ArenaResult, failed: bool) -> void:
+	if not _special_arena_active:
+		return
+	if _special_arena_id == SPECIAL_ARENA_ASH and not _run_state.run_is_over and not _is_game_over:
+		_apply_special_arena_ash_reward(result, failed)
+	_special_arena_active = false
+	_special_arena_effect_applied = false
+	_emit_run_debug_state()
+
+func _apply_special_arena_ash_reward(result: ArenaResult, failed: bool) -> void:
+	if _special_arena_effect_applied:
+		return
+	var reward_amount: int = 12
+	if not failed and result.won:
+		add_coins(reward_amount)
+	var scar_id: StringName = _pick_special_arena_scar()
+	if scar_id != &"":
+		_apply_level3_scar(scar_id, "Arena of Ash")
+	_special_arena_effect_applied = true
+
+func _pick_special_arena_scar() -> StringName:
+	var options: Array[StringName] = [SCAR_SHAME_MARK, SCAR_CRACKED_BONES, SCAR_RUSTED_ARMOR]
+	for scar_id: StringName in options:
+		if not _has_scar(scar_id):
+			return scar_id
+	return &""
 
 func _select_enemy_profile() -> void:
 	if LEVEL3_ENEMY_PROFILES.is_empty():
@@ -869,10 +986,10 @@ func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_app
 
 func _resolve_level3_arena() -> ArenaResult:
 	var result: ArenaResult = ArenaResult.new()
-	var base_win: float = 0.65
-	var base_damage: float = 0.35
-	var escalation_penalty: float = float(_run_state.escalation_level) * 0.08
-	var escalation_damage: float = float(_run_state.escalation_level) * 0.05
+	var base_win: float = 0.66
+	var base_damage: float = 0.4
+	var escalation_penalty: float = _get_escalation_win_penalty(_run_state.escalation_level)
+	var escalation_damage: float = _get_escalation_damage_penalty(_run_state.escalation_level)
 	if _has_scar(SCAR_CRACKED_BONES):
 		base_win -= 0.12
 		base_damage += 0.18
@@ -900,8 +1017,8 @@ func _resolve_level3_arena() -> ArenaResult:
 		if _run_state.enemy_profile == ENEMY_TRICKSTER:
 			base_win = 0.5 + (base_win - 0.5) * 1.35
 			base_damage = 0.5 + (base_damage - 0.5) * 1.25
-	var win_chance: float = clampf(base_win - escalation_penalty, 0.1, 0.9)
-	var damage_chance: float = clampf(base_damage + escalation_damage, 0.1, 0.9)
+	var win_chance: float = clampf(base_win - escalation_penalty, 0.2, 0.85)
+	var damage_chance: float = clampf(base_damage + escalation_damage, 0.2, 0.85)
 
 	_level3_rng.seed = _compute_level3_seed(_run_state.active_bet_id)
 	var win_roll: float = _level3_rng.randf()
@@ -913,6 +1030,22 @@ func _resolve_level3_arena() -> ArenaResult:
 	if _run_state.enemy_profile != &"":
 		result.notes.append(StringName("ENEMY_" + String(_run_state.enemy_profile)))
 	return result
+
+func _get_escalation_win_penalty(escalation_level: int) -> float:
+	var penalty: float = 0.0
+	if escalation_level >= 1:
+		penalty += 0.04
+	if escalation_level >= 2:
+		penalty += float(escalation_level - 1) * 0.09
+	return penalty
+
+func _get_escalation_damage_penalty(escalation_level: int) -> float:
+	var penalty: float = 0.0
+	if escalation_level >= 1:
+		penalty += 0.03
+	if escalation_level >= 2:
+		penalty += float(escalation_level - 1) * 0.07
+	return penalty
 
 func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
 	_waiting_for_push_luck = true
@@ -1324,6 +1457,35 @@ func _on_request_set_run_seed(seed: int) -> void:
 	print("Debug seed override set:", seed)
 	if _has_started_run:
 		start_new_run()
+
+func _on_request_skip_arena_resolution() -> void:
+	if _run_state.run_is_over or _is_game_over:
+		return
+	if not OS.is_debug_build():
+		return
+	if LEVEL3_ENABLED:
+		_debug_skip_level3_step()
+		return
+	_clear_enemies()
+	var wave: int = 0
+	if _arena != null and _arena.has_method("get_current_wave"):
+		wave = int(_arena.call("get_current_wave"))
+	_on_wave_cleared(wave)
+
+func _debug_skip_level3_step() -> void:
+	if _waiting_for_bet:
+		var bet_id: StringName = _get_debug_default_bet()
+		if bet_id != &"":
+			select_bet(bet_id)
+		return
+	if _waiting_for_push_luck:
+		_on_request_push_luck_double()
+
+func _get_debug_default_bet() -> StringName:
+	if _level3_current_offer.is_empty():
+		return &""
+	var bet_data: Dictionary = _level3_current_offer[0] as Dictionary
+	return StringName(str(bet_data.get("id", "")))
 
 func _on_modal_opened(_kind: String) -> void:
 	_modal_lock_count += 1
@@ -1901,6 +2063,36 @@ func _emit_run_finale() -> void:
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
+	_emit_run_log(finale)
+
+func _emit_run_log(finale: Dictionary) -> void:
+	if not GameEvents.has_signal("run_log_ready"):
+		return
+	var log_text: String = _build_run_log(finale)
+	GameEvents.run_log_ready.emit(log_text)
+
+func _build_run_log(finale: Dictionary) -> String:
+	var ending_id: String = str(finale.get("ending_id", ""))
+	var title: String = str(finale.get("title", ""))
+	var arena_count: int = _run_state.arena_index
+	var cashouts: int = _level3_cashouts
+	var doubles: int = _level3_doubles
+	var max_escalation: int = _level3_max_escalation
+	var scar_count: int = _run_state.scars.size()
+	var special_arena: String = ""
+	if _special_arena_id != &"":
+		special_arena = _get_special_arena_title(_special_arena_id)
+	var lines: Array[String] = []
+	lines.append("Seed: %d" % _run_state.run_seed)
+	if title != "":
+		lines.append("Ending: %s (%s)" % [title, ending_id])
+	else:
+		lines.append("Ending: %s" % ending_id)
+	lines.append("Arene: %d | Cashout: %d | Double: %d | Escalation max: %d" % [arena_count, cashouts, doubles, max_escalation])
+	lines.append("Cicatrici: %d" % scar_count)
+	if special_arena != "":
+		lines.append("Arena speciale: %s" % special_arena)
+	return "\n".join(lines)
 
 func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _scars.duplicate(true)

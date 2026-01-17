@@ -36,7 +36,8 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var debug_skip_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/SkipArenaButton") as Button
 @onready var debug_copy_log_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/CopyLogButton") as Button
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
-@onready var scar_popup: Label = get_node_or_null("HUD/ScarPopup") as Label
+@onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopup") as RichTextLabel
+@onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverPanel") as Panel
@@ -93,6 +94,7 @@ var _tokens: int = 0
 var _coins: int = 0
 var _popup_tween: Tween = null
 var _scar_popup_tween: Tween = null
+var _arena_resolution_tween: Tween = null
 var _last_level: int = 1
 var _last_tokens: int = 0
 var _xp_anim_tween: Tween = null
@@ -240,6 +242,8 @@ func _ready() -> void:
 		level_up_popup.visible = false
 	if scar_popup != null:
 		scar_popup.visible = false
+	if arena_resolution_label != null:
+		arena_resolution_label.visible = false
 
 	if fast_blink_timer != null:
 		var blink_callable: Callable = Callable(self, "_on_fast_blink_tick")
@@ -524,10 +528,17 @@ func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_popup == null:
 		return
 	var scar_name: String = str(scar.get("name", "Cicatrice"))
-	var scar_story: String = str(scar.get("story", ""))
-	var text_lines: Array[String] = ["CICATRICE: %s" % scar_name]
+	var scar_story: String = str(scar.get("narrative_text", ""))
+	if scar_story == "":
+		scar_story = str(scar.get("story", ""))
+	var effect_text: String = str(scar.get("effect_text", ""))
+	if effect_text == "":
+		effect_text = str(scar.get("effect", ""))
+	var text_lines: Array[String] = ["[center][b]%s[/b][/center]" % scar_name]
 	if scar_story != "":
-		text_lines.append(scar_story)
+		text_lines.append("[i]%s[/i]" % scar_story)
+	if effect_text != "":
+		text_lines.append("[b]Effetto:[/b] %s" % effect_text)
 	scar_popup.text = "\n".join(text_lines)
 	scar_popup.visible = true
 	scar_popup.modulate.a = 0.0
@@ -548,6 +559,34 @@ func _show_scar_popup(scar: Dictionary) -> void:
 func _hide_scar_popup() -> void:
 	if scar_popup != null:
 		scar_popup.visible = false
+
+func _should_show_arena_resolution_overlay() -> bool:
+	if arena_resolution_label == null:
+		return false
+	var manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if manager != null and manager.has_method("is_visual_only"):
+		return bool(manager.call("is_visual_only"))
+	return false
+
+func _show_arena_resolution_overlay() -> void:
+	if arena_resolution_label == null:
+		return
+	arena_resolution_label.visible = true
+	arena_resolution_label.modulate.a = 0.0
+	if _arena_resolution_tween != null and _arena_resolution_tween.is_valid():
+		_arena_resolution_tween.kill()
+	_arena_resolution_tween = create_tween()
+	_arena_resolution_tween.set_trans(Tween.TRANS_QUAD)
+	_arena_resolution_tween.set_ease(Tween.EASE_OUT)
+	_arena_resolution_tween.tween_property(arena_resolution_label, "modulate:a", 1.0, 0.18)
+	_arena_resolution_tween.tween_interval(0.7)
+	_arena_resolution_tween.set_ease(Tween.EASE_IN)
+	_arena_resolution_tween.tween_property(arena_resolution_label, "modulate:a", 0.0, 0.25)
+	_arena_resolution_tween.tween_callback(Callable(self, "_hide_arena_resolution_overlay"))
+
+func _hide_arena_resolution_overlay() -> void:
+	if arena_resolution_label != null:
+		arena_resolution_label.visible = false
 
 func _on_buy_token_pressed() -> void:
 	if GameEvents.has_signal("request_purchase_token"):
@@ -758,6 +797,8 @@ func _on_arena_started(arena_index: int) -> void:
 		var special_index: int = int(_special_arena_payload.get("arena_index", -1))
 		if arena_index >= special_index and special_index > 0:
 			_special_arena_payload = {}
+	if _should_show_arena_resolution_overlay():
+		_show_arena_resolution_overlay()
 
 func _on_countdown_requested(seconds: int) -> void:
 	# FAST countdown must be visible during the round ONLY if the player selected FAST.
@@ -896,9 +937,13 @@ func _refresh_scars_ui(scars: Array) -> void:
 		var scar_name: String = str(scar.get("name", "Cicatrice"))
 		var visual_tag: String = str(scar.get("visual_tag", ""))
 		var short_desc: String = str(scar.get("short_desc", ""))
-		var story: String = str(scar.get("story", ""))
+		var story: String = str(scar.get("narrative_text", ""))
+		if story == "":
+			story = str(scar.get("story", ""))
+		var effect_text: String = str(scar.get("effect_text", ""))
+		if effect_text == "":
+			effect_text = str(scar.get("effect", ""))
 		var origin: String = str(scar.get("origin", ""))
-		var effect: String = str(scar.get("effect", ""))
 		if visual_tag != "":
 			summary_lines.append("• %s %s" % [visual_tag, scar_name])
 			detail_lines.append("• %s %s" % [visual_tag, scar_name])
@@ -909,11 +954,14 @@ func _refresh_scars_ui(scars: Array) -> void:
 			summary_lines.append("  %s" % short_desc)
 			detail_lines.append("  %s" % short_desc)
 		if story != "":
-			detail_lines.append("  %s" % story)
+			var story_lines: PackedStringArray = story.split("\n")
+			for line: String in story_lines:
+				if line != "":
+					detail_lines.append("  %s" % line)
+		if effect_text != "":
+			detail_lines.append("  Effetto: %s" % effect_text)
 		if origin != "":
 			detail_lines.append("  Origine: %s" % origin)
-		if effect != "":
-			detail_lines.append("  Effetto: %s" % effect)
 		summary_lines.append("")
 		detail_lines.append("")
 	if summary_lines.size() > 0 and summary_lines[summary_lines.size() - 1] == "":

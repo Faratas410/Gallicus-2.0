@@ -21,6 +21,7 @@ var _current_wave: int = 0
 var _enemies_remaining: int = 0
 var _player: Node2D = null
 var _aggro_sequence_id: int = 0
+var _visual_only: bool = false
 
 func set_difficulty_tier(tier: int, mult: float = 1.0) -> void:
 	difficulty_tier = tier
@@ -45,8 +46,36 @@ func _ready() -> void:
 			GameEvents.difficulty_tier_changed.connect(tier_callable)
 	queue_redraw()
 	ensure_player()
-	if debug_spawn_enemy:
+	if debug_spawn_enemy and not _is_visual_only():
 		_spawn_debug_enemy()
+
+func set_visual_only(visual_only: bool) -> void:
+	if _visual_only == visual_only:
+		return
+	_visual_only = visual_only
+	set_process(not _visual_only)
+	set_physics_process(not _visual_only)
+	if _visual_only:
+		_aggro_sequence_id += 1
+		_clear_enemies()
+		_set_enemy_ai_locked(true)
+	else:
+		_set_enemy_ai_locked(false)
+
+func _is_visual_only() -> bool:
+	if _visual_only:
+		return true
+	var manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if manager != null and manager.has_method("is_visual_only"):
+		return bool(manager.call("is_visual_only"))
+	return false
+
+func _set_enemy_ai_locked(locked: bool) -> void:
+	for enemy: Node in get_tree().get_nodes_in_group("enemies"):
+		if enemy == null or not is_instance_valid(enemy):
+			continue
+		if enemy.has_method("set_ai_locked"):
+			enemy.call("set_ai_locked", locked)
 
 func _on_difficulty_tier_changed(tier: int, mult: float) -> void:
 	set_difficulty_tier(tier, mult)
@@ -57,6 +86,8 @@ func _draw() -> void:
 	draw_rect(rect, Color(0.15, 0.15, 0.2, 1.0))
 
 func start_next_wave() -> void:
+	if _is_visual_only():
+		return
 	if _enemies_remaining > 0:
 		return
 	_current_wave += 1
@@ -86,6 +117,8 @@ func _spawn_player() -> void:
 		_player.died.connect(died_callable)
 
 func _spawn_enemies(count: int) -> void:
+	if _is_visual_only():
+		return
 	_enemies_remaining = count
 	enemy_count_changed.emit(_enemies_remaining)
 	if _player == null or not is_instance_valid(_player):
@@ -123,6 +156,8 @@ func _apply_difficulty_to_enemy(enemy: Node) -> void:
 		enemy.call("_apply_tier_scaling_from_run_manager")
 
 func _spawn_debug_enemy() -> void:
+	if _is_visual_only():
+		return
 	if enemy_scene == null:
 		return
 	await get_tree().create_timer(0.2).timeout
@@ -235,6 +270,8 @@ func ensure_player() -> Node2D:
 	return _player
 
 func _schedule_enemy_aggro_after_delay() -> void:
+	if _is_visual_only():
+		return
 	_aggro_sequence_id += 1
 	var my_id: int = _aggro_sequence_id
 	var delay: float = maxf(enemy_aggro_delay, 0.0)
@@ -250,6 +287,8 @@ func _apply_enemy_targets_deferred(my_id: int, delay: float) -> void:
 func _apply_enemy_targets_if_possible(my_id: int) -> void:
 	# Se nel frattempo è cambiata wave/reset/gameover -> abort
 	if my_id != _aggro_sequence_id:
+		return
+	if _is_visual_only():
 		return
 	if _player == null or not is_instance_valid(_player) or not _player.is_inside_tree():
 		_player = get_tree().get_first_node_in_group("player") as Node2D

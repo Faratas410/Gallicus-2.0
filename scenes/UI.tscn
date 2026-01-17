@@ -229,69 +229,6 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "Il patto viene giudicato..."
 
-[node name="DebugOverlay" type="Label" parent="HUD"]
-mouse_filter = 2
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 256.0
-offset_bottom = 156.0
-horizontal_alignment = 0
-text = "Seed: 0\nArena: 0\nEscalation: 0\nActive Bet: -\nScars: [-]"
-
-[node name="DebugTools" type="Panel" parent="HUD"]
-visible = false
-z_index = 120
-anchor_left = 0.0
-anchor_top = 1.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = -160.0
-offset_right = 316.0
-offset_bottom = -16.0
-custom_minimum_size = Vector2(300, 144)
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
-
-[node name="DebugToolsVBox" type="VBoxContainer" parent="HUD/DebugTools"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-theme_override_constants/separation = 6
-
-[node name="DebugToolsTitle" type="Label" parent="HUD/DebugTools/DebugToolsVBox"]
-text = "DEBUG TOOLS"
-
-[node name="SeedRow" type="HBoxContainer" parent="HUD/DebugTools/DebugToolsVBox"]
-theme_override_constants/separation = 6
-
-[node name="SeedInput" type="LineEdit" parent="HUD/DebugTools/DebugToolsVBox/SeedRow"]
-size_flags_horizontal = 3
-placeholder_text = "Run seed"
-
-[node name="SeedButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox/SeedRow"]
-text = "SET"
-
-[node name="DebugButtons" type="HBoxContainer" parent="HUD/DebugTools/DebugToolsVBox"]
-theme_override_constants/separation = 6
-
-[node name="RestartRunButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox/DebugButtons"]
-size_flags_horizontal = 3
-text = "RESTART"
-
-[node name="SkipArenaButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox/DebugButtons"]
-size_flags_horizontal = 3
-text = "SKIP"
-
-[node name="CopyLogButton" type="Button" parent="HUD/DebugTools/DebugToolsVBox"]
-text = "COPY RUN LOG"
-
 [node name="WorldUI" type="Control" parent="."]
 mouse_filter = 2
 anchor_right = 1.0
@@ -320,19 +257,24 @@ color = Color(0, 0, 0, 0.55)
 
 [node name="OnboardingModal" type="Control" parent="Modals"]
 visible = false
-mouse_filter = 2
-z_index = 96
+mouse_filter = 0
+z_index = 200
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="OnboardingBlocker" type="ColorRect" parent="Modals/OnboardingModal"]
-mouse_filter = 2
+mouse_filter = 0
+anchor_left = 0.0
+anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -300.0
-color = Color(0, 0, 0, 0.2)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+color = Color(0, 0, 0, 0.35)
 
 [node name="OnboardingPanel" type="Panel" parent="Modals/OnboardingModal"]
 visible = false
@@ -365,7 +307,7 @@ text = "PRIMA DEL PATTO"
 [node name="OnboardingText" type="Label" parent="Modals/OnboardingModal/OnboardingPanel/OnboardingVBox"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Scegli un patto. Vedi prima la condanna.\nLe cicatrici restano fino a fine run.\nRaddoppi = più reward, più condanna."
+text = "Scegli un patto. Leggi prima la condanna.\nLe cicatrici restano fino a fine run.\nRaddoppi = più ricompensa, più condanna."
 
 [node name="OnboardingButton" type="Button" parent="Modals/OnboardingModal/OnboardingPanel/OnboardingVBox"]
 focus_mode = 2
@@ -396,12 +338,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -240.0
-offset_right = 240.0
-offset_bottom = 240.0
+offset_left = -280.0
+offset_top = -280.0
+offset_right = 280.0
+offset_bottom = 280.0
 clip_contents = true
-custom_minimum_size = Vector2(480, 480)
+custom_minimum_size = Vector2(560, 560)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="BetScroll" type="ScrollContainer" parent="Modals/BetModal/BetPanel"]
@@ -522,7 +464,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
-text = "Disponibile dopo questa arena."
+text = "Disponibile dopo l'arena in corso."
 
 [node name="BuyTokenInfo" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow"]
 autowrap_mode = 2
@@ -606,7 +548,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
-text = "Disponibile dopo questa arena."
+text = "Disponibile dopo l'arena in corso."
 
 [node name="PushLuckDoubleBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
 size_flags_horizontal = 3
@@ -623,7 +565,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
-text = "Disponibile dopo questa arena."
+text = "Disponibile dopo l'arena in corso."
 
 [node name="ScarsDetailPanel" type="Panel" parent="Modals"]
 visible = false
@@ -794,26 +736,3 @@ vertical_scroll_mode = 2
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Nessuna cicatrice."
-
-[node name="ControlsHintPanel" type="Panel" parent="HUD/SafeMargin/TopRow/RightColumn"]
-visible = true
-mouse_filter = 2
-clip_contents = true
-custom_minimum_size = Vector2(280, 160)
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
-
-[node name="ControlsVBox" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-
-[node name="ControlsTitle" type="Label" parent="HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel/ControlsVBox"]
-autowrap_mode = 2
-text = "CONTROLS"
-
-[node name="ControlsText" type="Label" parent="HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel/ControlsVBox"]
-autowrap_mode = 2
-text = "MOVE: WASD / Arrows\nLIGHT: J\nHEAVY: K\nDODGE: Space\nBLOCK: Shift"

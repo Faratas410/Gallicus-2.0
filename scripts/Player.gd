@@ -42,6 +42,7 @@ var _dodge_cooldown_multiplier: float = 1.0
 var _dodge_speed_multiplier: float = 1.0
 var input_locked: bool = false
 @onready var sword_sprite: Sprite2D = get_node_or_null("SwordSprite") as Sprite2D
+@onready var body_sprite: Sprite2D = get_node_or_null("Visual") as Sprite2D
 
 func _ready() -> void:
 	_base_max_health = max_health
@@ -52,6 +53,12 @@ func _ready() -> void:
 	_ensure_placeholder_sprite()
 	if sword_sprite != null:
 		sword_sprite.texture = SWORD_TEX_IDLE
+	if _is_level3_mode():
+		if body_sprite != null:
+			body_sprite.visible = false
+		if sword_sprite != null:
+			sword_sprite.visible = false
+		input_locked = true
 	add_to_group("player")
 	if Engine.has_singleton("GameEvents") and GameEvents != null:
 		if GameEvents.has_signal("gameplay_enabled_changed"):
@@ -61,6 +68,10 @@ func _ready() -> void:
 		input_locked = not GameEvents.gameplay_enabled
 
 func _physics_process(delta: float) -> void:
+	if _is_level3_mode():
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	if input_locked:
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -87,6 +98,12 @@ func _physics_process(delta: float) -> void:
 
 func set_input_locked(locked: bool) -> void:
 	input_locked = locked
+
+func _is_level3_mode() -> bool:
+	var manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if manager != null and manager.has_method("is_level3_mode"):
+		return bool(manager.call("is_level3_mode"))
+	return false
 
 func _on_gameplay_enabled_changed(enabled: bool) -> void:
 	set_input_locked(not enabled)

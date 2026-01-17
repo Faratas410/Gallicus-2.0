@@ -1978,7 +1978,7 @@ func _get_cashout_lock_reason() -> String:
 	if _cashout_lock_remaining > 0:
 		return "Decima di Sangue: incasso bloccato (%d arena)" % _cashout_lock_remaining
 	if _run_state.arena_index < _level3_min_cashout_arenas:
-		return "Incasso disponibile dopo arena %d" % _level3_min_cashout_arenas
+		return "Incasso disponibile dopo Arena %d" % _level3_min_cashout_arenas
 	return ""
 
 func _get_double_lock_reason() -> String:
@@ -2426,7 +2426,12 @@ func consume_upgrade_shop() -> void:
 func is_live() -> bool:
 	return phase == RunPhase.LIVE
 
+func is_level3_mode() -> bool:
+	return LEVEL3_ENABLED
+
 func is_visual_only() -> bool:
+	if LEVEL3_ENABLED:
+		return true
 	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _run_state.run_is_over or _is_game_over
 
 func set_phase(p: Variant) -> void:

@@ -133,7 +133,9 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"name": "FERITA APERTA",
 		"short_desc": "HP massimo ridotto.",
 		"effect": "HP massimo ridotto e cure meno efficaci.",
+		"effect_text": "HP massimo ridotto e cure meno efficaci.",
 		"story": "Il sangue non si è mai fermato.",
+		"narrative_text": "Il sangue ti segue anche quando l'arena tace.\nLa folla ascolta il tuo respiro corto.\nIl giudizio è già inciso sulla pelle.",
 		"visual_tag": "🩸",
 		"tags": [&"physical"],
 	},
@@ -142,7 +144,9 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"name": "OSSA INCRINATE",
 		"short_desc": "Rischio aumentato nelle arene.",
 		"effect": "Movimento rallentato e schivate meno affidabili.",
+		"effect_text": "Movimento rallentato e schivate meno affidabili.",
 		"story": "Ogni passo fa male.",
+		"narrative_text": "Cammini con onore ma ogni passo pesa.\nIl debito del corpo resta sotto la sabbia.\nIl destino ti guarda senza tregua.",
 		"visual_tag": "🦴",
 		"tags": [&"physical"],
 	},
@@ -151,7 +155,9 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"name": "MARCHIO DELLA VERGOGNA",
 		"short_desc": "Il pubblico ti giudica.",
 		"effect": "Aumenta la probabilità di subire danni.",
+		"effect_text": "Aumenta la probabilità di subire danni.",
 		"story": "Il boato è diventato un sibilo.",
+		"narrative_text": "La vergogna ti precede davanti alla folla.\nOgni sguardo è un giudizio che brucia.\nPorti il segno anche quando vinci.",
 		"visual_tag": "🎭",
 		"tags": [&"social"],
 	},
@@ -160,7 +166,9 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"name": "ARMATURA ARRUGGINITA",
 		"short_desc": "Protezione compromessa.",
 		"effect": "I danni sono più probabili.",
+		"effect_text": "I danni sono più probabili.",
 		"story": "Le crepe non si chiudono più.",
+		"narrative_text": "Hai offerto onore e sangue, ma l'armatura non regge.\nLa ruggine canta il tuo debito.\nIl giudizio scivola sulle ferite.",
 		"visual_tag": "🛡️",
 		"tags": [&"physical"],
 	},
@@ -169,7 +177,9 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"name": "MARCHIO DEL DEBITO",
 		"short_desc": "Escalation più severa.",
 		"effect": "Le escalation puniscono di più.",
+		"effect_text": "Le escalation puniscono di più.",
 		"story": "Ogni vittoria ha un prezzo.",
+		"narrative_text": "Il debito ti stringe come catena sacra.\nLa folla esige il prezzo della promessa.\nIl destino pesa su ogni patto.",
 		"visual_tag": "⛓️",
 		"tags": [&"risk"],
 	},
@@ -178,7 +188,9 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"name": "OCCHIO PERDUTO",
 		"short_desc": "Il perfetto è più raro.",
 		"effect": "Peggiora le chance di outcome puliti.",
+		"effect_text": "Peggiora le chance di outcome puliti.",
 		"story": "La profondità si è spenta.",
+		"narrative_text": "Hai perso un occhio ma non la vergogna di guardare.\nIl sangue vela il tuo destino.\nLa folla vede la tua mancanza.",
 		"visual_tag": "👁️",
 		"tags": [&"physical"],
 	},
@@ -308,6 +320,8 @@ var _boot_countdown_skipped: bool = false
 var _show_shop_next_bet: bool = false
 var _modal_lock_count: int = 0
 var _arena_suspended: bool = false
+var _arena_visual_only: bool = false
+var _resolving_arena: bool = false
 var _bet_chain_level: int = 1
 var _current_bet_id: String = ""
 var _scars: Array[Dictionary] = []
@@ -457,9 +471,11 @@ func start_new_run() -> void:
 	_failed_high_risk_bets = 0
 	_run_end_reason = ""
 	_run_finale_emitted = false
+	_resolving_arena = false
 	_reset_bet_chain()
 	_reset_scars()
 	set_phase(RunPhase.PREP)
+	_update_arena_visual_only()
 
 	_ensure_arena_and_player()
 	if _arena != null and _arena.has_method("soft_reset"):
@@ -518,6 +534,7 @@ func _start_level3_run() -> void:
 	_show_shop_next_bet = false
 	_run_end_reason = ""
 	_run_finale_emitted = false
+	_resolving_arena = false
 	_forced_ending_id = &""
 	_level3_reward_tier = 1
 	_level3_next_loss_hp_penalty = 0
@@ -577,6 +594,7 @@ func _start_level3_run() -> void:
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
 	set_phase(RunPhase.PREP)
+	_update_arena_visual_only()
 	_emit_run_debug_state()
 	start_arena()
 
@@ -602,6 +620,7 @@ func select_bet(bet_id: StringName) -> void:
 		return
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
+	_update_arena_visual_only()
 	_run_state.active_bet_id = bet_id
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
@@ -624,8 +643,11 @@ func select_bet(bet_id: StringName) -> void:
 func resolve_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
+	_resolving_arena = true
+	_update_arena_visual_only()
 	set_phase(RunPhase.LIVE)
 	GameEvents.arena_started.emit(_run_state.arena_index)
+	_play_arena_resolution_fx()
 	_apply_special_arena_pre_resolution()
 	var result: ArenaResult = _resolve_level3_arena()
 	_run_state.arenas_cleared = maxi(_run_state.arenas_cleared + 1, 1)
@@ -642,16 +664,39 @@ func resolve_arena() -> void:
 	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
 	_run_state.active_bet_id = &""
+	_resolving_arena = false
+	_update_arena_visual_only()
 	_emit_run_debug_state()
 
 func apply_scar(scar_id: StringName) -> void:
 	_apply_level3_scar(scar_id, "")
+
+func _play_arena_resolution_fx() -> void:
+	if _arena == null or not is_instance_valid(_arena):
+		_arena = get_node_or_null(arena_path)
+	if _arena == null or not (_arena is CanvasItem):
+		return
+	var canvas: CanvasItem = _arena as CanvasItem
+	var base_color: Color = canvas.modulate
+	var flash_color: Color = Color(
+		minf(base_color.r + 0.2, 1.0),
+		minf(base_color.g + 0.2, 1.0),
+		minf(base_color.b + 0.2, 1.0),
+		base_color.a
+	)
+	var tween: Tween = create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(canvas, "modulate", flash_color, 0.12)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(canvas, "modulate", base_color, 0.18)
 
 func end_run(ending_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
 	_forced_ending_id = ending_id
 	_run_state.run_is_over = true
+	_update_arena_visual_only()
 	_register_run_end(String(ending_id))
 	_enter_game_over()
 
@@ -698,6 +743,7 @@ func _open_bet_ui(from_victory: bool = false) -> void:
 	_waiting_for_push_luck = false
 	_show_shop_next_bet = from_victory
 	set_phase(RunPhase.PREP)
+	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
 	if _bet_manager and _bet_manager.has_method("open_bet_ui_before_arena"):
 		_bet_manager.open_bet_ui_before_arena()
@@ -708,6 +754,7 @@ func _open_level3_bet_ui() -> void:
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
 	set_phase(RunPhase.PREP)
+	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
 	_level3_current_offer = offer.duplicate(true)
@@ -1161,12 +1208,16 @@ func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
 	var scar_def: Dictionary = _get_scar_def(scar_id)
 	if scar_def.is_empty():
 		return
+	var narrative_text: String = str(scar_def.get("narrative_text", scar_def.get("story", "")))
+	var effect_text: String = str(scar_def.get("effect_text", scar_def.get("effect", "")))
 	var scar: Dictionary = {
 		"id": scar_id,
 		"name": str(scar_def.get("name", "")),
 		"origin": origin,
 		"effect": str(scar_def.get("effect", "")),
+		"effect_text": effect_text,
 		"story": str(scar_def.get("story", "")),
+		"narrative_text": narrative_text,
 		"short_desc": str(scar_def.get("short_desc", "")),
 		"visual_tag": str(scar_def.get("visual_tag", "")),
 		"tags": scar_def.get("tags", []) as Array,
@@ -1232,6 +1283,7 @@ func _ensure_arena_and_player() -> void:
 	if _player and _player is Node2D:
 		(_player as Node2D).global_position = Vector2.ZERO
 	_set_arena_suspended(_modal_lock_count > 0)
+	_update_arena_visual_only()
 
 func pick_next_arena_scene() -> PackedScene:
 	if _arena_scenes.size() == 0:
@@ -1422,6 +1474,7 @@ func _on_request_push_luck_cashout() -> void:
 			return
 		var bet_id_name: StringName = StringName(_current_bet_id)
 		_waiting_for_push_luck = false
+		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		if bet_id_name != &"":
 			_apply_level3_reward(bet_id_name, _level3_reward_tier)
@@ -1439,6 +1492,7 @@ func _on_request_push_luck_cashout() -> void:
 		return
 	var bet_id: String = _current_bet_id
 	_waiting_for_push_luck = false
+	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	_push_luck_cashouts += 1
 	if bet_id != "":
@@ -1454,6 +1508,7 @@ func _on_request_push_luck_double() -> void:
 		if lock_reason != "":
 			return
 		_waiting_for_push_luck = false
+		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
 		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
@@ -1469,6 +1524,7 @@ func _on_request_push_luck_double() -> void:
 		return
 	var bet_id: String = _current_bet_id
 	_waiting_for_push_luck = false
+	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	if bet_id == "":
 		_open_bet_ui(true)
@@ -1878,11 +1934,13 @@ func _reset_bet_chain() -> void:
 	_bet_chain_level = 1
 	_current_bet_id = ""
 	_waiting_for_push_luck = false
+	_update_arena_visual_only()
 
 func _open_push_luck_choice(bet_id: StringName) -> void:
 	_waiting_for_push_luck = true
 	_show_shop_next_bet = false
 	set_phase(RunPhase.PREP)
+	_update_arena_visual_only()
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))
 	var bet_name: String = String(bet_id)
 	var condition_text: String = ""
@@ -2096,6 +2154,7 @@ func _enter_game_over() -> void:
 	_run_state.run_is_over = true
 	_waiting_for_bet = false
 	set_phase(RunPhase.GAME_OVER)
+	_update_arena_visual_only()
 	_emit_run_finale()
 	_emit_run_failed()
 
@@ -2256,6 +2315,13 @@ func _select_run_finale() -> Dictionary:
 			title = "THE PRUDENT"
 			text = "Ha scelto la via più sicura.\nHa evitato il baratro tre volte di fila.\nLa folla non dimentica la prudenza."
 
+	if ending_id == &"THE_BROKEN" and not scars_copy.is_empty():
+		var first_scar_name: String = "una cicatrice"
+		var first_scar: Dictionary = scars_copy[0] as Dictionary
+		if first_scar.has("name"):
+			first_scar_name = str(first_scar.get("name", first_scar_name))
+		text += "\nPorta ancora %s." % first_scar_name
+
 	var bet_names: Array[String] = []
 	for bet_id: StringName in _level3_bets_used:
 		bet_names.append(_get_bet_display_name(String(bet_id)))
@@ -2385,6 +2451,9 @@ func consume_upgrade_shop() -> void:
 func is_live() -> bool:
 	return phase == RunPhase.LIVE
 
+func is_visual_only() -> bool:
+	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _run_state.run_is_over or _is_game_over
+
 func set_phase(p: Variant) -> void:
 	# Supporta sia RunPhase che int (es. valori serializzati / segnali legacy).
 	if typeof(p) == TYPE_INT:
@@ -2396,7 +2465,19 @@ func set_phase(p: Variant) -> void:
 
 func _apply_phase() -> void:
 	if GameEvents.has_method("set_gameplay_enabled"):
-		GameEvents.set_gameplay_enabled(phase == RunPhase.LIVE)
+		var gameplay_enabled: bool = phase == RunPhase.LIVE and not is_visual_only()
+		GameEvents.set_gameplay_enabled(gameplay_enabled)
+
+func _update_arena_visual_only() -> void:
+	var desired: bool = is_visual_only()
+	if desired == _arena_visual_only:
+		return
+	_arena_visual_only = desired
+	if _arena == null or not is_instance_valid(_arena):
+		_arena = get_node_or_null(arena_path)
+	if _arena != null and _arena.has_method("set_visual_only"):
+		_arena.call("set_visual_only", _arena_visual_only)
+	_apply_phase()
 
 func _position_player_after_respawn() -> void:
 	if _player == null or not (_player is Node2D):
@@ -2505,12 +2586,16 @@ func _try_apply_open_wound_scar(chain_level: int) -> void:
 	var bet_name: String = _get_bet_display_name(BET_PURE_BLOOD)
 	var origin_text: String = "Condanna: %s (catena %d)" % [bet_name, chain_level]
 	var scar_def: Dictionary = _get_scar_def(SCAR_OPEN_WOUND)
+	var narrative_text: String = str(scar_def.get("narrative_text", scar_def.get("story", "Il sangue non si è mai fermato.")))
+	var effect_text: String = str(scar_def.get("effect_text", scar_def.get("effect", "HP massimo ridotto e cure meno efficaci.")))
 	var scar: Dictionary = {
 		"id": SCAR_OPEN_WOUND,
 		"name": str(scar_def.get("name", "FERITA APERTA")),
 		"origin": origin_text,
 		"effect": str(scar_def.get("effect", "HP massimo ridotto e cure meno efficaci.")),
+		"effect_text": effect_text,
 		"story": str(scar_def.get("story", "Il sangue non si è mai fermato.")),
+		"narrative_text": narrative_text,
 		"short_desc": str(scar_def.get("short_desc", "")),
 		"visual_tag": str(scar_def.get("visual_tag", "")),
 		"tags": scar_def.get("tags", []) as Array,
@@ -2525,12 +2610,16 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 	var bet_name: String = _get_bet_display_name(bet_id)
 	var origin_text: String = "Push Your Luck: %s (x%d)" % [bet_name, chain_level]
 	var scar_def: Dictionary = _get_scar_def(SCAR_CRACKED_BONES)
+	var narrative_text: String = str(scar_def.get("narrative_text", scar_def.get("story", "Ogni passo fa male.")))
+	var effect_text: String = str(scar_def.get("effect_text", scar_def.get("effect", "Movimento rallentato e blocco meno efficace.")))
 	var scar: Dictionary = {
 		"id": SCAR_CRACKED_BONES,
 		"name": str(scar_def.get("name", "OSSA INCRINATE")),
 		"origin": origin_text,
 		"effect": str(scar_def.get("effect", "Movimento rallentato e blocco meno efficace.")),
+		"effect_text": effect_text,
 		"story": str(scar_def.get("story", "Ogni passo fa male.")),
+		"narrative_text": narrative_text,
 		"short_desc": str(scar_def.get("short_desc", "")),
 		"visual_tag": str(scar_def.get("visual_tag", "")),
 		"tags": scar_def.get("tags", []) as Array,

@@ -197,7 +197,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "LEVEL UP! +1 TOKEN"
 
-[node name="ScarPopup" type="Label" parent="HUD"]
+[node name="ScarPopup" type="RichTextLabel" parent="HUD"]
 visible = false
 z_index = 111
 anchor_left = 0.5
@@ -208,9 +208,26 @@ offset_left = -260.0
 offset_top = -24.0
 offset_right = 260.0
 offset_bottom = 24.0
+bbcode_enabled = true
+fit_content = true
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "CICATRICE APPLICATA"
+
+[node name="ArenaResolutionOverlay" type="Label" parent="HUD"]
+visible = false
+z_index = 110
+anchor_left = 0.5
+anchor_top = 0.25
+anchor_right = 0.5
+anchor_bottom = 0.25
+offset_left = -260.0
+offset_top = -16.0
+offset_right = 260.0
+offset_bottom = 16.0
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Il patto viene giudicato..."
 
 [node name="DebugOverlay" type="Label" parent="HUD"]
 mouse_filter = 2

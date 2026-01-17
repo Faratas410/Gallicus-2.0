@@ -34,6 +34,8 @@ func _ready() -> void:
 	print("Arena ready")
 	_rng.randomize()
 	add_to_group("arena")
+	if _is_visual_only():
+		set_visual_only(true)
 	var run_started_callable: Callable = Callable(self, "_on_run_started")
 	if not GameEvents.run_started.is_connected(run_started_callable):
 		GameEvents.run_started.connect(run_started_callable)
@@ -222,6 +224,9 @@ func restart_arena() -> void:
 		start_next_wave()
 
 func _on_run_started() -> void:
+	if _is_visual_only():
+		set_visual_only(true)
+		return
 	set_process(true)
 	set_physics_process(true)
 

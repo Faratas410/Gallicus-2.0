@@ -21,6 +21,8 @@ func _despawn_after(seconds: float) -> void:
 		queue_free()
 
 func _on_body_entered(body: Node) -> void:
+	if _is_level3_mode():
+		return
 	if not body.is_in_group("player"):
 		return
 	match pickup_type:
@@ -37,3 +39,9 @@ func _on_body_entered(body: Node) -> void:
 			if GameEvents.has_signal("request_add_coins"):
 				GameEvents.request_add_coins.emit(value)
 	queue_free()
+
+func _is_level3_mode() -> bool:
+	var manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if manager != null and manager.has_method("is_level3_mode"):
+		return bool(manager.call("is_level3_mode"))
+	return false

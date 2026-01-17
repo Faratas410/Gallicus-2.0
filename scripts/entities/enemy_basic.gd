@@ -32,6 +32,12 @@ func _ready() -> void:
 	add_to_group("enemies")
 	_reset_to_base()
 	_emit_health()
+	if _is_level3_mode():
+		var visual: CanvasItem = get_node_or_null("Visual") as CanvasItem
+		if visual != null:
+			visual.visible = false
+		set_process(false)
+		set_physics_process(false)
 
 func _physics_process(delta: float) -> void:
 	if ai_locked:
@@ -144,3 +150,9 @@ func _emit_health() -> void:
 	if _health_bar != null:
 		_health_bar.call("set_health", _current_health, max_health)
 	health_changed.emit(_current_health, max_health)
+
+func _is_level3_mode() -> bool:
+	var manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if manager != null and manager.has_method("is_level3_mode"):
+		return bool(manager.call("is_level3_mode"))
+	return false

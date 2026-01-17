@@ -889,6 +889,7 @@ func _maybe_show_onboarding() -> void:
 		return
 	_onboarding_visible = true
 	_set_onboarding_modal(true)
+	_set_bet_buttons_enabled(false)
 	if GameEvents.has_signal("modal_opened"):
 		GameEvents.modal_opened.emit("onboarding")
 	_refresh_modal_dimmer()
@@ -900,6 +901,7 @@ func _hide_onboarding_panel() -> void:
 		return
 	_onboarding_visible = false
 	_set_onboarding_modal(false)
+	_set_bet_buttons_enabled(true)
 	if GameEvents.has_signal("modal_closed"):
 		GameEvents.modal_closed.emit("onboarding")
 	_refresh_modal_dimmer()
@@ -1126,30 +1128,24 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
 		if cashout_locked and cashout_reason != "":
-			push_luck_cashout_button.tooltip_text = "Disponibile dopo %s" % cashout_reason
+			push_luck_cashout_button.tooltip_text = cashout_reason
 		else:
 			push_luck_cashout_button.tooltip_text = ""
 	if push_luck_cashout_note != null:
 		if cashout_locked:
-			var note_text: String = "Disponibile dopo questa arena."
-			if cashout_reason != "":
-				note_text = "Disponibile dopo %s." % cashout_reason
-			push_luck_cashout_note.text = note_text
+			push_luck_cashout_note.text = _format_lock_note(cashout_reason, "Disponibile dopo l'arena in corso.")
 			push_luck_cashout_note.visible = true
 		else:
 			push_luck_cashout_note.visible = false
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
 		if double_locked and double_reason != "":
-			push_luck_double_button.tooltip_text = "Disponibile dopo %s" % double_reason
+			push_luck_double_button.tooltip_text = double_reason
 		else:
 			push_luck_double_button.tooltip_text = ""
 	if push_luck_double_note != null:
 		if double_locked:
-			var note_text: String = "Disponibile dopo questa arena."
-			if double_reason != "":
-				note_text = "Disponibile dopo %s." % double_reason
-			push_luck_double_note.text = note_text
+			push_luck_double_note.text = _format_lock_note(double_reason, "Disponibile dopo l'arena in corso.")
 			push_luck_double_note.visible = true
 		else:
 			push_luck_double_note.visible = false
@@ -1341,12 +1337,13 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 
 func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	var button: Button = Button.new()
-	button.custom_minimum_size = Vector2(0, 160)
+	button.custom_minimum_size = Vector2(0, 190)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	button.add_theme_font_size_override("font_size", 22)
+	button.add_theme_font_size_override("font_size", 20)
 	button.text = _format_bet_button_text(bet_id, bet)
+	button.text_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
 	var pressed_callable: Callable = Callable(self, "_on_bet_choice_pressed").bind(bet_id)
@@ -1362,15 +1359,23 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary) -> String:
 	var doom_text: String = str(bet.get("doom", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
-		lines.append("❌ CONDANNA — %s" % name_text)
+		lines.append("❌ Condanna — %s" % name_text)
 		lines.append("%s" % doom_text)
 	else:
-		lines.append("❌ CONDANNA — %s" % name_text)
+		lines.append("❌ Condanna — %s" % name_text)
 	if condition_text != "":
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":
 		lines.append("✅ Patto: %s" % pact_text)
 	return "\n".join(lines)
+
+func _format_lock_note(reason: String, fallback: String) -> String:
+	var text: String = reason.strip_edges()
+	if text == "":
+		text = fallback
+	if not text.ends_with("."):
+		text += "."
+	return text
 
 func _clear_bet_buttons() -> void:
 	_bet_buttons.clear()
@@ -1379,6 +1384,13 @@ func _clear_bet_buttons() -> void:
 	for child in bet_buttons_container.get_children():
 		if child is Node:
 			child.queue_free()
+
+func _set_bet_buttons_enabled(enabled: bool) -> void:
+	for button: Button in _bet_buttons:
+		if button != null:
+			button.disabled = not enabled
+	if bet_confirm_button != null:
+		bet_confirm_button.disabled = not enabled
 
 func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 	if button == null:

@@ -49,6 +49,7 @@ signal request_add_coins(amount: int)
 signal request_push_luck_cashout
 signal request_push_luck_double
 signal request_set_run_seed(seed: int)
+signal request_clear_run_seed
 signal request_skip_arena_resolution
 
 var gameplay_enabled: bool = true

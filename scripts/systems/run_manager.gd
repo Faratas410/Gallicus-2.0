@@ -58,9 +58,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CASH_OUT",
 		"name": "INCASSA E VAI",
-		"pact": "Ricompensa bassa",
-		"condition": "Vinci l'arena",
-		"doom": "Fallimento → cicatrice OSSA INCRINATE",
+		"pact": "Ricompensa minima ma sicura: incassi subito e riduci l'esposizione.",
+		"condition": "Devi vincere l'arena senza inseguire l'escalation.",
+		"doom": "Fallimento → cicatrice OSSA INCRINATE, che rende ogni futura scommessa più rischiosa.",
 		"weight": 5,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -68,9 +68,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "FLAWLESS_BLOOD",
 		"name": "SANGUE INTEGRO",
-		"pact": "Ricompensa alta",
-		"condition": "Vinci l'arena senza subire danni",
-		"doom": "HP massimo -20 (min 1) + cicatrice FERITA APERTA",
+		"pact": "Se riesci, ottieni una ricompensa alta e alzi l'intensità della run.",
+		"condition": "Devi vincere l'arena senza subire danni.",
+		"doom": "HP massimo -20 (min 1) + cicatrice FERITA APERTA: il sangue non si ferma.",
 		"weight": 4,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -78,9 +78,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "DOUBLE_OR_DIE",
 		"name": "RADDOPPI O MUORI",
-		"pact": "Ricompensa devastante",
-		"condition": "Vinci l'arena",
-		"doom": "MORTE IMMEDIATA: run terminata",
+		"pact": "Ricompensa devastante: moltiplica la posta e accelera la corsa.",
+		"condition": "Devi vincere l'arena senza esitazioni.",
+		"doom": "MORTE IMMEDIATA: run terminata senza appello.",
 		"weight": 2,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -88,9 +88,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "DEBT_CHAIN",
 		"name": "CATENA DI DEBITO",
-		"pact": "Ricompensa media",
-		"condition": "Vinci l'arena",
-		"doom": "Fallimento → cicatrice MARCHIO DEL DEBITO",
+		"pact": "Ricompensa media, ma mantiene viva la catena del patto.",
+		"condition": "Vinci l'arena e non spezzare la promessa.",
+		"doom": "Fallimento → cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
 		"weight": 4,
 		"blocked_scars": [SCAR_DEBT_BRAND],
 		"requires_scars": [],
@@ -98,9 +98,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "BLOOD_TAX",
 		"name": "DECIMA DI SANGUE",
-		"pact": "Ricompensa alta",
-		"condition": "Vinci l'arena",
-		"doom": "Fallimento → HP massimo -25 + incasso bloccato per 1 arena",
+		"pact": "Ricompensa alta: la vittoria spinge la run verso un ritmo più feroce.",
+		"condition": "Vinci l'arena sapendo che ogni colpo ha un prezzo.",
+		"doom": "Fallimento → HP massimo -25 + incasso bloccato per 1 arena: paghi la decima.",
 		"weight": 3,
 		"blocked_scars": [SCAR_OPEN_WOUND],
 		"requires_scars": [],
@@ -108,9 +108,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CROW_PLEASER",
 		"name": "PIACERE AL PUBBLICO",
-		"pact": "Ricompensa narrativa + bonus lieve",
-		"condition": "Vinci l'arena",
-		"doom": "Fallimento → cicatrice MARCHIO DELLA VERGOGNA",
+		"pact": "Ricompensa narrativa + bonus lieve, alimentando la tua reputazione.",
+		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
+		"doom": "Fallimento → cicatrice MARCHIO DELLA VERGOGNA, il pubblico rende le arene più dure.",
 		"weight": 4,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -118,9 +118,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "LAST_BREATH",
 		"name": "ULTIMO RESPIRO",
-		"pact": "Ricompensa altissima",
-		"condition": "Vinci l'arena",
-		"doom": "Fallimento → cicatrice GRAVE (non mortale)",
+		"pact": "Ricompensa altissima, con la run al limite dell'ossessione.",
+		"condition": "Vinci l'arena con il cuore in gola.",
+		"doom": "Fallimento → cicatrice GRAVE (non mortale), ma compromette il cammino.",
 		"weight": 2,
 		"blocked_scars": [],
 		"requires_scars": [SCAR_CRACKED_BONES],
@@ -307,6 +307,7 @@ var _has_started_run: bool = false
 var _boot_countdown_skipped: bool = false
 var _show_shop_next_bet: bool = false
 var _modal_lock_count: int = 0
+var _arena_suspended: bool = false
 var _bet_chain_level: int = 1
 var _current_bet_id: String = ""
 var _scars: Array[Dictionary] = []
@@ -1230,6 +1231,7 @@ func _ensure_arena_and_player() -> void:
 	_player = existing_player
 	if _player and _player is Node2D:
 		(_player as Node2D).global_position = Vector2.ZERO
+	_set_arena_suspended(_modal_lock_count > 0)
 
 func pick_next_arena_scene() -> PackedScene:
 	if _arena_scenes.size() == 0:
@@ -1549,6 +1551,24 @@ func _apply_modal_lock() -> void:
 			enemy.call("set_ai_locked", locked)
 		elif "ai_locked" in enemy:
 			enemy.set("ai_locked", locked)
+	_set_arena_suspended(locked)
+
+func _set_arena_suspended(suspended: bool) -> void:
+	if _arena == null or not is_instance_valid(_arena):
+		_arena = get_node_or_null(arena_path)
+	if _arena == null:
+		return
+	if suspended == _arena_suspended:
+		return
+	_arena_suspended = suspended
+	if suspended:
+		_arena.process_mode = Node.PROCESS_MODE_DISABLED
+		if _arena is CanvasItem:
+			(_arena as CanvasItem).visible = false
+	else:
+		_arena.process_mode = Node.PROCESS_MODE_INHERIT
+		if _arena is CanvasItem:
+			(_arena as CanvasItem).visible = true
 
 func add_coins(amount: int) -> void:
 	if amount <= 0:

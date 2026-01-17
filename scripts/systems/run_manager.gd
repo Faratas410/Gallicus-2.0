@@ -60,7 +60,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "INCASSA E VAI",
 		"pact": "Ricompensa minima ma sicura: incassi subito e riduci l'esposizione.",
 		"condition": "Devi vincere l'arena senza inseguire l'escalation.",
-		"doom": "Fallimento → cicatrice OSSA INCRINATE, che rende ogni futura scommessa più rischiosa.",
+		"doom": "Hai scelto la via breve.\nLa folla ricorda chi non spinge.\nL'arena lascia comunque il segno.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
 		"weight": 5,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -70,7 +70,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "SANGUE INTEGRO",
 		"pact": "Se riesci, ottieni una ricompensa alta e alzi l'intensità della run.",
 		"condition": "Devi vincere l'arena senza subire danni.",
-		"doom": "HP massimo -20 (min 1) + cicatrice FERITA APERTA: il sangue non si ferma.",
+		"doom": "Il sangue deve restare puro.\nOgni errore pesa doppio.\nLa sabbia non perdona.\nEffetto: HP massimo -20 (min 1) + cicatrice FERITA APERTA.",
 		"weight": 4,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -80,7 +80,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "RADDOPPI O MUORI",
 		"pact": "Ricompensa devastante: moltiplica la posta e accelera la corsa.",
 		"condition": "Devi vincere l'arena senza esitazioni.",
-		"doom": "MORTE IMMEDIATA: run terminata senza appello.",
+		"doom": "Hai promesso tutto.\nNon esiste margine.\nLa folla trattiene il fiato.\nEffetto: MORTE IMMEDIATA, run terminata senza appello.",
 		"weight": 2,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -90,7 +90,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "CATENA DI DEBITO",
 		"pact": "Ricompensa media, ma mantiene viva la catena del patto.",
 		"condition": "Vinci l'arena e non spezzare la promessa.",
-		"doom": "Fallimento → cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
+		"doom": "La catena non si spezza.\nOgni passo stringe il debito.\nIl pubblico pretende il prezzo.\nEffetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
 		"weight": 4,
 		"blocked_scars": [SCAR_DEBT_BRAND],
 		"requires_scars": [],
@@ -100,7 +100,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "DECIMA DI SANGUE",
 		"pact": "Ricompensa alta: la vittoria spinge la run verso un ritmo più feroce.",
 		"condition": "Vinci l'arena sapendo che ogni colpo ha un prezzo.",
-		"doom": "Fallimento → HP massimo -25 + incasso bloccato per 1 arena: paghi la decima.",
+		"doom": "La vittoria chiede sangue.\nIl tributo è scritto sulla pelle.\nNon puoi evitarlo.\nEffetto: HP massimo -25 + incasso bloccato per 1 arena.",
 		"weight": 3,
 		"blocked_scars": [SCAR_OPEN_WOUND],
 		"requires_scars": [],
@@ -110,7 +110,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "PIACERE AL PUBBLICO",
 		"pact": "Ricompensa narrativa + bonus lieve, alimentando la tua reputazione.",
 		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
-		"doom": "Fallimento → cicatrice MARCHIO DELLA VERGOGNA, il pubblico rende le arene più dure.",
+		"doom": "La folla vuole spettacolo.\nUn passo falso diventa scherno.\nIl giudizio resta addosso.\nEffetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",
 		"weight": 4,
 		"blocked_scars": [],
 		"requires_scars": [],
@@ -120,7 +120,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "ULTIMO RESPIRO",
 		"pact": "Ricompensa altissima, con la run al limite dell'ossessione.",
 		"condition": "Vinci l'arena con il cuore in gola.",
-		"doom": "Fallimento → cicatrice GRAVE (non mortale), ma compromette il cammino.",
+		"doom": "Respiri corto.\nOgni colpo è l'ultimo.\nIl destino pesa sulle ossa.\nEffetto: cicatrice GRAVE (non mortale), cammino compromesso.",
 		"weight": 2,
 		"blocked_scars": [],
 		"requires_scars": [SCAR_CRACKED_BONES],
@@ -1617,14 +1617,9 @@ func _set_arena_suspended(suspended: bool) -> void:
 	if suspended == _arena_suspended:
 		return
 	_arena_suspended = suspended
-	if suspended:
-		_arena.process_mode = Node.PROCESS_MODE_DISABLED
-		if _arena is CanvasItem:
-			(_arena as CanvasItem).visible = false
-	else:
-		_arena.process_mode = Node.PROCESS_MODE_INHERIT
-		if _arena is CanvasItem:
-			(_arena as CanvasItem).visible = true
+	if _arena.has_method("set_visual_only"):
+		_arena.call("set_visual_only", suspended)
+	_arena.process_mode = Node.PROCESS_MODE_INHERIT
 
 func add_coins(amount: int) -> void:
 	if amount <= 0:

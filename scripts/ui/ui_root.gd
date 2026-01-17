@@ -40,7 +40,8 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
-@onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverPanel") as Panel
+@onready var game_over_modal: Control = get_node_or_null("Modals/GameOverModal") as Control
+@onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverModal/GameOverPanel") as Panel
 @onready var push_luck_modal: Control = get_node_or_null("Modals/PushLuckModal") as Control
 @onready var push_luck_panel: Panel = get_node_or_null("Modals/PushLuckModal/PushLuckPanel") as Panel
 @onready var push_luck_title: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckTitle") as Label
@@ -48,14 +49,14 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var push_luck_details: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckDetails") as Label
 @onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutButton") as Button
 @onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleButton") as Button
-@onready var game_over_title: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverTitle") as Label
-@onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverEpilogue") as Label
-@onready var game_over_scars: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverScars") as Label
-@onready var game_over_meta: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverMeta") as Label
-@onready var game_over_hint: Label = get_node_or_null("Modals/GameOverPanel/GameOverVBox/GameOverHint") as Label
-@onready var restart_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/RestartButton") as Button
-@onready var next_bet_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/NextBetButton") as Button
-@onready var quit_button: Button = get_node_or_null("Modals/GameOverPanel/GameOverVBox/QuitButton") as Button
+@onready var game_over_title: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverTitle") as Label
+@onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverEpilogue") as Label
+@onready var game_over_scars: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScars") as Label
+@onready var game_over_meta: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverMeta") as Label
+@onready var game_over_hint: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverHint") as Label
+@onready var restart_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/RestartButton") as Button
+@onready var next_bet_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/NextBetButton") as Button
+@onready var quit_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/QuitButton") as Button
 @onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
 @onready var scars_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel") as Panel
 @onready var scars_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel/ScarsVBox/ScarsScroll/ScarsLabel") as Label
@@ -656,8 +657,7 @@ func _on_run_started() -> void:
 			fast_countdown_label.modulate.a = 1.0
 	_set_push_luck_modal(false)
 	_pending_bets = []
-	if game_over_panel != null:
-		game_over_panel.visible = false
+	_set_game_over_modal(false)
 	if next_bet_button != null:
 		next_bet_button.visible = true
 	_last_finale_title = "RUN FAILED"
@@ -740,8 +740,7 @@ func _on_run_failed() -> void:
 		condanna_focus_label.visible = false
 	_reset_fast_countdown()
 	_set_push_luck_modal(false)
-	if game_over_panel != null:
-		game_over_panel.visible = true
+	_set_game_over_modal(true)
 	if next_bet_button != null:
 		next_bet_button.visible = false
 	if game_over_title != null:
@@ -1106,8 +1105,16 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 		push_luck_details.text = "\n".join(lines)
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
+		if cashout_locked and cashout_reason != "":
+			push_luck_cashout_button.tooltip_text = "Disponibile dopo %s" % cashout_reason
+		else:
+			push_luck_cashout_button.tooltip_text = ""
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
+		if double_locked and double_reason != "":
+			push_luck_double_button.tooltip_text = "Disponibile dopo %s" % double_reason
+		else:
+			push_luck_double_button.tooltip_text = ""
 	_set_push_luck_modal(true)
 
 func _on_push_luck_closed() -> void:
@@ -1190,8 +1197,7 @@ func _on_retry_pressed() -> void:
 	_request_retry()
 
 func _request_reset() -> void:
-	if game_over_panel != null:
-		game_over_panel.visible = false
+	_set_game_over_modal(false)
 
 	if GameEvents.has_signal("request_reset_run"):
 		GameEvents.request_reset_run.emit()
@@ -1207,8 +1213,7 @@ func _request_next_bet() -> void:
 		GameEvents.request_next_bet.emit()
 
 func _request_retry() -> void:
-	if game_over_panel != null:
-		game_over_panel.visible = false
+	_set_game_over_modal(false)
 	if GameEvents.has_signal("request_retry_run"):
 		GameEvents.request_retry_run.emit()
 	_hide_onboarding_panel()
@@ -1298,11 +1303,11 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 
 func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	var button: Button = Button.new()
-	button.custom_minimum_size = Vector2(0, 136)
+	button.custom_minimum_size = Vector2(0, 160)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	button.add_theme_font_size_override("font_size", 16)
+	button.add_theme_font_size_override("font_size", 18)
 	button.text = _format_bet_button_text(bet_id, bet)
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1392,8 +1397,7 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	_reset_fast_countdown()
-	if game_over_panel != null:
-		game_over_panel.visible = true
+	_set_game_over_modal(true)
 	if game_over_title != null:
 		game_over_title.text = "RUN FAILED"
 		if can_retry:
@@ -1481,6 +1485,20 @@ func _set_push_luck_modal(active: bool) -> void:
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
+func _set_game_over_modal(active: bool) -> void:
+	if game_over_modal != null:
+		game_over_modal.visible = active
+	if game_over_panel != null:
+		game_over_panel.visible = active
+	if active:
+		if GameEvents.has_signal("modal_opened"):
+			GameEvents.modal_opened.emit("ending")
+	else:
+		if GameEvents.has_signal("modal_closed"):
+			GameEvents.modal_closed.emit("ending")
+	_refresh_modal_dimmer()
+	get_viewport().gui_release_focus()
+
 func _reset_bet_confirmation() -> void:
 	_pending_confirm_bet_id = ""
 	if bet_confirm_label != null:
@@ -1496,7 +1514,7 @@ func _refresh_modal_dimmer() -> void:
 		active = true
 	if push_luck_modal != null and push_luck_modal.visible:
 		active = true
-	if game_over_panel != null and game_over_panel.visible:
+	if game_over_modal != null and game_over_modal.visible:
 		active = true
 	if onboarding_modal != null and onboarding_modal.visible:
 		active = true

@@ -320,7 +320,7 @@ color = Color(0, 0, 0, 0.55)
 
 [node name="OnboardingModal" type="Control" parent="Modals"]
 visible = false
-mouse_filter = 0
+mouse_filter = 2
 z_index = 96
 anchor_left = 0.0
 anchor_top = 0.0
@@ -328,9 +328,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="OnboardingBlocker" type="ColorRect" parent="Modals/OnboardingModal"]
-mouse_filter = 0
+mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -300.0
 color = Color(0, 0, 0, 0.2)
 
 [node name="OnboardingPanel" type="Panel" parent="Modals/OnboardingModal"]
@@ -366,12 +367,12 @@ text = "Scegli un patto. Vedi prima la condanna.\nLe cicatrici restano fino a fi
 
 [node name="OnboardingButton" type="Button" parent="Modals/OnboardingModal/OnboardingPanel/OnboardingVBox"]
 focus_mode = 2
-mouse_filter = 0
+mouse_filter = 2
 text = "HO CAPITO"
 
 [node name="BetModal" type="Control" parent="Modals"]
 visible = false
-mouse_filter = 1
+mouse_filter = 2
 z_index = 95
 anchor_left = 0.0
 anchor_top = 0.0
@@ -379,9 +380,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="BetBlocker" type="ColorRect" parent="Modals/BetModal"]
-mouse_filter = 1
+mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -300.0
 color = Color(0, 0, 0, 0)
 
 [node name="BetPanel" type="Panel" parent="Modals/BetModal"]
@@ -392,31 +394,31 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -220.0
-offset_right = 220.0
-offset_bottom = 220.0
+offset_left = -240.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = 240.0
 clip_contents = true
-custom_minimum_size = Vector2(440, 440)
+custom_minimum_size = Vector2(480, 480)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="BetScroll" type="ScrollContainer" parent="Modals/BetModal/BetPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 6.0
-offset_top = 6.0
-offset_right = -6.0
-offset_bottom = -6.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
 [node name="BetVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
-offset_top = 2.0
-offset_right = -2.0
-offset_bottom = -2.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 
 [node name="BetTitle" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
 text = "Scommessa Arena"
@@ -432,6 +434,7 @@ autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = false
+theme_override_font_sizes/font_size = 18
 text = "FOCUS: Leggi prima la CONDANNA."
 
 [node name="SeedRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
@@ -509,7 +512,7 @@ text = "x1"
 
 [node name="PushLuckModal" type="Control" parent="Modals"]
 visible = false
-mouse_filter = 0
+mouse_filter = 2
 z_index = 95
 anchor_left = 0.0
 anchor_top = 0.0
@@ -517,9 +520,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="PushLuckBlocker" type="ColorRect" parent="Modals/PushLuckModal"]
-mouse_filter = 0
+mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -300.0
 color = Color(0, 0, 0, 0)
 
 [node name="PushLuckPanel" type="Panel" parent="Modals/PushLuckModal"]
@@ -530,12 +534,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -160.0
-offset_right = 200.0
-offset_bottom = 160.0
+offset_left = -220.0
+offset_top = -170.0
+offset_right = 220.0
+offset_bottom = 170.0
 clip_contents = true
-custom_minimum_size = Vector2(400, 320)
+custom_minimum_size = Vector2(440, 340)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="PushLuckVBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel"]
@@ -609,9 +613,25 @@ text = ""
 [node name="ScarsDetailClose" type="Button" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
 text = "CHIUDI"
 
-[node name="GameOverPanel" type="Panel" parent="Modals"]
+[node name="GameOverModal" type="Control" parent="Modals"]
 visible = false
+mouse_filter = 2
 z_index = 95
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GameOverBlocker" type="ColorRect" parent="Modals/GameOverModal"]
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -300.0
+color = Color(0, 0, 0, 0)
+
+[node name="GameOverPanel" type="Panel" parent="Modals/GameOverModal"]
+visible = false
+z_index = 1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -624,7 +644,7 @@ clip_contents = true
 custom_minimum_size = Vector2(360, 380)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
-[node name="GameOverVBox" type="VBoxContainer" parent="Modals/GameOverPanel"]
+[node name="GameOverVBox" type="VBoxContainer" parent="Modals/GameOverModal/GameOverPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
@@ -632,34 +652,34 @@ offset_top = 12.0
 offset_right = -12.0
 offset_bottom = -12.0
 
-[node name="GameOverTitle" type="Label" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="GameOverTitle" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 theme_override_font_sizes/font_size = 30
 text = "RUN FAILED"
 
-[node name="GameOverEpilogue" type="Label" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="GameOverEpilogue" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 autowrap_mode = 2
 text = ""
 
-[node name="GameOverScars" type="Label" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="GameOverScars" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 visible = false
 autowrap_mode = 2
 text = ""
 
-[node name="GameOverMeta" type="Label" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="GameOverMeta" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 visible = false
 autowrap_mode = 2
 text = ""
 
-[node name="GameOverHint" type="Label" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="GameOverHint" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 text = "Vuoi riprovare?"
 
-[node name="RestartButton" type="Button" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="RestartButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 text = "RESTART"
 
-[node name="NextBetButton" type="Button" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="NextBetButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 text = "NEXT BET"
 
-[node name="QuitButton" type="Button" parent="Modals/GameOverPanel/GameOverVBox"]
+[node name="QuitButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 text = "QUIT"
 
 [node name="CountdownLabel" type="Label" parent="Modals"]
@@ -697,7 +717,7 @@ autostart = false
 
 [node name="ScarsPanel" type="Panel" parent="HUD/SafeMargin/TopRow/RightColumn"]
 mouse_filter = 1
-z_index = 100
+z_index = 80
 clip_contents = true
 custom_minimum_size = Vector2(280, 200)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")

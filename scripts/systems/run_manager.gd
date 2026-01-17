@@ -2259,68 +2259,48 @@ func _select_run_finale() -> Dictionary:
 			ending_id = &"THE_FOOL"
 		else:
 			var physical_scars: int = _count_scars_with_tag(&"physical")
-			var used_double_or_die: bool = _has_used_bet(BET_DOUBLE_OR_DIE_L3)
-			var cashout_streak: bool = _level3_cashout_streak_max >= 3
-			if _level3_cashed_after_high_escalation:
-				ending_id = &"THE_HIGH_ROLLER"
-			elif used_double_or_die:
-				ending_id = &"THE_GAMBLER"
-			elif physical_scars >= 2:
-				ending_id = &"THE_BRUISED"
-			elif _has_scar(SCAR_SHAME_MARK):
-				ending_id = &"THE_SHOWMAN"
-			elif cashout_streak:
-				ending_id = &"THE_PRUDENT"
+			var run_completed: bool = _level3_target_arenas > 0 and _run_state.arena_index >= _level3_target_arenas
+			var many_cashouts: bool = _level3_cashouts >= 3 and _level3_doubles <= 0
+			var high_escalation: bool = _level3_max_escalation >= 3
+			var debt_marked: bool = _has_scar(SCAR_DEBT_BRAND)
+			if run_completed and physical_scars >= 2:
+				ending_id = &"THE_MARTYR"
+			elif debt_marked or high_escalation:
+				ending_id = &"THE_DEBTOR"
+			elif many_cashouts:
+				ending_id = &"THE_CROWD_PET"
 			elif scar_count <= 0:
 				ending_id = &"THE_SURVIVOR"
 			elif scar_count == 1:
 				ending_id = &"THE_MARKED"
-			elif scar_count == 2:
-				ending_id = &"THE_HARDENED"
 			else:
 				ending_id = &"THE_BROKEN"
 
-	var title: String = "THE SURVIVOR"
-	var text: String = "Ha attraversato l'arena senza lasciarsi spezzare.\nIl sangue è rimasto suo.\nIl prezzo, minimo."
+	var title: String = "IL SOPRAVVISSUTO"
+	var text: String = "Hai scelto con prudenza.\nOgni patto è stato misurato, ogni passo trattenuto.\n\nLa folla ha applaudito, ma senza entusiasmo.\nNon per disprezzo — per mancanza di sangue.\n\nEsci dall’arena intero, senza segni, senza gloria.\nNessuno canterà il tuo nome.\n\nMa sei vivo.\nE, per oggi, questo è bastato."
 
 	match ending_id:
 		&"THE_FOOL":
-			title = "THE FOOL"
-			text = "Ha raddoppiato fino a firmare la propria fine.\nL'arena non dimentica la superbia.\nIl patto si è chiuso nel silenzio."
+			title = "LO STOLTO"
+			text = "Hai promesso tutto.\n\nLa folla si è zittita.\nAnche l’arena sembrava trattenere il respiro.\n\nNon c’è stata rabbia,\nné sorpresa.\n\nSolo silenzio.\n\nChi raddoppia senza rispetto\nnon muore da eroe.\n\nMuore come esempio."
 		&"THE_MARKED":
-			title = "THE MARKED"
-			text = "Una sola cicatrice basta a ricordare il patto.\nNon è più lo stesso.\nMa è ancora in piedi."
-		&"THE_HARDENED":
-			title = "THE HARDENED"
-			text = "Due ferite hanno inciso la pelle.\nNon c'è spazio per la paura.\nSolo per il passo successivo."
+			title = "IL SEGNATO"
+			text = "Una sola ferita ha tradito la tua arroganza.\nNon abbastanza profonda da spezzarti,\nabbastanza visibile da farti ricordare.\n\nLa folla l’ha notata.\nL’ha commentata.\n\nQuando lasci l’arena, il tuo passo è ancora saldo,\nma il corpo porta già il prezzo di ciò che hai promesso.\n\nTornerai.\nChi viene marchiato una volta, raramente smette di scommettere."
 		&"THE_BROKEN":
-			title = "THE BROKEN"
-			text = "Le cicatrici hanno preso tutto il posto.\nIl corpo resiste, l'anima no.\nEppure cammina."
+			title = "IL SPEZZATO"
+			text = "Ogni patto ha lasciato un segno.\nOgni segno ha chiesto altro in cambio.\n\nLe tue cicatrici raccontano una storia\nche la folla conosce a memoria.\n\nNon c’è stata una singola sconfitta,\nma una lunga serie di decisioni sbagliate.\n\nEsci dall’arena piegato,\ncon il corpo ancora in piedi\ne il destino già deciso.\n\nAlcuni ti chiamano leggenda.\nAltri ti chiamano monito."
 		&"THE_SURVIVOR":
-			title = "THE SURVIVOR"
-			text = "Ha attraversato l'arena senza lasciarsi spezzare.\nIl sangue è rimasto suo.\nIl prezzo, minimo."
-		&"THE_GAMBLER":
-			title = "THE GAMBLER"
-			text = "Ha guardato la condanna negli occhi.\nHa vinto abbastanza per restare.\nIl debito lo aspetta comunque."
-		&"THE_HIGH_ROLLER":
-			title = "THE HIGH ROLLER"
-			text = "Ha spinto l'escalation oltre la soglia.\nHa incassato quando l'arena tremava.\nOra tutti conoscono il suo nome."
-		&"THE_SHOWMAN":
-			title = "THE SHOWMAN"
-			text = "Il pubblico lo ha inciso con vergogna.\nHa trasformato i fischi in applausi.\nMa il marchio resta."
-		&"THE_BRUISED":
-			title = "THE BRUISED"
-			text = "Le ossa hanno retto a fatica.\nOgni arena è stata un tributo.\nEppure non si è fermato."
-		&"THE_PRUDENT":
-			title = "THE PRUDENT"
-			text = "Ha scelto la via più sicura.\nHa evitato il baratro tre volte di fila.\nLa folla non dimentica la prudenza."
-
-	if ending_id == &"THE_BROKEN" and not scars_copy.is_empty():
-		var first_scar_name: String = "una cicatrice"
-		var first_scar: Dictionary = scars_copy[0] as Dictionary
-		if first_scar.has("name"):
-			first_scar_name = str(first_scar.get("name", first_scar_name))
-		text += "\nPorta ancora %s." % first_scar_name
+			title = "IL SOPRAVVISSUTO"
+			text = "Hai scelto con prudenza.\nOgni patto è stato misurato, ogni passo trattenuto.\n\nLa folla ha applaudito, ma senza entusiasmo.\nNon per disprezzo — per mancanza di sangue.\n\nEsci dall’arena intero, senza segni, senza gloria.\nNessuno canterà il tuo nome.\n\nMa sei vivo.\nE, per oggi, questo è bastato."
+		&"THE_DEBTOR":
+			title = "IL DEBITORE"
+			text = "Ogni scommessa ti ha dato qualcosa.\nOgni scommessa ti ha chiesto di più.\n\nIl pubblico non dimentica chi deve ancora pagare.\n\nAnche quando lasci l’arena,\nil debito ti segue.\n\nNon sei sconfitto.\n\nSei trattenuto.\nE tornerai,\nperché certe promesse non finiscono con una run."
+		&"THE_CROWD_PET":
+			title = "IL BENEAMATO"
+			text = "Hai dato alla folla ciò che voleva\nsenza mai rischiare davvero.\n\nApplausi sicuri.\nNessun silenzio imbarazzante.\n\nIl tuo nome è ricordato,\nma non inciso.\n\nQuando l’arena chiude le porte,\nresti con l’impressione\ndi essere piaciuto a tutti\nsenza appartenere a nessuno."
+		&"THE_MARTYR":
+			title = "IL MARTIRE"
+			text = "Il tuo corpo è rimasto nell’arena\nmolto prima della fine.\n\nOgni ferita è stata un’offerta.\nOgni offerta un applauso.\n\nQuando finalmente tutto si è fermato,\nla folla era in piedi.\n\nNon per la vittoria.\n\nPer ciò che avevi accettato di perdere."
 
 	var bet_names: Array[String] = []
 	for bet_id: StringName in _level3_bets_used:

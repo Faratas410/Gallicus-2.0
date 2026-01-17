@@ -38,7 +38,14 @@ class RunState:
 	var escalation_level: int = 0
 	var active_bet_id: StringName = &""
 	var enemy_profile: StringName = &""
+	var enemy_profiles: Array[StringName] = []
 	var scars: Array[StringName] = []
+	var scars_history: Array[StringName] = []
+	var bets_history: Array[StringName] = []
+	var cashouts: int = 0
+	var doubles: int = 0
+	var max_escalation: int = 0
+	var arenas_cleared: int = 0
 	var max_hp_modifier: int = 0
 	var run_is_over: bool = false
 
@@ -338,6 +345,7 @@ var _run_finale_emitted: bool = false
 var _forced_ending_id: StringName = &""
 var _debug_seed_override_active: bool = false
 var _debug_seed_override: int = 0
+var _run_start_time_msec: int = 0
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -388,6 +396,9 @@ func _ready() -> void:
 	var request_seed_callable: Callable = Callable(self, "_on_request_set_run_seed")
 	if GameEvents.has_signal("request_set_run_seed") and not GameEvents.request_set_run_seed.is_connected(request_seed_callable):
 		GameEvents.request_set_run_seed.connect(request_seed_callable)
+	var request_clear_seed_callable: Callable = Callable(self, "_on_request_clear_run_seed")
+	if GameEvents.has_signal("request_clear_run_seed") and not GameEvents.request_clear_run_seed.is_connected(request_clear_seed_callable):
+		GameEvents.request_clear_run_seed.connect(request_clear_seed_callable)
 	var request_skip_callable: Callable = Callable(self, "_on_request_skip_arena_resolution")
 	if GameEvents.has_signal("request_skip_arena_resolution") and not GameEvents.request_skip_arena_resolution.is_connected(request_skip_callable):
 		GameEvents.request_skip_arena_resolution.connect(request_skip_callable)
@@ -424,6 +435,7 @@ func _boot() -> void:
 	_log_runtime_state("boot_complete")
 
 func start_new_run() -> void:
+	_run_start_time_msec = Time.get_ticks_msec()
 	if LEVEL3_ENABLED:
 		_start_level3_run()
 		return
@@ -495,6 +507,7 @@ func start_run() -> void:
 	_start_level3_run()
 
 func _start_level3_run() -> void:
+	_run_start_time_msec = Time.get_ticks_msec()
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	_run_failed_emitted = false
@@ -534,7 +547,14 @@ func _start_level3_run() -> void:
 	_run_state.escalation_level = 0
 	_run_state.active_bet_id = &""
 	_run_state.enemy_profile = &""
+	_run_state.enemy_profiles = []
 	_run_state.scars = []
+	_run_state.scars_history = []
+	_run_state.bets_history = []
+	_run_state.cashouts = 0
+	_run_state.doubles = 0
+	_run_state.max_escalation = 0
+	_run_state.arenas_cleared = 0
 	_run_state.max_hp_modifier = 0
 	_run_state.run_is_over = false
 	_arena_layout_rng.seed = _run_state.run_seed
@@ -568,6 +588,8 @@ func start_arena() -> void:
 	run["arena_index"] = _run_state.arena_index
 	_maybe_activate_special_arena()
 	_select_enemy_profile()
+	if _run_state.enemy_profile != &"":
+		_run_state.enemy_profiles.append(_run_state.enemy_profile)
 	load_next_arena()
 	_emit_run_debug_state()
 	_open_level3_bet_ui()
@@ -580,6 +602,8 @@ func select_bet(bet_id: StringName) -> void:
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_run_state.active_bet_id = bet_id
+	if bet_id != &"":
+		_run_state.bets_history.append(bet_id)
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
 	_level3_bets_used.append(bet_id)
@@ -603,6 +627,7 @@ func resolve_arena() -> void:
 	GameEvents.arena_started.emit(_run_state.arena_index)
 	_apply_special_arena_pre_resolution()
 	var result: ArenaResult = _resolve_level3_arena()
+	_run_state.arenas_cleared = maxi(_run_state.arenas_cleared + 1, 1)
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var bet_id: StringName = _run_state.active_bet_id
 	var failed: bool = not result.won
@@ -881,6 +906,8 @@ func _apply_special_arena_pre_resolution() -> void:
 		return
 	if _special_arena_id == SPECIAL_ARENA_SILENCE:
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+		_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
+		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 		_special_arena_effect_applied = true
 		_emit_run_debug_state()
 
@@ -1397,6 +1424,7 @@ func _on_request_push_luck_cashout() -> void:
 		if bet_id_name != &"":
 			_apply_level3_reward(bet_id_name, _level3_reward_tier)
 		_level3_cashouts += 1
+		_run_state.cashouts += 1
 		if _run_state.escalation_level >= 2:
 			_level3_cashed_after_high_escalation = true
 		_level3_reward_tier = 1
@@ -1428,7 +1456,9 @@ func _on_request_push_luck_double() -> void:
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
 		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
 		_level3_doubles += 1
+		_run_state.doubles += 1
 		_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
+		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 		if _cashout_lock_remaining > 0:
 			_cashout_lock_remaining = maxi(_cashout_lock_remaining - 1, 0)
 		_level3_next_loss_hp_penalty = 30
@@ -1455,6 +1485,13 @@ func _on_request_set_run_seed(seed: int) -> void:
 	_debug_seed_override_active = true
 	_debug_seed_override = seed
 	print("Debug seed override set:", seed)
+	if _has_started_run:
+		start_new_run()
+
+func _on_request_clear_run_seed() -> void:
+	_debug_seed_override_active = false
+	_debug_seed_override = 0
+	print("Debug seed override cleared")
 	if _has_started_run:
 		start_new_run()
 
@@ -2064,6 +2101,7 @@ func _emit_run_finale() -> void:
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
 	_emit_run_log(finale)
+	_export_run_summary(finale)
 
 func _emit_run_log(finale: Dictionary) -> void:
 	if not GameEvents.has_signal("run_log_ready"):
@@ -2093,6 +2131,45 @@ func _build_run_log(finale: Dictionary) -> String:
 	if special_arena != "":
 		lines.append("Arena speciale: %s" % special_arena)
 	return "\n".join(lines)
+
+func _export_run_summary(finale: Dictionary) -> void:
+	var summary: Dictionary = _build_run_summary(finale)
+	var json_text: String = JSON.stringify(summary, "\t")
+	var file_path: String = "user://run_summary_%d.json" % _run_state.run_seed
+	var file: FileAccess = FileAccess.open(file_path, FileAccess.WRITE)
+	if file == null:
+		DisplayServer.clipboard_set(json_text)
+		return
+	file.store_string(json_text)
+	file.close()
+
+func _build_run_summary(finale: Dictionary) -> Dictionary:
+	var duration_seconds: int = 0
+	if _run_start_time_msec > 0:
+		duration_seconds = int(float(Time.get_ticks_msec() - _run_start_time_msec) / 1000.0)
+	var bets_history: Array[String] = []
+	for bet_id: StringName in _run_state.bets_history:
+		bets_history.append(String(bet_id))
+	var scars_history: Array[String] = []
+	for scar_id: StringName in _run_state.scars_history:
+		scars_history.append(String(scar_id))
+	var enemy_profiles: Array[String] = []
+	for profile_id: StringName in _run_state.enemy_profiles:
+		enemy_profiles.append(String(profile_id))
+	var ending_id: String = str(finale.get("ending_id", ""))
+	return {
+		"seed": _run_state.run_seed,
+		"duration_seconds": duration_seconds,
+		"arenas_cleared": _run_state.arenas_cleared,
+		"bets_history": bets_history,
+		"max_escalation": _run_state.max_escalation,
+		"scars_history": scars_history,
+		"scars_count": _run_state.scars_history.size(),
+		"ending_id": ending_id,
+		"cashouts": _run_state.cashouts,
+		"doubles": _run_state.doubles,
+		"enemy_profiles": enemy_profiles,
+	}
 
 func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _scars.duplicate(true)
@@ -2341,6 +2418,7 @@ func _reset_progression() -> void:
 func _reset_scars() -> void:
 	_scars = []
 	_run_state.scars = []
+	_run_state.scars_history = []
 	_run_state.max_hp_modifier = 0
 	_scar_heal_multiplier = 1.0
 	_scar_dodge_cooldown_multiplier = 1.0
@@ -2366,6 +2444,7 @@ func _add_scar(scar: Dictionary) -> void:
 		return
 	_scars.append(scar)
 	_run_state.scars.append(scar_id)
+	_run_state.scars_history.append(scar_id)
 	_recompute_scar_modifiers()
 	_emit_scars_updated()
 	_emit_run_debug_state()

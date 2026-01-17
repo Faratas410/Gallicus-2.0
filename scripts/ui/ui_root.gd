@@ -10,6 +10,7 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var xp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPLabel") as Label
 @onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
 @onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
+@onready var seed_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/SeedRow/SeedLabel") as Label
 @onready var bet_panel: Panel = _req("Modals/BetPanel") as Panel
 @onready var buy_token_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenButton") as Button
 @onready var buy_token_info: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
@@ -24,6 +25,8 @@ const FAST_SELECTION_SECONDS: int = 12
 @onready var bet_confirm_row: Control = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow") as Control
 @onready var bet_confirm_label: Label = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmLabel") as Label
 @onready var bet_confirm_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmButton") as Button
+@onready var seed_input: LineEdit = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/SeedRow/SeedInput") as LineEdit
+@onready var seed_apply_button: Button = get_node_or_null("Modals/BetPanel/BetScroll/BetVBox/SeedRow/SeedButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 @onready var debug_tools_panel: Panel = get_node_or_null("HUD/DebugTools") as Panel
 @onready var debug_seed_input: LineEdit = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedInput") as LineEdit
@@ -223,6 +226,7 @@ func _ready() -> void:
 				var confirm_callable: Callable = Callable(self, "_on_bet_confirm_pressed")
 				if not bet_confirm_button.pressed.is_connected(confirm_callable):
 					bet_confirm_button.pressed.connect(confirm_callable)
+			_wire_seed_input()
 
 	if debug_overlay != null:
 		debug_overlay.visible = false
@@ -385,6 +389,13 @@ func _wire_buy_token_button() -> void:
 	if not buy_token_button.pressed.is_connected(buy_token_callable):
 		buy_token_button.pressed.connect(buy_token_callable)
 
+func _wire_seed_input() -> void:
+	if seed_apply_button == null:
+		return
+	var seed_callable: Callable = Callable(self, "_on_seed_apply_pressed")
+	if not seed_apply_button.pressed.is_connected(seed_callable):
+		seed_apply_button.pressed.connect(seed_callable)
+
 func _refresh_buy_token_ui() -> void:
 	if buy_token_button == null:
 		return
@@ -538,6 +549,20 @@ func _hide_scar_popup() -> void:
 func _on_buy_token_pressed() -> void:
 	if GameEvents.has_signal("request_purchase_token"):
 		GameEvents.request_purchase_token.emit()
+
+func _on_seed_apply_pressed() -> void:
+	if seed_input == null:
+		return
+	var text_value: String = seed_input.text.strip_edges()
+	if text_value == "":
+		if GameEvents.has_signal("request_clear_run_seed"):
+			GameEvents.request_clear_run_seed.emit()
+		return
+	if not text_value.is_valid_int():
+		return
+	var seed_value: int = int(text_value)
+	if GameEvents.has_signal("request_set_run_seed"):
+		GameEvents.request_set_run_seed.emit(seed_value)
 
 func _ensure_token_icons() -> void:
 	if coins_icon != null and coins_icon.texture == null:
@@ -705,6 +730,8 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_scars = []
 	for scar_value in scars_value:
 		_debug_scars.append(str(scar_value))
+	if seed_label != null:
+		seed_label.text = "Seed: %d" % _debug_seed
 	_refresh_debug_overlay()
 
 func _on_run_log_ready(log_text: String) -> void:

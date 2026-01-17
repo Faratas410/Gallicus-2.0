@@ -116,6 +116,14 @@ autowrap_mode = 2
 size_flags_horizontal = 3
 text = "Coins: 0"
 
+[node name="SeedRow" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="SeedLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/SeedRow"]
+autowrap_mode = 2
+text = "Seed: 0"
+
 [node name="LevelRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 visible = false
 size_flags_horizontal = 3
@@ -373,6 +381,19 @@ text = "ARENA SPECIALE"
 visible = false
 autowrap_mode = 2
 text = "FOCUS: Leggi prima la CONDANNA."
+
+[node name="SeedRow" type="HBoxContainer" parent="Modals/BetPanel/BetScroll/BetVBox"]
+theme_override_constants/separation = 6
+
+[node name="SeedLabel" type="Label" parent="Modals/BetPanel/BetScroll/BetVBox/SeedRow"]
+text = "Seed (opzionale)"
+
+[node name="SeedInput" type="LineEdit" parent="Modals/BetPanel/BetScroll/BetVBox/SeedRow"]
+size_flags_horizontal = 3
+placeholder_text = "Es. 10331"
+
+[node name="SeedButton" type="Button" parent="Modals/BetPanel/BetScroll/BetVBox/SeedRow"]
+text = "APPLICA"
 
 [node name="StakeRow" type="HBoxContainer" parent="Modals/BetPanel/BetScroll/BetVBox"]
 

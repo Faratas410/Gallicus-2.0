@@ -14,6 +14,12 @@ signal enemy_despawned(enemy: Node2D)
 @export var debug_spawn_enemy: bool = false
 @export var enemy_aggro_delay: float = 0.85 # secondi prima che i nemici inizino a inseguire (bilanciamento)
 
+const ARENA_BG_VARIANTS: Array[Texture2D] = [
+	preload("res://assets/backgrounds/sfondo_arena_principale.png"),
+	preload("res://assets/backgrounds/arena/variants/arena_bg_variant_01.png"),
+	preload("res://assets/backgrounds/arena/variants/arena_bg_variant_02.png"),
+]
+
 var difficulty_tier: int = 0
 var difficulty_multiplier: float = 1.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -22,6 +28,7 @@ var _enemies_remaining: int = 0
 var _player: Node2D = null
 var _aggro_sequence_id: int = 0
 var _visual_only: bool = false
+var _background_sprite: Sprite2D = null
 
 func set_difficulty_tier(tier: int, mult: float = 1.0) -> void:
 	difficulty_tier = tier
@@ -34,6 +41,7 @@ func _ready() -> void:
 	print("Arena ready")
 	_rng.randomize()
 	add_to_group("arena")
+	_apply_background_variant()
 	if _is_visual_only():
 		set_visual_only(true)
 	var run_started_callable: Callable = Callable(self, "_on_run_started")
@@ -50,6 +58,19 @@ func _ready() -> void:
 	ensure_player()
 	if debug_spawn_enemy and not _is_visual_only():
 		_spawn_debug_enemy()
+
+func _apply_background_variant() -> void:
+	if _background_sprite == null:
+		_background_sprite = get_node_or_null("Background") as Sprite2D
+	if _background_sprite == null:
+		return
+	if ARENA_BG_VARIANTS.is_empty():
+		return
+	var index: int = _rng.randi_range(0, ARENA_BG_VARIANTS.size() - 1)
+	var texture: Texture2D = ARENA_BG_VARIANTS[index]
+	if texture == null:
+		return
+	_background_sprite.texture = texture
 
 func set_visual_only(visual_only: bool) -> void:
 	if _visual_only == visual_only:

@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://Circolo Scommesse.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/circolo_scommesse.png" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
 bg_color = Color(0.88, 0.83, 0.72, 1)

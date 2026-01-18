@@ -369,6 +369,9 @@ func _ready() -> void:
 	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
 	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
 		GameEvents.bet_placed.connect(bet_placed_callable)
+	var bet_confirmed_callable: Callable = Callable(self, "_on_bet_confirmed")
+	if GameEvents.has_signal("bet_confirmed") and not GameEvents.bet_confirmed.is_connected(bet_confirmed_callable):
+		GameEvents.bet_confirmed.connect(bet_confirmed_callable)
 	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
 	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
 		GameEvents.betting_opened.connect(betting_opened_callable)
@@ -1683,6 +1686,29 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	_waiting_for_push_luck = false
 	_current_bet_id = _bet_id
 	_bet_chain_level = 1
+	GameEvents.betting_closed.emit()
+	set_phase(RunPhase.LIVE)
+	load_next_arena()
+	_start_next_arena()
+
+func _on_bet_confirmed(pact_id: StringName, condition_id: StringName, sentence_id: StringName) -> void:
+	if LEVEL3_ENABLED:
+		return
+	if not _waiting_for_bet:
+		return
+	if _is_game_over:
+		return
+	if pact_id == &"" or condition_id == &"" or sentence_id == &"":
+		return
+	_waiting_for_bet = false
+	_waiting_for_push_luck = false
+	_bet_chain_level = 1
+	_current_bet_id = ""
+	run["betting_circle"] = {
+		"pact_id": String(pact_id),
+		"condition_id": String(condition_id),
+		"sentence_id": String(sentence_id),
+	}
 	GameEvents.betting_closed.emit()
 	set_phase(RunPhase.LIVE)
 	load_next_arena()

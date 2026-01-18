@@ -4,6 +4,7 @@
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_panel_96x64.png" id="4"]
 [ext_resource type="Texture2D" path="res://assets/sprites/coin_gold.png" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
 texture_margin_left = 12.0
@@ -443,7 +444,7 @@ text = "Selezione: -"
 
 [node name="BetConfirmButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow"]
 custom_minimum_size = Vector2(120, 40)
-text = "CONFERMA"
+text = "SIGILLA"
 
 [node name="BuyTokenRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
 size_flags_horizontal = 3
@@ -470,6 +471,8 @@ text = "Disponibile dopo l'arena in corso."
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "x1"
+
+[node name="BettingCircle" parent="Modals" instance=ExtResource("6")]
 
 [node name="PushLuckModal" type="Control" parent="Modals"]
 visible = false

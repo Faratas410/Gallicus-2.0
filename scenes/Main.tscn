@@ -2,18 +2,18 @@
 
 [ext_resource type="Script" path="res://scripts/systems/run_manager.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
-[ext_resource type="Script" path="res://scripts/pickups/PickupSpawner.gd" id="5"]
 
 [node name="Main" type="Node2D"]
 
+[node name="RitualBackground" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Backdrop" type="ColorRect" parent="RitualBackground"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.08, 0.05, 0.1, 1)
+
 [node name="RunManager" type="Node" parent="." groups=["run_manager"]]
 script = ExtResource("1")
-arena_path = NodePath("../Arena")
-
-[node name="PickupSpawner" type="Node2D" parent="."]
-script = ExtResource("5")
-spawn_interval = 4.0
-spawn_area = Rect2(-480, -352, 960, 704)
-max_alive = 3
 
 [node name="UI" parent="." instance=ExtResource("2")]

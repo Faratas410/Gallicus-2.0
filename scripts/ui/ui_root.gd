@@ -69,9 +69,6 @@ const MODAL_FADE_SECONDS: float = 0.2
 @onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
 @onready var enemy_bars: Control = get_node_or_null("WorldUI/EnemyBars") as Control
-@onready var onboarding_modal: Control = get_node_or_null("Modals/OnboardingModal") as Control
-@onready var onboarding_panel: Panel = get_node_or_null("Modals/OnboardingModal/OnboardingPanel") as Panel
-@onready var onboarding_button: Button = get_node_or_null("Modals/OnboardingModal/OnboardingPanel/OnboardingVBox/OnboardingButton") as Button
 @onready var scars_detail_panel: Panel = get_node_or_null("Modals/ScarsDetailPanel") as Panel
 @onready var scars_detail_text: Label = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailText") as Label
 @onready var scars_detail_close: Button = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
@@ -102,7 +99,6 @@ var _popup_tween: Tween = null
 var _scar_popup_tween: Tween = null
 var _arena_resolution_tween: Tween = null
 var _bet_modal_fade_tween: Tween = null
-var _onboarding_modal_fade_tween: Tween = null
 var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
 var _last_level: int = 1
@@ -118,8 +114,6 @@ var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
 var _last_finale_stats: Dictionary = {}
 var _special_arena_payload: Dictionary = {}
-var _onboarding_pending: bool = false
-var _onboarding_visible: bool = false
 var _require_bet_confirm: bool = false
 var _scars_detail_text: String = ""
 var _debug_run_log: String = ""
@@ -278,12 +272,6 @@ func _ready() -> void:
 		var scars_gui_callable: Callable = Callable(self, "_on_scars_panel_gui_input")
 		if not scars_panel.gui_input.is_connected(scars_gui_callable):
 			scars_panel.gui_input.connect(scars_gui_callable)
-	if onboarding_panel != null:
-		_set_onboarding_modal(false)
-		if onboarding_button != null:
-			var onboarding_callable: Callable = Callable(self, "_on_onboarding_dismissed")
-			if not onboarding_button.pressed.is_connected(onboarding_callable):
-				onboarding_button.pressed.connect(onboarding_callable)
 	if scars_detail_panel != null:
 		scars_detail_panel.visible = false
 		if scars_detail_close != null:
@@ -685,8 +673,6 @@ func _on_run_started() -> void:
 	_last_finale_seed = 0
 	_last_finale_stats = {}
 	_special_arena_payload = {}
-	_onboarding_pending = true
-	_onboarding_visible = false
 	_debug_run_log = ""
 	_debug_special_arena = ""
 	if special_arena_label != null:
@@ -698,7 +684,6 @@ func _on_run_started() -> void:
 	if not _fast_countdown_active:
 		_reset_fast_countdown()
 	_refresh_modal_dimmer()
-	_hide_onboarding_panel()
 	_hide_scars_detail()
 
 func _on_run_started_ui() -> void:
@@ -773,7 +758,6 @@ func _on_run_failed() -> void:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
 	_refresh_modal_dimmer()
-	_hide_onboarding_panel()
 	_hide_scars_detail()
 
 func _on_run_debug_state_updated(payload: Dictionary) -> void:
@@ -808,13 +792,9 @@ func _on_betting_opened() -> void:
 	if betting_circle != null:
 		betting_circle.open()
 		_set_bet_modal(false)
-		_maybe_show_onboarding()
 		_refresh_modal_dimmer()
 
 func _on_arena_started(arena_index: int) -> void:
-	if arena_index >= 1:
-		_onboarding_pending = false
-		_hide_onboarding_panel()
 	if not _special_arena_payload.is_empty():
 		var special_index: int = int(_special_arena_payload.get("arena_index", -1))
 		if arena_index >= special_index and special_index > 0:
@@ -857,7 +837,6 @@ func _on_bet_ui_opened(bets: Array) -> void:
 		return
 	if betting_circle != null:
 		_set_bet_modal(false)
-		_maybe_show_onboarding()
 		_refresh_modal_dimmer()
 		return
 	if game_over_panel != null and game_over_panel.visible:
@@ -878,7 +857,6 @@ func _on_bet_ui_opened(bets: Array) -> void:
 	_set_bet_modal(true)
 	_update_special_arena_ui()
 	_update_condanna_focus()
-	_maybe_show_onboarding()
 	_reset_fast_countdown()
 	_refresh_buy_token_ui()
 	_refresh_modal_dimmer()
@@ -890,36 +868,6 @@ func _on_bet_ui_closed() -> void:
 		special_arena_label.visible = false
 	if condanna_focus_label != null:
 		condanna_focus_label.visible = false
-
-func _maybe_show_onboarding() -> void:
-	if not _onboarding_pending:
-		return
-	if onboarding_panel == null:
-		return
-	if _onboarding_visible:
-		return
-	_onboarding_visible = true
-	_set_onboarding_modal(true)
-	_set_bet_buttons_enabled(false)
-	if GameEvents.has_signal("modal_opened"):
-		GameEvents.modal_opened.emit("onboarding")
-	_refresh_modal_dimmer()
-
-func _hide_onboarding_panel() -> void:
-	if onboarding_panel == null:
-		return
-	if not _onboarding_visible and not onboarding_panel.visible:
-		return
-	_onboarding_visible = false
-	_set_onboarding_modal(false)
-	_set_bet_buttons_enabled(true)
-	if GameEvents.has_signal("modal_closed"):
-		GameEvents.modal_closed.emit("onboarding")
-	_refresh_modal_dimmer()
-
-func _on_onboarding_dismissed() -> void:
-	_onboarding_pending = false
-	_hide_onboarding_panel()
 
 func _update_special_arena_ui() -> void:
 	if special_arena_label == null:
@@ -939,7 +887,7 @@ func _update_condanna_focus() -> void:
 	if condanna_focus_label == null:
 		return
 	var arena_index: int = _get_arena_index()
-	condanna_focus_label.visible = _onboarding_pending or arena_index <= 1
+	condanna_focus_label.visible = arena_index <= 1
 
 func _on_scars_updated(scars: Array) -> void:
 	_refresh_scars_ui(scars)
@@ -1246,7 +1194,6 @@ func _request_reset() -> void:
 
 	if GameEvents.has_signal("request_reset_run"):
 		GameEvents.request_reset_run.emit()
-	_hide_onboarding_panel()
 	_hide_scars_detail()
 	_refresh_modal_dimmer()
 
@@ -1261,7 +1208,6 @@ func _request_retry() -> void:
 	_set_game_over_modal(false)
 	if GameEvents.has_signal("request_retry_run"):
 		GameEvents.request_retry_run.emit()
-	_hide_onboarding_panel()
 	_hide_scars_detail()
 	_refresh_modal_dimmer()
 
@@ -1339,23 +1285,30 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 	if bet_buttons_container == null:
 		return
 	_clear_bet_buttons()
+	var add_intro_note: bool = _get_arena_index() <= 1
+	var intro_note: String = "Le cicatrici restano. Raddoppiare aumenta il rischio."
+	var note_used: bool = false
 	for bet_value: Dictionary in bets:
 		var bet: Dictionary = bet_value as Dictionary
 		var bet_id: String = str(bet.get("id", ""))
 		if bet_id == "":
 			continue
-		var button: Button = _create_bet_button(bet_id, bet)
+		var extra_note: String = ""
+		if add_intro_note and not note_used:
+			extra_note = intro_note
+			note_used = true
+		var button: Button = _create_bet_button(bet_id, bet, extra_note)
 		bet_buttons_container.add_child(button)
 		_bet_buttons.append(button)
 
-func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
+func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> Button:
 	var button: Button = Button.new()
 	button.custom_minimum_size = Vector2(0, 190)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_size_override("font_size", 20)
-	button.text = _format_bet_button_text(bet_id, bet)
+	button.text = _format_bet_button_text(bet_id, bet, extra_note)
 	button.alignment = HorizontalAlignment.HORIZONTAL_ALIGNMENT_LEFT
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1365,7 +1318,7 @@ func _create_bet_button(bet_id: String, bet: Dictionary) -> Button:
 	_apply_bet_button_style(button, bet_id)
 	return button
 
-func _format_bet_button_text(bet_id: String, bet: Dictionary) -> String:
+func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String) -> String:
 	var name_text: String = str(bet.get("name", bet_id))
 	var condition_text: String = str(bet.get("condition", ""))
 	var pact_text: String = str(bet.get("pact", ""))
@@ -1380,6 +1333,8 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary) -> String:
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":
 		lines.append("✅ Patto: %s" % pact_text)
+	if extra_note != "":
+		lines.append("ℹ️ %s" % extra_note)
 	return "\n".join(lines)
 
 func _format_lock_note(reason: String, fallback: String) -> String:
@@ -1397,13 +1352,6 @@ func _clear_bet_buttons() -> void:
 	for child in bet_buttons_container.get_children():
 		if child is Node:
 			child.queue_free()
-
-func _set_bet_buttons_enabled(enabled: bool) -> void:
-	for button: Button in _bet_buttons:
-		if button != null:
-			button.disabled = not enabled
-	if bet_confirm_button != null:
-		bet_confirm_button.disabled = not enabled
 
 func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 	if button == null:
@@ -1559,11 +1507,6 @@ func _set_bet_modal(active: bool) -> void:
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
-func _set_onboarding_modal(active: bool) -> void:
-	_onboarding_modal_fade_tween = _fade_modal(onboarding_panel, onboarding_modal, active, _onboarding_modal_fade_tween)
-	_refresh_modal_dimmer()
-	get_viewport().gui_release_focus()
-
 func _set_push_luck_modal(active: bool) -> void:
 	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween)
 	if active:
@@ -1602,8 +1545,6 @@ func _refresh_modal_dimmer() -> void:
 	if push_luck_modal != null and push_luck_modal.visible:
 		active = true
 	if game_over_modal != null and game_over_modal.visible:
-		active = true
-	if onboarding_modal != null and onboarding_modal.visible:
 		active = true
 	if scars_detail_panel != null and scars_detail_panel.visible:
 		active = true

@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_panel_96x64.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/sprites/coin_gold.png" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
@@ -68,55 +67,6 @@ mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 
-[node name="PlayerHPRow" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
-
-[node name="PlayerHPContent" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 6.0
-offset_right = -8.0
-offset_bottom = -6.0
-theme_override_constants/separation = 8
-
-[node name="PlayerHPBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent"]
-custom_minimum_size = Vector2(260, 16)
-min_value = 0.0
-max_value = 10.0
-value = 10.0
-
-[node name="PlayerHPLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent"]
-autowrap_mode = 2
-size_flags_horizontal = 3
-text = "HP: -/-"
-
-[node name="CoinsRow" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
-
-[node name="CoinsContent" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/CoinsRow"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 6.0
-offset_right = -8.0
-offset_bottom = -6.0
-theme_override_constants/separation = 8
-
-[node name="CoinIcon" type="TextureRect" parent="HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent"]
-custom_minimum_size = Vector2(16, 16)
-expand_mode = 1
-stretch_mode = 5
-texture = ExtResource("5")
-texture_filter = 2
-
-[node name="CoinsLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent"]
-autowrap_mode = 2
-size_flags_horizontal = 3
-text = "Coins: 0"
-
 [node name="SeedRow" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
@@ -124,42 +74,6 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 [node name="SeedLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/SeedRow"]
 autowrap_mode = 2
 text = "Seed: 0"
-
-[node name="LevelRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
-visible = false
-size_flags_horizontal = 3
-
-[node name="LevelLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/LevelRow"]
-autowrap_mode = 2
-text = "Level: 1"
-
-[node name="TokensRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
-visible = false
-size_flags_horizontal = 3
-
-[node name="TokenIcon" type="TextureRect" parent="HUD/SafeMargin/TopRow/LeftColumn/TokensRow"]
-custom_minimum_size = Vector2(16, 16)
-expand_mode = 1
-stretch_mode = 5
-
-[node name="TokensLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/TokensRow"]
-autowrap_mode = 2
-size_flags_horizontal = 3
-text = "Tokens: 0"
-
-[node name="XPRow" type="HBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
-visible = false
-size_flags_horizontal = 3
-
-[node name="XPBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/XPRow"]
-custom_minimum_size = Vector2(260, 14)
-min_value = 0.0
-max_value = 6.0
-value = 0.0
-
-[node name="XPLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/XPRow"]
-autowrap_mode = 2
-text = "XP: 0/6"
 
 [node name="BetRow" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 size_flags_horizontal = 3
@@ -183,20 +97,6 @@ custom_minimum_size = Vector2(280, 0)
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="LevelUpPopup" type="Label" parent="HUD"]
-visible = false
-z_index = 110
-anchor_left = 0.5
-anchor_top = 0.25
-anchor_right = 0.5
-anchor_bottom = 0.25
-offset_left = -240.0
-offset_top = -20.0
-offset_right = 240.0
-offset_bottom = 20.0
-horizontal_alignment = 1
-autowrap_mode = 2
-text = "LEVEL UP! +1 TOKEN"
 
 [node name="ScarPopup" type="RichTextLabel" parent="HUD"]
 visible = false
@@ -229,16 +129,6 @@ offset_bottom = 16.0
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "Il patto viene giudicato..."
-
-[node name="WorldUI" type="Control" parent="."]
-mouse_filter = 2
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="EnemyBars" type="Control" parent="WorldUI"]
-mouse_filter = 2
-anchor_right = 1.0
-anchor_bottom = 1.0
 
 [node name="Modals" type="Control" parent="."]
 mouse_filter = 1

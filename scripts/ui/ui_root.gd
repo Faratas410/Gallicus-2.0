@@ -1269,6 +1269,8 @@ func _on_quit_pressed() -> void:
 	get_tree().quit()
 
 func _on_player_health_changed(current: int, max_value: int) -> void:
+	if player_hp_bar == null or player_hp_label == null:
+		return
 	player_hp_bar.max_value = max_value
 	player_hp_bar.value = current
 	player_hp_label.text = "HP: %d/%d" % [current, max_value]

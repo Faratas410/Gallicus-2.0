@@ -431,10 +431,14 @@ func _ready() -> void:
 
 func _boot() -> void:
 	await get_tree().process_frame
-	_ensure_arena_and_player()
-	_arena = get_node_or_null(arena_path)
-	_player = get_tree().get_first_node_in_group("player")
-	_connect_player_signals()
+	if not LEVEL3_ENABLED:
+		_ensure_arena_and_player()
+		_arena = get_node_or_null(arena_path)
+		_player = get_tree().get_first_node_in_group("player")
+		_connect_player_signals()
+	else:
+		_arena = null
+		_player = null
 	_bet_manager = get_node_or_null("BetManager")
 	if _arena:
 		var wave_started_callable: Callable = Callable(self, "_on_wave_started")
@@ -590,10 +594,6 @@ func _start_level3_run() -> void:
 	_reset_upgrades()
 	_reset_upgrade_costs()
 
-	_ensure_arena_and_player()
-	_reset_or_respawn_player_full()
-	_clear_enemies()
-
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
 	set_phase(RunPhase.PREP)
@@ -604,15 +604,17 @@ func _start_level3_run() -> void:
 func start_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
-	_ensure_arena_and_player()
 	_clear_enemies()
+	if not LEVEL3_ENABLED:
+		_ensure_arena_and_player()
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
 	_maybe_activate_special_arena()
 	_select_enemy_profile()
 	if _run_state.enemy_profile != &"":
 		_run_state.enemy_profiles.append(_run_state.enemy_profile)
-	load_next_arena()
+	if not LEVEL3_ENABLED:
+		load_next_arena()
 	_emit_run_debug_state()
 	_open_level3_bet_ui()
 
@@ -1243,6 +1245,8 @@ func _determine_level3_ending_id() -> StringName:
 	return &"THE_BROKEN"
 
 func _ensure_arena_and_player() -> void:
+	if LEVEL3_ENABLED:
+		return
 	var main: Node = get_parent()
 	if main == null:
 		return
@@ -1858,6 +1862,12 @@ func _apply_enemy_difficulty_to_arena() -> void:
 func _resolve_player() -> Node:
 	if _player and is_instance_valid(_player) and _player.is_inside_tree():
 		return _player
+	if LEVEL3_ENABLED:
+		var existing_player: Node = get_tree().get_first_node_in_group("player")
+		if existing_player != null and existing_player.is_inside_tree():
+			_player = existing_player
+			return _player
+		return null
 	if player_path != NodePath():
 		var path_player: Node = get_node_or_null(player_path)
 		if path_player:

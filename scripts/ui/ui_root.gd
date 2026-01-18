@@ -808,6 +808,8 @@ func _on_betting_opened() -> void:
 	if betting_circle != null:
 		betting_circle.open()
 		_set_bet_modal(false)
+		_maybe_show_onboarding()
+		_refresh_modal_dimmer()
 
 func _on_arena_started(arena_index: int) -> void:
 	if arena_index >= 1:
@@ -852,6 +854,11 @@ func _on_bet_placed(bet_id: String, _stake: int, _odds: float) -> void:
 
 func _on_bet_ui_opened(bets: Array) -> void:
 	if bet_panel == null:
+		return
+	if betting_circle != null:
+		_set_bet_modal(false)
+		_maybe_show_onboarding()
+		_refresh_modal_dimmer()
 		return
 	if game_over_panel != null and game_over_panel.visible:
 		return

@@ -13,6 +13,7 @@ const MODAL_FADE_SECONDS: float = 0.2
 @onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
 @onready var seed_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/SeedRow/SeedLabel") as Label
 @onready var bet_modal: Control = _req("Modals/BetModal") as Control
+@onready var betting_circle: BettingCircleUI = get_node_or_null("Modals/BettingCircle") as BettingCircleUI
 @onready var bet_panel: Panel = _req("Modals/BetModal/BetPanel") as Panel
 @onready var buy_token_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenButton") as Button
 @onready var buy_token_info: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
@@ -804,6 +805,9 @@ func _on_betting_opened() -> void:
 		return
 	if push_luck_panel != null and push_luck_panel.visible:
 		return
+	if betting_circle != null:
+		betting_circle.open()
+		_set_bet_modal(false)
 
 func _on_arena_started(arena_index: int) -> void:
 	if arena_index >= 1:

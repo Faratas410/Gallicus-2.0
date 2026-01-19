@@ -81,8 +81,8 @@ const MODAL_FADE_SECONDS: float = 0.2
 @onready var scars_detail_text: Label = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailText") as Label
 @onready var scars_detail_close: Button = get_node_or_null("Modals/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
 
-@export var sfx_level_up_path: String = "res://assets/audio/ui/level_up.ogg"
-@export var sfx_buy_token_path: String = "res://assets/audio/ui/buy_token.ogg"
+@export var sfx_level_up_path: String = ""
+@export var sfx_buy_token_path: String = ""
 
 var _enemy_bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")
 var _bets_by_id: Dictionary = {}

@@ -94,8 +94,8 @@ func _on_sigilla_pressed() -> void:
 	close()
 
 func _update_sigilla_state() -> void:
-	var ready: bool = selected_bet_id != &""
-	sigilla_button.disabled = not ready
+	var is_ready: bool = selected_bet_id != &""
+	sigilla_button.disabled = not is_ready
 
 func _apply_option_copy() -> void:
 	if BETTING_CIRCLE_OPTIONS.size() < 3:

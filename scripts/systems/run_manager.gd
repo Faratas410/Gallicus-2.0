@@ -367,10 +367,14 @@ var _forced_ending_id: StringName = &""
 var _debug_seed_override_active: bool = false
 var _debug_seed_override: int = 0
 var _run_start_time_msec: int = 0
+var _boot_valid: bool = true
+var _sanity_ui_root: Node = null
 
 func _ready() -> void:
 	print("RunManager ready")
 	add_to_group("run_manager")
+	if not _validate_game_events_signals():
+		return
 	_arena_layout_rng.randomize()
 	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
 	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
@@ -443,6 +447,10 @@ func _ready() -> void:
 
 func _boot() -> void:
 	await get_tree().process_frame
+	if not _boot_valid:
+		return
+	if not _validate_boot():
+		return
 	if not LEVEL3_ENABLED:
 		_ensure_arena_and_player()
 		_arena = get_node_or_null(arena_path)
@@ -467,6 +475,87 @@ func _boot() -> void:
 	print("Starting new run")
 	start_new_run()
 	_log_runtime_state("boot_complete")
+
+func _validate_game_events_signals() -> bool:
+	var errors: Array[String] = []
+	if not Engine.has_singleton("GameEvents"):
+		errors.append("GameEvents autoload missing")
+	else:
+		var required_signals: Array[String] = [
+			"bet_placed",
+			"betting_opened",
+			"run_failed",
+			"enemy_killed",
+			"run_started",
+			"coins_changed",
+			"resolve_ritual_opened",
+			"resolve_ritual_closed",
+			"push_luck_opened",
+			"push_luck_closed",
+			"run_finale_selected",
+		]
+		for signal_name: String in required_signals:
+			if not GameEvents.has_signal(signal_name):
+				errors.append("GameEvents missing signal '%s'" % signal_name)
+	if errors.size() > 0:
+		_abort_sanity("SANITY FAIL: %s" % "; ".join(errors))
+		return false
+	return true
+
+func _validate_boot() -> bool:
+	var errors: Array[String] = []
+	if not Engine.has_singleton("GameEvents"):
+		errors.append("GameEvents autoload missing")
+	var run_managers: Array[Node] = get_tree().get_nodes_in_group("run_manager")
+	if run_managers.size() != 1:
+		errors.append("expected 1 run_manager, found %d" % run_managers.size())
+	var current_scene: Node = get_tree().current_scene
+	if current_scene == null:
+		errors.append("current scene is missing")
+	else:
+		var scene_path: String = current_scene.scene_file_path
+		if scene_path != "" and scene_path != "res://scenes/Main.tscn":
+			push_warning("SANITY WARN: entry scene is %s (expected res://scenes/Main.tscn)" % scene_path)
+		_sanity_ui_root = current_scene.get_node_or_null("UI")
+		if _sanity_ui_root == null:
+			errors.append("UI root missing at path 'UI'")
+		else:
+			var required_ui_paths: Array[String] = [
+				"Modals/BettingCircle",
+				"Modals/BetModal",
+				"Modals/ResolveRitualModal",
+				"Modals/PushLuckModal",
+				"Modals/PushLuckModal/PushLuckPanel",
+				"Modals/GameOverModal",
+			]
+			for ui_path: String in required_ui_paths:
+				if _sanity_ui_root.get_node_or_null(ui_path) == null:
+					errors.append("UI node missing at path '%s'" % ui_path)
+	if errors.size() > 0:
+		_abort_sanity("SANITY FAIL: %s" % "; ".join(errors))
+		return false
+	return true
+
+func _abort_sanity(message: String) -> void:
+	push_error(message)
+	_boot_valid = false
+	get_tree().paused = true
+
+func _ensure_flow_panel(path: String, context: String) -> bool:
+	if _sanity_ui_root == null:
+		_fail_flow("missing UI root during %s" % context)
+		return false
+	if _sanity_ui_root.get_node_or_null(path) == null:
+		_fail_flow("missing UI panel at '%s' after %s" % [path, context])
+		return false
+	return true
+
+func _fail_flow(message: String) -> void:
+	push_error("SANITY FAIL FLOW: %s" % message)
+	if _is_game_over:
+		return
+	_forced_ending_id = &"THE_FOOL"
+	_enter_game_over()
 
 func start_new_run() -> void:
 	_run_start_time_msec = Time.get_ticks_msec()
@@ -697,6 +786,8 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 
 func _start_resolve_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
+		return
+	if not _ensure_flow_panel("Modals/ResolveRitualModal", "resolve ritual"):
 		return
 	_resolving_ritual = true
 	_resolve_ritual_sequence_id += 1
@@ -2142,6 +2233,8 @@ func _reset_bet_chain() -> void:
 	_update_arena_visual_only()
 
 func _open_push_luck_choice(bet_id: StringName) -> void:
+	if not _ensure_flow_panel("Modals/PushLuckModal", "push luck choice"):
+		return
 	_waiting_for_push_luck = true
 	_show_shop_next_bet = false
 	set_phase(RunPhase.PREP)
@@ -2377,6 +2470,10 @@ func _get_player_max_health_value(p: Node) -> int:
 
 func _enter_game_over() -> void:
 	if _is_game_over:
+		return
+	if _sanity_ui_root == null or _sanity_ui_root.get_node_or_null("Modals/GameOverModal") == null:
+		push_error("SANITY FAIL FLOW: ending panel missing")
+		get_tree().paused = true
 		return
 	_is_game_over = true
 	_run_state.run_is_over = true

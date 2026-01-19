@@ -24,6 +24,8 @@ signal betting_opened
 signal betting_closed
 signal bet_opened
 signal bet_closed
+signal pact_sealed_opened
+signal pact_sealed_closed
 signal resolve_ritual_opened(payload: Dictionary)
 signal resolve_ritual_closed
 signal push_luck_opened(payload: Dictionary)

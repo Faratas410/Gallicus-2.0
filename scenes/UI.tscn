@@ -155,6 +155,53 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
+[node name="PactSealedModal" type="Control" parent="Modals"]
+visible = false
+mouse_filter = 2
+z_index = 96
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="PactSealedBlocker" type="ColorRect" parent="Modals/PactSealedModal"]
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0)
+
+[node name="PactSealedPanel" type="Panel" parent="Modals/PactSealedModal"]
+z_index = 1
+focus_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -120.0
+offset_right = 260.0
+offset_bottom = 120.0
+custom_minimum_size = Vector2(520, 240)
+
+[node name="PactSealedVBox" type="VBoxContainer" parent="Modals/PactSealedModal/PactSealedPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+theme_override_constants/separation = 12
+
+[node name="PactSealedTitle" type="Label" parent="Modals/PactSealedModal/PactSealedPanel/PactSealedVBox"]
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+text = "IL PATTO È SIGILLATO."
+
+[node name="PactSealedSubtitle" type="Label" parent="Modals/PactSealedModal/PactSealedPanel/PactSealedVBox"]
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "La folla trattiene il fiato."
+
 [node name="ResolveRitualModal" type="Control" parent="Modals"]
 visible = false
 mouse_filter = 2

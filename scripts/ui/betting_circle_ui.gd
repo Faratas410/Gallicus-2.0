@@ -1,6 +1,13 @@
 extends Control
 class_name BettingCircleUI
 
+const BETTING_CIRCLE_BET_IDS: Array[StringName] = [
+	&"CASH_OUT",
+	&"FLAWLESS_BLOOD",
+	&"DOUBLE_OR_DIE",
+]
+const BETTING_CIRCLE_BET_DATA: Array[Dictionary] = preload("res://scripts/systems/run_manager.gd").LEVEL3_BETS
+
 const PACT_ID_1: StringName = &"pact_1"
 const PACT_ID_2: StringName = &"pact_2"
 const PACT_ID_3: StringName = &"pact_3"
@@ -37,6 +44,9 @@ func _ready() -> void:
 	_setup_group(pact_buttons, pact_group)
 	_setup_group(condition_buttons, condition_group)
 	_setup_group(sentence_buttons, sentence_group)
+	_apply_option_copy(pact_buttons)
+	_apply_option_copy(condition_buttons)
+	_apply_option_copy(sentence_buttons)
 	pact_button_1.pressed.connect(_on_pact_selected.bind(PACT_ID_1))
 	pact_button_2.pressed.connect(_on_pact_selected.bind(PACT_ID_2))
 	pact_button_3.pressed.connect(_on_pact_selected.bind(PACT_ID_3))
@@ -98,9 +108,54 @@ func _on_sentence_selected(sentence_id: StringName) -> void:
 func _on_sigilla_pressed() -> void:
 	if selected_pact_id == &"" or selected_condition_id == &"" or selected_sentence_id == &"":
 		return
-	GameEvents.bet_confirmed.emit(selected_pact_id, selected_condition_id, selected_sentence_id)
+	var bet_choice: Dictionary = {
+		"pact_id": String(selected_pact_id),
+		"condition_id": String(selected_condition_id),
+		"sentence_id": String(selected_sentence_id),
+	}
+	if GameEvents.has_signal("bet_sealed"):
+		GameEvents.bet_sealed.emit(bet_choice)
 	close()
 
 func _update_sigilla_state() -> void:
 	var ready: bool = selected_pact_id != &"" and selected_condition_id != &"" and selected_sentence_id != &""
 	sigilla_button.disabled = not ready
+
+func _apply_option_copy(buttons: Array[Button]) -> void:
+	var limit: int = mini(buttons.size(), BETTING_CIRCLE_BET_IDS.size())
+	for index: int in range(limit):
+		var bet_id: StringName = BETTING_CIRCLE_BET_IDS[index]
+		var bet_data: Dictionary = _get_bet_data(bet_id)
+		if bet_data.is_empty():
+			continue
+		var name_text: String = str(bet_data.get("name", String(bet_id)))
+		if name_text == "":
+			name_text = String(bet_id)
+		var tooltip_text: String = _build_tooltip_text(bet_data, name_text)
+		buttons[index].text = name_text
+		buttons[index].tooltip_text = tooltip_text
+
+func _get_bet_data(bet_id: StringName) -> Dictionary:
+	for bet_value: Dictionary in BETTING_CIRCLE_BET_DATA:
+		var bet: Dictionary = bet_value as Dictionary
+		if StringName(str(bet.get("id", ""))) == bet_id:
+			return bet
+	return {}
+
+func _build_tooltip_text(bet_data: Dictionary, name_text: String) -> String:
+	var pact_text: String = str(bet_data.get("pact", ""))
+	var condition_text: String = str(bet_data.get("condition", ""))
+	var doom_text: String = str(bet_data.get("doom", ""))
+	var effect_text: String = _extract_first_line(doom_text)
+	var description_text: String = pact_text
+	if description_text == "":
+		description_text = condition_text
+	if effect_text == "":
+		effect_text = condition_text
+	return "%s\n%s\nEffetto: %s" % [name_text, description_text, effect_text]
+
+func _extract_first_line(text: String) -> String:
+	var newline_index: int = text.find("\n")
+	if newline_index == -1:
+		return text.strip_edges()
+	return text.substr(0, newline_index).strip_edges()

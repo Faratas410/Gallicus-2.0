@@ -9,7 +9,8 @@ extends Node
 @export var arena_layout_offset: Vector2 = Vector2(-640.0, -360.0)
 
 const LEVEL3_ENABLED: bool = true
-const RESOLVE_RITUAL_SECONDS: float = 0.8
+const PACT_SEALED_SECONDS: float = 0.7
+const RESOLVE_RITUAL_SECONDS: float = 0.9
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_FLAWLESS_BLOOD: StringName = &"FLAWLESS_BLOOD"
 const BET_DOUBLE_OR_DIE_L3: StringName = &"DOUBLE_OR_DIE"
@@ -324,6 +325,7 @@ var _arena_suspended: bool = false
 var _arena_visual_only: bool = false
 var _resolving_arena: bool = false
 var _resolving_ritual: bool = false
+var _pact_sealed_sequence_id: int = 0
 var _resolve_ritual_sequence_id: int = 0
 var _resolve_ritual_reward_applied: bool = false
 var _bet_chain_level: int = 1
@@ -490,6 +492,7 @@ func start_new_run() -> void:
 	_run_finale_emitted = false
 	_resolving_arena = false
 	_resolving_ritual = false
+	_pact_sealed_sequence_id = 0
 	_resolve_ritual_sequence_id = 0
 	_resolve_ritual_reward_applied = false
 	_reset_bet_chain()
@@ -555,6 +558,7 @@ func _start_level3_run() -> void:
 	_run_end_reason = ""
 	_run_finale_emitted = false
 	_resolving_arena = false
+	_pact_sealed_sequence_id = 0
 	_forced_ending_id = &""
 	_level3_reward_tier = 1
 	_level3_next_loss_hp_penalty = 0
@@ -677,6 +681,20 @@ func _register_level3_bet_choice(bet_id: StringName) -> void:
 	GameEvents.bet_ui_closed.emit()
 	GameEvents.bet_closed.emit()
 
+func _start_pact_sealed_ritual(bet_id: StringName) -> void:
+	if _run_state.run_is_over or _is_game_over:
+		return
+	_pact_sealed_sequence_id += 1
+	var sequence_id: int = _pact_sealed_sequence_id
+	GameEvents.pact_sealed_opened.emit()
+	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
+	if sequence_id != _pact_sealed_sequence_id:
+		return
+	if _run_state.run_is_over or _is_game_over:
+		return
+	GameEvents.pact_sealed_closed.emit()
+	_start_resolve_ritual(bet_id)
+
 func _start_resolve_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -686,6 +704,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	var payload: Dictionary = {
 		"bet_id": String(bet_id),
 		"bet_name": _get_level3_bet_name(bet_id),
+		"doom_short": _get_level3_doom_short(bet_id),
 	}
 	GameEvents.resolve_ritual_opened.emit(payload)
 	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
@@ -1836,7 +1855,7 @@ func _on_bet_sealed(bet_choice: Dictionary) -> void:
 	_handle_bet_sealed(pact_id, condition_id, sentence_id)
 
 func _on_bet_selected(bet_id: String) -> void:
-	_handle_bet_selected(StringName(bet_id))
+	await _handle_bet_selected(StringName(bet_id))
 
 func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_id: StringName) -> void:
 	if _is_game_over:
@@ -1871,7 +1890,7 @@ func _handle_bet_selected(bet_id: StringName) -> void:
 	_resolve_ritual_reward_applied = false
 	_register_level3_bet_choice(bet_id)
 	GameEvents.betting_closed.emit()
-	_start_resolve_ritual(bet_id)
+	await _start_pact_sealed_ritual(bet_id)
 
 func _on_betting_opened() -> void:
 	_force_game_over_if_dead()
@@ -2267,6 +2286,22 @@ func _get_level3_bet_name(bet_id: StringName) -> String:
 		if StringName(str(bet.get("id", ""))) == bet_id:
 			return str(bet.get("name", String(bet_id)))
 	return String(bet_id)
+
+func _get_level3_doom_short(bet_id: StringName) -> String:
+	var bet_data: Dictionary = _get_bet_data(String(bet_id))
+	if bet_data.is_empty():
+		return ""
+	var doom_text: String = str(bet_data.get("doom", ""))
+	if doom_text == "":
+		return ""
+	var lines: PackedStringArray = doom_text.split("\n")
+	for line: String in lines:
+		var trimmed: String = line.strip_edges()
+		if trimmed.begins_with("Effetto:"):
+			return trimmed.replace("Effetto:", "").strip_edges()
+	if not lines.is_empty():
+		return lines[0].strip_edges()
+	return doom_text
 
 func _apply_double_or_die_reward_scaled(scale: int) -> void:
 	var p: Node = _resolve_player()

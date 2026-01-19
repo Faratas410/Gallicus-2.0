@@ -14,6 +14,10 @@ const MODAL_FADE_SECONDS: float = 0.2
 @onready var seed_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/SeedRow/SeedLabel") as Label
 @onready var bet_modal: Control = _req("Modals/BetModal") as Control
 @onready var betting_circle: BettingCircleUI = get_node_or_null("Modals/BettingCircle") as BettingCircleUI
+@onready var pact_sealed_modal: Control = get_node_or_null("Modals/PactSealedModal") as Control
+@onready var pact_sealed_panel: Panel = get_node_or_null("Modals/PactSealedModal/PactSealedPanel") as Panel
+@onready var pact_sealed_title: Label = get_node_or_null("Modals/PactSealedModal/PactSealedPanel/PactSealedVBox/PactSealedTitle") as Label
+@onready var pact_sealed_subtitle: Label = get_node_or_null("Modals/PactSealedModal/PactSealedPanel/PactSealedVBox/PactSealedSubtitle") as Label
 @onready var resolve_ritual_modal: Control = get_node_or_null("Modals/ResolveRitualModal") as Control
 @onready var resolve_ritual_panel: Panel = get_node_or_null("Modals/ResolveRitualModal/ResolveRitualPanel") as Panel
 @onready var resolve_ritual_title: Label = get_node_or_null("Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox/ResolveRitualTitle") as Label
@@ -103,6 +107,7 @@ var _popup_tween: Tween = null
 var _scar_popup_tween: Tween = null
 var _arena_resolution_tween: Tween = null
 var _bet_modal_fade_tween: Tween = null
+var _pact_sealed_modal_fade_tween: Tween = null
 var _resolve_ritual_modal_fade_tween: Tween = null
 var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
@@ -178,6 +183,12 @@ func _ready() -> void:
 	var bet_ui_closed_callable: Callable = Callable(self, "_on_bet_ui_closed")
 	if not GameEvents.bet_ui_closed.is_connected(bet_ui_closed_callable):
 		GameEvents.bet_ui_closed.connect(bet_ui_closed_callable)
+	var pact_sealed_opened_callable: Callable = Callable(self, "_on_pact_sealed_opened")
+	if GameEvents.has_signal("pact_sealed_opened") and not GameEvents.pact_sealed_opened.is_connected(pact_sealed_opened_callable):
+		GameEvents.pact_sealed_opened.connect(pact_sealed_opened_callable)
+	var pact_sealed_closed_callable: Callable = Callable(self, "_on_pact_sealed_closed")
+	if GameEvents.has_signal("pact_sealed_closed") and not GameEvents.pact_sealed_closed.is_connected(pact_sealed_closed_callable):
+		GameEvents.pact_sealed_closed.connect(pact_sealed_closed_callable)
 	var resolve_ritual_opened_callable: Callable = Callable(self, "_on_resolve_ritual_opened")
 	if GameEvents.has_signal("resolve_ritual_opened") and not GameEvents.resolve_ritual_opened.is_connected(resolve_ritual_opened_callable):
 		GameEvents.resolve_ritual_opened.connect(resolve_ritual_opened_callable)
@@ -880,12 +891,27 @@ func _on_bet_ui_closed() -> void:
 	if condanna_focus_label != null:
 		condanna_focus_label.visible = false
 
+func _on_pact_sealed_opened() -> void:
+	if pact_sealed_title != null:
+		pact_sealed_title.text = "IL PATTO È SIGILLATO."
+	if pact_sealed_subtitle != null:
+		pact_sealed_subtitle.text = "La folla trattiene il fiato."
+	_set_pact_sealed_modal(true)
+	_refresh_modal_dimmer()
+
+func _on_pact_sealed_closed() -> void:
+	_set_pact_sealed_modal(false)
+	_refresh_modal_dimmer()
+
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	if resolve_ritual_title != null:
 		resolve_ritual_title.text = "RITO DI GIUDIZIO"
 	if resolve_ritual_subtitle != null:
-		var bet_name: String = str(payload.get("bet_name", ""))
-		resolve_ritual_subtitle.text = "Patto scelto: %s" % bet_name
+		var doom_short: String = str(payload.get("doom_short", ""))
+		if doom_short == "":
+			resolve_ritual_subtitle.text = "CONDANNA: giudizio imminente."
+		else:
+			resolve_ritual_subtitle.text = "CONDANNA: %s" % doom_short
 	_set_resolve_ritual_modal(true)
 	_refresh_modal_dimmer()
 
@@ -1077,17 +1103,10 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 		return
 	_set_bet_modal(false)
 	var bet_name: String = str(payload.get("bet_name", ""))
-	var current_level: int = int(payload.get("current_level", 1))
-	var next_level: int = int(payload.get("next_level", 2))
-	var arena_index: int = int(payload.get("arena_index", 0))
-	var arena_target: int = int(payload.get("arena_target", 0))
 	if push_luck_title != null:
 		push_luck_title.text = "PUSH YOUR LUCK — %s" % bet_name
 	if push_luck_info != null:
-		var info_line: String = "Vittoria x%d → Rischio x%d" % [current_level, next_level]
-		if arena_target > 0:
-			info_line += "  |  Arena %d/%d" % [arena_index, arena_target]
-		push_luck_info.text = info_line
+		push_luck_info.text = "La folla vuole di più. Puoi incassare… o rilanciare."
 	var doom_text: String = str(payload.get("next_doom", ""))
 	var condition_text: String = str(payload.get("condition", ""))
 	var pact_text: String = str(payload.get("next_pact", ""))
@@ -1531,6 +1550,17 @@ func _set_bet_modal(active: bool) -> void:
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
+func _set_pact_sealed_modal(active: bool) -> void:
+	_pact_sealed_modal_fade_tween = _fade_modal(pact_sealed_panel, pact_sealed_modal, active, _pact_sealed_modal_fade_tween)
+	if active:
+		if GameEvents.has_signal("modal_opened"):
+			GameEvents.modal_opened.emit("pact_sealed")
+	else:
+		if GameEvents.has_signal("modal_closed"):
+			GameEvents.modal_closed.emit("pact_sealed")
+	_refresh_modal_dimmer()
+	get_viewport().gui_release_focus()
+
 func _set_resolve_ritual_modal(active: bool) -> void:
 	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween)
 	if active:
@@ -1576,6 +1606,8 @@ func _refresh_modal_dimmer() -> void:
 		return
 	var active: bool = false
 	if bet_modal != null and bet_modal.visible:
+		active = true
+	if pact_sealed_modal != null and pact_sealed_modal.visible:
 		active = true
 	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
 		active = true

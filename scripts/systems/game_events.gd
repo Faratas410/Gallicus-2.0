@@ -16,6 +16,7 @@ signal level_changed(level: int)
 signal xp_changed(xp: int, xp_required: int)
 signal bet_placed(bet_id: String, stake: int, odds: float)
 signal bet_confirmed(pact_id: StringName, condition_id: StringName, sentence_id: StringName)
+signal bet_sealed(bet_choice: Dictionary)
 signal bet_ui_opened(bets: Array)
 signal bet_ui_closed
 signal betting_opened

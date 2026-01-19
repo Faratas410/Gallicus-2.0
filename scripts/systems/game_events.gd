@@ -17,12 +17,15 @@ signal xp_changed(xp: int, xp_required: int)
 signal bet_placed(bet_id: String, stake: int, odds: float)
 signal bet_confirmed(pact_id: StringName, condition_id: StringName, sentence_id: StringName)
 signal bet_sealed(bet_choice: Dictionary)
+signal bet_selected(bet_id: String)
 signal bet_ui_opened(bets: Array)
 signal bet_ui_closed
 signal betting_opened
 signal betting_closed
 signal bet_opened
 signal bet_closed
+signal resolve_ritual_opened(payload: Dictionary)
+signal resolve_ritual_closed
 signal push_luck_opened(payload: Dictionary)
 signal push_luck_closed
 signal player_damaged

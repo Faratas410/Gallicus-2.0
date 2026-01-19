@@ -155,6 +155,53 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
+[node name="ResolveRitualModal" type="Control" parent="Modals"]
+visible = false
+mouse_filter = 2
+z_index = 96
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ResolveRitualBlocker" type="ColorRect" parent="Modals/ResolveRitualModal"]
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0)
+
+[node name="ResolveRitualPanel" type="Panel" parent="Modals/ResolveRitualModal"]
+z_index = 1
+focus_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -140.0
+offset_right = 280.0
+offset_bottom = 140.0
+custom_minimum_size = Vector2(560, 280)
+
+[node name="ResolveRitualVBox" type="VBoxContainer" parent="Modals/ResolveRitualModal/ResolveRitualPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+theme_override_constants/separation = 12
+
+[node name="ResolveRitualTitle" type="Label" parent="Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox"]
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+text = "RITO DI GIUDIZIO"
+
+[node name="ResolveRitualSubtitle" type="Label" parent="Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox"]
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Il patto viene giudicato."
+
 [node name="BetBlocker" type="ColorRect" parent="Modals/BetModal"]
 mouse_filter = 2
 anchor_right = 1.0

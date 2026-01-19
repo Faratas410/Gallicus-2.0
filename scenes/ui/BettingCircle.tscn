@@ -90,74 +90,112 @@ theme_override_constants/separation = 16
 text = "CIRCOLO SCOMMESSE"
 horizontal_alignment = 1
 
-[node name="PactSection" type="VBoxContainer" parent="ContractPanel/ContractVBox"]
+[node name="BetOptions" type="VBoxContainer" parent="ContractPanel/ContractVBox"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+size_flags_vertical = 3
+theme_override_constants/separation = 12
 
-[node name="PactLabel" type="Label" parent="ContractPanel/ContractVBox/PactSection"]
-text = "Patto"
-
-[node name="PactButtons" type="HBoxContainer" parent="ContractPanel/ContractVBox/PactSection"]
+[node name="BetOption1" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
+custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="PactOption1" type="Button" parent="ContractPanel/ContractVBox/PactSection/PactButtons"]
-text = "Patto I"
 toggle_mode = true
+text = ""
+clip_text = false
+autowrap_mode = 2
 
-[node name="PactOption2" type="Button" parent="ContractPanel/ContractVBox/PactSection/PactButtons"]
-text = "Patto II"
-toggle_mode = true
+[node name="CardVBox" type="VBoxContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = -12.0
+offset_bottom = -10.0
+theme_override_constants/separation = 6
 
-[node name="PactOption3" type="Button" parent="ContractPanel/ContractVBox/PactSection/PactButtons"]
-text = "Patto III"
-toggle_mode = true
+[node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
+theme_override_font_sizes/font_size = 20
+text = "INCASSA E VAI"
 
-[node name="ConditionSection" type="VBoxContainer" parent="ContractPanel/ContractVBox"]
+[node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "❌ CONDANNA: ..."
+
+[node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
+autowrap_mode = 2
+text = "⚠️ CONDIZIONE: ..."
+
+[node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
+autowrap_mode = 2
+text = "✅ PATTO: ..."
+
+[node name="BetOption2" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
+custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+toggle_mode = true
+text = ""
+clip_text = false
+autowrap_mode = 2
 
-[node name="ConditionLabel" type="Label" parent="ContractPanel/ContractVBox/ConditionSection"]
-text = "Condizione"
+[node name="CardVBox" type="VBoxContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = -12.0
+offset_bottom = -10.0
+theme_override_constants/separation = 6
 
-[node name="ConditionButtons" type="HBoxContainer" parent="ContractPanel/ContractVBox/ConditionSection"]
+[node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
+theme_override_font_sizes/font_size = 20
+text = "SANGUE INTEGRO"
+
+[node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "❌ CONDANNA: ..."
+
+[node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
+autowrap_mode = 2
+text = "⚠️ CONDIZIONE: ..."
+
+[node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
+autowrap_mode = 2
+text = "✅ PATTO: ..."
+
+[node name="BetOption3" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
+custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="ConditionOption1" type="Button" parent="ContractPanel/ContractVBox/ConditionSection/ConditionButtons"]
-text = "Condizione I"
 toggle_mode = true
+text = ""
+clip_text = false
+autowrap_mode = 2
 
-[node name="ConditionOption2" type="Button" parent="ContractPanel/ContractVBox/ConditionSection/ConditionButtons"]
-text = "Condizione II"
-toggle_mode = true
+[node name="CardVBox" type="VBoxContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = -12.0
+offset_bottom = -10.0
+theme_override_constants/separation = 6
 
-[node name="ConditionOption3" type="Button" parent="ContractPanel/ContractVBox/ConditionSection/ConditionButtons"]
-text = "Condizione III"
-toggle_mode = true
+[node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
+theme_override_font_sizes/font_size = 20
+text = "RADDOPPI O MUORI"
 
-[node name="SentenceSection" type="VBoxContainer" parent="ContractPanel/ContractVBox"]
-size_flags_horizontal = 3
-theme_override_constants/separation = 8
+[node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "❌ CONDANNA: ..."
 
-[node name="SentenceLabel" type="Label" parent="ContractPanel/ContractVBox/SentenceSection"]
-text = "Condanna"
+[node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
+autowrap_mode = 2
+text = "⚠️ CONDIZIONE: ..."
 
-[node name="SentenceButtons" type="HBoxContainer" parent="ContractPanel/ContractVBox/SentenceSection"]
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="SentenceOption1" type="Button" parent="ContractPanel/ContractVBox/SentenceSection/SentenceButtons"]
-text = "Condanna I"
-toggle_mode = true
-
-[node name="SentenceOption2" type="Button" parent="ContractPanel/ContractVBox/SentenceSection/SentenceButtons"]
-text = "Condanna II"
-toggle_mode = true
-
-[node name="SentenceOption3" type="Button" parent="ContractPanel/ContractVBox/SentenceSection/SentenceButtons"]
-text = "Condanna III"
-toggle_mode = true
+[node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
+autowrap_mode = 2
+text = "✅ PATTO: ..."
 
 [node name="SigillaButton" type="Button" parent="ContractPanel/ContractVBox"]
 text = "SIGILLA"

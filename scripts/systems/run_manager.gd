@@ -9,6 +9,7 @@ extends Node
 @export var arena_layout_offset: Vector2 = Vector2(-640.0, -360.0)
 
 const LEVEL3_ENABLED: bool = true
+const RESOLVE_RITUAL_SECONDS: float = 0.8
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_FLAWLESS_BLOOD: StringName = &"FLAWLESS_BLOOD"
 const BET_DOUBLE_OR_DIE_L3: StringName = &"DOUBLE_OR_DIE"
@@ -322,6 +323,9 @@ var _modal_lock_count: int = 0
 var _arena_suspended: bool = false
 var _arena_visual_only: bool = false
 var _resolving_arena: bool = false
+var _resolving_ritual: bool = false
+var _resolve_ritual_sequence_id: int = 0
+var _resolve_ritual_reward_applied: bool = false
 var _bet_chain_level: int = 1
 var _current_bet_id: String = ""
 var _scars: Array[Dictionary] = []
@@ -372,6 +376,9 @@ func _ready() -> void:
 	var bet_sealed_callable: Callable = Callable(self, "_on_bet_sealed")
 	if GameEvents.has_signal("bet_sealed") and not GameEvents.bet_sealed.is_connected(bet_sealed_callable):
 		GameEvents.bet_sealed.connect(bet_sealed_callable)
+	var bet_selected_callable: Callable = Callable(self, "_on_bet_selected")
+	if GameEvents.has_signal("bet_selected") and not GameEvents.bet_selected.is_connected(bet_selected_callable):
+		GameEvents.bet_selected.connect(bet_selected_callable)
 	var bet_confirmed_callable: Callable = Callable(self, "_on_bet_confirmed")
 	if GameEvents.has_signal("bet_confirmed") and not GameEvents.bet_confirmed.is_connected(bet_confirmed_callable):
 		GameEvents.bet_confirmed.connect(bet_confirmed_callable)
@@ -482,6 +489,9 @@ func start_new_run() -> void:
 	_run_end_reason = ""
 	_run_finale_emitted = false
 	_resolving_arena = false
+	_resolving_ritual = false
+	_resolve_ritual_sequence_id = 0
+	_resolve_ritual_reward_applied = false
 	_reset_bet_chain()
 	_reset_scars()
 	set_phase(RunPhase.PREP)
@@ -648,6 +658,76 @@ func select_bet(bet_id: StringName) -> void:
 	GameEvents.betting_closed.emit()
 	resolve_arena()
 
+func _register_level3_bet_choice(bet_id: StringName) -> void:
+	_update_arena_visual_only()
+	_run_state.active_bet_id = bet_id
+	if bet_id != &"":
+		_run_state.bets_history.append(bet_id)
+	_current_bet_id = String(bet_id)
+	_last_selected_bet_id = bet_id
+	_level3_bets_used.append(bet_id)
+	_level3_current_offer = []
+	if bet_id == BET_CASH_OUT:
+		_level3_cashout_streak += 1
+		_level3_cashout_streak_max = maxi(_level3_cashout_streak_max, _level3_cashout_streak)
+	else:
+		_level3_cashout_streak = 0
+	_emit_run_debug_state()
+	GameEvents.bet_placed.emit(String(bet_id), 0, 1.0)
+	GameEvents.bet_ui_closed.emit()
+	GameEvents.bet_closed.emit()
+
+func _start_resolve_ritual(bet_id: StringName) -> void:
+	if _run_state.run_is_over or _is_game_over:
+		return
+	_resolving_ritual = true
+	_resolve_ritual_sequence_id += 1
+	var sequence_id: int = _resolve_ritual_sequence_id
+	var payload: Dictionary = {
+		"bet_id": String(bet_id),
+		"bet_name": _get_level3_bet_name(bet_id),
+	}
+	GameEvents.resolve_ritual_opened.emit(payload)
+	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
+	if sequence_id != _resolve_ritual_sequence_id:
+		return
+	if _run_state.run_is_over or _is_game_over:
+		return
+	GameEvents.resolve_ritual_closed.emit()
+	_resolving_ritual = false
+	_resolve_ritual_outcome(bet_id)
+
+func _resolve_ritual_outcome(bet_id: StringName) -> void:
+	if _run_state.run_is_over or _is_game_over:
+		return
+	_resolving_arena = true
+	_update_arena_visual_only()
+	set_phase(RunPhase.LIVE)
+	GameEvents.arena_started.emit(_run_state.arena_index)
+	_play_arena_resolution_fx()
+	_apply_special_arena_pre_resolution()
+	var result: ArenaResult = _resolve_level3_arena()
+	_run_state.arenas_cleared = maxi(_run_state.arenas_cleared + 1, 1)
+	GameEvents.arena_completed.emit(_run_state.arena_index)
+	var failed: bool = not result.won
+	var scars_applied: Array[StringName] = []
+	if bet_id == BET_FLAWLESS_BLOOD and result.took_damage:
+		failed = true
+	if failed:
+		scars_applied = _handle_level3_loss_ritual(bet_id, result)
+	else:
+		_apply_level3_reward(bet_id, _level3_reward_tier)
+		_resolve_ritual_reward_applied = true
+	_apply_special_arena_post_resolution(result, failed)
+	_log_level3_arena_result(bet_id, result, scars_applied)
+	_run_state.active_bet_id = &""
+	_resolving_arena = false
+	_update_arena_visual_only()
+	_emit_run_debug_state()
+	if _run_state.run_is_over or _is_game_over:
+		return
+	_open_push_luck_choice(bet_id)
+
 func resolve_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -761,6 +841,7 @@ func _open_level3_bet_ui() -> void:
 		return
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
+	_resolve_ritual_reward_applied = false
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
@@ -1180,6 +1261,51 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 	start_arena()
 	return scars_applied
 
+func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Array[StringName]:
+	_waiting_for_push_luck = false
+	_waiting_for_bet = false
+	set_phase(RunPhase.PREP)
+	var scars_applied: Array[StringName] = []
+	var executioner_bonus: int = 0
+	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
+		executioner_bonus = 10
+	if bet_id == BET_DOUBLE_OR_DIE_L3:
+		_register_run_end("DOUBLE_OR_DIE")
+		end_run(&"THE_FOOL")
+		return scars_applied
+	if bet_id == BET_FLAWLESS_BLOOD:
+		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY + executioner_bonus)
+		_apply_level3_scar(SCAR_OPEN_WOUND, "Condanna: Sangue Integro")
+		scars_applied.append(SCAR_OPEN_WOUND)
+	elif bet_id == BET_DEBT_CHAIN:
+		_apply_level3_scar(SCAR_DEBT_BRAND, "Condanna: Catena di Debito")
+		scars_applied.append(SCAR_DEBT_BRAND)
+	elif bet_id == BET_BLOOD_TAX:
+		_apply_max_hp_loss(25 + executioner_bonus)
+		_cashout_lock_remaining = maxi(_cashout_lock_remaining, 1)
+		_apply_level3_scar(SCAR_RUSTED_ARMOR, "Condanna: Decima di Sangue")
+		scars_applied.append(SCAR_RUSTED_ARMOR)
+	elif bet_id == BET_CROW_PLEASER:
+		_apply_level3_scar(SCAR_SHAME_MARK, "Condanna: Piacere al Pubblico")
+		scars_applied.append(SCAR_SHAME_MARK)
+	elif bet_id == BET_LAST_BREATH:
+		_apply_max_hp_loss(15 + executioner_bonus)
+		_apply_level3_scar(SCAR_ONE_EYE, "Condanna: Ultimo Respiro")
+		scars_applied.append(SCAR_ONE_EYE)
+	else:
+		if executioner_bonus > 0:
+			_apply_max_hp_loss(executioner_bonus)
+		_apply_level3_scar(SCAR_CRACKED_BONES, "Sconfitta in arena")
+		scars_applied.append(SCAR_CRACKED_BONES)
+	if _level3_next_loss_hp_penalty > 0:
+		_apply_max_hp_loss(_level3_next_loss_hp_penalty)
+	_level3_next_loss_hp_penalty = 0
+	_level3_reward_tier = 1
+	_run_state.escalation_level = 0
+	_resolve_ritual_reward_applied = true
+	_emit_run_debug_state()
+	return scars_applied
+
 func _apply_max_hp_loss(amount: int) -> void:
 	if amount <= 0:
 		return
@@ -1486,8 +1612,9 @@ func _on_request_push_luck_cashout() -> void:
 		_waiting_for_push_luck = false
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
-		if bet_id_name != &"":
+		if bet_id_name != &"" and not _resolve_ritual_reward_applied:
 			_apply_level3_reward(bet_id_name, _level3_reward_tier)
+		_resolve_ritual_reward_applied = false
 		_level3_cashouts += 1
 		_run_state.cashouts += 1
 		if _run_state.escalation_level >= 2:
@@ -1520,6 +1647,7 @@ func _on_request_push_luck_double() -> void:
 		_waiting_for_push_luck = false
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
+		_resolve_ritual_reward_applied = false
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
 		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
 		_level3_doubles += 1
@@ -1707,6 +1835,9 @@ func _on_bet_sealed(bet_choice: Dictionary) -> void:
 	var sentence_id: StringName = StringName(str(bet_choice.get("sentence_id", "")))
 	_handle_bet_sealed(pact_id, condition_id, sentence_id)
 
+func _on_bet_selected(bet_id: String) -> void:
+	_handle_bet_selected(StringName(bet_id))
+
 func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_id: StringName) -> void:
 	if _is_game_over:
 		return
@@ -1727,6 +1858,20 @@ func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_
 	set_phase(RunPhase.LIVE)
 	load_next_arena()
 	_start_next_arena()
+
+func _handle_bet_selected(bet_id: StringName) -> void:
+	if _is_game_over:
+		return
+	if bet_id == &"":
+		push_warning("Bet selected missing id; forcing next step.")
+	if not _waiting_for_bet:
+		push_warning("Bet selected outside waiting state; forcing advance.")
+	_waiting_for_bet = false
+	_waiting_for_push_luck = false
+	_resolve_ritual_reward_applied = false
+	_register_level3_bet_choice(bet_id)
+	GameEvents.betting_closed.emit()
+	_start_resolve_ritual(bet_id)
 
 func _on_betting_opened() -> void:
 	_force_game_over_if_dead()
@@ -2115,6 +2260,13 @@ func _get_bet_data(bet_id: String) -> Dictionary:
 	if _bet_manager and _bet_manager.has_method("get_bet_data"):
 		return _bet_manager.call("get_bet_data", bet_id) as Dictionary
 	return {}
+
+func _get_level3_bet_name(bet_id: StringName) -> String:
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		if StringName(str(bet.get("id", ""))) == bet_id:
+			return str(bet.get("name", String(bet_id)))
+	return String(bet_id)
 
 func _apply_double_or_die_reward_scaled(scale: int) -> void:
 	var p: Node = _resolve_player()

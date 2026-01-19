@@ -137,6 +137,9 @@ var _debug_special_arena: String = ""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	if not _validate_ui_boot():
+		_disable_ui_interactions()
+		return
 	if controls_hint_panel != null:
 		controls_hint_panel.visible = true
 		_has_seen_controls = false
@@ -322,6 +325,36 @@ func _ready() -> void:
 		_bind_player(p)
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
+
+func _validate_ui_boot() -> bool:
+	var errors: Array[String] = []
+	if sfx_level_up_path != "" and not ResourceLoader.exists(sfx_level_up_path):
+		errors.append("missing resource at %s" % sfx_level_up_path)
+	if sfx_buy_token_path != "" and not ResourceLoader.exists(sfx_buy_token_path):
+		errors.append("missing resource at %s" % sfx_buy_token_path)
+	var required_nodes: Array[String] = [
+		"Modals/BettingCircle",
+		"Modals/BetModal",
+		"Modals/ResolveRitualModal",
+		"Modals/PushLuckModal",
+		"Modals/PushLuckModal/PushLuckPanel",
+		"Modals/GameOverModal",
+		"Modals/GameOverModal/GameOverPanel",
+		"Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons",
+	]
+	for node_path: String in required_nodes:
+		if get_node_or_null(node_path) == null:
+			errors.append("missing node path %s" % node_path)
+	if errors.size() > 0:
+		push_error("SANITY FAIL UI: %s" % "; ".join(errors))
+		return false
+	return true
+
+func _disable_ui_interactions() -> void:
+	process_mode = Node.PROCESS_MODE_DISABLED
+	set_process(false)
+	set_process_input(false)
+	set_process_unhandled_input(false)
 
 func _sync_enemy_bars() -> void:
 	if enemy_bars == null:

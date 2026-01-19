@@ -1787,10 +1787,10 @@ func _on_request_push_luck_double() -> void:
 	_clear_enemies()
 	_spawn_wave_or_enemies()
 
-func _on_request_set_run_seed(seed: int) -> void:
+func _on_request_set_run_seed(run_seed: int) -> void:
 	_debug_seed_override_active = true
-	_debug_seed_override = seed
-	print("Debug seed override set:", seed)
+	_debug_seed_override = run_seed
+	print("Debug seed override set:", run_seed)
 	if _has_started_run:
 		start_new_run()
 

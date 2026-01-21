@@ -521,7 +521,6 @@ func _validate_boot() -> bool:
 			errors.append("UI root missing at path 'UI'")
 		else:
 			var required_ui_paths: Array[String] = [
-				"Modals/BettingCircle",
 				"Modals/BetModal",
 				"Modals/ResolveRitualModal",
 				"Modals/PushLuckModal",
@@ -706,6 +705,8 @@ func _start_level3_run() -> void:
 	_update_arena_visual_only()
 	_emit_run_debug_state()
 	start_arena()
+	if not _waiting_for_bet:
+		_open_level3_bet_ui()
 
 func start_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:

@@ -478,8 +478,16 @@ func _boot() -> void:
 
 func _validate_game_events_signals() -> bool:
 	var errors: Array[String] = []
-	if not Engine.has_singleton("GameEvents"):
-		errors.append("GameEvents autoload missing")
+	var ge: Node = get_node_or_null("/root/GameEvents") as Node
+	if ge == null:
+		var autoload_exists: bool = ProjectSettings.has_setting("autoload/GameEvents")
+		var root_children: Array[Node] = get_tree().root.get_children()
+		var root_names: PackedStringArray = PackedStringArray()
+		for child: Node in root_children:
+			root_names.append(child.name)
+		push_warning("SANITY DIAG: autoload/GameEvents setting=%s" % str(autoload_exists))
+		push_warning("SANITY DIAG: /root children=%s" % ", ".join(root_names))
+		errors.append("GameEvents node missing at /root/GameEvents")
 	else:
 		var required_signals: Array[String] = [
 			"bet_placed",
@@ -495,7 +503,7 @@ func _validate_game_events_signals() -> bool:
 			"run_finale_selected",
 		]
 		for signal_name: String in required_signals:
-			if not GameEvents.has_signal(signal_name):
+			if not ge.has_signal(signal_name):
 				errors.append("GameEvents missing signal '%s'" % signal_name)
 	if errors.size() > 0:
 		_abort_sanity("SANITY FAIL: %s" % "; ".join(errors))
@@ -504,8 +512,9 @@ func _validate_game_events_signals() -> bool:
 
 func _validate_boot() -> bool:
 	var errors: Array[String] = []
-	if not Engine.has_singleton("GameEvents"):
-		errors.append("GameEvents autoload missing")
+	var ge: Node = get_node_or_null("/root/GameEvents") as Node
+	if ge == null:
+		errors.append("GameEvents node missing at /root/GameEvents")
 	var run_managers: Array[Node] = get_tree().get_nodes_in_group("run_manager")
 	if run_managers.size() != 1:
 		errors.append("expected 1 run_manager, found %d" % run_managers.size())

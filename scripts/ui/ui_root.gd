@@ -2,6 +2,7 @@ extends CanvasLayer
 
 const FAST_SELECTION_SECONDS: int = 12
 const MODAL_FADE_SECONDS: float = 0.2
+const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokensLabel") as Label
@@ -14,6 +15,7 @@ const MODAL_FADE_SECONDS: float = 0.2
 @onready var seed_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/SeedRow/SeedLabel") as Label
 @onready var bet_modal: Control = _req("Modals/BetModal") as Control
 @onready var betting_circle: BettingCircleUI = get_node_or_null("Modals/BettingCircle") as BettingCircleUI
+@onready var modals_root: Control = get_node_or_null("Modals") as Control
 @onready var pact_sealed_modal: Control = get_node_or_null("Modals/PactSealedModal") as Control
 @onready var pact_sealed_panel: Panel = get_node_or_null("Modals/PactSealedModal/PactSealedPanel") as Panel
 @onready var pact_sealed_title: Label = get_node_or_null("Modals/PactSealedModal/PactSealedPanel/PactSealedVBox/PactSealedTitle") as Label
@@ -328,12 +330,14 @@ func _ready() -> void:
 
 func _validate_ui_boot() -> bool:
 	var errors: Array[String] = []
+	if get_node_or_null("Modals/BettingCircle") == null and not ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
+		push_error("SANITY FAIL UI: BetCircle missing")
+		return false
 	if sfx_level_up_path != "" and not ResourceLoader.exists(sfx_level_up_path):
 		errors.append("missing resource at %s" % sfx_level_up_path)
 	if sfx_buy_token_path != "" and not ResourceLoader.exists(sfx_buy_token_path):
 		errors.append("missing resource at %s" % sfx_buy_token_path)
 	var required_nodes: Array[String] = [
-		"Modals/BettingCircle",
 		"Modals/BetModal",
 		"Modals/ResolveRitualModal",
 		"Modals/PushLuckModal",
@@ -844,10 +848,7 @@ func _on_betting_opened() -> void:
 		return
 	if push_luck_panel != null and push_luck_panel.visible:
 		return
-	if betting_circle != null:
-		betting_circle.open()
-		_set_bet_modal(false)
-		_refresh_modal_dimmer()
+	open_bet_circle([] as Array[Dictionary])
 
 func _on_arena_started(arena_index: int) -> void:
 	if not _special_arena_payload.is_empty():
@@ -887,12 +888,11 @@ func _on_bet_placed(bet_id: String, _stake: int, _odds: float) -> void:
 	if bet_info_label != null:
 		bet_info_label.text = "Bet: %s" % _get_bet_name(bet_id)
 
-func _on_bet_ui_opened(bets: Array) -> void:
+func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 	if bet_panel == null:
 		return
-	if betting_circle != null:
-		_set_bet_modal(false)
-		_refresh_modal_dimmer()
+	if betting_circle != null or ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
+		open_bet_circle(bets)
 		return
 	if game_over_panel != null and game_over_panel.visible:
 		return
@@ -918,6 +918,8 @@ func _on_bet_ui_opened(bets: Array) -> void:
 
 func _on_bet_ui_closed() -> void:
 	_set_bet_modal(false)
+	if betting_circle != null:
+		betting_circle.close()
 	_reset_bet_confirmation()
 	if special_arena_label != null:
 		special_arena_label.visible = false
@@ -1640,6 +1642,8 @@ func _refresh_modal_dimmer() -> void:
 	var active: bool = false
 	if bet_modal != null and bet_modal.visible:
 		active = true
+	if betting_circle != null and betting_circle.visible:
+		active = true
 	if pact_sealed_modal != null and pact_sealed_modal.visible:
 		active = true
 	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
@@ -1651,7 +1655,37 @@ func _refresh_modal_dimmer() -> void:
 	if scars_detail_panel != null and scars_detail_panel.visible:
 		active = true
 	modal_dimmer.visible = active
-	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
+
+func open_bet_circle(bets: Array[Dictionary]) -> void:
+	_current_bet_offer = bets.duplicate()
+	var circle: BettingCircleUI = betting_circle
+	if circle == null:
+		if modals_root == null:
+			push_error("SANITY FAIL UI: BetCircle missing")
+			return
+		var circle_scene: PackedScene = load(BETTING_CIRCLE_SCENE_PATH) as PackedScene
+		if circle_scene == null:
+			push_error("SANITY FAIL UI: BetCircle missing")
+			return
+		var instance: Node = circle_scene.instantiate()
+		if instance == null:
+			push_error("SANITY FAIL UI: BetCircle missing")
+			return
+		instance.name = "BettingCircle"
+		modals_root.add_child(instance)
+		circle = instance as BettingCircleUI
+		if circle == null:
+			push_error("SANITY FAIL UI: BetCircle missing")
+			return
+		betting_circle = circle
+	circle.visible = true
+	circle.modulate.a = 1.0
+	circle.process_mode = Node.PROCESS_MODE_INHERIT
+	circle.mouse_filter = Control.MOUSE_FILTER_STOP
+	circle.open()
+	_set_bet_modal(false)
+	_refresh_modal_dimmer()
 
 func _reset_fast_countdown() -> void:
 	_selected_bet_id = ""

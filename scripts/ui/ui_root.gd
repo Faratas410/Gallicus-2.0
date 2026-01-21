@@ -1,7 +1,9 @@
 extends CanvasLayer
 
 const FAST_SELECTION_SECONDS: int = 12
-const MODAL_FADE_SECONDS: float = 0.2
+const MIN_MODAL_READ_TIME_SEC: float = 1.25
+const FADE_IN_SEC: float = 0.25
+const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
@@ -64,11 +66,11 @@ const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 @onready var push_luck_cashout_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutNote") as Label
 @onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleButton") as Button
 @onready var push_luck_double_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleNote") as Label
-@onready var game_over_title: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverTitle") as Label
-@onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverEpilogue") as Label
-@onready var game_over_scars: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScars") as Label
-@onready var game_over_meta: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverMeta") as Label
-@onready var game_over_hint: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverHint") as Label
+@onready var game_over_title: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverTitle") as Label
+@onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverEpilogue") as Label
+@onready var game_over_scars: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverScars") as Label
+@onready var game_over_meta: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverMeta") as Label
+@onready var game_over_hint: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverHint") as Label
 @onready var restart_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/RestartButton") as Button
 @onready var next_bet_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/NextBetButton") as Button
 @onready var quit_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/QuitButton") as Button
@@ -816,6 +818,14 @@ func _on_run_failed() -> void:
 	if restart_button != null:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
+	var ending_read_buttons: Array[Button] = []
+	if restart_button != null:
+		ending_read_buttons.append(restart_button)
+	if next_bet_button != null and next_bet_button.visible:
+		ending_read_buttons.append(next_bet_button)
+	if quit_button != null:
+		ending_read_buttons.append(quit_button)
+	_apply_modal_read_delay(ending_read_buttons)
 	_refresh_modal_dimmer()
 	_hide_scars_detail()
 
@@ -915,6 +925,11 @@ func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 	_reset_fast_countdown()
 	_refresh_buy_token_ui()
 	_refresh_modal_dimmer()
+	var bet_read_buttons: Array[Button] = []
+	bet_read_buttons.append_array(_bet_buttons)
+	if bet_confirm_button != null:
+		bet_read_buttons.append(bet_confirm_button)
+	_apply_modal_read_delay(bet_read_buttons)
 
 func _on_bet_ui_closed() -> void:
 	_set_bet_modal(false)
@@ -1187,6 +1202,12 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 		else:
 			push_luck_double_note.visible = false
 	_set_push_luck_modal(true)
+	var push_luck_read_buttons: Array[Button] = []
+	if push_luck_cashout_button != null:
+		push_luck_read_buttons.append(push_luck_cashout_button)
+	if push_luck_double_button != null:
+		push_luck_read_buttons.append(push_luck_double_button)
+	_apply_modal_read_delay(push_luck_read_buttons)
 
 func _on_push_luck_closed() -> void:
 	_set_push_luck_modal(false)
@@ -1506,6 +1527,14 @@ func _on_bet_failed(can_retry: bool) -> void:
 	if restart_button != null:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
+	var bet_failed_read_buttons: Array[Button] = []
+	if restart_button != null:
+		bet_failed_read_buttons.append(restart_button)
+	if next_bet_button != null and next_bet_button.visible:
+		bet_failed_read_buttons.append(next_bet_button)
+	if quit_button != null:
+		bet_failed_read_buttons.append(quit_button)
+	_apply_modal_read_delay(bet_failed_read_buttons)
 
 func _on_bet_choice_pressed(bet_id: String) -> void:
 	if _require_bet_confirm:
@@ -1538,6 +1567,20 @@ func _get_bet_name(bet_id: String) -> String:
 		return bet_id
 	return str(bet.get("name", bet_id))
 
+func _apply_modal_read_delay(buttons: Array[Button]) -> void:
+	if buttons.is_empty():
+		return
+	var initial_states: Array[bool] = []
+	initial_states.resize(buttons.size())
+	for index: int in range(buttons.size()):
+		var button: Button = buttons[index]
+		initial_states[index] = button.disabled
+		button.disabled = true
+	await get_tree().create_timer(MIN_MODAL_READ_TIME_SEC).timeout
+	for index: int in range(buttons.size()):
+		var button: Button = buttons[index]
+		button.disabled = initial_states[index]
+
 func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) -> Tween:
 	if panel == null or modal == null:
 		if modal != null:
@@ -1554,7 +1597,7 @@ func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) 
 		tween = create_tween()
 		tween.set_trans(Tween.TRANS_LINEAR)
 		tween.set_ease(Tween.EASE_IN_OUT)
-		tween.tween_property(panel, "modulate:a", 1.0, MODAL_FADE_SECONDS)
+		tween.tween_property(panel, "modulate:a", 1.0, FADE_IN_SEC)
 	else:
 		if not panel.visible:
 			modal.visible = false
@@ -1562,7 +1605,7 @@ func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) 
 		tween = create_tween()
 		tween.set_trans(Tween.TRANS_LINEAR)
 		tween.set_ease(Tween.EASE_IN_OUT)
-		tween.tween_property(panel, "modulate:a", 0.0, MODAL_FADE_SECONDS)
+		tween.tween_property(panel, "modulate:a", 0.0, FADE_OUT_SEC)
 		tween.tween_callback(Callable(self, "_on_modal_fade_out_complete").bind(panel, modal))
 	return tween
 

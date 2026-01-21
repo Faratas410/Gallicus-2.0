@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/panels/contract_clean_paper_9slice.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/overlays/wax_seal_red.png" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
@@ -570,27 +571,48 @@ offset_right = -12.0
 offset_bottom = -12.0
 theme_override_constants/separation = 10
 
-[node name="GameOverTitle" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="GameOverScroll" type="ScrollContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="GameOverMargin" type="MarginContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll"]
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="GameOverTextVBox" type="VBoxContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="GameOverTitle" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
 theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
 text = "RUN FAILED"
 
-[node name="GameOverEpilogue" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="GameOverEpilogue" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
 autowrap_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
 text = ""
 
-[node name="GameOverScars" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="GameOverScars" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
 visible = false
 autowrap_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
 text = ""
 
-[node name="GameOverMeta" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="GameOverMeta" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
 visible = false
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
 text = ""
 
-[node name="GameOverHint" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="GameOverHint" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
 theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
 text = "Vuoi riprovare?"
 
 [node name="RestartButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
@@ -601,6 +623,19 @@ text = "NEXT BET"
 
 [node name="QuitButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 text = "QUIT"
+
+[node name="WaxSeal" type="TextureRect" parent="Modals/GameOverModal/GameOverPanel"]
+z_index = 2
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -104.0
+offset_top = -104.0
+offset_right = -16.0
+offset_bottom = -16.0
+mouse_filter = 1
+texture = ExtResource("5")
 
 [node name="CountdownLabel" type="Label" parent="Modals"]
 anchor_left = 0.5

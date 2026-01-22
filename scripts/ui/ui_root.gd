@@ -5,16 +5,19 @@ const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
+const SCARS_PANEL_BASE_HEIGHT: float = 140.0
+const SCARS_PANEL_ROW_HEIGHT: float = 28.0
+const SCARS_PANEL_MIN_HEIGHT: float = 180.0
+const SCARS_PANEL_MAX_HEIGHT: float = 360.0
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokensLabel") as Label
 @onready var level_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/LevelRow/LevelLabel") as Label
-@onready var bet_info_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetRow/BetContent/BetInfoLabel") as Label
 @onready var xp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPBar") as ProgressBar
 @onready var xp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPLabel") as Label
 @onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
 @onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
-@onready var seed_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/SeedRow/SeedLabel") as Label
+@onready var bet_badge_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText/BetBadgeValue") as Label
 @onready var bet_modal: Control = _req("Modals/BetModal") as Control
 @onready var betting_circle: BettingCircleUI = get_node_or_null("Modals/BettingCircle") as BettingCircleUI
 @onready var modals_root: Control = get_node_or_null("Modals") as Control
@@ -76,7 +79,7 @@ const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 @onready var quit_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/QuitButton") as Button
 @onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
 @onready var scars_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel") as Panel
-@onready var scars_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel/ScarsVBox/ScarsScroll/ScarsLabel") as Label
+@onready var scars_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabel") as Label
 @onready var countdown_label: Label = get_node_or_null("Modals/CountdownLabel") as Label
 @onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
@@ -705,8 +708,7 @@ func show_countdown(seconds: int = 3) -> void:
 func _on_run_started() -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: 0"
-	if bet_info_label != null:
-		bet_info_label.text = "Bet: -"
+	set_active_bet_text("—")
 	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	_reset_bet_confirmation()
@@ -793,8 +795,6 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 		game_over_epilogue.text = _last_finale_text
 
 func _on_run_failed() -> void:
-	if bet_info_label != null:
-		bet_info_label.text = "Bet: -"
 	_set_bet_modal(false)
 	if level_up_popup != null:
 		level_up_popup.visible = false
@@ -840,8 +840,6 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_scars = []
 	for scar_value in scars_value:
 		_debug_scars.append(str(scar_value))
-	if seed_label != null:
-		seed_label.text = "Seed: %d" % _debug_seed
 	_refresh_debug_overlay()
 
 func _on_run_log_ready(log_text: String) -> void:
@@ -894,9 +892,19 @@ func _on_coins_changed(coins: int) -> void:
 	_coins = coins
 	_refresh_buy_token_ui()
 
-func _on_bet_placed(bet_id: String, _stake: int, _odds: float) -> void:
-	if bet_info_label != null:
-		bet_info_label.text = "Bet: %s" % _get_bet_name(bet_id)
+func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
+	var bet_label: String = _get_bet_name(_bet_id)
+	set_active_bet(bet_label, _odds)
+
+func set_active_bet(label: String, multiplier: float) -> void:
+	if bet_badge_value_label == null:
+		return
+	bet_badge_value_label.text = "%s · x%.1f" % [label, multiplier]
+
+func set_active_bet_text(text: String) -> void:
+	if bet_badge_value_label == null:
+		return
+	bet_badge_value_label.text = text
 
 func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 	if bet_panel == null:
@@ -1000,6 +1008,11 @@ func _refresh_scars_ui(scars: Array) -> void:
 		return
 	if scars_panel != null:
 		scars_panel.visible = true
+		var scar_count: int = scars.size()
+		var clamped_count: int = maxi(scar_count, 1)
+		var desired_height: float = SCARS_PANEL_BASE_HEIGHT + (SCARS_PANEL_ROW_HEIGHT * float(clamped_count))
+		var clamped_height: float = clampf(desired_height, SCARS_PANEL_MIN_HEIGHT, SCARS_PANEL_MAX_HEIGHT)
+		scars_panel.custom_minimum_size.y = clamped_height
 	if scars.is_empty():
 		scars_label.text = "Nessuna cicatrice."
 		scars_label.tooltip_text = ""

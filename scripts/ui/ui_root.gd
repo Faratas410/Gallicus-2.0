@@ -2,6 +2,7 @@ extends CanvasLayer
 
 const FAST_SELECTION_SECONDS: int = 12
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
+const POST_BET_MESSAGE_TIME_SEC: float = 3.5
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
@@ -11,6 +12,23 @@ const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
 const SCARS_PANEL_MAX_HEIGHT: float = 360.0
+const POST_BET_TEXTS: Dictionary = {
+	"CASH_OUT": [
+		"Hai incassato. La folla mormora.",
+		"Te ne vai con il bottino. Sguardi bassi.",
+		"Meglio vivi che leggendari.",
+	],
+	"FLAWLESS_BLOOD": [
+		"Sangue integro. Nessuno osa fiatare.",
+		"Hai promesso pulizia. La folla osserva.",
+		"Un passo pulito. Il silenzio si stringe.",
+	],
+	"DOUBLE_OR_DIE": [
+		"Hai rilanciato. La folla trattiene il fiato.",
+		"Nessun ritorno. I volti restano fermi.",
+		"Hai scelto il sangue invece dell'oro.",
+	],
+}
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
 @onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokensLabel") as Label
@@ -148,6 +166,10 @@ var _debug_enemy_profile: String = ""
 var _debug_scars: Array[String] = []
 var _debug_special_arena: String = ""
 var _ending_mode_active: bool = false
+var _post_bet_text_last_index: Dictionary = {}
+var _pact_sealed_sequence_id: int = 0
+var _pact_sealed_pending_close_id: int = 0
+var _pact_sealed_min_read_elapsed: bool = true
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -197,6 +219,9 @@ func _ready() -> void:
 	var bet_ui_opened_callable: Callable = Callable(self, "_on_bet_ui_opened")
 	if not GameEvents.bet_ui_opened.is_connected(bet_ui_opened_callable):
 		GameEvents.bet_ui_opened.connect(bet_ui_opened_callable)
+	var bet_selected_callable: Callable = Callable(self, "_on_bet_selected")
+	if GameEvents.has_signal("bet_selected") and not GameEvents.bet_selected.is_connected(bet_selected_callable):
+		GameEvents.bet_selected.connect(bet_selected_callable)
 	var bet_ui_closed_callable: Callable = Callable(self, "_on_bet_ui_closed")
 	if not GameEvents.bet_ui_closed.is_connected(bet_ui_closed_callable):
 		GameEvents.bet_ui_closed.connect(bet_ui_closed_callable)
@@ -960,15 +985,26 @@ func _on_bet_ui_closed() -> void:
 	if condanna_focus_label != null:
 		condanna_focus_label.visible = false
 
+func _on_bet_selected(bet_id: String) -> void:
+	_selected_bet_id = bet_id
+
 func _on_pact_sealed_opened() -> void:
+	_pact_sealed_sequence_id += 1
+	var sequence_id: int = _pact_sealed_sequence_id
+	_pact_sealed_pending_close_id = 0
+	_pact_sealed_min_read_elapsed = false
 	if pact_sealed_title != null:
 		pact_sealed_title.text = "IL PATTO È SIGILLATO."
 	if pact_sealed_subtitle != null:
-		pact_sealed_subtitle.text = "La folla trattiene il fiato."
+		pact_sealed_subtitle.text = _select_post_bet_text(_selected_bet_id)
 	_set_pact_sealed_modal(true)
 	_refresh_modal_dimmer()
+	await _hold_post_bet_message(sequence_id)
 
 func _on_pact_sealed_closed() -> void:
+	if not _pact_sealed_min_read_elapsed:
+		_pact_sealed_pending_close_id = _pact_sealed_sequence_id
+		return
 	_set_pact_sealed_modal(false)
 	_refresh_modal_dimmer()
 
@@ -987,6 +1023,27 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 func _on_resolve_ritual_closed() -> void:
 	_set_resolve_ritual_modal(false)
 	_refresh_modal_dimmer()
+
+func _select_post_bet_text(bet_id: String) -> String:
+	var options: Array = POST_BET_TEXTS.get(bet_id, []) as Array
+	if options.is_empty():
+		return "La folla trattiene il fiato."
+	var last_index: int = int(_post_bet_text_last_index.get(bet_id, -1))
+	var pick_index: int = randi() % options.size()
+	if options.size() > 1 and pick_index == last_index:
+		pick_index = (pick_index + 1) % options.size()
+	_post_bet_text_last_index[bet_id] = pick_index
+	return str(options[pick_index])
+
+func _hold_post_bet_message(sequence_id: int) -> void:
+	await get_tree().create_timer(POST_BET_MESSAGE_TIME_SEC).timeout
+	if sequence_id != _pact_sealed_sequence_id:
+		return
+	_pact_sealed_min_read_elapsed = true
+	if _pact_sealed_pending_close_id == sequence_id:
+		_pact_sealed_pending_close_id = 0
+		_set_pact_sealed_modal(false)
+		_refresh_modal_dimmer()
 
 func _update_special_arena_ui() -> void:
 	if special_arena_label == null:

@@ -5,6 +5,8 @@ const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
+const UI_PARCHMENT_TEXTURE_PATH: String = "res://assets/ui/panels/contract_clean_paper_9slice.png"
+const UI_WAX_SEAL_TEXTURE_PATH: String = "res://assets/ui/overlays/wax_seal_red.png"
 const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
@@ -30,22 +32,22 @@ const SCARS_PANEL_MAX_HEIGHT: float = 360.0
 @onready var resolve_ritual_title: Label = get_node_or_null("Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox/ResolveRitualTitle") as Label
 @onready var resolve_ritual_subtitle: Label = get_node_or_null("Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox/ResolveRitualSubtitle") as Label
 @onready var bet_panel: Panel = _req("Modals/BetModal/BetPanel") as Panel
-@onready var buy_token_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenButton") as Button
-@onready var buy_token_info: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
-@onready var buy_token_note: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenNote") as Label
+@onready var buy_token_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenButton") as Button
+@onready var buy_token_info: Label = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
+@onready var buy_token_note: Label = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenNote") as Label
 @onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinIcon") as TextureRect
 @onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokenIcon") as TextureRect
 @onready var modal_dimmer: ColorRect = get_node_or_null("Modals/ModalDimmer") as ColorRect
-@onready var stake_row: Control = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/StakeRow") as Control
-@onready var stake_input: SpinBox = _req("Modals/BetModal/BetPanel/BetScroll/BetVBox/StakeRow/StakeInput") as SpinBox
-@onready var bet_buttons_container: VBoxContainer = _req("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons") as VBoxContainer
-@onready var special_arena_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/SpecialArenaLabel") as Label
-@onready var condanna_focus_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/CondannaFocusLabel") as Label
-@onready var bet_confirm_row: Control = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow") as Control
-@onready var bet_confirm_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmLabel") as Label
-@onready var bet_confirm_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow/BetConfirmButton") as Button
-@onready var seed_input: LineEdit = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/SeedRow/SeedInput") as LineEdit
-@onready var seed_apply_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetScroll/BetVBox/SeedRow/SeedButton") as Button
+@onready var stake_row: Control = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/StakeRow") as Control
+@onready var stake_input: SpinBox = _req("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/StakeRow/StakeInput") as SpinBox
+@onready var bet_buttons_container: VBoxContainer = _req("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons") as VBoxContainer
+@onready var special_arena_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SpecialArenaLabel") as Label
+@onready var condanna_focus_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/CondannaFocusLabel") as Label
+@onready var bet_confirm_row: Control = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetConfirmRow") as Control
+@onready var bet_confirm_label: Label = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetConfirmRow/BetConfirmLabel") as Label
+@onready var bet_confirm_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetConfirmRow/BetConfirmButton") as Button
+@onready var seed_input: LineEdit = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow/SeedInput") as LineEdit
+@onready var seed_apply_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow/SeedButton") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
 @onready var debug_tools_panel: Panel = get_node_or_null("HUD/DebugTools") as Panel
 @onready var debug_seed_input: LineEdit = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedInput") as LineEdit
@@ -338,6 +340,10 @@ func _validate_ui_boot() -> bool:
 	if get_node_or_null("Modals/BettingCircle") == null and not ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
 		push_error("SANITY FAIL UI: BetCircle missing")
 		return false
+	if not ResourceLoader.exists(UI_PARCHMENT_TEXTURE_PATH):
+		errors.append("missing resource at %s" % UI_PARCHMENT_TEXTURE_PATH)
+	if not ResourceLoader.exists(UI_WAX_SEAL_TEXTURE_PATH):
+		errors.append("missing resource at %s" % UI_WAX_SEAL_TEXTURE_PATH)
 	if sfx_level_up_path != "" and not ResourceLoader.exists(sfx_level_up_path):
 		errors.append("missing resource at %s" % sfx_level_up_path)
 	if sfx_buy_token_path != "" and not ResourceLoader.exists(sfx_buy_token_path):
@@ -349,7 +355,7 @@ func _validate_ui_boot() -> bool:
 		"Modals/PushLuckModal/PushLuckPanel",
 		"Modals/GameOverModal",
 		"Modals/GameOverModal/GameOverPanel",
-		"Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons",
+		"Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons",
 	]
 	for node_path: String in required_nodes:
 		if get_node_or_null(node_path) == null:

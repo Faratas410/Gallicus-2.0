@@ -1,11 +1,83 @@
 [gd_resource type="Theme" format=3]
 
 [ext_resource type="FontVariation" path="res://assets/fonts/gallicus_ui_font.tres" id="1"]
+[ext_resource type="Texture2D" path="res://assets/ui/panels/button_primary_9slice.png" id="2"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
+texture = ExtResource("2")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
+texture = ExtResource("2")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+modulate_color = Color(1, 0.97, 0.9, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
+texture = ExtResource("2")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+modulate_color = Color(0.9, 0.85, 0.75, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
+texture = ExtResource("2")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+modulate_color = Color(0.55, 0.52, 0.46, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.12, 0.1, 0.08, 0.6)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
+bg_color = Color(0.74, 0.6, 0.28, 0.9)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3"]
+bg_color = Color(0.86, 0.7, 0.34, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [resource]
 default_font = ExtResource("1")
 default_font_size = 22
 theme_types/Label = {
+"colors": {
+"font_color": Color(0.95, 0.92, 0.85, 1)
+},
 "fonts": {
 "font": ExtResource("1")
 },
@@ -15,15 +87,30 @@ theme_types/Label = {
 "styles": {}
 }
 theme_types/Button = {
+"colors": {
+"font_color": Color(0.95, 0.92, 0.85, 1),
+"font_color_disabled": Color(0.55, 0.52, 0.46, 0.8),
+"font_color_hover": Color(1, 0.98, 0.92, 1),
+"font_color_pressed": Color(0.9, 0.85, 0.75, 1)
+},
 "fonts": {
 "font": ExtResource("1")
 },
 "font_sizes": {
 "font_size": 22
 },
-"styles": {}
+"styles": {
+"disabled": SubResource("StyleBoxTexture_4"),
+"hover": SubResource("StyleBoxTexture_2"),
+"normal": SubResource("StyleBoxTexture_1"),
+"pressed": SubResource("StyleBoxTexture_3")
+}
 }
 theme_types/LineEdit = {
+"colors": {
+"font_color": Color(0.95, 0.92, 0.85, 1),
+"font_color_placeholder": Color(0.78, 0.72, 0.62, 1)
+},
 "fonts": {
 "font": ExtResource("1")
 },
@@ -33,6 +120,9 @@ theme_types/LineEdit = {
 "styles": {}
 }
 theme_types/SpinBox = {
+"colors": {
+"font_color": Color(0.95, 0.92, 0.85, 1)
+},
 "fonts": {
 "font": ExtResource("1")
 },
@@ -49,4 +139,26 @@ theme_types/ProgressBar = {
 "font_size": 22
 },
 "styles": {}
+}
+theme_types/VScrollBar = {
+"constants": {
+"scroll_size": 14
+},
+"styles": {
+"grabber": SubResource("StyleBoxFlat_2"),
+"grabber_highlight": SubResource("StyleBoxFlat_3"),
+"grabber_pressed": SubResource("StyleBoxFlat_3"),
+"scroll": SubResource("StyleBoxFlat_1")
+}
+}
+theme_types/HScrollBar = {
+"constants": {
+"scroll_size": 14
+},
+"styles": {
+"grabber": SubResource("StyleBoxFlat_2"),
+"grabber_highlight": SubResource("StyleBoxFlat_3"),
+"grabber_pressed": SubResource("StyleBoxFlat_3"),
+"scroll": SubResource("StyleBoxFlat_1")
+}
 }

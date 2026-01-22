@@ -113,7 +113,7 @@ offset_bottom = -10.0
 theme_override_constants/separation = 6
 
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 text = "INCASSA E VAI"
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
@@ -147,7 +147,7 @@ offset_bottom = -10.0
 theme_override_constants/separation = 6
 
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 text = "SANGUE INTEGRO"
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
@@ -181,7 +181,7 @@ offset_bottom = -10.0
 theme_override_constants/separation = 6
 
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 text = "RADDOPPI O MUORI"
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]

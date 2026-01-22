@@ -7,10 +7,10 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
 
 [node name="UI" type="CanvasLayer"]
 pause_mode = 2
@@ -278,17 +278,25 @@ clip_contents = true
 custom_minimum_size = Vector2(560, 560)
 theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
-[node name="BetScroll" type="ScrollContainer" parent="Modals/BetModal/BetPanel"]
+[node name="BetMargin" type="MarginContainer" parent="Modals/BetModal/BetPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = -4.0
-offset_bottom = -4.0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="BetScroll" type="ScrollContainer" parent="Modals/BetModal/BetPanel/BetMargin"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="BetVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll"]
+[node name="BetVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
@@ -297,100 +305,100 @@ offset_right = 0.0
 offset_bottom = 0.0
 theme_override_constants/separation = 12
 
-[node name="BetTitle" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
-theme_override_font_sizes/font_size = 28
+[node name="BetTitle" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+theme_override_font_sizes/font_size = 30
 text = "Scommessa Arena"
 
-[node name="SpecialArenaLabel" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+[node name="SpecialArenaLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
 visible = false
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "ARENA SPECIALE"
 
-[node name="CondannaFocusLabel" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+[node name="CondannaFocusLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
 visible = false
 autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = false
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 22
 text = "FOCUS: Leggi prima la CONDANNA."
 
-[node name="SeedRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+[node name="SeedRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
 theme_override_constants/separation = 6
 
-[node name="SeedLabel" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/SeedRow"]
+[node name="SeedLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow"]
 text = "Seed (opzionale)"
 
-[node name="SeedInput" type="LineEdit" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/SeedRow"]
+[node name="SeedInput" type="LineEdit" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow"]
 size_flags_horizontal = 3
 placeholder_text = "Es. 10331"
 
-[node name="SeedButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/SeedRow"]
+[node name="SeedButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow"]
 text = "APPLICA"
 
-[node name="StakeRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+[node name="StakeRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
 
-[node name="StakeLabel" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/StakeRow"]
+[node name="StakeLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/StakeRow"]
 text = "Stake"
 
-[node name="StakeInput" type="SpinBox" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/StakeRow"]
+[node name="StakeInput" type="SpinBox" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/StakeRow"]
 focus_mode = 1
 min_value = 0.0
 step = 5.0
 value = 10.0
 shortcut_keys_enabled = false
 
-[node name="BetButtons" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+[node name="BetButtons" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="BetWinButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons"]
+[node name="BetWinButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDANNA — RADDOPPI O MUORI"
 
-[node name="BetNoHitButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons"]
+[node name="BetNoHitButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDIZIONE — SANGUE INTEGRO"
 
-[node name="BetFastButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BetButtons"]
+[node name="BetFastButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "PATTO — INCASSA E VAI"
 
-[node name="BetConfirmRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+[node name="BetConfirmRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
 visible = false
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="BetConfirmLabel" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow"]
+[node name="BetConfirmLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetConfirmRow"]
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Selezione: -"
 
-[node name="BetConfirmButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BetConfirmRow"]
+[node name="BetConfirmButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetConfirmRow"]
 custom_minimum_size = Vector2(120, 40)
 text = "SIGILLA"
 
-[node name="BuyTokenRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox"]
+[node name="BuyTokenRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="BuyTokenVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow"]
+[node name="BuyTokenVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="BuyTokenButton" type="Button" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
+[node name="BuyTokenButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
 custom_minimum_size = Vector2(0, 40)
 size_flags_horizontal = 3
 text = "BUY TOKEN (100c)"
 
-[node name="BuyTokenNote" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
+[node name="BuyTokenNote" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
 visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -398,7 +406,7 @@ theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
 text = "Disponibile dopo l'arena in corso."
 
-[node name="BuyTokenInfo" type="Label" parent="Modals/BetModal/BetPanel/BetScroll/BetVBox/BuyTokenRow"]
+[node name="BuyTokenInfo" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "x1"
@@ -447,7 +455,7 @@ offset_bottom = -12.0
 theme_override_constants/separation = 12
 
 [node name="PushLuckTitle" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 30
 text = "PUSH YOUR LUCK"
 
 [node name="PushLuckInfo" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
@@ -526,7 +534,7 @@ offset_bottom = -12.0
 theme_override_constants/separation = 8
 
 [node name="ScarsDetailTitle" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 30
 text = "DETTAGLIO CICATRICI"
 
 [node name="ScarsDetailText" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
@@ -593,7 +601,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="GameOverTitle" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 30
 theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
 text = "RUN FAILED"
 
@@ -651,7 +659,7 @@ offset_left = -120.0
 offset_top = -36.0
 offset_right = 120.0
 offset_bottom = 36.0
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
 visible = false
 text = ""
@@ -665,7 +673,7 @@ offset_left = -140.0
 offset_top = 12.0
 offset_right = 140.0
 offset_bottom = 52.0
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
 visible = false
 text = "FAST: 12s"

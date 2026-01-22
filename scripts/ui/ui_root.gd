@@ -93,11 +93,7 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var push_luck_cashout_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutNote") as Label
 @onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleButton") as Button
 @onready var push_luck_double_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleNote") as Label
-@onready var game_over_title: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverTitle") as Label
-@onready var game_over_epilogue: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverEpilogue") as Label
-@onready var game_over_scars: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverScars") as Label
-@onready var game_over_meta: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverMeta") as Label
-@onready var game_over_hint: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox/GameOverHint") as Label
+@onready var ending_text: RichTextLabel = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/EndingText") as RichTextLabel
 @onready var restart_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/RestartButton") as Button
 @onready var next_bet_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/NextBetButton") as Button
 @onready var quit_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/QuitButton") as Button
@@ -154,6 +150,7 @@ var _last_finale_scars: Array = []
 var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
 var _last_finale_stats: Dictionary = {}
+var _last_finale_hint: String = ""
 var _special_arena_payload: Dictionary = {}
 var _require_bet_confirm: bool = false
 var _scars_detail_text: String = ""
@@ -369,6 +366,10 @@ func _validate_ui_boot() -> bool:
 	var errors: Array[String] = []
 	if get_node_or_null("Modals/BettingCircle") == null and not ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
 		push_error("SANITY FAIL UI: BetCircle missing")
+		return false
+	var ending_text_path: String = "Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/EndingText"
+	if get_node_or_null(ending_text_path) == null:
+		push_error("SANITY FAIL UI: Ending nodes missing %s" % ending_text_path)
 		return false
 	if not ResourceLoader.exists(UI_PARCHMENT_TEXTURE_PATH):
 		errors.append("missing resource at %s" % UI_PARCHMENT_TEXTURE_PATH)
@@ -771,6 +772,7 @@ func _on_run_started() -> void:
 	_last_finale_ending_id = ""
 	_last_finale_seed = 0
 	_last_finale_stats = {}
+	_last_finale_hint = ""
 	_special_arena_payload = {}
 	_debug_run_log = ""
 	_debug_special_arena = ""
@@ -825,10 +827,6 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 		_last_finale_stats = {}
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
-	if game_over_title != null:
-		game_over_title.text = _last_finale_title
-	if game_over_epilogue != null:
-		game_over_epilogue.text = _last_finale_text
 
 func _on_run_failed() -> void:
 	_set_bet_modal(false)
@@ -843,14 +841,9 @@ func _on_run_failed() -> void:
 	_set_game_over_modal(true)
 	if next_bet_button != null:
 		next_bet_button.visible = false
-	if game_over_title != null:
-		game_over_title.text = _last_finale_title
-	if game_over_epilogue != null:
-		game_over_epilogue.text = _last_finale_text
+	_last_finale_hint = "Vuoi riprovare?"
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
-	if game_over_hint != null:
-		game_over_hint.text = "Vuoi riprovare?"
 	if restart_button != null:
 		restart_button.text = "RESTART RUN"
 	_reset_fast_countdown()
@@ -1176,26 +1169,44 @@ func _set_scars_detail_modal(active: bool) -> void:
 	_refresh_modal_dimmer()
 
 func _refresh_game_over_scars() -> void:
-	if game_over_scars == null:
+	_refresh_ending_text()
+
+func _refresh_game_over_meta() -> void:
+	_refresh_ending_text()
+
+func _refresh_ending_text() -> void:
+	if ending_text == null:
 		return
+	var sections: Array[String] = []
+	var title_text: String = _last_finale_title.strip_edges()
+	if title_text != "":
+		sections.append("[center][b][font_size=32]%s[/font_size][/b][/center]" % title_text)
+	if _last_finale_text != "":
+		sections.append(_last_finale_text)
+	var scars_section: String = _build_ending_scars_section()
+	if scars_section != "":
+		sections.append(scars_section)
+	var meta_section: String = _build_ending_meta_section()
+	if meta_section != "":
+		sections.append(meta_section)
+	if _last_finale_hint != "":
+		sections.append("[i]%s[/i]" % _last_finale_hint)
+	ending_text.text = "\n\n".join(sections)
+
+func _build_ending_scars_section() -> String:
 	if _last_finale_scars.is_empty():
-		game_over_scars.text = ""
-		game_over_scars.visible = false
-		return
+		return ""
 	var lines: Array[String] = []
-	lines.append("Cicatrici rilevanti:")
+	lines.append("[b]Cicatrici rilevanti:[/b]")
 	for scar_value: Dictionary in _last_finale_scars:
 		var scar: Dictionary = scar_value as Dictionary
 		var scar_name: String = "Cicatrice"
 		if scar.has("name"):
 			scar_name = str(scar["name"])
 		lines.append("• %s" % scar_name)
-	game_over_scars.text = "\n".join(lines)
-	game_over_scars.visible = true
+	return "\n".join(lines)
 
-func _refresh_game_over_meta() -> void:
-	if game_over_meta == null:
-		return
+func _build_ending_meta_section() -> String:
 	var lines: Array[String] = []
 	if _last_finale_ending_id != "":
 		lines.append("Ending ID: %s" % _last_finale_ending_id)
@@ -1227,11 +1238,9 @@ func _refresh_game_over_meta() -> void:
 				bet_names.append(str(bet_name_value))
 			lines.append("Bets: %s" % ", ".join(bet_names))
 	if lines.is_empty():
-		game_over_meta.text = ""
-		game_over_meta.visible = false
-		return
-	game_over_meta.text = "\n".join(lines)
-	game_over_meta.visible = true
+		return ""
+	lines.insert(0, "[b]Registro:[/b]")
+	return "\n".join(lines)
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
 	if push_luck_panel == null:
@@ -1593,19 +1602,19 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_reset_bet_confirmation()
 	_reset_fast_countdown()
 	_set_game_over_modal(true)
-	if game_over_title != null:
-		game_over_title.text = "RUN FAILED"
-		if can_retry:
-			game_over_title.text = "BET FAILED"
-	if game_over_epilogue != null:
-		game_over_epilogue.text = ""
+	_last_finale_title = "RUN FAILED"
+	if can_retry:
+		_last_finale_title = "BET FAILED"
 	_last_finale_text = ""
 	_last_finale_scars = []
+	_last_finale_ending_id = ""
+	_last_finale_seed = 0
+	_last_finale_stats = {}
+	_last_finale_hint = "Vuoi riprovare?"
+	if can_retry:
+		_last_finale_hint = "Riprova la scommessa?"
 	_refresh_game_over_scars()
-	if game_over_hint != null:
-		game_over_hint.text = "Vuoi riprovare?"
-		if can_retry:
-			game_over_hint.text = "Riprova la scommessa?"
+	_refresh_game_over_meta()
 	if next_bet_button != null:
 		next_bet_button.visible = can_retry
 		next_bet_button.text = "RETRY BET"

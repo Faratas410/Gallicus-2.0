@@ -655,37 +655,15 @@ theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 32
 
-[node name="GameOverTextVBox" type="VBoxContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin"]
+[node name="EndingText" type="RichTextLabel" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="GameOverTitle" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
-theme_override_font_sizes/font_size = 30
-theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
-text = "RUN FAILED"
-
-[node name="GameOverEpilogue" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
 autowrap_mode = 2
 theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
+theme_override_constants/line_separation = 6
 text = ""
-
-[node name="GameOverScars" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
-visible = false
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
-text = ""
-
-[node name="GameOverMeta" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
-visible = false
-autowrap_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
-text = ""
-
-[node name="GameOverHint" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/GameOverTextVBox"]
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.68, 0.08, 0.08, 1)
-text = "Vuoi riprovare?"
 
 [node name="RestartButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
 text = "RESTART"

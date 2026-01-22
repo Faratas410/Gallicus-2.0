@@ -167,6 +167,8 @@ var _post_bet_text_last_index: Dictionary = {}
 var _pact_sealed_sequence_id: int = 0
 var _pact_sealed_pending_close_id: int = 0
 var _pact_sealed_min_read_elapsed: bool = true
+var _post_bet_queue: Array[Dictionary] = []
+var _post_bet_running: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -982,38 +984,34 @@ func _on_bet_selected(bet_id: String) -> void:
 	_selected_bet_id = bet_id
 
 func _on_pact_sealed_opened() -> void:
-	_pact_sealed_sequence_id += 1
-	var sequence_id: int = _pact_sealed_sequence_id
-	_pact_sealed_pending_close_id = 0
-	_pact_sealed_min_read_elapsed = false
-	if pact_sealed_title != null:
-		pact_sealed_title.text = "IL PATTO È SIGILLATO."
-	if pact_sealed_subtitle != null:
-		pact_sealed_subtitle.text = _select_post_bet_text(_selected_bet_id)
-	_set_pact_sealed_modal(true)
-	_refresh_modal_dimmer()
-	await _hold_post_bet_message(sequence_id)
+	var payload: Dictionary = {
+		"kind": "pact_sealed",
+		"title": "IL PATTO È SIGILLATO.",
+		"subtitle": _select_post_bet_text(_selected_bet_id),
+	}
+	enqueue_post_bet_message(payload)
 
 func _on_pact_sealed_closed() -> void:
-	if not _pact_sealed_min_read_elapsed:
-		_pact_sealed_pending_close_id = _pact_sealed_sequence_id
+	if _post_bet_running:
 		return
 	_set_pact_sealed_modal(false)
 	_refresh_modal_dimmer()
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
-	if resolve_ritual_title != null:
-		resolve_ritual_title.text = "RITO DI GIUDIZIO"
-	if resolve_ritual_subtitle != null:
-		var doom_short: String = str(payload.get("doom_short", ""))
-		if doom_short == "":
-			resolve_ritual_subtitle.text = "CONDANNA: giudizio imminente."
-		else:
-			resolve_ritual_subtitle.text = "CONDANNA: %s" % doom_short
-	_set_resolve_ritual_modal(true)
-	_refresh_modal_dimmer()
+	var doom_short: String = str(payload.get("doom_short", ""))
+	var subtitle: String = "CONDANNA: giudizio imminente."
+	if doom_short != "":
+		subtitle = "CONDANNA: %s" % doom_short
+	var queue_payload: Dictionary = {
+		"kind": "resolve_ritual",
+		"title": "RITO DI GIUDIZIO",
+		"subtitle": subtitle,
+	}
+	enqueue_post_bet_message(queue_payload)
 
 func _on_resolve_ritual_closed() -> void:
+	if _post_bet_running:
+		return
 	_set_resolve_ritual_modal(false)
 	_refresh_modal_dimmer()
 
@@ -1028,15 +1026,46 @@ func _select_post_bet_text(bet_id: String) -> String:
 	_post_bet_text_last_index[bet_id] = pick_index
 	return str(options[pick_index])
 
-func _hold_post_bet_message(sequence_id: int) -> void:
-	await get_tree().create_timer(POST_BET_MESSAGE_TIME_SEC).timeout
-	if sequence_id != _pact_sealed_sequence_id:
+func enqueue_post_bet_message(payload: Dictionary) -> void:
+	_post_bet_queue.append(payload)
+	if not _post_bet_running:
+		call_deferred("_run_post_bet_queue")
+
+func _run_post_bet_queue() -> void:
+	if _post_bet_running:
 		return
-	_pact_sealed_min_read_elapsed = true
-	if _pact_sealed_pending_close_id == sequence_id:
-		_pact_sealed_pending_close_id = 0
+	_post_bet_running = true
+	while not _post_bet_queue.is_empty():
+		var payload: Dictionary = _post_bet_queue.pop_front()
+		_show_post_bet_payload(payload)
+		await get_tree().create_timer(POST_BET_MESSAGE_TIME_SEC).timeout
+		_hide_post_bet_payload(payload)
+		await get_tree().create_timer(FADE_OUT_SEC).timeout
+	_post_bet_running = false
+
+func _show_post_bet_payload(payload: Dictionary) -> void:
+	var kind: String = str(payload.get("kind", ""))
+	if kind == "pact_sealed":
+		if pact_sealed_title != null:
+			pact_sealed_title.text = str(payload.get("title", "IL PATTO È SIGILLATO."))
+		if pact_sealed_subtitle != null:
+			pact_sealed_subtitle.text = str(payload.get("subtitle", ""))
+		_set_pact_sealed_modal(true)
+	elif kind == "resolve_ritual":
+		if resolve_ritual_title != null:
+			resolve_ritual_title.text = str(payload.get("title", "RITO DI GIUDIZIO"))
+		if resolve_ritual_subtitle != null:
+			resolve_ritual_subtitle.text = str(payload.get("subtitle", "CONDANNA: giudizio imminente."))
+		_set_resolve_ritual_modal(true)
+	_refresh_modal_dimmer()
+
+func _hide_post_bet_payload(payload: Dictionary) -> void:
+	var kind: String = str(payload.get("kind", ""))
+	if kind == "pact_sealed":
 		_set_pact_sealed_modal(false)
-		_refresh_modal_dimmer()
+	elif kind == "resolve_ritual":
+		_set_resolve_ritual_modal(false)
+	_refresh_modal_dimmer()
 
 func _update_special_arena_ui() -> void:
 	if special_arena_label == null:

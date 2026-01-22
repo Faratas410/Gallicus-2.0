@@ -20,6 +20,7 @@ const SCARS_PANEL_MAX_HEIGHT: float = 360.0
 @onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
 @onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
 @onready var bet_badge_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText/BetBadgeValue") as Label
+@onready var hud_root: Control = get_node_or_null("HUD") as Control
 @onready var bet_modal: Control = _req("Modals/BetModal") as Control
 @onready var betting_circle: BettingCircleUI = get_node_or_null("Modals/BettingCircle") as BettingCircleUI
 @onready var modals_root: Control = get_node_or_null("Modals") as Control
@@ -61,7 +62,10 @@ const SCARS_PANEL_MAX_HEIGHT: float = 360.0
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var game_over_modal: Control = get_node_or_null("Modals/GameOverModal") as Control
-@onready var game_over_panel: Panel = get_node_or_null("Modals/GameOverModal/GameOverPanel") as Panel
+@onready var game_over_panel: TextureRect = get_node_or_null("Modals/GameOverModal/GameOverPanel") as TextureRect
+@onready var ending_background: TextureRect = get_node_or_null("Modals/EndingBackground") as TextureRect
+@onready var torch_flicker_overlay: TextureRect = get_node_or_null("Modals/TorchFlickerOverlay") as TextureRect
+@onready var torch_flicker_player: AnimationPlayer = get_node_or_null("Modals/TorchFlickerPlayer") as AnimationPlayer
 @onready var push_luck_modal: Control = get_node_or_null("Modals/PushLuckModal") as Control
 @onready var push_luck_panel: Panel = get_node_or_null("Modals/PushLuckModal/PushLuckPanel") as Panel
 @onready var push_luck_title: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckTitle") as Label
@@ -80,8 +84,8 @@ const SCARS_PANEL_MAX_HEIGHT: float = 360.0
 @onready var next_bet_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/NextBetButton") as Button
 @onready var quit_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/QuitButton") as Button
 @onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
-@onready var scars_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel") as Panel
-@onready var scars_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabel") as Label
+@onready var scars_panel: Panel = get_node_or_null("HUD/ScarsPanel") as Panel
+@onready var scars_label: Label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabel") as Label
 @onready var countdown_label: Label = get_node_or_null("Modals/CountdownLabel") as Label
 @onready var fast_countdown_label: Label = get_node_or_null("Modals/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("Modals/FastBlinkTimer") as Timer
@@ -143,6 +147,7 @@ var _debug_active_bet: String = ""
 var _debug_enemy_profile: String = ""
 var _debug_scars: Array[String] = []
 var _debug_special_arena: String = ""
+var _ending_mode_active: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -1013,12 +1018,16 @@ func _refresh_scars_ui(scars: Array) -> void:
 	if scars_label == null:
 		return
 	if scars_panel != null:
+		if _ending_mode_active:
+			scars_panel.visible = false
+			return
 		scars_panel.visible = true
 		var scar_count: int = scars.size()
 		var clamped_count: int = maxi(scar_count, 1)
 		var desired_height: float = SCARS_PANEL_BASE_HEIGHT + (SCARS_PANEL_ROW_HEIGHT * float(clamped_count))
 		var clamped_height: float = clampf(desired_height, SCARS_PANEL_MIN_HEIGHT, SCARS_PANEL_MAX_HEIGHT)
 		scars_panel.custom_minimum_size.y = clamped_height
+		scars_panel.size.y = clamped_height
 	if scars.is_empty():
 		scars_label.text = "Nessuna cicatrice."
 		scars_label.tooltip_text = ""
@@ -1683,13 +1692,44 @@ func _set_push_luck_modal(active: bool) -> void:
 func _set_game_over_modal(active: bool) -> void:
 	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween)
 	if active:
+		enter_ending_mode()
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("ending")
 	else:
+		exit_ending_mode()
 		if GameEvents.has_signal("modal_closed"):
 			GameEvents.modal_closed.emit("ending")
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+
+func enter_ending_mode() -> void:
+	_ending_mode_active = true
+	if hud_root != null:
+		hud_root.visible = false
+	if scars_panel != null:
+		scars_panel.visible = false
+	if ending_background != null:
+		ending_background.visible = true
+	if torch_flicker_overlay != null:
+		torch_flicker_overlay.visible = true
+	if torch_flicker_player != null and torch_flicker_player.has_animation("flicker"):
+		torch_flicker_player.play("flicker")
+	if modal_dimmer != null:
+		modal_dimmer.visible = false
+		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func exit_ending_mode() -> void:
+	_ending_mode_active = false
+	if torch_flicker_player != null:
+		torch_flicker_player.stop()
+	if torch_flicker_overlay != null:
+		torch_flicker_overlay.visible = false
+	if ending_background != null:
+		ending_background.visible = false
+	if hud_root != null:
+		hud_root.visible = true
+	if scars_panel != null:
+		scars_panel.visible = true
 
 func _reset_bet_confirmation() -> void:
 	_pending_confirm_bet_id = ""
@@ -1700,6 +1740,10 @@ func _reset_bet_confirmation() -> void:
 
 func _refresh_modal_dimmer() -> void:
 	if modal_dimmer == null:
+		return
+	if _ending_mode_active:
+		modal_dimmer.visible = false
+		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		return
 	var active: bool = false
 	if bet_modal != null and bet_modal.visible:

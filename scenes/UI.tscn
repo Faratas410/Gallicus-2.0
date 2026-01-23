@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/sfondo_arena_principale.png" id="7"]
 [ext_resource type="Texture2D" path="res://assets/ui/overlays/vignette_overlay.png" id="8"]
+[ext_resource type="FontVariation" path="res://assets/ui/fonts/gallicus_ui_font.tres" id="9"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
 texture_margin_left = 48.0
@@ -142,6 +143,7 @@ bbcode_enabled = true
 fit_content = true
 horizontal_alignment = 1
 autowrap_mode = 2
+theme_override_fonts/normal_font = ExtResource("9")
 text = "CICATRICE APPLICATA"
 
 [node name="ArenaResolutionOverlay" type="Label" parent="HUD"]
@@ -663,6 +665,7 @@ bbcode_enabled = true
 fit_content = true
 horizontal_alignment = 1
 autowrap_mode = 2
+theme_override_fonts/normal_font = ExtResource("9")
 theme_override_colors/font_color = Color(0.32, 0.24, 0.16, 1)
 theme_override_constants/line_separation = 4
 text = ""

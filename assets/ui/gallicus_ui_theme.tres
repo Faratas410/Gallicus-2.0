@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3]
 
-[ext_resource type="FontVariation" path="res://assets/fonts/gallicus_ui_font.tres" id="1"]
+[ext_resource type="FontVariation" path="res://assets/ui/fonts/gallicus_ui_font.tres" id="1"]
 [ext_resource type="Texture2D" path="res://assets/ui/panels/button_primary_9slice.png" id="2"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]

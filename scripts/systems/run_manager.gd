@@ -360,6 +360,7 @@ var _scar_max_hp_penalty: int = 0
 var _push_luck_cashouts: int = 0
 var _push_luck_doubles: int = 0
 var _max_push_luck_chain: int = 1
+var _pending_push_luck_bet_id: StringName = &""
 var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
 var _run_finale_emitted: bool = false
@@ -451,6 +452,7 @@ func _boot() -> void:
 		return
 	if not _validate_boot():
 		return
+	_connect_ui_queue_signals()
 	if not LEVEL3_ENABLED:
 		_ensure_arena_and_player()
 		_arena = get_node_or_null(arena_path)
@@ -544,6 +546,15 @@ func _validate_boot() -> bool:
 		return false
 	return true
 
+func _connect_ui_queue_signals() -> void:
+	if _sanity_ui_root == null:
+		return
+	if not _sanity_ui_root.has_signal("arena_message_queue_completed"):
+		return
+	var queue_callable: Callable = Callable(self, "_on_arena_message_queue_completed")
+	if not _sanity_ui_root.is_connected("arena_message_queue_completed", queue_callable):
+		_sanity_ui_root.connect("arena_message_queue_completed", queue_callable)
+
 func _abort_sanity(message: String) -> void:
 	push_error(message)
 	_boot_valid = false
@@ -584,6 +595,7 @@ func start_new_run() -> void:
 	_push_luck_cashouts = 0
 	_push_luck_doubles = 0
 	_max_push_luck_chain = 1
+	_pending_push_luck_bet_id = &""
 	_failed_high_risk_bets = 0
 	_run_end_reason = ""
 	_run_finale_emitted = false
@@ -846,7 +858,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_emit_run_debug_state()
 	if _run_state.run_is_over or _is_game_over:
 		return
-	_open_push_luck_choice(bet_id)
+	_queue_push_luck_choice(bet_id)
 
 func resolve_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:
@@ -2284,6 +2296,27 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 		"arena_target": _level3_target_arenas,
 	}
 	GameEvents.push_luck_opened.emit(payload)
+
+func _queue_push_luck_choice(bet_id: StringName) -> void:
+	if _sanity_ui_root == null:
+		_open_push_luck_choice(bet_id)
+		return
+	if not _sanity_ui_root.has_signal("arena_message_queue_completed"):
+		_open_push_luck_choice(bet_id)
+		return
+	if _sanity_ui_root.has_method("is_post_bet_queue_running"):
+		var queue_running: bool = bool(_sanity_ui_root.call("is_post_bet_queue_running"))
+		if not queue_running:
+			_open_push_luck_choice(bet_id)
+			return
+	_pending_push_luck_bet_id = bet_id
+
+func _on_arena_message_queue_completed() -> void:
+	if _pending_push_luck_bet_id == &"":
+		return
+	var bet_id: StringName = _pending_push_luck_bet_id
+	_pending_push_luck_bet_id = &""
+	_open_push_luck_choice(bet_id)
 
 func _get_cashout_lock_reason() -> String:
 	if _run_state.arena_index >= _level3_target_arenas and _level3_target_arenas > 0:

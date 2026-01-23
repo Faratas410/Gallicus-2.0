@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+signal arena_message_queue_completed
+
 const FAST_SELECTION_SECONDS: int = 12
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const POST_BET_MESSAGE_TIME_SEC: float = 3.5
@@ -1042,6 +1044,10 @@ func _run_post_bet_queue() -> void:
 		_hide_post_bet_payload(payload)
 		await get_tree().create_timer(FADE_OUT_SEC).timeout
 	_post_bet_running = false
+	arena_message_queue_completed.emit()
+
+func is_post_bet_queue_running() -> bool:
+	return _post_bet_running
 
 func _show_post_bet_payload(payload: Dictionary) -> void:
 	var kind: String = str(payload.get("kind", ""))

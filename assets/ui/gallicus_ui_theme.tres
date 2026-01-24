@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3]
 
-[ext_resource type="FontVariation" path="res://assets/ui/fonts/gallicus_ui_font.tres" id="1"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/grabstein_gotik.otf" id="1"]
 [ext_resource type="Texture2D" path="res://assets/ui/panels/button_primary_9slice.png" id="2"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
@@ -73,7 +73,7 @@ corner_radius_bottom_left = 6
 
 [resource]
 default_font = ExtResource("1")
-default_font_size = 22
+default_font_size = 30
 theme_types/Label = {
 "colors": {
 "font_color": Color(0.95, 0.92, 0.85, 1)
@@ -82,7 +82,7 @@ theme_types/Label = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 22
+"font_size": 30
 },
 "styles": {}
 }
@@ -97,7 +97,7 @@ theme_types/Button = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 22
+"font_size": 30
 },
 "styles": {
 "disabled": SubResource("StyleBoxTexture_4"),
@@ -115,7 +115,7 @@ theme_types/LineEdit = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 22
+"font_size": 30
 },
 "styles": {}
 }
@@ -127,7 +127,7 @@ theme_types/SpinBox = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 22
+"font_size": 30
 },
 "styles": {}
 }
@@ -136,7 +136,7 @@ theme_types/ProgressBar = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 22
+"font_size": 30
 },
 "styles": {}
 }

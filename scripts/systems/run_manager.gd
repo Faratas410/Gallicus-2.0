@@ -11,6 +11,9 @@ extends Node
 const LEVEL3_ENABLED: bool = true
 const PACT_SEALED_SECONDS: float = 0.7
 const RESOLVE_RITUAL_SECONDS: float = 0.9
+const INTERMEDIATE_PLACA_BONUS_COINS: int = 6
+const INTERMEDIATE_PROVOCA_BONUS_TIER: int = 1
+const INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS: int = 6
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_FLAWLESS_BLOOD: StringName = &"FLAWLESS_BLOOD"
 const BET_DOUBLE_OR_DIE_L3: StringName = &"DOUBLE_OR_DIE"
@@ -312,6 +315,7 @@ var _current_arena_path: String = ""
 var _bet_manager: Node
 var _waiting_for_bet: bool = false
 var _waiting_for_push_luck: bool = false
+var _waiting_for_intermediate_choice: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _is_game_over: bool = false
@@ -361,6 +365,11 @@ var _push_luck_cashouts: int = 0
 var _push_luck_doubles: int = 0
 var _max_push_luck_chain: int = 1
 var _pending_push_luck_bet_id: StringName = &""
+var _pending_intermediate_choice_bet_id: StringName = &""
+var _intermediate_double_disabled_once: bool = false
+var _intermediate_bonus_tier: int = 0
+var _intermediate_choice_note: String = ""
+var _intermediate_loss_penalty_pending: bool = false
 var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
 var _run_finale_emitted: bool = false
@@ -428,6 +437,9 @@ func _ready() -> void:
 	var request_double_callable: Callable = Callable(self, "_on_request_push_luck_double")
 	if GameEvents.has_signal("request_push_luck_double") and not GameEvents.request_push_luck_double.is_connected(request_double_callable):
 		GameEvents.request_push_luck_double.connect(request_double_callable)
+	var request_intermediate_callable: Callable = Callable(self, "_on_request_intermediate_choice")
+	if GameEvents.has_signal("request_intermediate_choice") and not GameEvents.request_intermediate_choice.is_connected(request_intermediate_callable):
+		GameEvents.request_intermediate_choice.connect(request_intermediate_callable)
 	var request_seed_callable: Callable = Callable(self, "_on_request_set_run_seed")
 	if GameEvents.has_signal("request_set_run_seed") and not GameEvents.request_set_run_seed.is_connected(request_seed_callable):
 		GameEvents.request_set_run_seed.connect(request_seed_callable)
@@ -534,6 +546,7 @@ func _validate_boot() -> bool:
 			var required_ui_paths: Array[String] = [
 				"Modals/BetModal",
 				"Modals/ResolveRitualModal",
+				"Modals/IntermediateChoiceModal",
 				"Modals/PushLuckModal",
 				"Modals/PushLuckModal/PushLuckPanel",
 				"Modals/GameOverModal",
@@ -591,11 +604,17 @@ func start_new_run() -> void:
 	_is_game_over = false
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
+	_waiting_for_intermediate_choice = false
 	_show_shop_next_bet = false
 	_push_luck_cashouts = 0
 	_push_luck_doubles = 0
 	_max_push_luck_chain = 1
 	_pending_push_luck_bet_id = &""
+	_pending_intermediate_choice_bet_id = &""
+	_intermediate_double_disabled_once = false
+	_intermediate_bonus_tier = 0
+	_intermediate_choice_note = ""
+	_intermediate_loss_penalty_pending = false
 	_failed_high_risk_bets = 0
 	_run_end_reason = ""
 	_run_finale_emitted = false
@@ -846,6 +865,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	if bet_id == BET_FLAWLESS_BLOOD and result.took_damage:
 		failed = true
 	if failed:
+		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss_ritual(bet_id, result)
 	else:
 		_apply_level3_reward(bet_id, _level3_reward_tier)
@@ -878,6 +898,7 @@ func resolve_arena() -> void:
 	if bet_id == BET_FLAWLESS_BLOOD and result.took_damage:
 		failed = true
 	if failed:
+		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss(bet_id, result)
 	else:
 		_handle_level3_win(bet_id, result)
@@ -1733,6 +1754,33 @@ func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 		return
 	select_bet(StringName(bet_id))
 
+func _on_request_intermediate_choice(choice_id: String) -> void:
+	if not _waiting_for_intermediate_choice:
+		return
+	_waiting_for_intermediate_choice = false
+	_intermediate_double_disabled_once = false
+	_intermediate_bonus_tier = 0
+	_intermediate_choice_note = ""
+	_intermediate_loss_penalty_pending = false
+	var normalized_choice: String = choice_id.strip_edges().to_lower()
+	match normalized_choice:
+		"placa":
+			if INTERMEDIATE_PLACA_BONUS_COINS > 0:
+				add_coins(INTERMEDIATE_PLACA_BONUS_COINS)
+			_intermediate_double_disabled_once = true
+			_intermediate_choice_note = "Folla placata: +%d monete, raddoppio bloccato." % INTERMEDIATE_PLACA_BONUS_COINS
+		"provoca":
+			_intermediate_bonus_tier = INTERMEDIATE_PROVOCA_BONUS_TIER
+			_intermediate_loss_penalty_pending = true
+			_intermediate_choice_note = "Folla provocata: premio aumentato, debito alla prima sconfitta."
+		_:
+			_intermediate_choice_note = ""
+	var bet_id: StringName = _pending_intermediate_choice_bet_id
+	if bet_id == &"":
+		bet_id = _last_selected_bet_id
+	_pending_intermediate_choice_bet_id = &""
+	_open_push_luck_choice(bet_id)
+
 func _on_request_push_luck_cashout() -> void:
 	if not _waiting_for_push_luck:
 		return
@@ -1741,11 +1789,12 @@ func _on_request_push_luck_cashout() -> void:
 		if lock_reason != "":
 			return
 		var bet_id_name: StringName = StringName(_current_bet_id)
+		var bonus_tier: int = _consume_intermediate_choice_bonus()
 		_waiting_for_push_luck = false
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		if bet_id_name != &"" and not _resolve_ritual_reward_applied:
-			_apply_level3_reward(bet_id_name, _level3_reward_tier)
+			_apply_level3_reward(bet_id_name, _level3_reward_tier + bonus_tier)
 		_resolve_ritual_reward_applied = false
 		_level3_cashouts += 1
 		_run_state.cashouts += 1
@@ -1760,12 +1809,13 @@ func _on_request_push_luck_cashout() -> void:
 		end_run(&"")
 		return
 	var bet_id: String = _current_bet_id
+	var bonus_tier: int = _consume_intermediate_choice_bonus()
 	_waiting_for_push_luck = false
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	_push_luck_cashouts += 1
 	if bet_id != "":
-		_apply_bet_reward_scaled(bet_id, _bet_chain_level)
+		_apply_bet_reward_scaled(bet_id, _bet_chain_level + bonus_tier)
 	_reset_bet_chain()
 	_open_bet_ui(true)
 
@@ -1777,6 +1827,7 @@ func _on_request_push_luck_double() -> void:
 		if lock_reason != "":
 			return
 		_waiting_for_push_luck = false
+		_reset_intermediate_choice_modifiers()
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		_resolve_ritual_reward_applied = false
@@ -1793,6 +1844,7 @@ func _on_request_push_luck_double() -> void:
 		start_arena()
 		return
 	var bet_id: String = _current_bet_id
+	_reset_intermediate_choice_modifiers()
 	_waiting_for_push_luck = false
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
@@ -2252,7 +2304,36 @@ func _reset_bet_chain() -> void:
 	_bet_chain_level = 1
 	_current_bet_id = ""
 	_waiting_for_push_luck = false
+	_reset_intermediate_choice_modifiers()
 	_update_arena_visual_only()
+
+func _reset_intermediate_choice_modifiers() -> void:
+	_intermediate_double_disabled_once = false
+	_intermediate_bonus_tier = 0
+	_intermediate_choice_note = ""
+
+func _consume_intermediate_choice_bonus() -> int:
+	var bonus: int = _intermediate_bonus_tier
+	_reset_intermediate_choice_modifiers()
+	return bonus
+
+func _apply_intermediate_loss_penalty_if_needed() -> void:
+	if not _intermediate_loss_penalty_pending:
+		return
+	_intermediate_loss_penalty_pending = false
+	if INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS > 0:
+		spend_coins(INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS)
+
+func _open_intermediate_choice(bet_id: StringName) -> void:
+	if not _ensure_flow_panel("Modals/IntermediateChoiceModal", "intermediate choice"):
+		return
+	_waiting_for_intermediate_choice = true
+	_waiting_for_push_luck = false
+	_pending_intermediate_choice_bet_id = bet_id
+	set_phase(RunPhase.PREP)
+	_update_arena_visual_only()
+	if GameEvents.has_signal("intermediate_choice_opened"):
+		GameEvents.intermediate_choice_opened.emit()
 
 func _open_push_luck_choice(bet_id: StringName) -> void:
 	if not _ensure_flow_panel("Modals/PushLuckModal", "push luck choice"):
@@ -2292,6 +2373,7 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 		"cashout_lock_reason": cashout_lock_reason,
 		"double_locked": double_lock_reason != "",
 		"double_lock_reason": double_lock_reason,
+		"choice_note": _intermediate_choice_note,
 		"arena_index": _run_state.arena_index,
 		"arena_target": _level3_target_arenas,
 	}
@@ -2299,15 +2381,15 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 
 func _queue_push_luck_choice(bet_id: StringName) -> void:
 	if _sanity_ui_root == null:
-		_open_push_luck_choice(bet_id)
+		_open_intermediate_choice(bet_id)
 		return
 	if not _sanity_ui_root.has_signal("arena_message_queue_completed"):
-		_open_push_luck_choice(bet_id)
+		_open_intermediate_choice(bet_id)
 		return
 	if _sanity_ui_root.has_method("is_post_bet_queue_running"):
 		var queue_running: bool = bool(_sanity_ui_root.call("is_post_bet_queue_running"))
 		if not queue_running:
-			_open_push_luck_choice(bet_id)
+			_open_intermediate_choice(bet_id)
 			return
 	_pending_push_luck_bet_id = bet_id
 
@@ -2316,7 +2398,7 @@ func _on_arena_message_queue_completed() -> void:
 		return
 	var bet_id: StringName = _pending_push_luck_bet_id
 	_pending_push_luck_bet_id = &""
-	_open_push_luck_choice(bet_id)
+	_open_intermediate_choice(bet_id)
 
 func _get_cashout_lock_reason() -> String:
 	if _run_state.arena_index >= _level3_target_arenas and _level3_target_arenas > 0:
@@ -2328,6 +2410,8 @@ func _get_cashout_lock_reason() -> String:
 	return ""
 
 func _get_double_lock_reason() -> String:
+	if _intermediate_double_disabled_once:
+		return "Hai placato la folla: raddoppio bloccato."
 	if _run_state.arena_index >= _level3_target_arenas and _level3_target_arenas > 0:
 		return "Fine run: incassa ora"
 	return ""
@@ -2805,7 +2889,7 @@ func is_level3_mode() -> bool:
 func is_visual_only() -> bool:
 	if LEVEL3_ENABLED:
 		return true
-	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _run_state.run_is_over or _is_game_over
+	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice or _run_state.run_is_over or _is_game_over
 
 func set_phase(p: Variant) -> void:
 	# Supporta sia RunPhase che int (es. valori serializzati / segnali legacy).

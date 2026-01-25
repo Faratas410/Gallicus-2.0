@@ -28,6 +28,7 @@ signal pact_sealed_opened
 signal pact_sealed_closed
 signal resolve_ritual_opened(payload: Dictionary)
 signal resolve_ritual_closed
+signal intermediate_choice_opened
 signal push_luck_opened(payload: Dictionary)
 signal push_luck_closed
 signal player_damaged
@@ -55,6 +56,7 @@ signal request_next_bet
 signal request_add_coins(amount: int)
 signal request_push_luck_cashout
 signal request_push_luck_double
+signal request_intermediate_choice(choice_id: String)
 signal request_set_run_seed(seed: int)
 signal request_clear_run_seed
 signal request_skip_arena_resolution

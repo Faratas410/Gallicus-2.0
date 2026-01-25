@@ -76,7 +76,11 @@ default_font = ExtResource("1")
 default_font_size = 30
 theme_types/Label = {
 "colors": {
-"font_color": Color(0.95, 0.92, 0.85, 1)
+"font_color": Color(0.949, 0.91, 0.847, 1)
+},
+"constants": {
+"line_spacing": 4,
+"paragraph_spacing": 6
 },
 "fonts": {
 "font": ExtResource("1")
@@ -108,7 +112,7 @@ theme_types/Button = {
 }
 theme_types/LineEdit = {
 "colors": {
-"font_color": Color(0.95, 0.92, 0.85, 1),
+"font_color": Color(0.949, 0.91, 0.847, 1),
 "font_color_placeholder": Color(0.78, 0.72, 0.62, 1)
 },
 "fonts": {

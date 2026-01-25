@@ -4,20 +4,20 @@
 [ext_resource type="Texture2D" path="res://assets/backgrounds/circolo_scommesse.png" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
-bg_color = Color(0.88, 0.83, 0.72, 1)
+bg_color = Color(0.243, 0.231, 0.208, 0.9)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.42, 0.34, 0.24, 1)
+border_color = Color(0.184, 0.173, 0.153, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
-bg_color = Color(0.91, 0.86, 0.76, 1)
+bg_color = Color(0.243, 0.231, 0.208, 0.9)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.5, 0.4, 0.28, 1)
+border_color = Color(0.204, 0.192, 0.169, 1)
 
 [node name="BettingCircle" type="Control"]
 visible = false
@@ -89,6 +89,7 @@ theme_override_constants/separation = 16
 [node name="TitleLabel" type="Label" parent="ContractPanel/ContractVBox"]
 text = "CIRCOLO SCOMMESSE"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="BetOptions" type="VBoxContainer" parent="ContractPanel/ContractVBox"]
 size_flags_horizontal = 3
@@ -115,19 +116,23 @@ theme_override_constants/separation = 6
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 theme_override_font_sizes/font_size = 22
 text = "INCASSA E VAI"
+theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "❌ CONDANNA: ..."
+theme_override_colors/font_color = Color(0.722, 0.259, 0.259, 1)
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 autowrap_mode = 2
 text = "⚠️ CONDIZIONE: ..."
+theme_override_colors/font_color = Color(0.851, 0.714, 0.357, 1)
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 autowrap_mode = 2
 text = "✅ PATTO: ..."
+theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="BetOption2" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
 custom_minimum_size = Vector2(0, 120)
@@ -149,19 +154,23 @@ theme_override_constants/separation = 6
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 theme_override_font_sizes/font_size = 22
 text = "SANGUE INTEGRO"
+theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "❌ CONDANNA: ..."
+theme_override_colors/font_color = Color(0.722, 0.259, 0.259, 1)
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 autowrap_mode = 2
 text = "⚠️ CONDIZIONE: ..."
+theme_override_colors/font_color = Color(0.851, 0.714, 0.357, 1)
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 autowrap_mode = 2
 text = "✅ PATTO: ..."
+theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="BetOption3" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
 custom_minimum_size = Vector2(0, 120)
@@ -183,19 +192,23 @@ theme_override_constants/separation = 6
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 theme_override_font_sizes/font_size = 22
 text = "RADDOPPI O MUORI"
+theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "❌ CONDANNA: ..."
+theme_override_colors/font_color = Color(0.722, 0.259, 0.259, 1)
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 autowrap_mode = 2
 text = "⚠️ CONDIZIONE: ..."
+theme_override_colors/font_color = Color(0.851, 0.714, 0.357, 1)
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 autowrap_mode = 2
 text = "✅ PATTO: ..."
+theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="SigillaButton" type="Button" parent="ContractPanel/ContractVBox"]
 text = "SIGILLA"

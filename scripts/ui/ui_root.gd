@@ -52,6 +52,11 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var resolve_ritual_panel: Panel = get_node_or_null("Modals/ResolveRitualModal/ResolveRitualPanel") as Panel
 @onready var resolve_ritual_title: Label = get_node_or_null("Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox/ResolveRitualTitle") as Label
 @onready var resolve_ritual_subtitle: Label = get_node_or_null("Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox/ResolveRitualSubtitle") as Label
+@onready var intermediate_choice_modal: Control = get_node_or_null("Modals/IntermediateChoiceModal") as Control
+@onready var intermediate_choice_panel: Panel = get_node_or_null("Modals/IntermediateChoiceModal/IntermediateChoicePanel") as Panel
+@onready var intermediate_choice_label: Label = get_node_or_null("Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox/IntermediateChoiceLabel") as Label
+@onready var intermediate_choice_placa_button: Button = get_node_or_null("Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox/IntermediateChoiceButtons/IntermediateChoicePlaca") as Button
+@onready var intermediate_choice_provoca_button: Button = get_node_or_null("Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox/IntermediateChoiceButtons/IntermediateChoiceProvoca") as Button
 @onready var bet_panel: Panel = _req("Modals/BetModal/BetPanel") as Panel
 @onready var buy_token_button: Button = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox/BuyTokenButton") as Button
 @onready var buy_token_info: Label = get_node_or_null("Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenInfo") as Label
@@ -138,6 +143,7 @@ var _arena_resolution_tween: Tween = null
 var _bet_modal_fade_tween: Tween = null
 var _pact_sealed_modal_fade_tween: Tween = null
 var _resolve_ritual_modal_fade_tween: Tween = null
+var _intermediate_choice_modal_fade_tween: Tween = null
 var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
 var _last_level: int = 1
@@ -238,6 +244,9 @@ func _ready() -> void:
 	var resolve_ritual_closed_callable: Callable = Callable(self, "_on_resolve_ritual_closed")
 	if GameEvents.has_signal("resolve_ritual_closed") and not GameEvents.resolve_ritual_closed.is_connected(resolve_ritual_closed_callable):
 		GameEvents.resolve_ritual_closed.connect(resolve_ritual_closed_callable)
+	var intermediate_choice_opened_callable: Callable = Callable(self, "_on_intermediate_choice_opened")
+	if GameEvents.has_signal("intermediate_choice_opened") and not GameEvents.intermediate_choice_opened.is_connected(intermediate_choice_opened_callable):
+		GameEvents.intermediate_choice_opened.connect(intermediate_choice_opened_callable)
 	var arena_started_callable: Callable = Callable(self, "_on_arena_started")
 	if not GameEvents.arena_started.is_connected(arena_started_callable):
 		GameEvents.arena_started.connect(arena_started_callable)
@@ -343,6 +352,7 @@ func _ready() -> void:
 			var close_callable: Callable = Callable(self, "_on_scars_detail_closed")
 			if not scars_detail_close.pressed.is_connected(close_callable):
 				scars_detail_close.pressed.connect(close_callable)
+	_wire_intermediate_choice_buttons()
 	_wire_push_luck_buttons()
 
 	var arena: Node = get_tree().get_first_node_in_group("arena")
@@ -386,6 +396,8 @@ func _validate_ui_boot() -> bool:
 	var required_nodes: Array[String] = [
 		"Modals/BetModal",
 		"Modals/ResolveRitualModal",
+		"Modals/IntermediateChoiceModal",
+		"Modals/IntermediateChoiceModal/IntermediateChoicePanel",
 		"Modals/PushLuckModal",
 		"Modals/PushLuckModal/PushLuckPanel",
 		"Modals/GameOverModal",
@@ -1017,6 +1029,20 @@ func _on_resolve_ritual_closed() -> void:
 	_set_resolve_ritual_modal(false)
 	_refresh_modal_dimmer()
 
+func _on_intermediate_choice_opened() -> void:
+	if intermediate_choice_panel == null:
+		return
+	_set_bet_modal(false)
+	if intermediate_choice_label != null:
+		intermediate_choice_label.text = "SCEGLI IL GESTO"
+	_set_intermediate_choice_modal(true)
+	var choice_buttons: Array[Button] = []
+	if intermediate_choice_placa_button != null:
+		choice_buttons.append(intermediate_choice_placa_button)
+	if intermediate_choice_provoca_button != null:
+		choice_buttons.append(intermediate_choice_provoca_button)
+	_apply_modal_read_delay(choice_buttons)
+
 func _select_post_bet_text(bet_id: String) -> String:
 	var options: Array = POST_BET_TEXTS.get(bet_id, []) as Array
 	if options.is_empty():
@@ -1293,6 +1319,7 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	var cashout_reason: String = str(payload.get("cashout_lock_reason", ""))
 	var double_locked: bool = bool(payload.get("double_locked", false))
 	var double_reason: String = str(payload.get("double_lock_reason", ""))
+	var choice_note: String = str(payload.get("choice_note", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append("❌ Condanna futura: %s" % doom_text)
@@ -1300,6 +1327,8 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":
 		lines.append("✅ Patto potenziato: %s" % pact_text)
+	if choice_note != "":
+		lines.append("⚡ %s" % choice_note)
 	if cashout_locked and cashout_reason != "":
 		lines.append("⛔ Incasso bloccato: %s" % cashout_reason)
 	if double_locked and double_reason != "":
@@ -1350,6 +1379,26 @@ func _wire_push_luck_buttons() -> void:
 		var double_callable: Callable = Callable(self, "_on_push_luck_double_pressed")
 		if not push_luck_double_button.pressed.is_connected(double_callable):
 			push_luck_double_button.pressed.connect(double_callable)
+
+func _wire_intermediate_choice_buttons() -> void:
+	if intermediate_choice_placa_button != null:
+		var placa_callable: Callable = Callable(self, "_on_intermediate_choice_placa_pressed")
+		if not intermediate_choice_placa_button.pressed.is_connected(placa_callable):
+			intermediate_choice_placa_button.pressed.connect(placa_callable)
+	if intermediate_choice_provoca_button != null:
+		var provoca_callable: Callable = Callable(self, "_on_intermediate_choice_provoca_pressed")
+		if not intermediate_choice_provoca_button.pressed.is_connected(provoca_callable):
+			intermediate_choice_provoca_button.pressed.connect(provoca_callable)
+
+func _on_intermediate_choice_placa_pressed() -> void:
+	_set_intermediate_choice_modal(false)
+	if GameEvents.has_signal("request_intermediate_choice"):
+		GameEvents.request_intermediate_choice.emit("placa")
+
+func _on_intermediate_choice_provoca_pressed() -> void:
+	_set_intermediate_choice_modal(false)
+	if GameEvents.has_signal("request_intermediate_choice"):
+		GameEvents.request_intermediate_choice.emit("provoca")
 
 func _wire_debug_tools() -> void:
 	if not OS.is_debug_build():
@@ -1779,6 +1828,22 @@ func _set_resolve_ritual_modal(active: bool) -> void:
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
+func _set_intermediate_choice_modal(active: bool) -> void:
+	_intermediate_choice_modal_fade_tween = _fade_modal(
+		intermediate_choice_panel,
+		intermediate_choice_modal,
+		active,
+		_intermediate_choice_modal_fade_tween
+	)
+	if active:
+		if GameEvents.has_signal("modal_opened"):
+			GameEvents.modal_opened.emit("intermediate_choice")
+	else:
+		if GameEvents.has_signal("modal_closed"):
+			GameEvents.modal_closed.emit("intermediate_choice")
+	_refresh_modal_dimmer()
+	get_viewport().gui_release_focus()
+
 func _set_push_luck_modal(active: bool) -> void:
 	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween)
 	if active:
@@ -1854,6 +1919,8 @@ func _refresh_modal_dimmer() -> void:
 	if pact_sealed_modal != null and pact_sealed_modal.visible:
 		active = true
 	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
+		active = true
+	if intermediate_choice_modal != null and intermediate_choice_modal.visible:
 		active = true
 	if push_luck_modal != null and push_luck_modal.visible:
 		active = true

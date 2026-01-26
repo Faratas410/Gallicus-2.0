@@ -370,6 +370,7 @@ var _intermediate_double_disabled_once: bool = false
 var _intermediate_bonus_tier: int = 0
 var _intermediate_choice_note: String = ""
 var _intermediate_loss_penalty_pending: bool = false
+var _provoke_armed: bool = false
 var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
 var _run_finale_emitted: bool = false
@@ -615,6 +616,7 @@ func start_new_run() -> void:
 	_intermediate_bonus_tier = 0
 	_intermediate_choice_note = ""
 	_intermediate_loss_penalty_pending = false
+	_provoke_armed = false
 	_failed_high_risk_bets = 0
 	_run_end_reason = ""
 	_run_finale_emitted = false
@@ -710,6 +712,7 @@ func _start_level3_run() -> void:
 	_current_bet_id = ""
 	_bet_chain_level = 1
 	_has_started_run = true
+	_provoke_armed = false
 
 	_run_state = RunState.new()
 	_run_state.run_seed = _get_run_seed_value()
@@ -1374,6 +1377,11 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
+	if _provoke_armed:
+		_provoke_armed = false
+		_register_run_end("PROVOCA_FAIL")
+		_enter_game_over()
+		return scars_applied
 	var executioner_bonus: int = 0
 	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
 		executioner_bonus = 10
@@ -1419,6 +1427,11 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
+	if _provoke_armed:
+		_provoke_armed = false
+		_register_run_end("PROVOCA_FAIL")
+		_enter_game_over()
+		return scars_applied
 	var executioner_bonus: int = 0
 	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
 		executioner_bonus = 10
@@ -1762,6 +1775,7 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 	_intermediate_bonus_tier = 0
 	_intermediate_choice_note = ""
 	_intermediate_loss_penalty_pending = false
+	_provoke_armed = false
 	var normalized_choice: String = choice_id.strip_edges().to_lower()
 	match normalized_choice:
 		"placa":
@@ -1772,6 +1786,7 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 		"provoca":
 			_intermediate_bonus_tier = INTERMEDIATE_PROVOCA_BONUS_TIER
 			_intermediate_loss_penalty_pending = true
+			_provoke_armed = true
 			_intermediate_choice_note = "Folla provocata: premio aumentato, debito alla prima sconfitta."
 		_:
 			_intermediate_choice_note = ""
@@ -2268,6 +2283,11 @@ func _soft_reset() -> void:
 func handle_bet_failed(bet_id: String) -> void:
 	if _is_game_over:
 		return
+	if _provoke_armed:
+		_provoke_armed = false
+		_register_run_end("PROVOCA_FAIL")
+		_enter_game_over()
+		return
 	if bet_id == BET_DOUBLE_OR_DIE:
 		_failed_high_risk_bets += 1
 		_register_run_end("DOUBLE_OR_DIE")
@@ -2603,6 +2623,7 @@ func _enter_game_over() -> void:
 		get_tree().paused = true
 		return
 	_is_game_over = true
+	_provoke_armed = false
 	_run_state.run_is_over = true
 	_waiting_for_bet = false
 	set_phase(RunPhase.GAME_OVER)

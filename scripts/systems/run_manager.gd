@@ -37,6 +37,24 @@ const ENEMY_TRICKSTER: StringName = &"TRICKSTER"
 const SPECIAL_ARENA_SILENCE: StringName = &"ARENA_OF_SILENCE"
 const SPECIAL_ARENA_ASH: StringName = &"ARENA_OF_ASH"
 
+const PACT_OUTCOME_UNKNOWN: int = 0
+const PACT_OUTCOME_WIN: int = 1
+const PACT_OUTCOME_LOSS: int = 2
+
+class PactLogEntry:
+	var bet_id: StringName = &""
+	var bet_name: String = ""
+	var arena_index: int = 0
+	var outcome: int = PACT_OUTCOME_UNKNOWN
+
+	func to_dict() -> Dictionary:
+		return {
+			"bet_id": String(bet_id),
+			"bet_name": bet_name,
+			"arena_index": arena_index,
+			"outcome": outcome,
+		}
+
 class RunState:
 	var run_seed: int = 0
 	var arena_index: int = 0
@@ -47,6 +65,7 @@ class RunState:
 	var scars: Array[StringName] = []
 	var scars_history: Array[StringName] = []
 	var bets_history: Array[StringName] = []
+	var pacts_log: Array[PactLogEntry] = []
 	var cashouts: int = 0
 	var doubles: int = 0
 	var max_escalation: int = 0
@@ -724,6 +743,7 @@ func _start_level3_run() -> void:
 	_run_state.scars = []
 	_run_state.scars_history = []
 	_run_state.bets_history = []
+	_run_state.pacts_log = []
 	_run_state.cashouts = 0
 	_run_state.doubles = 0
 	_run_state.max_escalation = 0
@@ -779,6 +799,7 @@ func select_bet(bet_id: StringName) -> void:
 	_run_state.active_bet_id = bet_id
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
+		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
 	_level3_bets_used.append(bet_id)
@@ -800,6 +821,7 @@ func _register_level3_bet_choice(bet_id: StringName) -> void:
 	_run_state.active_bet_id = bet_id
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
+		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
 	_level3_bets_used.append(bet_id)
@@ -873,6 +895,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	else:
 		_apply_level3_reward(bet_id, _level3_reward_tier)
 		_resolve_ritual_reward_applied = true
+	_update_last_pact_outcome(bet_id, not failed)
 	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
 	_run_state.active_bet_id = &""
@@ -905,6 +928,7 @@ func resolve_arena() -> void:
 		scars_applied = _handle_level3_loss(bet_id, result)
 	else:
 		_handle_level3_win(bet_id, result)
+	_update_last_pact_outcome(bet_id, not failed)
 	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
 	_run_state.active_bet_id = &""
@@ -1136,6 +1160,32 @@ func _emit_run_debug_state() -> void:
 		"special_arena_active": _special_arena_active,
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
+
+func _get_current_arena_index() -> int:
+	var arena_index: int = _run_state.arena_index
+	if arena_index <= 0:
+		arena_index = int(run.get("arena_index", 0))
+	return arena_index
+
+func _append_pact_log_entry(bet_id: StringName, bet_name: String) -> void:
+	if bet_id == &"":
+		return
+	var entry: PactLogEntry = PactLogEntry.new()
+	entry.bet_id = bet_id
+	entry.bet_name = bet_name
+	entry.arena_index = _get_current_arena_index()
+	entry.outcome = PACT_OUTCOME_UNKNOWN
+	_run_state.pacts_log.append(entry)
+
+func _update_last_pact_outcome(bet_id: StringName, won: bool) -> void:
+	if bet_id == &"":
+		return
+	if _run_state.pacts_log.is_empty():
+		return
+	var entry: PactLogEntry = _run_state.pacts_log[_run_state.pacts_log.size() - 1]
+	if entry.bet_id != bet_id:
+		return
+	entry.outcome = PACT_OUTCOME_WIN if won else PACT_OUTCOME_LOSS
 
 func _pick_special_arena_index(target_arenas: int) -> int:
 	if target_arenas <= 0:
@@ -2020,6 +2070,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	_waiting_for_push_luck = false
 	_current_bet_id = _bet_id
 	_bet_chain_level = 1
+	_append_pact_log_entry(StringName(_bet_id), "")
 	GameEvents.betting_closed.emit()
 	set_phase(RunPhase.LIVE)
 	load_next_arena()
@@ -2097,6 +2148,7 @@ func _on_wave_cleared(_wave: int) -> void:
 	if not bet_result.is_empty():
 		var bet_id: String = str(bet_result.get("id", ""))
 		var won: bool = bool(bet_result.get("won", false))
+		_update_last_pact_outcome(StringName(bet_id), won)
 		if won and bet_id != "":
 			_current_bet_id = bet_id
 			_open_push_luck_choice(StringName(bet_id))
@@ -2283,6 +2335,7 @@ func _soft_reset() -> void:
 func handle_bet_failed(bet_id: String) -> void:
 	if _is_game_over:
 		return
+	_update_last_pact_outcome(StringName(bet_id), false)
 	if _provoke_armed:
 		_provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
@@ -2702,6 +2755,9 @@ func _build_run_summary(finale: Dictionary) -> Dictionary:
 	var bets_history: Array[String] = []
 	for bet_id: StringName in _run_state.bets_history:
 		bets_history.append(String(bet_id))
+	var pacts_log: Array[Dictionary] = []
+	for entry: PactLogEntry in _run_state.pacts_log:
+		pacts_log.append(entry.to_dict())
 	var scars_history: Array[String] = []
 	for scar_id: StringName in _run_state.scars_history:
 		scars_history.append(String(scar_id))
@@ -2714,6 +2770,7 @@ func _build_run_summary(finale: Dictionary) -> Dictionary:
 		"duration_seconds": duration_seconds,
 		"arenas_cleared": _run_state.arenas_cleared,
 		"bets_history": bets_history,
+		"pacts_log": pacts_log,
 		"max_escalation": _run_state.max_escalation,
 		"scars_history": scars_history,
 		"scars_count": _run_state.scars_history.size(),

@@ -116,6 +116,20 @@ text = "SCOMMESSA"
 autowrap_mode = 2
 text = "—"
 
+[node name="EscalationRow" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
+custom_minimum_size = Vector2(360, 0)
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="EscalationLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
+text = "ESCALATION"
+
+[node name="EscalationBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
+size_flags_horizontal = 3
+max_value = 10.0
+value = 0.0
+show_percentage = false
+
 [node name="RightColumn" type="VBoxContainer" parent="HUD/SafeMargin/TopRow"]
 custom_minimum_size = Vector2(280, 0)
 size_flags_horizontal = 0

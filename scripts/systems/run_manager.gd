@@ -36,6 +36,7 @@ const ENEMY_EXECUTIONER: StringName = &"EXECUTIONER"
 const ENEMY_TRICKSTER: StringName = &"TRICKSTER"
 const SPECIAL_ARENA_SILENCE: StringName = &"ARENA_OF_SILENCE"
 const SPECIAL_ARENA_ASH: StringName = &"ARENA_OF_ASH"
+const ESCALATION_MAX: int = 10
 
 const PACT_OUTCOME_UNKNOWN: int = 0
 const PACT_OUTCOME_WIN: int = 1
@@ -750,6 +751,7 @@ func _start_level3_run() -> void:
 	_run_state.arenas_cleared = 0
 	_run_state.max_hp_modifier = 0
 	_run_state.run_is_over = false
+	_emit_escalation_changed()
 	_arena_layout_rng.seed = _run_state.run_seed
 	_level3_rng.seed = _run_state.run_seed
 	_level3_target_arenas = _level3_rng.randi_range(5, 8)
@@ -1161,6 +1163,11 @@ func _emit_run_debug_state() -> void:
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
 
+func _emit_escalation_changed() -> void:
+	if not GameEvents.has_signal("escalation_changed"):
+		return
+	GameEvents.escalation_changed.emit(_run_state.escalation_level, ESCALATION_MAX)
+
 func _get_current_arena_index() -> int:
 	var arena_index: int = _run_state.arena_index
 	if arena_index <= 0:
@@ -1252,6 +1259,7 @@ func _apply_special_arena_pre_resolution() -> void:
 		_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
 		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 		_special_arena_effect_applied = true
+		_emit_escalation_changed()
 		_emit_run_debug_state()
 
 func _apply_special_arena_post_resolution(result: ArenaResult, failed: bool) -> void:
@@ -1468,6 +1476,7 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 	_level3_next_loss_hp_penalty = 0
 	_level3_reward_tier = 1
 	_run_state.escalation_level = 0
+	_emit_escalation_changed()
 	_current_bet_id = ""
 	start_arena()
 	return scars_applied
@@ -1518,6 +1527,7 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	_level3_next_loss_hp_penalty = 0
 	_level3_reward_tier = 1
 	_run_state.escalation_level = 0
+	_emit_escalation_changed()
 	_resolve_ritual_reward_applied = true
 	_emit_run_debug_state()
 	return scars_applied
@@ -1865,12 +1875,13 @@ func _on_request_push_luck_cashout() -> void:
 		_run_state.cashouts += 1
 		if _run_state.escalation_level >= 2:
 			_level3_cashed_after_high_escalation = true
-		_level3_reward_tier = 1
-		_level3_next_loss_hp_penalty = 0
-		_run_state.escalation_level = 0
-		_current_bet_id = ""
-		_emit_run_debug_state()
-		_register_run_end("CASH_OUT")
+			_level3_reward_tier = 1
+			_level3_next_loss_hp_penalty = 0
+			_run_state.escalation_level = 0
+			_emit_escalation_changed()
+			_current_bet_id = ""
+			_emit_run_debug_state()
+			_register_run_end("CASH_OUT")
 		end_run(&"")
 		return
 	var bet_id: String = _current_bet_id
@@ -1896,14 +1907,15 @@ func _on_request_push_luck_double() -> void:
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		_resolve_ritual_reward_applied = false
-		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
-		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
-		_level3_doubles += 1
-		_run_state.doubles += 1
-		_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
-		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
-		if _cashout_lock_remaining > 0:
-			_cashout_lock_remaining = maxi(_cashout_lock_remaining - 1, 0)
+			_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+			_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
+			_level3_doubles += 1
+			_run_state.doubles += 1
+			_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
+			_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
+			_emit_escalation_changed()
+			if _cashout_lock_remaining > 0:
+				_cashout_lock_remaining = maxi(_cashout_lock_remaining - 1, 0)
 		_level3_next_loss_hp_penalty = 30
 		_emit_run_debug_state()
 		start_arena()

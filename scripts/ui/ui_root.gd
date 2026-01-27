@@ -40,6 +40,7 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
 @onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
 @onready var bet_badge_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText/BetBadgeValue") as Label
+@onready var escalation_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as ProgressBar
 @onready var hud_root: Control = get_node_or_null("HUD") as Control
 @onready var bet_modal: Control = _req("Modals/BetModal") as Control
 @onready var betting_circle: BettingCircleUI = get_node_or_null("Modals/BettingCircle") as BettingCircleUI
@@ -137,6 +138,8 @@ var _xp_to_next: int = 6
 var _level: int = 1
 var _tokens: int = 0
 var _coins: int = 0
+var _escalation_level: int = 0
+var _escalation_max: int = 0
 var _popup_tween: Tween = null
 var _scar_popup_tween: Tween = null
 var _arena_resolution_tween: Tween = null
@@ -208,6 +211,9 @@ func _ready() -> void:
 	var run_debug_callable: Callable = Callable(self, "_on_run_debug_state_updated")
 	if GameEvents.has_signal("run_debug_state_updated") and not GameEvents.run_debug_state_updated.is_connected(run_debug_callable):
 		GameEvents.run_debug_state_updated.connect(run_debug_callable)
+	var escalation_changed_callable: Callable = Callable(self, "_on_escalation_changed")
+	if GameEvents.has_signal("escalation_changed") and not GameEvents.escalation_changed.is_connected(escalation_changed_callable):
+		GameEvents.escalation_changed.connect(escalation_changed_callable)
 	var run_log_callable: Callable = Callable(self, "_on_run_log_ready")
 	if GameEvents.has_signal("run_log_ready") and not GameEvents.run_log_ready.is_connected(run_log_callable):
 		GameEvents.run_log_ready.connect(run_log_callable)
@@ -761,6 +767,10 @@ func show_countdown(seconds: int = 3) -> void:
 func _on_run_started() -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: 0"
+	if escalation_bar != null:
+		escalation_bar.visible = true
+	_escalation_level = 0
+	_update_escalation_bar()
 	set_active_bet_text("—")
 	_set_bet_modal(false)
 	_reset_bet_confirmation()
@@ -846,6 +856,8 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 
 func _on_run_failed() -> void:
 	_set_bet_modal(false)
+	if escalation_bar != null:
+		escalation_bar.visible = false
 	if level_up_popup != null:
 		level_up_popup.visible = false
 	if special_arena_label != null:
@@ -886,6 +898,18 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	for scar_value in scars_value:
 		_debug_scars.append(str(scar_value))
 	_refresh_debug_overlay()
+
+func _on_escalation_changed(level: int, max_value: int) -> void:
+	_escalation_level = level
+	_escalation_max = max_value
+	_update_escalation_bar()
+
+func _update_escalation_bar() -> void:
+	if escalation_bar == null:
+		return
+	var safe_max: float = float(maxi(_escalation_max, 1))
+	escalation_bar.max_value = safe_max
+	escalation_bar.value = clampf(float(_escalation_level), 0.0, safe_max)
 
 func _on_run_log_ready(log_text: String) -> void:
 	_debug_run_log = log_text

@@ -90,10 +90,16 @@ class ArenaResult:
 	var took_damage: bool = false
 	var notes: Array[StringName] = []
 
+const ARCH_DEBT: StringName = &"DEBT"
+const ARCH_EGO: StringName = &"EGO"
+const ARCH_TIME: StringName = &"TIME"
+
 const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CASH_OUT",
 		"name": "INCASSA E VAI",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
 		"pact": "Ricompensa minima ma sicura: incassi subito e riduci l'esposizione.",
 		"condition": "Devi vincere l'arena senza inseguire l'escalation.",
 		"doom": "Hai scelto la via breve.\nLa folla ricorda chi non spinge.\nL'arena lascia comunque il segno.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
@@ -104,6 +110,8 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "FLAWLESS_BLOOD",
 		"name": "SANGUE INTEGRO",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
 		"pact": "Se riesci, ottieni una ricompensa alta e alzi l'intensità della run.",
 		"condition": "Devi vincere l'arena senza subire danni.",
 		"doom": "Il sangue deve restare puro.\nOgni errore pesa doppio.\nLa sabbia non perdona.\nEffetto: HP massimo -20 (min 1) + cicatrice FERITA APERTA.",
@@ -114,6 +122,8 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "DOUBLE_OR_DIE",
 		"name": "RADDOPPI O MUORI",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
 		"pact": "Ricompensa devastante: moltiplica la posta e accelera la corsa.",
 		"condition": "Devi vincere l'arena senza esitazioni.",
 		"doom": "Hai promesso tutto.\nNon esiste margine.\nLa folla trattiene il fiato.\nEffetto: MORTE IMMEDIATA, run terminata senza appello.",
@@ -124,6 +134,8 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "DEBT_CHAIN",
 		"name": "CATENA DI DEBITO",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
 		"pact": "Ricompensa media, ma mantiene viva la catena del patto.",
 		"condition": "Vinci l'arena e non spezzare la promessa.",
 		"doom": "La catena non si spezza.\nOgni passo stringe il debito.\nIl pubblico pretende il prezzo.\nEffetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
@@ -134,6 +146,8 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "BLOOD_TAX",
 		"name": "DECIMA DI SANGUE",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
 		"pact": "Ricompensa alta: la vittoria spinge la run verso un ritmo più feroce.",
 		"condition": "Vinci l'arena sapendo che ogni colpo ha un prezzo.",
 		"doom": "La vittoria chiede sangue.\nIl tributo è scritto sulla pelle.\nNon puoi evitarlo.\nEffetto: HP massimo -25 + incasso bloccato per 1 arena.",
@@ -144,6 +158,8 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CROW_PLEASER",
 		"name": "PIACERE AL PUBBLICO",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
 		"pact": "Ricompensa narrativa + bonus lieve, alimentando la tua reputazione.",
 		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
 		"doom": "La folla vuole spettacolo.\nUn passo falso diventa scherno.\nIl giudizio resta addosso.\nEffetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",
@@ -154,6 +170,8 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "LAST_BREATH",
 		"name": "ULTIMO RESPIRO",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
 		"pact": "Ricompensa altissima, con la run al limite dell'ossessione.",
 		"condition": "Vinci l'arena con il cuore in gola.",
 		"doom": "Respiri corto.\nOgni colpo è l'ultimo.\nIl destino pesa sulle ossa.\nEffetto: cicatrice GRAVE (non mortale), cammino compromesso.",

@@ -928,6 +928,8 @@ func resolve_arena() -> void:
 	_resolving_arena = true
 	_update_arena_visual_only()
 	set_phase(RunPhase.LIVE)
+	var bet_id: StringName = _run_state.active_bet_id
+	_emit_sentence_banner_for_bet(bet_id)
 	GameEvents.arena_started.emit(_run_state.arena_index)
 	_play_arena_resolution_fx()
 	_apply_special_arena_pre_resolution()
@@ -935,7 +937,6 @@ func resolve_arena() -> void:
 	_update_audience_after_arena(result)
 	_run_state.arenas_cleared = maxi(_run_state.arenas_cleared + 1, 1)
 	GameEvents.arena_completed.emit(_run_state.arena_index)
-	var bet_id: StringName = _run_state.active_bet_id
 	var failed: bool = not result.won
 	var scars_applied: Array[StringName] = []
 	if bet_id == BET_FLAWLESS_BLOOD and result.took_damage:
@@ -1814,6 +1815,10 @@ func _start_next_arena() -> void:
 	if _arena == null or _is_game_over:
 		return
 	run["arena_index"] = int(run.get("arena_index", 0)) + 1
+	var bet_id: StringName = StringName(_current_bet_id)
+	if bet_id == &"":
+		bet_id = _last_selected_bet_id
+	_emit_sentence_banner_for_bet(bet_id)
 	_arena.call("start_next_wave")
 
 func _on_request_purchase_upgrade(upgrade_key: String) -> void:
@@ -2520,6 +2525,57 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 		"cashout_modifier_text": cashout_modifier_text,
 	}
 	return payload
+
+func _emit_sentence_banner_for_bet(bet_id: StringName) -> void:
+	if not GameEvents.has_signal("sentence_banner_requested"):
+		return
+	var payload: Dictionary = _build_sentence_payload(bet_id)
+	if payload.is_empty():
+		return
+	GameEvents.sentence_banner_requested.emit(payload)
+
+func _build_sentence_payload(bet_id: StringName) -> Dictionary:
+	var rule: String = _get_sentence_rule(bet_id)
+	var doom: String = _get_sentence_doom(bet_id)
+	if doom == "":
+		doom = "SE FALLISCI: LA CICATRICE TI RESTA."
+	elif not doom.begins_with("SE FALLISCI:"):
+		doom = "SE FALLISCI: %s" % doom
+	return {
+		"sentence_title": "SENTENZA",
+		"sentence_rule": rule,
+		"sentence_doom": doom,
+		"bet_id": String(bet_id),
+	}
+
+func _get_sentence_rule(bet_id: StringName) -> String:
+	if bet_id == BET_FLAWLESS_BLOOD:
+		return "NO HIT"
+	var bet_data: Dictionary = _get_bet_data(String(bet_id))
+	var condition: String = ""
+	if not bet_data.is_empty():
+		condition = str(bet_data.get("condition", ""))
+	var condition_lower: String = condition.to_lower()
+	if condition_lower.findn("senza subire danni") >= 0:
+		return "NO HIT"
+	return "VINCI"
+
+func _get_sentence_doom(bet_id: StringName) -> String:
+	var doom: String = ""
+	if bet_id != &"":
+		if LEVEL3_ENABLED:
+			doom = _get_level3_doom_short(bet_id)
+		if doom == "":
+			var bet_data: Dictionary = _get_bet_data(String(bet_id))
+			if not bet_data.is_empty():
+				doom = str(bet_data.get("doom", ""))
+				if doom != "":
+					var lines: PackedStringArray = doom.split("\n")
+					if not lines.is_empty():
+						doom = lines[0].strip_edges()
+	if doom == "":
+		doom = "LA CICATRICE TI RESTA."
+	return doom
 
 func _queue_push_luck_choice(bet_id: StringName) -> void:
 	if _sanity_ui_root == null:

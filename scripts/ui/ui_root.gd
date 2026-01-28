@@ -5,6 +5,7 @@ signal arena_message_queue_completed
 const FAST_SELECTION_SECONDS: int = 12
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const POST_BET_MESSAGE_TIME_SEC: float = 3.5
+const SENTENCE_BANNER_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
@@ -85,6 +86,10 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
 @onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopup") as RichTextLabel
 @onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
+@onready var sentence_banner: Control = get_node_or_null("HUD/SentenceBanner") as Control
+@onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitle") as Label
+@onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRule") as Label
+@onready var sentence_doom_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoom") as Label
 @onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
 @onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var game_over_modal: Control = get_node_or_null("Modals/GameOverModal") as Control
@@ -182,6 +187,7 @@ var _pact_sealed_pending_close_id: int = 0
 var _pact_sealed_min_read_elapsed: bool = true
 var _post_bet_queue: Array[Dictionary] = []
 var _post_bet_running: bool = false
+var _sentence_banner_sequence_id: int = 0
 var _is_signing: bool = false
 var _bet_confirm_default_text: String = ""
 
@@ -215,6 +221,9 @@ func _ready() -> void:
 	var run_debug_callable: Callable = Callable(self, "_on_run_debug_state_updated")
 	if GameEvents.has_signal("run_debug_state_updated") and not GameEvents.run_debug_state_updated.is_connected(run_debug_callable):
 		GameEvents.run_debug_state_updated.connect(run_debug_callable)
+	var sentence_banner_callable: Callable = Callable(self, "_on_sentence_banner_requested")
+	if GameEvents.has_signal("sentence_banner_requested") and not GameEvents.sentence_banner_requested.is_connected(sentence_banner_callable):
+		GameEvents.sentence_banner_requested.connect(sentence_banner_callable)
 	var escalation_changed_callable: Callable = Callable(self, "_on_escalation_changed")
 	if GameEvents.has_signal("escalation_changed") and not GameEvents.escalation_changed.is_connected(escalation_changed_callable):
 		GameEvents.escalation_changed.connect(escalation_changed_callable)
@@ -829,6 +838,26 @@ func _on_run_started_ui() -> void:
 	var player_node: Node = get_tree().get_first_node_in_group("player")
 	if player_node != null:
 		_bind_player(player_node)
+
+func _on_sentence_banner_requested(payload: Dictionary) -> void:
+	if sentence_banner == null:
+		return
+	if sentence_title_label == null or sentence_rule_label == null or sentence_doom_label == null:
+		return
+	var title: String = str(payload.get("sentence_title", "SENTENZA"))
+	var rule: String = str(payload.get("sentence_rule", "VINCI"))
+	var doom: String = str(payload.get("sentence_doom", ""))
+	sentence_title_label.text = title
+	sentence_rule_label.text = rule
+	sentence_doom_label.text = doom
+	sentence_banner.visible = true
+	_sentence_banner_sequence_id += 1
+	var sequence_id: int = _sentence_banner_sequence_id
+	await get_tree().create_timer(SENTENCE_BANNER_SECONDS).timeout
+	if sequence_id != _sentence_banner_sequence_id:
+		return
+	if sentence_banner != null:
+		sentence_banner.visible = false
 
 func _on_run_finale_selected(payload: Dictionary) -> void:
 	if payload.has("title"):

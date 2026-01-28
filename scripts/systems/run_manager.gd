@@ -34,6 +34,9 @@ const SCAR_SHAME_MARK: StringName = &"SHAME_MARK"
 const SCAR_RUSTED_ARMOR: StringName = &"RUSTED_ARMOR"
 const SCAR_DEBT_BRAND: StringName = &"DEBT_BRAND"
 const SCAR_ONE_EYE: StringName = &"ONE_EYE"
+const TAG_BLOOD: StringName = &"BLOOD"
+const TAG_EGO: StringName = &"EGO"
+const TAG_SOCIAL: StringName = &"SOCIAL"
 
 const ENEMY_BRUISER: StringName = &"BRUISER"
 const ENEMY_DUELIST: StringName = &"DUELIST"
@@ -80,6 +83,7 @@ class RunState:
 	var max_hp_modifier: int = 0
 	var audience_score: int = 0
 	var run_is_over: bool = false
+	var is_hunted_by_crowd: bool = false
 
 class ArenaResult:
 	var won: bool = false
@@ -169,7 +173,7 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"story": "Il sangue non si è mai fermato.",
 		"narrative_text": "Il sangue ti segue anche quando l'arena tace.\nLa folla ascolta il tuo respiro corto.\nIl giudizio è già inciso sulla pelle.",
 		"visual_tag": "🩸",
-		"tags": [&"physical"],
+		"tags": [TAG_BLOOD, &"physical"],
 	},
 	{
 		"id": SCAR_CRACKED_BONES,
@@ -180,7 +184,7 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"story": "Ogni passo fa male.",
 		"narrative_text": "Cammini con onore ma ogni passo pesa.\nIl debito del corpo resta sotto la sabbia.\nIl destino ti guarda senza tregua.",
 		"visual_tag": "🦴",
-		"tags": [&"physical"],
+		"tags": [TAG_BLOOD, &"physical"],
 	},
 	{
 		"id": SCAR_SHAME_MARK,
@@ -191,7 +195,7 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"story": "Il boato è diventato un sibilo.",
 		"narrative_text": "La vergogna ti precede davanti alla folla.\nOgni sguardo è un giudizio che brucia.\nPorti il segno anche quando vinci.",
 		"visual_tag": "🎭",
-		"tags": [&"social"],
+		"tags": [TAG_SOCIAL, &"social"],
 	},
 	{
 		"id": SCAR_RUSTED_ARMOR,
@@ -224,7 +228,7 @@ const LEVEL3_SCARS: Array[Dictionary] = [
 		"story": "La profondità si è spenta.",
 		"narrative_text": "Hai perso un occhio ma non la vergogna di guardare.\nIl sangue vela il tuo destino.\nLa folla vede la tua mancanza.",
 		"visual_tag": "👁️",
-		"tags": [&"physical"],
+		"tags": [TAG_BLOOD, &"physical"],
 	},
 ]
 
@@ -759,6 +763,7 @@ func _start_level3_run() -> void:
 	_run_state.max_hp_modifier = 0
 	_run_state.audience_score = 0
 	_run_state.run_is_over = false
+	_run_state.is_hunted_by_crowd = false
 	_emit_escalation_changed()
 	_arena_layout_rng.seed = _run_state.run_seed
 	_level3_rng.seed = _run_state.run_seed
@@ -1170,6 +1175,7 @@ func _emit_run_debug_state() -> void:
 		"scars": scars_copy,
 		"special_arena_id": String(_special_arena_id),
 		"special_arena_active": _special_arena_active,
+		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
 
@@ -2885,6 +2891,7 @@ func _build_run_summary(finale: Dictionary) -> Dictionary:
 		"max_escalation": _run_state.max_escalation,
 		"scars_history": scars_history,
 		"scars_count": _run_state.scars_history.size(),
+		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
 		"ending_id": ending_id,
 		"cashouts": _run_state.cashouts,
 		"doubles": _run_state.doubles,
@@ -3147,6 +3154,7 @@ func _reset_scars() -> void:
 	_run_state.scars = []
 	_run_state.scars_history = []
 	_run_state.max_hp_modifier = 0
+	_run_state.is_hunted_by_crowd = false
 	_scar_heal_multiplier = 1.0
 	_scar_dodge_cooldown_multiplier = 1.0
 	_scar_dodge_speed_multiplier = 1.0
@@ -3173,6 +3181,7 @@ func _add_scar(scar: Dictionary) -> void:
 	_run_state.scars.append(scar_id)
 	_run_state.scars_history.append(scar_id)
 	_recompute_scar_modifiers()
+	_recompute_scar_synergies()
 	_emit_scars_updated()
 	_emit_run_debug_state()
 	if GameEvents.has_signal("scar_applied"):
@@ -3199,6 +3208,13 @@ func _recompute_scar_modifiers() -> void:
 	_scar_dodge_speed_multiplier = dodge_speed_multiplier
 	_scar_max_hp_penalty = max_hp_penalty
 	_apply_run_upgrades_to_player()
+
+func _recompute_scar_synergies() -> void:
+	if _run_state.is_hunted_by_crowd:
+		return
+	var blood_count: int = _count_scars_with_tag(TAG_BLOOD)
+	if blood_count >= 3:
+		_run_state.is_hunted_by_crowd = true
 
 func _get_bet_display_name(bet_id: String) -> String:
 	var bet_data: Dictionary = _get_bet_data(bet_id)

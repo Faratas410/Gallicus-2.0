@@ -596,6 +596,17 @@ autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Incassa ora o raddoppia il rischio"
 
+[node name="PushLuckAudienceLabel" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+visible = false
+theme_override_font_sizes/font_size = 20
+text = ""
+
+[node name="PushLuckAudienceReason" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+visible = false
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+text = ""
+
 [node name="PushLuckDetails" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
 autowrap_mode = 2
 size_flags_horizontal = 3

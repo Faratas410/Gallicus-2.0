@@ -1858,19 +1858,27 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 	_intermediate_loss_penalty_pending = false
 	_provoke_armed = false
 	var normalized_choice: String = choice_id.strip_edges().to_lower()
+	var escalation_delta: int = 0
 	match normalized_choice:
 		"placa":
-			if INTERMEDIATE_PLACA_BONUS_COINS > 0:
-				add_coins(INTERMEDIATE_PLACA_BONUS_COINS)
-			_intermediate_double_disabled_once = true
-			_intermediate_choice_note = "Folla placata: +%d monete, raddoppio bloccato." % INTERMEDIATE_PLACA_BONUS_COINS
+			escalation_delta = -1
+			_intermediate_choice_note = "Gesto: Umiliati."
 		"provoca":
-			_intermediate_bonus_tier = INTERMEDIATE_PROVOCA_BONUS_TIER
-			_intermediate_loss_penalty_pending = true
-			_provoke_armed = true
-			_intermediate_choice_note = "Folla provocata: premio aumentato, debito alla prima sconfitta."
+			escalation_delta = 1
+			_intermediate_choice_note = "Gesto: Provoca."
 		_:
 			_intermediate_choice_note = ""
+	if escalation_delta != 0:
+		var previous_level: int = _run_state.escalation_level
+		var next_level: int = clampi(previous_level + escalation_delta, 0, ESCALATION_MAX)
+		_run_state.escalation_level = next_level
+		if next_level > _level3_max_escalation:
+			_level3_max_escalation = next_level
+		if next_level > _run_state.max_escalation:
+			_run_state.max_escalation = next_level
+		if next_level != previous_level:
+			_emit_escalation_changed()
+			_emit_run_debug_state()
 	var bet_id: StringName = _pending_intermediate_choice_bet_id
 	if bet_id == &"":
 		bet_id = _last_selected_bet_id

@@ -1671,12 +1671,15 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String
 	var condition_text: String = str(bet.get("condition", ""))
 	var pact_text: String = str(bet.get("pact", ""))
 	var doom_text: String = str(bet.get("doom", ""))
+	var archetype_label: String = str(bet.get("archetype_label", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append("❌ Condanna — %s" % name_text)
 		lines.append("%s" % doom_text)
 	else:
 		lines.append("❌ Condanna — %s" % name_text)
+	if archetype_label != "":
+		lines.append(archetype_label)
 	if condition_text != "":
 		lines.append("⚠️ Condizione: %s" % condition_text)
 	if pact_text != "":

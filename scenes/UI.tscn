@@ -380,13 +380,13 @@ theme_override_constants/separation = 10
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
-text = "PLACA LA FOLLA"
+text = "UMILIATI"
 
 [node name="IntermediateChoiceProvoca" type="Button" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox/IntermediateChoiceButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
-text = "PROVOCA LA FOLLA"
+text = "PROVOCA"
 
 [node name="BetBlocker" type="ColorRect" parent="Modals/BetModal"]
 mouse_filter = 2

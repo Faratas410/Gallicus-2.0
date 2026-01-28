@@ -173,6 +173,51 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "Il patto viene giudicato..."
 
+[node name="SentenceBanner" type="Control" parent="HUD"]
+visible = false
+z_index = 112
+mouse_filter = 2
+anchor_left = 0.5
+anchor_top = 0.18
+anchor_right = 0.5
+anchor_bottom = 0.18
+offset_left = -300.0
+offset_top = -40.0
+offset_right = 300.0
+offset_bottom = 60.0
+
+[node name="SentencePanel" type="PanelContainer" parent="HUD/SentenceBanner"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="SentenceMargin" type="MarginContainer" parent="HUD/SentenceBanner/SentencePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="SentenceVBox" type="VBoxContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 4
+
+[node name="SentenceTitle" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+horizontal_alignment = 1
+text = "SENTENZA"
+
+[node name="SentenceRule" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+horizontal_alignment = 1
+text = "VINCI"
+
+[node name="SentenceDoom" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "SE FALLISCI: LA CICATRICE TI RESTA."
+
 [node name="Modals" type="Control" parent="."]
 mouse_filter = 1
 z_index = 90

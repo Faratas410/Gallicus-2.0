@@ -96,6 +96,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var push_luck_panel: Panel = get_node_or_null("Modals/PushLuckModal/PushLuckPanel") as Panel
 @onready var push_luck_title: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckTitle") as Label
 @onready var push_luck_info: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckInfo") as Label
+@onready var push_luck_audience_label: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckAudienceLabel") as Label
+@onready var push_luck_audience_reason: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckAudienceReason") as Label
 @onready var push_luck_details: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckDetails") as Label
 @onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutButton") as Button
 @onready var push_luck_cashout_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutNote") as Label
@@ -1346,6 +1348,9 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	var double_locked: bool = bool(payload.get("double_locked", false))
 	var double_reason: String = str(payload.get("double_lock_reason", ""))
 	var choice_note: String = str(payload.get("choice_note", ""))
+	var audience_label: String = str(payload.get("audience_label", ""))
+	var audience_reason: String = str(payload.get("audience_reason", ""))
+	var cashout_modifier_text: String = str(payload.get("cashout_modifier_text", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append("❌ Condanna futura: %s" % doom_text)
@@ -1361,6 +1366,17 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 		lines.append("⛔ Raddoppio bloccato: %s" % double_reason)
 	if push_luck_details != null:
 		push_luck_details.text = "\n".join(lines)
+	if push_luck_audience_label != null:
+		push_luck_audience_label.text = audience_label
+		push_luck_audience_label.visible = audience_label != ""
+	if push_luck_audience_reason != null:
+		var reason_lines: Array[String] = []
+		if audience_reason != "":
+			reason_lines.append(audience_reason)
+		if cashout_modifier_text != "":
+			reason_lines.append(cashout_modifier_text)
+		push_luck_audience_reason.text = "\n".join(reason_lines)
+		push_luck_audience_reason.visible = reason_lines.size() > 0
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
 		if cashout_locked and cashout_reason != "":

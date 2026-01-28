@@ -22,6 +22,12 @@ const BET_BLOOD_TAX: StringName = &"BLOOD_TAX"
 const BET_CROW_PLEASER: StringName = &"CROW_PLEASER"
 const BET_LAST_BREATH: StringName = &"LAST_BREATH"
 
+const AUDIENCE_SCORE_MIN: int = -5
+const AUDIENCE_SCORE_MAX: int = 5
+const AUDIENCE_CASHOUT_DISABLE_THRESHOLD: int = -3
+const AUDIENCE_CASHOUT_PENALTY_THRESHOLD: int = 0
+const AUDIENCE_CASHOUT_PENALTY_MULTIPLIER: float = 0.8
+
 const SCAR_OPEN_WOUND: StringName = &"OPEN_WOUND"
 const SCAR_CRACKED_BONES: StringName = &"CRACKED_BONES"
 const SCAR_SHAME_MARK: StringName = &"SHAME_MARK"
@@ -72,6 +78,7 @@ class RunState:
 	var max_escalation: int = 0
 	var arenas_cleared: int = 0
 	var max_hp_modifier: int = 0
+	var audience_score: int = 0
 	var run_is_over: bool = false
 
 class ArenaResult:
@@ -750,6 +757,7 @@ func _start_level3_run() -> void:
 	_run_state.max_escalation = 0
 	_run_state.arenas_cleared = 0
 	_run_state.max_hp_modifier = 0
+	_run_state.audience_score = 0
 	_run_state.run_is_over = false
 	_emit_escalation_changed()
 	_arena_layout_rng.seed = _run_state.run_seed
@@ -885,6 +893,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_play_arena_resolution_fx()
 	_apply_special_arena_pre_resolution()
 	var result: ArenaResult = _resolve_level3_arena()
+	_update_audience_after_arena(result)
 	_run_state.arenas_cleared = maxi(_run_state.arenas_cleared + 1, 1)
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var failed: bool = not result.won
@@ -918,6 +927,7 @@ func resolve_arena() -> void:
 	_play_arena_resolution_fx()
 	_apply_special_arena_pre_resolution()
 	var result: ArenaResult = _resolve_level3_arena()
+	_update_audience_after_arena(result)
 	_run_state.arenas_cleared = maxi(_run_state.arenas_cleared + 1, 1)
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var bet_id: StringName = _run_state.active_bet_id
@@ -1548,7 +1558,12 @@ func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
 	var tier: int = maxi(reward_tier, 1)
 	match bet_id:
 		BET_CASH_OUT:
-			add_coins(10 * tier)
+			var reward: int = 10 * tier
+			var modifier: float = _get_audience_cashout_modifier()
+			if modifier < 1.0:
+				reward = int(floor(float(reward) * modifier))
+				reward = maxi(reward, 0)
+			add_coins(reward)
 		BET_FLAWLESS_BLOOD:
 			add_coins(20 * tier)
 		BET_DOUBLE_OR_DIE_L3:
@@ -1858,6 +1873,10 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 
 func _on_request_push_luck_cashout() -> void:
 	if not _waiting_for_push_luck:
+		return
+	var audience_policy: Dictionary = _get_audience_cashout_policy()
+	if not bool(audience_policy.get("cashout_enabled", true)):
+		_refresh_push_luck_choice(StringName(_current_bet_id))
 		return
 	if LEVEL3_ENABLED:
 		var lock_reason: String = _get_cashout_lock_reason()
@@ -2427,6 +2446,16 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 	_show_shop_next_bet = false
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
+	var payload: Dictionary = _build_push_luck_payload(bet_id)
+	GameEvents.push_luck_opened.emit(payload)
+
+func _refresh_push_luck_choice(bet_id: StringName) -> void:
+	if not GameEvents.has_signal("push_luck_opened"):
+		return
+	var payload: Dictionary = _build_push_luck_payload(bet_id)
+	GameEvents.push_luck_opened.emit(payload)
+
+func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))
 	var bet_name: String = String(bet_id)
 	var condition_text: String = ""
@@ -2446,6 +2475,16 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 	if LEVEL3_ENABLED:
 		cashout_lock_reason = _get_cashout_lock_reason()
 		double_lock_reason = _get_double_lock_reason()
+	var cashout_policy: Dictionary = _get_audience_cashout_policy()
+	var cashout_enabled: bool = bool(cashout_policy.get("cashout_enabled", true))
+	var cashout_modifier: float = float(cashout_policy.get("cashout_modifier", 1.0))
+	var cashout_modifier_text: String = str(cashout_policy.get("cashout_modifier_text", ""))
+	var audience_label: String = _get_audience_label(_run_state.audience_score)
+	var audience_reason: String = _get_audience_reason(_run_state.audience_score)
+	var cashout_locked: bool = cashout_lock_reason != ""
+	if not cashout_enabled:
+		cashout_locked = true
+		cashout_lock_reason = str(cashout_policy.get("cashout_lock_reason", ""))
 	var payload: Dictionary = {
 		"bet_id": String(bet_id),
 		"bet_name": bet_name,
@@ -2454,15 +2493,19 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 		"condition": condition_text,
 		"next_pact": _build_bet_pact_text(String(bet_id), next_reward_tier),
 		"next_doom": _build_bet_doom_text(String(bet_id), next_level),
-		"cashout_locked": cashout_lock_reason != "",
+		"cashout_locked": cashout_locked,
 		"cashout_lock_reason": cashout_lock_reason,
 		"double_locked": double_lock_reason != "",
 		"double_lock_reason": double_lock_reason,
 		"choice_note": _intermediate_choice_note,
 		"arena_index": _run_state.arena_index,
 		"arena_target": _level3_target_arenas,
+		"audience_label": audience_label,
+		"audience_reason": audience_reason,
+		"cashout_modifier": cashout_modifier,
+		"cashout_modifier_text": cashout_modifier_text,
 	}
-	GameEvents.push_luck_opened.emit(payload)
+	return payload
 
 func _queue_push_luck_choice(bet_id: StringName) -> void:
 	if _sanity_ui_root == null:
@@ -2500,6 +2543,62 @@ func _get_double_lock_reason() -> String:
 	if _run_state.arena_index >= _level3_target_arenas and _level3_target_arenas > 0:
 		return "Fine run: incassa ora"
 	return ""
+
+func _update_audience_after_arena(result: ArenaResult) -> void:
+	var delta: int = 0
+	if result.won:
+		if result.took_damage:
+			delta = 1
+		else:
+			delta = 2
+	else:
+		delta = -2
+	if delta == 0:
+		return
+	_run_state.audience_score = clampi(_run_state.audience_score + delta, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
+
+func _get_audience_label(score: int) -> String:
+	if score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
+		return "FOLLA IN FURIA"
+	if score <= -1:
+		return "FOLLA OSTILE"
+	if score == 0:
+		return "FOLLA TIEPIDA"
+	if score <= 2:
+		return "FOLLA IN ASCOLTO"
+	return "FOLLA IN DELIRIO"
+
+func _get_audience_reason(score: int) -> String:
+	if score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
+		return "Ti vietano di fuggire."
+	if score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
+		return "La folla taglia il tuo incasso."
+	if score <= 2:
+		return "Il pubblico ti segue, ma non perdona."
+	return "Il tuo nome incendia gli spalti."
+
+func _get_audience_cashout_modifier() -> float:
+	if _run_state.audience_score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
+		return AUDIENCE_CASHOUT_PENALTY_MULTIPLIER
+	return 1.0
+
+func _get_audience_cashout_policy() -> Dictionary:
+	var score: int = _run_state.audience_score
+	var cashout_enabled: bool = score > AUDIENCE_CASHOUT_DISABLE_THRESHOLD
+	var cashout_modifier: float = 1.0
+	var cashout_modifier_text: String = ""
+	var cashout_lock_reason: String = ""
+	if not cashout_enabled:
+		cashout_lock_reason = "La folla non ti lascia incassare."
+	elif score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
+		cashout_modifier = AUDIENCE_CASHOUT_PENALTY_MULTIPLIER
+		cashout_modifier_text = "Incasso penalizzato: x%.1f" % cashout_modifier
+	return {
+		"cashout_enabled": cashout_enabled,
+		"cashout_lock_reason": cashout_lock_reason,
+		"cashout_modifier": cashout_modifier,
+		"cashout_modifier_text": cashout_modifier_text,
+	}
 
 func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 	var reward_scale: int = _get_bet_chain_reward_scale(chain_level)

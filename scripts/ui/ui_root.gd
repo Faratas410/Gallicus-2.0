@@ -180,6 +180,8 @@ var _pact_sealed_pending_close_id: int = 0
 var _pact_sealed_min_read_elapsed: bool = true
 var _post_bet_queue: Array[Dictionary] = []
 var _post_bet_running: bool = false
+var _is_signing: bool = false
+var _bet_confirm_default_text: String = ""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -1752,7 +1754,24 @@ func _on_bet_choice_pressed(bet_id: String) -> void:
 func _on_bet_confirm_pressed() -> void:
 	if _pending_confirm_bet_id == "":
 		return
-	_place_bet(_pending_confirm_bet_id)
+	if _is_signing:
+		return
+	_is_signing = true
+	if bet_confirm_button != null:
+		if _bet_confirm_default_text == "":
+			_bet_confirm_default_text = bet_confirm_button.text
+		bet_confirm_button.text = "FIRMA IN CORSO..."
+		bet_confirm_button.disabled = true
+	for button: Button in _bet_buttons:
+		button.disabled = true
+	var confirm_bet_id: String = _pending_confirm_bet_id
+	await get_tree().create_timer(0.7).timeout
+	if not _is_signing:
+		return
+	if _pending_confirm_bet_id == "":
+		_reset_bet_confirmation()
+		return
+	_place_bet(confirm_bet_id)
 
 func _place_bet(bet_id: String) -> void:
 	_selected_bet_id = bet_id
@@ -1923,10 +1942,18 @@ func exit_ending_mode() -> void:
 
 func _reset_bet_confirmation() -> void:
 	_pending_confirm_bet_id = ""
+	_is_signing = false
 	if bet_confirm_label != null:
 		bet_confirm_label.text = "Selezione: -"
 	if bet_confirm_row != null:
 		bet_confirm_row.visible = false
+	if bet_confirm_button != null:
+		if _bet_confirm_default_text == "":
+			_bet_confirm_default_text = bet_confirm_button.text
+		bet_confirm_button.text = _bet_confirm_default_text
+		bet_confirm_button.disabled = false
+	for button: Button in _bet_buttons:
+		button.disabled = false
 
 func _refresh_modal_dimmer() -> void:
 	if modal_dimmer == null:

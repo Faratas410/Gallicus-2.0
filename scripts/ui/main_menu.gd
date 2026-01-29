@@ -1,5 +1,7 @@
 extends Control
 
+const CondannaDataScript = preload("res://data/condanne.gd")
+
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
 @onready var credits_panel: Control = get_node("CreditsPanel") as Control
@@ -12,6 +14,9 @@ extends Control
 @onready var settings_button: Button = get_node("CenterContainer/MenuVBox/SettingsButton") as Button
 @onready var credits_button: Button = get_node("CenterContainer/MenuVBox/CreditsButton") as Button
 @onready var back_button: Button = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/BackButton") as Button
+@onready var condanne_vbox: VBoxContainer = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneScroll/CondanneVBox") as VBoxContainer
+@onready var condanna_tooltip: PanelContainer = get_node("AchievementsPanel/CondannaTooltip") as PanelContainer
+@onready var tooltip_label: RichTextLabel = get_node("AchievementsPanel/CondannaTooltip/TooltipLabel") as RichTextLabel
 @onready var credits_back_button: Button = get_node("CreditsPanel/CreditsCenter/CreditsVBox/CreditsBackButton") as Button
 @onready var settings_back_button: Button = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsBackButton") as Button
 @onready var brightness_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessSlider") as HSlider
@@ -24,6 +29,7 @@ extends Control
 @onready var brightness_modulate: CanvasModulate = get_node("../../BrightnessModulate") as CanvasModulate
 
 var selected_language: String = "Italiano"
+var condanne_populated: bool = false
 
 func _ready() -> void:
 	_show_menu()
@@ -31,6 +37,7 @@ func _ready() -> void:
 	_refresh_continue_button()
 	_setup_language_options()
 	_setup_initial_values()
+	_build_condanne_list()
 	continue_button.pressed.connect(_on_continue_pressed)
 	achievements_button.pressed.connect(_on_achievements_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
@@ -48,6 +55,7 @@ func _show_menu() -> void:
 	achievements_panel.visible = false
 	credits_panel.visible = false
 	settings_panel.visible = false
+	condanna_tooltip.visible = false
 	_refresh_continue_button()
 
 func _show_achievements() -> void:
@@ -55,6 +63,8 @@ func _show_achievements() -> void:
 	achievements_panel.visible = true
 	credits_panel.visible = false
 	settings_panel.visible = false
+	if not condanne_populated:
+		_build_condanne_list()
 
 func _show_credits() -> void:
 	menu_vbox.visible = false
@@ -71,6 +81,35 @@ func _show_settings() -> void:
 func _disable_placeholder_buttons() -> void:
 	new_game_button.disabled = true
 	load_game_button.disabled = true
+
+func _build_condanne_list() -> void:
+	if condanne_populated:
+		return
+	var condanne: Array[CondannaData] = CondannaDataScript.defaults()
+	for condanna in condanne:
+		var entry_label := Label.new()
+		entry_label.text = "— %s" % condanna.title
+		entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+		entry_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		entry_label.modulate = Color(1, 1, 1, 0.6)
+		entry_label.mouse_entered.connect(_on_condanna_mouse_entered.bind(condanna))
+		entry_label.mouse_exited.connect(_on_condanna_mouse_exited)
+		condanne_vbox.add_child(entry_label)
+	condanne_populated = true
+
+func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
+	var tooltip_text := "%s\n\nCome è stata ottenuta:\n%s\n\n%s" % [
+		condanna.title,
+		condanna.condition_text,
+		condanna.lore_text
+	]
+	tooltip_label.text = tooltip_text
+	condanna_tooltip.visible = true
+	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
+	condanna_tooltip.global_position = mouse_pos + Vector2(16, 16)
+
+func _on_condanna_mouse_exited() -> void:
+	condanna_tooltip.visible = false
 
 func _refresh_continue_button() -> void:
 	var has_run_save: bool = FileAccess.file_exists("user://run.save")

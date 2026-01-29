@@ -55,6 +55,14 @@ const AUDIENCE_ATTENTION_THRESHOLD: int = 3
 const AUDIENCE_CASHOUT_DISABLE_THRESHOLD: int = -3
 const AUDIENCE_CASHOUT_PENALTY_THRESHOLD: int = 0
 const AUDIENCE_CASHOUT_PENALTY_MULTIPLIER: float = 0.8
+const AUDIENCE_CONTEXT_PACT_SIGNED: StringName = &"PACT_SIGNED"
+const AUDIENCE_CONTEXT_GESTURE_CHOSEN: StringName = &"GESTURE_CHOSEN"
+const AUDIENCE_CONTEXT_CASH_OUT: StringName = &"CASH_OUT"
+const AUDIENCE_CONTEXT_CONTINUE: StringName = &"CONTINUE"
+const AUDIENCE_CONTEXT_RUN_LOSS: StringName = &"RUN_LOSS"
+const AUDIENCE_MOOD_FURY: StringName = &"FURY"
+const AUDIENCE_MOOD_COLD: StringName = &"COLD"
+const AUDIENCE_MOOD_DELIRIUM: StringName = &"DELIRIUM"
 const AUDIENCE_PHRASES: Dictionary = {
 	"FURY": [
 		"Ti vogliono a terra, non al sicuro.",
@@ -92,6 +100,108 @@ const AUDIENCE_PHRASES: Dictionary = {
 		"Ti alzano in alto solo per vederti cadere.",
 		"Il tuo nome urla, ma il prezzo sale.",
 	],
+}
+const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
+	AUDIENCE_CONTEXT_PACT_SIGNED: {
+		AUDIENCE_MOOD_FURY: [
+			"Hai firmato. Ora non ti vogliono intero.",
+			"Il patto ti lega. La folla annusa il sangue.",
+			"Hai segnato il destino. Ti vogliono a terra.",
+			"Firma fatta. Aspettano il tuo crollo.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Il patto è inciso. Ti misurano.",
+			"Hai firmato. Nessuno ti dà tregua.",
+			"La firma pesa. Il pubblico resta in giudizio.",
+			"Patto chiuso. L'arena ti osserva.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Hai firmato forte. L'arena vuole vedere.",
+			"Il patto accende la folla. Spingi ora.",
+			"Firma e alza il rischio. Ti chiedono il salto.",
+			"La folla ti vuole oltre. La firma è l'inizio.",
+		],
+	},
+	AUDIENCE_CONTEXT_GESTURE_CHOSEN: {
+		AUDIENCE_MOOD_FURY: [
+			"Il tuo gesto li irrita. Ora vogliono il prezzo.",
+			"Hai mostrato il fianco. Ti puniscono col silenzio.",
+			"Un gesto non basta. Vogliono vederti cedere.",
+			"Ti sei esposto. Ti vogliono spezzare.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Un gesto segnato, il debito resta.",
+			"Hai scelto come muoverti. Non cambia nulla.",
+			"Il gesto pesa poco. La folla resta ferma.",
+			"Scelta fatta. Ti valutano senza voce.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Hai scelto il gesto. Ora spingono di più.",
+			"La folla ti segue. Vogliono il prossimo strappo.",
+			"Il gesto accende l'arena. Ti vogliono oltre.",
+			"Hai mosso la folla. Non fermarti ora.",
+		],
+	},
+	AUDIENCE_CONTEXT_CASH_OUT: {
+		AUDIENCE_MOOD_FURY: [
+			"Ti sei fermato. Troppo presto per essere pulito.",
+			"Incassi e scappi. Non ti lasciano respirare.",
+			"Ti sei tirato indietro. La folla non dimentica.",
+			"Hai scelto l'uscita. La folla ti mette il conto.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Incassi e vai. Il giudizio resta.",
+			"Ti fermi qui. Nessuno ti segue.",
+			"Hai chiuso la mano. Il silenzio pesa.",
+			"Incasso preso. Il pubblico non si muove.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Ti fermi mentre urlano. Ora è delusione.",
+			"Hai spento la corsa. La folla voleva il salto.",
+			"Incassi mentre vogliono di più. Ti giudicano.",
+			"Ti sei fermato in alto. Ti lasciano cadere.",
+		],
+	},
+	AUDIENCE_CONTEXT_CONTINUE: {
+		AUDIENCE_MOOD_FURY: [
+			"Hai scelto di restare. Non chiamarla coraggio.",
+			"Continui. Ora ti vogliono sanguinare.",
+			"Resti dentro. La folla pretende il tuo errore.",
+			"Hai rifiutato l'uscita. Ti puniscono con occhi feroci.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Resti. Nessuno ti salva.",
+			"Hai scelto di continuare. L'arena prende nota.",
+			"Rimani. Il pubblico ti pesa addosso.",
+			"Continui. Nessun applauso, solo attesa.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Continui. La folla vuole il prossimo taglio.",
+			"Ti spingi avanti. L'arena grida il rischio.",
+			"Hai rilanciato. Ora vogliono il colpo finale.",
+			"Resti dentro. Ti chiedono l'eccesso.",
+		],
+	},
+	AUDIENCE_CONTEXT_RUN_LOSS: {
+		AUDIENCE_MOOD_FURY: [
+			"Così finisci. La folla non ti piange.",
+			"Sei caduto. Ti volevano in ginocchio.",
+			"È finita. Il pubblico prende il tuo nome.",
+			"Perduto. Il loro giudizio resta addosso.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Sei crollato. Nessun suono.",
+			"Fine della corsa. Il silenzio resta.",
+			"Caduta secca. Il pubblico non reagisce.",
+			"È finita. Solo occhi fermi.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Sei caduto. Hanno avuto il sangue.",
+			"Fine violenta. La folla ha ciò che voleva.",
+			"Hai perso. L'arena resta accesa.",
+			"Caduta finale. Hanno avuto il rischio.",
+		],
+	},
 }
 
 const SCAR_OPEN_WOUND: StringName = &"OPEN_WOUND"
@@ -2575,6 +2685,7 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 		if next_level != previous_level:
 			_emit_escalation_changed()
 			_emit_run_debug_state()
+	_emit_audience_context_line(AUDIENCE_CONTEXT_GESTURE_CHOSEN)
 	var bet_id: StringName = _pending_intermediate_choice_bet_id
 	if bet_id == &"":
 		bet_id = _last_selected_bet_id
@@ -2605,6 +2716,7 @@ func _on_request_push_luck_cashout() -> void:
 		_run_state.risky_choice_made_recently = false
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
+		_emit_audience_context_line(AUDIENCE_CONTEXT_CASH_OUT)
 		if bet_id_name != &"" and not _resolve_ritual_reward_applied:
 			_apply_level3_reward(bet_id_name, _level3_reward_tier + bonus_tier)
 		_resolve_ritual_reward_applied = false
@@ -2632,6 +2744,7 @@ func _on_request_push_luck_cashout() -> void:
 	_waiting_for_push_luck = false
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
+	_emit_audience_context_line(AUDIENCE_CONTEXT_CASH_OUT)
 	_push_luck_cashouts += 1
 	if bet_id != "":
 		_apply_bet_reward_scaled(bet_id, _bet_chain_level + bonus_tier)
@@ -2697,6 +2810,7 @@ func _on_request_push_luck_double() -> void:
 		_special_arena_cashout_lock_reason = ""
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
+		_emit_audience_context_line(AUDIENCE_CONTEXT_CONTINUE)
 		_resolve_ritual_reward_applied = false
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
 		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
@@ -2717,6 +2831,7 @@ func _on_request_push_luck_double() -> void:
 	_waiting_for_push_luck = false
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
+	_emit_audience_context_line(AUDIENCE_CONTEXT_CONTINUE)
 	if bet_id == "":
 		_open_bet_ui(true)
 		return
@@ -2911,6 +3026,7 @@ func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_
 	GameEvents.betting_closed.emit()
 	set_phase(RunPhase.LIVE)
 	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, &"")
+	_emit_audience_context_line(AUDIENCE_CONTEXT_PACT_SIGNED)
 	load_next_arena()
 	_start_next_arena()
 
@@ -2927,6 +3043,7 @@ func _handle_bet_selected(bet_id: StringName) -> void:
 	_register_level3_bet_choice(bet_id)
 	GameEvents.betting_closed.emit()
 	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, bet_id)
+	_emit_audience_context_line(AUDIENCE_CONTEXT_PACT_SIGNED)
 	await _start_pact_sealed_ritual(bet_id)
 
 func _on_betting_opened() -> void:
@@ -3424,6 +3541,34 @@ func _pick_audience_phrase(mood: String) -> String:
 	var pick_idx: int = rng.randi_range(0, phrases.size() - 1)
 	return str(phrases[pick_idx])
 
+func _get_audience_context_mood(score: int) -> StringName:
+	if score <= -1:
+		return AUDIENCE_MOOD_FURY
+	if score <= 2:
+		return AUDIENCE_MOOD_COLD
+	return AUDIENCE_MOOD_DELIRIUM
+
+func _pick_audience_context_line(context: StringName) -> String:
+	var context_bucket: Dictionary = AUDIENCE_CONTEXT_PHRASES.get(context, {}) as Dictionary
+	if context_bucket.is_empty():
+		return ""
+	var mood: StringName = _get_audience_context_mood(_run_state.audience_score)
+	var mood_bucket: Array = context_bucket.get(mood, []) as Array
+	if mood_bucket.is_empty():
+		return ""
+	var context_seed: int = int(String(context).hash())
+	_level3_rng.seed = _run_state.run_seed + _run_state.arena_index * 41 + _run_state.audience_score * 19 + context_seed
+	var pick_idx: int = _level3_rng.randi_range(0, mood_bucket.size() - 1)
+	return str(mood_bucket[pick_idx])
+
+func _emit_audience_context_line(context: StringName) -> void:
+	if not GameEvents.has_signal("audience_context_line_emitted"):
+		return
+	var line: String = _pick_audience_context_line(context)
+	if line == "":
+		return
+	GameEvents.audience_context_line_emitted.emit(line)
+
 func _get_audience_cashout_modifier() -> float:
 	if _run_state.audience_score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
 		return AUDIENCE_CASHOUT_PENALTY_MULTIPLIER
@@ -3667,6 +3812,7 @@ func _emit_run_failed() -> void:
 	if _run_failed_emitted:
 		return
 	_run_failed_emitted = true
+	_emit_audience_context_line(AUDIENCE_CONTEXT_RUN_LOSS)
 	GameEvents.run_failed.emit()
 	GameEvents.set_gameplay_enabled(false)
 

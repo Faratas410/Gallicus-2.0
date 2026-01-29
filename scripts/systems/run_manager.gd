@@ -27,6 +27,10 @@ const CONDANNA_ANCORA: StringName = &"CONDANNA_ANCORA"
 const CONDANNA_FINCHE_REGGE: StringName = &"CONDANNA_FINCHE_REGGE"
 const CONDANNA_NON_DOVEVO_PROVARCI: StringName = &"CONDANNA_NON_DOVEVO_PROVARCI"
 const CONDANNA_FIRMATO: StringName = &"CONDANNA_FIRMATO"
+const CONDANNA_SAPEVO_COSA_STAVO_FACENDO: StringName = &"CONDANNA_SAPEVO_COSA_STAVO_FACENDO"
+const CONDANNA_ERA_IL_PREZZO: StringName = &"CONDANNA_ERA_IL_PREZZO"
+const CONDANNA_SO_COME_FINISCE: StringName = &"CONDANNA_SO_COME_FINISCE"
+const CONDANNA_NON_OGGI: StringName = &"CONDANNA_NON_OGGI"
 
 const AUDIENCE_SCORE_MIN: int = -5
 const AUDIENCE_SCORE_MAX: int = 5
@@ -133,6 +137,7 @@ class RunState:
 	var last_action_was_rilancio: bool = false
 	var run_is_over: bool = false
 	var is_hunted_by_crowd: bool = false
+	var last_signed_pact_id: StringName = &""
 
 class ArenaResult:
 	var won: bool = false
@@ -1068,6 +1073,7 @@ func select_bet(bet_id: StringName) -> void:
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
+		_run_state.last_signed_pact_id = bet_id
 		_register_condanna(CONDANNA_FIRMATO)
 		_register_condanna(CONDANNA_FIRMATO)
 		_register_condanna(CONDANNA_FIRMATO)
@@ -1093,6 +1099,7 @@ func _register_level3_bet_choice(bet_id: StringName) -> void:
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
+		_run_state.last_signed_pact_id = bet_id
 		_register_condanna(CONDANNA_FIRMATO)
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
@@ -1169,6 +1176,21 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		_run_state.last_action_was_rilancio = false
 		_apply_level3_reward(bet_id, _level3_reward_tier)
 		_resolve_ritual_reward_applied = true
+		var player: Node = _resolve_player()
+		var current_hp: int = -1
+		var max_hp: int = -1
+		if player != null:
+			current_hp = _get_player_health_value(player)
+			max_hp = _get_player_max_health_value(player)
+		var hp_available: bool = current_hp >= 0 and max_hp > 0
+		if hp_available:
+			if current_hp == 1 or float(current_hp) / float(max_hp) <= 0.10:
+				_register_condanna(CONDANNA_NON_OGGI)
+		else:
+			var bet_data: Dictionary = _get_bet_data(String(bet_id))
+			var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
+			if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
+				_register_condanna(CONDANNA_NON_OGGI)
 	_update_last_pact_outcome(bet_id, not failed)
 	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
@@ -1204,6 +1226,21 @@ func resolve_arena() -> void:
 		scars_applied = _handle_level3_loss(bet_id, result)
 	else:
 		_handle_level3_win(bet_id, result)
+		var player: Node = _resolve_player()
+		var current_hp: int = -1
+		var max_hp: int = -1
+		if player != null:
+			current_hp = _get_player_health_value(player)
+			max_hp = _get_player_max_health_value(player)
+		var hp_available: bool = current_hp >= 0 and max_hp > 0
+		if hp_available:
+			if current_hp == 1 or float(current_hp) / float(max_hp) <= 0.10:
+				_register_condanna(CONDANNA_NON_OGGI)
+		else:
+			var bet_data: Dictionary = _get_bet_data(String(bet_id))
+			var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
+			if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
+				_register_condanna(CONDANNA_NON_OGGI)
 	_update_last_pact_outcome(bet_id, not failed)
 	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
@@ -2233,6 +2270,18 @@ func _on_request_push_luck_double() -> void:
 		if lock_reason != "":
 			return
 		_run_state.refuse_cashout_count_this_run += 1
+		var player: Node = _resolve_player()
+		var current_hp: int = -1
+		var max_hp: int = -1
+		if player != null:
+			current_hp = _get_player_health_value(player)
+			max_hp = _get_player_max_health_value(player)
+		var critical_hp: bool = false
+		if current_hp >= 0 and max_hp > 0:
+			critical_hp = float(current_hp) / float(max_hp) <= 0.20
+		var critical_scars: bool = _run_state.scars.size() >= 3
+		if critical_hp or critical_scars:
+			_register_condanna(CONDANNA_SO_COME_FINISCE)
 		if _run_state.refuse_cashout_count_this_run == 1:
 			_register_condanna(CONDANNA_NON_MI_FERMERO)
 		elif _run_state.refuse_cashout_count_this_run == 2:
@@ -3173,6 +3222,12 @@ func _enter_game_over() -> void:
 	_is_game_over = true
 	_provoke_armed = false
 	_run_state.run_is_over = true
+	var is_loss: bool = _run_end_reason != "CASH_OUT"
+	if is_loss:
+		if _run_state.last_signed_pact_id != &"":
+			_register_condanna(CONDANNA_SAPEVO_COSA_STAVO_FACENDO)
+		if _run_state.bets_history.size() > 0:
+			_register_condanna(CONDANNA_ERA_IL_PREZZO)
 	if _run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
 		_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
 	_waiting_for_bet = false

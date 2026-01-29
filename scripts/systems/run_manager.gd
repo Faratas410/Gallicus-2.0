@@ -27,6 +27,44 @@ const AUDIENCE_SCORE_MAX: int = 5
 const AUDIENCE_CASHOUT_DISABLE_THRESHOLD: int = -3
 const AUDIENCE_CASHOUT_PENALTY_THRESHOLD: int = 0
 const AUDIENCE_CASHOUT_PENALTY_MULTIPLIER: float = 0.8
+const AUDIENCE_PHRASES: Dictionary = {
+	"FURY": [
+		"Ti vogliono a terra, non al sicuro.",
+		"Ogni tuo respiro è un insulto.",
+		"Fischi e sputi, nessuna pietà.",
+		"Non ti credono degno di incassare.",
+		"Vogliono vederti spezzato.",
+		"Qui non c'è perdono per i timidi.",
+		"Il tuo sangue è l'unico applauso.",
+		"Se esiti, ti divorano.",
+		"Sei debito, non eroe.",
+		"La folla in furia pretende il tuo crollo.",
+	],
+	"COLD": [
+		"Ti osservano e aspettano l'errore.",
+		"Il silenzio pesa più dell'acciaio.",
+		"Non applaudono, registrano.",
+		"Nessun calore, solo misura.",
+		"Ti seguono senza pietà né favore.",
+		"Ogni mossa è un conto aperto.",
+		"Nessun grido, solo occhi fissi.",
+		"Ti concedono spazio, non rispetto.",
+		"Il pubblico calcola, non parteggia.",
+		"L'arena ti pesa addosso.",
+	],
+	"DELIRIUM": [
+		"Ti vogliono oltre il limite, senza ritorno.",
+		"Ogni colpo chiede di più.",
+		"Non cercano vittoria: cercano rovina.",
+		"Ti spingono al gesto che ti spezza.",
+		"Se rallenti, ti strappano la gloria.",
+		"Il delirio ti brucia addosso.",
+		"Vogliono che tu rischi tutto, ora.",
+		"La folla urla sangue, non prudenza.",
+		"Ti alzano in alto solo per vederti cadere.",
+		"Il tuo nome urla, ma il prezzo sale.",
+	],
+}
 
 const SCAR_OPEN_WOUND: StringName = &"OPEN_WOUND"
 const SCAR_CRACKED_BONES: StringName = &"CRACKED_BONES"
@@ -45,6 +83,8 @@ const ENEMY_EXECUTIONER: StringName = &"EXECUTIONER"
 const ENEMY_TRICKSTER: StringName = &"TRICKSTER"
 const SPECIAL_ARENA_SILENCE: StringName = &"ARENA_OF_SILENCE"
 const SPECIAL_ARENA_ASH: StringName = &"ARENA_OF_ASH"
+const SPECIAL_ARENA_DISPREZZO: StringName = &"ARENA_DISPREZZO"
+const SPECIAL_ARENA_VERGOGNA: StringName = &"ARENA_VERGOGNA"
 const ESCALATION_MAX: int = 10
 
 const PACT_OUTCOME_UNKNOWN: int = 0
@@ -178,6 +218,186 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"weight": 2,
 		"blocked_scars": [],
 		"requires_scars": [SCAR_CRACKED_BONES],
+	},
+	{
+		"id": "PACT_DEBT_01_IOU",
+		"name": "CAMBIALE DI SANGUE",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Ricompensa media: firmi un debito immediato.",
+		"condition": "Vinci l'arena senza cercare scuse.",
+		"doom": "La cambiale resta sulla pelle.\nOgni debito morde più a fondo.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_DEBT_02_COLLATERAL",
+		"name": "PEGNO DI CARNE",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Ricompensa alta: lasci una garanzia viva.",
+		"condition": "Vinci l'arena con la gola stretta.",
+		"doom": "La garanzia non si restituisce.\nIl corpo paga il sigillo.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_DEBT_03_USURY",
+		"name": "USURA SACRA",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Ricompensa media: il credito cresce con l'ansia.",
+		"condition": "Vinci l'arena sapendo che il costo aumenta.",
+		"doom": "L'usura beve tempo e ossa.\nLa folla ti conta le ferite.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_DEBT_04_FORFEIT",
+		"name": "CONFISCA",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Ricompensa bassa: vendi la tua fuga.",
+		"condition": "Vinci l'arena senza protezioni.",
+		"doom": "La confisca ti spoglia davanti a tutti.\nNessuno restituisce ciò che cedi.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_EGO_01_BRAG",
+		"name": "VANTO A LAMA",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Ricompensa alta: firmi la tua superiorità.",
+		"condition": "Vinci l'arena senza subire danni.",
+		"doom": "Il vanto si spezza al primo taglio.\nLa folla ride del tuo orgoglio.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_EGO_02_MIRROR",
+		"name": "SPECCHIO ROTTO",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Ricompensa media: lo sguardo del pubblico ti consacra.",
+		"condition": "Vinci l'arena senza esitazioni.",
+		"doom": "Lo specchio si frantuma addosso.\nLa tua immagine diventa vergogna.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_EGO_03_CROWN",
+		"name": "CORONA DI POLVERE",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Ricompensa alta: ti alzi sopra gli altri.",
+		"condition": "Vinci l'arena e tieni la testa alta.",
+		"doom": "La corona cade e pesa.\nIl pubblico ama la caduta.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_EGO_04_SPOTLIGHT",
+		"name": "OCCHI SU DI TE",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Ricompensa media: resti sotto il giudizio.",
+		"condition": "Vinci l'arena e non arretrare.",
+		"doom": "La luce brucia chi esita.\nIl tuo nome resta inciso nel fango.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_TIME_01_TEN_SECONDS",
+		"name": "DIECI SECONDI",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
+		"pact": "Ricompensa alta: compri tempo con sangue.",
+		"condition": "Vinci l'arena senza subire danni.",
+		"doom": "Dieci secondi bastano per spezzarti.\nIl tempo ti volta le spalle.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_TIME_02_LAST_TICK",
+		"name": "ULTIMO BATTITO",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
+		"pact": "Ricompensa media: resti sul filo.",
+		"condition": "Vinci l'arena prima che il respiro ceda.",
+		"doom": "L'ultimo battito non torna indietro.\nIl corpo paga la fretta.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_TIME_03_STOLEN_BREATH",
+		"name": "RESPIRO RUBATO",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
+		"pact": "Ricompensa alta: rubi tempo al tuo futuro.",
+		"condition": "Vinci l'arena senza cedere terreno.",
+		"doom": "Il respiro rubato si riscuote.\nOgni passo pesa il doppio.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_TIME_04_SHORT_HOUR",
+		"name": "ORA CORTA",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
+		"pact": "Ricompensa media: riduci il margine.",
+		"condition": "Vinci l'arena e non indugiare.",
+		"doom": "L'ora corta non perdona.\nIl tuo corpo resta indietro.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_LIE_01_TRUE_NOW",
+		"name": "NESSUNA PERDITA",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Non perderai nulla. È solo una formalità.",
+		"condition": "Vinci l'arena senza cercare scuse.",
+		"doom": "La formalità diventa catena.\nIl debito si pianta nelle ossa.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_LIE_02_WORDPLAY",
+		"name": "APPLAUDE SENZA RISCHIO",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "La folla ti applaude. Non dice a chi.",
+		"condition": "Vinci l'arena senza subire danni.",
+		"doom": "L'applauso è per la tua caduta.\nIl nome si macchia di scherno.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "PACT_LIE_03_DEFERRED_PRICE",
+		"name": "PAGAMENTO DOPO",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
+		"pact": "Il prezzo verrà più tardi. Non ora.",
+		"condition": "Vinci l'arena e non indugiare.",
+		"doom": "Il dopo arriva sempre.\nIl tempo ti presenta il conto.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
+		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [],
 	},
 ]
 
@@ -424,6 +644,8 @@ var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
 var _run_finale_emitted: bool = false
 var _forced_ending_id: StringName = &""
+var _forced_next_pact_archetype: StringName = &""
+var _special_arena_cashout_lock_reason: String = ""
 var _debug_seed_override_active: bool = false
 var _debug_seed_override: int = 0
 var _run_start_time_msec: int = 0
@@ -739,6 +961,7 @@ func _start_level3_run() -> void:
 	_resolving_arena = false
 	_pact_sealed_sequence_id = 0
 	_forced_ending_id = &""
+	_forced_next_pact_archetype = &""
 	_level3_reward_tier = 1
 	_level3_next_loss_hp_penalty = 0
 	_level3_target_arenas = 0
@@ -751,6 +974,7 @@ func _start_level3_run() -> void:
 	_special_arena_id = &""
 	_special_arena_active = false
 	_special_arena_effect_applied = false
+	_special_arena_cashout_lock_reason = ""
 	_level3_cashouts = 0
 	_level3_doubles = 0
 	_level3_bets_used = []
@@ -1077,6 +1301,8 @@ func _build_level3_bet_offer() -> Array[Dictionary]:
 		var bet_id: StringName = StringName(str(bet_value.get("id", "")))
 		if bet_id != &"":
 			_last_bet_offers.append(bet_id)
+	if _forced_next_pact_archetype != &"":
+		_forced_next_pact_archetype = &""
 	return picks
 
 func _get_available_level3_bets() -> Array[Dictionary]:
@@ -1084,8 +1310,21 @@ func _get_available_level3_bets() -> Array[Dictionary]:
 	for bet_value: Dictionary in LEVEL3_BETS:
 		var bet: Dictionary = bet_value as Dictionary
 		if _is_level3_bet_allowed(bet):
+			if _forced_next_pact_archetype != &"":
+				var archetype: StringName = StringName(str(bet.get("archetype", "")))
+				if archetype != _forced_next_pact_archetype:
+					continue
 			available.append(bet)
 	if available.is_empty():
+		if _forced_next_pact_archetype != &"":
+			_forced_next_pact_archetype = &""
+			for bet_value: Dictionary in LEVEL3_BETS:
+				var bet: Dictionary = bet_value as Dictionary
+				if _is_level3_bet_allowed(bet):
+					available.append(bet)
+			if available.is_empty():
+				return LEVEL3_BETS.duplicate()
+			return available
 		return LEVEL3_BETS.duplicate()
 	return available
 
@@ -1246,7 +1485,12 @@ func _maybe_activate_special_arena() -> void:
 		return
 	if _run_state.arena_index != _special_arena_index:
 		return
-	var options: Array[StringName] = [SPECIAL_ARENA_SILENCE, SPECIAL_ARENA_ASH]
+	var options: Array[StringName] = [
+		SPECIAL_ARENA_SILENCE,
+		SPECIAL_ARENA_ASH,
+		SPECIAL_ARENA_DISPREZZO,
+		SPECIAL_ARENA_VERGOGNA,
+	]
 	_level3_rng.seed = _run_state.run_seed + _run_state.arena_index * 23
 	var pick_idx: int = _level3_rng.randi_range(0, options.size() - 1)
 	_special_arena_id = options[pick_idx]
@@ -1272,6 +1516,10 @@ func _get_special_arena_title(arena_id: StringName) -> String:
 			return "Arena of Silence"
 		SPECIAL_ARENA_ASH:
 			return "Arena of Ash"
+		SPECIAL_ARENA_DISPREZZO:
+			return "Arena del Disprezzo"
+		SPECIAL_ARENA_VERGOGNA:
+			return "Arena della Vergogna"
 		_:
 			return "Arena"
 
@@ -1281,6 +1529,10 @@ func _get_special_arena_description(arena_id: StringName) -> String:
 			return "L'escalation sale subito. Il rischio cresce, le ricompense restano."
 		SPECIAL_ARENA_ASH:
 			return "Ricompensa extra, ma una cicatrice è garantita."
+		SPECIAL_ARENA_DISPREZZO:
+			return "Qui non si incassa. La folla pretende un altro sangue."
+		SPECIAL_ARENA_VERGOGNA:
+			return "La vergogna intacca il favore. Il pubblico cala più in fretta."
 		_:
 			return ""
 
@@ -1302,6 +1554,10 @@ func _apply_special_arena_post_resolution(result: ArenaResult, failed: bool) -> 
 		return
 	if _special_arena_id == SPECIAL_ARENA_ASH and not _run_state.run_is_over and not _is_game_over:
 		_apply_special_arena_ash_reward(result, failed)
+	if _special_arena_id == SPECIAL_ARENA_DISPREZZO:
+		_special_arena_cashout_lock_reason = "Arena del Disprezzo: incasso vietato."
+	if _special_arena_id == SPECIAL_ARENA_VERGOGNA:
+		_run_state.audience_score = clampi(_run_state.audience_score - 1, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
 	_special_arena_active = false
 	_special_arena_effect_applied = false
 	_emit_run_debug_state()
@@ -1960,6 +2216,7 @@ func _on_request_push_luck_double() -> void:
 			return
 		_waiting_for_push_luck = false
 		_reset_intermediate_choice_modifiers()
+		_special_arena_cashout_lock_reason = ""
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		_resolve_ritual_reward_applied = false
@@ -2559,6 +2816,8 @@ func _build_sentence_payload(bet_id: StringName) -> Dictionary:
 		doom = "SE FALLISCI: LA CICATRICE TI RESTA."
 	elif not doom.begins_with("SE FALLISCI:"):
 		doom = "SE FALLISCI: %s" % doom
+	if _run_state.escalation_level >= 7 and doom.findn("ESCALATION") < 0:
+		doom = "%s\nESCALATION: NON HAI PIÙ MARGINE." % doom
 	return {
 		"sentence_title": "SENTENZA",
 		"sentence_rule": rule,
@@ -2619,6 +2878,8 @@ func _on_arena_message_queue_completed() -> void:
 func _get_cashout_lock_reason() -> String:
 	if _run_state.arena_index >= _level3_target_arenas and _level3_target_arenas > 0:
 		return ""
+	if _special_arena_cashout_lock_reason != "":
+		return _special_arena_cashout_lock_reason
 	if _cashout_lock_remaining > 0:
 		return "Decima di Sangue: incasso bloccato (%d arena)" % _cashout_lock_remaining
 	if _run_state.arena_index < _level3_min_cashout_arenas:
@@ -2644,6 +2905,8 @@ func _update_audience_after_arena(result: ArenaResult) -> void:
 	if delta == 0:
 		return
 	_run_state.audience_score = clampi(_run_state.audience_score + delta, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
+	if _run_state.audience_score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
+		_forced_next_pact_archetype = ARCH_EGO
 
 func _get_audience_label(score: int) -> String:
 	if score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
@@ -2657,13 +2920,20 @@ func _get_audience_label(score: int) -> String:
 	return "FOLLA IN DELIRIO"
 
 func _get_audience_reason(score: int) -> String:
-	if score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
-		return "Ti vietano di fuggire."
-	if score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
-		return "La folla taglia il tuo incasso."
+	if score <= -1:
+		return _pick_audience_phrase("FURY")
 	if score <= 2:
-		return "Il pubblico ti segue, ma non perdona."
-	return "Il tuo nome incendia gli spalti."
+		return _pick_audience_phrase("COLD")
+	return _pick_audience_phrase("DELIRIUM")
+
+func _pick_audience_phrase(mood: String) -> String:
+	var phrases: Array = AUDIENCE_PHRASES.get(mood, []) as Array
+	if phrases.is_empty():
+		return ""
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = _run_state.run_seed + _run_state.arena_index * 37 + _run_state.audience_score * 13
+	var pick_idx: int = rng.randi_range(0, phrases.size() - 1)
+	return str(phrases[pick_idx])
 
 func _get_audience_cashout_modifier() -> float:
 	if _run_state.audience_score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:

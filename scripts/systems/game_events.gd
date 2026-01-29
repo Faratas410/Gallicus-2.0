@@ -34,6 +34,7 @@ signal resolve_ritual_closed
 signal intermediate_choice_opened
 signal push_luck_opened(payload: Dictionary)
 signal push_luck_closed
+signal post_arena_choice_selected(choice_id: StringName)
 signal player_damaged
 signal run_phase_changed(phase: int)
 signal countdown_requested(seconds: int)

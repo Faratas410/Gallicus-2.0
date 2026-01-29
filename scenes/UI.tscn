@@ -681,6 +681,22 @@ theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
 text = "Disponibile dopo l'arena in corso."
 
+[node name="PushLuckCondannaBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="PushLuckCondannaButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCondannaBox"]
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 3
+text = "CONDANNA"
+
+[node name="PushLuckCondannaNote" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCondannaBox"]
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 16
+modulate = Color(0.75, 0.72, 0.6, 1)
+text = "NESSUN REWARD"
+
 [node name="PushLuckDoubleBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 4

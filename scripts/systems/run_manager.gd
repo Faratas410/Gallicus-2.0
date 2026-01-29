@@ -723,6 +723,9 @@ func _ready() -> void:
 	var request_double_callable: Callable = Callable(self, "_on_request_push_luck_double")
 	if GameEvents.has_signal("request_push_luck_double") and not GameEvents.request_push_luck_double.is_connected(request_double_callable):
 		GameEvents.request_push_luck_double.connect(request_double_callable)
+	var post_arena_callable: Callable = Callable(self, "_on_post_arena_choice_selected")
+	if GameEvents.has_signal("post_arena_choice_selected") and not GameEvents.post_arena_choice_selected.is_connected(post_arena_callable):
+		GameEvents.post_arena_choice_selected.connect(post_arena_callable)
 	var request_intermediate_callable: Callable = Callable(self, "_on_request_intermediate_choice")
 	if GameEvents.has_signal("request_intermediate_choice") and not GameEvents.request_intermediate_choice.is_connected(request_intermediate_callable):
 		GameEvents.request_intermediate_choice.connect(request_intermediate_callable)
@@ -2218,6 +2221,11 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 	_pending_intermediate_choice_bet_id = &""
 	_open_push_luck_choice(bet_id)
 
+func _on_post_arena_choice_selected(choice_id: StringName) -> void:
+	if choice_id != &"CONDANNA":
+		return
+	_handle_push_luck_condanna()
+
 func _on_request_push_luck_cashout() -> void:
 	if not _waiting_for_push_luck:
 		return
@@ -2259,6 +2267,30 @@ func _on_request_push_luck_cashout() -> void:
 	_push_luck_cashouts += 1
 	if bet_id != "":
 		_apply_bet_reward_scaled(bet_id, _bet_chain_level + bonus_tier)
+	_reset_bet_chain()
+	_open_bet_ui(true)
+
+func _handle_push_luck_condanna() -> void:
+	if not _waiting_for_push_luck:
+		return
+	_consume_intermediate_choice_bonus()
+	_waiting_for_push_luck = false
+	_run_state.last_action_was_rilancio = false
+	_update_arena_visual_only()
+	GameEvents.push_luck_closed.emit()
+	if LEVEL3_ENABLED:
+		_resolve_ritual_reward_applied = false
+		if _run_state.escalation_level >= 2:
+			_level3_cashed_after_high_escalation = true
+			_level3_reward_tier = 1
+			_level3_next_loss_hp_penalty = 0
+			_run_state.escalation_level = 0
+			_emit_escalation_changed()
+			_current_bet_id = ""
+			_emit_run_debug_state()
+			_register_run_end("CASH_OUT")
+		end_run(&"")
+		return
 	_reset_bet_chain()
 	_open_bet_ui(true)
 

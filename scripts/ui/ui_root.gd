@@ -106,6 +106,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var push_luck_details: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckDetails") as Label
 @onready var push_luck_cashout_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutButton") as Button
 @onready var push_luck_cashout_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox/PushLuckCashoutNote") as Label
+@onready var push_luck_condanna_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCondannaBox/PushLuckCondannaButton") as Button
+@onready var push_luck_condanna_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCondannaBox/PushLuckCondannaNote") as Label
 @onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleButton") as Button
 @onready var push_luck_double_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleNote") as Label
 @onready var ending_text: RichTextLabel = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/EndingText") as RichTextLabel
@@ -1434,6 +1436,8 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	var push_luck_read_buttons: Array[Button] = []
 	if push_luck_cashout_button != null:
 		push_luck_read_buttons.append(push_luck_cashout_button)
+	if push_luck_condanna_button != null:
+		push_luck_read_buttons.append(push_luck_condanna_button)
 	if push_luck_double_button != null:
 		push_luck_read_buttons.append(push_luck_double_button)
 	_apply_modal_read_delay(push_luck_read_buttons)
@@ -1446,6 +1450,10 @@ func _wire_push_luck_buttons() -> void:
 		var cashout_callable: Callable = Callable(self, "_on_push_luck_cashout_pressed")
 		if not push_luck_cashout_button.pressed.is_connected(cashout_callable):
 			push_luck_cashout_button.pressed.connect(cashout_callable)
+	if push_luck_condanna_button != null:
+		var condanna_callable: Callable = Callable(self, "_on_push_luck_condanna_pressed")
+		if not push_luck_condanna_button.pressed.is_connected(condanna_callable):
+			push_luck_condanna_button.pressed.connect(condanna_callable)
 	if push_luck_double_button != null:
 		var double_callable: Callable = Callable(self, "_on_push_luck_double_pressed")
 		if not push_luck_double_button.pressed.is_connected(double_callable):
@@ -1515,10 +1523,18 @@ func _on_debug_copy_log_pressed() -> void:
 	DisplayServer.clipboard_set(_debug_run_log)
 
 func _on_push_luck_cashout_pressed() -> void:
+	if GameEvents.has_signal("post_arena_choice_selected"):
+		GameEvents.post_arena_choice_selected.emit(&"CASH_OUT")
 	if GameEvents.has_signal("request_push_luck_cashout"):
 		GameEvents.request_push_luck_cashout.emit()
 
+func _on_push_luck_condanna_pressed() -> void:
+	if GameEvents.has_signal("post_arena_choice_selected"):
+		GameEvents.post_arena_choice_selected.emit(&"CONDANNA")
+
 func _on_push_luck_double_pressed() -> void:
+	if GameEvents.has_signal("post_arena_choice_selected"):
+		GameEvents.post_arena_choice_selected.emit(&"CONTINUE")
 	if GameEvents.has_signal("request_push_luck_double"):
 		GameEvents.request_push_luck_double.emit()
 

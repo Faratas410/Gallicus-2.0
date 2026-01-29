@@ -5,6 +5,11 @@ const PROFILE_PATH: String = "user://profile.save"
 const TMP_PATH: String = "%s.tmp" % PROFILE_PATH
 const BAK_PATH: String = "%s.bak" % PROFILE_PATH
 const BAK2_PATH: String = "%s.bak2" % PROFILE_PATH
+const RUN_SCHEMA_VERSION: int = 1
+const RUN_PATH: String = "user://run.save"
+const RUN_TMP_PATH: String = "%s.tmp" % RUN_PATH
+const RUN_BAK_PATH: String = "%s.bak" % RUN_PATH
+const RUN_BAK2_PATH: String = "%s.bak2" % RUN_PATH
 
 var _profile_loaded: bool = false
 var _profile_dirty: bool = false
@@ -164,4 +169,124 @@ func _migrate(data: Dictionary, from_version: int) -> Dictionary:
 	return current
 
 func _migrate_v1_to_v2(data: Dictionary) -> Dictionary:
+	return data
+
+func has_run_save() -> bool:
+	return FileAccess.file_exists(RUN_PATH) or FileAccess.file_exists(RUN_BAK_PATH)
+
+func load_run() -> Dictionary:
+	var payload: Dictionary = {}
+	if FileAccess.file_exists(RUN_PATH):
+		if _load_run_from_path(RUN_PATH, payload):
+			return payload
+		_backup_corrupt_run()
+		if FileAccess.file_exists(RUN_BAK_PATH) and _load_run_from_path(RUN_BAK_PATH, payload):
+			return payload
+		return {}
+	if FileAccess.file_exists(RUN_BAK_PATH) and _load_run_from_path(RUN_BAK_PATH, payload):
+		return payload
+	return {}
+
+func save_run(data: Dictionary) -> void:
+	var payload: Dictionary = {
+		"schema_version": RUN_SCHEMA_VERSION,
+		"saved_at_unix": int(Time.get_unix_time_from_system()),
+		"payload": data,
+	}
+	var json_text: String = JSON.stringify(payload)
+	var file: FileAccess = FileAccess.open(RUN_TMP_PATH, FileAccess.WRITE)
+	if file == null:
+		return
+	file.store_string(json_text)
+	file.close()
+	var tmp_abs: String = ProjectSettings.globalize_path(RUN_TMP_PATH)
+	var run_abs: String = ProjectSettings.globalize_path(RUN_PATH)
+	var bak_abs: String = ProjectSettings.globalize_path(RUN_BAK_PATH)
+	var bak2_abs: String = ProjectSettings.globalize_path(RUN_BAK2_PATH)
+	if FileAccess.file_exists(RUN_BAK2_PATH):
+		DirAccess.remove_absolute(bak2_abs)
+	if FileAccess.file_exists(RUN_BAK_PATH):
+		DirAccess.rename_absolute(bak_abs, bak2_abs)
+	var can_replace: bool = true
+	if FileAccess.file_exists(RUN_PATH):
+		var move_err: Error = DirAccess.rename_absolute(run_abs, bak_abs)
+		if move_err != OK:
+			can_replace = false
+	if can_replace:
+		DirAccess.rename_absolute(tmp_abs, run_abs)
+
+func clear_run() -> void:
+	var tmp_abs: String = ProjectSettings.globalize_path(RUN_TMP_PATH)
+	var run_abs: String = ProjectSettings.globalize_path(RUN_PATH)
+	var bak_abs: String = ProjectSettings.globalize_path(RUN_BAK_PATH)
+	var bak2_abs: String = ProjectSettings.globalize_path(RUN_BAK2_PATH)
+	if FileAccess.file_exists(RUN_TMP_PATH):
+		DirAccess.remove_absolute(tmp_abs)
+	if FileAccess.file_exists(RUN_PATH):
+		DirAccess.remove_absolute(run_abs)
+	if FileAccess.file_exists(RUN_BAK_PATH):
+		DirAccess.remove_absolute(bak_abs)
+	if FileAccess.file_exists(RUN_BAK2_PATH):
+		DirAccess.remove_absolute(bak2_abs)
+
+func _backup_corrupt_run() -> void:
+	if not FileAccess.file_exists(RUN_PATH):
+		return
+	var timestamp: int = int(Time.get_unix_time_from_system())
+	var corrupt_path: String = "user://run.corrupt.%d.save" % timestamp
+	var run_abs: String = ProjectSettings.globalize_path(RUN_PATH)
+	var corrupt_abs: String = ProjectSettings.globalize_path(corrupt_path)
+	DirAccess.rename_absolute(run_abs, corrupt_abs)
+
+func _load_run_from_path(path: String, out_payload: Dictionary) -> bool:
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return false
+	var text: String = file.get_as_text()
+	file.close()
+	var parsed: Variant = JSON.parse_string(text)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	var data: Dictionary = parsed as Dictionary
+	if not _validate_run_dict(data):
+		return false
+	var version_value: Variant = data.get("schema_version", RUN_SCHEMA_VERSION)
+	if typeof(version_value) != TYPE_INT:
+		return false
+	var from_version: int = int(version_value)
+	if from_version <= 0:
+		from_version = 1
+	if from_version < RUN_SCHEMA_VERSION:
+		data = _migrate_run(data, from_version)
+	var payload_value: Variant = data.get("payload", {})
+	if not (payload_value is Dictionary):
+		return false
+	out_payload.clear()
+	out_payload.merge(payload_value as Dictionary, true)
+	return true
+
+func _validate_run_dict(data: Dictionary) -> bool:
+	if not data.has("schema_version"):
+		return false
+	if typeof(data["schema_version"]) != TYPE_INT:
+		return false
+	if not data.has("payload"):
+		return false
+	if not (data["payload"] is Dictionary):
+		return false
+	return true
+
+func _migrate_run(data: Dictionary, from_version: int) -> Dictionary:
+	var current: Dictionary = data
+	var working_version: int = from_version
+	while working_version < RUN_SCHEMA_VERSION:
+		match working_version:
+			1:
+				current = _migrate_run_v1_to_v2(current)
+			_:
+				break
+		working_version += 1
+	return current
+
+func _migrate_run_v1_to_v2(data: Dictionary) -> Dictionary:
 	return data

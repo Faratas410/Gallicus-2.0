@@ -21,6 +21,33 @@ const BET_DEBT_CHAIN: StringName = &"DEBT_CHAIN"
 const BET_BLOOD_TAX: StringName = &"BLOOD_TAX"
 const BET_CROW_PLEASER: StringName = &"CROW_PLEASER"
 const BET_LAST_BREATH: StringName = &"LAST_BREATH"
+const BET_P3_WAX_SEAL: StringName = &"P3_WAX_SEAL"
+const BET_P3_BLOOD_LEDGER: StringName = &"P3_BLOOD_LEDGER"
+const BET_P3_DEBT_MIRROR: StringName = &"P3_DEBT_MIRROR"
+const BET_P3_CROWD_FEAST: StringName = &"P3_CROWD_FEAST"
+const BET_P3_LAST_WAGER: StringName = &"P3_LAST_WAGER"
+const BET_P3_RED_VERDICT: StringName = &"P3_RED_VERDICT"
+const BET_P3_CHAIN_OATH: StringName = &"P3_CHAIN_OATH"
+const BET_P3_TITHE_OF_BONE: StringName = &"P3_TITHE_OF_BONE"
+const BET_P3_GLORY_TAX: StringName = &"P3_GLORY_TAX"
+const BET_P3_MERCY_BAIT: StringName = &"P3_MERCY_BAIT"
+const BET_P3_SILENCE_BRIBE: StringName = &"P3_SILENCE_BRIBE"
+const BET_P3_FINAL_APPLAUSE: StringName = &"P3_FINAL_APPLAUSE"
+
+const LEVEL3_BET_BEHAVIOR: Dictionary = {
+	BET_P3_WAX_SEAL: BET_DEBT_CHAIN,
+	BET_P3_BLOOD_LEDGER: BET_BLOOD_TAX,
+	BET_P3_DEBT_MIRROR: BET_DEBT_CHAIN,
+	BET_P3_CROWD_FEAST: BET_CROW_PLEASER,
+	BET_P3_LAST_WAGER: BET_LAST_BREATH,
+	BET_P3_RED_VERDICT: BET_BLOOD_TAX,
+	BET_P3_CHAIN_OATH: BET_DEBT_CHAIN,
+	BET_P3_TITHE_OF_BONE: BET_BLOOD_TAX,
+	BET_P3_GLORY_TAX: BET_CROW_PLEASER,
+	BET_P3_MERCY_BAIT: BET_CROW_PLEASER,
+	BET_P3_SILENCE_BRIBE: BET_DEBT_CHAIN,
+	BET_P3_FINAL_APPLAUSE: BET_CROW_PLEASER,
+}
 const RUN_SAVE_SCHEMA_VERSION: int = 1
 const RUN_FLOW_BET_SIGNED: StringName = &"BET_SIGNED"
 const RUN_FLOW_INTERMEDIATE_CHOICE: StringName = &"INTERMEDIATE_CHOICE"
@@ -539,6 +566,150 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"condition": "Vinci l'arena e non indugiare.",
 		"doom": "Il dopo arriva sempre.\nIl tempo ti presenta il conto.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
 		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_WAX_SEAL",
+		"name": "SIGILLO DI CERA",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Firmi e rinunci alla via facile. Il debito resta aperto.",
+		"condition": "Vinci l'arena e non spezzare la promessa.",
+		"doom": "Il sigillo non si scioglie.\nOgni passo stringe il debito.\nEffetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
+		"weight": 3,
+		"blocked_scars": [SCAR_DEBT_BRAND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_BLOOD_LEDGER",
+		"name": "LIBRO DI SANGUE",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Iscrivi il tuo nome nel registro rosso.",
+		"condition": "Vinci l'arena sapendo che ogni colpo ha un prezzo.",
+		"doom": "Il libro chiede sangue.\nIl tributo è inciso nella carne.\nEffetto: HP massimo -25 + incasso bloccato per 1 arena.",
+		"weight": 3,
+		"blocked_scars": [SCAR_OPEN_WOUND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_DEBT_MIRROR",
+		"name": "SPECCHIO DEL DEBITO",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Ti guardi e firmi ciò che devi.",
+		"condition": "Vinci l'arena senza cercare scuse.",
+		"doom": "Lo specchio riflette catene.\nIl debito non lascia uscita.\nEffetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
+		"weight": 3,
+		"blocked_scars": [SCAR_DEBT_BRAND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_CROWD_FEAST",
+		"name": "BANCHETTO DELLA FOLLA",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Offri la vittoria come carne alla folla.",
+		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
+		"doom": "La folla pretende spettacolo.\nUn passo falso diventa scherno.\nEffetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_LAST_WAGER",
+		"name": "ULTIMA PUNTATA",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
+		"pact": "Rilanci oltre il respiro.",
+		"condition": "Vinci l'arena con il cuore in gola.",
+		"doom": "Ogni colpo è l'ultimo.\nIl destino stringe il passo.\nEffetto: cicatrice GRAVE (non mortale), cammino compromesso.",
+		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [SCAR_CRACKED_BONES],
+	},
+	{
+		"id": "P3_RED_VERDICT",
+		"name": "VERDETTO ROSSO",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Accetti il verdetto scritto nel sangue.",
+		"condition": "Vinci l'arena sapendo che ogni colpo ha un prezzo.",
+		"doom": "Il verdetto è sangue.\nIl tributo non si discute.\nEffetto: HP massimo -25 + incasso bloccato per 1 arena.",
+		"weight": 3,
+		"blocked_scars": [SCAR_OPEN_WOUND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_CHAIN_OATH",
+		"name": "GIURAMENTO A CATENA",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Giuri e consegni il futuro.",
+		"condition": "Vinci l'arena e non spezzare la promessa.",
+		"doom": "Il giuramento stringe la catena.\nOgni passo pesa il doppio.\nEffetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
+		"weight": 3,
+		"blocked_scars": [SCAR_DEBT_BRAND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_TITHE_OF_BONE",
+		"name": "DECIMA D'OSSA",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Paghi con ossa ciò che chiedi.",
+		"condition": "Vinci l'arena sapendo che ogni colpo ha un prezzo.",
+		"doom": "La decima frantuma.\nIl tributo resta sulle ossa.\nEffetto: HP massimo -25 + incasso bloccato per 1 arena.",
+		"weight": 3,
+		"blocked_scars": [SCAR_OPEN_WOUND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_GLORY_TAX",
+		"name": "TASSA DI GLORIA",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "La gloria si paga davanti a tutti.",
+		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
+		"doom": "La gloria esige scherno.\nIl pubblico ti pesa ogni passo.\nEffetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_MERCY_BAIT",
+		"name": "ESCA DI MISERICORDIA",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Offri pietà come spettacolo.",
+		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
+		"doom": "La misericordia è una trappola.\nIl pubblico pretende il crollo.\nEffetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_SILENCE_BRIBE",
+		"name": "TANGENTE DEL SILENZIO",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Paghi per tacere, firmi comunque.",
+		"condition": "Vinci l'arena senza cercare scuse.",
+		"doom": "Il silenzio costa più della parola.\nLa catena non si allenta.\nEffetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
+		"weight": 3,
+		"blocked_scars": [SCAR_DEBT_BRAND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_FINAL_APPLAUSE",
+		"name": "APPLAUSO FINALE",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Cerchi l'ultima ovazione.",
+		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
+		"doom": "L'applauso è una lama.\nIl giudizio resta addosso.\nEffetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",
+		"weight": 3,
 		"blocked_scars": [],
 		"requires_scars": [],
 	},
@@ -2231,6 +2402,10 @@ func _get_escalation_damage_penalty(escalation_level: int) -> float:
 		penalty += float(escalation_level - 1) * 0.07
 	return penalty
 
+func _get_level3_bet_behavior(bet_id: StringName) -> StringName:
+	var mapped: Variant = LEVEL3_BET_BEHAVIOR.get(bet_id, bet_id)
+	return StringName(str(mapped))
+
 func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
 	_waiting_for_push_luck = true
 	_current_bet_id = String(bet_id)
@@ -2243,6 +2418,7 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
+	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
 	if _provoke_armed:
 		_provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
@@ -2259,18 +2435,18 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY + executioner_bonus)
 		_apply_level3_scar(SCAR_OPEN_WOUND, "Condanna: Sangue Integro")
 		scars_applied.append(SCAR_OPEN_WOUND)
-	elif bet_id == BET_DEBT_CHAIN:
+	elif behavior_id == BET_DEBT_CHAIN:
 		_apply_level3_scar(SCAR_DEBT_BRAND, "Condanna: Catena di Debito")
 		scars_applied.append(SCAR_DEBT_BRAND)
-	elif bet_id == BET_BLOOD_TAX:
+	elif behavior_id == BET_BLOOD_TAX:
 		_apply_max_hp_loss(25 + executioner_bonus)
 		_cashout_lock_remaining = maxi(_cashout_lock_remaining, 1)
 		_apply_level3_scar(SCAR_RUSTED_ARMOR, "Condanna: Decima di Sangue")
 		scars_applied.append(SCAR_RUSTED_ARMOR)
-	elif bet_id == BET_CROW_PLEASER:
+	elif behavior_id == BET_CROW_PLEASER:
 		_apply_level3_scar(SCAR_SHAME_MARK, "Condanna: Piacere al Pubblico")
 		scars_applied.append(SCAR_SHAME_MARK)
-	elif bet_id == BET_LAST_BREATH:
+	elif behavior_id == BET_LAST_BREATH:
 		_apply_max_hp_loss(15 + executioner_bonus)
 		_apply_level3_scar(SCAR_ONE_EYE, "Condanna: Ultimo Respiro")
 		scars_applied.append(SCAR_ONE_EYE)
@@ -2294,6 +2470,7 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	_waiting_for_bet = false
 	set_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
+	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
 	if _provoke_armed:
 		_provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
@@ -2310,18 +2487,18 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY + executioner_bonus)
 		_apply_level3_scar(SCAR_OPEN_WOUND, "Condanna: Sangue Integro")
 		scars_applied.append(SCAR_OPEN_WOUND)
-	elif bet_id == BET_DEBT_CHAIN:
+	elif behavior_id == BET_DEBT_CHAIN:
 		_apply_level3_scar(SCAR_DEBT_BRAND, "Condanna: Catena di Debito")
 		scars_applied.append(SCAR_DEBT_BRAND)
-	elif bet_id == BET_BLOOD_TAX:
+	elif behavior_id == BET_BLOOD_TAX:
 		_apply_max_hp_loss(25 + executioner_bonus)
 		_cashout_lock_remaining = maxi(_cashout_lock_remaining, 1)
 		_apply_level3_scar(SCAR_RUSTED_ARMOR, "Condanna: Decima di Sangue")
 		scars_applied.append(SCAR_RUSTED_ARMOR)
-	elif bet_id == BET_CROW_PLEASER:
+	elif behavior_id == BET_CROW_PLEASER:
 		_apply_level3_scar(SCAR_SHAME_MARK, "Condanna: Piacere al Pubblico")
 		scars_applied.append(SCAR_SHAME_MARK)
-	elif bet_id == BET_LAST_BREATH:
+	elif behavior_id == BET_LAST_BREATH:
 		_apply_max_hp_loss(15 + executioner_bonus)
 		_apply_level3_scar(SCAR_ONE_EYE, "Condanna: Ultimo Respiro")
 		scars_applied.append(SCAR_ONE_EYE)
@@ -2354,7 +2531,8 @@ func _apply_max_hp_loss(amount: int) -> void:
 
 func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
 	var tier: int = maxi(reward_tier, 1)
-	match bet_id:
+	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
+	match behavior_id:
 		BET_CASH_OUT:
 			var reward: int = 10 * tier
 			var modifier: float = _get_audience_cashout_modifier()

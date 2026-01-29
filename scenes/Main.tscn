@@ -4,6 +4,19 @@
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
 
+[sub_resource type="StyleBoxFlat" id="4"]
+bg_color = Color(0.12, 0.09, 0.07, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.26, 0.2, 0.16, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 6
 [node name="Main" type="Node2D"]
 
 [node name="RitualBackground" type="CanvasLayer" parent="."]
@@ -58,7 +71,7 @@ text = "NUOVA PARTITA"
 text = "CARICA PARTITA"
 
 [node name="AchievementsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-text = "ACHIEVEMENTS"
+text = "ARCHIVIO"
 
 [node name="SettingsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "IMPOSTAZIONI"
@@ -82,15 +95,36 @@ theme_override_constants/separation = 12
 
 [node name="AchievementsTitle" type="Label" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
 horizontal_alignment = 1
-text = "ACHIEVEMENTS"
+text = "ARCHIVIO DELLE CONDANNE"
 
-[node name="AchievementsBody" type="Label" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
-horizontal_alignment = 1
-autowrap_mode = 2
-text = "In arrivo. Qui compariranno i rewards delle run."
+[node name="CondanneScroll" type="ScrollContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+custom_minimum_size = Vector2(520, 360)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="CondanneVBox" type="VBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneScroll"]
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/separation = 6
 
 [node name="BackButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
 text = "INDIETRO"
+
+[node name="CondannaTooltip" type="PanelContainer" parent="MenuLayer/MainMenu/AchievementsPanel"]
+visible = false
+custom_minimum_size = Vector2(360, 0)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("4")
+
+[node name="TooltipLabel" type="RichTextLabel" parent="MenuLayer/MainMenu/AchievementsPanel/CondannaTooltip"]
+custom_minimum_size = Vector2(340, 0)
+size_flags_horizontal = 3
+bbcode_enabled = false
+fit_content = true
+autowrap_mode = 3
+scroll_active = false
+theme_override_colors/default_color = Color(0.88, 0.84, 0.76, 1)
 
 [node name="CreditsPanel" type="Control" parent="MenuLayer/MainMenu"]
 visible = false

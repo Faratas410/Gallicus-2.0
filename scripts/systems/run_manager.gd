@@ -36,11 +36,17 @@ const CONDANNA_MI_SONO_FERMATO: StringName = &"CONDANNA_MI_SONO_FERMATO"
 const CONDANNA_E_FINITA_COSI: StringName = &"CONDANNA_E_FINITA_COSI"
 const CONDANNA_NON_ABBASTANZA: StringName = &"CONDANNA_NON_ABBASTANZA"
 const CONDANNA_TROPPO_TARDI: StringName = &"CONDANNA_TROPPO_TARDI"
+const CONDANNA_NON_E_COLPA_LORO: StringName = &"CONDANNA_NON_E_COLPA_LORO"
+const CONDANNA_RICORDATO: StringName = &"CONDANNA_RICORDATO"
+const CONDANNA_VISTO_DAL_PUBBLICO: StringName = &"CONDANNA_VISTO_DAL_PUBBLICO"
+const CONDANNA_IL_TUO_NOME: StringName = &"CONDANNA_IL_TUO_NOME"
+const CONDANNA_NON_SARA_L_ULTIMA: StringName = &"CONDANNA_NON_SARA_L_ULTIMA"
 
 const PROFILE_HAS_COMPLETED_ANY_RUN: StringName = &"PROFILE_HAS_COMPLETED_ANY_RUN"
 
 const AUDIENCE_SCORE_MIN: int = -5
 const AUDIENCE_SCORE_MAX: int = 5
+const AUDIENCE_ATTENTION_THRESHOLD: int = 3
 const AUDIENCE_CASHOUT_DISABLE_THRESHOLD: int = -3
 const AUDIENCE_CASHOUT_PENALTY_THRESHOLD: int = 0
 const AUDIENCE_CASHOUT_PENALTY_MULTIPLIER: float = 0.8
@@ -668,6 +674,7 @@ var _run_finale_emitted: bool = false
 var _forced_ending_id: StringName = &""
 var _forced_next_pact_archetype: StringName = &""
 var _special_arena_cashout_lock_reason: String = ""
+var _seen_by_crowd_before_run: bool = false
 var _debug_seed_override_active: bool = false
 var _debug_seed_override: int = 0
 var _run_start_time_msec: int = 0
@@ -891,6 +898,9 @@ func start_new_run() -> void:
 	if LEVEL3_ENABLED:
 		_start_level3_run()
 		return
+	_seen_by_crowd_before_run = SaveManager.has_unlocked(CONDANNA_VISTO_DAL_PUBBLICO)
+	if SaveManager.has_unlocked(CONDANNA_E_FINITA_COSI):
+		_register_condanna(CONDANNA_NON_SARA_L_ULTIMA)
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	if GameEvents != null and GameEvents.has_method("set_gameplay_enabled"):
@@ -974,6 +984,9 @@ func start_run() -> void:
 
 func _start_level3_run() -> void:
 	_run_start_time_msec = Time.get_ticks_msec()
+	_seen_by_crowd_before_run = SaveManager.has_unlocked(CONDANNA_VISTO_DAL_PUBBLICO)
+	if SaveManager.has_unlocked(CONDANNA_E_FINITA_COSI):
+		_register_condanna(CONDANNA_NON_SARA_L_ULTIMA)
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	_run_failed_emitted = false
@@ -3040,8 +3053,15 @@ func _update_audience_after_arena(result: ArenaResult) -> void:
 	if delta == 0:
 		return
 	_run_state.audience_score = clampi(_run_state.audience_score + delta, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
+	_check_audience_condanne()
 	if _run_state.audience_score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
 		_forced_next_pact_archetype = ARCH_EGO
+
+func _check_audience_condanne() -> void:
+	if _run_state.is_hunted_by_crowd or _run_state.audience_score >= AUDIENCE_ATTENTION_THRESHOLD:
+		_register_condanna(CONDANNA_VISTO_DAL_PUBBLICO)
+		if _seen_by_crowd_before_run:
+			_register_condanna(CONDANNA_IL_TUO_NOME)
 
 func _get_audience_label(score: int) -> String:
 	if score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
@@ -3284,11 +3304,14 @@ func _enter_game_over() -> void:
 	_run_state.run_is_over = true
 	var is_loss: bool = _run_end_reason != "CASH_OUT"
 	var first_run_completed: bool = SaveManager.has_unlocked(PROFILE_HAS_COMPLETED_ANY_RUN)
+	_register_condanna(CONDANNA_RICORDATO)
 	if is_loss:
 		if not first_run_completed:
 			_register_condanna(CONDANNA_E_FINITA_COSI)
 		if _run_state.arena_index >= 2:
 			_register_condanna(CONDANNA_NON_ABBASTANZA)
+		if _run_state.bets_history.size() > 0:
+			_register_condanna(CONDANNA_NON_E_COLPA_LORO)
 		if _run_state.risky_choice_made_recently:
 			_register_condanna(CONDANNA_TROPPO_TARDI)
 		if _run_state.last_signed_pact_id != &"":
@@ -3728,6 +3751,7 @@ func _recompute_scar_synergies() -> void:
 	var blood_count: int = _count_scars_with_tag(TAG_BLOOD)
 	if blood_count >= 3:
 		_run_state.is_hunted_by_crowd = true
+		_check_audience_condanne()
 
 func _get_bet_display_name(bet_id: String) -> String:
 	var bet_data: Dictionary = _get_bet_data(bet_id)

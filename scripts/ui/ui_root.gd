@@ -86,6 +86,7 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
 @onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopup") as RichTextLabel
 @onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
+@onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabel") as Label
 @onready var sentence_banner: Control = get_node_or_null("HUD/SentenceBanner") as Control
 @onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitle") as Label
 @onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRule") as Label
@@ -226,6 +227,9 @@ func _ready() -> void:
 	var sentence_banner_callable: Callable = Callable(self, "_on_sentence_banner_requested")
 	if GameEvents.has_signal("sentence_banner_requested") and not GameEvents.sentence_banner_requested.is_connected(sentence_banner_callable):
 		GameEvents.sentence_banner_requested.connect(sentence_banner_callable)
+	var audience_context_callable: Callable = Callable(self, "_on_audience_context_line_emitted")
+	if GameEvents.has_signal("audience_context_line_emitted") and not GameEvents.audience_context_line_emitted.is_connected(audience_context_callable):
+		GameEvents.audience_context_line_emitted.connect(audience_context_callable)
 	var escalation_changed_callable: Callable = Callable(self, "_on_escalation_changed")
 	if GameEvents.has_signal("escalation_changed") and not GameEvents.escalation_changed.is_connected(escalation_changed_callable):
 		GameEvents.escalation_changed.connect(escalation_changed_callable)
@@ -860,6 +864,12 @@ func _on_sentence_banner_requested(payload: Dictionary) -> void:
 		return
 	if sentence_banner != null:
 		sentence_banner.visible = false
+
+func _on_audience_context_line_emitted(text: String) -> void:
+	if audience_context_label == null:
+		return
+	audience_context_label.text = text
+	audience_context_label.visible = text != ""
 
 func _on_run_finale_selected(payload: Dictionary) -> void:
 	if payload.has("title"):

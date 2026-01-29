@@ -22,6 +22,12 @@ const BET_BLOOD_TAX: StringName = &"BLOOD_TAX"
 const BET_CROW_PLEASER: StringName = &"CROW_PLEASER"
 const BET_LAST_BREATH: StringName = &"LAST_BREATH"
 
+const CONDANNA_NON_MI_FERMERO: StringName = &"CONDANNA_NON_MI_FERMERO"
+const CONDANNA_ANCORA: StringName = &"CONDANNA_ANCORA"
+const CONDANNA_FINCHE_REGGE: StringName = &"CONDANNA_FINCHE_REGGE"
+const CONDANNA_NON_DOVEVO_PROVARCI: StringName = &"CONDANNA_NON_DOVEVO_PROVARCI"
+const CONDANNA_FIRMATO: StringName = &"CONDANNA_FIRMATO"
+
 const AUDIENCE_SCORE_MIN: int = -5
 const AUDIENCE_SCORE_MAX: int = 5
 const AUDIENCE_CASHOUT_DISABLE_THRESHOLD: int = -3
@@ -86,6 +92,7 @@ const SPECIAL_ARENA_ASH: StringName = &"ARENA_OF_ASH"
 const SPECIAL_ARENA_DISPREZZO: StringName = &"ARENA_DISPREZZO"
 const SPECIAL_ARENA_VERGOGNA: StringName = &"ARENA_VERGOGNA"
 const ESCALATION_MAX: int = 10
+const ESCALATION_HIGH_THRESHOLD: int = 6
 
 const PACT_OUTCOME_UNKNOWN: int = 0
 const PACT_OUTCOME_WIN: int = 1
@@ -122,6 +129,8 @@ class RunState:
 	var arenas_cleared: int = 0
 	var max_hp_modifier: int = 0
 	var audience_score: int = 0
+	var refuse_cashout_count_this_run: int = 0
+	var last_action_was_rilancio: bool = false
 	var run_is_over: bool = false
 	var is_hunted_by_crowd: bool = false
 
@@ -1004,6 +1013,8 @@ func _start_level3_run() -> void:
 	_run_state.arenas_cleared = 0
 	_run_state.max_hp_modifier = 0
 	_run_state.audience_score = 0
+	_run_state.refuse_cashout_count_this_run = 0
+	_run_state.last_action_was_rilancio = false
 	_run_state.run_is_over = false
 	_run_state.is_hunted_by_crowd = false
 	_emit_escalation_changed()
@@ -1057,6 +1068,9 @@ func select_bet(bet_id: StringName) -> void:
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
+		_register_condanna(CONDANNA_FIRMATO)
+		_register_condanna(CONDANNA_FIRMATO)
+		_register_condanna(CONDANNA_FIRMATO)
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
 	_level3_bets_used.append(bet_id)
@@ -1079,6 +1093,7 @@ func _register_level3_bet_choice(bet_id: StringName) -> void:
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
+		_register_condanna(CONDANNA_FIRMATO)
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
 	_level3_bets_used.append(bet_id)
@@ -1151,6 +1166,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss_ritual(bet_id, result)
 	else:
+		_run_state.last_action_was_rilancio = false
 		_apply_level3_reward(bet_id, _level3_reward_tier)
 		_resolve_ritual_reward_applied = true
 	_update_last_pact_outcome(bet_id, not failed)
@@ -1719,6 +1735,7 @@ func _get_escalation_damage_penalty(escalation_level: int) -> float:
 func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
 	_waiting_for_push_luck = true
 	_current_bet_id = String(bet_id)
+	_run_state.last_action_was_rilancio = false
 	_open_push_luck_choice(StringName(bet_id))
 
 func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[StringName]:
@@ -2178,6 +2195,7 @@ func _on_request_push_luck_cashout() -> void:
 		var bet_id_name: StringName = StringName(_current_bet_id)
 		var bonus_tier: int = _consume_intermediate_choice_bonus()
 		_waiting_for_push_luck = false
+		_run_state.last_action_was_rilancio = false
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		if bet_id_name != &"" and not _resolve_ritual_reward_applied:
@@ -2214,21 +2232,29 @@ func _on_request_push_luck_double() -> void:
 		var lock_reason: String = _get_double_lock_reason()
 		if lock_reason != "":
 			return
+		_run_state.refuse_cashout_count_this_run += 1
+		if _run_state.refuse_cashout_count_this_run == 1:
+			_register_condanna(CONDANNA_NON_MI_FERMERO)
+		elif _run_state.refuse_cashout_count_this_run == 2:
+			_register_condanna(CONDANNA_ANCORA)
+		if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD:
+			_register_condanna(CONDANNA_FINCHE_REGGE)
+		_run_state.last_action_was_rilancio = true
 		_waiting_for_push_luck = false
 		_reset_intermediate_choice_modifiers()
 		_special_arena_cashout_lock_reason = ""
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		_resolve_ritual_reward_applied = false
-			_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
-			_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
-			_level3_doubles += 1
-			_run_state.doubles += 1
-			_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
-			_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
-			_emit_escalation_changed()
-			if _cashout_lock_remaining > 0:
-				_cashout_lock_remaining = maxi(_cashout_lock_remaining - 1, 0)
+		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
+		_level3_doubles += 1
+		_run_state.doubles += 1
+		_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
+		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
+		_emit_escalation_changed()
+		if _cashout_lock_remaining > 0:
+			_cashout_lock_remaining = maxi(_cashout_lock_remaining - 1, 0)
 		_level3_next_loss_hp_penalty = 30
 		_emit_run_debug_state()
 		start_arena()
@@ -3147,6 +3173,8 @@ func _enter_game_over() -> void:
 	_is_game_over = true
 	_provoke_armed = false
 	_run_state.run_is_over = true
+	if _run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
+		_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
 	_waiting_for_bet = false
 	set_phase(RunPhase.GAME_OVER)
 	_update_arena_visual_only()
@@ -3500,6 +3528,15 @@ func _reset_progression() -> void:
 	run["xp"] = 0
 	run["upgrade_tokens"] = starting_tokens
 	_recompute_difficulty_tier(true)
+
+func _register_condanna(id: StringName) -> void:
+	if id == &"":
+		return
+	if SaveManager.has_unlocked(id):
+		return
+	SaveManager.set_unlocked(id, true)
+	if GameEvents.has_signal("condanna_registered"):
+		GameEvents.condanna_registered.emit(id)
 
 func _reset_scars() -> void:
 	_scars = []

@@ -30,6 +30,10 @@ const CondannaDataScript = preload("res://data/condanne.gd")
 
 var selected_language: String = "Italiano"
 var condanne_populated: bool = false
+var condanna_entries: Dictionary = {}
+
+const CONDANNA_UNLOCKED_ALPHA: float = 1.0
+const CONDANNA_LOCKED_ALPHA: float = 0.35
 
 func _ready() -> void:
 	_show_menu()
@@ -49,6 +53,10 @@ func _ready() -> void:
 	language_option.item_selected.connect(_on_language_selected)
 	master_volume_slider.value_changed.connect(_on_master_volume_changed)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
+	if GameEvents.has_signal("condanna_registered"):
+		var condanna_callable: Callable = Callable(self, "_on_condanna_registered")
+		if not GameEvents.condanna_registered.is_connected(condanna_callable):
+			GameEvents.condanna_registered.connect(condanna_callable)
 
 func _show_menu() -> void:
 	menu_vbox.visible = true
@@ -65,6 +73,7 @@ func _show_achievements() -> void:
 	settings_panel.visible = false
 	if not condanne_populated:
 		_build_condanne_list()
+	_refresh_condanne_visuals()
 
 func _show_credits() -> void:
 	menu_vbox.visible = false
@@ -91,11 +100,35 @@ func _build_condanne_list() -> void:
 		entry_label.text = "— %s" % condanna.title
 		entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 		entry_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		entry_label.modulate = Color(1, 1, 1, 0.6)
+		condanna_entries[condanna.id] = entry_label
+		_apply_condanna_style(condanna.id, entry_label)
 		entry_label.mouse_entered.connect(_on_condanna_mouse_entered.bind(condanna))
 		entry_label.mouse_exited.connect(_on_condanna_mouse_exited)
 		condanne_vbox.add_child(entry_label)
 	condanne_populated = true
+
+func _refresh_condanne_visuals() -> void:
+	if condanna_entries.is_empty():
+		return
+	for condanna_id in condanna_entries.keys():
+		var condanna_id_name: StringName = StringName(condanna_id)
+		var entry_label: Label = condanna_entries.get(condanna_id_name) as Label
+		if entry_label != null:
+			_apply_condanna_style(condanna_id_name, entry_label)
+
+func _apply_condanna_style(condanna_id: StringName, entry_label: Label) -> void:
+	if entry_label == null:
+		return
+	var unlocked: bool = SaveManager.has_unlocked(condanna_id)
+	var alpha: float = CONDANNA_UNLOCKED_ALPHA if unlocked else CONDANNA_LOCKED_ALPHA
+	entry_label.modulate = Color(1.0, 1.0, 1.0, alpha)
+
+func _on_condanna_registered(condanna_id: StringName) -> void:
+	if condanna_entries.is_empty():
+		return
+	var entry_label: Label = condanna_entries.get(condanna_id) as Label
+	if entry_label != null:
+		_apply_condanna_style(condanna_id, entry_label)
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
 	var tooltip_text := "%s\n\nCome è stata ottenuta:\n%s\n\n%s" % [

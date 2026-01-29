@@ -54,6 +54,7 @@ signal request_open_bet_ui
 signal request_consume_upgrade_shop
 signal request_reset_run
 signal request_retry_run
+signal request_continue_run
 signal request_next_bet
 signal request_add_coins(amount: int)
 signal request_push_luck_cashout

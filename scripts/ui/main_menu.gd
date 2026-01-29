@@ -4,6 +4,8 @@ extends Control
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
 @onready var credits_panel: Control = get_node("CreditsPanel") as Control
 @onready var settings_panel: Control = get_node("SettingsPanel") as Control
+@onready var continue_button: Button = get_node("CenterContainer/MenuVBox/ContinueButton") as Button
+@onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintLabel") as Label
 @onready var new_game_button: Button = get_node("CenterContainer/MenuVBox/NewGameButton") as Button
 @onready var load_game_button: Button = get_node("CenterContainer/MenuVBox/LoadGameButton") as Button
 @onready var achievements_button: Button = get_node("CenterContainer/MenuVBox/AchievementsButton") as Button
@@ -26,8 +28,10 @@ var selected_language: String = "Italiano"
 func _ready() -> void:
 	_show_menu()
 	_disable_placeholder_buttons()
+	_refresh_continue_button()
 	_setup_language_options()
 	_setup_initial_values()
+	continue_button.pressed.connect(_on_continue_pressed)
 	achievements_button.pressed.connect(_on_achievements_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
@@ -44,6 +48,7 @@ func _show_menu() -> void:
 	achievements_panel.visible = false
 	credits_panel.visible = false
 	settings_panel.visible = false
+	_refresh_continue_button()
 
 func _show_achievements() -> void:
 	menu_vbox.visible = false
@@ -66,6 +71,26 @@ func _show_settings() -> void:
 func _disable_placeholder_buttons() -> void:
 	new_game_button.disabled = true
 	load_game_button.disabled = true
+
+func _refresh_continue_button() -> void:
+	var has_run_save: bool = FileAccess.file_exists("user://run.save")
+	continue_button.disabled = not has_run_save
+	continue_hint_label.visible = not has_run_save
+	if not has_run_save:
+		continue_hint_label.text = "Nessuna partita salvata."
+
+func _on_continue_pressed() -> void:
+	if continue_button.disabled:
+		return
+	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("request_continue_run"):
+		GameEvents.request_continue_run.emit()
+		var connections: Array = GameEvents.request_continue_run.get_connections()
+		if connections.is_empty():
+			continue_hint_label.text = "In arrivo."
+			continue_hint_label.visible = true
+	else:
+		continue_hint_label.text = "In arrivo."
+		continue_hint_label.visible = true
 
 func _on_achievements_pressed() -> void:
 	_show_achievements()

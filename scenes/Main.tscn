@@ -84,6 +84,32 @@ text = "In arrivo. Qui compariranno i rewards delle run."
 [node name="BackButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
 text = "INDIETRO"
 
+[node name="CreditsPanel" type="Control" parent="MenuLayer/MainMenu"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+
+[node name="CreditsCenter" type="CenterContainer" parent="MenuLayer/MainMenu/CreditsPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="CreditsVBox" type="VBoxContainer" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter"]
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="CreditsTitle" type="Label" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
+horizontal_alignment = 1
+text = "CREDITI"
+
+[node name="CreditsBody" type="Label" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)"
+
+[node name="CreditsBackButton" type="Button" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
+text = "INDIETRO"
+
 [node name="SettingsPanel" type="Control" parent="MenuLayer/MainMenu"]
 visible = false
 anchor_right = 1.0

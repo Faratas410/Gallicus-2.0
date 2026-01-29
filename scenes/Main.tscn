@@ -43,6 +43,14 @@ theme_override_constants/separation = 12
 horizontal_alignment = 1
 text = "GALLICUS"
 
+[node name="ContinueButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+text = "CONTINUA"
+
+[node name="ContinueHintLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+visible = false
+horizontal_alignment = 1
+text = "Nessuna partita salvata."
+
 [node name="NewGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "NUOVA PARTITA"
 

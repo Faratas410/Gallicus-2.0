@@ -145,7 +145,7 @@ func _on_condanna_mouse_exited() -> void:
 	condanna_tooltip.visible = false
 
 func _refresh_continue_button() -> void:
-	var has_run_save: bool = FileAccess.file_exists("user://run.save")
+	var has_run_save: bool = SaveManager.has_run_save()
 	continue_button.disabled = not has_run_save
 	continue_hint_label.visible = not has_run_save
 	if not has_run_save:

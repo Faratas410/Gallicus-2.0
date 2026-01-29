@@ -2,6 +2,7 @@ extends Control
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
+@onready var credits_panel: Control = get_node("CreditsPanel") as Control
 @onready var settings_panel: Control = get_node("SettingsPanel") as Control
 @onready var new_game_button: Button = get_node("CenterContainer/MenuVBox/NewGameButton") as Button
 @onready var load_game_button: Button = get_node("CenterContainer/MenuVBox/LoadGameButton") as Button
@@ -9,6 +10,7 @@ extends Control
 @onready var settings_button: Button = get_node("CenterContainer/MenuVBox/SettingsButton") as Button
 @onready var credits_button: Button = get_node("CenterContainer/MenuVBox/CreditsButton") as Button
 @onready var back_button: Button = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/BackButton") as Button
+@onready var credits_back_button: Button = get_node("CreditsPanel/CreditsCenter/CreditsVBox/CreditsBackButton") as Button
 @onready var settings_back_button: Button = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsBackButton") as Button
 @onready var brightness_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessSlider") as HSlider
 @onready var brightness_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessValue") as Label
@@ -28,7 +30,9 @@ func _ready() -> void:
 	_setup_initial_values()
 	achievements_button.pressed.connect(_on_achievements_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
+	credits_button.pressed.connect(_on_credits_pressed)
 	back_button.pressed.connect(_on_back_pressed)
+	credits_back_button.pressed.connect(_on_credits_back_pressed)
 	settings_back_button.pressed.connect(_on_settings_back_pressed)
 	brightness_slider.value_changed.connect(_on_brightness_changed)
 	language_option.item_selected.connect(_on_language_selected)
@@ -38,22 +42,30 @@ func _ready() -> void:
 func _show_menu() -> void:
 	menu_vbox.visible = true
 	achievements_panel.visible = false
+	credits_panel.visible = false
 	settings_panel.visible = false
 
 func _show_achievements() -> void:
 	menu_vbox.visible = false
 	achievements_panel.visible = true
+	credits_panel.visible = false
+	settings_panel.visible = false
+
+func _show_credits() -> void:
+	menu_vbox.visible = false
+	achievements_panel.visible = false
+	credits_panel.visible = true
 	settings_panel.visible = false
 
 func _show_settings() -> void:
 	menu_vbox.visible = false
 	achievements_panel.visible = false
+	credits_panel.visible = false
 	settings_panel.visible = true
 
 func _disable_placeholder_buttons() -> void:
 	new_game_button.disabled = true
 	load_game_button.disabled = true
-	credits_button.disabled = true
 
 func _on_achievements_pressed() -> void:
 	_show_achievements()
@@ -64,7 +76,13 @@ func _on_back_pressed() -> void:
 func _on_settings_pressed() -> void:
 	_show_settings()
 
+func _on_credits_pressed() -> void:
+	_show_credits()
+
 func _on_settings_back_pressed() -> void:
+	_show_menu()
+
+func _on_credits_back_pressed() -> void:
 	_show_menu()
 
 func _setup_language_options() -> void:

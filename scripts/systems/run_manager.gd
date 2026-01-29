@@ -31,6 +31,13 @@ const CONDANNA_SAPEVO_COSA_STAVO_FACENDO: StringName = &"CONDANNA_SAPEVO_COSA_ST
 const CONDANNA_ERA_IL_PREZZO: StringName = &"CONDANNA_ERA_IL_PREZZO"
 const CONDANNA_SO_COME_FINISCE: StringName = &"CONDANNA_SO_COME_FINISCE"
 const CONDANNA_NON_OGGI: StringName = &"CONDANNA_NON_OGGI"
+const CONDANNA_HO_VISTO_ABBASTANZA: StringName = &"CONDANNA_HO_VISTO_ABBASTANZA"
+const CONDANNA_MI_SONO_FERMATO: StringName = &"CONDANNA_MI_SONO_FERMATO"
+const CONDANNA_E_FINITA_COSI: StringName = &"CONDANNA_E_FINITA_COSI"
+const CONDANNA_NON_ABBASTANZA: StringName = &"CONDANNA_NON_ABBASTANZA"
+const CONDANNA_TROPPO_TARDI: StringName = &"CONDANNA_TROPPO_TARDI"
+
+const PROFILE_HAS_COMPLETED_ANY_RUN: StringName = &"PROFILE_HAS_COMPLETED_ANY_RUN"
 
 const AUDIENCE_SCORE_MIN: int = -5
 const AUDIENCE_SCORE_MAX: int = 5
@@ -138,6 +145,7 @@ class RunState:
 	var run_is_over: bool = false
 	var is_hunted_by_crowd: bool = false
 	var last_signed_pact_id: StringName = &""
+	var risky_choice_made_recently: bool = false
 
 class ArenaResult:
 	var won: bool = false
@@ -1025,6 +1033,7 @@ func _start_level3_run() -> void:
 	_run_state.last_action_was_rilancio = false
 	_run_state.run_is_over = false
 	_run_state.is_hunted_by_crowd = false
+	_run_state.risky_choice_made_recently = false
 	_emit_escalation_changed()
 	_arena_layout_rng.seed = _run_state.run_seed
 	_level3_rng.seed = _run_state.run_seed
@@ -1077,6 +1086,10 @@ func select_bet(bet_id: StringName) -> void:
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
 		_run_state.last_signed_pact_id = bet_id
+		var bet_data: Dictionary = _get_bet_data(String(bet_id))
+		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
+		if archetype == ARCH_EGO or archetype == ARCH_TIME:
+			_run_state.risky_choice_made_recently = true
 		_register_condanna(CONDANNA_FIRMATO)
 		_register_condanna(CONDANNA_FIRMATO)
 		_register_condanna(CONDANNA_FIRMATO)
@@ -1103,6 +1116,10 @@ func _register_level3_bet_choice(bet_id: StringName) -> void:
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
 		_run_state.last_signed_pact_id = bet_id
+		var bet_data: Dictionary = _get_bet_data(String(bet_id))
+		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
+		if archetype == ARCH_EGO or archetype == ARCH_TIME:
+			_run_state.risky_choice_made_recently = true
 		_register_condanna(CONDANNA_FIRMATO)
 	_current_bet_id = String(bet_id)
 	_last_selected_bet_id = bet_id
@@ -1177,6 +1194,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		scars_applied = _handle_level3_loss_ritual(bet_id, result)
 	else:
 		_run_state.last_action_was_rilancio = false
+		_run_state.risky_choice_made_recently = false
 		_apply_level3_reward(bet_id, _level3_reward_tier)
 		_resolve_ritual_reward_applied = true
 		var player: Node = _resolve_player()
@@ -1776,6 +1794,7 @@ func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
 	_waiting_for_push_luck = true
 	_current_bet_id = String(bet_id)
 	_run_state.last_action_was_rilancio = false
+	_run_state.risky_choice_made_recently = false
 	_open_push_luck_choice(StringName(bet_id))
 
 func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[StringName]:
@@ -2241,6 +2260,7 @@ func _on_request_push_luck_cashout() -> void:
 		var bonus_tier: int = _consume_intermediate_choice_bonus()
 		_waiting_for_push_luck = false
 		_run_state.last_action_was_rilancio = false
+		_run_state.risky_choice_made_recently = false
 		_update_arena_visual_only()
 		GameEvents.push_luck_closed.emit()
 		if bet_id_name != &"" and not _resolve_ritual_reward_applied:
@@ -2248,6 +2268,12 @@ func _on_request_push_luck_cashout() -> void:
 		_resolve_ritual_reward_applied = false
 		_level3_cashouts += 1
 		_run_state.cashouts += 1
+		if _run_state.refuse_cashout_count_this_run >= 1:
+			_register_condanna(CONDANNA_HO_VISTO_ABBASTANZA)
+		if _run_state.escalation_level >= 4:
+			_register_condanna(CONDANNA_HO_VISTO_ABBASTANZA)
+		if _run_state.escalation_level >= 7:
+			_register_condanna(CONDANNA_MI_SONO_FERMATO)
 		if _run_state.escalation_level >= 2:
 			_level3_cashed_after_high_escalation = true
 			_level3_reward_tier = 1
@@ -2302,6 +2328,8 @@ func _on_request_push_luck_double() -> void:
 		if lock_reason != "":
 			return
 		_run_state.refuse_cashout_count_this_run += 1
+		if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD or _run_state.refuse_cashout_count_this_run >= 3:
+			_run_state.risky_choice_made_recently = true
 		var player: Node = _resolve_player()
 		var current_hp: int = -1
 		var max_hp: int = -1
@@ -3255,13 +3283,22 @@ func _enter_game_over() -> void:
 	_provoke_armed = false
 	_run_state.run_is_over = true
 	var is_loss: bool = _run_end_reason != "CASH_OUT"
+	var first_run_completed: bool = SaveManager.has_unlocked(PROFILE_HAS_COMPLETED_ANY_RUN)
 	if is_loss:
+		if not first_run_completed:
+			_register_condanna(CONDANNA_E_FINITA_COSI)
+		if _run_state.arena_index >= 2:
+			_register_condanna(CONDANNA_NON_ABBASTANZA)
+		if _run_state.risky_choice_made_recently:
+			_register_condanna(CONDANNA_TROPPO_TARDI)
 		if _run_state.last_signed_pact_id != &"":
 			_register_condanna(CONDANNA_SAPEVO_COSA_STAVO_FACENDO)
 		if _run_state.bets_history.size() > 0:
 			_register_condanna(CONDANNA_ERA_IL_PREZZO)
 	if _run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
 		_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
+	if not first_run_completed:
+		SaveManager.set_unlocked(PROFILE_HAS_COMPLETED_ANY_RUN, true)
 	_waiting_for_bet = false
 	set_phase(RunPhase.GAME_OVER)
 	_update_arena_visual_only()

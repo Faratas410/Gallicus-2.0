@@ -97,13 +97,47 @@ theme_override_constants/separation = 12
 horizontal_alignment = 1
 text = "ARCHIVIO DELLE CONDANNE"
 
-[node name="CondanneScroll" type="ScrollContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+[node name="ArchivioDisclaimer" type="Label" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+horizontal_alignment = 1
+text = "Registro consultivo. Nessuna ricompensa."
+
+[node name="TabsHBox" type="HBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="CondanneTabButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox"]
+text = "CONDANNE"
+
+[node name="MuseoTabButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox"]
+text = "MUSEO"
+
+[node name="CondanneContainer" type="VBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CondanneScroll" type="ScrollContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneContainer"]
 custom_minimum_size = Vector2(520, 360)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 scroll_horizontal_enabled = false
 
-[node name="CondanneVBox" type="VBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneScroll"]
+[node name="CondanneVBox" type="VBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneContainer/CondanneScroll"]
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="MuseoContainer" type="VBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+visible = false
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MuseoScroll" type="ScrollContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/MuseoContainer"]
+custom_minimum_size = Vector2(520, 360)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="MuseoVBox" type="VBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/MuseoContainer/MuseoScroll"]
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_constants/separation = 6

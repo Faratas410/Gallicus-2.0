@@ -188,6 +188,38 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "La folla ti guarda."
 
+[node name="ArenaThemeTitleLabel" type="Label" parent="HUD"]
+visible = false
+z_index = 111
+anchor_left = 0.5
+anchor_top = 0.2
+anchor_right = 0.5
+anchor_bottom = 0.2
+offset_left = -320.0
+offset_top = -22.0
+offset_right = 320.0
+offset_bottom = 22.0
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Arena del Sigillo"
+
+[node name="ArenaThemeSubtitleLabel" type="Label" parent="HUD"]
+visible = false
+z_index = 111
+anchor_left = 0.5
+anchor_top = 0.235
+anchor_right = 0.5
+anchor_bottom = 0.235
+offset_left = -320.0
+offset_top = -18.0
+offset_right = 320.0
+offset_bottom = 18.0
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Qui ogni firma pesa."
+
 [node name="SentenceBanner" type="Control" parent="HUD"]
 visible = false
 z_index = 112

@@ -33,6 +33,7 @@ const BET_P3_GLORY_TAX: StringName = &"P3_GLORY_TAX"
 const BET_P3_MERCY_BAIT: StringName = &"P3_MERCY_BAIT"
 const BET_P3_SILENCE_BRIBE: StringName = &"P3_SILENCE_BRIBE"
 const BET_P3_FINAL_APPLAUSE: StringName = &"P3_FINAL_APPLAUSE"
+const ArenaThemes = preload("res://data/arena_themes.gd")
 
 const LEVEL3_BET_BEHAVIOR: Dictionary = {
 	BET_P3_WAX_SEAL: BET_DEBT_CHAIN,
@@ -933,6 +934,7 @@ var _special_arena_index: int = 0
 var _special_arena_id: StringName = &""
 var _special_arena_active: bool = false
 var _special_arena_effect_applied: bool = false
+var _arena_theme_id: StringName = ArenaThemes.ARENA_WAX_SEAL
 var _level3_cashouts: int = 0
 var _level3_doubles: int = 0
 var _level3_bets_used: Array[StringName] = []
@@ -1374,6 +1376,7 @@ func start_arena() -> void:
 		_ensure_arena_and_player()
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
+	_emit_arena_theme_changed()
 	_maybe_activate_special_arena()
 	_select_enemy_profile()
 	if _run_state.enemy_profile != &"":
@@ -2139,6 +2142,33 @@ func _get_current_arena_index() -> int:
 	if arena_index <= 0:
 		arena_index = int(run.get("arena_index", 0))
 	return arena_index
+
+func _pick_next_arena_theme() -> StringName:
+	var arena_index: int = _get_current_arena_index()
+	var theme_index: int = (maxi(arena_index, 1) - 1) % 4
+	match theme_index:
+		0:
+			return ArenaThemes.ARENA_WAX_SEAL
+		1:
+			return ArenaThemes.ARENA_DEBT
+		2:
+			return ArenaThemes.ARENA_SILENCE
+		_:
+			return ArenaThemes.ARENA_BLOOD
+
+func _emit_arena_theme_changed() -> void:
+	if not GameEvents.has_signal("arena_theme_changed"):
+		return
+	_arena_theme_id = _pick_next_arena_theme()
+	var theme_data: Dictionary = ArenaThemes.get_theme(_arena_theme_id)
+	var payload: Dictionary = {
+		"theme_id": _arena_theme_id,
+		"title": str(theme_data.get("title", "")),
+		"subtitle": str(theme_data.get("subtitle", "")),
+		"bg_path": str(theme_data.get("bg_texture_path", "")),
+		"overlay_path": str(theme_data.get("overlay_texture_path", "")),
+	}
+	GameEvents.arena_theme_changed.emit(payload)
 
 func _append_pact_log_entry(bet_id: StringName, bet_name: String) -> void:
 	if bet_id == &"":

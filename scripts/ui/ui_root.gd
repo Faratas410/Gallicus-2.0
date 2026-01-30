@@ -12,6 +12,7 @@ const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const UI_PARCHMENT_TEXTURE_PATH: String = "res://assets/ui/panels/contract_clean_paper_9slice.png"
 const UI_WAX_SEAL_TEXTURE_PATH: String = "res://assets/ui/overlays/wax_seal_red.png"
 const CondannaDataScript = preload("res://data/condanne.gd")
+const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
@@ -116,6 +117,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var push_luck_double_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleNote") as Label
 @onready var verdict_header: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictHeader") as Label
 @onready var verdict_outcome: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictOutcome") as Label
+@onready var verdict_sentence_label: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSentenceLabel") as Label
+@onready var verdict_charge_label: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictChargeLabel") as Label
 @onready var verdict_sections: VBoxContainer = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections") as VBoxContainer
 @onready var verdict_pacts_text: RichTextLabel = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/PactsText") as RichTextLabel
 @onready var verdict_condanne_text: RichTextLabel = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/CondanneText") as RichTextLabel
@@ -187,6 +190,8 @@ var _last_verdict_pacts: Array[String] = []
 var _last_verdict_condanne: Array[String] = []
 var _last_verdict_crowd_line: String = ""
 var _last_verdict_outcome: StringName = &"LOSS"
+var _last_verdict_sentence: String = ""
+var _last_verdict_charge: String = ""
 var _special_arena_payload: Dictionary = {}
 var _arena_theme_payload: Dictionary = {}
 var _require_bet_confirm: bool = false
@@ -930,6 +935,9 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	_last_verdict_crowd_line = str(payload.get("last_crowd_line", ""))
 	var outcome_value: Variant = payload.get("outcome", &"LOSS")
 	_last_verdict_outcome = StringName(str(outcome_value))
+	var summary: Dictionary = _build_verdict_summary(payload, pacts_payload, condanne_payload)
+	_last_verdict_sentence = VerdictLinesScript.pick_sentence(summary)
+	_last_verdict_charge = VerdictLinesScript.pick_charge(summary)
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	_refresh_verdict_panel()
@@ -1022,6 +1030,16 @@ func _refresh_verdict_panel() -> void:
 		verdict_header.text = "VERDETTO"
 	if verdict_outcome != null:
 		verdict_outcome.text = _get_verdict_outcome_text(_last_verdict_outcome)
+	if verdict_sentence_label != null:
+		var sentence_text: String = _last_verdict_sentence
+		if sentence_text == "":
+			sentence_text = "SENTENZA NON REGISTRATA."
+		verdict_sentence_label.text = "SENTENZA: %s" % sentence_text
+	if verdict_charge_label != null:
+		var charge_text: String = _last_verdict_charge
+		if charge_text == "":
+			charge_text = "CAPO D'ACCUSA NON REGISTRATO."
+		verdict_charge_label.text = "CAPO D’ACCUSA: %s" % charge_text
 	if verdict_pacts_text != null:
 		verdict_pacts_text.text = _format_verdict_pacts_list(_last_verdict_pacts)
 	if verdict_condanne_text != null:
@@ -1038,6 +1056,10 @@ func _set_verdict_mode(active: bool) -> void:
 		verdict_header.visible = active
 	if verdict_outcome != null:
 		verdict_outcome.visible = active
+	if verdict_sentence_label != null:
+		verdict_sentence_label.visible = active
+	if verdict_charge_label != null:
+		verdict_charge_label.visible = active
 	if verdict_sections != null:
 		verdict_sections.visible = active
 	if verdict_crowd_section != null and active:
@@ -1054,7 +1076,39 @@ func _get_verdict_outcome_text(outcome: StringName) -> String:
 		&"WIN":
 			return "HAI SUPERATO L'ARENA."
 		_:
-			return "SEI CADUTO."
+	return "SEI CADUTO."
+
+func _build_verdict_summary(payload: Dictionary, pacts_payload: Array, condanne_payload: Array) -> Dictionary:
+	var stats_payload: Dictionary = payload.get("stats", {}) as Dictionary
+	var max_escalation: int = int(stats_payload.get("max_escalation", payload.get("max_escalation", 0)))
+	var refuse_cashout: int = int(stats_payload.get("refuse_cashout_count_this_run", payload.get("refuse_cashout_count_this_run", 0)))
+	var seed_value: int = int(payload.get("seed", 0))
+	var summary: Dictionary = {
+		"outcome": str(payload.get("outcome", "LOSS")),
+		"pacts_signed_count": pacts_payload.size(),
+		"condanne_this_run_count": condanne_payload.size(),
+		"max_escalation": max_escalation,
+		"refuse_cashout_count": refuse_cashout,
+		"lying_pact_present": _payload_has_lying_pact(pacts_payload),
+		"seed": seed_value,
+	}
+	return summary
+
+func _payload_has_lying_pact(pacts_payload: Array) -> bool:
+	if pacts_payload.is_empty():
+		return false
+	var manager: Node = _get_run_manager()
+	if manager == null:
+		return false
+	var reveals_value: Variant = manager.get("LYING_PACT_REVEALS")
+	if not (reveals_value is Dictionary):
+		return false
+	var reveals: Dictionary = reveals_value as Dictionary
+	for pact in pacts_payload:
+		var pact_key: StringName = StringName(str(pact))
+		if reveals.has(pact_key) or reveals.has(str(pact)):
+			return true
+	return false
 
 func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_seed = int(payload.get("seed", 0))

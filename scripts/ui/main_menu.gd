@@ -52,6 +52,7 @@ func _ready() -> void:
 	_setup_initial_values()
 	_build_condanne_list()
 	continue_button.pressed.connect(_on_continue_pressed)
+	new_game_button.pressed.connect(_on_new_game_pressed)
 	achievements_button.pressed.connect(_on_achievements_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
@@ -81,6 +82,9 @@ func _show_menu() -> void:
 	condanna_tooltip.visible = false
 	_refresh_continue_button()
 
+func _hide_menu() -> void:
+	visible = false
+
 func _on_request_show_main_menu() -> void:
 	visible = true
 	_show_menu()
@@ -109,8 +113,8 @@ func _show_settings() -> void:
 	settings_panel.visible = true
 
 func _disable_placeholder_buttons() -> void:
-	new_game_button.disabled = true
 	load_game_button.disabled = true
+	load_game_button.tooltip_text = "NON DISPONIBILE"
 
 func _build_condanne_list() -> void:
 	if condanne_populated:
@@ -260,11 +264,26 @@ func _on_continue_pressed() -> void:
 	if continue_button.disabled:
 		return
 	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("request_continue_run"):
-		GameEvents.request_continue_run.emit()
-		var connections: Array = GameEvents.request_continue_run.get_connections()
-		if connections.is_empty():
+		var run_manager: Node = _get_run_manager()
+		if run_manager == null:
 			continue_hint_label.text = "In arrivo."
 			continue_hint_label.visible = true
+			return
+		GameEvents.request_continue_run.emit()
+		_hide_menu()
+	else:
+		continue_hint_label.text = "In arrivo."
+		continue_hint_label.visible = true
+
+func _on_new_game_pressed() -> void:
+	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("request_reset_run"):
+		var run_manager: Node = _get_run_manager()
+		if run_manager == null:
+			continue_hint_label.text = "In arrivo."
+			continue_hint_label.visible = true
+			return
+		GameEvents.request_reset_run.emit()
+		_hide_menu()
 	else:
 		continue_hint_label.text = "In arrivo."
 		continue_hint_label.visible = true

@@ -43,6 +43,7 @@ var selected_language: String = "Italiano"
 var condanne_populated: bool = false
 var condanna_entries: Dictionary = {}
 var _active_achievements_tab: StringName = ACHIEVEMENTS_TAB_CONDANNE
+var _suppress_settings_events: bool = false
 
 func _ready() -> void:
 	_show_menu()
@@ -73,6 +74,14 @@ func _ready() -> void:
 		var menu_callable: Callable = Callable(self, "_on_request_show_main_menu")
 		if not GameEvents.request_show_main_menu.is_connected(menu_callable):
 			GameEvents.request_show_main_menu.connect(menu_callable)
+	if GameEvents.has_signal("settings_opened"):
+		var settings_open_callable: Callable = Callable(self, "_on_settings_opened")
+		if not GameEvents.settings_opened.is_connected(settings_open_callable):
+			GameEvents.settings_opened.connect(settings_open_callable)
+	if GameEvents.has_signal("settings_closed"):
+		var settings_closed_callable: Callable = Callable(self, "_on_settings_closed")
+		if not GameEvents.settings_closed.is_connected(settings_closed_callable):
+			GameEvents.settings_closed.connect(settings_closed_callable)
 
 func _show_menu() -> void:
 	menu_vbox.visible = true
@@ -301,13 +310,19 @@ func _on_back_pressed() -> void:
 	_show_menu()
 
 func _on_settings_pressed() -> void:
-	_show_settings()
+	if GameEvents.has_signal("settings_opened"):
+		GameEvents.settings_opened.emit()
+	else:
+		_show_settings()
 
 func _on_credits_pressed() -> void:
 	_show_credits()
 
 func _on_settings_back_pressed() -> void:
-	_show_menu()
+	if GameEvents.has_signal("settings_closed"):
+		GameEvents.settings_closed.emit()
+	else:
+		_show_menu()
 
 func _on_credits_back_pressed() -> void:
 	_show_menu()
@@ -315,32 +330,84 @@ func _on_credits_back_pressed() -> void:
 func _setup_language_options() -> void:
 	language_option.clear()
 	language_option.add_item("Italiano")
+	language_option.set_item_metadata(0, "it")
 	language_option.add_item("English")
+	language_option.set_item_metadata(1, "en")
 	language_option.select(0)
 	_update_language_label()
 
 func _setup_initial_values() -> void:
-	_apply_brightness(brightness_slider.value)
-	_update_volume_label(master_volume_slider.value)
+	_apply_saved_settings()
 	_update_fullscreen_toggle()
 
+func _apply_saved_settings() -> void:
+	_suppress_settings_events = true
+	var saved_brightness: float = SaveManager.get_brightness()
+	brightness_slider.set_value_no_signal(saved_brightness)
+	_apply_brightness(saved_brightness)
+	var saved_volume: float = SaveManager.get_master_volume()
+	master_volume_slider.set_value_no_signal(saved_volume)
+	_update_volume_label(saved_volume)
+	_apply_master_volume(saved_volume)
+	var saved_language: String = SaveManager.get_language()
+	_select_language(saved_language)
+	_apply_language(saved_language)
+	_suppress_settings_events = false
+
+func _select_language(locale: String) -> void:
+	var target_locale: String = locale.to_lower()
+	var selected_index: int = 0
+	for index in language_option.item_count:
+		var metadata_value: String = str(language_option.get_item_metadata(index)).to_lower()
+		if metadata_value == target_locale:
+			selected_index = index
+			break
+	language_option.select(selected_index)
+	selected_language = _language_label_from_locale(target_locale)
+	_update_language_label()
+
+func _language_label_from_locale(locale: String) -> String:
+	return "English" if locale == "en" else "Italiano"
+
 func _on_brightness_changed(value: float) -> void:
-	_apply_brightness(value)
+	if _suppress_settings_events:
+		return
+	SaveManager.set_brightness(value)
+	var applied_value: float = SaveManager.get_brightness()
+	if not is_equal_approx(applied_value, value):
+		brightness_slider.set_value_no_signal(applied_value)
+	_apply_brightness(applied_value)
+	_emit_settings_changed()
 
 func _apply_brightness(value: float) -> void:
 	brightness_modulate.color = Color(value, value, value, 1.0)
 	brightness_value.text = "Luminosità: %.2f" % value
 
 func _on_language_selected(index: int) -> void:
-	selected_language = language_option.get_item_text(index)
-	_update_language_label()
+	if _suppress_settings_events:
+		return
+	var locale_value: String = str(language_option.get_item_metadata(index))
+	SaveManager.set_language(locale_value)
+	var applied_locale: String = SaveManager.get_language()
+	_suppress_settings_events = true
+	_select_language(applied_locale)
+	_suppress_settings_events = false
+	_apply_language(applied_locale)
+	_emit_settings_changed()
 
 func _update_language_label() -> void:
 	language_value.text = "Lingua selezionata: %s" % selected_language
 
 func _on_master_volume_changed(value: float) -> void:
-	_update_volume_label(value)
-	_apply_master_volume(value)
+	if _suppress_settings_events:
+		return
+	SaveManager.set_master_volume(value)
+	var applied_value: float = SaveManager.get_master_volume()
+	if not is_equal_approx(applied_value, value):
+		master_volume_slider.set_value_no_signal(applied_value)
+	_update_volume_label(applied_value)
+	_apply_master_volume(applied_value)
+	_emit_settings_changed()
 
 func _update_volume_label(value: float) -> void:
 	master_volume_value.text = "Volume: %d%%" % int(round(value * 100.0))
@@ -348,7 +415,25 @@ func _update_volume_label(value: float) -> void:
 func _apply_master_volume(value: float) -> void:
 	var bus_index: int = AudioServer.get_bus_index("Master")
 	if bus_index >= 0:
-		AudioServer.set_bus_volume_db(bus_index, linear_to_db(value))
+		var db_value: float = -80.0 if value <= 0.001 else linear_to_db(value)
+		AudioServer.set_bus_volume_db(bus_index, db_value)
+
+func _apply_language(locale: String) -> void:
+	var target_locale: String = locale.to_lower()
+	if target_locale != "it" and target_locale != "en":
+		target_locale = "it"
+	TranslationServer.set_locale(target_locale)
+	selected_language = _language_label_from_locale(target_locale)
+	_update_language_label()
+
+func _emit_settings_changed() -> void:
+	if GameEvents.has_signal("settings_changed"):
+		var payload: Dictionary = {
+			"language": SaveManager.get_language(),
+			"brightness": SaveManager.get_brightness(),
+			"master_volume": SaveManager.get_master_volume(),
+		}
+		GameEvents.settings_changed.emit(payload)
 
 func _update_fullscreen_toggle() -> void:
 	fullscreen_toggle.button_pressed = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
@@ -358,3 +443,10 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+func _on_settings_opened() -> void:
+	_show_settings()
+	_apply_saved_settings()
+
+func _on_settings_closed() -> void:
+	_show_menu()

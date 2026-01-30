@@ -45,6 +45,9 @@ signal modal_opened(kind: String)
 signal modal_closed(kind: String)
 signal scars_updated(scars: Array)
 signal scar_applied(scar: Dictionary)
+signal settings_opened
+signal settings_closed
+signal settings_changed(payload: Dictionary)
 
 # --- Progression / Difficulty ---
 signal difficulty_tier_changed(tier: int, multiplier: float)

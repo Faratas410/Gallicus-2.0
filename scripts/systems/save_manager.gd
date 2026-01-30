@@ -1,6 +1,6 @@
 extends Node
 
-const SCHEMA_VERSION: int = 1
+const PROFILE_VERSION: int = 2
 const PROFILE_PATH: String = "user://profile.save"
 const TMP_PATH: String = "%s.tmp" % PROFILE_PATH
 const BAK_PATH: String = "%s.bak" % PROFILE_PATH
@@ -14,6 +14,15 @@ const RUN_BAK2_PATH: String = "%s.bak2" % RUN_PATH
 var _profile_loaded: bool = false
 var _profile_dirty: bool = false
 var _unlocked_ids: Array[StringName] = []
+var _settings: Dictionary = {}
+
+const DEFAULT_LANGUAGE: String = "it"
+const DEFAULT_BRIGHTNESS: float = 1.0
+const DEFAULT_MASTER_VOLUME: float = 0.8
+const BRIGHTNESS_MIN: float = 0.6
+const BRIGHTNESS_MAX: float = 1.4
+const VOLUME_MIN: float = 0.0
+const VOLUME_MAX: float = 1.0
 
 func _ready() -> void:
 	load_profile()
@@ -23,6 +32,7 @@ func load_profile() -> void:
 		return
 	_profile_loaded = true
 	_unlocked_ids = []
+	_settings = _get_default_settings()
 	_profile_dirty = false
 	if FileAccess.file_exists(PROFILE_PATH):
 		if _load_profile_from_path(PROFILE_PATH):
@@ -50,8 +60,9 @@ func save_profile() -> void:
 	if not _profile_dirty:
 		return
 	var payload: Dictionary = {
-		"schema_version": SCHEMA_VERSION,
+		"version": PROFILE_VERSION,
 		"unlocked_ids": _serialize_unlocked_ids(),
+		"settings": _serialize_settings(),
 	}
 	var json_text: String = JSON.stringify(payload)
 	var file: FileAccess = FileAccess.open(TMP_PATH, FileAccess.WRITE)
@@ -106,11 +117,64 @@ func get_unlocked_ids() -> Array[StringName]:
 		load_profile()
 	return _unlocked_ids.duplicate()
 
+func get_settings() -> Dictionary:
+	if not _profile_loaded:
+		load_profile()
+	return _settings.duplicate(true)
+
+func get_language() -> String:
+	if not _profile_loaded:
+		load_profile()
+	return str(_settings.get("language", DEFAULT_LANGUAGE))
+
+func get_brightness() -> float:
+	if not _profile_loaded:
+		load_profile()
+	return float(_settings.get("brightness", DEFAULT_BRIGHTNESS))
+
+func get_master_volume() -> float:
+	if not _profile_loaded:
+		load_profile()
+	return float(_settings.get("master_volume", DEFAULT_MASTER_VOLUME))
+
+func set_language(value: String) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: String = _sanitize_language(value)
+	if str(_settings.get("language", DEFAULT_LANGUAGE)) == sanitized:
+		return
+	_settings["language"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func set_brightness(value: float) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: float = _sanitize_brightness(value)
+	if is_equal_approx(float(_settings.get("brightness", DEFAULT_BRIGHTNESS)), sanitized):
+		return
+	_settings["brightness"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func set_master_volume(value: float) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: float = _sanitize_master_volume(value)
+	if is_equal_approx(float(_settings.get("master_volume", DEFAULT_MASTER_VOLUME)), sanitized):
+		return
+	_settings["master_volume"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
 func _serialize_unlocked_ids() -> Array[String]:
 	var items: Array[String] = []
 	for id in _unlocked_ids:
 		items.append(String(id))
 	return items
+
+func _serialize_settings() -> Dictionary:
+	return _settings.duplicate(true)
 
 func _backup_corrupt_profile() -> void:
 	if not FileAccess.file_exists(PROFILE_PATH):
@@ -133,11 +197,11 @@ func _load_profile_from_path(path: String) -> bool:
 	var data: Dictionary = parsed as Dictionary
 	if not _validate_profile_dict(data):
 		return false
-	var version_value: Variant = data.get("schema_version", data.get("version", SCHEMA_VERSION))
+	var version_value: Variant = data.get("version", data.get("schema_version", PROFILE_VERSION))
 	var from_version: int = int(version_value)
 	if from_version <= 0:
 		from_version = 1
-	if from_version < SCHEMA_VERSION:
+	if from_version < PROFILE_VERSION:
 		data = _migrate(data, from_version)
 		_profile_dirty = true
 	var unlocked_values: Array = []
@@ -149,6 +213,7 @@ func _load_profile_from_path(path: String) -> bool:
 			var id: StringName = StringName(id_text)
 			if not _unlocked_ids.has(id):
 				_unlocked_ids.append(id)
+	_load_settings_from_profile(data)
 	return true
 
 func _validate_profile_dict(data: Dictionary) -> bool:
@@ -159,7 +224,7 @@ func _validate_profile_dict(data: Dictionary) -> bool:
 func _migrate(data: Dictionary, from_version: int) -> Dictionary:
 	var current: Dictionary = data
 	var working_version: int = from_version
-	while working_version < SCHEMA_VERSION:
+	while working_version < PROFILE_VERSION:
 		match working_version:
 			1:
 				current = _migrate_v1_to_v2(current)
@@ -170,6 +235,58 @@ func _migrate(data: Dictionary, from_version: int) -> Dictionary:
 
 func _migrate_v1_to_v2(data: Dictionary) -> Dictionary:
 	return data
+
+func _get_default_settings() -> Dictionary:
+	return {
+		"language": DEFAULT_LANGUAGE,
+		"brightness": DEFAULT_BRIGHTNESS,
+		"master_volume": DEFAULT_MASTER_VOLUME,
+	}
+
+func _sanitize_language(value: String) -> String:
+	var locale: String = value.strip_edges().to_lower()
+	if locale != "it" and locale != "en":
+		return DEFAULT_LANGUAGE
+	return locale
+
+func _sanitize_brightness(value: float) -> float:
+	return clamp(value, BRIGHTNESS_MIN, BRIGHTNESS_MAX)
+
+func _sanitize_master_volume(value: float) -> float:
+	return clamp(value, VOLUME_MIN, VOLUME_MAX)
+
+func _load_settings_from_profile(data: Dictionary) -> void:
+	var needs_save: bool = false
+	var settings_value: Dictionary = {}
+	if data.has("settings") and data["settings"] is Dictionary:
+		settings_value = data["settings"] as Dictionary
+	else:
+		needs_save = true
+	var sanitized: Dictionary = _get_default_settings()
+	var locale_value: String = DEFAULT_LANGUAGE
+	if settings_value.has("language"):
+		locale_value = _sanitize_language(str(settings_value.get("language", DEFAULT_LANGUAGE)))
+	else:
+		needs_save = true
+	if settings_value.has("brightness"):
+		sanitized["brightness"] = _sanitize_brightness(float(settings_value.get("brightness", DEFAULT_BRIGHTNESS)))
+	else:
+		needs_save = true
+	if settings_value.has("master_volume"):
+		sanitized["master_volume"] = _sanitize_master_volume(float(settings_value.get("master_volume", DEFAULT_MASTER_VOLUME)))
+	else:
+		needs_save = true
+	sanitized["language"] = locale_value
+	if not needs_save:
+		if str(settings_value.get("language", "")) != str(sanitized["language"]):
+			needs_save = true
+		if not is_equal_approx(float(settings_value.get("brightness", DEFAULT_BRIGHTNESS)), float(sanitized["brightness"])):
+			needs_save = true
+		if not is_equal_approx(float(settings_value.get("master_volume", DEFAULT_MASTER_VOLUME)), float(sanitized["master_volume"])):
+			needs_save = true
+	_settings = sanitized
+	if needs_save:
+		_profile_dirty = true
 
 func has_run_save() -> bool:
 	return FileAccess.file_exists(RUN_PATH) or FileAccess.file_exists(RUN_BAK_PATH)

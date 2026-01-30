@@ -66,6 +66,7 @@ signal request_intermediate_choice(choice_id: String)
 signal request_set_run_seed(seed: int)
 signal request_clear_run_seed
 signal request_skip_arena_resolution
+signal request_show_main_menu
 
 var gameplay_enabled: bool = true
 

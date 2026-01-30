@@ -57,6 +57,10 @@ func _ready() -> void:
 		var condanna_callable: Callable = Callable(self, "_on_condanna_registered")
 		if not GameEvents.condanna_registered.is_connected(condanna_callable):
 			GameEvents.condanna_registered.connect(condanna_callable)
+	if GameEvents.has_signal("request_show_main_menu"):
+		var menu_callable: Callable = Callable(self, "_on_request_show_main_menu")
+		if not GameEvents.request_show_main_menu.is_connected(menu_callable):
+			GameEvents.request_show_main_menu.connect(menu_callable)
 
 func _show_menu() -> void:
 	menu_vbox.visible = true
@@ -65,6 +69,10 @@ func _show_menu() -> void:
 	settings_panel.visible = false
 	condanna_tooltip.visible = false
 	_refresh_continue_button()
+
+func _on_request_show_main_menu() -> void:
+	visible = true
+	_show_menu()
 
 func _show_achievements() -> void:
 	menu_vbox.visible = false

@@ -88,6 +88,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopup") as RichTextLabel
 @onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
 @onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabel") as Label
+@onready var arena_theme_title_label: Label = get_node_or_null("HUD/ArenaThemeTitleLabel") as Label
+@onready var arena_theme_subtitle_label: Label = get_node_or_null("HUD/ArenaThemeSubtitleLabel") as Label
 @onready var sentence_banner: Control = get_node_or_null("HUD/SentenceBanner") as Control
 @onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitle") as Label
 @onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRule") as Label
@@ -186,6 +188,7 @@ var _last_verdict_condanne: Array[String] = []
 var _last_verdict_crowd_line: String = ""
 var _last_verdict_outcome: StringName = &"LOSS"
 var _special_arena_payload: Dictionary = {}
+var _arena_theme_payload: Dictionary = {}
 var _require_bet_confirm: bool = false
 var _scars_detail_text: String = ""
 var _debug_run_log: String = ""
@@ -252,6 +255,9 @@ func _ready() -> void:
 	var special_arena_callable: Callable = Callable(self, "_on_special_arena_started")
 	if GameEvents.has_signal("special_arena_started") and not GameEvents.special_arena_started.is_connected(special_arena_callable):
 		GameEvents.special_arena_started.connect(special_arena_callable)
+	var arena_theme_callable: Callable = Callable(self, "_on_arena_theme_changed")
+	if GameEvents.has_signal("arena_theme_changed") and not GameEvents.arena_theme_changed.is_connected(arena_theme_callable):
+		GameEvents.arena_theme_changed.connect(arena_theme_callable)
 	var bet_failed_callable: Callable = Callable(self, "_on_bet_failed")
 	if not GameEvents.bet_failed.is_connected(bet_failed_callable):
 		GameEvents.bet_failed.connect(bet_failed_callable)
@@ -1064,6 +1070,10 @@ func _on_special_arena_started(payload: Dictionary) -> void:
 	if bet_panel != null and bet_panel.visible:
 		_update_special_arena_ui()
 
+func _on_arena_theme_changed(payload: Dictionary) -> void:
+	_arena_theme_payload = payload.duplicate(true)
+	_update_arena_theme_ui()
+
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
 		_set_bet_modal(false)
@@ -1281,6 +1291,24 @@ func _update_special_arena_ui() -> void:
 	else:
 		special_arena_label.text = title
 	special_arena_label.visible = true
+
+func _update_arena_theme_ui() -> void:
+	if arena_theme_title_label == null and arena_theme_subtitle_label == null:
+		return
+	if _arena_theme_payload.is_empty():
+		if arena_theme_title_label != null:
+			arena_theme_title_label.visible = false
+		if arena_theme_subtitle_label != null:
+			arena_theme_subtitle_label.visible = false
+		return
+	var title: String = str(_arena_theme_payload.get("title", ""))
+	var subtitle: String = str(_arena_theme_payload.get("subtitle", ""))
+	if arena_theme_title_label != null:
+		arena_theme_title_label.text = title
+		arena_theme_title_label.visible = title != ""
+	if arena_theme_subtitle_label != null:
+		arena_theme_subtitle_label.text = subtitle
+		arena_theme_subtitle_label.visible = subtitle != ""
 
 func _update_condanna_focus() -> void:
 	if condanna_focus_label == null:

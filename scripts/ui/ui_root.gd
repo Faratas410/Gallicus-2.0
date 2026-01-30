@@ -11,6 +11,7 @@ const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const UI_PARCHMENT_TEXTURE_PATH: String = "res://assets/ui/panels/contract_clean_paper_9slice.png"
 const UI_WAX_SEAL_TEXTURE_PATH: String = "res://assets/ui/overlays/wax_seal_red.png"
+const CondannaDataScript = preload("res://data/condanne.gd")
 const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
@@ -111,6 +112,14 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var push_luck_condanna_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCondannaBox/PushLuckCondannaNote") as Label
 @onready var push_luck_double_button: Button = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleButton") as Button
 @onready var push_luck_double_note: Label = get_node_or_null("Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox/PushLuckDoubleNote") as Label
+@onready var verdict_header: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictHeader") as Label
+@onready var verdict_outcome: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictOutcome") as Label
+@onready var verdict_sections: VBoxContainer = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections") as VBoxContainer
+@onready var verdict_pacts_text: RichTextLabel = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/PactsText") as RichTextLabel
+@onready var verdict_condanne_text: RichTextLabel = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/CondanneText") as RichTextLabel
+@onready var verdict_crowd_section: VBoxContainer = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/CrowdSection") as VBoxContainer
+@onready var verdict_crowd_text: Label = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/CrowdSection/CrowdText") as Label
+@onready var game_over_scroll: ScrollContainer = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll") as ScrollContainer
 @onready var ending_text: RichTextLabel = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin/EndingText") as RichTextLabel
 @onready var restart_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/RestartButton") as Button
 @onready var next_bet_button: Button = get_node_or_null("Modals/GameOverModal/GameOverPanel/GameOverVBox/NextBetButton") as Button
@@ -172,6 +181,10 @@ var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
 var _last_finale_stats: Dictionary = {}
 var _last_finale_hint: String = ""
+var _last_verdict_pacts: Array[String] = []
+var _last_verdict_condanne: Array[String] = []
+var _last_verdict_crowd_line: String = ""
+var _last_verdict_outcome: StringName = &"LOSS"
 var _special_arena_payload: Dictionary = {}
 var _require_bet_confirm: bool = false
 var _scars_detail_text: String = ""
@@ -810,7 +823,7 @@ func _on_run_started() -> void:
 	_pending_bets = []
 	_set_game_over_modal(false)
 	if next_bet_button != null:
-		next_bet_button.visible = true
+		next_bet_button.visible = false
 	_last_finale_title = "RUN FAILED"
 	_last_finale_text = ""
 	_last_finale_scars = []
@@ -818,6 +831,10 @@ func _on_run_started() -> void:
 	_last_finale_seed = 0
 	_last_finale_stats = {}
 	_last_finale_hint = ""
+	_last_verdict_pacts = []
+	_last_verdict_condanne = []
+	_last_verdict_crowd_line = ""
+	_last_verdict_outcome = &"LOSS"
 	_special_arena_payload = {}
 	_debug_run_log = ""
 	_debug_special_arena = ""
@@ -896,8 +913,20 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 		_last_finale_stats = payload["stats"] as Dictionary
 	else:
 		_last_finale_stats = {}
+	var pacts_payload: Array = []
+	if payload.has("pacts_signed"):
+		pacts_payload = payload.get("pacts_signed", []) as Array
+	elif payload.has("pacts"):
+		pacts_payload = payload.get("pacts", []) as Array
+	_last_verdict_pacts = _coerce_string_list(pacts_payload)
+	var condanne_payload: Array = payload.get("condanne_this_run", []) as Array
+	_last_verdict_condanne = _coerce_string_list(condanne_payload)
+	_last_verdict_crowd_line = str(payload.get("last_crowd_line", ""))
+	var outcome_value: Variant = payload.get("outcome", &"LOSS")
+	_last_verdict_outcome = StringName(str(outcome_value))
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
+	_refresh_verdict_panel()
 
 func _on_run_failed() -> void:
 	_set_bet_modal(false)
@@ -912,13 +941,13 @@ func _on_run_failed() -> void:
 	_reset_fast_countdown()
 	_set_push_luck_modal(false)
 	_set_game_over_modal(true)
+	_set_verdict_mode(true)
 	if next_bet_button != null:
 		next_bet_button.visible = false
-	_last_finale_hint = "Vuoi riprovare?"
+	_last_finale_hint = ""
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
-	if restart_button != null:
-		restart_button.text = "RESTART RUN"
+	_refresh_verdict_panel()
 	_reset_fast_countdown()
 	var ending_read_buttons: Array[Button] = []
 	if restart_button != null:
@@ -930,6 +959,77 @@ func _on_run_failed() -> void:
 	_apply_modal_read_delay(ending_read_buttons)
 	_refresh_modal_dimmer()
 	_hide_scars_detail()
+
+func _coerce_string_list(values: Array) -> Array[String]:
+	var result: Array[String] = []
+	for value in values:
+		var text: String = str(value).strip_edges()
+		if text != "":
+			result.append(text)
+	return result
+
+func _format_verdict_list(values: Array[String]) -> String:
+	if values.is_empty():
+		return "—"
+	var lines: PackedStringArray = []
+	for value in values:
+		lines.append("• %s" % value)
+	return "\n".join(lines)
+
+func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
+	if values.is_empty():
+		return []
+	var entries: Array[CondannaData] = CondannaDataScript.defaults()
+	var titles_by_id: Dictionary = {}
+	for entry in entries:
+		titles_by_id[str(entry.id)] = entry.title
+	var result: Array[String] = []
+	for value in values:
+		var key: String = value
+		var title: String = str(titles_by_id.get(key, ""))
+		if title == "":
+			title = value
+		result.append(title)
+	return result
+
+func _refresh_verdict_panel() -> void:
+	if verdict_header != null:
+		verdict_header.text = "VERDETTO"
+	if verdict_outcome != null:
+		verdict_outcome.text = _get_verdict_outcome_text(_last_verdict_outcome)
+	if verdict_pacts_text != null:
+		verdict_pacts_text.text = _format_verdict_list(_last_verdict_pacts)
+	if verdict_condanne_text != null:
+		var condanne_titles: Array[String] = _resolve_condanna_titles(_last_verdict_condanne)
+		verdict_condanne_text.text = _format_verdict_list(condanne_titles)
+	var crowd_line: String = _last_verdict_crowd_line.strip_edges()
+	if verdict_crowd_section != null:
+		verdict_crowd_section.visible = crowd_line != ""
+	if verdict_crowd_text != null:
+		verdict_crowd_text.text = crowd_line
+
+func _set_verdict_mode(active: bool) -> void:
+	if verdict_header != null:
+		verdict_header.visible = active
+	if verdict_outcome != null:
+		verdict_outcome.visible = active
+	if verdict_sections != null:
+		verdict_sections.visible = active
+	if verdict_crowd_section != null and active:
+		verdict_crowd_section.visible = _last_verdict_crowd_line.strip_edges() != ""
+	if game_over_scroll != null:
+		game_over_scroll.visible = not active
+	if ending_text != null:
+		ending_text.visible = not active
+
+func _get_verdict_outcome_text(outcome: StringName) -> String:
+	match outcome:
+		&"CASHOUT":
+			return "HAI INCASSATO."
+		&"WIN":
+			return "HAI SUPERATO L'ARENA."
+		_:
+			return "SEI CADUTO."
 
 func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_seed = int(payload.get("seed", 0))
@@ -1586,7 +1686,11 @@ func _request_retry() -> void:
 	_refresh_modal_dimmer()
 
 func _on_quit_pressed() -> void:
-	get_tree().quit()
+	_set_game_over_modal(false)
+	if GameEvents.has_signal("request_show_main_menu"):
+		GameEvents.request_show_main_menu.emit()
+	_hide_scars_detail()
+	_refresh_modal_dimmer()
 
 func _on_player_health_changed(current: int, max_value: int) -> void:
 	if player_hp_bar == null or player_hp_label == null:
@@ -1786,6 +1890,7 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_reset_bet_confirmation()
 	_reset_fast_countdown()
 	_set_game_over_modal(true)
+	_set_verdict_mode(false)
 	_last_finale_title = "RUN FAILED"
 	if can_retry:
 		_last_finale_title = "BET FAILED"

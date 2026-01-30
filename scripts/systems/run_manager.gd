@@ -957,6 +957,8 @@ var _provoke_armed: bool = false
 var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
 var _run_finale_emitted: bool = false
+var _condanne_this_run: Array[StringName] = []
+var _last_audience_context_line: String = ""
 var _forced_ending_id: StringName = &""
 var _forced_next_pact_archetype: StringName = &""
 var _special_arena_cashout_lock_reason: String = ""
@@ -1217,6 +1219,8 @@ func start_new_run() -> void:
 	_failed_high_risk_bets = 0
 	_run_end_reason = ""
 	_run_finale_emitted = false
+	_condanne_this_run = []
+	_last_audience_context_line = ""
 	_resolving_arena = false
 	_resolving_ritual = false
 	_pact_sealed_sequence_id = 0
@@ -1287,6 +1291,8 @@ func _start_level3_run() -> void:
 	_show_shop_next_bet = false
 	_run_end_reason = ""
 	_run_finale_emitted = false
+	_condanne_this_run = []
+	_last_audience_context_line = ""
 	_resolving_arena = false
 	_pact_sealed_sequence_id = 0
 	_forced_ending_id = &""
@@ -3745,6 +3751,7 @@ func _emit_audience_context_line(context: StringName) -> void:
 	var line: String = _pick_audience_context_line(context)
 	if line == "":
 		return
+	_last_audience_context_line = line
 	GameEvents.audience_context_line_emitted.emit(line)
 
 func _get_audience_cashout_modifier() -> float:
@@ -4088,12 +4095,12 @@ func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _scars.duplicate(true)
 	var scar_count: int = _run_state.scars.size()
 	var ending_id: StringName = _forced_ending_id
+	var run_completed: bool = _level3_target_arenas > 0 and _run_state.arena_index >= _level3_target_arenas
 	if ending_id == &"":
 		if _run_end_reason == "DOUBLE_OR_DIE":
 			ending_id = &"THE_FOOL"
 		else:
 			var physical_scars: int = _count_scars_with_tag(&"physical")
-			var run_completed: bool = _level3_target_arenas > 0 and _run_state.arena_index >= _level3_target_arenas
 			var many_cashouts: bool = _level3_cashouts >= 3 and _level3_doubles <= 0
 			var high_escalation: bool = _level3_max_escalation >= 3
 			var debt_marked: bool = _has_scar(SCAR_DEBT_BRAND)
@@ -4139,6 +4146,12 @@ func _select_run_finale() -> Dictionary:
 	var bet_names: Array[String] = []
 	for bet_id: StringName in _level3_bets_used:
 		bet_names.append(_get_bet_display_name(String(bet_id)))
+	var pacts_signed: Array[StringName] = _run_state.bets_history.duplicate()
+	var outcome: StringName = &"LOSS"
+	if _run_end_reason == "CASH_OUT":
+		outcome = &"CASHOUT"
+	elif run_completed:
+		outcome = &"WIN"
 	var stats_payload: Dictionary = {
 		"cashouts": _level3_cashouts,
 		"doubles": _level3_doubles,
@@ -4155,6 +4168,10 @@ func _select_run_finale() -> Dictionary:
 		"ending_id": String(ending_id),
 		"seed": _run_state.run_seed,
 		"stats": stats_payload,
+		"pacts_signed": pacts_signed,
+		"condanne_this_run": _condanne_this_run.duplicate(),
+		"last_crowd_line": _last_audience_context_line,
+		"outcome": outcome,
 	}
 
 func _has_used_bet(bet_id: StringName) -> bool:
@@ -4338,6 +4355,8 @@ func _reset_progression() -> void:
 func _register_condanna(id: StringName) -> void:
 	if id == &"":
 		return
+	if not _condanne_this_run.has(id):
+		_condanne_this_run.append(id)
 	if SaveManager.has_unlocked(id):
 		return
 	SaveManager.set_unlocked(id, true)

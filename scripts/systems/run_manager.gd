@@ -33,6 +33,9 @@ const BET_P3_GLORY_TAX: StringName = &"P3_GLORY_TAX"
 const BET_P3_MERCY_BAIT: StringName = &"P3_MERCY_BAIT"
 const BET_P3_SILENCE_BRIBE: StringName = &"P3_SILENCE_BRIBE"
 const BET_P3_FINAL_APPLAUSE: StringName = &"P3_FINAL_APPLAUSE"
+const BET_P3_LIE_MERCY: StringName = &"P3_LIE_MERCY"
+const BET_P3_LIE_DEBT: StringName = &"P3_LIE_DEBT"
+const BET_P3_LIE_APPLAUSE: StringName = &"P3_LIE_APPLAUSE"
 const ArenaThemes = preload("res://data/arena_themes.gd")
 
 const LEVEL3_BET_BEHAVIOR: Dictionary = {
@@ -48,6 +51,9 @@ const LEVEL3_BET_BEHAVIOR: Dictionary = {
 	BET_P3_MERCY_BAIT: BET_CROW_PLEASER,
 	BET_P3_SILENCE_BRIBE: BET_DEBT_CHAIN,
 	BET_P3_FINAL_APPLAUSE: BET_CROW_PLEASER,
+	BET_P3_LIE_MERCY: BET_CROW_PLEASER,
+	BET_P3_LIE_DEBT: BET_DEBT_CHAIN,
+	BET_P3_LIE_APPLAUSE: BET_LAST_BREATH,
 }
 const LEVEL3_PACT_UNLOCKS: Dictionary = {
 	BET_P3_WAX_SEAL: CONDANNA_FIRMATO,
@@ -62,6 +68,9 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 	BET_P3_GLORY_TAX: CONDANNA_MI_SONO_FERMATO,
 	BET_P3_SILENCE_BRIBE: CONDANNA_MI_SONO_FERMATO,
 	BET_P3_FINAL_APPLAUSE: CONDANNA_MI_SONO_FERMATO,
+	BET_P3_LIE_MERCY: CONDANNA_NON_DOVEVO_PROVARCI,
+	BET_P3_LIE_DEBT: CONDANNA_NON_DOVEVO_PROVARCI,
+	BET_P3_LIE_APPLAUSE: CONDANNA_NON_DOVEVO_PROVARCI,
 }
 const RUN_SAVE_SCHEMA_VERSION: int = 1
 const RUN_FLOW_BET_SIGNED: StringName = &"BET_SIGNED"
@@ -785,7 +794,49 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"blocked_scars": [],
 		"requires_scars": [],
 	},
+	{
+		"id": "P3_LIE_MERCY",
+		"name": "CLAUSOLA DI MISERICORDIA",
+		"archetype": ARCH_EGO,
+		"archetype_label": "ARCHETIPO: EGO",
+		"pact": "Se ti fermi, l’arena ti lascia andare.",
+		"condition": "Vinci l'arena e lascia il pubblico in estasi.",
+		"doom": "La folla pretende spettacolo.\nUn passo falso diventa scherno.\nEffetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",
+		"weight": 3,
+		"blocked_scars": [],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_LIE_DEBT",
+		"name": "DEBITO PULITO",
+		"archetype": ARCH_DEBT,
+		"archetype_label": "ARCHETIPO: DEBITO",
+		"pact": "Firmi una volta. Poi sei libero.",
+		"condition": "Vinci l'arena e non spezzare la promessa.",
+		"doom": "La catena non si spezza.\nOgni passo stringe il debito.\nIl pubblico pretende il prezzo.\nEffetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",
+		"weight": 3,
+		"blocked_scars": [SCAR_DEBT_BRAND],
+		"requires_scars": [],
+	},
+	{
+		"id": "P3_LIE_APPLAUSE",
+		"name": "APPLAUSO GARANTITO",
+		"archetype": ARCH_TIME,
+		"archetype_label": "ARCHETIPO: TEMPO",
+		"pact": "Il pubblico è dalla tua parte. Sempre.",
+		"condition": "Vinci l'arena con il cuore in gola.",
+		"doom": "Respiri corto.\nOgni colpo è l'ultimo.\nIl destino pesa sulle ossa.\nEffetto: cicatrice GRAVE (non mortale), cammino compromesso.",
+		"weight": 2,
+		"blocked_scars": [],
+		"requires_scars": [SCAR_CRACKED_BONES],
+	},
 ]
+
+const LYING_PACT_REVEALS: Dictionary = {
+	BET_P3_LIE_MERCY: "VERITÀ: La folla pretende spettacolo: ogni esitazione si paga.",
+	BET_P3_LIE_DEBT: "VERITÀ: Il debito si rinnova: ciò che prendi oggi lo restituisci domani.",
+	BET_P3_LIE_APPLAUSE: "VERITÀ: L'applauso è una trappola: più ti esaltano, più ti consumano.",
+}
 
 const LEVEL3_SCARS: Array[Dictionary] = [
 	{
@@ -4329,6 +4380,11 @@ func get_level3_pact_title(pact_id: StringName) -> String:
 		if bet_id == pact_id:
 			return str(bet.get("name", ""))
 	return str(pact_id)
+
+func get_pact_reveal_line(pact_id: StringName) -> String:
+	if LYING_PACT_REVEALS.has(pact_id):
+		return str(LYING_PACT_REVEALS.get(pact_id, ""))
+	return ""
 
 func get_available_arena_themes() -> Array[StringName]:
 	return _get_available_arena_theme_ids()

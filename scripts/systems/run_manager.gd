@@ -1094,9 +1094,11 @@ var _boot_valid: bool = true
 var _sanity_ui_root: Node = null
 var _run_save_flow_step: StringName = &""
 var _run_save_flow_bet_id: StringName = &""
+var _arena_themes: RefCounted = null
 
 func _ready() -> void:
 	print("RunManager ready")
+	_arena_themes = ArenaThemes.new()
 	add_to_group("run_manager")
 	if not _validate_game_events_signals():
 		return
@@ -2295,7 +2297,7 @@ func _emit_arena_theme_changed() -> void:
 	if not GameEvents.has_signal("arena_theme_changed"):
 		return
 	_arena_theme_id = _pick_next_arena_theme()
-	var theme_data: Dictionary = ArenaThemes.get_theme(_arena_theme_id)
+	var theme_data: Dictionary = _arena_themes.get_theme(_arena_theme_id)
 	var payload: Dictionary = {
 		"theme_id": _arena_theme_id,
 		"title": str(theme_data.get("title", "")),

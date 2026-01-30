@@ -44,8 +44,10 @@ var condanne_populated: bool = false
 var condanna_entries: Dictionary = {}
 var _active_achievements_tab: StringName = ACHIEVEMENTS_TAB_CONDANNE
 var _suppress_settings_events: bool = false
+var _arena_themes: RefCounted = null
 
 func _ready() -> void:
+	_arena_themes = ArenaThemes.new()
 	_show_menu()
 	_disable_placeholder_buttons()
 	_refresh_continue_button()
@@ -177,7 +179,7 @@ func _build_museo_list() -> void:
 		_add_museo_item("— Nessuna arena disponibile.")
 	else:
 		for theme_id in arena_themes:
-			var theme_data: Dictionary = ArenaThemes.get_theme(theme_id)
+			var theme_data: Dictionary = _arena_themes.get_theme(theme_id)
 			var theme_title: String = str(theme_data.get("title", ""))
 			if theme_title == "":
 				theme_title = str(theme_id)

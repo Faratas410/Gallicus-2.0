@@ -1076,7 +1076,7 @@ func _get_verdict_outcome_text(outcome: StringName) -> String:
 		&"WIN":
 			return "HAI SUPERATO L'ARENA."
 		_:
-	return "SEI CADUTO."
+			return "SEI CADUTO."
 
 func _build_verdict_summary(payload: Dictionary, pacts_payload: Array, condanne_payload: Array) -> Dictionary:
 	var stats_payload: Dictionary = payload.get("stats", {}) as Dictionary

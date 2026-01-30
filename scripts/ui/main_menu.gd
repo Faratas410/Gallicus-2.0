@@ -1,6 +1,7 @@
 extends Control
 
 const CondannaDataScript = preload("res://data/condanne.gd")
+const ArenaThemes = preload("res://data/arena_themes.gd")
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
@@ -13,8 +14,13 @@ const CondannaDataScript = preload("res://data/condanne.gd")
 @onready var achievements_button: Button = get_node("CenterContainer/MenuVBox/AchievementsButton") as Button
 @onready var settings_button: Button = get_node("CenterContainer/MenuVBox/SettingsButton") as Button
 @onready var credits_button: Button = get_node("CenterContainer/MenuVBox/CreditsButton") as Button
+@onready var condanne_tab_button: Button = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox/CondanneTabButton") as Button
+@onready var museo_tab_button: Button = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox/MuseoTabButton") as Button
+@onready var condanne_container: Control = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneContainer") as Control
+@onready var museo_container: Control = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/MuseoContainer") as Control
 @onready var back_button: Button = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/BackButton") as Button
-@onready var condanne_vbox: VBoxContainer = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneScroll/CondanneVBox") as VBoxContainer
+@onready var condanne_vbox: VBoxContainer = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneContainer/CondanneScroll/CondanneVBox") as VBoxContainer
+@onready var museo_vbox: VBoxContainer = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/MuseoContainer/MuseoScroll/MuseoVBox") as VBoxContainer
 @onready var condanna_tooltip: PanelContainer = get_node("AchievementsPanel/CondannaTooltip") as PanelContainer
 @onready var tooltip_label: RichTextLabel = get_node("AchievementsPanel/CondannaTooltip/TooltipLabel") as RichTextLabel
 @onready var credits_back_button: Button = get_node("CreditsPanel/CreditsCenter/CreditsVBox/CreditsBackButton") as Button
@@ -28,12 +34,15 @@ const CondannaDataScript = preload("res://data/condanne.gd")
 @onready var fullscreen_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/FullscreenToggle") as CheckBox
 @onready var brightness_modulate: CanvasModulate = get_node("../../BrightnessModulate") as CanvasModulate
 
+const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
+const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
+const CONDANNA_UNLOCKED_ALPHA: float = 1.0
+const CONDANNA_LOCKED_ALPHA: float = 0.35
+
 var selected_language: String = "Italiano"
 var condanne_populated: bool = false
 var condanna_entries: Dictionary = {}
-
-const CONDANNA_UNLOCKED_ALPHA: float = 1.0
-const CONDANNA_LOCKED_ALPHA: float = 0.35
+var _active_achievements_tab: StringName = ACHIEVEMENTS_TAB_CONDANNE
 
 func _ready() -> void:
 	_show_menu()
@@ -46,6 +55,8 @@ func _ready() -> void:
 	achievements_button.pressed.connect(_on_achievements_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
+	condanne_tab_button.pressed.connect(_on_condanne_tab_pressed)
+	museo_tab_button.pressed.connect(_on_museo_tab_pressed)
 	back_button.pressed.connect(_on_back_pressed)
 	credits_back_button.pressed.connect(_on_credits_back_pressed)
 	settings_back_button.pressed.connect(_on_settings_back_pressed)
@@ -81,6 +92,8 @@ func _show_achievements() -> void:
 	settings_panel.visible = false
 	if not condanne_populated:
 		_build_condanne_list()
+	_build_museo_list()
+	_set_achievements_tab(ACHIEVEMENTS_TAB_CONDANNE)
 	_refresh_condanne_visuals()
 
 func _show_credits() -> void:
@@ -114,6 +127,90 @@ func _build_condanne_list() -> void:
 		entry_label.mouse_exited.connect(_on_condanna_mouse_exited)
 		condanne_vbox.add_child(entry_label)
 	condanne_populated = true
+
+func _build_museo_list() -> void:
+	if museo_vbox == null:
+		return
+	for child in museo_vbox.get_children():
+		child.queue_free()
+	var run_manager: Node = _get_run_manager()
+	var pact_ids: Array[StringName] = []
+	var arena_themes: Array[StringName] = []
+	var harsh_unlocked: bool = false
+	var base_count: int = 0
+	var harsh_count: int = 0
+	if run_manager != null:
+		if run_manager.has_method("get_available_level3_pacts"):
+			pact_ids = run_manager.get_available_level3_pacts() as Array[StringName]
+		if run_manager.has_method("get_available_arena_themes"):
+			arena_themes = run_manager.get_available_arena_themes() as Array[StringName]
+		if run_manager.has_method("is_harsh_crowd_unlocked"):
+			harsh_unlocked = bool(run_manager.is_harsh_crowd_unlocked())
+		if run_manager.has_method("get_crowd_line_count_base"):
+			base_count = int(run_manager.get_crowd_line_count_base())
+		if run_manager.has_method("get_crowd_line_count_harsh"):
+			harsh_count = int(run_manager.get_crowd_line_count_harsh())
+	var base_total: int = base_count if base_count > 0 else 60
+	var harsh_total: int = harsh_count if harsh_count > 0 else 15
+	_add_museo_header("PATTI DISPONIBILI (LIVELLO 3)")
+	if pact_ids.is_empty():
+		_add_museo_item("— Nessun patto disponibile.")
+	else:
+		for pact_id in pact_ids:
+			var pact_title: String = _get_pact_display_name(run_manager, pact_id)
+			_add_museo_item("— %s" % pact_title)
+	_add_museo_header("ARENE TEMATICHE")
+	if arena_themes.is_empty():
+		_add_museo_item("— Nessuna arena disponibile.")
+	else:
+		for theme_id in arena_themes:
+			var theme_data: Dictionary = ArenaThemes.get_theme(theme_id)
+			var theme_title: String = str(theme_data.get("title", ""))
+			if theme_title == "":
+				theme_title = str(theme_id)
+			_add_museo_item("— %s" % theme_title)
+	_add_museo_header("VOCI DEL PUBBLICO")
+	_add_museo_item("Voci base: %d" % base_total)
+	var harsh_status: String = "SBLOCCATE" if harsh_unlocked else "BLOCCATE"
+	_add_museo_item("Voci dure: %s" % harsh_status)
+	if harsh_unlocked:
+		_add_museo_item("Voci dure: +%d" % harsh_total)
+
+func _add_museo_header(text: String) -> void:
+	var label := Label.new()
+	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	museo_vbox.add_child(label)
+
+func _add_museo_item(text: String) -> void:
+	var label := Label.new()
+	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	museo_vbox.add_child(label)
+
+func _get_pact_display_name(run_manager: Node, pact_id: StringName) -> String:
+	if run_manager != null and run_manager.has_method("get_level3_pact_title"):
+		var pact_title: String = str(run_manager.get_level3_pact_title(pact_id))
+		if pact_title != "":
+			return pact_title
+	return str(pact_id)
+
+func _get_run_manager() -> Node:
+	return get_tree().get_first_node_in_group("run_manager")
+
+func _set_achievements_tab(tab_id: StringName) -> void:
+	_active_achievements_tab = tab_id
+	var show_condanne: bool = tab_id == ACHIEVEMENTS_TAB_CONDANNE
+	condanne_container.visible = show_condanne
+	museo_container.visible = not show_condanne
+	condanne_tab_button.disabled = show_condanne
+	museo_tab_button.disabled = not show_condanne
+	if not show_condanne:
+		condanna_tooltip.visible = false
 
 func _refresh_condanne_visuals() -> void:
 	if condanna_entries.is_empty():
@@ -174,6 +271,12 @@ func _on_continue_pressed() -> void:
 
 func _on_achievements_pressed() -> void:
 	_show_achievements()
+
+func _on_condanne_tab_pressed() -> void:
+	_set_achievements_tab(ACHIEVEMENTS_TAB_CONDANNE)
+
+func _on_museo_tab_pressed() -> void:
+	_set_achievements_tab(ACHIEVEMENTS_TAB_MUSEO)
 
 func _on_back_pressed() -> void:
 	_show_menu()

@@ -1788,16 +1788,21 @@ func _get_available_level3_bets() -> Array[Dictionary]:
 		return LEVEL3_BETS.duplicate()
 	return available
 
+func _is_level3_bet_unlocked(bet_id: StringName) -> bool:
+	if LEVEL3_PACT_UNLOCKS.has(bet_id):
+		var unlock_id: StringName = StringName(str(LEVEL3_PACT_UNLOCKS.get(bet_id, "")))
+		if unlock_id != &"" and not _is_unlocked(unlock_id):
+			return false
+	return true
+
 func _is_level3_bet_allowed(bet: Dictionary) -> bool:
 	var bet_id: StringName = StringName(str(bet.get("id", "")))
 	if bet_id == &"":
 		return false
 	if bet_id == BET_DOUBLE_OR_DIE_L3 and _last_selected_bet_id == BET_DOUBLE_OR_DIE_L3:
 		return false
-	if LEVEL3_PACT_UNLOCKS.has(bet_id):
-		var unlock_id: StringName = StringName(str(LEVEL3_PACT_UNLOCKS.get(bet_id, "")))
-		if unlock_id != &"" and not _is_unlocked(unlock_id):
-			return false
+	if not _is_level3_bet_unlocked(bet_id):
+		return false
 	var blocked_scars: Array = bet.get("blocked_scars", []) as Array
 	for scar_value in blocked_scars:
 		if _has_scar(StringName(scar_value)):
@@ -2218,8 +2223,7 @@ func _get_current_arena_index() -> int:
 		arena_index = int(run.get("arena_index", 0))
 	return arena_index
 
-func _pick_next_arena_theme() -> StringName:
-	var arena_index: int = _get_current_arena_index()
+func _get_available_arena_theme_ids() -> Array[StringName]:
 	var themes: Array[StringName] = [
 		ArenaThemes.ARENA_WAX_SEAL,
 		ArenaThemes.ARENA_DEBT,
@@ -2228,6 +2232,11 @@ func _pick_next_arena_theme() -> StringName:
 		themes.append(ArenaThemes.ARENA_BLOOD)
 	if _is_unlocked(CONDANNA_SO_COME_FINISCE):
 		themes.append(ArenaThemes.ARENA_SILENCE)
+	return themes
+
+func _pick_next_arena_theme() -> StringName:
+	var arena_index: int = _get_current_arena_index()
+	var themes: Array[StringName] = _get_available_arena_theme_ids()
 	var theme_index: int = (maxi(arena_index, 1) - 1) % themes.size()
 	return themes[theme_index]
 
@@ -4300,6 +4309,46 @@ func _count_scars_with_tag(tag: StringName) -> int:
 			if StringName(tag_value) == tag:
 				count += 1
 				break
+	return count
+
+func get_available_level3_pacts() -> Array[StringName]:
+	var available: Array[StringName] = []
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		var bet_id: StringName = StringName(str(bet.get("id", "")))
+		if bet_id == &"":
+			continue
+		if _is_level3_bet_unlocked(bet_id):
+			available.append(bet_id)
+	return available
+
+func get_level3_pact_title(pact_id: StringName) -> String:
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		var bet_id: StringName = StringName(str(bet.get("id", "")))
+		if bet_id == pact_id:
+			return str(bet.get("name", ""))
+	return str(pact_id)
+
+func get_available_arena_themes() -> Array[StringName]:
+	return _get_available_arena_theme_ids()
+
+func is_harsh_crowd_unlocked() -> bool:
+	return _is_unlocked(CONDANNA_VISTO_DAL_PUBBLICO)
+
+func get_crowd_line_count_base() -> int:
+	return _count_crowd_lines(AUDIENCE_CONTEXT_PHRASES)
+
+func get_crowd_line_count_harsh() -> int:
+	return _count_crowd_lines(AUDIENCE_CONTEXT_PHRASES_HARSH)
+
+func _count_crowd_lines(source: Dictionary) -> int:
+	var count: int = 0
+	for context_value in source.values():
+		var mood_bucket: Dictionary = context_value as Dictionary
+		for lines_value in mood_bucket.values():
+			var lines: Array = lines_value as Array
+			count += lines.size()
 	return count
 
 func get_arena() -> Node:

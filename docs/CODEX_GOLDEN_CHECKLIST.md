@@ -7,7 +7,7 @@ Se una patch li viola, la patch va fermata e segnalata.
 
 1. INVARIANTI TECNICI (NON NEGOZIABILI)
 
-Engine: Godot 4.5.1
+Engine: Godot 4.6
 
 Linguaggio: strict typed GDScript
 

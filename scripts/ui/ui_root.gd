@@ -982,6 +982,25 @@ func _format_verdict_list(values: Array[String]) -> String:
 		lines.append("• %s" % value)
 	return "\n".join(lines)
 
+func _format_verdict_pacts_list(values: Array[String]) -> String:
+	if values.is_empty():
+		return "—"
+	var lines: PackedStringArray = []
+	var manager: Node = _get_run_manager()
+	for value in values:
+		var line_value: String = value
+		if manager != null and manager.has_method("get_level3_pact_title"):
+			var title: String = str(manager.call("get_level3_pact_title", StringName(value)))
+			if title != "":
+				line_value = title
+		lines.append("• %s" % line_value)
+		var reveal_line: String = ""
+		if manager != null and manager.has_method("get_pact_reveal_line"):
+			reveal_line = str(manager.call("get_pact_reveal_line", StringName(value)))
+		if reveal_line != "":
+			lines.append("  %s" % reveal_line)
+	return "\n".join(lines)
+
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
 		return []
@@ -1004,7 +1023,7 @@ func _refresh_verdict_panel() -> void:
 	if verdict_outcome != null:
 		verdict_outcome.text = _get_verdict_outcome_text(_last_verdict_outcome)
 	if verdict_pacts_text != null:
-		verdict_pacts_text.text = _format_verdict_list(_last_verdict_pacts)
+		verdict_pacts_text.text = _format_verdict_pacts_list(_last_verdict_pacts)
 	if verdict_condanne_text != null:
 		var condanne_titles: Array[String] = _resolve_condanna_titles(_last_verdict_condanne)
 		verdict_condanne_text.text = _format_verdict_list(condanne_titles)

@@ -49,6 +49,20 @@ const LEVEL3_BET_BEHAVIOR: Dictionary = {
 	BET_P3_SILENCE_BRIBE: BET_DEBT_CHAIN,
 	BET_P3_FINAL_APPLAUSE: BET_CROW_PLEASER,
 }
+const LEVEL3_PACT_UNLOCKS: Dictionary = {
+	BET_P3_WAX_SEAL: CONDANNA_FIRMATO,
+	BET_P3_BLOOD_LEDGER: CONDANNA_FIRMATO,
+	BET_P3_CROWD_FEAST: CONDANNA_FIRMATO,
+	BET_P3_CHAIN_OATH: CONDANNA_FIRMATO,
+	BET_P3_DEBT_MIRROR: CONDANNA_ANCORA,
+	BET_P3_RED_VERDICT: CONDANNA_ANCORA,
+	BET_P3_TITHE_OF_BONE: CONDANNA_ANCORA,
+	BET_P3_MERCY_BAIT: CONDANNA_ANCORA,
+	BET_P3_LAST_WAGER: CONDANNA_MI_SONO_FERMATO,
+	BET_P3_GLORY_TAX: CONDANNA_MI_SONO_FERMATO,
+	BET_P3_SILENCE_BRIBE: CONDANNA_MI_SONO_FERMATO,
+	BET_P3_FINAL_APPLAUSE: CONDANNA_MI_SONO_FERMATO,
+}
 const RUN_SAVE_SCHEMA_VERSION: int = 1
 const RUN_FLOW_BET_SIGNED: StringName = &"BET_SIGNED"
 const RUN_FLOW_INTERMEDIATE_CHOICE: StringName = &"INTERMEDIATE_CHOICE"
@@ -228,6 +242,63 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Fine violenta. La folla ha ciò che voleva.",
 			"Hai perso. L'arena resta accesa.",
 			"Caduta finale. Hanno avuto il rischio.",
+		],
+	},
+}
+const AUDIENCE_CONTEXT_PHRASES_HARSH: Dictionary = {
+	AUDIENCE_CONTEXT_PACT_SIGNED: {
+		AUDIENCE_MOOD_FURY: [
+			"Hai firmato male. Ora ti vogliono spezzato.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Firma asciutta. Ti contano come errore.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Hai firmato troppo forte. Ora vogliono la tua rovina.",
+		],
+	},
+	AUDIENCE_CONTEXT_GESTURE_CHOSEN: {
+		AUDIENCE_MOOD_FURY: [
+			"Un gesto debole. Ora ti strappano il rispetto.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Il gesto è sterile. Ti tengono in debito.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Il gesto li accende, ma chiedono il crollo.",
+		],
+	},
+	AUDIENCE_CONTEXT_CASH_OUT: {
+		AUDIENCE_MOOD_FURY: [
+			"Hai incassato per paura. Ora paghi doppio.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Incasso facile. Il silenzio ti pesa addosso.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Hai spento il delirio. Ora ti chiedono sangue.",
+		],
+	},
+	AUDIENCE_CONTEXT_CONTINUE: {
+		AUDIENCE_MOOD_FURY: [
+			"Continui per orgoglio. Ti vogliono in ginocchio.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Continui. Nessuno ti deve niente.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Continui e li nutri. Vogliono il tuo errore.",
+		],
+	},
+	AUDIENCE_CONTEXT_RUN_LOSS: {
+		AUDIENCE_MOOD_FURY: [
+			"Hai perso come volevano. Non ti lasciano il nome.",
+		],
+		AUDIENCE_MOOD_COLD: [
+			"Caduta nuda. Nessuno ti ricorda.",
+		],
+		AUDIENCE_MOOD_DELIRIUM: [
+			"Sei crollato. Hanno avuto il sacrificio.",
 		],
 	},
 }
@@ -1723,6 +1794,10 @@ func _is_level3_bet_allowed(bet: Dictionary) -> bool:
 		return false
 	if bet_id == BET_DOUBLE_OR_DIE_L3 and _last_selected_bet_id == BET_DOUBLE_OR_DIE_L3:
 		return false
+	if LEVEL3_PACT_UNLOCKS.has(bet_id):
+		var unlock_id: StringName = StringName(str(LEVEL3_PACT_UNLOCKS.get(bet_id, "")))
+		if unlock_id != &"" and not _is_unlocked(unlock_id):
+			return false
 	var blocked_scars: Array = bet.get("blocked_scars", []) as Array
 	for scar_value in blocked_scars:
 		if _has_scar(StringName(scar_value)):
@@ -2145,16 +2220,16 @@ func _get_current_arena_index() -> int:
 
 func _pick_next_arena_theme() -> StringName:
 	var arena_index: int = _get_current_arena_index()
-	var theme_index: int = (maxi(arena_index, 1) - 1) % 4
-	match theme_index:
-		0:
-			return ArenaThemes.ARENA_WAX_SEAL
-		1:
-			return ArenaThemes.ARENA_DEBT
-		2:
-			return ArenaThemes.ARENA_SILENCE
-		_:
-			return ArenaThemes.ARENA_BLOOD
+	var themes: Array[StringName] = [
+		ArenaThemes.ARENA_WAX_SEAL,
+		ArenaThemes.ARENA_DEBT,
+	]
+	if _is_unlocked(CONDANNA_E_FINITA_COSI):
+		themes.append(ArenaThemes.ARENA_BLOOD)
+	if _is_unlocked(CONDANNA_SO_COME_FINISCE):
+		themes.append(ArenaThemes.ARENA_SILENCE)
+	var theme_index: int = (maxi(arena_index, 1) - 1) % themes.size()
+	return themes[theme_index]
 
 func _emit_arena_theme_changed() -> void:
 	if not GameEvents.has_signal("arena_theme_changed"):
@@ -3768,12 +3843,19 @@ func _pick_audience_context_line(context: StringName) -> String:
 		return ""
 	var mood: StringName = _get_audience_context_mood(_run_state.audience_score)
 	var mood_bucket: Array = context_bucket.get(mood, []) as Array
-	if mood_bucket.is_empty():
+	var combined_bucket: Array = mood_bucket
+	if _is_unlocked(CONDANNA_NON_DOVEVO_PROVARCI):
+		var harsh_bucket: Dictionary = AUDIENCE_CONTEXT_PHRASES_HARSH.get(context, {}) as Dictionary
+		var harsh_lines: Array = harsh_bucket.get(mood, []) as Array
+		if not harsh_lines.is_empty():
+			combined_bucket = mood_bucket.duplicate()
+			combined_bucket.append_array(harsh_lines)
+	if combined_bucket.is_empty():
 		return ""
 	var context_seed: int = int(String(context).hash())
 	_level3_rng.seed = _run_state.run_seed + _run_state.arena_index * 41 + _run_state.audience_score * 19 + context_seed
-	var pick_idx: int = _level3_rng.randi_range(0, mood_bucket.size() - 1)
-	return str(mood_bucket[pick_idx])
+	var pick_idx: int = _level3_rng.randi_range(0, combined_bucket.size() - 1)
+	return str(combined_bucket[pick_idx])
 
 func _emit_audience_context_line(context: StringName) -> void:
 	if not GameEvents.has_signal("audience_context_line_emitted"):
@@ -4392,6 +4474,9 @@ func _register_condanna(id: StringName) -> void:
 	SaveManager.set_unlocked(id, true)
 	if GameEvents.has_signal("condanna_registered"):
 		GameEvents.condanna_registered.emit(id)
+
+func _is_unlocked(id: StringName) -> bool:
+	return SaveManager.has_unlocked(id)
 
 func _reset_scars() -> void:
 	_scars = []

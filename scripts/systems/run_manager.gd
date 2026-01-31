@@ -1100,6 +1100,7 @@ func _ready() -> void:
 	print("RunManager ready")
 	_arena_themes = ArenaThemes.new()
 	add_to_group("run_manager")
+	_apply_saved_language()
 	if not _validate_game_events_signals():
 		return
 	_arena_layout_rng.randomize()
@@ -1145,6 +1146,23 @@ func _ready() -> void:
 	var request_continue_callable: Callable = Callable(self, "_on_request_continue_run")
 	if GameEvents.has_signal("request_continue_run") and not GameEvents.request_continue_run.is_connected(request_continue_callable):
 		GameEvents.request_continue_run.connect(request_continue_callable)
+	var settings_changed_callable: Callable = Callable(self, "_on_settings_changed")
+	if GameEvents.has_signal("settings_changed") and not GameEvents.settings_changed.is_connected(settings_changed_callable):
+		GameEvents.settings_changed.connect(settings_changed_callable)
+
+func _apply_saved_language() -> void:
+	var saved_language: String = SaveManager.get_language()
+	_apply_language(saved_language)
+
+func _apply_language(locale: String) -> void:
+	var target_locale: String = locale.strip_edges().to_lower()
+	if target_locale != "it" and target_locale != "en":
+		target_locale = "it"
+	TranslationServer.set_locale(target_locale)
+
+func _on_settings_changed(payload: Dictionary) -> void:
+	if payload.has("language"):
+		_apply_language(str(payload.get("language", SaveManager.get_language())))
 	var request_place_bet_callable: Callable = Callable(self, "_on_request_place_bet")
 	if GameEvents.has_signal("request_place_bet") and not GameEvents.request_place_bet.is_connected(request_place_bet_callable):
 		GameEvents.request_place_bet.connect(request_place_bet_callable)

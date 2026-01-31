@@ -1133,6 +1133,9 @@ func _ready() -> void:
 	var request_consume_shop_callable: Callable = Callable(self, "_on_request_consume_upgrade_shop")
 	if GameEvents.has_signal("request_consume_upgrade_shop") and not GameEvents.request_consume_upgrade_shop.is_connected(request_consume_shop_callable):
 		GameEvents.request_consume_upgrade_shop.connect(request_consume_shop_callable)
+	var request_new_run_callable: Callable = Callable(self, "_on_request_new_run")
+	if GameEvents.has_signal("request_new_run") and not GameEvents.request_new_run.is_connected(request_new_run_callable):
+		GameEvents.request_new_run.connect(request_new_run_callable)
 	var request_reset_callable: Callable = Callable(self, "_on_request_reset_run")
 	if GameEvents.has_signal("request_reset_run") and not GameEvents.request_reset_run.is_connected(request_reset_callable):
 		GameEvents.request_reset_run.connect(request_reset_callable)
@@ -2971,6 +2974,12 @@ func _on_request_purchase_token() -> void:
 
 func _on_request_consume_upgrade_shop() -> void:
 	consume_upgrade_shop()
+
+func _on_request_new_run() -> void:
+	if _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice:
+		print("RunManager: forcing new run while flow is active.")
+	SaveManager.clear_run()
+	start_new_run()
 
 func _on_request_reset_run() -> void:
 	SaveManager.clear_run()

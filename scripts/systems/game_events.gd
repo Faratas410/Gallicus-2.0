@@ -59,6 +59,7 @@ signal request_purchase_token
 signal request_place_bet(bet_id: String, stake: int)
 signal request_open_bet_ui
 signal request_consume_upgrade_shop
+signal request_new_run
 signal request_reset_run
 signal request_retry_run
 signal request_continue_run

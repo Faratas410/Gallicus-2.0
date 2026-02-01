@@ -1,5 +1,16 @@
 extends CanvasLayer
 
+# -----------------------------------------------------------------------------
+# ROLE / OWNERSHIP
+# - This script is responsible for: Rendering UI based on run/game state signals.
+# - This script must NOT: decide gameplay outcomes or mutate run state directly.
+#
+# FLOW CONTRACT (high level)
+# - Inputs (signals/events it listens to): GameEvents.run_started/run_failed/etc. (state updates)
+# - Outputs (signals/events it emits): GameEvents.request_* intents, GameEvents.modal_opened/closed
+# - Critical invariants: UI is reactive; RunManager and systems own state changes.
+# -----------------------------------------------------------------------------
+
 signal arena_message_queue_completed
 
 const FAST_SELECTION_SECONDS: int = 12
@@ -807,6 +818,9 @@ func show_countdown(seconds: int = 3) -> void:
 	await get_tree().create_timer(0.5).timeout
 	countdown_label.visible = false
 
+# FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
+# Preconditions: RunManager emitted GameEvents.run_started; UI nodes are initialized.
+# Postconditions: HUD/modals reset and visible state reflects a fresh run.
 func _on_run_started() -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: 0"

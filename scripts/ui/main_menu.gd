@@ -1,5 +1,16 @@
 extends Control
 
+# -----------------------------------------------------------------------------
+# ROLE / OWNERSHIP
+# - This script is responsible for: Main menu navigation and emitting UI intents.
+# - This script must NOT: start or manage gameplay/run state directly.
+#
+# FLOW CONTRACT (high level)
+# - Inputs (signals/events it listens to): GameEvents.request_show_main_menu, GameEvents.settings_opened/closed, GameEvents.condanna_registered
+# - Outputs (signals/events it emits): GameEvents.request_new_run, GameEvents.request_continue_run, GameEvents.settings_opened/closed
+# - Critical invariants: UI only emits intent; gameplay authority lives in RunManager.
+# -----------------------------------------------------------------------------
+
 const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
 
@@ -287,6 +298,11 @@ func _on_continue_pressed() -> void:
 		continue_hint_label.visible = true
 
 func _on_new_game_pressed() -> void:
+	# FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
+	# Preconditions: GameEvents autoload is available and exposes request_new_run.
+	# Postconditions: RunManager receives intent; menu hides to unblock gameplay.
+	# NOTE: UI must never call gameplay/run logic directly.
+	# It only emits intent via GameEvents. RunManager is the authority.
 	if GameEvents != null and GameEvents.has_signal("request_new_run"):
 		GameEvents.request_new_run.emit()
 		_hide_menu()

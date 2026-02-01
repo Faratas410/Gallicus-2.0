@@ -1,5 +1,16 @@
 extends Node
 
+# -----------------------------------------------------------------------------
+# ROLE / OWNERSHIP
+# - This script is responsible for: Run state machine authority and progression.
+# - This script must NOT: own UI rendering or menu navigation decisions.
+#
+# FLOW CONTRACT (high level)
+# - Inputs (signals/events it listens to): GameEvents.request_* intents from UI/debug.
+# - Outputs (signals/events it emits): GameEvents.run_started/run_failed/etc. for UI/systems.
+# - Critical invariants: single RunManager in group "run_manager"; RunManager is authority.
+# -----------------------------------------------------------------------------
+
 @export var arena_path: NodePath
 @export var player_path: NodePath
 @export var starting_coins: int = GameConstants.RUN_STARTING_COINS
@@ -2993,6 +3004,9 @@ func _on_request_purchase_token() -> void:
 func _on_request_consume_upgrade_shop() -> void:
 	consume_upgrade_shop()
 
+# FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
+# Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
+# Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
 	if _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice:
 		print("RunManager: forcing new run while flow is active.")

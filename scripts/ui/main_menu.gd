@@ -287,7 +287,7 @@ func _on_continue_pressed() -> void:
 		continue_hint_label.visible = true
 
 func _on_new_game_pressed() -> void:
-	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("request_new_run"):
+	if GameEvents != null and GameEvents.has_signal("request_new_run"):
 		GameEvents.request_new_run.emit()
 		_hide_menu()
 	else:

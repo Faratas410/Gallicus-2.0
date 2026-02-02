@@ -19,6 +19,24 @@ extends Node
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
 @export var arena_layout_offset: Vector2 = Vector2(-640.0, -360.0)
 
+# RUN FLOW (contract)
+# MAIN_MENU -> RUN_INIT -> BET_PRESENT -> BET_COMMITTED
+# -> POST_BET_MESSAGES (await queue completed OR fallback)
+# -> INTERMEDIATE_CHOICE -> PUSH_YOUR_LUCK (or NEXT_BET)
+enum RunPhase {
+	PREP = 0,
+	LIVE = 1,
+	GAME_OVER = 2,
+	MAIN_MENU = 10,
+	RUN_INIT = 11,
+	BET_PRESENT = 12,
+	BET_COMMITTED = 13,
+	POST_BET_MESSAGES = 14,
+	INTERMEDIATE_CHOICE = 15,
+	PUSH_YOUR_LUCK = 16,
+	NEXT_BET = 17,
+}
+
 const LEVEL3_ENABLED: bool = true
 const PACT_SEALED_SECONDS: float = 0.7
 const RESOLVE_RITUAL_SECONDS: float = 0.9
@@ -1004,8 +1022,6 @@ const BET_PURE_BLOOD: String = "PURE_BLOOD"
 const BET_DOUBLE_OR_DIE: String = "DOUBLE_OR_DIE"
 const SCAR_OPEN_WOUND_HP_PENALTY: int = 20
 
-enum RunPhase { PREP, LIVE, GAME_OVER }
-
 var run: Dictionary = {
 	"arena_index": 0,
 	"coins": 0,
@@ -1037,6 +1053,7 @@ var _waiting_for_intermediate_choice: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _is_game_over: bool = false
+var _phase: RunPhase = RunPhase.MAIN_MENU
 var phase: RunPhase = RunPhase.PREP
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
@@ -1083,9 +1100,9 @@ var _scar_max_hp_penalty: int = 0
 var _push_luck_cashouts: int = 0
 var _push_luck_doubles: int = 0
 var _max_push_luck_chain: int = 1
-var _pending_push_luck_bet_id: StringName = &""
-var _pending_push_luck_sequence_id: int = 0
-var _pending_intermediate_choice_bet_id: StringName = &""
+var _post_bet_pending_bet_id: StringName = &""
+var _post_bet_sequence_id: int = 0
+var _intermediate_pending_bet_id: StringName = &""
 var _intermediate_double_disabled_once: bool = false
 var _intermediate_bonus_tier: int = 0
 var _intermediate_choice_note: String = ""
@@ -1348,6 +1365,7 @@ func _fail_flow(message: String) -> void:
 
 func start_new_run() -> void:
 	_run_start_time_msec = Time.get_ticks_msec()
+	_set_phase(RunPhase.RUN_INIT, "start_new_run")
 	if LEVEL3_ENABLED:
 		_start_level3_run()
 		return
@@ -1369,8 +1387,9 @@ func start_new_run() -> void:
 	_push_luck_cashouts = 0
 	_push_luck_doubles = 0
 	_max_push_luck_chain = 1
-	_pending_push_luck_bet_id = &""
-	_pending_intermediate_choice_bet_id = &""
+	_post_bet_pending_bet_id = &""
+	_post_bet_sequence_id = 0
+	_intermediate_pending_bet_id = &""
 	_intermediate_double_disabled_once = false
 	_intermediate_bonus_tier = 0
 	_intermediate_choice_note = ""
@@ -1439,6 +1458,7 @@ func start_run() -> void:
 
 func _start_level3_run() -> void:
 	_run_start_time_msec = Time.get_ticks_msec()
+	_set_phase(RunPhase.RUN_INIT, "start_level3_run")
 	_seen_by_crowd_before_run = SaveManager.has_unlocked(CONDANNA_VISTO_DAL_PUBBLICO)
 	if SaveManager.has_unlocked(CONDANNA_E_FINITA_COSI):
 		_register_condanna(CONDANNA_NON_SARA_L_ULTIMA)
@@ -1549,6 +1569,7 @@ func select_bet(bet_id: StringName) -> void:
 		return
 	if _run_state.run_is_over or _is_game_over:
 		return
+	_set_phase(RunPhase.BET_COMMITTED, "select_bet")
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_update_arena_visual_only()
@@ -1583,6 +1604,7 @@ func select_bet(bet_id: StringName) -> void:
 
 func _register_level3_bet_choice(bet_id: StringName) -> void:
 	_update_arena_visual_only()
+	_set_phase(RunPhase.BET_COMMITTED, "register_level3_bet_choice")
 	_run_state.active_bet_id = bet_id
 	if bet_id != &"":
 		_run_state.bets_history.append(bet_id)
@@ -1693,6 +1715,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_emit_run_debug_state()
 	if _run_state.run_is_over or _is_game_over:
 		return
+	# FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 	_queue_push_luck_choice(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_INTERMEDIATE_CHOICE, bet_id)
 
@@ -1785,6 +1808,7 @@ func start_next_bet_round() -> void:
 		return
 	if _waiting_for_push_luck:
 		return
+	_set_phase(RunPhase.NEXT_BET, "start_next_bet_round")
 	_waiting_for_bet = false
 	_show_shop_next_bet = false
 	set_phase(RunPhase.LIVE)
@@ -1814,6 +1838,7 @@ func _open_bet_ui(from_victory: bool = false) -> void:
 		return
 	if _is_game_over:
 		return
+	_set_phase(RunPhase.BET_PRESENT, "open_bet_ui")
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
 	_show_shop_next_bet = from_victory
@@ -1826,6 +1851,7 @@ func _open_bet_ui(from_victory: bool = false) -> void:
 func _open_level3_bet_ui() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
+	_set_phase(RunPhase.BET_PRESENT, "open_level3_bet_ui")
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
 	_resolve_ritual_reward_applied = false
@@ -2115,8 +2141,8 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_waiting_for_intermediate_choice = false
-	_pending_intermediate_choice_bet_id = &""
-	_pending_push_luck_bet_id = &""
+	_intermediate_pending_bet_id = &""
+	_post_bet_pending_bet_id = &""
 	_show_shop_next_bet = false
 
 	var run_state_data: Dictionary = payload["run_state"] as Dictionary
@@ -2222,8 +2248,8 @@ func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_waiting_for_intermediate_choice = false
-	_pending_intermediate_choice_bet_id = &""
-	_pending_push_luck_bet_id = &""
+	_intermediate_pending_bet_id = &""
+	_post_bet_pending_bet_id = &""
 	_show_shop_next_bet = false
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
@@ -3080,10 +3106,10 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 			_emit_escalation_changed()
 			_emit_run_debug_state()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_GESTURE_CHOSEN)
-	var bet_id: StringName = _pending_intermediate_choice_bet_id
+	var bet_id: StringName = _intermediate_pending_bet_id
 	if bet_id == &"":
 		bet_id = _last_selected_bet_id
-	_pending_intermediate_choice_bet_id = &""
+	_intermediate_pending_bet_id = &""
 	_open_push_luck_choice(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_PUSH_LUCK, bet_id)
 
@@ -3715,20 +3741,24 @@ func _apply_intermediate_loss_penalty_if_needed() -> void:
 	if INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS > 0:
 		spend_coins(INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS)
 
+# FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_intermediate_choice(bet_id: StringName) -> void:
 	if not _ensure_flow_panel("Modals/IntermediateChoiceModal", "intermediate choice"):
 		return
+	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
 	_waiting_for_intermediate_choice = true
 	_waiting_for_push_luck = false
-	_pending_intermediate_choice_bet_id = bet_id
+	_intermediate_pending_bet_id = bet_id
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	if GameEvents.has_signal("intermediate_choice_opened"):
 		GameEvents.intermediate_choice_opened.emit()
 
+# FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_push_luck_choice(bet_id: StringName) -> void:
 	if not _ensure_flow_panel("Modals/PushLuckModal", "push luck choice"):
 		return
+	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 	_waiting_for_push_luck = true
 	_show_shop_next_bet = false
 	set_phase(RunPhase.PREP)
@@ -3847,7 +3877,14 @@ func _get_sentence_doom(bet_id: StringName) -> String:
 		doom = "LA CICATRICE TI RESTA."
 	return doom
 
+# -----------------------------------------------------------------------------
+# POST-BET SEQUENCE
+# - Triggered when bet is sealed/committed
+# - Waits arena_message_queue_completed OR fallback timer
+# - Then opens intermediate choice
+# -----------------------------------------------------------------------------
 func _queue_push_luck_choice(bet_id: StringName) -> void:
+	_set_phase(RunPhase.POST_BET_MESSAGES, "queue_post_bet_messages")
 	if _sanity_ui_root == null:
 		_open_intermediate_choice(bet_id)
 		return
@@ -3859,26 +3896,26 @@ func _queue_push_luck_choice(bet_id: StringName) -> void:
 		if not queue_running:
 			_open_intermediate_choice(bet_id)
 			return
-	_pending_push_luck_bet_id = bet_id
-	_pending_push_luck_sequence_id += 1
-	var sequence_id: int = _pending_push_luck_sequence_id
+	_post_bet_pending_bet_id = bet_id
+	_post_bet_sequence_id += 1
+	var sequence_id: int = _post_bet_sequence_id
 	call_deferred("_force_post_bet_choice_fallback", sequence_id)
 
 func _on_arena_message_queue_completed() -> void:
-	if _pending_push_luck_bet_id == &"":
+	if _post_bet_pending_bet_id == &"":
 		return
-	var bet_id: StringName = _pending_push_luck_bet_id
-	_pending_push_luck_bet_id = &""
+	var bet_id: StringName = _post_bet_pending_bet_id
+	_post_bet_pending_bet_id = &""
 	_open_intermediate_choice(bet_id)
 
 func _force_post_bet_choice_fallback(sequence_id: int) -> void:
 	await get_tree().create_timer(POST_BET_QUEUE_FALLBACK_SECONDS).timeout
-	if sequence_id != _pending_push_luck_sequence_id:
+	if sequence_id != _post_bet_sequence_id:
 		return
-	if _pending_push_luck_bet_id == &"":
+	if _post_bet_pending_bet_id == &"":
 		return
-	var bet_id: StringName = _pending_push_luck_bet_id
-	_pending_push_luck_bet_id = &""
+	var bet_id: StringName = _post_bet_pending_bet_id
+	_post_bet_pending_bet_id = &""
 	_open_intermediate_choice(bet_id)
 
 func _get_cashout_lock_reason() -> String:
@@ -4193,6 +4230,7 @@ func _enter_game_over() -> void:
 		push_error("SANITY FAIL FLOW: ending panel missing")
 		get_tree().paused = true
 		return
+	_set_phase(RunPhase.GAME_OVER, "enter_game_over")
 	SaveManager.clear_run()
 	_is_game_over = true
 	_provoke_armed = false
@@ -4564,6 +4602,13 @@ func is_visual_only() -> bool:
 	if LEVEL3_ENABLED:
 		return true
 	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice or _run_state.run_is_over or _is_game_over
+
+func _set_phase(next: RunPhase, reason: String) -> void:
+	if _phase == next:
+		return
+	_phase = next
+	if OS.is_debug_build() and reason != "":
+		print_debug("RunManager flow phase:", int(next), "-", reason)
 
 func set_phase(p: Variant) -> void:
 	# Supporta sia RunPhase che int (es. valori serializzati / segnali legacy).

@@ -2,22 +2,22 @@
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/circolo_scommesse.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_clean_paper_9slice.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_dirty_paper_9slice.png" id="4"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
-bg_color = Color(0.243, 0.231, 0.208, 0.9)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.184, 0.173, 0.153, 1)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
+texture = ExtResource("4")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
-bg_color = Color(0.243, 0.231, 0.208, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.204, 0.192, 0.169, 1)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
+texture = ExtResource("3")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
 
 [node name="BettingCircle" type="Control"]
 visible = false
@@ -64,14 +64,14 @@ offset_left = -12.0
 offset_top = -12.0
 offset_right = 12.0
 offset_bottom = 12.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="PaperFront" type="Panel" parent="ContractPanel"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_2")
+theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="ContractVBox" type="VBoxContainer" parent="ContractPanel"]
 anchor_left = 0.0

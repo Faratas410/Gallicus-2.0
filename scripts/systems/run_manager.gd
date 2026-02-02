@@ -22,6 +22,7 @@ extends Node
 const LEVEL3_ENABLED: bool = true
 const PACT_SEALED_SECONDS: float = 0.7
 const RESOLVE_RITUAL_SECONDS: float = 0.9
+const POST_BET_QUEUE_FALLBACK_SECONDS: float = 0.5
 const INTERMEDIATE_PLACA_BONUS_COINS: int = 6
 const INTERMEDIATE_PROVOCA_BONUS_TIER: int = 1
 const INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS: int = 6
@@ -1083,6 +1084,7 @@ var _push_luck_cashouts: int = 0
 var _push_luck_doubles: int = 0
 var _max_push_luck_chain: int = 1
 var _pending_push_luck_bet_id: StringName = &""
+var _pending_push_luck_sequence_id: int = 0
 var _pending_intermediate_choice_bet_id: StringName = &""
 var _intermediate_double_disabled_once: bool = false
 var _intermediate_bonus_tier: int = 0
@@ -3858,8 +3860,21 @@ func _queue_push_luck_choice(bet_id: StringName) -> void:
 			_open_intermediate_choice(bet_id)
 			return
 	_pending_push_luck_bet_id = bet_id
+	_pending_push_luck_sequence_id += 1
+	var sequence_id: int = _pending_push_luck_sequence_id
+	call_deferred("_force_post_bet_choice_fallback", sequence_id)
 
 func _on_arena_message_queue_completed() -> void:
+	if _pending_push_luck_bet_id == &"":
+		return
+	var bet_id: StringName = _pending_push_luck_bet_id
+	_pending_push_luck_bet_id = &""
+	_open_intermediate_choice(bet_id)
+
+func _force_post_bet_choice_fallback(sequence_id: int) -> void:
+	await get_tree().create_timer(POST_BET_QUEUE_FALLBACK_SECONDS).timeout
+	if sequence_id != _pending_push_luck_sequence_id:
+		return
 	if _pending_push_luck_bet_id == &"":
 		return
 	var bet_id: StringName = _pending_push_luck_bet_id

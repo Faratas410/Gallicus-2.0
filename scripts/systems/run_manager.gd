@@ -1347,7 +1347,18 @@ func _abort_sanity(message: String) -> void:
 	_boot_valid = false
 	get_tree().paused = true
 
+func _refresh_sanity_ui_root() -> void:
+	if _sanity_ui_root != null and is_instance_valid(_sanity_ui_root):
+		return
+	var current_scene: Node = get_tree().current_scene
+	if current_scene == null:
+		return
+	var ui_root: Node = current_scene.get_node_or_null("UI")
+	if ui_root != null:
+		_sanity_ui_root = ui_root
+
 func _ensure_flow_panel(path: String, context: String) -> bool:
+	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null:
 		_fail_flow("missing UI root during %s" % context)
 		return false
@@ -4226,6 +4237,7 @@ func _get_player_max_health_value(p: Node) -> int:
 func _enter_game_over() -> void:
 	if _is_game_over:
 		return
+	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null or _sanity_ui_root.get_node_or_null("Modals/GameOverModal") == null:
 		push_error("SANITY FAIL FLOW: ending panel missing")
 		get_tree().paused = true

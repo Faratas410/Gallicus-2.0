@@ -4,7 +4,8 @@
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
 [ext_resource type="AudioStream" path="res://Ambient1.mp3" id="4"]
-[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_clean_paper_9slice.png" id="5"]
+[ext_resource type="Texture2D" path="res://PNG Utili/frame.png" id="5"]
+[ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="6"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
 texture = ExtResource("5")
@@ -42,6 +43,7 @@ color = Color(1, 1, 1, 1)
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 0
+theme = ExtResource("6")
 script = ExtResource("3")
 
 [node name="CenterContainer" type="CenterContainer" parent="MenuLayer/MainMenu"]

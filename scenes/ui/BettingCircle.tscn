@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/circolo_scommesse.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_clean_paper_9slice.png" id="3"]
-[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_dirty_paper_9slice.png" id="4"]
+[ext_resource type="Texture2D" path="res://PNG Utili/bg_01_01.png" id="2"]
+[ext_resource type="Texture2D" path="res://PNG Utili/frame.png" id="3"]
+[ext_resource type="Texture2D" path="res://PNG Utili/frame.png" id="4"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")

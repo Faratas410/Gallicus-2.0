@@ -2,6 +2,7 @@
 
 [ext_resource type="FontFile" path="res://assets/ui/fonts/grabstein_gotik.otf" id="1"]
 [ext_resource type="Texture2D" path="res://assets/ui/panels/button_primary_9slice.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_clean_paper_9slice.png" id="3"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("2")
@@ -71,6 +72,13 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5"]
+texture = ExtResource("3")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+
 [resource]
 default_font = ExtResource("1")
 default_font_size = 30
@@ -108,6 +116,16 @@ theme_types/Button = {
 "hover": SubResource("StyleBoxTexture_2"),
 "normal": SubResource("StyleBoxTexture_1"),
 "pressed": SubResource("StyleBoxTexture_3")
+}
+}
+theme_types/Panel = {
+"styles": {
+"panel": SubResource("StyleBoxTexture_5")
+}
+}
+theme_types/PanelContainer = {
+"styles": {
+"panel": SubResource("StyleBoxTexture_5")
 }
 }
 theme_types/LineEdit = {

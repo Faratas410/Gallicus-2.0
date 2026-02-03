@@ -4,20 +4,14 @@
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
 [ext_resource type="AudioStream" path="res://Ambient1.mp3" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_clean_paper_9slice.png" id="5"]
 
-[sub_resource type="StyleBoxFlat" id="4"]
-bg_color = Color(0.12, 0.09, 0.07, 0.95)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.26, 0.2, 0.16, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-shadow_color = Color(0, 0, 0, 0.2)
-shadow_size = 6
+[sub_resource type="StyleBoxTexture" id="4"]
+texture = ExtResource("5")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
 [node name="Main" type="Node2D"]
 
 [node name="RitualBackground" type="CanvasLayer" parent="."]

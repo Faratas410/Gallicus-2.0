@@ -1804,6 +1804,10 @@ func resolve_arena() -> void:
 	_resolving_arena = false
 	_update_arena_visual_only()
 	_emit_run_debug_state()
+	if _run_state.run_is_over or _is_game_over:
+		return
+	_queue_push_luck_choice(bet_id)
+	_autosave_run_checkpoint(RUN_FLOW_INTERMEDIATE_CHOICE, bet_id)
 
 func apply_scar(scar_id: StringName) -> void:
 	_apply_level3_scar(scar_id, "")

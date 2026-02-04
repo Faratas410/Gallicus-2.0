@@ -1149,6 +1149,9 @@ func _ready() -> void:
 	var bet_confirmed_callable: Callable = Callable(self, "_on_bet_confirmed")
 	if GameEvents.has_signal("bet_confirmed") and not GameEvents.bet_confirmed.is_connected(bet_confirmed_callable):
 		GameEvents.bet_confirmed.connect(bet_confirmed_callable)
+	var request_place_bet_callable: Callable = Callable(self, "_on_request_place_bet")
+	if GameEvents.has_signal("request_place_bet") and not GameEvents.request_place_bet.is_connected(request_place_bet_callable):
+		GameEvents.request_place_bet.connect(request_place_bet_callable)
 	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
 	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
 		GameEvents.betting_opened.connect(betting_opened_callable)
@@ -3112,6 +3115,7 @@ func _on_request_add_coins(amount: int) -> void:
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	if not LEVEL3_ENABLED:
 		return
+	print_debug("[FLOW] bet_choice_received :: arena=%d, bet_id=%s" % [_run_state.arena_index, bet_id])
 	select_bet(StringName(bet_id))
 
 func _on_request_intermediate_choice(choice_id: String) -> void:

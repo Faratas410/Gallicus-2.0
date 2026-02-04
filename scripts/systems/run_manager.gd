@@ -3105,7 +3105,9 @@ func _on_request_continue_run() -> void:
 	_resume_run_from_save(_run_save_flow_step, _run_save_flow_bet_id)
 
 func _on_request_show_main_menu() -> void:
-	print_debug("[FLOW] main_menu_requested :: arena=%d" % _run_state.arena_index)
+	print_debug("[FLOW] request_show_main_menu_received")
+	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
+	set_phase(RunPhase.MAIN_MENU)
 
 func _on_request_next_bet() -> void:
 	if LEVEL3_ENABLED:
@@ -4292,7 +4294,12 @@ func _enter_game_over() -> void:
 		get_tree().paused = true
 		return
 	_set_phase(RunPhase.GAME_OVER, "enter_game_over")
-	print_debug("[FLOW] ending_entered :: arena=%d, reason=%s" % [_run_state.arena_index, _run_end_reason])
+	var reason_label: String = "other"
+	if _run_end_reason == "CASH_OUT":
+		reason_label = "cashout"
+	elif _run_end_reason != "":
+		reason_label = "failed"
+	print_debug("[FLOW] ending_entered :: reason=%s, arena=%d" % [reason_label, _run_state.arena_index])
 	SaveManager.clear_run()
 	_is_game_over = true
 	_provoke_armed = false

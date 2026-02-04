@@ -1167,6 +1167,9 @@ func _ready() -> void:
 	var request_new_run_callable: Callable = Callable(self, "_on_request_new_run")
 	if GameEvents.has_signal("request_new_run") and not GameEvents.request_new_run.is_connected(request_new_run_callable):
 		GameEvents.request_new_run.connect(request_new_run_callable)
+	var request_intermediate_callable: Callable = Callable(self, "_on_request_intermediate_choice")
+	if GameEvents.has_signal("request_intermediate_choice") and not GameEvents.request_intermediate_choice.is_connected(request_intermediate_callable):
+		GameEvents.request_intermediate_choice.connect(request_intermediate_callable)
 	var request_reset_callable: Callable = Callable(self, "_on_request_reset_run")
 	if GameEvents.has_signal("request_reset_run") and not GameEvents.request_reset_run.is_connected(request_reset_callable):
 		GameEvents.request_reset_run.connect(request_reset_callable)
@@ -3101,6 +3104,7 @@ func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 func _on_request_intermediate_choice(choice_id: String) -> void:
 	if not _waiting_for_intermediate_choice:
 		return
+	print_debug("[FLOW] intermediate_choice_received :: arena=%d choice=%s" % [_run_state.arena_index, choice_id])
 	_waiting_for_intermediate_choice = false
 	_intermediate_double_disabled_once = false
 	_intermediate_bonus_tier = 0
@@ -3789,6 +3793,8 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	var payload: Dictionary = _build_push_luck_payload(bet_id)
+	var cashout_available: bool = not bool(payload.get("cashout_locked", false))
+	print_debug("[FLOW] push_luck_opened :: arena=%d cashout_available=%s" % [_run_state.arena_index, str(cashout_available)])
 	GameEvents.push_luck_opened.emit(payload)
 
 func _refresh_push_luck_choice(bet_id: StringName) -> void:

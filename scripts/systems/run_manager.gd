@@ -1354,6 +1354,8 @@ func _refresh_sanity_ui_root() -> void:
 	if current_scene == null:
 		return
 	var ui_root: Node = current_scene.get_node_or_null("UI")
+	if ui_root == null:
+		ui_root = get_node_or_null("/root/Main/UI")
 	if ui_root != null:
 		_sanity_ui_root = ui_root
 

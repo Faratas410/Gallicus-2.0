@@ -1754,6 +1754,8 @@ func _on_push_luck_cashout_pressed() -> void:
 		GameEvents.request_push_luck_cashout.emit()
 
 func _on_push_luck_condanna_pressed() -> void:
+	if GameEvents.has_signal("request_push_luck_cashout"):
+		GameEvents.request_push_luck_cashout.emit()
 	if GameEvents.has_signal("post_arena_choice_selected"):
 		GameEvents.post_arena_choice_selected.emit(&"CONDANNA")
 

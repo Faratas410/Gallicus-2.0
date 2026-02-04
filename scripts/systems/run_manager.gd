@@ -1167,6 +1167,15 @@ func _ready() -> void:
 	var request_new_run_callable: Callable = Callable(self, "_on_request_new_run")
 	if GameEvents.has_signal("request_new_run") and not GameEvents.request_new_run.is_connected(request_new_run_callable):
 		GameEvents.request_new_run.connect(request_new_run_callable)
+	var request_cashout_callable: Callable = Callable(self, "_on_request_push_luck_cashout")
+	if GameEvents.has_signal("request_push_luck_cashout") and not GameEvents.request_push_luck_cashout.is_connected(request_cashout_callable):
+		GameEvents.request_push_luck_cashout.connect(request_cashout_callable)
+	var request_double_callable: Callable = Callable(self, "_on_request_push_luck_double")
+	if GameEvents.has_signal("request_push_luck_double") and not GameEvents.request_push_luck_double.is_connected(request_double_callable):
+		GameEvents.request_push_luck_double.connect(request_double_callable)
+	var post_arena_callable: Callable = Callable(self, "_on_post_arena_choice_selected")
+	if GameEvents.has_signal("post_arena_choice_selected") and not GameEvents.post_arena_choice_selected.is_connected(post_arena_callable):
+		GameEvents.post_arena_choice_selected.connect(post_arena_callable)
 	var request_intermediate_callable: Callable = Callable(self, "_on_request_intermediate_choice")
 	if GameEvents.has_signal("request_intermediate_choice") and not GameEvents.request_intermediate_choice.is_connected(request_intermediate_callable):
 		GameEvents.request_intermediate_choice.connect(request_intermediate_callable)
@@ -3149,6 +3158,7 @@ func _on_post_arena_choice_selected(choice_id: StringName) -> void:
 func _on_request_push_luck_cashout() -> void:
 	if not _waiting_for_push_luck:
 		return
+	print_debug("[FLOW] push_luck_cashout_received :: arena=%d" % _run_state.arena_index)
 	var audience_policy: Dictionary = _get_audience_cashout_policy()
 	if not bool(audience_policy.get("cashout_enabled", true)):
 		_refresh_push_luck_choice(StringName(_current_bet_id))
@@ -3227,6 +3237,7 @@ func _handle_push_luck_condanna() -> void:
 func _on_request_push_luck_double() -> void:
 	if not _waiting_for_push_luck:
 		return
+	print_debug("[FLOW] push_luck_double_received :: arena=%d" % _run_state.arena_index)
 	if LEVEL3_ENABLED:
 		var lock_reason: String = _get_double_lock_reason()
 		if lock_reason != "":

@@ -1176,6 +1176,9 @@ func _ready() -> void:
 	var request_continue_callable: Callable = Callable(self, "_on_request_continue_run")
 	if GameEvents.has_signal("request_continue_run") and not GameEvents.request_continue_run.is_connected(request_continue_callable):
 		GameEvents.request_continue_run.connect(request_continue_callable)
+	var request_show_menu_callable: Callable = Callable(self, "_on_request_show_main_menu")
+	if GameEvents.has_signal("request_show_main_menu") and not GameEvents.request_show_main_menu.is_connected(request_show_menu_callable):
+		GameEvents.request_show_main_menu.connect(request_show_menu_callable)
 	var settings_changed_callable: Callable = Callable(self, "_on_settings_changed")
 	if GameEvents.has_signal("settings_changed") and not GameEvents.settings_changed.is_connected(settings_changed_callable):
 		GameEvents.settings_changed.connect(settings_changed_callable)
@@ -1518,6 +1521,7 @@ func _start_level3_run() -> void:
 	_run_state = RunState.new()
 	_run_state.run_seed = _get_run_seed_value()
 	_run_state.arena_index = 0
+	print_debug("[FLOW] run_started :: arena=%d, save_present=%s" % [_run_state.arena_index, str(SaveManager.has_run_save())])
 	_run_state.escalation_level = 0
 	_run_state.active_bet_id = &""
 	_run_state.enemy_profile = &""
@@ -1647,6 +1651,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 		return
 	_pact_sealed_sequence_id += 1
 	var sequence_id: int = _pact_sealed_sequence_id
+	print_debug("[FLOW] pact_sealed_opened :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.pact_sealed_opened.emit()
 	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
 	if sequence_id != _pact_sealed_sequence_id:
@@ -1669,6 +1674,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 		"bet_name": _get_level3_bet_name(bet_id),
 		"doom_short": _get_level3_doom_short(bet_id),
 	}
+	print_debug("[FLOW] resolve_ritual_opened :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.resolve_ritual_opened.emit(payload)
 	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
 	if sequence_id != _resolve_ritual_sequence_id:
@@ -1676,6 +1682,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
 	GameEvents.resolve_ritual_closed.emit()
+	print_debug("[FLOW] resolve_ritual_closed :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_resolving_ritual = false
 	_resolve_ritual_outcome(bet_id)
 
@@ -1873,6 +1880,7 @@ func _open_level3_bet_ui() -> void:
 	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
 	_level3_current_offer = offer.duplicate(true)
+	print_debug("[FLOW] bet_ui_opened :: arena=%d, offer_count=%d" % [_run_state.arena_index, offer.size()])
 	GameEvents.bet_ui_opened.emit(offer)
 	GameEvents.bet_opened.emit()
 
@@ -3073,6 +3081,9 @@ func _on_request_continue_run() -> void:
 		return
 	_resume_run_from_save(_run_save_flow_step, _run_save_flow_bet_id)
 
+func _on_request_show_main_menu() -> void:
+	print_debug("[FLOW] main_menu_requested :: arena=%d" % _run_state.arena_index)
+
 func _on_request_next_bet() -> void:
 	if LEVEL3_ENABLED:
 		start_arena()
@@ -3470,6 +3481,7 @@ func _handle_bet_selected(bet_id: StringName) -> void:
 		push_warning("Bet selected missing id; forcing next step.")
 	if not _waiting_for_bet:
 		push_warning("Bet selected outside waiting state; forcing advance.")
+	print_debug("[FLOW] bet_choice_received :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_resolve_ritual_reward_applied = false
@@ -4245,6 +4257,7 @@ func _enter_game_over() -> void:
 		get_tree().paused = true
 		return
 	_set_phase(RunPhase.GAME_OVER, "enter_game_over")
+	print_debug("[FLOW] ending_entered :: arena=%d, reason=%s" % [_run_state.arena_index, _run_end_reason])
 	SaveManager.clear_run()
 	_is_game_over = true
 	_provoke_armed = false

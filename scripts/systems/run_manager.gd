@@ -1663,6 +1663,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 		return
 	_pact_sealed_sequence_id += 1
 	var sequence_id: int = _pact_sealed_sequence_id
+	_close_audience_context_line()
 	print_debug("[FLOW] pact_sealed_opened :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.pact_sealed_opened.emit()
 	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
@@ -3789,6 +3790,7 @@ func _open_intermediate_choice(bet_id: StringName) -> void:
 	_waiting_for_intermediate_choice = true
 	_waiting_for_push_luck = false
 	_intermediate_pending_bet_id = bet_id
+	_close_audience_context_line()
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	if GameEvents.has_signal("intermediate_choice_opened"):
@@ -3801,6 +3803,7 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 	_waiting_for_push_luck = true
 	_show_shop_next_bet = false
+	_close_audience_context_line()
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	var payload: Dictionary = _build_push_luck_payload(bet_id)
@@ -4061,6 +4064,11 @@ func _emit_audience_context_line(context: StringName) -> void:
 		return
 	_last_audience_context_line = line
 	GameEvents.audience_context_line_emitted.emit(line)
+
+func _close_audience_context_line() -> void:
+	if not GameEvents.has_signal("audience_context_line_emitted"):
+		return
+	GameEvents.audience_context_line_emitted.emit("")
 
 func _get_audience_cashout_modifier() -> float:
 	if _run_state.audience_score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:

@@ -222,6 +222,7 @@ var _pact_sealed_pending_close_id: int = 0
 var _pact_sealed_min_read_elapsed: bool = true
 var _post_bet_queue: Array[Dictionary] = []
 var _post_bet_running: bool = false
+var _post_bet_log_index: int = 0
 var _sentence_banner_sequence_id: int = 0
 var _is_signing: bool = false
 var _bet_confirm_default_text: String = ""
@@ -1331,6 +1332,8 @@ func _run_post_bet_queue() -> void:
 	_post_bet_running = true
 	while not _post_bet_queue.is_empty():
 		var payload: Dictionary = _post_bet_queue.pop_front()
+		_post_bet_log_index += 1
+		payload["log_index"] = _post_bet_log_index
 		_show_post_bet_payload(payload)
 		await get_tree().create_timer(POST_BET_MESSAGE_TIME_SEC).timeout
 		_hide_post_bet_payload(payload)
@@ -1343,6 +1346,9 @@ func is_post_bet_queue_running() -> bool:
 
 func _show_post_bet_payload(payload: Dictionary) -> void:
 	var kind: String = str(payload.get("kind", ""))
+	var log_index: int = int(payload.get("log_index", -1))
+	if log_index >= 0:
+		print_debug("[FLOW] audience_message_opened :: index=%d, text_id=%s" % [log_index, kind])
 	if kind == "pact_sealed":
 		if pact_sealed_title != null:
 			pact_sealed_title.text = str(payload.get("title", "IL PATTO È SIGILLATO."))
@@ -1359,6 +1365,9 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 
 func _hide_post_bet_payload(payload: Dictionary) -> void:
 	var kind: String = str(payload.get("kind", ""))
+	var log_index: int = int(payload.get("log_index", -1))
+	if log_index >= 0:
+		print_debug("[FLOW] audience_message_closed :: index=%d" % log_index)
 	if kind == "pact_sealed":
 		_set_pact_sealed_modal(false)
 	elif kind == "resolve_ritual":

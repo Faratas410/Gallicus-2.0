@@ -3102,9 +3102,9 @@ func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	select_bet(StringName(bet_id))
 
 func _on_request_intermediate_choice(choice_id: String) -> void:
-	if not _waiting_for_intermediate_choice:
+	if not _waiting_for_intermediate_choice and _phase != RunPhase.INTERMEDIATE_CHOICE:
 		return
-	print_debug("[FLOW] intermediate_choice_received :: arena=%d choice=%s" % [_run_state.arena_index, choice_id])
+	print_debug("[FLOW] intermediate_choice_received :: arena=%d, choice=%s" % [_run_state.arena_index, choice_id])
 	_waiting_for_intermediate_choice = false
 	_intermediate_double_disabled_once = false
 	_intermediate_bonus_tier = 0
@@ -3793,8 +3793,7 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	var payload: Dictionary = _build_push_luck_payload(bet_id)
-	var cashout_available: bool = not bool(payload.get("cashout_locked", false))
-	print_debug("[FLOW] push_luck_opened :: arena=%d cashout_available=%s" % [_run_state.arena_index, str(cashout_available)])
+	print_debug("[FLOW] push_luck_opened :: arena=%d" % _run_state.arena_index)
 	GameEvents.push_luck_opened.emit(payload)
 
 func _refresh_push_luck_choice(bet_id: StringName) -> void:

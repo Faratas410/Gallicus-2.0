@@ -182,6 +182,9 @@ const AUDIENCE_PHRASES: Dictionary = {
 		"Il tuo nome urla, ma il prezzo sale.",
 	],
 }
+
+func _flow_log(tag: String, details: String = "") -> void:
+	print_debug("[FLOW] %s :: %s" % [tag, details])
 const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 	AUDIENCE_CONTEXT_PACT_SIGNED: {
 		AUDIENCE_MOOD_FURY: [
@@ -1533,7 +1536,7 @@ func _start_level3_run() -> void:
 	_run_state = RunState.new()
 	_run_state.run_seed = _get_run_seed_value()
 	_run_state.arena_index = 0
-	print_debug("[FLOW] run_started :: arena=%d, save_present=%s" % [_run_state.arena_index, str(SaveManager.has_run_save())])
+	_flow_log("run_started", "arena=%d, bet_id=, save_present=%s" % [_run_state.arena_index, str(SaveManager.has_run_save())])
 	_run_state.escalation_level = 0
 	_run_state.active_bet_id = &""
 	_run_state.enemy_profile = &""
@@ -1664,7 +1667,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	_pact_sealed_sequence_id += 1
 	var sequence_id: int = _pact_sealed_sequence_id
 	_close_audience_context_line()
-	print_debug("[FLOW] pact_sealed_opened :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_flow_log("pact_sealed_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.pact_sealed_opened.emit()
 	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
 	if sequence_id != _pact_sealed_sequence_id:
@@ -1687,7 +1690,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 		"bet_name": _get_level3_bet_name(bet_id),
 		"doom_short": _get_level3_doom_short(bet_id),
 	}
-	print_debug("[FLOW] resolve_ritual_opened :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.resolve_ritual_opened.emit(payload)
 	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
 	if sequence_id != _resolve_ritual_sequence_id:
@@ -1695,7 +1698,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
 	GameEvents.resolve_ritual_closed.emit()
-	print_debug("[FLOW] resolve_ritual_closed :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_flow_log("resolve_ritual_closed", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_resolving_ritual = false
 	_resolve_ritual_outcome(bet_id)
 
@@ -1893,7 +1896,7 @@ func _open_level3_bet_ui() -> void:
 	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
 	_level3_current_offer = offer.duplicate(true)
-	print_debug("[FLOW] bet_ui_opened :: arena=%d, offer_count=%d" % [_run_state.arena_index, offer.size()])
+	_flow_log("bet_ui_opened", "arena=%d, bet_id=" % _run_state.arena_index)
 	GameEvents.bet_ui_opened.emit(offer)
 	GameEvents.bet_opened.emit()
 
@@ -3497,7 +3500,7 @@ func _handle_bet_selected(bet_id: StringName) -> void:
 		push_warning("Bet selected missing id; forcing next step.")
 	if not _waiting_for_bet:
 		push_warning("Bet selected outside waiting state; forcing advance.")
-	print_debug("[FLOW] bet_choice_received :: arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_flow_log("bet_choice_received", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_resolve_ritual_reward_applied = false

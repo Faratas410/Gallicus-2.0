@@ -1675,9 +1675,9 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
 	if sequence_id != _pact_sealed_sequence_id:
 		return
+	GameEvents.pact_sealed_closed.emit()
 	if _run_state.run_is_over or _is_game_over:
 		return
-	GameEvents.pact_sealed_closed.emit()
 	_start_resolve_ritual(bet_id)
 
 func _start_resolve_ritual(bet_id: StringName) -> void:
@@ -1698,11 +1698,11 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
 	if sequence_id != _resolve_ritual_sequence_id:
 		return
-	if _run_state.run_is_over or _is_game_over:
-		return
 	GameEvents.resolve_ritual_closed.emit()
 	_flow_log("resolve_ritual_closed", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_resolving_ritual = false
+	if _run_state.run_is_over or _is_game_over:
+		return
 	_resolve_ritual_outcome(bet_id)
 
 func _resolve_ritual_outcome(bet_id: StringName) -> void:

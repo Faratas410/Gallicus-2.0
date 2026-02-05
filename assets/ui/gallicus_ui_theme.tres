@@ -4,9 +4,10 @@
 [ext_resource type="FontFile" path="res://assets/ui/fonts/grabstein_gotik.otf" id="1"]
 [ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/WHITE.png" id="2"]
 [ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/frame.png" id="3"]
-[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/BLUE.png" id="4"]
+[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/WHITE.png" id="4"]
 [ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/PRESSED.png" id="5"]
 [ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/DISABLED/button_2_disabled.png" id="6"]
+[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/DISABLED/PRESSED.png" id="9"]
 [ext_resource type="Texture2D" path="res://OK GUI/Settings/Checkbox/rect.png" id="7"]
 [ext_resource type="Texture2D" path="res://OK GUI/Settings/Checkbox/PRESSED.png" id="8"]
 
@@ -45,6 +46,17 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
 texture = ExtResource("6")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6"]
+texture = ExtResource("9")
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -116,7 +128,8 @@ theme_types/Button = {
 },
 "styles": {
 "disabled": SubResource("StyleBoxTexture_4"),
-"hover": SubResource("StyleBoxTexture_2"),
+"disabled_pressed": SubResource("StyleBoxTexture_6"),
+"hover": SubResource("StyleBoxTexture_1"),
 "normal": SubResource("StyleBoxTexture_1"),
 "pressed": SubResource("StyleBoxTexture_3")
 }

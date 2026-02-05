@@ -1,9 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/bg_01_01.png" id="2"]
-[ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/frame.png" id="3"]
-[ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/frame.png" id="4"]
+[ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/circle_bg.png" id="2"]
+[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/Container.png" id="3"]
+[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/Container.png" id="4"]
+[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/3/Exclamation Red.png" id="5"]
+[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/accept/box.png" id="6"]
+[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/accept/PRESSED.png" id="7"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
@@ -18,6 +21,28 @@ texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
 texture_margin_bottom = 48.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
+texture = ExtResource("6")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
+texture = ExtResource("7")
+texture_margin_left = 48.0
+texture_margin_top = 48.0
+texture_margin_right = 48.0
+texture_margin_bottom = 48.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
 
 [node name="BettingCircle" type="Control"]
 visible = false
@@ -118,6 +143,12 @@ theme_override_font_sizes/font_size = 22
 text = "INCASSA E VAI"
 theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
+[node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
+custom_minimum_size = Vector2(24, 24)
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
@@ -155,6 +186,12 @@ theme_override_constants/separation = 6
 theme_override_font_sizes/font_size = 22
 text = "SANGUE INTEGRO"
 theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
+
+[node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
+custom_minimum_size = Vector2(24, 24)
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 autowrap_mode = 2
@@ -194,6 +231,12 @@ theme_override_font_sizes/font_size = 22
 text = "RADDOPPI O MUORI"
 theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
+[node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
+custom_minimum_size = Vector2(24, 24)
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
@@ -214,3 +257,5 @@ theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 text = "SIGILLA"
 disabled = true
 size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxTexture_3")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_4")

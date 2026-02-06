@@ -184,6 +184,7 @@ var _resolve_ritual_modal_fade_tween: Tween = null
 var _intermediate_choice_modal_fade_tween: Tween = null
 var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
+var _current_modal: Control = null
 var _last_level: int = 1
 var _last_tokens: int = 0
 var _xp_anim_tween: Tween = null
@@ -1514,7 +1515,7 @@ func _show_scars_detail() -> void:
 		return
 	if _scars_detail_text == "":
 		return
-	scars_detail_panel.visible = true
+	show_modal(scars_detail_panel)
 	scars_detail_text.text = _scars_detail_text
 	_set_scars_detail_modal(true)
 
@@ -2149,15 +2150,73 @@ func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) 
 		tween.tween_callback(Callable(self, "_on_modal_fade_out_complete").bind(panel, modal))
 	return tween
 
+func hide_all_modals() -> void:
+	if _bet_modal_fade_tween != null and _bet_modal_fade_tween.is_valid():
+		_bet_modal_fade_tween.kill()
+	if _pact_sealed_modal_fade_tween != null and _pact_sealed_modal_fade_tween.is_valid():
+		_pact_sealed_modal_fade_tween.kill()
+	if _resolve_ritual_modal_fade_tween != null and _resolve_ritual_modal_fade_tween.is_valid():
+		_resolve_ritual_modal_fade_tween.kill()
+	if _intermediate_choice_modal_fade_tween != null and _intermediate_choice_modal_fade_tween.is_valid():
+		_intermediate_choice_modal_fade_tween.kill()
+	if _push_luck_modal_fade_tween != null and _push_luck_modal_fade_tween.is_valid():
+		_push_luck_modal_fade_tween.kill()
+	if _game_over_modal_fade_tween != null and _game_over_modal_fade_tween.is_valid():
+		_game_over_modal_fade_tween.kill()
+	if bet_panel != null:
+		bet_panel.visible = false
+	if bet_modal != null:
+		bet_modal.visible = false
+	if pact_sealed_panel != null:
+		pact_sealed_panel.visible = false
+	if pact_sealed_modal != null:
+		pact_sealed_modal.visible = false
+	if resolve_ritual_panel != null:
+		resolve_ritual_panel.visible = false
+	if resolve_ritual_modal != null:
+		resolve_ritual_modal.visible = false
+	if intermediate_choice_panel != null:
+		intermediate_choice_panel.visible = false
+	if intermediate_choice_modal != null:
+		intermediate_choice_modal.visible = false
+	if push_luck_panel != null:
+		push_luck_panel.visible = false
+	if push_luck_modal != null:
+		push_luck_modal.visible = false
+	if game_over_panel != null:
+		game_over_panel.visible = false
+	if game_over_modal != null:
+		game_over_modal.visible = false
+	if scars_detail_panel != null:
+		scars_detail_panel.visible = false
+	if betting_circle != null:
+		betting_circle.visible = false
+	exit_ending_mode()
+	_current_modal = null
+	_refresh_modal_dimmer()
+
+func show_modal(modal: Control) -> void:
+	hide_all_modals()
+	if modal == null:
+		return
+	modal.visible = true
+	modal.move_to_front()
+	_current_modal = modal
+	_refresh_modal_dimmer()
+
 func _on_modal_fade_out_complete(panel: CanvasItem, modal: Control) -> void:
 	if panel != null:
 		panel.visible = false
 		panel.modulate.a = 1.0
 	if modal != null:
 		modal.visible = false
+		if modal == _current_modal:
+			_current_modal = null
 	_refresh_modal_dimmer()
 
 func _set_bet_modal(active: bool) -> void:
+	if active:
+		show_modal(bet_modal)
 	_bet_modal_fade_tween = _fade_modal(bet_panel, bet_modal, active, _bet_modal_fade_tween)
 	if active:
 		if GameEvents.has_signal("modal_opened"):
@@ -2169,6 +2228,8 @@ func _set_bet_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_pact_sealed_modal(active: bool) -> void:
+	if active:
+		show_modal(pact_sealed_modal)
 	_pact_sealed_modal_fade_tween = _fade_modal(pact_sealed_panel, pact_sealed_modal, active, _pact_sealed_modal_fade_tween)
 	if active:
 		if GameEvents.has_signal("modal_opened"):
@@ -2180,6 +2241,8 @@ func _set_pact_sealed_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_resolve_ritual_modal(active: bool) -> void:
+	if active:
+		show_modal(resolve_ritual_modal)
 	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween)
 	if active:
 		if GameEvents.has_signal("modal_opened"):
@@ -2191,6 +2254,8 @@ func _set_resolve_ritual_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_intermediate_choice_modal(active: bool) -> void:
+	if active:
+		show_modal(intermediate_choice_modal)
 	_intermediate_choice_modal_fade_tween = _fade_modal(
 		intermediate_choice_panel,
 		intermediate_choice_modal,
@@ -2207,6 +2272,8 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_push_luck_modal(active: bool) -> void:
+	if active:
+		show_modal(push_luck_modal)
 	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween)
 	if active:
 		if GameEvents.has_signal("modal_opened"):
@@ -2218,6 +2285,8 @@ func _set_push_luck_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_game_over_modal(active: bool) -> void:
+	if active:
+		show_modal(game_over_modal)
 	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween)
 	if active:
 		enter_ending_mode()
@@ -2282,6 +2351,8 @@ func _refresh_modal_dimmer() -> void:
 		modal_dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		return
 	var active: bool = false
+	if _current_modal != null and is_instance_valid(_current_modal) and _current_modal.visible:
+		active = true
 	if bet_modal != null and bet_modal.visible:
 		active = true
 	if betting_circle != null and betting_circle.visible:
@@ -2323,7 +2394,7 @@ func open_bet_circle(bets: Array[Dictionary]) -> void:
 			push_error("SANITY FAIL UI: BetCircle missing")
 			return
 		betting_circle = circle
-	circle.visible = true
+	show_modal(circle)
 	circle.modulate.a = 1.0
 	circle.process_mode = Node.PROCESS_MODE_INHERIT
 	circle.mouse_filter = Control.MOUSE_FILTER_STOP

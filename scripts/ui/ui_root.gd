@@ -219,7 +219,6 @@ var _ending_mode_active: bool = false
 var _post_bet_text_last_index: Dictionary = {}
 var _pact_sealed_sequence_id: int = 0
 var _pact_sealed_pending_close_id: int = 0
-var _pact_sealed_min_read_elapsed: bool = true
 var _post_bet_queue: Array[Dictionary] = []
 var _post_bet_running: bool = false
 var _post_bet_log_index: int = 0

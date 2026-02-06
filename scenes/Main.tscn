@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/systems/run_manager.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
-[ext_resource type="AudioStream" path="res://Ambient1.mp3" id="4"]
+[ext_resource type="AudioStream" path="res://Music/Ambient1.mp3" id="4"]
 [ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/frame.png" id="5"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="6"]
 

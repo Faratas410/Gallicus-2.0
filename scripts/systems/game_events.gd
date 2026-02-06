@@ -16,6 +16,7 @@ extends Node
 # - arena_started: emitted by RunManager/Arena; consumed by UIRoot.
 # - arena_completed: emitted by Arena/RunManager; consumed by RunManager/UI.
 # - run_failed: emitted by RunManager; consumed by UIRoot/UI.
+# - run_ended: emitted by RunManager; consumed by UIRoot/UI.
 # - run_finale_selected: emitted by RunManager; consumed by UIRoot.
 # - run_debug_state_updated: emitted by RunManager; consumed by UIRoot (debug).
 # - run_log_ready: emitted by RunManager; consumed by UIRoot (debug).
@@ -87,6 +88,7 @@ signal run_started
 signal arena_started(arena_index: int)
 signal arena_completed(arena_index: int)
 signal run_failed
+signal run_ended(reason: String, summary: Dictionary)
 signal run_finale_selected(payload: Dictionary)
 signal run_debug_state_updated(payload: Dictionary)
 signal run_log_ready(log_text: String)

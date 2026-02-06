@@ -1,5 +1,4 @@
 [gd_resource type="Theme" format=3]
-# NOTE: UI textures must come from gui_review.txt "OK GUI files" only.
 
 [ext_resource type="FontFile" path="res://assets/ui/fonts/grabstein_gotik.otf" id="1"]
 [ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/WHITE.png" id="2"]

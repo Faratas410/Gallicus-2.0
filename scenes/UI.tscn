@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/overlays/vignette_overlay.png" id="8"]
 [ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/Container.png" id="9"]
 [ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/3/container.png" id="10"]
+[ext_resource type="FontVariation" path="res://assets/ui/fonts/font_title_outline.tres" id="11"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
 texture_margin_left = 48.0
@@ -373,13 +374,15 @@ offset_bottom = -24.0
 theme_override_constants/separation = 12
 
 [node name="PactSealedTitle" type="Label" parent="Modals/PactSealedModal/PactSealedPanel/PactSealedVBox"]
+theme_override_fonts/font = ExtResource("11")
+theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 30
 text = "IL PATTO È SIGILLATO."
 
 [node name="PactSealedSubtitle" type="Label" parent="Modals/PactSealedModal/PactSealedPanel/PactSealedVBox"]
 horizontal_alignment = 1
 autowrap_mode = 2
+clip_text = true
 text = "La folla trattiene il fiato."
 
 [node name="ResolveRitualModal" type="Control" parent="Modals"]
@@ -421,13 +424,15 @@ offset_bottom = -24.0
 theme_override_constants/separation = 12
 
 [node name="ResolveRitualTitle" type="Label" parent="Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox"]
+theme_override_fonts/font = ExtResource("11")
+theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 30
 text = "RITO DI GIUDIZIO"
 
 [node name="ResolveRitualSubtitle" type="Label" parent="Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox"]
 horizontal_alignment = 1
 autowrap_mode = 2
+clip_text = true
 text = "Il patto viene giudicato."
 
 [node name="IntermediateChoiceModal" type="Control" parent="Modals"]
@@ -471,8 +476,9 @@ offset_bottom = -16.0
 theme_override_constants/separation = 12
 
 [node name="IntermediateChoiceLabel" type="Label" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox"]
+theme_override_fonts/font = ExtResource("11")
+theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 28
 text = "SCEGLI IL GESTO"
 
 [node name="IntermediateChoiceButtons" type="VBoxContainer" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox"]
@@ -542,7 +548,8 @@ offset_bottom = 0.0
 theme_override_constants/separation = 12
 
 [node name="BetTitle" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("11")
+theme_type_variation = &"TitleLabel"
 text = "Scommessa Arena"
 
 [node name="SpecialArenaLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
@@ -556,7 +563,7 @@ visible = false
 autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-clip_text = false
+clip_text = true
 theme_override_font_sizes/font_size = 22
 text = "FOCUS: Leggi prima la CONDANNA."
 
@@ -644,6 +651,7 @@ text = "Disponibile dopo l'arena in corso."
 
 [node name="BuyTokenInfo" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow"]
 autowrap_mode = 2
+clip_text = true
 theme_override_font_sizes/font_size = 18
 text = "x1"
 
@@ -691,7 +699,8 @@ offset_bottom = -12.0
 theme_override_constants/separation = 12
 
 [node name="PushLuckTitle" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("11")
+theme_type_variation = &"TitleLabel"
 text = "PUSH YOUR LUCK"
 
 [node name="PushLuckInfo" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
@@ -797,11 +806,13 @@ offset_bottom = -12.0
 theme_override_constants/separation = 8
 
 [node name="ScarsDetailTitle" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("11")
+theme_type_variation = &"TitleLabel"
 text = "DETTAGLIO CICATRICI"
 
 [node name="ScarsDetailText" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
 autowrap_mode = 2
+clip_text = true
 text = ""
 
 [node name="ScarsDetailClose" type="Button" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
@@ -850,7 +861,8 @@ offset_bottom = -12.0
 theme_override_constants/separation = 10
 
 [node name="VerdictHeader" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
-theme_override_font_sizes/font_size = 36
+theme_override_fonts/font = ExtResource("11")
+theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "VERDETTO"
 
@@ -879,7 +891,7 @@ text = "PATTI FIRMATI"
 [node name="PactsText" type="RichTextLabel" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections"]
 size_flags_horizontal = 3
 bbcode_enabled = false
-fit_content = true
+fit_content = false
 autowrap_mode = 2
 text = ""
 
@@ -889,7 +901,7 @@ text = "CONDANNE"
 [node name="CondanneText" type="RichTextLabel" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections"]
 size_flags_horizontal = 3
 bbcode_enabled = false
-fit_content = true
+fit_content = false
 autowrap_mode = 2
 text = ""
 
@@ -904,6 +916,7 @@ text = "ULTIMA VOCE"
 [node name="CrowdText" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/CrowdSection"]
 size_flags_horizontal = 3
 autowrap_mode = 2
+clip_text = true
 text = ""
 
 [node name="GameOverScroll" type="ScrollContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
@@ -923,7 +936,7 @@ theme_override_constants/margin_bottom = 32
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
-fit_content = true
+fit_content = false
 horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_colors/font_color = Color(0.32, 0.24, 0.16, 1)

@@ -251,6 +251,9 @@ func _ready() -> void:
 	var run_failed_callable: Callable = Callable(self, "_on_run_failed")
 	if not GameEvents.run_failed.is_connected(run_failed_callable):
 		GameEvents.run_failed.connect(run_failed_callable)
+	var run_ended_callable: Callable = Callable(self, "_on_run_ended")
+	if GameEvents.has_signal("run_ended") and not GameEvents.run_ended.is_connected(run_ended_callable):
+		GameEvents.run_ended.connect(run_ended_callable)
 	var run_finale_callable: Callable = Callable(self, "_on_run_finale_selected")
 	if GameEvents.has_signal("run_finale_selected") and not GameEvents.run_finale_selected.is_connected(run_finale_callable):
 		GameEvents.run_finale_selected.connect(run_finale_callable)
@@ -973,6 +976,10 @@ func _on_run_failed() -> void:
 	_set_verdict_mode(true)
 	if next_bet_button != null:
 		next_bet_button.visible = false
+	if restart_button != null:
+		restart_button.text = "NUOVA RUN"
+	if quit_button != null:
+		quit_button.text = "MENU"
 	_last_finale_hint = ""
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
@@ -988,6 +995,14 @@ func _on_run_failed() -> void:
 	_apply_modal_read_delay(ending_read_buttons)
 	_refresh_modal_dimmer()
 	_hide_scars_detail()
+
+func _on_run_ended(_reason: String, _summary: Dictionary) -> void:
+	if game_over_modal == null:
+		return
+	if game_over_modal.visible:
+		return
+	_set_game_over_modal(true)
+	_refresh_modal_dimmer()
 
 func _coerce_string_list(values: Array) -> Array[String]:
 	var result: Array[String] = []
@@ -1792,8 +1807,8 @@ func _on_retry_pressed() -> void:
 func _request_reset() -> void:
 	_set_game_over_modal(false)
 
-	if GameEvents.has_signal("request_reset_run"):
-		GameEvents.request_reset_run.emit()
+	if GameEvents.has_signal("request_new_run"):
+		GameEvents.request_new_run.emit()
 	_hide_scars_detail()
 	_refresh_modal_dimmer()
 

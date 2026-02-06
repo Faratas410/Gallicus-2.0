@@ -1055,6 +1055,7 @@ var _waiting_for_push_luck: bool = false
 var _waiting_for_intermediate_choice: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
+var _run_ended_emitted: bool = false
 var _is_game_over: bool = false
 var _phase: RunPhase = RunPhase.MAIN_MENU
 var phase: RunPhase = RunPhase.PREP
@@ -1113,6 +1114,7 @@ var _intermediate_loss_penalty_pending: bool = false
 var _provoke_armed: bool = false
 var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
+var _run_end_public_reason: String = ""
 var _run_finale_emitted: bool = false
 var _condanne_this_run: Array[StringName] = []
 var _last_audience_context_line: String = ""
@@ -1395,7 +1397,7 @@ func _fail_flow(message: String) -> void:
 	if _is_game_over:
 		return
 	_forced_ending_id = &"THE_FOOL"
-	_enter_game_over()
+	_enter_end_run("RUN_FAILED")
 
 func start_new_run() -> void:
 	_run_start_time_msec = Time.get_ticks_msec()
@@ -1413,6 +1415,7 @@ func start_new_run() -> void:
 	_prep_sequence_id += 1
 	var current_id: int = _prep_sequence_id
 	_run_failed_emitted = false
+	_run_ended_emitted = false
 	_is_game_over = false
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
@@ -1431,6 +1434,7 @@ func start_new_run() -> void:
 	_provoke_armed = false
 	_failed_high_risk_bets = 0
 	_run_end_reason = ""
+	_run_end_public_reason = ""
 	_run_finale_emitted = false
 	_condanne_this_run = []
 	_last_audience_context_line = ""
@@ -1499,11 +1503,13 @@ func _start_level3_run() -> void:
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	_run_failed_emitted = false
+	_run_ended_emitted = false
 	_is_game_over = false
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_show_shop_next_bet = false
 	_run_end_reason = ""
+	_run_end_public_reason = ""
 	_run_finale_emitted = false
 	_condanne_this_run = []
 	_last_audience_context_line = ""
@@ -1839,7 +1845,7 @@ func end_run(ending_id: StringName) -> void:
 	_run_state.run_is_over = true
 	_update_arena_visual_only()
 	_register_run_end(String(ending_id))
-	_enter_game_over()
+	_enter_end_run("")
 
 func start_next_bet_round() -> void:
 	if LEVEL3_ENABLED:
@@ -2178,8 +2184,10 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_resolving_ritual = false
 	_resolving_arena = false
 	_run_failed_emitted = false
+	_run_ended_emitted = false
 	_run_finale_emitted = false
 	_run_end_reason = ""
+	_run_end_public_reason = ""
 	_is_game_over = false
 	_has_started_run = true
 	_waiting_for_bet = false
@@ -2699,7 +2707,7 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 	if _provoke_armed:
 		_provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
-		_enter_game_over()
+		_enter_end_run("")
 		return scars_applied
 	var executioner_bonus: int = 0
 	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
@@ -2751,7 +2759,7 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	if _provoke_armed:
 		_provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
-		_enter_game_over()
+		_enter_end_run("")
 		return scars_applied
 	var executioner_bonus: int = 0
 	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
@@ -3712,13 +3720,11 @@ func _on_run_failed() -> void:
 	if _run_failed_emitted:
 		return
 	_run_failed_emitted = true
-	_register_run_end("RUN_FAILED")
 	GameEvents.set_gameplay_enabled(false)
-	_enter_game_over()
+	_enter_end_run("RUN_FAILED")
 
 func _on_player_died() -> void:
-	_register_run_end("PLAYER_DIED")
-	_enter_game_over()
+	_enter_end_run("death")
 
 func _soft_reset() -> void:
 	if _arena and _arena.has_method("soft_reset"):
@@ -3737,13 +3743,13 @@ func handle_bet_failed(bet_id: String) -> void:
 	if _provoke_armed:
 		_provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
-		_enter_game_over()
+		_enter_end_run("")
 		return
 	if bet_id == BET_DOUBLE_OR_DIE:
 		_failed_high_risk_bets += 1
 		_register_run_end("DOUBLE_OR_DIE")
 		_reset_bet_chain()
-		_enter_game_over()
+		_enter_end_run("")
 		return
 	if bet_id == BET_PURE_BLOOD:
 		_failed_high_risk_bets += 1
@@ -4258,8 +4264,7 @@ func _force_game_over_if_dead() -> bool:
 		return false
 	var current_health: int = _get_player_health_value(p)
 	if current_health <= 0 and current_health != -1:
-		_register_run_end("PLAYER_DIED")
-		_enter_game_over()
+		_enter_end_run("death")
 		return true
 	return false
 
@@ -4284,6 +4289,18 @@ func _get_player_max_health_value(p: Node) -> int:
 	if p.has_meta("max_health"):
 		return int(p.get_meta("max_health"))
 	return -1
+
+func _enter_end_run(reason: String) -> void:
+	if _is_game_over:
+		return
+	var trimmed_reason: String = reason.strip_edges()
+	if trimmed_reason != "":
+		_run_end_public_reason = trimmed_reason
+	if trimmed_reason == "death":
+		_register_run_end("PLAYER_DIED")
+	elif trimmed_reason != "":
+		_register_run_end(trimmed_reason)
+	_enter_game_over()
 
 func _enter_game_over() -> void:
 	if _is_game_over:
@@ -4328,6 +4345,7 @@ func _enter_game_over() -> void:
 	set_phase(RunPhase.GAME_OVER)
 	_update_arena_visual_only()
 	_emit_run_finale()
+	_emit_run_ended()
 	_emit_run_failed()
 
 func _emit_run_failed() -> void:
@@ -4337,6 +4355,21 @@ func _emit_run_failed() -> void:
 	_emit_audience_context_line(AUDIENCE_CONTEXT_RUN_LOSS)
 	GameEvents.run_failed.emit()
 	GameEvents.set_gameplay_enabled(false)
+
+func _emit_run_ended() -> void:
+	if _run_ended_emitted:
+		return
+	_run_ended_emitted = true
+	if not GameEvents.has_signal("run_ended"):
+		return
+	var emit_reason: String = _run_end_public_reason
+	if emit_reason == "":
+		emit_reason = _run_end_reason
+	if emit_reason == "":
+		emit_reason = "unknown"
+	var finale: Dictionary = _select_run_finale()
+	var summary: Dictionary = _build_run_summary(finale)
+	GameEvents.run_ended.emit(emit_reason, summary)
 
 func _register_run_end(reason: String) -> void:
 	if reason == "":

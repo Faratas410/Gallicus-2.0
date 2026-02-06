@@ -262,12 +262,12 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 		_apply_condanna_style(condanna_id, entry_label)
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
-	var tooltip_text := "%s\n\nCome è stata ottenuta:\n%s\n\n%s" % [
+	var tooltip_label_text: String = "%s\n\nCome è stata ottenuta:\n%s\n\n%s" % [
 		condanna.title,
 		condanna.condition_text,
 		condanna.lore_text
 	]
-	tooltip_label.text = tooltip_text
+	tooltip_label.text = tooltip_label_text
 	condanna_tooltip.visible = true
 	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
 	condanna_tooltip.global_position = mouse_pos + Vector2(16, 16)

@@ -96,7 +96,7 @@ texture_margin_bottom = 48.0
 
 [resource]
 default_font = ExtResource("1")
-default_font_size = 8
+default_font_size = 12
 theme_types/Label = {
 "colors": {
 "font_color": Color(0.949, 0.91, 0.847, 1)
@@ -109,7 +109,7 @@ theme_types/Label = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 8
+"font_size": 12
 },
 "styles": {}
 }
@@ -124,7 +124,7 @@ theme_types/Button = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 8
+"font_size": 12
 },
 "styles": {
 "disabled": SubResource("StyleBoxTexture_4"),
@@ -149,7 +149,7 @@ theme_types/CheckBox = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 8
+"font_size": 12
 },
 "icons": {
 "checked": ExtResource("8"),
@@ -170,7 +170,7 @@ theme_types/LineEdit = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 8
+"font_size": 12
 },
 "styles": {}
 }
@@ -182,7 +182,7 @@ theme_types/SpinBox = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 8
+"font_size": 12
 },
 "styles": {}
 }
@@ -191,7 +191,7 @@ theme_types/ProgressBar = {
 "font": ExtResource("1")
 },
 "font_sizes": {
-"font_size": 8
+"font_size": 12
 },
 "styles": {}
 }
@@ -221,7 +221,7 @@ theme_types/HScrollBar = {
 theme_type_variations/TitleLabel = {
 "base_type": &"Label",
 "font_sizes": {
-"font_size": 13
+"font_size": 20
 },
 "fonts": {
 "font": ExtResource("10")
@@ -230,7 +230,7 @@ theme_type_variations/TitleLabel = {
 theme_type_variations/BodyLabel = {
 "base_type": &"Label",
 "font_sizes": {
-"font_size": 8
+"font_size": 12
 },
 "fonts": {
 "font": ExtResource("1")

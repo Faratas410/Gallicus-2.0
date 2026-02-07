@@ -366,6 +366,21 @@ const SPECIAL_ARENA_DISPREZZO: StringName = &"ARENA_DISPREZZO"
 const SPECIAL_ARENA_VERGOGNA: StringName = &"ARENA_VERGOGNA"
 const ESCALATION_MAX: int = 10
 const ESCALATION_HIGH_THRESHOLD: int = 6
+const SCAR_REFUSE_CASHOUT_THRESHOLD: int = 3
+const SCAR_RISK_ESCALATION_THRESHOLD: int = 7
+const SCAR_MIN_ARENA_INTERVAL: int = 1
+const IRREVERSIBLE_BET_IDS: Array[StringName] = [
+	BET_DOUBLE_OR_DIE_L3,
+	BET_LAST_BREATH,
+	BET_DEBT_CHAIN,
+	BET_BLOOD_TAX,
+]
+const SCAR_TRIGGER_IRREVERSIBLE_BET: StringName = &"IRREVERSIBLE_BET"
+const SCAR_TRIGGER_REFUSED_CLOSURE: StringName = &"REFUSED_CLOSURE"
+const SCAR_TRIGGER_RISK_THRESHOLD: StringName = &"RISK_THRESHOLD"
+const SCAR_EVENT_IRREVERSIBLE_PACT: StringName = &"SCAR_EVENT_IRREVERSIBLE_PACT"
+const SCAR_EVENT_REFUSED_CLOSURE: StringName = &"SCAR_EVENT_REFUSED_CLOSURE"
+const SCAR_EVENT_RISK_THRESHOLD: StringName = &"SCAR_EVENT_RISK_THRESHOLD"
 
 const PACT_OUTCOME_UNKNOWN: int = 0
 const PACT_OUTCOME_WIN: int = 1
@@ -385,6 +400,31 @@ class PactLogEntry:
 			"outcome": outcome,
 		}
 
+class Scar:
+	var id: StringName = &""
+	var origin: String = ""
+	var trigger: StringName = &""
+	var arena_index: int = 0
+	var escalation_level: int = 0
+
+	func to_dict() -> Dictionary:
+		return {
+			"id": String(id),
+			"origin": origin,
+			"trigger": String(trigger),
+			"arena_index": arena_index,
+			"escalation_level": escalation_level,
+		}
+
+	static func from_dict(value: Dictionary) -> Scar:
+		var scar: Scar = Scar.new()
+		scar.id = StringName(str(value.get("id", "")))
+		scar.origin = str(value.get("origin", ""))
+		scar.trigger = StringName(str(value.get("trigger", "")))
+		scar.arena_index = int(value.get("arena_index", 0))
+		scar.escalation_level = int(value.get("escalation_level", 0))
+		return scar
+
 class RunState:
 	var run_seed: int = 0
 	var arena_index: int = 0
@@ -392,7 +432,7 @@ class RunState:
 	var active_bet_id: StringName = &""
 	var enemy_profile: StringName = &""
 	var enemy_profiles: Array[StringName] = []
-	var scars: Array[StringName] = []
+	var scars: Array[Scar] = []
 	var scars_history: Array[StringName] = []
 	var bets_history: Array[StringName] = []
 	var pacts_log: Array[PactLogEntry] = []
@@ -408,6 +448,10 @@ class RunState:
 	var is_hunted_by_crowd: bool = false
 	var last_signed_pact_id: StringName = &""
 	var risky_choice_made_recently: bool = false
+	var irreversible_bet_scar_registered: bool = false
+	var refused_closure_scar_registered: bool = false
+	var risk_threshold_scar_registered: bool = false
+	var last_scar_arena_index: int = -1000
 
 class ArenaResult:
 	var won: bool = false
@@ -1568,6 +1612,10 @@ func _start_level3_run() -> void:
 	_run_state.run_is_over = false
 	_run_state.is_hunted_by_crowd = false
 	_run_state.risky_choice_made_recently = false
+	_run_state.irreversible_bet_scar_registered = false
+	_run_state.refused_closure_scar_registered = false
+	_run_state.risk_threshold_scar_registered = false
+	_run_state.last_scar_arena_index = -1000
 	_emit_escalation_changed()
 	_arena_layout_rng.seed = _run_state.run_seed
 	_level3_rng.seed = _run_state.run_seed
@@ -2041,7 +2089,7 @@ func _compute_level3_seed(bet_id: StringName) -> int:
 	seed_value += _run_state.escalation_level * 13
 	seed_value += String(bet_id).hash() * 7
 	var scars_hash: int = 0
-	for scar_name: StringName in _run_state.scars:
+	for scar_name: StringName in _run_state.scars_history:
 		scars_hash += String(scar_name).hash() * 3
 	seed_value += scars_hash
 	seed_value += String(_run_state.enemy_profile).hash() * 5
@@ -2051,14 +2099,14 @@ func _compute_level3_offer_seed() -> int:
 	var seed_value: int = _run_state.run_seed
 	seed_value += _run_state.arena_index * 43
 	seed_value += _run_state.escalation_level * 17
-	seed_value += _run_state.scars.size() * 11
+	seed_value += _run_state.scars_history.size() * 11
 	seed_value += String(_last_selected_bet_id).hash() * 5
 	return seed_value
 
 func _emit_run_debug_state() -> void:
 	if not GameEvents.has_signal("run_debug_state_updated"):
 		return
-	var scars_copy: Array = _run_state.scars.duplicate()
+	var scars_copy: Array[String] = _serialize_stringname_array(_run_state.scars_history)
 	var payload: Dictionary = {
 		"seed": _run_state.run_seed,
 		"arena_index": _run_state.arena_index,
@@ -2107,7 +2155,7 @@ func _build_run_save_payload() -> Dictionary:
 		"active_bet_id": String(_run_state.active_bet_id),
 		"enemy_profile": String(_run_state.enemy_profile),
 		"enemy_profiles": _serialize_stringname_array(_run_state.enemy_profiles),
-		"scars": _serialize_stringname_array(_run_state.scars),
+		"scars": _serialize_run_scars(_run_state.scars),
 		"scars_history": _serialize_stringname_array(_run_state.scars_history),
 		"bets_history": _serialize_stringname_array(_run_state.bets_history),
 		"pacts_log": pacts_log,
@@ -2123,6 +2171,10 @@ func _build_run_save_payload() -> Dictionary:
 		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
 		"last_signed_pact_id": String(_run_state.last_signed_pact_id),
 		"risky_choice_made_recently": _run_state.risky_choice_made_recently,
+		"irreversible_bet_scar_registered": _run_state.irreversible_bet_scar_registered,
+		"refused_closure_scar_registered": _run_state.refused_closure_scar_registered,
+		"risk_threshold_scar_registered": _run_state.risk_threshold_scar_registered,
+		"last_scar_arena_index": _run_state.last_scar_arena_index,
 	}
 	var level3_payload: Dictionary = {
 		"reward_tier": _level3_reward_tier,
@@ -2210,7 +2262,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_state.active_bet_id = StringName(str(run_state_data.get("active_bet_id", "")))
 	_run_state.enemy_profile = StringName(str(run_state_data.get("enemy_profile", "")))
 	_run_state.enemy_profiles = _parse_stringname_array(run_state_data.get("enemy_profiles", []) as Array)
-	_run_state.scars = _parse_stringname_array(run_state_data.get("scars", []) as Array)
+	_run_state.scars = _parse_run_scars(run_state_data.get("scars", []) as Array)
 	_run_state.scars_history = _parse_stringname_array(run_state_data.get("scars_history", []) as Array)
 	_run_state.bets_history = _parse_stringname_array(run_state_data.get("bets_history", []) as Array)
 	_run_state.cashouts = int(run_state_data.get("cashouts", 0))
@@ -2225,6 +2277,10 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_state.is_hunted_by_crowd = bool(run_state_data.get("is_hunted_by_crowd", false))
 	_run_state.last_signed_pact_id = StringName(str(run_state_data.get("last_signed_pact_id", "")))
 	_run_state.risky_choice_made_recently = bool(run_state_data.get("risky_choice_made_recently", false))
+	_run_state.irreversible_bet_scar_registered = bool(run_state_data.get("irreversible_bet_scar_registered", false))
+	_run_state.refused_closure_scar_registered = bool(run_state_data.get("refused_closure_scar_registered", false))
+	_run_state.risk_threshold_scar_registered = bool(run_state_data.get("risk_threshold_scar_registered", false))
+	_run_state.last_scar_arena_index = int(run_state_data.get("last_scar_arena_index", -1000))
 	if _run_state.run_is_over:
 		return false
 
@@ -2334,6 +2390,12 @@ func _serialize_stringname_array(items: Array) -> Array[String]:
 		values.append(text)
 	return values
 
+func _serialize_run_scars(items: Array[Scar]) -> Array[Dictionary]:
+	var values: Array[Dictionary] = []
+	for item: Scar in items:
+		values.append(item.to_dict())
+	return values
+
 func _parse_stringname_array(items: Array) -> Array[StringName]:
 	var values: Array[StringName] = []
 	for item in items:
@@ -2341,6 +2403,18 @@ func _parse_stringname_array(items: Array) -> Array[StringName]:
 		if text == "":
 			continue
 		values.append(StringName(text))
+	return values
+
+func _parse_run_scars(items: Array) -> Array[Scar]:
+	var values: Array[Scar] = []
+	for item in items:
+		if item is Dictionary:
+			values.append(Scar.from_dict(item as Dictionary))
+		elif str(item) != "":
+			var legacy: Scar = Scar.new()
+			legacy.id = StringName(str(item))
+			legacy.trigger = SCAR_TRIGGER_IRREVERSIBLE_BET
+			values.append(legacy)
 	return values
 
 func _serialize_scars_detail() -> Array[Dictionary]:
@@ -2517,6 +2591,7 @@ func _apply_special_arena_pre_resolution() -> void:
 		return
 	if _special_arena_id == SPECIAL_ARENA_SILENCE:
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+		_try_register_risk_threshold_scar()
 		_level3_max_escalation = maxi(_level3_max_escalation, _run_state.escalation_level)
 		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 		_special_arena_effect_applied = true
@@ -2871,7 +2946,7 @@ func _get_scar_def(scar_id: StringName) -> Dictionary:
 	return {}
 
 func _determine_level3_ending_id() -> StringName:
-	var scar_count: int = _run_state.scars.size()
+	var scar_count: int = _run_state.scars_history.size()
 	if scar_count <= 0:
 		return &"THE_SURVIVOR"
 	if scar_count == 1:
@@ -3268,6 +3343,7 @@ func _on_request_push_luck_double() -> void:
 		if lock_reason != "":
 			return
 		_run_state.refuse_cashout_count_this_run += 1
+		_try_register_refused_closure_scar()
 		if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD or _run_state.refuse_cashout_count_this_run >= 3:
 			_run_state.risky_choice_made_recently = true
 		var player: Node = _resolve_player()
@@ -3279,7 +3355,7 @@ func _on_request_push_luck_double() -> void:
 		var critical_hp: bool = false
 		if current_hp >= 0 and max_hp > 0:
 			critical_hp = float(current_hp) / float(max_hp) <= 0.20
-		var critical_scars: bool = _run_state.scars.size() >= 3
+		var critical_scars: bool = _run_state.scars_history.size() >= 3
 		if critical_hp or critical_scars:
 			_register_condanna(CONDANNA_SO_COME_FINISCE)
 		if _run_state.refuse_cashout_count_this_run == 1:
@@ -3297,6 +3373,7 @@ func _on_request_push_luck_double() -> void:
 		_emit_audience_context_line(AUDIENCE_CONTEXT_CONTINUE)
 		_resolve_ritual_reward_applied = false
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+		_try_register_risk_threshold_scar()
 		_level3_reward_tier = maxi(_level3_reward_tier + 1, 1)
 		_level3_doubles += 1
 		_run_state.doubles += 1
@@ -3526,6 +3603,7 @@ func _handle_bet_selected(bet_id: StringName) -> void:
 	_waiting_for_push_luck = false
 	_resolve_ritual_reward_applied = false
 	_register_level3_bet_choice(bet_id)
+	_try_register_irreversible_bet_scar(bet_id)
 	GameEvents.betting_closed.emit()
 	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, bet_id)
 	_emit_audience_context_line(AUDIENCE_CONTEXT_PACT_SIGNED)
@@ -4409,7 +4487,7 @@ func _build_run_log(finale: Dictionary) -> String:
 	var cashouts: int = _level3_cashouts
 	var doubles: int = _level3_doubles
 	var max_escalation: int = _level3_max_escalation
-	var scar_count: int = _run_state.scars.size()
+	var scar_count: int = _run_state.scars_history.size()
 	var special_arena: String = ""
 	if _special_arena_id != &"":
 		special_arena = _get_special_arena_title(_special_arena_id)
@@ -4471,7 +4549,7 @@ func _build_run_summary(finale: Dictionary) -> Dictionary:
 
 func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _scars.duplicate(true)
-	var scar_count: int = _run_state.scars.size()
+	var scar_count: int = _run_state.scars_history.size()
 	var ending_id: StringName = _forced_ending_id
 	var run_completed: bool = _level3_target_arenas > 0 and _run_state.arena_index >= _level3_target_arenas
 	if ending_id == &"":
@@ -4813,7 +4891,7 @@ func _emit_scars_updated() -> void:
 	GameEvents.scars_updated.emit(scars_copy)
 
 func _has_scar(scar_id: StringName) -> bool:
-	for scar_name: StringName in _run_state.scars:
+	for scar_name: StringName in _run_state.scars_history:
 		if scar_name == scar_id:
 			return true
 	return false
@@ -4825,14 +4903,67 @@ func _add_scar(scar: Dictionary) -> void:
 	if _has_scar(scar_id):
 		return
 	_scars.append(scar)
-	_run_state.scars.append(scar_id)
 	_run_state.scars_history.append(scar_id)
+	var trigger: StringName = StringName(str(scar.get("trigger", SCAR_TRIGGER_IRREVERSIBLE_BET)))
+	_register_run_scar(scar_id, String(str(scar.get("origin", ""))), trigger)
 	_recompute_scar_modifiers()
 	_recompute_scar_synergies()
 	_emit_scars_updated()
 	_emit_run_debug_state()
 	if GameEvents.has_signal("scar_applied"):
 		GameEvents.scar_applied.emit(scar)
+
+func _build_run_scar(scar_id: StringName, origin: String, trigger: StringName) -> Scar:
+	var scar: Scar = Scar.new()
+	scar.id = scar_id
+	scar.origin = origin
+	scar.trigger = trigger
+	scar.arena_index = _run_state.arena_index
+	scar.escalation_level = _run_state.escalation_level
+	return scar
+
+func _register_run_scar(scar_id: StringName, origin: String, trigger: StringName) -> void:
+	if scar_id == &"":
+		return
+	for scar_entry: Scar in _run_state.scars:
+		if scar_entry.id == scar_id:
+			return
+	_run_state.scars.append(_build_run_scar(scar_id, origin, trigger))
+	_run_state.last_scar_arena_index = _run_state.arena_index
+
+func _can_register_trigger_scar() -> bool:
+	var arenas_since_last: int = _run_state.arena_index - _run_state.last_scar_arena_index
+	return arenas_since_last >= SCAR_MIN_ARENA_INTERVAL
+
+func _try_register_irreversible_bet_scar(bet_id: StringName) -> void:
+	if _run_state.irreversible_bet_scar_registered:
+		return
+	if not IRREVERSIBLE_BET_IDS.has(bet_id):
+		return
+	if not _can_register_trigger_scar():
+		return
+	_register_run_scar(SCAR_EVENT_IRREVERSIBLE_PACT, "Scommessa irreversibile: %s" % String(bet_id), SCAR_TRIGGER_IRREVERSIBLE_BET)
+	_run_state.irreversible_bet_scar_registered = true
+
+func _try_register_refused_closure_scar() -> void:
+	if _run_state.refused_closure_scar_registered:
+		return
+	if _run_state.refuse_cashout_count_this_run < SCAR_REFUSE_CASHOUT_THRESHOLD:
+		return
+	if not _can_register_trigger_scar():
+		return
+	_register_run_scar(SCAR_EVENT_REFUSED_CLOSURE, "Rifiuto chiusura ripetuto (%d)" % _run_state.refuse_cashout_count_this_run, SCAR_TRIGGER_REFUSED_CLOSURE)
+	_run_state.refused_closure_scar_registered = true
+
+func _try_register_risk_threshold_scar() -> void:
+	if _run_state.risk_threshold_scar_registered:
+		return
+	if _run_state.escalation_level < SCAR_RISK_ESCALATION_THRESHOLD:
+		return
+	if not _can_register_trigger_scar():
+		return
+	_register_run_scar(SCAR_EVENT_RISK_THRESHOLD, "Soglia rischio raggiunta (%d)" % _run_state.escalation_level, SCAR_TRIGGER_RISK_THRESHOLD)
+	_run_state.risk_threshold_scar_registered = true
 
 func _recompute_scar_modifiers() -> void:
 	var heal_multiplier: float = 1.0

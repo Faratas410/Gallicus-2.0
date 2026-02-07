@@ -426,37 +426,74 @@ class Scar:
 		return scar
 
 class RegisterState:
+	const FLOW_PHASE_1: StringName = &"PHASE_1"
+	const FLOW_PHASE_2: StringName = &"PHASE_2"
+	const EXTREME_SCAR_THRESHOLD: int = 3
+	const EXTREME_REFUSED_CLOSURE_THRESHOLD: int = 3
+	const EXTREME_RISK_THRESHOLD: int = 7
+
 	var scar_events_recorded: int = 0
 	var run_end_events_recorded: int = 0
 	var last_annotation_text: String = ""
 	var introduced_after_irreversible_choice: bool = false
+	var flow_phase: StringName = FLOW_PHASE_1
 
-	func record_scar_annotation(scar_id: StringName, _arena_index: int) -> Dictionary:
+	func _update_flow_phase(metrics: Dictionary) -> void:
+		if flow_phase == FLOW_PHASE_2:
+			return
+		var irreversible_count: int = int(metrics.get("irreversible_scar_count", 0))
+		var refused_count: int = int(metrics.get("refused_closure_count", 0))
+		var risk_threshold_count: int = int(metrics.get("risk_threshold_scar_count", 0))
+		var scar_count: int = int(metrics.get("scar_count", 0))
+		var max_escalation: int = int(metrics.get("max_escalation", 0))
+		if irreversible_count < 1:
+			return
+		if refused_count < EXTREME_REFUSED_CLOSURE_THRESHOLD:
+			return
+		if risk_threshold_count < 1:
+			return
+		if scar_count < EXTREME_SCAR_THRESHOLD:
+			return
+		if max_escalation < EXTREME_RISK_THRESHOLD:
+			return
+		flow_phase = FLOW_PHASE_2
+
+	func record_scar_annotation(scar_id: StringName, _arena_index: int, metrics: Dictionary) -> Dictionary:
+		_update_flow_phase(metrics)
 		if introduced_after_irreversible_choice:
 			return {}
 		if scar_id != SCAR_EVENT_IRREVERSIBLE_PACT:
 			return {}
 		scar_events_recorded += 1
 		introduced_after_irreversible_choice = true
-		last_annotation_text = "Registrato: accettata una condizione irreversibile."
+		if flow_phase == FLOW_PHASE_2:
+			last_annotation_text = "Registrato: accettata una perdita non necessaria secondo parametri correnti."
+		else:
+			last_annotation_text = "Registrato: accettata una condizione irreversibile."
 		return {
 			"text": last_annotation_text,
 			"duration": 1.2,
 			"blocking": true,
+			"flow_phase": String(flow_phase),
 		}
 
-	func record_run_end_annotation(reason: String, scar_count: int) -> Dictionary:
+	func record_run_end_annotation(reason: String, scar_count: int, metrics: Dictionary) -> Dictionary:
+		_update_flow_phase(metrics)
 		if not introduced_after_irreversible_choice:
 			return {}
 		run_end_events_recorded += 1
 		var emit_reason: String = reason
 		if emit_reason.strip_edges() == "":
 			emit_reason = "unknown"
-		last_annotation_text = "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
+		if flow_phase == FLOW_PHASE_2:
+			last_annotation_text = "Registrato: chiusura run (%s). Parametri non conclusivi; precedenti in verifica." % [emit_reason]
+		else:
+			last_annotation_text = "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
 		return {
 			"text": last_annotation_text,
 			"duration": 1.4,
 			"blocking": true,
+			"flow_phase": String(flow_phase),
 		}
 
 class RunState:
@@ -4979,7 +5016,7 @@ func _add_scar(scar: Dictionary) -> void:
 func _emit_register_annotation_from_scar(scar_id: StringName) -> void:
 	if not GameEvents.has_signal("register_annotation"):
 		return
-	var payload: Dictionary = _register_state.record_scar_annotation(scar_id, _run_state.arena_index)
+	var payload: Dictionary = _register_state.record_scar_annotation(scar_id, _run_state.arena_index, _build_register_metrics())
 	if payload.is_empty():
 		return
 	GameEvents.register_annotation.emit(payload)
@@ -4987,10 +5024,26 @@ func _emit_register_annotation_from_scar(scar_id: StringName) -> void:
 func _emit_register_annotation_from_run_end(reason: String) -> void:
 	if not GameEvents.has_signal("register_annotation"):
 		return
-	var payload: Dictionary = _register_state.record_run_end_annotation(reason, _run_state.scars.size())
+	var payload: Dictionary = _register_state.record_run_end_annotation(reason, _run_state.scars.size(), _build_register_metrics())
 	if payload.is_empty():
 		return
 	GameEvents.register_annotation.emit(payload)
+
+func _build_register_metrics() -> Dictionary:
+	var irreversible_scar_count: int = 0
+	var risk_threshold_scar_count: int = 0
+	for scar_entry: Scar in _run_state.scars:
+		if scar_entry.trigger == SCAR_TRIGGER_IRREVERSIBLE_BET:
+			irreversible_scar_count += 1
+		elif scar_entry.trigger == SCAR_TRIGGER_RISK_THRESHOLD:
+			risk_threshold_scar_count += 1
+	return {
+		"irreversible_scar_count": irreversible_scar_count,
+		"risk_threshold_scar_count": risk_threshold_scar_count,
+		"refused_closure_count": _run_state.refuse_cashout_count_this_run,
+		"scar_count": _run_state.scars.size(),
+		"max_escalation": _run_state.max_escalation,
+	}
 
 func _build_run_scar(scar_id: StringName, origin: String, trigger: StringName) -> Scar:
 	var scar: Scar = Scar.new()

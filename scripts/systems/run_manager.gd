@@ -366,6 +366,7 @@ const SPECIAL_ARENA_VERGOGNA: StringName = &"ARENA_VERGOGNA"
 const ESCALATION_MAX: int = 10
 const ESCALATION_HIGH_THRESHOLD: int = 6
 const SCAR_REFUSE_CASHOUT_THRESHOLD: int = 3
+const REGISTRY_SILENCE_ROLL_MAX: int = 50000
 const SCAR_RISK_ESCALATION_THRESHOLD: int = 7
 const SCAR_MIN_ARENA_INTERVAL: int = 1
 const IRREVERSIBLE_BET_IDS: Array[StringName] = [
@@ -1307,6 +1308,8 @@ var _failed_high_risk_bets: int = 0
 var _run_end_reason: String = ""
 var _run_end_public_reason: String = ""
 var _run_finale_emitted: bool = false
+var _registry_silence_evaluated: bool = false
+var _registry_silence_active: bool = false
 var _condanne_this_run: Array[StringName] = []
 var _last_audience_context_line: String = ""
 var _forced_ending_id: StringName = &""
@@ -1610,6 +1613,8 @@ func start_new_run() -> void:
 	var current_id: int = _prep_sequence_id
 	_run_failed_emitted = false
 	_run_ended_emitted = false
+	_registry_silence_evaluated = false
+	_registry_silence_active = false
 	_is_game_over = false
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
@@ -1699,6 +1704,8 @@ func _start_level3_run() -> void:
 	Engine.time_scale = 1.0
 	_run_failed_emitted = false
 	_run_ended_emitted = false
+	_registry_silence_evaluated = false
+	_registry_silence_active = false
 	_is_game_over = false
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
@@ -4600,6 +4607,9 @@ func _emit_run_ended() -> void:
 		emit_reason = _run_end_reason
 	if emit_reason == "":
 		emit_reason = "unknown"
+	if _should_emit_registry_silence():
+		GameEvents.run_ended.emit(emit_reason, {})
+		return
 	var finale: Dictionary = _select_run_finale()
 	var summary: Dictionary = _build_run_summary(finale)
 	GameEvents.run_ended.emit(emit_reason, summary)
@@ -4615,12 +4625,26 @@ func _emit_run_finale() -> void:
 	if _run_finale_emitted:
 		return
 	_run_finale_emitted = true
+	if _should_emit_registry_silence():
+		return
 	var finale: Dictionary = _select_run_finale()
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
 	_emit_run_log(finale)
 	_export_run_summary(finale)
+
+func _should_emit_registry_silence() -> bool:
+	if _registry_silence_evaluated:
+		return _registry_silence_active
+	_registry_silence_evaluated = true
+	_registry_silence_active = false
+	if _register_state.flow_phase != RegisterState.FLOW_PHASE_SOSPENSIONE:
+		return false
+	var silence_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	silence_rng.randomize()
+	_registry_silence_active = silence_rng.randi_range(1, REGISTRY_SILENCE_ROLL_MAX) == 1
+	return _registry_silence_active
 
 func _emit_run_log(finale: Dictionary) -> void:
 	if not GameEvents.has_signal("run_log_ready"):

@@ -436,6 +436,7 @@ class RegisterState:
 	var run_end_events_recorded: int = 0
 	var last_annotation_text: String = ""
 	var introduced_after_irreversible_choice: bool = false
+	var felix_precedent_emitted: bool = false
 	var flow_phase: StringName = FLOW_PHASE_1
 
 	func _update_flow_phase(metrics: Dictionary) -> void:
@@ -486,7 +487,11 @@ class RegisterState:
 		if emit_reason.strip_edges() == "":
 			emit_reason = "unknown"
 		if flow_phase == FLOW_PHASE_2:
-			last_annotation_text = "Registrato: chiusura run (%s). Parametri non conclusivi; precedenti in verifica." % [emit_reason]
+			if not felix_precedent_emitted:
+				last_annotation_text = "Registrato: chiusura run (%s). Parametri non conclusivi. Caso analogo rilevato. Precedente ID: Felix Gallicus." % [emit_reason]
+				felix_precedent_emitted = true
+			else:
+				last_annotation_text = "Registrato: chiusura run (%s). Parametri non conclusivi; precedenti in verifica." % [emit_reason]
 		else:
 			last_annotation_text = "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
 		return {

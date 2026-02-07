@@ -17,6 +17,7 @@ const FAST_SELECTION_SECONDS: int = 12
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const POST_BET_MESSAGE_TIME_SEC: float = 3.5
 const SENTENCE_BANNER_SECONDS: float = 1.2
+const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
@@ -100,6 +101,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopup") as RichTextLabel
 @onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
 @onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabel") as Label
+@onready var register_blocker: Control = get_node_or_null("HUD/RegisterAnnotationBlocker") as Control
+@onready var register_annotation_label: Label = get_node_or_null("HUD/RegisterAnnotationBlocker/RegisterAnnotationLabel") as Label
 @onready var arena_theme_title_label: Label = get_node_or_null("HUD/ArenaThemeTitleLabel") as Label
 @onready var arena_theme_subtitle_label: Label = get_node_or_null("HUD/ArenaThemeSubtitleLabel") as Label
 @onready var sentence_banner: Control = get_node_or_null("HUD/SentenceBanner") as Control
@@ -178,6 +181,7 @@ var _escalation_max: int = 0
 var _popup_tween: Tween = null
 var _scar_popup_tween: Tween = null
 var _arena_resolution_tween: Tween = null
+var _register_annotation_tween: Tween = null
 var _bet_modal_fade_tween: Tween = null
 var _pact_sealed_modal_fade_tween: Tween = null
 var _resolve_ritual_modal_fade_tween: Tween = null
@@ -266,6 +270,9 @@ func _ready() -> void:
 	var audience_context_callable: Callable = Callable(self, "_on_audience_context_line_emitted")
 	if GameEvents.has_signal("audience_context_line_emitted") and not GameEvents.audience_context_line_emitted.is_connected(audience_context_callable):
 		GameEvents.audience_context_line_emitted.connect(audience_context_callable)
+	var register_annotation_callable: Callable = Callable(self, "_on_register_annotation")
+	if GameEvents.has_signal("register_annotation") and not GameEvents.register_annotation.is_connected(register_annotation_callable):
+		GameEvents.register_annotation.connect(register_annotation_callable)
 	var escalation_changed_callable: Callable = Callable(self, "_on_escalation_changed")
 	if GameEvents.has_signal("escalation_changed") and not GameEvents.escalation_changed.is_connected(escalation_changed_callable):
 		GameEvents.escalation_changed.connect(escalation_changed_callable)
@@ -916,6 +923,35 @@ func _on_audience_context_line_emitted(text: String) -> void:
 		return
 	audience_context_label.text = text
 	audience_context_label.visible = text != ""
+
+
+
+func _on_register_annotation(payload: Dictionary) -> void:
+	if register_blocker == null or register_annotation_label == null:
+		return
+	var text: String = str(payload.get("text", "")).strip_edges()
+	if text == "":
+		return
+	var duration: float = float(payload.get("duration", REGISTER_ANNOTATION_FALLBACK_SECONDS))
+	if duration <= 0.0:
+		duration = REGISTER_ANNOTATION_FALLBACK_SECONDS
+	register_annotation_label.text = text
+	register_blocker.visible = true
+	register_blocker.modulate.a = 0.0
+	if _register_annotation_tween != null and _register_annotation_tween.is_valid():
+		_register_annotation_tween.kill()
+	_register_annotation_tween = create_tween()
+	_register_annotation_tween.set_trans(Tween.TRANS_QUAD)
+	_register_annotation_tween.set_ease(Tween.EASE_OUT)
+	_register_annotation_tween.tween_property(register_blocker, "modulate:a", 1.0, 0.12)
+	_register_annotation_tween.tween_interval(duration)
+	_register_annotation_tween.set_ease(Tween.EASE_IN)
+	_register_annotation_tween.tween_property(register_blocker, "modulate:a", 0.0, 0.2)
+	_register_annotation_tween.tween_callback(Callable(self, "_hide_register_annotation"))
+
+func _hide_register_annotation() -> void:
+	if register_blocker != null:
+		register_blocker.visible = false
 
 func _on_run_finale_selected(payload: Dictionary) -> void:
 	if payload.has("title"):

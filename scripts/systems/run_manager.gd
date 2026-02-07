@@ -425,6 +425,32 @@ class Scar:
 		scar.escalation_level = int(value.get("escalation_level", 0))
 		return scar
 
+class RegisterState:
+	var scar_events_recorded: int = 0
+	var run_end_events_recorded: int = 0
+	var last_annotation_text: String = ""
+
+	func record_scar_annotation(scar_id: StringName, arena_index: int) -> Dictionary:
+		scar_events_recorded += 1
+		last_annotation_text = "Registro: cicatrice %s annotata. Arena %d." % [String(scar_id), arena_index]
+		return {
+			"text": last_annotation_text,
+			"duration": 1.2,
+			"blocking": true,
+		}
+
+	func record_run_end_annotation(reason: String, scar_count: int) -> Dictionary:
+		run_end_events_recorded += 1
+		var emit_reason: String = reason
+		if emit_reason.strip_edges() == "":
+			emit_reason = "unknown"
+		last_annotation_text = "Registro: run chiusa (%s). Scar %d." % [emit_reason, scar_count]
+		return {
+			"text": last_annotation_text,
+			"duration": 1.4,
+			"blocking": true,
+		}
+
 class RunState:
 	var run_seed: int = 0
 	var arena_index: int = 0
@@ -1119,6 +1145,7 @@ var _bet_chain_level: int = 1
 var _current_bet_id: String = ""
 var _scars: Array[Dictionary] = []
 var _run_state: RunState = RunState.new()
+var _register_state: RegisterState = RegisterState.new()
 var _level3_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _level3_reward_tier: int = 1
 var _level3_next_loss_hp_penalty: int = 0
@@ -1485,6 +1512,7 @@ func start_new_run() -> void:
 	_run_finale_emitted = false
 	_condanne_this_run = []
 	_last_audience_context_line = ""
+	_register_state = RegisterState.new()
 	_resolving_arena = false
 	_resolving_ritual = false
 	_pact_sealed_sequence_id = 0
@@ -1560,6 +1588,7 @@ func _start_level3_run() -> void:
 	_run_finale_emitted = false
 	_condanne_this_run = []
 	_last_audience_context_line = ""
+	_register_state = RegisterState.new()
 	_resolving_arena = false
 	_pact_sealed_sequence_id = 0
 	_forced_ending_id = &""
@@ -4456,6 +4485,7 @@ func _emit_run_ended() -> void:
 	var finale: Dictionary = _select_run_finale()
 	var summary: Dictionary = _build_run_summary(finale)
 	GameEvents.run_ended.emit(emit_reason, summary)
+	_emit_register_annotation_from_run_end(emit_reason)
 
 func _register_run_end(reason: String) -> void:
 	if reason == "":
@@ -4913,6 +4943,18 @@ func _add_scar(scar: Dictionary) -> void:
 	if GameEvents.has_signal("scar_applied"):
 		GameEvents.scar_applied.emit(scar)
 
+func _emit_register_annotation_from_scar(scar_id: StringName) -> void:
+	if not GameEvents.has_signal("register_annotation"):
+		return
+	var payload: Dictionary = _register_state.record_scar_annotation(scar_id, _run_state.arena_index)
+	GameEvents.register_annotation.emit(payload)
+
+func _emit_register_annotation_from_run_end(reason: String) -> void:
+	if not GameEvents.has_signal("register_annotation"):
+		return
+	var payload: Dictionary = _register_state.record_run_end_annotation(reason, _run_state.scars.size())
+	GameEvents.register_annotation.emit(payload)
+
 func _build_run_scar(scar_id: StringName, origin: String, trigger: StringName) -> Scar:
 	var scar: Scar = Scar.new()
 	scar.id = scar_id
@@ -4930,6 +4972,7 @@ func _register_run_scar(scar_id: StringName, origin: String, trigger: StringName
 			return
 	_run_state.scars.append(_build_run_scar(scar_id, origin, trigger))
 	_run_state.last_scar_arena_index = _run_state.arena_index
+	_emit_register_annotation_from_scar(scar_id)
 
 func _can_register_trigger_scar() -> bool:
 	var arenas_since_last: int = _run_state.arena_index - _run_state.last_scar_arena_index

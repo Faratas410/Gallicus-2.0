@@ -24,6 +24,7 @@ extends Node
 # - arena_theme_changed: emitted by RunManager; consumed by UIRoot.
 # - sentence_banner_requested: emitted by RunManager; consumed by UIRoot.
 # - audience_context_line_emitted: emitted by RunManager; consumed by UIRoot.
+# - register_annotation: emitted by RunManager; consumed by UIRoot.
 # - condanna_registered: emitted by RunManager; consumed by MainMenu.
 # - bet_failed: emitted by RunManager/BetManager; consumed by UIRoot.
 # - coins_changed: emitted by RunManager; consumed by UIRoot.
@@ -97,6 +98,7 @@ signal special_arena_started(payload: Dictionary)
 signal arena_theme_changed(payload: Dictionary)
 signal sentence_banner_requested(payload: Dictionary)
 signal audience_context_line_emitted(text: String)
+signal register_annotation(payload: Dictionary)
 signal condanna_registered(id: StringName)
 signal bet_failed(can_retry: bool)
 signal coins_changed(coins: int)

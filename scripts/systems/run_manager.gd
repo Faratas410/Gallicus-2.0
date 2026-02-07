@@ -128,7 +128,6 @@ const CONDANNA_VISTO_DAL_PUBBLICO: StringName = &"CONDANNA_VISTO_DAL_PUBBLICO"
 const CONDANNA_IL_TUO_NOME: StringName = &"CONDANNA_IL_TUO_NOME"
 const CONDANNA_NON_SARA_L_ULTIMA: StringName = &"CONDANNA_NON_SARA_L_ULTIMA"
 
-const PROFILE_HAS_COMPLETED_ANY_RUN: StringName = &"PROFILE_HAS_COMPLETED_ANY_RUN"
 
 const AUDIENCE_SCORE_MIN: int = -5
 const AUDIENCE_SCORE_MAX: int = 5
@@ -4514,7 +4513,7 @@ func _enter_game_over() -> void:
 	_provoke_armed = false
 	_run_state.run_is_over = true
 	var is_loss: bool = _run_end_reason != "CASH_OUT"
-	var first_run_completed: bool = SaveManager.has_unlocked(PROFILE_HAS_COMPLETED_ANY_RUN)
+	var first_run_completed: bool = SaveManager.has_unlocked(CONDANNA_RICORDATO)
 	_register_condanna(CONDANNA_RICORDATO)
 	if is_loss:
 		if not first_run_completed:
@@ -4531,8 +4530,6 @@ func _enter_game_over() -> void:
 			_register_condanna(CONDANNA_ERA_IL_PREZZO)
 	if _run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
 		_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
-	if not first_run_completed:
-		SaveManager.set_unlocked(PROFILE_HAS_COMPLETED_ANY_RUN, true)
 	_waiting_for_bet = false
 	set_phase(RunPhase.GAME_OVER)
 	_update_arena_visual_only()

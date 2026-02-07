@@ -425,38 +425,68 @@ class Scar:
 		return scar
 
 class RegisterState:
-	const FLOW_PHASE_1: StringName = &"PHASE_1"
-	const FLOW_PHASE_2: StringName = &"PHASE_2"
-	const EXTREME_SCAR_THRESHOLD: int = 3
-	const EXTREME_REFUSED_CLOSURE_THRESHOLD: int = 3
-	const EXTREME_RISK_THRESHOLD: int = 7
+	const FLOW_PHASE_STABLE: StringName = &"STABLE"
+	const FLOW_PHASE_ATTRITO: StringName = &"ATTRITO"
+	const FLOW_PHASE_DERIVA: StringName = &"DERIVA"
+	const FLOW_PHASE_MEMORIA: StringName = &"MEMORIA"
+	const FLOW_PHASE_SOSPENSIONE: StringName = &"SOSPENSIONE"
+	const DERIVA_REFUSED_CLOSURE_THRESHOLD: int = 2
+	const DERIVA_SCAR_THRESHOLD: int = 2
+	const MEMORIA_REFUSED_CLOSURE_THRESHOLD: int = 3
+	const MEMORIA_SCAR_THRESHOLD: int = 3
+	const MEMORIA_RISK_THRESHOLD: int = 6
+	const SOSPENSIONE_REFUSED_CLOSURE_THRESHOLD: int = 4
+	const SOSPENSIONE_SCAR_THRESHOLD: int = 4
+	const SOSPENSIONE_RISK_THRESHOLD: int = 7
 
 	var scar_events_recorded: int = 0
 	var run_end_events_recorded: int = 0
 	var last_annotation_text: String = ""
 	var introduced_after_irreversible_choice: bool = false
 	var felix_precedent_emitted: bool = false
-	var flow_phase: StringName = FLOW_PHASE_1
+	var flow_phase: StringName = FLOW_PHASE_STABLE
 
 	func _update_flow_phase(metrics: Dictionary) -> void:
-		if flow_phase == FLOW_PHASE_2:
-			return
 		var irreversible_count: int = int(metrics.get("irreversible_scar_count", 0))
 		var refused_count: int = int(metrics.get("refused_closure_count", 0))
 		var risk_threshold_count: int = int(metrics.get("risk_threshold_scar_count", 0))
 		var scar_count: int = int(metrics.get("scar_count", 0))
 		var max_escalation: int = int(metrics.get("max_escalation", 0))
 		if irreversible_count < 1:
+			flow_phase = FLOW_PHASE_STABLE
 			return
-		if refused_count < EXTREME_REFUSED_CLOSURE_THRESHOLD:
+		if refused_count < 1:
+			flow_phase = FLOW_PHASE_STABLE
+			return
+		if scar_count < 1:
+			flow_phase = FLOW_PHASE_STABLE
+			return
+
+		flow_phase = FLOW_PHASE_ATTRITO
+		if refused_count < DERIVA_REFUSED_CLOSURE_THRESHOLD:
+			return
+		if scar_count < DERIVA_SCAR_THRESHOLD:
 			return
 		if risk_threshold_count < 1:
 			return
-		if scar_count < EXTREME_SCAR_THRESHOLD:
+
+		flow_phase = FLOW_PHASE_DERIVA
+		if refused_count < MEMORIA_REFUSED_CLOSURE_THRESHOLD:
 			return
-		if max_escalation < EXTREME_RISK_THRESHOLD:
+		if scar_count < MEMORIA_SCAR_THRESHOLD:
 			return
-		flow_phase = FLOW_PHASE_2
+		if max_escalation < MEMORIA_RISK_THRESHOLD:
+			return
+
+		flow_phase = FLOW_PHASE_MEMORIA
+		if refused_count < SOSPENSIONE_REFUSED_CLOSURE_THRESHOLD:
+			return
+		if scar_count < SOSPENSIONE_SCAR_THRESHOLD:
+			return
+		if max_escalation < SOSPENSIONE_RISK_THRESHOLD:
+			return
+
+		flow_phase = FLOW_PHASE_SOSPENSIONE
 
 	func record_scar_annotation(scar_id: StringName, _arena_index: int, metrics: Dictionary) -> Dictionary:
 		_update_flow_phase(metrics)
@@ -466,10 +496,17 @@ class RegisterState:
 			return {}
 		scar_events_recorded += 1
 		introduced_after_irreversible_choice = true
-		if flow_phase == FLOW_PHASE_2:
-			last_annotation_text = "Registrato: accettata una perdita non necessaria secondo parametri correnti."
-		else:
-			last_annotation_text = "Registrato: accettata una condizione irreversibile."
+		match flow_phase:
+			FLOW_PHASE_ATTRITO:
+				last_annotation_text = "Registrato: accettata una perdita che eccede le soglie operative previste."
+			FLOW_PHASE_DERIVA:
+				last_annotation_text = "Registrato: condizione irreversibile acquisita in profilo coerente, ma non conclusivo."
+			FLOW_PHASE_MEMORIA:
+				last_annotation_text = "Registrato: condizione irreversibile acquisita con precedenti in memoria operativa."
+			FLOW_PHASE_SOSPENSIONE:
+				last_annotation_text = "Registrato: condizione irreversibile acquisita; classificazione mantenuta in stato sospeso."
+			_:
+				last_annotation_text = "Registrato: accettata una condizione irreversibile."
 		return {
 			"text": last_annotation_text,
 			"duration": 1.2,
@@ -485,14 +522,21 @@ class RegisterState:
 		var emit_reason: String = reason
 		if emit_reason.strip_edges() == "":
 			emit_reason = "unknown"
-		if flow_phase == FLOW_PHASE_2:
-			if not felix_precedent_emitted:
-				last_annotation_text = "Registrato: chiusura run (%s). Parametri non conclusivi. Caso analogo rilevato. Precedente ID: Felix Gallicus." % [emit_reason]
-				felix_precedent_emitted = true
-			else:
-				last_annotation_text = "Registrato: chiusura run (%s). Parametri non conclusivi; precedenti in verifica." % [emit_reason]
-		else:
-			last_annotation_text = "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
+		match flow_phase:
+			FLOW_PHASE_ATTRITO:
+				last_annotation_text = "Registrato: chiusura run (%s). Parametri estesi in attrito; tracce attive: %d." % [emit_reason, scar_count]
+			FLOW_PHASE_DERIVA:
+				last_annotation_text = "Registrato: chiusura run (%s). Profilo coerente, ma non conclusivo." % [emit_reason]
+			FLOW_PHASE_MEMORIA:
+				if not felix_precedent_emitted:
+					last_annotation_text = "Registrato: chiusura run (%s). Precedente rilevato (Felix Gallicus). Applicabilità non determinabile." % [emit_reason]
+					felix_precedent_emitted = true
+				else:
+					last_annotation_text = "Registrato: chiusura run (%s). Precedente rilevato; applicabilità non determinabile." % [emit_reason]
+			FLOW_PHASE_SOSPENSIONE:
+				last_annotation_text = "Registrato: stato run (%s). Chiusura non applicabile." % [emit_reason]
+			_:
+				last_annotation_text = "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
 		return {
 			"text": last_annotation_text,
 			"duration": 1.4,
@@ -4732,7 +4776,7 @@ func _select_run_finale() -> Dictionary:
 
 func _build_final_report(ending_id: StringName) -> FinalReport:
 	var report: FinalReport = FinalReport.new()
-	var is_anomalous: bool = _register_state.flow_phase == RegisterState.FLOW_PHASE_2
+	var is_anomalous: bool = _register_state.flow_phase != RegisterState.FLOW_PHASE_STABLE
 	report.is_anomalous = is_anomalous
 	report.register_flow_phase = String(_register_state.flow_phase)
 
@@ -4755,8 +4799,21 @@ func _build_final_report(ending_id: StringName) -> FinalReport:
 		report.patterns.append("sacrificio di opzioni future registrato")
 
 	if is_anomalous:
-		report.fracture = "Il profilo osservato non rientra pienamente nelle classi disponibili. Parametri in verifica su precedenti; classificazione incompleta."
-		report.final_state = "registrato in attesa"
+		match _register_state.flow_phase:
+			RegisterState.FLOW_PHASE_ATTRITO:
+				report.fracture = "Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente."
+				report.final_state = _get_final_state_label(ending_id)
+			RegisterState.FLOW_PHASE_DERIVA:
+				report.fracture = "Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva."
+				report.final_state = "classificazione non conclusiva"
+			RegisterState.FLOW_PHASE_MEMORIA:
+				report.fracture = "Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta."
+				report.final_state = "classificazione incompleta"
+			RegisterState.FLOW_PHASE_SOSPENSIONE:
+				report.fracture = "Stato registrato con parametri attivi. Chiusura finale non applicabile."
+				report.final_state = "registrato in sospensione"
+			_:
+				report.final_state = _get_final_state_label(ending_id)
 	else:
 		report.final_state = _get_final_state_label(ending_id)
 

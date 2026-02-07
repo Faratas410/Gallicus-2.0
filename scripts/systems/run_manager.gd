@@ -1199,6 +1199,9 @@ func _ready() -> void:
 	var request_show_menu_callable: Callable = Callable(self, "_on_request_show_main_menu")
 	if GameEvents.has_signal("request_show_main_menu") and not GameEvents.request_show_main_menu.is_connected(request_show_menu_callable):
 		GameEvents.request_show_main_menu.connect(request_show_menu_callable)
+	var request_fail_run_callable: Callable = Callable(self, "_on_request_fail_run")
+	if GameEvents.has_signal("request_fail_run") and not GameEvents.request_fail_run.is_connected(request_fail_run_callable):
+		GameEvents.request_fail_run.connect(request_fail_run_callable)
 	var settings_changed_callable: Callable = Callable(self, "_on_settings_changed")
 	if GameEvents.has_signal("settings_changed") and not GameEvents.settings_changed.is_connected(settings_changed_callable):
 		GameEvents.settings_changed.connect(settings_changed_callable)
@@ -3717,11 +3720,16 @@ func _connect_player_signals() -> void:
 		_player.died.connect(died_callable)
 
 func _on_run_failed() -> void:
-	if _run_failed_emitted:
+	_on_request_fail_run("RUN_FAILED")
+
+func _on_request_fail_run(reason: String = "") -> void:
+	if _is_game_over or _run_failed_emitted:
 		return
-	_run_failed_emitted = true
 	GameEvents.set_gameplay_enabled(false)
-	_enter_end_run("RUN_FAILED")
+	var resolved_reason: String = reason.strip_edges()
+	if resolved_reason == "":
+		resolved_reason = "RUN_FAILED"
+	_enter_end_run(resolved_reason)
 
 func _on_player_died() -> void:
 	_enter_end_run("death")

@@ -195,7 +195,8 @@ func take_damage(amount: int, from: Vector2 = Vector2.ZERO) -> void:
 		_state = PlayerState.DEAD
 		velocity = Vector2.ZERO
 		died.emit()
-		GameEvents.run_failed.emit()
+		if GameEvents.has_signal("request_fail_run"):
+			GameEvents.request_fail_run.emit("death")
 		queue_free()
 
 func get_health() -> Array[int]:

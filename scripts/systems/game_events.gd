@@ -83,6 +83,7 @@ extends Node
 # - request_clear_run_seed: emitted by UI; consumed by RunManager.
 # - request_skip_arena_resolution: emitted by UI/debug; consumed by RunManager.
 # - request_show_main_menu: emitted by UI; consumed by MainMenu.
+# - request_fail_run: emitted by gameplay systems; consumed by RunManager.
 
 signal run_started
 signal arena_started(arena_index: int)
@@ -160,6 +161,7 @@ signal request_set_run_seed(seed: int)
 signal request_clear_run_seed
 signal request_skip_arena_resolution
 signal request_show_main_menu
+signal request_fail_run(reason: String)
 
 var gameplay_enabled: bool = true
 

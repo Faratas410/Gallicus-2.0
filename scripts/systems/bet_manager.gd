@@ -163,9 +163,8 @@ func fail_current_bet() -> void:
 	if _run_manager != null and _run_manager.has_method("handle_bet_failed"):
 		_run_manager.handle_bet_failed(bet_id)
 	else:
-		if bet_id == BET_DOUBLE_OR_DIE:
-			GameEvents.run_failed.emit()
-			GameEvents.set_gameplay_enabled(false)
+		if bet_id == BET_DOUBLE_OR_DIE and GameEvents.has_signal("request_fail_run"):
+			GameEvents.request_fail_run.emit("RUN_FAILED")
 	_arena_active = false
 
 func win_current_bet() -> void:

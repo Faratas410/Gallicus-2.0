@@ -429,10 +429,16 @@ class RegisterState:
 	var scar_events_recorded: int = 0
 	var run_end_events_recorded: int = 0
 	var last_annotation_text: String = ""
+	var introduced_after_irreversible_choice: bool = false
 
-	func record_scar_annotation(scar_id: StringName, arena_index: int) -> Dictionary:
+	func record_scar_annotation(scar_id: StringName, _arena_index: int) -> Dictionary:
+		if introduced_after_irreversible_choice:
+			return {}
+		if scar_id != SCAR_EVENT_IRREVERSIBLE_PACT:
+			return {}
 		scar_events_recorded += 1
-		last_annotation_text = "Registro: cicatrice %s annotata. Arena %d." % [String(scar_id), arena_index]
+		introduced_after_irreversible_choice = true
+		last_annotation_text = "Registrato: accettata una condizione irreversibile."
 		return {
 			"text": last_annotation_text,
 			"duration": 1.2,
@@ -440,11 +446,13 @@ class RegisterState:
 		}
 
 	func record_run_end_annotation(reason: String, scar_count: int) -> Dictionary:
+		if not introduced_after_irreversible_choice:
+			return {}
 		run_end_events_recorded += 1
 		var emit_reason: String = reason
 		if emit_reason.strip_edges() == "":
 			emit_reason = "unknown"
-		last_annotation_text = "Registro: run chiusa (%s). Scar %d." % [emit_reason, scar_count]
+		last_annotation_text = "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
 		return {
 			"text": last_annotation_text,
 			"duration": 1.4,
@@ -4604,30 +4612,23 @@ func _select_run_finale() -> Dictionary:
 				ending_id = &"THE_BROKEN"
 
 	var title: String = "IL SOPRAVVISSUTO"
-	var text: String = "Hai scelto con prudenza.\nOgni patto è stato misurato, ogni passo trattenuto.\n\nLa folla ha applaudito, ma senza entusiasmo.\nNon per disprezzo — per mancanza di sangue.\n\nEsci dall’arena intero, senza segni, senza gloria.\nNessuno canterà il tuo nome.\n\nMa sei vivo.\nE, per oggi, questo è bastato."
+	var text: String = _build_standard_run_finale_text(ending_id)
 
 	match ending_id:
 		&"THE_FOOL":
 			title = "LO STOLTO"
-			text = "Hai promesso tutto.\n\nLa folla si è zittita.\nAnche l’arena sembrava trattenere il respiro.\n\nNon c’è stata rabbia,\nné sorpresa.\n\nSolo silenzio.\n\nChi raddoppia senza rispetto\nnon muore da eroe.\n\nMuore come esempio."
 		&"THE_MARKED":
 			title = "IL SEGNATO"
-			text = "Una sola ferita ha tradito la tua arroganza.\nNon abbastanza profonda da spezzarti,\nabbastanza visibile da farti ricordare.\n\nLa folla l’ha notata.\nL’ha commentata.\n\nQuando lasci l’arena, il tuo passo è ancora saldo,\nma il corpo porta già il prezzo di ciò che hai promesso.\n\nTornerai.\nChi viene marchiato una volta, raramente smette di scommettere."
 		&"THE_BROKEN":
 			title = "IL SPEZZATO"
-			text = "Ogni patto ha lasciato un segno.\nOgni segno ha chiesto altro in cambio.\n\nLe tue cicatrici raccontano una storia\nche la folla conosce a memoria.\n\nNon c’è stata una singola sconfitta,\nma una lunga serie di decisioni sbagliate.\n\nEsci dall’arena piegato,\ncon il corpo ancora in piedi\ne il destino già deciso.\n\nAlcuni ti chiamano leggenda.\nAltri ti chiamano monito."
 		&"THE_SURVIVOR":
 			title = "IL SOPRAVVISSUTO"
-			text = "Hai scelto con prudenza.\nOgni patto è stato misurato, ogni passo trattenuto.\n\nLa folla ha applaudito, ma senza entusiasmo.\nNon per disprezzo — per mancanza di sangue.\n\nEsci dall’arena intero, senza segni, senza gloria.\nNessuno canterà il tuo nome.\n\nMa sei vivo.\nE, per oggi, questo è bastato."
 		&"THE_DEBTOR":
 			title = "IL DEBITORE"
-			text = "Ogni scommessa ti ha dato qualcosa.\nOgni scommessa ti ha chiesto di più.\n\nIl pubblico non dimentica chi deve ancora pagare.\n\nAnche quando lasci l’arena,\nil debito ti segue.\n\nNon sei sconfitto.\n\nSei trattenuto.\nE tornerai,\nperché certe promesse non finiscono con una run."
 		&"THE_CROWD_PET":
 			title = "IL BENEAMATO"
-			text = "Hai dato alla folla ciò che voleva\nsenza mai rischiare davvero.\n\nApplausi sicuri.\nNessun silenzio imbarazzante.\n\nIl tuo nome è ricordato,\nma non inciso.\n\nQuando l’arena chiude le porte,\nresti con l’impressione\ndi essere piaciuto a tutti\nsenza appartenere a nessuno."
 		&"THE_MARTYR":
 			title = "IL MARTIRE"
-			text = "Il tuo corpo è rimasto nell’arena\nmolto prima della fine.\n\nOgni ferita è stata un’offerta.\nOgni offerta un applauso.\n\nQuando finalmente tutto si è fermato,\nla folla era in piedi.\n\nNon per la vittoria.\n\nPer ciò che avevi accettato di perdere."
 
 	var bet_names: Array[String] = []
 	for bet_id: StringName in _level3_bets_used:
@@ -4659,6 +4660,38 @@ func _select_run_finale() -> Dictionary:
 		"last_crowd_line": _last_audience_context_line,
 		"outcome": outcome,
 	}
+
+
+func _build_standard_run_finale_text(ending_id: StringName) -> String:
+	var opening_line: String = "Apertura: lettura amministrativa avviata."
+	var pattern_lines: Array[String] = []
+	if _run_state.bets_history.size() > 0:
+		pattern_lines.append("accettate condizioni irreversibili")
+	if _run_state.refuse_cashout_count_this_run > 0:
+		pattern_lines.append("rifiutata la chiusura quando disponibile")
+	if _run_state.scars_history.size() > 0:
+		pattern_lines.append("accumulate tracce persistenti")
+	if pattern_lines.is_empty():
+		pattern_lines.append("nessun pattern conclusivo")
+	var final_state: String = "Stato finale: %s." % _get_final_state_label(ending_id)
+	return "%s\n\nPattern:\n- %s\n\n%s" % [opening_line, "\n- ".join(pattern_lines), final_state]
+
+func _get_final_state_label(ending_id: StringName) -> String:
+	match ending_id:
+		&"THE_FOOL":
+			return "interruzione immediata"
+		&"THE_MARKED":
+			return "segnato"
+		&"THE_BROKEN":
+			return "compromesso"
+		&"THE_DEBTOR":
+			return "in debito attivo"
+		&"THE_CROWD_PET":
+			return "conforme al pubblico"
+		&"THE_MARTYR":
+			return "consumo completo"
+		_:
+			return "non definito"
 
 func _has_used_bet(bet_id: StringName) -> bool:
 	for used_bet: StringName in _level3_bets_used:
@@ -4947,12 +4980,16 @@ func _emit_register_annotation_from_scar(scar_id: StringName) -> void:
 	if not GameEvents.has_signal("register_annotation"):
 		return
 	var payload: Dictionary = _register_state.record_scar_annotation(scar_id, _run_state.arena_index)
+	if payload.is_empty():
+		return
 	GameEvents.register_annotation.emit(payload)
 
 func _emit_register_annotation_from_run_end(reason: String) -> void:
 	if not GameEvents.has_signal("register_annotation"):
 		return
 	var payload: Dictionary = _register_state.record_run_end_annotation(reason, _run_state.scars.size())
+	if payload.is_empty():
+		return
 	GameEvents.register_annotation.emit(payload)
 
 func _build_run_scar(scar_id: StringName, origin: String, trigger: StringName) -> Scar:

@@ -1058,22 +1058,8 @@ func _format_verdict_list(values: Array[String]) -> String:
 
 func _format_verdict_pacts_list(values: Array[String]) -> String:
 	if values.is_empty():
-		return "—"
-	var lines: PackedStringArray = []
-	var manager: Node = _get_run_manager()
-	for value in values:
-		var line_value: String = value
-		if manager != null and manager.has_method("get_level3_pact_title"):
-			var title: String = str(manager.call("get_level3_pact_title", StringName(value)))
-			if title != "":
-				line_value = title
-		lines.append("• %s" % line_value)
-		var reveal_line: String = ""
-		if manager != null and manager.has_method("get_pact_reveal_line"):
-			reveal_line = str(manager.call("get_pact_reveal_line", StringName(value)))
-		if reveal_line != "":
-			lines.append("  %s" % reveal_line)
-	return "\n".join(lines)
+		return "Pattern registrato: nessuna firma persistente."
+	return "Pattern registrato: %d condizioni accettate." % values.size()
 
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
@@ -1613,35 +1599,8 @@ func _build_ending_scars_section() -> String:
 
 func _build_ending_meta_section() -> String:
 	var lines: Array[String] = []
-	if _last_finale_ending_id != "":
-		lines.append("Ending ID: %s" % _last_finale_ending_id)
-	if _last_finale_ending_id != "" or _last_finale_seed != 0:
-		lines.append("Seed: %d" % _last_finale_seed)
-	if not _last_finale_stats.is_empty():
-		var cashouts: int = int(_last_finale_stats.get("cashouts", 0))
-		var doubles: int = int(_last_finale_stats.get("doubles", 0))
-		var max_escalation: int = int(_last_finale_stats.get("max_escalation", 0))
-		var arena_target: int = int(_last_finale_stats.get("arena_target", 0))
-		var arena_count: int = int(_last_finale_stats.get("arena_count", 0))
-		var scar_count: int = _last_finale_scars.size()
-		lines.append("Hai affrontato %d arene, hai raddoppiato %d volte e hai scelto di incassare %d volte." % [
-			arena_count,
-			doubles,
-			cashouts,
-		])
-		lines.append("Arene: %d" % arena_count)
-		lines.append("Raddoppi: %d" % doubles)
-		lines.append("Incassi: %d" % cashouts)
-		lines.append("Cicatrici: %d" % scar_count)
-		lines.append("Escalation max: %d" % max_escalation)
-		if arena_target > 0:
-			lines.append("Arene: %d/%d" % [arena_count, arena_target])
-		var bet_list: Array = _last_finale_stats.get("bets", []) as Array
-		if not bet_list.is_empty():
-			var bet_names: Array[String] = []
-			for bet_name_value in bet_list:
-				bet_names.append(str(bet_name_value))
-			lines.append("Bets: %s" % ", ".join(bet_names))
+	if _last_finale_seed != 0:
+		lines.append("Traccia: %d" % _last_finale_seed)
 	if lines.is_empty():
 		return ""
 	lines.insert(0, "[b]Registro:[/b]")

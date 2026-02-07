@@ -501,6 +501,33 @@ class RegisterState:
 			"flow_phase": String(flow_phase),
 		}
 
+class FinalReport:
+	var opening: String = ""
+	var patterns: Array[String] = []
+	var fracture: String = ""
+	var final_state: String = ""
+	var is_anomalous: bool = false
+	var register_flow_phase: String = ""
+
+	func to_text() -> String:
+		var sections: Array[String] = []
+		sections.append("I. APERTURA — CONSTATAZIONE\n%s" % opening)
+		sections.append("II. CORPO — LETTURA DEI PATTERN\n- %s" % "\n- ".join(patterns))
+		if fracture != "":
+			sections.append("III. FRATTURA\n%s" % fracture)
+		sections.append("Stato finale: %s." % final_state)
+		return "\n\n".join(sections)
+
+	func to_dict() -> Dictionary:
+		return {
+			"opening": opening,
+			"patterns": patterns.duplicate(),
+			"fracture": fracture,
+			"final_state": final_state,
+			"is_anomalous": is_anomalous,
+			"register_flow_phase": register_flow_phase,
+		}
+
 class RunState:
 	var run_seed: int = 0
 	var arena_index: int = 0
@@ -4654,7 +4681,8 @@ func _select_run_finale() -> Dictionary:
 				ending_id = &"THE_BROKEN"
 
 	var title: String = "IL SOPRAVVISSUTO"
-	var text: String = _build_standard_run_finale_text(ending_id)
+	var final_report: FinalReport = _build_final_report(ending_id)
+	var text: String = final_report.to_text()
 
 	match ending_id:
 		&"THE_FOOL":
@@ -4693,6 +4721,7 @@ func _select_run_finale() -> Dictionary:
 	return {
 		"title": title,
 		"text": text,
+		"final_report": final_report.to_dict(),
 		"scars": scars_copy,
 		"ending_id": String(ending_id),
 		"seed": _run_state.run_seed,
@@ -4704,19 +4733,37 @@ func _select_run_finale() -> Dictionary:
 	}
 
 
-func _build_standard_run_finale_text(ending_id: StringName) -> String:
-	var opening_line: String = "Apertura: lettura amministrativa avviata."
-	var pattern_lines: Array[String] = []
+func _build_final_report(ending_id: StringName) -> FinalReport:
+	var report: FinalReport = FinalReport.new()
+	var is_anomalous: bool = _register_state.flow_phase == RegisterState.FLOW_PHASE_2
+	report.is_anomalous = is_anomalous
+	report.register_flow_phase = String(_register_state.flow_phase)
+
+	if _run_end_reason == "CASH_OUT":
+		report.opening = "Il soggetto ha interrotto il ciclo prima della definizione."
+	elif _run_state.run_is_over:
+		report.opening = "Il soggetto ha completato il ciclo operativo."
+	else:
+		report.opening = "Il soggetto presenta un profilo registrabile."
+
 	if _run_state.bets_history.size() > 0:
-		pattern_lines.append("accettate condizioni irreversibili")
+		report.patterns.append("accettazione ricorrente di condizioni irreversibili")
 	if _run_state.refuse_cashout_count_this_run > 0:
-		pattern_lines.append("rifiutata la chiusura quando disponibile")
+		report.patterns.append("rifiuto della chiusura quando disponibile")
 	if _run_state.scars_history.size() > 0:
-		pattern_lines.append("accumulate tracce persistenti")
-	if pattern_lines.is_empty():
-		pattern_lines.append("nessun pattern conclusivo")
-	var final_state: String = "Stato finale: %s." % _get_final_state_label(ending_id)
-	return "%s\n\nPattern:\n- %s\n\n%s" % [opening_line, "\n- ".join(pattern_lines), final_state]
+		report.patterns.append("accumulo di Scar persistenti su più passaggi")
+	if _run_state.max_escalation >= 3:
+		report.patterns.append("reiterazione oltre l'utile con esposizione crescente")
+	if report.patterns.size() < 2:
+		report.patterns.append("sacrificio di opzioni future registrato")
+
+	if is_anomalous:
+		report.fracture = "Il profilo osservato non rientra pienamente nelle classi disponibili. Parametri in verifica su precedenti; classificazione incompleta."
+		report.final_state = "registrato in attesa"
+	else:
+		report.final_state = _get_final_state_label(ending_id)
+
+	return report
 
 func _get_final_state_label(ending_id: StringName) -> String:
 	match ending_id:

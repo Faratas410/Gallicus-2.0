@@ -71,6 +71,7 @@ const BET_P3_LIE_APPLAUSE: StringName = &"P3_LIE_APPLAUSE"
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
 const ScarSystemScript = preload("res://scripts/systems/run/scar_system.gd")
+const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd")
 
 const LEVEL3_BET_BEHAVIOR: Dictionary = {
 	BET_P3_WAX_SEAL: BET_DEBT_CHAIN,
@@ -1247,6 +1248,7 @@ var _sanity_ui_root: Node = null
 var _arena_themes: RefCounted = null
 var _bet_system: RunBetSystem = BetSystemScript.new()
 var _scar_system: RunScarSystem = ScarSystemScript.new()
+var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -2761,68 +2763,31 @@ func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_app
 		scar_names
 	)
 
+func _get_active_scar_ids() -> Array[StringName]:
+	var scar_ids: Array[StringName] = []
+	for scar: Dictionary in _scars:
+		var scar_id: StringName = StringName(str(scar.get("id", "")))
+		if scar_id != &"":
+			scar_ids.append(scar_id)
+	return scar_ids
+
 func _resolve_level3_arena() -> ArenaResult:
 	var result: ArenaResult = ArenaResult.new()
-	var base_win: float = 0.66
-	var base_damage: float = 0.4
-	var escalation_penalty: float = _get_escalation_win_penalty(_run_state.escalation_level)
-	var escalation_damage: float = _get_escalation_damage_penalty(_run_state.escalation_level)
-	if _has_scar(SCAR_CRACKED_BONES):
-		base_win -= 0.12
-		base_damage += 0.18
-	if _has_scar(SCAR_OPEN_WOUND):
-		base_win -= 0.05
-		base_damage += 0.1
-	if _has_scar(SCAR_SHAME_MARK):
-		base_win -= 0.06
-		base_damage += 0.12
-	if _has_scar(SCAR_RUSTED_ARMOR):
-		base_damage += 0.15
-	if _has_scar(SCAR_DEBT_BRAND):
-		escalation_penalty += 0.05
-		escalation_damage += 0.04
-	if _has_scar(SCAR_ONE_EYE):
-		base_damage += 0.1
-		base_win -= 0.03
-
-	var profile: Dictionary = _get_enemy_profile_def(_run_state.enemy_profile)
-	if not profile.is_empty():
-		var win_mod: float = float(profile.get("win_mod", 0.0))
-		var damage_mod: float = float(profile.get("damage_mod", 0.0))
-		base_win += win_mod
-		base_damage += damage_mod
-		if _run_state.enemy_profile == ENEMY_TRICKSTER:
-			base_win = 0.5 + (base_win - 0.5) * 1.35
-			base_damage = 0.5 + (base_damage - 0.5) * 1.25
-	var win_chance: float = clampf(base_win - escalation_penalty, 0.2, 0.85)
-	var damage_chance: float = clampf(base_damage + escalation_damage, 0.2, 0.85)
-
-	_level3_rng.seed = _compute_level3_seed(_run_state.active_bet_id)
-	var win_roll: float = _level3_rng.randf()
-	result.won = win_roll <= win_chance
-	var damage_roll: float = _level3_rng.randf()
-	result.took_damage = damage_roll <= damage_chance
-	if result.took_damage:
-		result.notes.append(&"TOOK_DAMAGE")
-	if _run_state.enemy_profile != &"":
-		result.notes.append(StringName("ENEMY_" + String(_run_state.enemy_profile)))
+	var payload: Dictionary = _outcome_system.resolve_level3_arena(
+		_level3_rng,
+		_compute_level3_seed(_run_state.active_bet_id),
+		_run_state.escalation_level,
+		_get_active_scar_ids(),
+		_run_state.enemy_profile,
+		LEVEL3_ENEMY_PROFILES
+	)
+	result.won = bool(payload.get("won", false))
+	result.took_damage = bool(payload.get("took_damage", false))
+	var notes_payload: Array = payload.get("notes", []) as Array
+	result.notes.clear()
+	for note_value: Variant in notes_payload:
+		result.notes.append(StringName(str(note_value)))
 	return result
-
-func _get_escalation_win_penalty(escalation_level: int) -> float:
-	var penalty: float = 0.0
-	if escalation_level >= 1:
-		penalty += 0.04
-	if escalation_level >= 2:
-		penalty += float(escalation_level - 1) * 0.09
-	return penalty
-
-func _get_escalation_damage_penalty(escalation_level: int) -> float:
-	var penalty: float = 0.0
-	if escalation_level >= 1:
-		penalty += 0.03
-	if escalation_level >= 2:
-		penalty += float(escalation_level - 1) * 0.07
-	return penalty
 
 func _get_level3_bet_behavior(bet_id: StringName) -> StringName:
 	var mapped: Variant = LEVEL3_BET_BEHAVIOR.get(bet_id, bet_id)
@@ -2841,47 +2806,40 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 	set_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
 	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
-	if _run_state.provoke_armed:
+	var consequence: Dictionary = _outcome_system.build_level3_loss_consequence(
+		bet_id,
+		behavior_id,
+		_run_state.enemy_profile,
+		_run_state.provoke_armed,
+		_run_state.level3_next_loss_hp_penalty,
+		SCAR_OPEN_WOUND_HP_PENALTY
+	)
+	if bool(consequence.get("provoke_failed", false)):
 		_run_state.provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
 		_enter_end_run("")
 		return scars_applied
-	var executioner_bonus: int = 0
-	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
-		executioner_bonus = 10
-	if bet_id == BET_DOUBLE_OR_DIE_L3:
+	if bool(consequence.get("double_or_die_failed", false)):
 		_register_run_end("DOUBLE_OR_DIE")
 		end_run(&"THE_FOOL")
 		return scars_applied
-	if bet_id == BET_FLAWLESS_BLOOD:
-		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY + executioner_bonus)
-		_apply_level3_scar(SCAR_OPEN_WOUND, "Condanna: Sangue Integro")
-		scars_applied.append(SCAR_OPEN_WOUND)
-	elif behavior_id == BET_DEBT_CHAIN:
-		_apply_level3_scar(SCAR_DEBT_BRAND, "Condanna: Catena di Debito")
-		scars_applied.append(SCAR_DEBT_BRAND)
-	elif behavior_id == BET_BLOOD_TAX:
-		_apply_max_hp_loss(25 + executioner_bonus)
-		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, 1)
-		_apply_level3_scar(SCAR_RUSTED_ARMOR, "Condanna: Decima di Sangue")
-		scars_applied.append(SCAR_RUSTED_ARMOR)
-	elif behavior_id == BET_CROW_PLEASER:
-		_apply_level3_scar(SCAR_SHAME_MARK, "Condanna: Piacere al Pubblico")
-		scars_applied.append(SCAR_SHAME_MARK)
-	elif behavior_id == BET_LAST_BREATH:
-		_apply_max_hp_loss(15 + executioner_bonus)
-		_apply_level3_scar(SCAR_ONE_EYE, "Condanna: Ultimo Respiro")
-		scars_applied.append(SCAR_ONE_EYE)
-	else:
-		if executioner_bonus > 0:
-			_apply_max_hp_loss(executioner_bonus)
-		_apply_level3_scar(SCAR_CRACKED_BONES, "Sconfitta in arena")
-		scars_applied.append(SCAR_CRACKED_BONES)
-	if _run_state.level3_next_loss_hp_penalty > 0:
-		_apply_max_hp_loss(_run_state.level3_next_loss_hp_penalty)
-	_run_state.level3_next_loss_hp_penalty = 0
-	_run_state.level3_reward_tier = 1
-	_run_state.escalation_level = 0
+	var hp_loss: int = int(consequence.get("hp_loss", 0))
+	if hp_loss > 0:
+		_apply_max_hp_loss(hp_loss)
+	var cashout_lock_min: int = int(consequence.get("cashout_lock_min", -1))
+	if cashout_lock_min >= 0:
+		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, cashout_lock_min)
+	var scar_id: StringName = StringName(str(consequence.get("scar_id", "")))
+	if scar_id != &"":
+		var scar_origin: String = str(consequence.get("scar_origin", ""))
+		_apply_level3_scar(scar_id, scar_origin)
+		scars_applied.append(scar_id)
+	if bool(consequence.get("clear_next_loss_hp_penalty", false)):
+		_run_state.level3_next_loss_hp_penalty = 0
+	if bool(consequence.get("reset_reward_tier", false)):
+		_run_state.level3_reward_tier = 1
+	if bool(consequence.get("reset_escalation", false)):
+		_run_state.escalation_level = 0
 	_emit_escalation_changed()
 	_run_state.current_bet_id = ""
 	start_arena()
@@ -2893,47 +2851,40 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	set_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
 	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
-	if _run_state.provoke_armed:
+	var consequence: Dictionary = _outcome_system.build_level3_loss_consequence(
+		bet_id,
+		behavior_id,
+		_run_state.enemy_profile,
+		_run_state.provoke_armed,
+		_run_state.level3_next_loss_hp_penalty,
+		SCAR_OPEN_WOUND_HP_PENALTY
+	)
+	if bool(consequence.get("provoke_failed", false)):
 		_run_state.provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
 		_enter_end_run("")
 		return scars_applied
-	var executioner_bonus: int = 0
-	if _run_state.enemy_profile == ENEMY_EXECUTIONER:
-		executioner_bonus = 10
-	if bet_id == BET_DOUBLE_OR_DIE_L3:
+	if bool(consequence.get("double_or_die_failed", false)):
 		_register_run_end("DOUBLE_OR_DIE")
 		end_run(&"THE_FOOL")
 		return scars_applied
-	if bet_id == BET_FLAWLESS_BLOOD:
-		_apply_max_hp_loss(SCAR_OPEN_WOUND_HP_PENALTY + executioner_bonus)
-		_apply_level3_scar(SCAR_OPEN_WOUND, "Condanna: Sangue Integro")
-		scars_applied.append(SCAR_OPEN_WOUND)
-	elif behavior_id == BET_DEBT_CHAIN:
-		_apply_level3_scar(SCAR_DEBT_BRAND, "Condanna: Catena di Debito")
-		scars_applied.append(SCAR_DEBT_BRAND)
-	elif behavior_id == BET_BLOOD_TAX:
-		_apply_max_hp_loss(25 + executioner_bonus)
-		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, 1)
-		_apply_level3_scar(SCAR_RUSTED_ARMOR, "Condanna: Decima di Sangue")
-		scars_applied.append(SCAR_RUSTED_ARMOR)
-	elif behavior_id == BET_CROW_PLEASER:
-		_apply_level3_scar(SCAR_SHAME_MARK, "Condanna: Piacere al Pubblico")
-		scars_applied.append(SCAR_SHAME_MARK)
-	elif behavior_id == BET_LAST_BREATH:
-		_apply_max_hp_loss(15 + executioner_bonus)
-		_apply_level3_scar(SCAR_ONE_EYE, "Condanna: Ultimo Respiro")
-		scars_applied.append(SCAR_ONE_EYE)
-	else:
-		if executioner_bonus > 0:
-			_apply_max_hp_loss(executioner_bonus)
-		_apply_level3_scar(SCAR_CRACKED_BONES, "Sconfitta in arena")
-		scars_applied.append(SCAR_CRACKED_BONES)
-	if _run_state.level3_next_loss_hp_penalty > 0:
-		_apply_max_hp_loss(_run_state.level3_next_loss_hp_penalty)
-	_run_state.level3_next_loss_hp_penalty = 0
-	_run_state.level3_reward_tier = 1
-	_run_state.escalation_level = 0
+	var hp_loss: int = int(consequence.get("hp_loss", 0))
+	if hp_loss > 0:
+		_apply_max_hp_loss(hp_loss)
+	var cashout_lock_min: int = int(consequence.get("cashout_lock_min", -1))
+	if cashout_lock_min >= 0:
+		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, cashout_lock_min)
+	var scar_id: StringName = StringName(str(consequence.get("scar_id", "")))
+	if scar_id != &"":
+		var scar_origin: String = str(consequence.get("scar_origin", ""))
+		_apply_level3_scar(scar_id, scar_origin)
+		scars_applied.append(scar_id)
+	if bool(consequence.get("clear_next_loss_hp_penalty", false)):
+		_run_state.level3_next_loss_hp_penalty = 0
+	if bool(consequence.get("reset_reward_tier", false)):
+		_run_state.level3_reward_tier = 1
+	if bool(consequence.get("reset_escalation", false)):
+		_run_state.escalation_level = 0
 	_emit_escalation_changed()
 	_resolve_ritual_reward_applied = true
 	_emit_run_debug_state()
@@ -2952,30 +2903,14 @@ func _apply_max_hp_loss(amount: int) -> void:
 	_apply_run_upgrades_to_player()
 
 func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
-	var tier: int = maxi(reward_tier, 1)
 	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
-	match behavior_id:
-		BET_CASH_OUT:
-			var reward: int = 10 * tier
-			var modifier: float = _get_audience_cashout_modifier()
-			if modifier < 1.0:
-				reward = int(floor(float(reward) * modifier))
-				reward = maxi(reward, 0)
-			add_coins(reward)
-		BET_FLAWLESS_BLOOD:
-			add_coins(20 * tier)
-		BET_DOUBLE_OR_DIE_L3:
-			add_coins(30 * tier)
-		BET_DEBT_CHAIN:
-			add_coins(18 * tier)
-		BET_BLOOD_TAX:
-			add_coins(26 * tier)
-		BET_CROW_PLEASER:
-			add_coins(14 * tier)
-		BET_LAST_BREATH:
-			add_coins(28 * tier)
-		_:
-			pass
+	var reward_coins: int = _outcome_system.compute_level3_reward_coins(
+		behavior_id,
+		reward_tier,
+		_get_audience_cashout_modifier()
+	)
+	if reward_coins > 0:
+		add_coins(reward_coins)
 
 func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
 	var scar_def: Dictionary = _get_scar_def(scar_id)

@@ -67,6 +67,8 @@ const BET_P3_LIE_MERCY: StringName = &"P3_LIE_MERCY"
 const BET_P3_LIE_DEBT: StringName = &"P3_LIE_DEBT"
 const BET_P3_LIE_APPLAUSE: StringName = &"P3_LIE_APPLAUSE"
 const ArenaThemes = preload("res://data/arena_themes.gd")
+const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
+const ScarSystemScript = preload("res://scripts/systems/run/scar_system.gd")
 
 const LEVEL3_BET_BEHAVIOR: Dictionary = {
 	BET_P3_WAX_SEAL: BET_DEBT_CHAIN,
@@ -1323,6 +1325,8 @@ var _sanity_ui_root: Node = null
 var _run_save_flow_step: StringName = &""
 var _run_save_flow_bet_id: StringName = &""
 var _arena_themes: RefCounted = null
+var _bet_system: RunBetSystem = BetSystemScript.new()
+var _scar_system: RunScarSystem = ScarSystemScript.new()
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -4317,7 +4321,7 @@ func _get_audience_cashout_policy() -> Dictionary:
 	}
 
 func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
-	var reward_scale: int = _get_bet_chain_reward_scale(chain_level)
+	var reward_scale: int = _bet_system.get_reward_scale(chain_level)
 	match bet_id:
 		BET_COWARD:
 			if bet_coward_coin_reward > 0:
@@ -4330,62 +4334,40 @@ func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 			pass
 
 func _apply_pure_bet_reward_scaled(scale: int) -> void:
-	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	var reward_scale: int = maxi(scale, 1)
-	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + bet_pure_hp_bonus * reward_scale
-	upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + bet_pure_light_bonus * reward_scale
-	upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + bet_pure_heavy_bonus * reward_scale
-	run["upgrades"] = upgrades
+	run = _bet_system.apply_pure_blood_reward(
+		run,
+		scale,
+		bet_pure_hp_bonus,
+		bet_pure_light_bonus,
+		bet_pure_heavy_bonus
+	)
 	_apply_run_upgrades_to_player()
 
-func _get_bet_chain_reward_scale(chain_level: int) -> int:
-	return maxi(chain_level, 1)
-
-func _get_bet_chain_doom_scale(chain_level: int) -> int:
-	return 1 + maxi(chain_level - 1, 0) * 2
-
 func _build_bet_pact_text(bet_id: String, chain_level: int) -> String:
-	if LEVEL3_ENABLED:
-		var tier: int = maxi(chain_level, 1)
-		var bet_data: Dictionary = _get_bet_data(bet_id)
-		if not bet_data.is_empty():
-			var pact_base: String = str(bet_data.get("pact", ""))
-			if pact_base != "":
-				return "%s x%d" % [pact_base, tier]
-		return bet_id
-	var reward_scale: int = _get_bet_chain_reward_scale(chain_level)
-	match bet_id:
-		BET_COWARD:
-			return "Ricompensa minore: +%d monete" % (bet_coward_coin_reward * reward_scale)
-		BET_PURE_BLOOD:
-			return "Upgrade forte: +%d HP max, +%d danni leggeri, +%d danni pesanti" % [
-				bet_pure_hp_bonus * reward_scale,
-				bet_pure_light_bonus * reward_scale,
-				bet_pure_heavy_bonus * reward_scale,
-			]
-		BET_DOUBLE_OR_DIE:
-			return "Raddoppio danni per la run x%d" % reward_scale
-		_:
-			return bet_id
+	return _bet_system.build_pact_text(
+		LEVEL3_ENABLED,
+		bet_id,
+		chain_level,
+		_get_bet_data(bet_id),
+		BET_COWARD,
+		BET_PURE_BLOOD,
+		BET_DOUBLE_OR_DIE,
+		bet_coward_coin_reward,
+		bet_pure_hp_bonus,
+		bet_pure_light_bonus,
+		bet_pure_heavy_bonus
+	)
 
 func _build_bet_doom_text(bet_id: String, chain_level: int) -> String:
-	if LEVEL3_ENABLED:
-		var bet_data: Dictionary = _get_bet_data(bet_id)
-		if not bet_data.is_empty():
-			var doom_text: String = str(bet_data.get("doom", ""))
-			if doom_text != "":
-				return doom_text
-		return ""
-	match bet_id:
-		BET_COWARD:
-			return "Nessuna penalità extra"
-		BET_PURE_BLOOD:
-			var doom_scale: int = _get_bet_chain_doom_scale(chain_level)
-			return "HP massimo -%d permanente per la run" % (10 * doom_scale)
-		BET_DOUBLE_OR_DIE:
-			return "MORTE IMMEDIATA: run terminata"
-		_:
-			return ""
+	return _bet_system.build_doom_text(
+		LEVEL3_ENABLED,
+		bet_id,
+		chain_level,
+		_get_bet_data(bet_id),
+		BET_COWARD,
+		BET_PURE_BLOOD,
+		BET_DOUBLE_OR_DIE
+	)
 
 func _get_bet_data(bet_id: String) -> Dictionary:
 	if LEVEL3_ENABLED:
@@ -4431,12 +4413,7 @@ func _apply_double_or_die_reward_scaled(scale: int) -> void:
 	var heavy_bonus: int = int(damage_values[1])
 	if light_bonus <= 0 and heavy_bonus <= 0:
 		return
-	var reward_scale: int = maxi(scale, 1)
-	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	for _i in range(reward_scale):
-		upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + light_bonus
-		upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + heavy_bonus
-	run["upgrades"] = upgrades
+	run = _bet_system.apply_double_or_die_reward(run, scale, light_bonus, heavy_bonus)
 	_apply_run_upgrades_to_player()
 
 func retry_current_bet() -> void:
@@ -5184,25 +5161,16 @@ func _try_register_risk_threshold_scar() -> void:
 	_run_state.risk_threshold_scar_registered = true
 
 func _recompute_scar_modifiers() -> void:
-	var heal_multiplier: float = 1.0
-	var dodge_cooldown_multiplier: float = 1.0
-	var dodge_speed_multiplier: float = 1.0
-	var max_hp_penalty: int = 0
-	for scar: Dictionary in _scars:
-		var scar_id: StringName = StringName(str(scar.get("id", "")))
-		match scar_id:
-			SCAR_OPEN_WOUND:
-				heal_multiplier = minf(heal_multiplier, 0.6)
-				max_hp_penalty -= SCAR_OPEN_WOUND_HP_PENALTY
-			SCAR_CRACKED_BONES:
-				dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 1.4)
-				dodge_speed_multiplier = minf(dodge_speed_multiplier, 0.85)
-			_:
-				pass
-	_scar_heal_multiplier = heal_multiplier
-	_scar_dodge_cooldown_multiplier = dodge_cooldown_multiplier
-	_scar_dodge_speed_multiplier = dodge_speed_multiplier
-	_scar_max_hp_penalty = max_hp_penalty
+	var modifiers: Dictionary = _scar_system.compute_modifiers(
+		_scars,
+		SCAR_OPEN_WOUND,
+		SCAR_CRACKED_BONES,
+		SCAR_OPEN_WOUND_HP_PENALTY
+	)
+	_scar_heal_multiplier = float(modifiers.get("heal_multiplier", 1.0))
+	_scar_dodge_cooldown_multiplier = float(modifiers.get("dodge_cooldown_multiplier", 1.0))
+	_scar_dodge_speed_multiplier = float(modifiers.get("dodge_speed_multiplier", 1.0))
+	_scar_max_hp_penalty = int(modifiers.get("max_hp_penalty", 0))
 	_apply_run_upgrades_to_player()
 
 func _recompute_scar_synergies() -> void:
@@ -5225,20 +5193,14 @@ func _try_apply_open_wound_scar(chain_level: int) -> void:
 	var bet_name: String = _get_bet_display_name(BET_PURE_BLOOD)
 	var origin_text: String = "Condanna: %s (catena %d)" % [bet_name, chain_level]
 	var scar_def: Dictionary = _get_scar_def(SCAR_OPEN_WOUND)
-	var narrative_text: String = str(scar_def.get("narrative_text", scar_def.get("story", "Il sangue non si è mai fermato.")))
-	var effect_text: String = str(scar_def.get("effect_text", scar_def.get("effect", "HP massimo ridotto e cure meno efficaci.")))
-	var scar: Dictionary = {
-		"id": SCAR_OPEN_WOUND,
-		"name": str(scar_def.get("name", "FERITA APERTA")),
-		"origin": origin_text,
-		"effect": str(scar_def.get("effect", "HP massimo ridotto e cure meno efficaci.")),
-		"effect_text": effect_text,
-		"story": str(scar_def.get("story", "Il sangue non si è mai fermato.")),
-		"narrative_text": narrative_text,
-		"short_desc": str(scar_def.get("short_desc", "")),
-		"visual_tag": str(scar_def.get("visual_tag", "")),
-		"tags": scar_def.get("tags", []) as Array,
-	}
+	var scar: Dictionary = _scar_system.build_scar_payload(
+		SCAR_OPEN_WOUND,
+		origin_text,
+		scar_def,
+		"FERITA APERTA",
+		"Il sangue non si è mai fermato.",
+		"HP massimo ridotto e cure meno efficaci."
+	)
 	_add_scar(scar)
 
 func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
@@ -5249,20 +5211,14 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 	var bet_name: String = _get_bet_display_name(bet_id)
 	var origin_text: String = "Push Your Luck: %s (x%d)" % [bet_name, chain_level]
 	var scar_def: Dictionary = _get_scar_def(SCAR_CRACKED_BONES)
-	var narrative_text: String = str(scar_def.get("narrative_text", scar_def.get("story", "Ogni passo fa male.")))
-	var effect_text: String = str(scar_def.get("effect_text", scar_def.get("effect", "Movimento rallentato e blocco meno efficace.")))
-	var scar: Dictionary = {
-		"id": SCAR_CRACKED_BONES,
-		"name": str(scar_def.get("name", "OSSA INCRINATE")),
-		"origin": origin_text,
-		"effect": str(scar_def.get("effect", "Movimento rallentato e blocco meno efficace.")),
-		"effect_text": effect_text,
-		"story": str(scar_def.get("story", "Ogni passo fa male.")),
-		"narrative_text": narrative_text,
-		"short_desc": str(scar_def.get("short_desc", "")),
-		"visual_tag": str(scar_def.get("visual_tag", "")),
-		"tags": scar_def.get("tags", []) as Array,
-	}
+	var scar: Dictionary = _scar_system.build_scar_payload(
+		SCAR_CRACKED_BONES,
+		origin_text,
+		scar_def,
+		"OSSA INCRINATE",
+		"Ogni passo fa male.",
+		"Movimento rallentato e blocco meno efficace."
+	)
 	_add_scar(scar)
 
 func _apply_run_upgrades_to_player() -> void:

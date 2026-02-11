@@ -3665,6 +3665,12 @@ func _apply_pure_bet_penalty(chain_level: int) -> void:
 	_apply_run_upgrades_to_player()
 	_try_apply_open_wound_scar(chain_level)
 
+func _get_bet_chain_doom_scale(chain_level: int) -> int:
+	return _bet_system.get_doom_scale(chain_level)
+
+func _get_bet_chain_reward_scale(chain_level: int) -> int:
+	return _bet_system.get_reward_scale(chain_level)
+
 func _apply_bet_result(result: Dictionary) -> void:
 	if result.is_empty():
 		return

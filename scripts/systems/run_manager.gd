@@ -1869,6 +1869,7 @@ func resolve_arena() -> void:
 func _enter_resolution() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
+	_emit_ui(_build_phase_ui_payload(RunPhase.RESOLUTION, "RISOLUZIONE", "L'arena decide il prezzo del patto."))
 	_resolving_arena = true
 	_update_arena_visual_only()
 	set_phase(RunPhase.LIVE)
@@ -3767,6 +3768,13 @@ func _emit_ui(payload: RunUiPayload) -> void:
 	if _sanity_ui_root.has_method("apply_run_ui_payload"):
 		_sanity_ui_root.call("apply_run_ui_payload", payload)
 
+func _build_phase_ui_payload(target_phase: RunPhase, title: String = "", body: String = "") -> RunUiPayload:
+	var payload: RunUiPayload = RunUiPayloadScript.new()
+	payload.phase = int(target_phase)
+	payload.title = title
+	payload.body = body
+	return payload
+
 func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))
 	var bet_name: String = String(bet_id)
@@ -3883,6 +3891,7 @@ func _queue_push_luck_choice(bet_id: StringName) -> void:
 	_set_phase(RunPhase.POST_BET_MESSAGES, "queue_post_bet_messages")
 
 func _enter_first_reaction() -> void:
+	_emit_ui(_build_phase_ui_payload(RunPhase.POST_BET_MESSAGES, "PRIMA REAZIONE", "La folla osserva la tua scelta."))
 	if _sanity_ui_root == null:
 		_open_intermediate_choice(_run_state.post_bet_pending_bet_id)
 		return
@@ -4204,6 +4213,7 @@ func _enter_end_run(reason: String) -> void:
 func _enter_game_over() -> void:
 	if _is_game_over:
 		return
+	_emit_ui(_build_phase_ui_payload(RunPhase.GAME_OVER, "FINE CORSA", "Il verdetto è stato inciso."))
 	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null or _sanity_ui_root.get_node_or_null("Modals/GameOverModal") == null:
 		push_error("SANITY FAIL FLOW: ending panel missing")
@@ -4640,22 +4650,22 @@ func _run_enter_phase(next: RunPhase) -> bool:
 			return false
 
 func _enter_main_menu() -> void:
-	pass
+	_emit_ui(_build_phase_ui_payload(RunPhase.MAIN_MENU, "MAIN MENU"))
 
 func _enter_intro() -> void:
-	pass
+	_emit_ui(_build_phase_ui_payload(RunPhase.RUN_INIT, "INIZIO RUN"))
 
 func _enter_bet_present() -> void:
-	pass
+	_emit_ui(_build_phase_ui_payload(RunPhase.BET_PRESENT, "PATTO PROPOSTO"))
 
 func _enter_bet_committed() -> void:
-	pass
+	_emit_ui(_build_phase_ui_payload(RunPhase.BET_COMMITTED, "PATTO SIGILLATO"))
 
 func _enter_next_bet() -> void:
-	pass
+	_emit_ui(_build_phase_ui_payload(RunPhase.NEXT_BET, "PROSSIMO PATTO"))
 
 func _enter_end_run_phase() -> void:
-	pass
+	_emit_ui(_build_phase_ui_payload(RunPhase.GAME_OVER, "FINE RUN"))
 
 func set_phase(p: Variant) -> void:
 	# Supporta sia RunPhase che int (es. valori serializzati / segnali legacy).

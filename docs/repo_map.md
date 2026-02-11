@@ -48,7 +48,12 @@ Core scenes (examples):
   - `run_manager.gd`
   - `game_events.gd` (autoload event bus)
   - `bet_manager.gd`, `save_manager.gd`, `constants.gd`
+  - **run/** (modular run-domain systems)
+    - `run_state.gd`, `bet_system.gd`, `outcome_system.gd`, `scar_system.gd`, `save_system.gd`
 - **ui/** (UI logic: `ui_root.gd`, `main_menu.gd`, `betting_circle_ui.gd`, `enemy_health_bar.gd`)
+  - `run_ui_payload.gd` (reactive UI payload contract from RunManager)
+- **content/** (run content catalogs / lookup only)
+  - `scar_catalog.gd`
 - **entities/** (`enemy_basic.gd`)
 - **pickups/** (`Pickup.gd`, `PickupSpawner.gd`)
 - **legacy/** (legacy scripts, see Deprecation)
@@ -64,3 +69,6 @@ Core scenes (examples):
 
 ## Deprecation / Legacy
 - `res://scenes/legacy/` and `res://scripts/legacy/` are **not referenced by the entry point** (`Main.tscn`).
+
+## Architecture docs
+- `res://docs/run_architecture_ledger.md` (run modular boundaries, authority, and phase-add checklist)

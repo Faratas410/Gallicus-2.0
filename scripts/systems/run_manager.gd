@@ -72,6 +72,7 @@ const ArenaThemes = preload("res://data/arena_themes.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
 const ScarSystemScript = preload("res://scripts/systems/run/scar_system.gd")
 const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd")
+const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
 
 const LEVEL3_BET_BEHAVIOR: Dictionary = {
 	BET_P3_WAX_SEAL: BET_DEBT_CHAIN,
@@ -3775,8 +3776,7 @@ func _enter_mid_choice() -> void:
 	_close_audience_context_line()
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
-	if GameEvents.has_signal("intermediate_choice_opened"):
-		GameEvents.intermediate_choice_opened.emit()
+	_emit_ui(_build_intermediate_choice_ui_payload())
 
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_push_luck_choice(bet_id: StringName) -> void:
@@ -3792,15 +3792,39 @@ func _enter_push_your_luck() -> void:
 	_update_arena_visual_only()
 	var bet_id: StringName = _pending_push_luck_bet_id
 	_pending_push_luck_bet_id = &""
-	var payload: Dictionary = _build_push_luck_payload(bet_id)
+	var payload: RunUiPayload = _build_push_luck_ui_payload(bet_id)
 	print_debug("[FLOW] push_luck_opened :: arena=%d" % _run_state.arena_index)
-	GameEvents.push_luck_opened.emit(payload)
+	_emit_ui(payload)
 
 func _refresh_push_luck_choice(bet_id: StringName) -> void:
-	if not GameEvents.has_signal("push_luck_opened"):
+	_emit_ui(_build_push_luck_ui_payload(bet_id))
+
+func _build_intermediate_choice_ui_payload() -> RunUiPayload:
+	var payload: RunUiPayload = RunUiPayloadScript.new()
+	payload.phase = int(RunPhase.INTERMEDIATE_CHOICE)
+	payload.title = "SCEGLI IL GESTO"
+	payload.choices = ["placa", "provoca"]
+	payload.show_mid_choice = true
+	return payload
+
+func _build_push_luck_ui_payload(bet_id: StringName) -> RunUiPayload:
+	var payload: RunUiPayload = RunUiPayloadScript.new()
+	payload.phase = int(RunPhase.PUSH_YOUR_LUCK)
+	payload.show_push_your_luck = true
+	payload.meta = _build_push_luck_payload(bet_id)
+	payload.title = "PUSH YOUR LUCK — %s" % str(payload.meta.get("bet_name", ""))
+	payload.body = "La folla vuole di più. Puoi incassare… o rilanciare."
+	payload.choices = ["cashout", "condanna", "double"]
+	return payload
+
+func _emit_ui(payload: RunUiPayload) -> void:
+	if payload == null:
 		return
-	var payload: Dictionary = _build_push_luck_payload(bet_id)
-	GameEvents.push_luck_opened.emit(payload)
+	_refresh_sanity_ui_root()
+	if _sanity_ui_root == null:
+		return
+	if _sanity_ui_root.has_method("apply_run_ui_payload"):
+		_sanity_ui_root.call("apply_run_ui_payload", payload)
 
 func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))

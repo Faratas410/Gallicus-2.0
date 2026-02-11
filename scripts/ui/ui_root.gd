@@ -25,6 +25,7 @@ const UI_PARCHMENT_TEXTURE_PATH: String = "res://assets/ui/panels/contract_clean
 const UI_WAX_SEAL_TEXTURE_PATH: String = "res://assets/ui/overlays/wax_seal_red.png"
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
+const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
 const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
@@ -1333,16 +1334,37 @@ func _on_resolve_ritual_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_intermediate_choice_opened() -> void:
+	var payload: RunUiPayload = RunUiPayloadScript.new()
+	payload.phase = 15
+	payload.title = "SCEGLI IL GESTO"
+	payload.choices = ["placa", "provoca"]
+	payload.show_mid_choice = true
+	apply_run_ui_payload(payload)
+
+func apply_run_ui_payload(payload: RunUiPayload) -> void:
+	if payload == null:
+		return
+	if payload.show_mid_choice:
+		_apply_intermediate_choice_payload(payload)
+	if payload.show_push_your_luck:
+		_apply_push_luck_payload(payload)
+
+func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 	if intermediate_choice_panel == null:
 		return
 	_set_bet_modal(false)
 	if intermediate_choice_label != null:
-		intermediate_choice_label.text = "SCEGLI IL GESTO"
+		var title: String = payload.title
+		if title == "":
+			title = "SCEGLI IL GESTO"
+		intermediate_choice_label.text = title
 	_set_intermediate_choice_modal(true)
 	var choice_buttons: Array[Button] = []
 	if intermediate_choice_placa_button != null:
+		intermediate_choice_placa_button.visible = payload.choices.is_empty() or payload.choices.has("placa")
 		choice_buttons.append(intermediate_choice_placa_button)
 	if intermediate_choice_provoca_button != null:
+		intermediate_choice_provoca_button.visible = payload.choices.is_empty() or payload.choices.has("provoca")
 		choice_buttons.append(intermediate_choice_provoca_button)
 	_apply_modal_read_delay(choice_buttons)
 
@@ -1606,25 +1628,42 @@ func _build_ending_meta_section() -> String:
 	return "\n".join(lines)
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
+	var ui_payload: RunUiPayload = RunUiPayloadScript.new()
+	ui_payload.phase = 16
+	ui_payload.show_push_your_luck = true
+	ui_payload.meta = payload
+	ui_payload.title = "PUSH YOUR LUCK — %s" % str(payload.get("bet_name", ""))
+	ui_payload.body = "La folla vuole di più. Puoi incassare… o rilanciare."
+	ui_payload.choices = ["cashout", "condanna", "double"]
+	apply_run_ui_payload(ui_payload)
+
+func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:
 		return
 	_set_bet_modal(false)
-	var bet_name: String = str(payload.get("bet_name", ""))
+	var meta: Dictionary = payload.meta
+	var bet_name: String = str(meta.get("bet_name", ""))
 	if push_luck_title != null:
-		push_luck_title.text = "PUSH YOUR LUCK — %s" % bet_name
+		if payload.title != "":
+			push_luck_title.text = payload.title
+		else:
+			push_luck_title.text = "PUSH YOUR LUCK — %s" % bet_name
 	if push_luck_info != null:
-		push_luck_info.text = "La folla vuole di più. Puoi incassare… o rilanciare."
-	var doom_text: String = str(payload.get("next_doom", ""))
-	var condition_text: String = str(payload.get("condition", ""))
-	var pact_text: String = str(payload.get("next_pact", ""))
-	var cashout_locked: bool = bool(payload.get("cashout_locked", false))
-	var cashout_reason: String = str(payload.get("cashout_lock_reason", ""))
-	var double_locked: bool = bool(payload.get("double_locked", false))
-	var double_reason: String = str(payload.get("double_lock_reason", ""))
-	var choice_note: String = str(payload.get("choice_note", ""))
-	var audience_label: String = str(payload.get("audience_label", ""))
-	var audience_reason: String = str(payload.get("audience_reason", ""))
-	var cashout_modifier_text: String = str(payload.get("cashout_modifier_text", ""))
+		if payload.body != "":
+			push_luck_info.text = payload.body
+		else:
+			push_luck_info.text = "La folla vuole di più. Puoi incassare… o rilanciare."
+	var doom_text: String = str(meta.get("next_doom", ""))
+	var condition_text: String = str(meta.get("condition", ""))
+	var pact_text: String = str(meta.get("next_pact", ""))
+	var cashout_locked: bool = bool(meta.get("cashout_locked", false))
+	var cashout_reason: String = str(meta.get("cashout_lock_reason", ""))
+	var double_locked: bool = bool(meta.get("double_locked", false))
+	var double_reason: String = str(meta.get("double_lock_reason", ""))
+	var choice_note: String = str(meta.get("choice_note", ""))
+	var audience_label: String = str(meta.get("audience_label", ""))
+	var audience_reason: String = str(meta.get("audience_reason", ""))
+	var cashout_modifier_text: String = str(meta.get("cashout_modifier_text", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append("❌ Condanna futura: %s" % doom_text)

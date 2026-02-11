@@ -1193,6 +1193,10 @@ func _ready() -> void:
 	if not _validate_game_events_signals():
 		return
 	_arena_layout_rng.randomize()
+	_connect_gameevents()
+
+
+func _connect_gameevents() -> void:
 	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
 	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
 		GameEvents.bet_placed.connect(bet_placed_callable)
@@ -1244,6 +1248,21 @@ func _ready() -> void:
 	var request_fail_run_callable: Callable = Callable(self, "_on_request_fail_run")
 	if GameEvents.has_signal("request_fail_run") and not GameEvents.request_fail_run.is_connected(request_fail_run_callable):
 		GameEvents.request_fail_run.connect(request_fail_run_callable)
+	var request_seed_callable: Callable = Callable(self, "_on_request_set_run_seed")
+	if GameEvents.has_signal("request_set_run_seed") and not GameEvents.request_set_run_seed.is_connected(request_seed_callable):
+		GameEvents.request_set_run_seed.connect(request_seed_callable)
+	var request_clear_seed_callable: Callable = Callable(self, "_on_request_clear_run_seed")
+	if GameEvents.has_signal("request_clear_run_seed") and not GameEvents.request_clear_run_seed.is_connected(request_clear_seed_callable):
+		GameEvents.request_clear_run_seed.connect(request_clear_seed_callable)
+	var request_skip_callable: Callable = Callable(self, "_on_request_skip_arena_resolution")
+	if GameEvents.has_signal("request_skip_arena_resolution") and not GameEvents.request_skip_arena_resolution.is_connected(request_skip_callable):
+		GameEvents.request_skip_arena_resolution.connect(request_skip_callable)
+	var modal_opened_callable: Callable = Callable(self, "_on_modal_opened")
+	if GameEvents.has_signal("modal_opened") and not GameEvents.modal_opened.is_connected(modal_opened_callable):
+		GameEvents.modal_opened.connect(modal_opened_callable)
+	var modal_closed_callable: Callable = Callable(self, "_on_modal_closed")
+	if GameEvents.has_signal("modal_closed") and not GameEvents.modal_closed.is_connected(modal_closed_callable):
+		GameEvents.modal_closed.connect(modal_closed_callable)
 	var settings_changed_callable: Callable = Callable(self, "_on_settings_changed")
 	if GameEvents.has_signal("settings_changed") and not GameEvents.settings_changed.is_connected(settings_changed_callable):
 		GameEvents.settings_changed.connect(settings_changed_callable)
@@ -1261,36 +1280,6 @@ func _apply_language(locale: String) -> void:
 func _on_settings_changed(payload: Dictionary) -> void:
 	if payload.has("language"):
 		_apply_language(str(payload.get("language", SaveManager.get_language())))
-	var request_place_bet_callable: Callable = Callable(self, "_on_request_place_bet")
-	if GameEvents.has_signal("request_place_bet") and not GameEvents.request_place_bet.is_connected(request_place_bet_callable):
-		GameEvents.request_place_bet.connect(request_place_bet_callable)
-	var request_cashout_callable: Callable = Callable(self, "_on_request_push_luck_cashout")
-	if GameEvents.has_signal("request_push_luck_cashout") and not GameEvents.request_push_luck_cashout.is_connected(request_cashout_callable):
-		GameEvents.request_push_luck_cashout.connect(request_cashout_callable)
-	var request_double_callable: Callable = Callable(self, "_on_request_push_luck_double")
-	if GameEvents.has_signal("request_push_luck_double") and not GameEvents.request_push_luck_double.is_connected(request_double_callable):
-		GameEvents.request_push_luck_double.connect(request_double_callable)
-	var post_arena_callable: Callable = Callable(self, "_on_post_arena_choice_selected")
-	if GameEvents.has_signal("post_arena_choice_selected") and not GameEvents.post_arena_choice_selected.is_connected(post_arena_callable):
-		GameEvents.post_arena_choice_selected.connect(post_arena_callable)
-	var request_intermediate_callable: Callable = Callable(self, "_on_request_intermediate_choice")
-	if GameEvents.has_signal("request_intermediate_choice") and not GameEvents.request_intermediate_choice.is_connected(request_intermediate_callable):
-		GameEvents.request_intermediate_choice.connect(request_intermediate_callable)
-	var request_seed_callable: Callable = Callable(self, "_on_request_set_run_seed")
-	if GameEvents.has_signal("request_set_run_seed") and not GameEvents.request_set_run_seed.is_connected(request_seed_callable):
-		GameEvents.request_set_run_seed.connect(request_seed_callable)
-	var request_clear_seed_callable: Callable = Callable(self, "_on_request_clear_run_seed")
-	if GameEvents.has_signal("request_clear_run_seed") and not GameEvents.request_clear_run_seed.is_connected(request_clear_seed_callable):
-		GameEvents.request_clear_run_seed.connect(request_clear_seed_callable)
-	var request_skip_callable: Callable = Callable(self, "_on_request_skip_arena_resolution")
-	if GameEvents.has_signal("request_skip_arena_resolution") and not GameEvents.request_skip_arena_resolution.is_connected(request_skip_callable):
-		GameEvents.request_skip_arena_resolution.connect(request_skip_callable)
-	var modal_opened_callable: Callable = Callable(self, "_on_modal_opened")
-	if GameEvents.has_signal("modal_opened") and not GameEvents.modal_opened.is_connected(modal_opened_callable):
-		GameEvents.modal_opened.connect(modal_opened_callable)
-	var modal_closed_callable: Callable = Callable(self, "_on_modal_closed")
-	if GameEvents.has_signal("modal_closed") and not GameEvents.modal_closed.is_connected(modal_closed_callable):
-		GameEvents.modal_closed.connect(modal_closed_callable)
 	_ensure_input_map()
 	call_deferred("_boot")
 

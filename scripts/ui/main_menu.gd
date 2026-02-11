@@ -6,7 +6,7 @@ extends Control
 # - This script must NOT: start or manage gameplay/run state directly.
 #
 # FLOW CONTRACT (high level)
-# - Inputs (signals/events it listens to): GameEvents.request_show_main_menu, GameEvents.settings_opened/closed, GameEvents.condanna_registered
+# - Inputs (signals/events it listens to): GameEvents.run_phase_changed, GameEvents.settings_opened/closed, GameEvents.condanna_registered
 # - Outputs (signals/events it emits): GameEvents.request_new_run, GameEvents.request_continue_run, GameEvents.settings_opened/closed
 # - Critical invariants: UI only emits intent; gameplay authority lives in RunManager.
 # -----------------------------------------------------------------------------
@@ -49,6 +49,7 @@ const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
 const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
 const CONDANNA_UNLOCKED_ALPHA: float = 1.0
 const CONDANNA_LOCKED_ALPHA: float = 0.35
+const RUN_PHASE_MAIN_MENU: int = 10
 
 var selected_language: String = "Italiano"
 var condanne_populated: bool = false
@@ -83,10 +84,10 @@ func _ready() -> void:
 		var condanna_callable: Callable = Callable(self, "_on_condanna_registered")
 		if not GameEvents.condanna_registered.is_connected(condanna_callable):
 			GameEvents.condanna_registered.connect(condanna_callable)
-	if GameEvents.has_signal("request_show_main_menu"):
-		var menu_callable: Callable = Callable(self, "_on_request_show_main_menu")
-		if not GameEvents.request_show_main_menu.is_connected(menu_callable):
-			GameEvents.request_show_main_menu.connect(menu_callable)
+	if GameEvents.has_signal("run_phase_changed"):
+		var run_phase_callable: Callable = Callable(self, "_on_run_phase_changed")
+		if not GameEvents.run_phase_changed.is_connected(run_phase_callable):
+			GameEvents.run_phase_changed.connect(run_phase_callable)
 	if GameEvents.has_signal("settings_opened"):
 		var settings_open_callable: Callable = Callable(self, "_on_settings_opened")
 		if not GameEvents.settings_opened.is_connected(settings_open_callable):
@@ -107,9 +108,10 @@ func _show_menu() -> void:
 func _hide_menu() -> void:
 	visible = false
 
-func _on_request_show_main_menu() -> void:
-	visible = true
-	_show_menu()
+func _on_run_phase_changed(next_phase: int) -> void:
+	if next_phase == RUN_PHASE_MAIN_MENU:
+		visible = true
+		_show_menu()
 
 func _show_achievements() -> void:
 	menu_vbox.visible = false

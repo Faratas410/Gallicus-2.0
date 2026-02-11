@@ -78,7 +78,7 @@ extends Node
 # - request_set_run_seed: emitted by UI/debug; consumed by RunManager.
 # - request_clear_run_seed: emitted by UI; consumed by RunManager.
 # - request_skip_arena_resolution: emitted by UI/debug; consumed by RunManager.
-# - request_show_main_menu: emitted by UI; consumed by MainMenu.
+# - request_show_main_menu: emitted by UI; consumed by RunManager.
 # - request_fail_run: emitted by gameplay systems; consumed by RunManager.
 
 signal run_started

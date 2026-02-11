@@ -109,6 +109,7 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 	BET_P3_LIE_APPLAUSE: CONDANNA_NON_DOVEVO_PROVARCI,
 }
 const RUN_SAVE_SCHEMA_VERSION: int = 1
+const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const RUN_FLOW_BET_SIGNED: StringName = &"BET_SIGNED"
 const RUN_FLOW_INTERMEDIATE_CHOICE: StringName = &"INTERMEDIATE_CHOICE"
 const RUN_FLOW_PUSH_LUCK: StringName = &"PUSH_LUCK"
@@ -1173,6 +1174,7 @@ var _resolve_ritual_sequence_id: int = 0
 var _resolve_ritual_reward_applied: bool = false
 var _scars: Array[Dictionary] = []
 var _run_state: RunState = RunState.new()
+var _save_system: SaveSystem = SaveSystemScript.new()
 var _register_state: RegisterState = RegisterState.new()
 var _level3_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _boot_valid: bool = true
@@ -1584,7 +1586,7 @@ func _start_level3_run() -> void:
 	_run_state.reset()
 	_run_state.run_seed = _get_run_seed_value()
 	_run_state.arena_index = 0
-	_flow_log("run_started", "arena=%d, bet_id=, save_present=%s" % [_run_state.arena_index, str(SaveManager.has_run_save())])
+	_flow_log("run_started", "arena=%d, bet_id=, save_present=%s" % [_run_state.arena_index, str(_save_system.has_run_save())])
 	_run_state.escalation_level = 0
 	_run_state.active_bet_id = &""
 	_run_state.enemy_profile = &""
@@ -2120,7 +2122,7 @@ func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void
 		return
 	_run_state.run_save_flow_step = flow_step
 	_run_state.run_save_flow_bet_id = bet_id
-	SaveManager.save_run(_build_run_save_payload())
+	_save_system.save_run_payload(_build_run_save_payload())
 
 func _build_run_save_payload() -> Dictionary:
 	var upgrade_costs: Dictionary = {}
@@ -2140,77 +2142,17 @@ func _build_run_save_payload() -> Dictionary:
 		"upgrade_costs": upgrade_costs,
 		"upgrades": upgrades,
 	}
+	var run_state_payload: Dictionary = _run_state.to_dict()
+	run_state_payload["scars"] = _serialize_run_scars(_run_state.scars)
 	var pacts_log: Array[Dictionary] = []
 	for entry: PactLogEntry in _run_state.pacts_log:
 		pacts_log.append(entry.to_dict())
-	var run_state_payload: Dictionary = {
-		"run_seed": _run_state.run_seed,
-		"arena_index": _run_state.arena_index,
-		"escalation_level": _run_state.escalation_level,
-		"active_bet_id": String(_run_state.active_bet_id),
-		"enemy_profile": String(_run_state.enemy_profile),
-		"enemy_profiles": _serialize_stringname_array(_run_state.enemy_profiles),
-		"scars": _serialize_run_scars(_run_state.scars),
-		"scars_history": _serialize_stringname_array(_run_state.scars_history),
-		"bets_history": _serialize_stringname_array(_run_state.bets_history),
-		"pacts_log": pacts_log,
-		"cashouts": _run_state.cashouts,
-		"doubles": _run_state.doubles,
-		"max_escalation": _run_state.max_escalation,
-		"arenas_cleared": _run_state.arenas_cleared,
-		"max_hp_modifier": _run_state.max_hp_modifier,
-		"audience_score": _run_state.audience_score,
-		"refuse_cashout_count_this_run": _run_state.refuse_cashout_count_this_run,
-		"last_action_was_rilancio": _run_state.last_action_was_rilancio,
-		"run_is_over": _run_state.run_is_over,
-		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
-		"last_signed_pact_id": String(_run_state.last_signed_pact_id),
-		"risky_choice_made_recently": _run_state.risky_choice_made_recently,
-		"irreversible_bet_scar_registered": _run_state.irreversible_bet_scar_registered,
-		"refused_closure_scar_registered": _run_state.refused_closure_scar_registered,
-		"risk_threshold_scar_registered": _run_state.risk_threshold_scar_registered,
-		"last_scar_arena_index": _run_state.last_scar_arena_index,
-	}
-	var level3_payload: Dictionary = {
-		"reward_tier": _run_state.level3_reward_tier,
-		"next_loss_hp_penalty": _run_state.level3_next_loss_hp_penalty,
-		"target_arenas": _run_state.level3_target_arenas,
-		"min_cashout_arenas": _run_state.level3_min_cashout_arenas,
-		"cashout_lock_remaining": _run_state.cashout_lock_remaining,
-		"last_selected_bet_id": String(_run_state.last_selected_bet_id),
-		"last_bet_offers": _serialize_stringname_array(_run_state.last_bet_offers),
-		"last_enemy_profile": String(_run_state.last_enemy_profile),
-		"special_arena_index": _run_state.special_arena_index,
-		"special_arena_id": String(_run_state.special_arena_id),
-		"special_arena_active": _run_state.special_arena_active,
-		"special_arena_effect_applied": _run_state.special_arena_effect_applied,
-		"special_arena_cashout_lock_reason": _run_state.special_arena_cashout_lock_reason,
-		"cashouts": _run_state.level3_cashouts,
-		"doubles": _run_state.level3_doubles,
-		"bets_used": _serialize_stringname_array(_run_state.level3_bets_used),
-		"max_escalation": _run_state.level3_max_escalation,
-		"cashout_streak": _run_state.level3_cashout_streak,
-		"cashout_streak_max": _run_state.level3_cashout_streak_max,
-		"cashed_after_high_escalation": _run_state.level3_cashed_after_high_escalation,
-	}
-	var intermediate_payload: Dictionary = {
-		"bonus_tier": _run_state.intermediate_bonus_tier,
-		"double_disabled_once": _run_state.intermediate_double_disabled_once,
-		"choice_note": _run_state.intermediate_choice_note,
-		"loss_penalty_pending": _run_state.intermediate_loss_penalty_pending,
-		"provoke_armed": _run_state.provoke_armed,
-	}
+	run_state_payload["pacts_log"] = pacts_log
 	return {
 		"schema_version": RUN_SAVE_SCHEMA_VERSION,
-		"flow_step": String(_run_state.run_save_flow_step),
-		"flow_bet_id": String(_run_state.run_save_flow_bet_id),
 		"run": run_payload,
 		"run_state": run_state_payload,
-		"level3": level3_payload,
-		"intermediate": intermediate_payload,
 		"scars_detail": _serialize_scars_detail(),
-		"current_bet_id": _run_state.current_bet_id,
-		"bet_chain_level": _run_state.bet_chain_level,
 	}
 
 func _apply_run_save_payload(payload: Dictionary) -> bool:
@@ -2225,10 +2167,6 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 		return false
 	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
 		return false
-	var flow_step_text: String = str(payload.get("flow_step", ""))
-	_run_state.run_save_flow_step = RUN_FLOW_BET_OFFER if flow_step_text == "" else StringName(flow_step_text)
-	_run_state.run_save_flow_bet_id = StringName(str(payload.get("flow_bet_id", "")))
-
 	_pact_sealed_sequence_id += 1
 	_resolve_ritual_sequence_id += 1
 	_resolving_ritual = false
@@ -2249,36 +2187,14 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	var run_state_data: Dictionary = payload["run_state"] as Dictionary
 	_run_state = RunState.new()
 	_run_state.reset()
-	_run_state.run_seed = int(run_state_data.get("run_seed", 0))
+	_run_state.from_dict(run_state_data)
+	if _run_state.run_save_flow_step == &"":
+		_run_state.run_save_flow_step = RUN_FLOW_BET_OFFER
 	if _run_state.run_seed <= 0:
 		return false
-	_run_state.arena_index = int(run_state_data.get("arena_index", 0))
-	_run_state.escalation_level = int(run_state_data.get("escalation_level", 0))
-	_run_state.active_bet_id = StringName(str(run_state_data.get("active_bet_id", "")))
-	_run_state.enemy_profile = StringName(str(run_state_data.get("enemy_profile", "")))
-	_run_state.enemy_profiles = _parse_stringname_array(run_state_data.get("enemy_profiles", []) as Array)
-	_run_state.scars = _parse_run_scars(run_state_data.get("scars", []) as Array)
-	_run_state.scars_history = _parse_stringname_array(run_state_data.get("scars_history", []) as Array)
-	_run_state.bets_history = _parse_stringname_array(run_state_data.get("bets_history", []) as Array)
-	_run_state.cashouts = int(run_state_data.get("cashouts", 0))
-	_run_state.doubles = int(run_state_data.get("doubles", 0))
-	_run_state.max_escalation = int(run_state_data.get("max_escalation", 0))
-	_run_state.arenas_cleared = int(run_state_data.get("arenas_cleared", 0))
-	_run_state.max_hp_modifier = int(run_state_data.get("max_hp_modifier", 0))
-	_run_state.audience_score = int(run_state_data.get("audience_score", 0))
-	_run_state.refuse_cashout_count_this_run = int(run_state_data.get("refuse_cashout_count_this_run", 0))
-	_run_state.last_action_was_rilancio = bool(run_state_data.get("last_action_was_rilancio", false))
-	_run_state.run_is_over = bool(run_state_data.get("run_is_over", false))
-	_run_state.is_hunted_by_crowd = bool(run_state_data.get("is_hunted_by_crowd", false))
-	_run_state.last_signed_pact_id = StringName(str(run_state_data.get("last_signed_pact_id", "")))
-	_run_state.risky_choice_made_recently = bool(run_state_data.get("risky_choice_made_recently", false))
-	_run_state.irreversible_bet_scar_registered = bool(run_state_data.get("irreversible_bet_scar_registered", false))
-	_run_state.refused_closure_scar_registered = bool(run_state_data.get("refused_closure_scar_registered", false))
-	_run_state.risk_threshold_scar_registered = bool(run_state_data.get("risk_threshold_scar_registered", false))
-	_run_state.last_scar_arena_index = int(run_state_data.get("last_scar_arena_index", -1000))
 	if _run_state.run_is_over:
 		return false
-
+	_run_state.scars = _parse_run_scars(run_state_data.get("scars", []) as Array)
 	_run_state.pacts_log = _parse_pacts_log(run_state_data.get("pacts_log", []))
 
 	var run_data: Dictionary = payload["run"] as Dictionary
@@ -2294,46 +2210,11 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	if run_data.has("upgrades") and run_data["upgrades"] is Dictionary:
 		run["upgrades"] = (run_data["upgrades"] as Dictionary).duplicate(true)
 
-	_run_state.current_bet_id = str(payload.get("current_bet_id", ""))
-	_run_state.bet_chain_level = int(payload.get("bet_chain_level", 1))
-
-	var level3_data: Dictionary = {}
-	if payload.has("level3") and payload["level3"] is Dictionary:
-		level3_data = payload["level3"] as Dictionary
-	_run_state.level3_reward_tier = int(level3_data.get("reward_tier", 1))
-	_run_state.level3_next_loss_hp_penalty = int(level3_data.get("next_loss_hp_penalty", 0))
-	_run_state.level3_target_arenas = int(level3_data.get("target_arenas", 0))
-	_run_state.level3_min_cashout_arenas = int(level3_data.get("min_cashout_arenas", 5))
-	_run_state.cashout_lock_remaining = int(level3_data.get("cashout_lock_remaining", 0))
-	_run_state.last_selected_bet_id = StringName(str(level3_data.get("last_selected_bet_id", "")))
-	_run_state.last_bet_offers = _parse_stringname_array(level3_data.get("last_bet_offers", []) as Array)
-	_run_state.last_enemy_profile = StringName(str(level3_data.get("last_enemy_profile", "")))
-	_run_state.special_arena_index = int(level3_data.get("special_arena_index", 0))
-	_run_state.special_arena_id = StringName(str(level3_data.get("special_arena_id", "")))
-	_run_state.special_arena_active = bool(level3_data.get("special_arena_active", false))
-	_run_state.special_arena_effect_applied = bool(level3_data.get("special_arena_effect_applied", false))
-	_run_state.special_arena_cashout_lock_reason = str(level3_data.get("special_arena_cashout_lock_reason", ""))
-	_run_state.level3_cashouts = int(level3_data.get("cashouts", 0))
-	_run_state.level3_doubles = int(level3_data.get("doubles", 0))
-	_run_state.level3_bets_used = _parse_stringname_array(level3_data.get("bets_used", []) as Array)
-	_run_state.level3_max_escalation = int(level3_data.get("max_escalation", 0))
-	_run_state.level3_cashout_streak = int(level3_data.get("cashout_streak", 0))
-	_run_state.level3_cashout_streak_max = int(level3_data.get("cashout_streak_max", 0))
-	_run_state.level3_cashed_after_high_escalation = bool(level3_data.get("cashed_after_high_escalation", false))
 	if _run_state.level3_target_arenas <= 0:
 		_level3_rng.seed = _run_state.run_seed
 		_run_state.level3_target_arenas = _level3_rng.randi_range(5, 8)
 	if _run_state.special_arena_index <= 0 and _run_state.level3_target_arenas > 0:
 		_run_state.special_arena_index = _pick_special_arena_index(_run_state.level3_target_arenas)
-
-	var intermediate_data: Dictionary = {}
-	if payload.has("intermediate") and payload["intermediate"] is Dictionary:
-		intermediate_data = payload["intermediate"] as Dictionary
-	_run_state.intermediate_bonus_tier = int(intermediate_data.get("bonus_tier", 0))
-	_run_state.intermediate_double_disabled_once = bool(intermediate_data.get("double_disabled_once", false))
-	_run_state.intermediate_choice_note = str(intermediate_data.get("choice_note", ""))
-	_run_state.intermediate_loss_penalty_pending = bool(intermediate_data.get("loss_penalty_pending", false))
-	_run_state.provoke_armed = bool(intermediate_data.get("provoke_armed", false))
 
 	if payload.has("scars_detail") and payload["scars_detail"] is Array:
 		_apply_scars_detail(payload["scars_detail"] as Array)
@@ -3082,11 +2963,11 @@ func _start_next_arena() -> void:
 func _on_request_new_run() -> void:
 	if _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice:
 		print("RunManager: forcing new run while flow is active.")
-	SaveManager.clear_run()
+	_save_system.clear_run()
 	start_new_run()
 
 func _on_request_reset_run() -> void:
-	SaveManager.clear_run()
+	_save_system.clear_run()
 	start_new_run()
 
 func _on_request_retry_run() -> void:
@@ -3096,11 +2977,11 @@ func _on_request_retry_run() -> void:
 	retry_current_bet()
 
 func _on_request_continue_run() -> void:
-	var payload: Dictionary = SaveManager.load_run()
+	var payload: Dictionary = _save_system.load_run_payload()
 	if payload.is_empty():
 		return
 	if not _apply_run_save_payload(payload):
-		SaveManager.clear_run()
+		_save_system.clear_run()
 		return
 	_resume_run_from_save(_run_state.run_save_flow_step, _run_state.run_save_flow_bet_id)
 
@@ -4275,7 +4156,7 @@ func _enter_game_over() -> void:
 	elif _run_state.run_end_reason != "":
 		reason_label = "failed"
 	print_debug("[FLOW] ending_entered :: reason=%s, arena=%d" % [reason_label, _run_state.arena_index])
-	SaveManager.clear_run()
+	_save_system.clear_run()
 	_is_game_over = true
 	_run_state.provoke_armed = false
 	_run_state.run_is_over = true

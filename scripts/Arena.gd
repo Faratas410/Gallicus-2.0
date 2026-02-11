@@ -1,5 +1,7 @@
 extends Node2D
 
+const LEVEL3_PASSIVE_MODE := true
+
 signal player_spawned(player: Node2D)
 signal wave_started(wave: int)
 signal wave_cleared(wave: int)
@@ -42,6 +44,9 @@ func _ready() -> void:
 	_rng.randomize()
 	add_to_group("arena")
 	_apply_background_variant()
+	if LEVEL3_PASSIVE_MODE:
+		set_process(false)
+		set_physics_process(false)
 	if _is_visual_only():
 		set_visual_only(true)
 	var run_started_callable: Callable = Callable(self, "_on_run_started")
@@ -55,6 +60,8 @@ func _ready() -> void:
 		if not GameEvents.difficulty_tier_changed.is_connected(tier_callable):
 			GameEvents.difficulty_tier_changed.connect(tier_callable)
 	queue_redraw()
+	if LEVEL3_PASSIVE_MODE:
+		return
 	ensure_player()
 	if debug_spawn_enemy and not _is_visual_only():
 		_spawn_debug_enemy()
@@ -109,6 +116,8 @@ func _draw() -> void:
 	draw_rect(rect, Color(0.15, 0.15, 0.2, 1.0))
 
 func start_next_wave() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _is_visual_only():
 		return
 	if _enemies_remaining > 0:
@@ -120,6 +129,8 @@ func start_next_wave() -> void:
 	_schedule_enemy_aggro_after_delay()
 
 func _spawn_player() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _player != null:
 		return
 	var existing_player: Node = get_tree().get_first_node_in_group("player")
@@ -140,6 +151,8 @@ func _spawn_player() -> void:
 		_player.died.connect(died_callable)
 
 func _spawn_enemies(count: int) -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _is_visual_only():
 		return
 	_enemies_remaining = count
@@ -179,6 +192,8 @@ func _apply_difficulty_to_enemy(enemy: Node) -> void:
 		enemy.call("_apply_tier_scaling_from_run_manager")
 
 func _spawn_debug_enemy() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _is_visual_only():
 		return
 	if enemy_scene == null:
@@ -225,6 +240,10 @@ func reset_arena() -> void:
 	# se hai proiettili/effects, puliscili qui
 
 func restart_arena() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		set_process(false)
+		set_physics_process(false)
+		return
 	set_process(false)
 	set_physics_process(false)
 	_current_wave = 0
@@ -245,6 +264,10 @@ func restart_arena() -> void:
 		start_next_wave()
 
 func _on_run_started() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		set_process(false)
+		set_physics_process(false)
+		return
 	if _is_visual_only():
 		set_visual_only(true)
 		return
@@ -272,6 +295,8 @@ func _reset_player() -> void:
 	_spawn_player()
 
 func ensure_player() -> Node2D:
+	if LEVEL3_PASSIVE_MODE:
+		return _player
 	if _player != null:
 		if not is_instance_valid(_player) or _player.is_queued_for_deletion() or not _player.is_inside_tree():
 			_player = null
@@ -296,6 +321,8 @@ func ensure_player() -> Node2D:
 	return _player
 
 func _schedule_enemy_aggro_after_delay() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _is_visual_only():
 		return
 	_aggro_sequence_id += 1
@@ -307,10 +334,14 @@ func _schedule_enemy_aggro_after_delay() -> void:
 	call_deferred("_apply_enemy_targets_deferred", my_id, delay)
 
 func _apply_enemy_targets_deferred(my_id: int, delay: float) -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	await get_tree().create_timer(delay).timeout
 	_apply_enemy_targets_if_possible(my_id)
 
 func _apply_enemy_targets_if_possible(my_id: int) -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	# Se nel frattempo è cambiata wave/reset/gameover -> abort
 	if my_id != _aggro_sequence_id:
 		return

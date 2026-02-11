@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const LEVEL3_PASSIVE_MODE := true
+
 signal health_changed(current: int, max: int)
 signal took_damage(amount: int)
 signal died
@@ -59,6 +61,11 @@ func _ready() -> void:
 		if sword_sprite != null:
 			sword_sprite.visible = false
 		input_locked = true
+	if LEVEL3_PASSIVE_MODE:
+		input_locked = true
+		set_process_input(false)
+		set_process(false)
+		set_physics_process(false)
 	add_to_group("player")
 	if Engine.has_singleton("GameEvents") and GameEvents != null:
 		if GameEvents.has_signal("gameplay_enabled_changed"):
@@ -68,6 +75,10 @@ func _ready() -> void:
 		input_locked = not GameEvents.gameplay_enabled
 
 func _physics_process(delta: float) -> void:
+	if LEVEL3_PASSIVE_MODE:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	if _is_level3_mode():
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -97,6 +108,9 @@ func _physics_process(delta: float) -> void:
 	_apply_bounds()
 
 func set_input_locked(locked: bool) -> void:
+	if LEVEL3_PASSIVE_MODE:
+		input_locked = true
+		return
 	input_locked = locked
 
 func _is_level3_mode() -> bool:

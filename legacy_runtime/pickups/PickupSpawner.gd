@@ -7,9 +7,9 @@ extends Node2D
 @export var weight_heal: float = 1.0
 @export var weight_coins: float = 1.0
 
-@export var speed_scene: PackedScene = preload("res://scenes/pickups/Pickup_SpeedBoost.tscn")
-@export var heal_scene: PackedScene = preload("res://scenes/pickups/Pickup_Heal.tscn")
-@export var coins_scene: PackedScene = preload("res://scenes/pickups/Pickup_Coins.tscn")
+@export var speed_scene: PackedScene = preload("res://legacy_runtime/pickups/Pickup_SpeedBoost.tscn")
+@export var heal_scene: PackedScene = preload("res://legacy_runtime/pickups/Pickup_Heal.tscn")
+@export var coins_scene: PackedScene = preload("res://legacy_runtime/pickups/Pickup_Coins.tscn")
 
 var _rng := RandomNumberGenerator.new()
 

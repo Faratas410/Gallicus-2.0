@@ -1240,7 +1240,6 @@ var _arena: Node
 var _arena_layout_container: Node2D = null
 var _current_arena_layout: Node = null
 var _current_arena_path: String = ""
-var _bet_manager: Node
 var _waiting_for_bet: bool = false
 var _waiting_for_push_luck: bool = false
 var _waiting_for_intermediate_choice: bool = false
@@ -1339,9 +1338,6 @@ func _ready() -> void:
 	var bet_sealed_callable: Callable = Callable(self, "_on_bet_sealed")
 	if GameEvents.has_signal("bet_sealed") and not GameEvents.bet_sealed.is_connected(bet_sealed_callable):
 		GameEvents.bet_sealed.connect(bet_sealed_callable)
-	var bet_selected_callable: Callable = Callable(self, "_on_bet_selected")
-	if GameEvents.has_signal("bet_selected") and not GameEvents.bet_selected.is_connected(bet_selected_callable):
-		GameEvents.bet_selected.connect(bet_selected_callable)
 	var bet_confirmed_callable: Callable = Callable(self, "_on_bet_confirmed")
 	if GameEvents.has_signal("bet_confirmed") and not GameEvents.bet_confirmed.is_connected(bet_confirmed_callable):
 		GameEvents.bet_confirmed.connect(bet_confirmed_callable)
@@ -1467,7 +1463,6 @@ func _boot() -> void:
 	else:
 		_arena = null
 		_player = null
-	_bet_manager = get_node_or_null("BetManager")
 	if _arena:
 		var wave_started_callable: Callable = Callable(self, "_on_wave_started")
 		if _arena.has_signal("wave_started") and not _arena.wave_started.is_connected(wave_started_callable):
@@ -1653,8 +1648,6 @@ func start_new_run() -> void:
 		_arena.call("soft_reset")
 	_reset_or_respawn_player_full()
 	_clear_enemies()
-	if _bet_manager != null and _bet_manager.has_method("reset_bet_state"):
-		_bet_manager.call("reset_bet_state")
 
 	run["coins"] = starting_coins
 	run["bet_hp_penalty"] = 0
@@ -2101,8 +2094,6 @@ func _open_bet_ui(from_victory: bool = false) -> void:
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
-	if _bet_manager and _bet_manager.has_method("open_bet_ui_before_arena"):
-		_bet_manager.open_bet_ui_before_arena()
 
 func _open_level3_bet_ui() -> void:
 	if _run_state.run_is_over or _is_game_over:
@@ -3556,8 +3547,6 @@ func _on_request_push_luck_double() -> void:
 	_push_luck_doubles += 1
 	_max_push_luck_chain = maxi(_max_push_luck_chain, _bet_chain_level)
 	_try_apply_cracked_bones_scar(bet_id, _bet_chain_level)
-	if _bet_manager and _bet_manager.has_method("set_chain_bet"):
-		_bet_manager.call("set_chain_bet", bet_id)
 	set_phase(RunPhase.LIVE)
 	_clear_enemies()
 	_spawn_wave_or_enemies()
@@ -3721,9 +3710,6 @@ func _on_bet_sealed(bet_choice: Dictionary) -> void:
 	var sentence_id: StringName = StringName(str(bet_choice.get("sentence_id", "")))
 	_handle_bet_sealed(pact_id, condition_id, sentence_id)
 
-func _on_bet_selected(bet_id: String) -> void:
-	await _handle_bet_selected(StringName(bet_id))
-
 func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_id: StringName) -> void:
 	if _is_game_over:
 		return
@@ -3747,24 +3733,6 @@ func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_
 	load_next_arena()
 	_start_next_arena()
 
-func _handle_bet_selected(bet_id: StringName) -> void:
-	if _is_game_over:
-		return
-	if bet_id == &"":
-		push_warning("Bet selected missing id; forcing next step.")
-	if not _waiting_for_bet:
-		push_warning("Bet selected outside waiting state; forcing advance.")
-	_flow_log("bet_choice_received", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
-	_waiting_for_bet = false
-	_waiting_for_push_luck = false
-	_resolve_ritual_reward_applied = false
-	_register_level3_bet_choice(bet_id)
-	_try_register_irreversible_bet_scar(bet_id)
-	GameEvents.betting_closed.emit()
-	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, bet_id)
-	_emit_audience_context_line(AUDIENCE_CONTEXT_PACT_SIGNED)
-	await _start_pact_sealed_ritual(bet_id)
-
 func _on_betting_opened() -> void:
 	_force_game_over_if_dead()
 
@@ -3772,8 +3740,6 @@ func _on_wave_started(_wave: int) -> void:
 	if LEVEL3_ENABLED:
 		return
 	GameEvents.arena_started.emit(int(run.get("arena_index", 0)))
-	if _bet_manager and _bet_manager.has_method("register_arena_start"):
-		_bet_manager.register_arena_start()
 	# la difficoltà dei nemici può dipendere dal livello
 	_apply_enemy_difficulty_to_arena()
 	_apply_phase()
@@ -3783,8 +3749,6 @@ func _on_wave_cleared(_wave: int) -> void:
 		return
 	GameEvents.arena_completed.emit(int(run.get("arena_index", 0)))
 	var bet_result: Dictionary = {}
-	if _bet_manager and _bet_manager.has_method("resolve_bet"):
-		bet_result = _bet_manager.resolve_bet() as Dictionary
 	if arena_clear_reward > 0:
 		add_coins(arena_clear_reward)
 	if not bet_result.is_empty():
@@ -3971,8 +3935,6 @@ func _on_player_died() -> void:
 func _soft_reset() -> void:
 	if _arena and _arena.has_method("soft_reset"):
 		_arena.call("soft_reset")
-	if _bet_manager and _bet_manager.has_method("reset_bet_state"):
-		_bet_manager.reset_bet_state()
 	run["arena_index"] = 0
 	_player = _resolve_player()
 	_reset_bet_chain()
@@ -4431,11 +4393,6 @@ func _get_bet_data(bet_id: String) -> Dictionary:
 			var bet: Dictionary = bet_value as Dictionary
 			if str(bet.get("id", "")) == bet_id:
 				return bet
-		return {}
-	if _bet_manager == null or not is_instance_valid(_bet_manager):
-		_bet_manager = get_node_or_null("BetManager")
-	if _bet_manager and _bet_manager.has_method("get_bet_data"):
-		return _bet_manager.call("get_bet_data", bet_id) as Dictionary
 	return {}
 
 func _get_level3_bet_name(bet_id: StringName) -> String:
@@ -4495,8 +4452,6 @@ func retry_current_bet() -> void:
 	if _arena and _arena.has_method("soft_reset"):
 		_arena.call("soft_reset")
 	_clear_enemies()
-	if _bet_manager and _bet_manager.has_method("reset_bet_state"):
-		_bet_manager.reset_bet_state()
 	_reset_or_respawn_player_full()
 	_open_bet_ui(false)
 

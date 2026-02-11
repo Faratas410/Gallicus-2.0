@@ -1984,7 +1984,7 @@ func restart_run(preserve_coins: bool = true) -> void:
 		run["coins"] = starting_coins
 		start_new_run()
 
-func _open_bet_ui(from_victory: bool = false) -> void:
+func _open_bet_ui(_from_victory: bool = false) -> void:
 	if LEVEL3_ENABLED:
 		_open_level3_bet_ui()
 		return

@@ -16,6 +16,8 @@ window/size/viewport_width=1280
 window/size/viewport_height=720
 window/size/window_width_override=1280
 window/size/window_height_override=720
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
 
 [input]
 move_up={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":87},{"type":"InputEventKey","keycode":16777232}]}

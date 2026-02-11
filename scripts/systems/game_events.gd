@@ -229,7 +229,7 @@ func _connect_noop(target_signal: Signal) -> void:
 	if not target_signal.is_connected(handler):
 		target_signal.connect(handler)
 
-func _noop(a: Variant = null, b: Variant = null, c: Variant = null, d: Variant = null) -> void:
+func _noop(_a: Variant = null, _b: Variant = null, _c: Variant = null, _d: Variant = null) -> void:
 	pass
 
 func set_gameplay_enabled(enabled: bool) -> void:

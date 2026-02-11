@@ -1,0 +1,58 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="FontVariation" path="res://ui/fonts/italiana_regular_font.tres" id="1_font"]
+
+[resource]
+default_font = ExtResource("1_font")
+default_font_size = 20
+theme_types/Label = {
+"fonts": {
+"font": ExtResource("1_font")
+},
+"font_sizes": {
+"font_size": 20
+},
+"styles": {}
+}
+theme_types/Button = {
+"fonts": {
+"font": ExtResource("1_font")
+},
+"font_sizes": {
+"font_size": 20
+},
+"styles": {}
+}
+theme_types/LineEdit = {
+"fonts": {
+"font": ExtResource("1_font")
+},
+"font_sizes": {
+"font_size": 18
+},
+"styles": {}
+}
+theme_types/CheckBox = {
+"fonts": {
+"font": ExtResource("1_font")
+},
+"font_sizes": {
+"font_size": 18
+},
+"styles": {}
+}
+theme_types/ProgressBar = {
+"fonts": {
+"font": ExtResource("1_font")
+},
+"font_sizes": {
+"font_size": 16
+},
+"styles": {}
+}
+theme_types/Panel = {
+"styles": {}
+}
+theme_types/PanelContainer = {
+"styles": {}
+}

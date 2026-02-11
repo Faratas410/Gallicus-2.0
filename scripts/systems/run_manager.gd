@@ -1254,7 +1254,6 @@ var phase: RunPhase = RunPhase.PREP
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
 var _boot_countdown_skipped: bool = false
-var _show_shop_next_bet: bool = false
 var _modal_lock_count: int = 0
 var _arena_suspended: bool = false
 var _arena_visual_only: bool = false
@@ -1357,15 +1356,6 @@ func _ready() -> void:
 	var enemy_killed_callable: Callable = Callable(self, "_on_enemy_killed")
 	if not GameEvents.enemy_killed.is_connected(enemy_killed_callable):
 		GameEvents.enemy_killed.connect(enemy_killed_callable)
-	var request_purchase_callable: Callable = Callable(self, "_on_request_purchase_upgrade")
-	if GameEvents.has_signal("request_purchase_upgrade") and not GameEvents.request_purchase_upgrade.is_connected(request_purchase_callable):
-		GameEvents.request_purchase_upgrade.connect(request_purchase_callable)
-	var request_purchase_token_callable: Callable = Callable(self, "_on_request_purchase_token")
-	if GameEvents.has_signal("request_purchase_token") and not GameEvents.request_purchase_token.is_connected(request_purchase_token_callable):
-		GameEvents.request_purchase_token.connect(request_purchase_token_callable)
-	var request_consume_shop_callable: Callable = Callable(self, "_on_request_consume_upgrade_shop")
-	if GameEvents.has_signal("request_consume_upgrade_shop") and not GameEvents.request_consume_upgrade_shop.is_connected(request_consume_shop_callable):
-		GameEvents.request_consume_upgrade_shop.connect(request_consume_shop_callable)
 	var request_new_run_callable: Callable = Callable(self, "_on_request_new_run")
 	if GameEvents.has_signal("request_new_run") and not GameEvents.request_new_run.is_connected(request_new_run_callable):
 		GameEvents.request_new_run.connect(request_new_run_callable)
@@ -1416,12 +1406,6 @@ func _on_settings_changed(payload: Dictionary) -> void:
 	var request_place_bet_callable: Callable = Callable(self, "_on_request_place_bet")
 	if GameEvents.has_signal("request_place_bet") and not GameEvents.request_place_bet.is_connected(request_place_bet_callable):
 		GameEvents.request_place_bet.connect(request_place_bet_callable)
-	var request_next_bet_callable: Callable = Callable(self, "_on_request_next_bet")
-	if GameEvents.has_signal("request_next_bet") and not GameEvents.request_next_bet.is_connected(request_next_bet_callable):
-		GameEvents.request_next_bet.connect(request_next_bet_callable)
-	var request_add_coins_callable: Callable = Callable(self, "_on_request_add_coins")
-	if GameEvents.has_signal("request_add_coins") and not GameEvents.request_add_coins.is_connected(request_add_coins_callable):
-		GameEvents.request_add_coins.connect(request_add_coins_callable)
 	var request_cashout_callable: Callable = Callable(self, "_on_request_push_luck_cashout")
 	if GameEvents.has_signal("request_push_luck_cashout") and not GameEvents.request_push_luck_cashout.is_connected(request_cashout_callable):
 		GameEvents.request_push_luck_cashout.connect(request_cashout_callable)
@@ -1618,7 +1602,6 @@ func start_new_run() -> void:
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_waiting_for_intermediate_choice = false
-	_show_shop_next_bet = false
 	_push_luck_cashouts = 0
 	_push_luck_doubles = 0
 	_max_push_luck_chain = 1
@@ -1706,7 +1689,6 @@ func _start_level3_run() -> void:
 	_is_game_over = false
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
-	_show_shop_next_bet = false
 	_run_end_reason = ""
 	_run_end_public_reason = ""
 	_run_finale_emitted = false
@@ -2063,7 +2045,6 @@ func start_next_bet_round() -> void:
 		return
 	_set_phase(RunPhase.NEXT_BET, "start_next_bet_round")
 	_waiting_for_bet = false
-	_show_shop_next_bet = false
 	set_phase(RunPhase.LIVE)
 	_clear_enemies()
 	_spawn_wave_or_enemies()
@@ -2094,7 +2075,6 @@ func _open_bet_ui(from_victory: bool = false) -> void:
 	_set_phase(RunPhase.BET_PRESENT, "open_bet_ui")
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
-	_show_shop_next_bet = from_victory
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
@@ -2401,7 +2381,6 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_waiting_for_intermediate_choice = false
 	_intermediate_pending_bet_id = &""
 	_post_bet_pending_bet_id = &""
-	_show_shop_next_bet = false
 
 	var run_state_data: Dictionary = payload["run_state"] as Dictionary
 	_run_state = RunState.new()
@@ -2512,7 +2491,6 @@ func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
 	_waiting_for_intermediate_choice = false
 	_intermediate_pending_bet_id = &""
 	_post_bet_pending_bet_id = &""
-	_show_shop_next_bet = false
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	var resolved_bet: StringName = bet_id
@@ -3304,15 +3282,6 @@ func _start_next_arena() -> void:
 	_emit_sentence_banner_for_bet(bet_id)
 	_arena.call("start_next_wave")
 
-func _on_request_purchase_upgrade(upgrade_key: String) -> void:
-	purchase_upgrade(upgrade_key)
-
-func _on_request_purchase_token() -> void:
-	purchase_token()
-
-func _on_request_consume_upgrade_shop() -> void:
-	consume_upgrade_shop()
-
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
@@ -3345,15 +3314,6 @@ func _on_request_show_main_menu() -> void:
 	print_debug("[FLOW] request_show_main_menu_received")
 	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
 	set_phase(RunPhase.MAIN_MENU)
-
-func _on_request_next_bet() -> void:
-	if LEVEL3_ENABLED:
-		start_arena()
-		return
-	start_next_bet_round()
-
-func _on_request_add_coins(amount: int) -> void:
-	add_coins(amount)
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	if not LEVEL3_ENABLED:
@@ -4029,7 +3989,6 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 		return
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 	_waiting_for_push_luck = true
-	_show_shop_next_bet = false
 	_close_audience_context_line()
 	set_phase(RunPhase.PREP)
 	_update_arena_visual_only()
@@ -4419,7 +4378,6 @@ func _apply_double_or_die_reward_scaled(scale: int) -> void:
 func retry_current_bet() -> void:
 	if _is_game_over:
 		return
-	_show_shop_next_bet = false
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_reset_bet_chain()
@@ -4858,89 +4816,6 @@ func get_arena() -> Node:
 
 func get_arena_index() -> int:
 	return int(run.get("arena_index", 0))
-
-func get_upgrade_state() -> Dictionary:
-	return run.get("upgrades", {}) as Dictionary
-
-func get_upgrade_config() -> Dictionary:
-	var costs: Dictionary = run.get("upgrade_costs", {}) as Dictionary
-	return {
-		"hp_bonus": upgrade_hp_bonus,
-		"hp_cost": int(costs.get("hp", upgrade_hp_token_cost_start)),
-		"light_bonus": upgrade_light_bonus,
-		"light_cost": int(costs.get("light", upgrade_light_token_cost_start)),
-		"heavy_bonus": upgrade_heavy_bonus,
-		"heavy_cost": int(costs.get("heavy", upgrade_heavy_token_cost_start)),
-	}
-
-func get_upgrade_offer() -> Dictionary:
-	# Ritorna dati "UI-ready" per mostrare preview e disabilitare BUY.
-	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	var tokens: int = int(run.get("upgrade_tokens", 0))
-	var costs: Dictionary = run.get("upgrade_costs", {}) as Dictionary
-	var hp_cost: int = int(costs.get("hp", upgrade_hp_token_cost_start))
-	var light_cost: int = int(costs.get("light", upgrade_light_token_cost_start))
-	var heavy_cost: int = int(costs.get("heavy", upgrade_heavy_token_cost_start))
-
-	return {
-		"tokens": tokens,
-		"hp": {
-			"current_total": int(upgrades.get("hp_bonus", 0)),
-			"add": int(upgrade_hp_bonus),
-			"next_total": int(upgrades.get("hp_bonus", 0)) + int(upgrade_hp_bonus),
-			"cost": hp_cost,
-			"affordable": tokens >= hp_cost,
-		},
-		"light": {
-			"current_total": int(upgrades.get("light_bonus", 0)),
-			"add": int(upgrade_light_bonus),
-			"next_total": int(upgrades.get("light_bonus", 0)) + int(upgrade_light_bonus),
-			"cost": light_cost,
-			"affordable": tokens >= light_cost,
-		},
-		"heavy": {
-			"current_total": int(upgrades.get("heavy_bonus", 0)),
-			"add": int(upgrade_heavy_bonus),
-			"next_total": int(upgrades.get("heavy_bonus", 0)) + int(upgrade_heavy_bonus),
-			"cost": heavy_cost,
-			"affordable": tokens >= heavy_cost,
-		},
-	}
-
-func purchase_upgrade(upgrade_type: String) -> bool:
-	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	var costs: Dictionary = run.get("upgrade_costs", {}) as Dictionary
-	match upgrade_type:
-		"hp":
-			var cost: int = int(costs.get("hp", upgrade_hp_token_cost_start))
-			if not spend_tokens(cost):
-				return false
-			upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + upgrade_hp_bonus
-			costs["hp"] = cost + 1
-		"light":
-			var cost: int = int(costs.get("light", upgrade_light_token_cost_start))
-			if not spend_tokens(cost):
-				return false
-			upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + upgrade_light_bonus
-			costs["light"] = cost + 1
-		"heavy":
-			var cost: int = int(costs.get("heavy", upgrade_heavy_token_cost_start))
-			if not spend_tokens(cost):
-				return false
-			upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + upgrade_heavy_bonus
-			costs["heavy"] = cost + 1
-		_:
-			return false
-	run["upgrade_costs"] = costs
-	run["upgrades"] = upgrades
-	_apply_run_upgrades_to_player()
-	return true
-
-func should_show_upgrade_shop() -> bool:
-	return _show_shop_next_bet
-
-func consume_upgrade_shop() -> void:
-	_show_shop_next_bet = false
 
 func is_live() -> bool:
 	return phase == RunPhase.LIVE

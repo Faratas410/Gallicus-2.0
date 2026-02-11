@@ -1039,75 +1039,6 @@ const LYING_PACT_REVEALS: Dictionary = {
 	BET_P3_LIE_APPLAUSE: "VERITÀ: L'applauso è una trappola: più ti esaltano, più ti consumano.",
 }
 
-const LEVEL3_SCARS: Array[Dictionary] = [
-	{
-		"id": SCAR_OPEN_WOUND,
-		"name": "FERITA APERTA",
-		"short_desc": "HP massimo ridotto.",
-		"effect": "HP massimo ridotto e cure meno efficaci.",
-		"effect_text": "HP massimo ridotto e cure meno efficaci.",
-		"story": "Il sangue non si è mai fermato.",
-		"narrative_text": "Il sangue ti segue anche quando l'arena tace.\nLa folla ascolta il tuo respiro corto.\nIl giudizio è già inciso sulla pelle.",
-		"visual_tag": "🩸",
-		"tags": [TAG_BLOOD, &"physical"],
-	},
-	{
-		"id": SCAR_CRACKED_BONES,
-		"name": "OSSA INCRINATE",
-		"short_desc": "Rischio aumentato nelle arene.",
-		"effect": "Movimento rallentato e schivate meno affidabili.",
-		"effect_text": "Movimento rallentato e schivate meno affidabili.",
-		"story": "Ogni passo fa male.",
-		"narrative_text": "Cammini con onore ma ogni passo pesa.\nIl debito del corpo resta sotto la sabbia.\nIl destino ti guarda senza tregua.",
-		"visual_tag": "🦴",
-		"tags": [TAG_BLOOD, &"physical"],
-	},
-	{
-		"id": SCAR_SHAME_MARK,
-		"name": "MARCHIO DELLA VERGOGNA",
-		"short_desc": "Il pubblico ti giudica.",
-		"effect": "Aumenta la probabilità di subire danni.",
-		"effect_text": "Aumenta la probabilità di subire danni.",
-		"story": "Il boato è diventato un sibilo.",
-		"narrative_text": "La vergogna ti precede davanti alla folla.\nOgni sguardo è un giudizio che brucia.\nPorti il segno anche quando vinci.",
-		"visual_tag": "🎭",
-		"tags": [TAG_SOCIAL, &"social"],
-	},
-	{
-		"id": SCAR_RUSTED_ARMOR,
-		"name": "ARMATURA ARRUGGINITA",
-		"short_desc": "Protezione compromessa.",
-		"effect": "I danni sono più probabili.",
-		"effect_text": "I danni sono più probabili.",
-		"story": "Le crepe non si chiudono più.",
-		"narrative_text": "Hai offerto onore e sangue, ma l'armatura non regge.\nLa ruggine canta il tuo debito.\nIl giudizio scivola sulle ferite.",
-		"visual_tag": "🛡️",
-		"tags": [&"physical"],
-	},
-	{
-		"id": SCAR_DEBT_BRAND,
-		"name": "MARCHIO DEL DEBITO",
-		"short_desc": "Escalation più severa.",
-		"effect": "Le escalation puniscono di più.",
-		"effect_text": "Le escalation puniscono di più.",
-		"story": "Ogni vittoria ha un prezzo.",
-		"narrative_text": "Il debito ti stringe come catena sacra.\nLa folla esige il prezzo della promessa.\nIl destino pesa su ogni patto.",
-		"visual_tag": "⛓️",
-		"tags": [&"risk"],
-	},
-	{
-		"id": SCAR_ONE_EYE,
-		"name": "OCCHIO PERDUTO",
-		"short_desc": "Il perfetto è più raro.",
-		"effect": "Peggiora le chance di outcome puliti.",
-		"effect_text": "Peggiora le chance di outcome puliti.",
-		"story": "La profondità si è spenta.",
-		"narrative_text": "Hai perso un occhio ma non la vergogna di guardare.\nIl sangue vela il tuo destino.\nLa folla vede la tua mancanza.",
-		"visual_tag": "👁️",
-		"tags": [TAG_BLOOD, &"physical"],
-	},
-]
-
 const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_BRUISER,
@@ -1248,6 +1179,7 @@ var _sanity_ui_root: Node = null
 var _arena_themes: RefCounted = null
 var _bet_system: RunBetSystem = BetSystemScript.new()
 var _scar_system: RunScarSystem = ScarSystemScript.new()
+var _scar_catalog: ScarCatalog = ScarCatalog.new()
 var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
 
 func _ready() -> void:
@@ -2933,11 +2865,7 @@ func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
 	_add_scar(scar)
 
 func _get_scar_def(scar_id: StringName) -> Dictionary:
-	for scar_value: Dictionary in LEVEL3_SCARS:
-		var scar: Dictionary = scar_value as Dictionary
-		if StringName(str(scar.get("id", ""))) == scar_id:
-			return scar
-	return {}
+	return _scar_catalog.get_scar(scar_id)
 
 func _determine_level3_ending_id() -> StringName:
 	var scar_count: int = _run_state.scars_history.size()

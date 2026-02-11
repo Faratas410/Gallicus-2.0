@@ -1,0 +1,98 @@
+# Run UI — Phase Paths and Node Names
+
+This document lists the canonical run UI phase containers and their key node names after the phase-based rename.
+
+Scene: `res://scenes/UI.tscn`
+
+## UI root
+
+- `UI_RunRoot`
+
+## Phase containers
+
+- `UI_RunRoot/Phase_INTRO`
+- `UI_RunRoot/Phase_FIRST_REACTION`
+- `UI_RunRoot/Phase_MID_CHOICE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK`
+- `UI_RunRoot/Phase_RESOLUTION`
+- `UI_RunRoot/Phase_END_RUN`
+
+## Key nodes by phase
+
+### INTRO
+
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLE`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLE`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINT`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODY`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKE`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTER`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Lbl_INTRO_CHOICE_0`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/Lbl_INTRO_CHOICE_1`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Btn_INTRO_BUY_TOKEN`
+
+### FIRST_REACTION
+
+- `UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION`
+- `UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLE`
+- `UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODY`
+
+### MID_CHOICE
+
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE`
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLE`
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0`
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1`
+
+### PUSH_YOUR_LUCK
+
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODY`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINT`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTER`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Btn_PUSH_YOUR_LUCK_CASHOUT`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE`
+
+### RESOLUTION
+
+- `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION`
+- `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLE`
+- `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODY`
+
+### END_RUN
+
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINT`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTER`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_NEXT_BET`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT`
+
+## Script mapping references
+
+- `scripts/ui/ui_root.gd`
+  - onready path bindings for renamed nodes
+  - phase map (`_phase_node_map`) and `show_phase(phase: int)`
+- `scripts/systems/run_manager.gd`
+  - sanity checks and `_ensure_flow_panel(...)` paths updated to `UI_RunRoot/Phase_*`

@@ -297,7 +297,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "SE FALLISCI: LA CICATRICE TI RESTA."
 
-[node name="Modals" type="Control" parent="."]
+[node name="UI_RunRoot" type="Control" parent="."]
 mouse_filter = 1
 z_index = 90
 theme = ExtResource("3")
@@ -306,7 +306,7 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ModalDimmer" type="ColorRect" parent="Modals"]
+[node name="ModalDimmer" type="ColorRect" parent="UI_RunRoot"]
 visible = false
 z_index = 0
 mouse_filter = 2
@@ -314,7 +314,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.55)
 
-[node name="EndingBackground" type="TextureRect" parent="Modals"]
+[node name="EndingBackground" type="TextureRect" parent="UI_RunRoot"]
 visible = false
 z_index = 1
 anchor_left = 0.0
@@ -328,7 +328,7 @@ texture = ExtResource("7")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TorchFlickerOverlay" type="TextureRect" parent="Modals"]
+[node name="TorchFlickerOverlay" type="TextureRect" parent="UI_RunRoot"]
 visible = false
 z_index = 2
 anchor_left = 0.0
@@ -343,12 +343,12 @@ texture = ExtResource("8")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TorchFlickerPlayer" type="AnimationPlayer" parent="Modals"]
+[node name="TorchFlickerPlayer" type="AnimationPlayer" parent="UI_RunRoot"]
 libraries = {
 "": SubResource("AnimationLibrary_1")
 }
 
-[node name="BetModal" type="Control" parent="Modals"]
+[node name="Phase_INTRO" type="Control" parent="UI_RunRoot"]
 visible = false
 mouse_filter = 2
 z_index = 95
@@ -357,7 +357,7 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="PactSealedModal" type="Control" parent="Modals"]
+[node name="Phase_FIRST_REACTION" type="Control" parent="UI_RunRoot"]
 visible = false
 mouse_filter = 2
 z_index = 96
@@ -366,13 +366,13 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="PactSealedBlocker" type="ColorRect" parent="Modals/PactSealedModal"]
+[node name="PactSealedBlocker" type="ColorRect" parent="UI_RunRoot/Phase_FIRST_REACTION"]
 mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0)
 
-[node name="PactSealedPanel" type="Panel" parent="Modals/PactSealedModal"]
+[node name="Panel_FIRST_REACTION" type="Panel" parent="UI_RunRoot/Phase_FIRST_REACTION"]
 z_index = 1
 focus_mode = 0
 anchor_left = 0.5
@@ -386,7 +386,7 @@ offset_bottom = 120.0
 custom_minimum_size = Vector2(520, 240)
 theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
-[node name="PactSealedVBox" type="VBoxContainer" parent="Modals/PactSealedModal/PactSealedPanel"]
+[node name="Box_FIRST_REACTION" type="VBoxContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
@@ -395,19 +395,19 @@ offset_right = -24.0
 offset_bottom = -24.0
 theme_override_constants/separation = 12
 
-[node name="PactSealedTitle" type="Label" parent="Modals/PactSealedModal/PactSealedPanel/PactSealedVBox"]
+[node name="Lbl_FIRST_REACTION_TITLE" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "IL PATTO È SIGILLATO."
 
-[node name="PactSealedSubtitle" type="Label" parent="Modals/PactSealedModal/PactSealedPanel/PactSealedVBox"]
+[node name="Lbl_FIRST_REACTION_BODY" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
 text = "La folla trattiene il fiato."
 
-[node name="ResolveRitualModal" type="Control" parent="Modals"]
+[node name="Phase_RESOLUTION" type="Control" parent="UI_RunRoot"]
 visible = false
 mouse_filter = 2
 z_index = 96
@@ -416,13 +416,13 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ResolveRitualBlocker" type="ColorRect" parent="Modals/ResolveRitualModal"]
+[node name="ResolveRitualBlocker" type="ColorRect" parent="UI_RunRoot/Phase_RESOLUTION"]
 mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0)
 
-[node name="ResolveRitualPanel" type="Panel" parent="Modals/ResolveRitualModal"]
+[node name="Panel_RESOLUTION" type="Panel" parent="UI_RunRoot/Phase_RESOLUTION"]
 z_index = 1
 focus_mode = 0
 anchor_left = 0.5
@@ -436,7 +436,7 @@ offset_bottom = 140.0
 custom_minimum_size = Vector2(560, 280)
 theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
-[node name="ResolveRitualVBox" type="VBoxContainer" parent="Modals/ResolveRitualModal/ResolveRitualPanel"]
+[node name="Box_RESOLUTION" type="VBoxContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
@@ -445,19 +445,19 @@ offset_right = -24.0
 offset_bottom = -24.0
 theme_override_constants/separation = 12
 
-[node name="ResolveRitualTitle" type="Label" parent="Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox"]
+[node name="Lbl_RESOLUTION_TITLE" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "RITO DI GIUDIZIO"
 
-[node name="ResolveRitualSubtitle" type="Label" parent="Modals/ResolveRitualModal/ResolveRitualPanel/ResolveRitualVBox"]
+[node name="Lbl_RESOLUTION_BODY" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
 horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
 text = "Il patto viene giudicato."
 
-[node name="IntermediateChoiceModal" type="Control" parent="Modals"]
+[node name="Phase_MID_CHOICE" type="Control" parent="UI_RunRoot"]
 visible = false
 mouse_filter = 2
 z_index = 95
@@ -466,13 +466,13 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="IntermediateChoiceBlocker" type="ColorRect" parent="Modals/IntermediateChoiceModal"]
+[node name="IntermediateChoiceBlocker" type="ColorRect" parent="UI_RunRoot/Phase_MID_CHOICE"]
 mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0)
 
-[node name="IntermediateChoicePanel" type="Panel" parent="Modals/IntermediateChoiceModal"]
+[node name="Panel_MID_CHOICE" type="Panel" parent="UI_RunRoot/Phase_MID_CHOICE"]
 visible = false
 z_index = 1
 focus_mode = 0
@@ -488,7 +488,7 @@ clip_contents = true
 custom_minimum_size = Vector2(480, 300)
 theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
-[node name="IntermediateChoiceVBox" type="VBoxContainer" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel"]
+[node name="Box_MID_CHOICE" type="VBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 16.0
@@ -497,36 +497,36 @@ offset_right = -16.0
 offset_bottom = -16.0
 theme_override_constants/separation = 12
 
-[node name="IntermediateChoiceLabel" type="Label" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox"]
+[node name="Lbl_MID_CHOICE_TITLE" type="Label" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "SCEGLI IL GESTO"
 
-[node name="IntermediateChoiceButtons" type="VBoxContainer" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox"]
+[node name="Box_MID_CHOICE_CHOICES" type="VBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="IntermediateChoicePlaca" type="Button" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox/IntermediateChoiceButtons"]
+[node name="Btn_MID_CHOICE_SELECT_0" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "UMILIATI"
 
-[node name="IntermediateChoiceProvoca" type="Button" parent="Modals/IntermediateChoiceModal/IntermediateChoicePanel/IntermediateChoiceVBox/IntermediateChoiceButtons"]
+[node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "PROVOCA"
 
-[node name="BetBlocker" type="ColorRect" parent="Modals/BetModal"]
+[node name="BetBlocker" type="ColorRect" parent="UI_RunRoot/Phase_INTRO"]
 mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = -300.0
 color = Color(0, 0, 0, 0)
 
-[node name="BetPanel" type="Panel" parent="Modals/BetModal"]
+[node name="Panel_INTRO" type="Panel" parent="UI_RunRoot/Phase_INTRO"]
 visible = false
 z_index = 1
 focus_mode = 0
@@ -542,7 +542,7 @@ clip_contents = true
 custom_minimum_size = Vector2(560, 560)
 theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
-[node name="BetMargin" type="MarginContainer" parent="Modals/BetModal/BetPanel"]
+[node name="BetMargin" type="MarginContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 24
@@ -550,7 +550,7 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 24
 
-[node name="BetScroll" type="ScrollContainer" parent="Modals/BetModal/BetPanel/BetMargin"]
+[node name="BetScroll" type="ScrollContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
@@ -560,7 +560,7 @@ offset_bottom = 0.0
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="BetVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll"]
+[node name="Box_INTRO" type="VBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
@@ -569,18 +569,18 @@ offset_right = 0.0
 offset_bottom = 0.0
 theme_override_constants/separation = 12
 
-[node name="BetTitle" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="Lbl_INTRO_TITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "Scommessa Arena"
 
-[node name="SpecialArenaLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="Lbl_INTRO_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 visible = false
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "ARENA SPECIALE"
 
-[node name="CondannaFocusLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="Lbl_INTRO_HINT" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 visible = false
 autowrap_mode = 2
 size_flags_horizontal = 3
@@ -589,81 +589,81 @@ clip_text = true
 theme_override_font_sizes/font_size = 22
 text = "FOCUS: Leggi prima la CONDANNA."
 
-[node name="SeedRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="SeedRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 theme_override_constants/separation = 6
 
-[node name="SeedLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow"]
+[node name="Lbl_INTRO_BODY" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
 text = "Seed (opzionale)"
 
-[node name="SeedInput" type="LineEdit" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow"]
+[node name="SeedInput" type="LineEdit" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
 size_flags_horizontal = 3
 placeholder_text = "Es. 10331"
 
-[node name="SeedButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/SeedRow"]
+[node name="Btn_INTRO_APPLY_SEED" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
 text = "APPLICA"
 
-[node name="StakeRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="StakeRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 
-[node name="StakeLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/StakeRow"]
+[node name="Lbl_INTRO_BODY_STAKE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow"]
 text = "Stake"
 
-[node name="StakeInput" type="SpinBox" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/StakeRow"]
+[node name="StakeInput" type="SpinBox" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow"]
 focus_mode = 1
 min_value = 0.0
 step = 5.0
 value = 10.0
 shortcut_keys_enabled = false
 
-[node name="BetButtons" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="BetButtons" type="VBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="BetWinButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons"]
+[node name="Btn_INTRO_SELECT_WIN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDANNA — RADDOPPI O MUORI"
 
-[node name="BetNoHitButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons"]
+[node name="Btn_INTRO_SELECT_NO_HIT" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDIZIONE — SANGUE INTEGRO"
 
-[node name="BetFastButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetButtons"]
+[node name="Btn_INTRO_SELECT_FAST" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "PATTO — INCASSA E VAI"
 
-[node name="BetConfirmRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="BetConfirmRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 visible = false
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="BetConfirmLabel" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetConfirmRow"]
+[node name="Lbl_INTRO_FOOTER" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Selezione: -"
 
-[node name="BetConfirmButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BetConfirmRow"]
+[node name="Btn_INTRO_CONFIRM" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
 custom_minimum_size = Vector2(120, 40)
 text = "SIGILLA"
 
-[node name="BuyTokenRow" type="HBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox"]
+[node name="BuyTokenRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="BuyTokenVBox" type="VBoxContainer" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow"]
+[node name="BuyTokenVBox" type="VBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="BuyTokenButton" type="Button" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
+[node name="Btn_INTRO_BUY_TOKEN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox"]
 custom_minimum_size = Vector2(0, 40)
 size_flags_horizontal = 3
 text = "BUY TOKEN (100c)"
 
-[node name="BuyTokenNote" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow/BuyTokenVBox"]
+[node name="Lbl_INTRO_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox"]
 visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -671,15 +671,15 @@ theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
 text = "Disponibile dopo l'arena in corso."
 
-[node name="BuyTokenInfo" type="Label" parent="Modals/BetModal/BetPanel/BetMargin/BetScroll/BetVBox/BuyTokenRow"]
+[node name="Lbl_INTRO_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow"]
 autowrap_mode = 2
 clip_text = true
 theme_override_font_sizes/font_size = 18
 text = "x1"
 
-[node name="BettingCircle" parent="Modals" instance=ExtResource("6")]
+[node name="BettingCircle" parent="UI_RunRoot" instance=ExtResource("6")]
 
-[node name="PushLuckModal" type="Control" parent="Modals"]
+[node name="Phase_PUSH_YOUR_LUCK" type="Control" parent="UI_RunRoot"]
 visible = false
 mouse_filter = 2
 z_index = 95
@@ -688,14 +688,14 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="PushLuckBlocker" type="ColorRect" parent="Modals/PushLuckModal"]
+[node name="PushLuckBlocker" type="ColorRect" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK"]
 mouse_filter = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = -300.0
 color = Color(0, 0, 0, 0)
 
-[node name="PushLuckPanel" type="Panel" parent="Modals/PushLuckModal"]
+[node name="Panel_PUSH_YOUR_LUCK" type="Panel" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK"]
 visible = false
 z_index = 1
 focus_mode = 0
@@ -711,7 +711,7 @@ clip_contents = true
 custom_minimum_size = Vector2(440, 340)
 theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
-[node name="PushLuckVBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel"]
+[node name="Box_PUSH_YOUR_LUCK" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
@@ -720,28 +720,28 @@ offset_right = -12.0
 offset_bottom = -12.0
 theme_override_constants/separation = 12
 
-[node name="PushLuckTitle" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_TITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "PUSH YOUR LUCK"
 
-[node name="PushLuckInfo" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Incassa ora o raddoppia il rischio"
 
-[node name="PushLuckAudienceLabel" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 visible = false
 theme_override_font_sizes/font_size = 20
 text = ""
 
-[node name="PushLuckAudienceReason" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_HINT" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 visible = false
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = ""
 
-[node name="PushLuckDetails" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_FOOTER" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -749,20 +749,20 @@ clip_text = true
 theme_override_font_sizes/font_size = 18
 text = ""
 
-[node name="PushLuckButtons" type="HBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox"]
+[node name="Box_PUSH_YOUR_LUCK_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="PushLuckCashoutBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+[node name="Box_PUSH_YOUR_LUCK_CHOICE_0" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="PushLuckCashoutButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox"]
+[node name="Btn_PUSH_YOUR_LUCK_CASHOUT" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "INCASSA ORA"
 
-[node name="PushLuckCashoutNote" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCashoutBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
 visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -770,32 +770,32 @@ theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
 text = "Disponibile dopo l'arena in corso."
 
-[node name="PushLuckCondannaBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+[node name="Box_PUSH_YOUR_LUCK_CHOICE_1" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="PushLuckCondannaButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCondannaBox"]
+[node name="Btn_PUSH_YOUR_LUCK_CONDANNA" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "CONDANNA"
 
-[node name="PushLuckCondannaNote" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckCondannaBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
 horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 16
 modulate = Color(0.75, 0.72, 0.6, 1)
 text = "NESSUN REWARD"
 
-[node name="PushLuckDoubleBox" type="VBoxContainer" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons"]
+[node name="Box_PUSH_YOUR_LUCK_CHOICE_2" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="PushLuckDoubleButton" type="Button" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox"]
+[node name="Btn_PUSH_YOUR_LUCK_DOUBLE" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "RADDOPPIA"
 
-[node name="PushLuckDoubleNote" type="Label" parent="Modals/PushLuckModal/PushLuckPanel/PushLuckVBox/PushLuckButtons/PushLuckDoubleBox"]
+[node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
 visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -803,7 +803,7 @@ theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
 text = "Disponibile dopo l'arena in corso."
 
-[node name="ScarsDetailPanel" type="Panel" parent="Modals"]
+[node name="ScarsDetailPanel" type="Panel" parent="UI_RunRoot"]
 visible = false
 z_index = 95
 anchor_left = 0.5
@@ -818,7 +818,7 @@ clip_contents = true
 custom_minimum_size = Vector2(440, 360)
 theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
-[node name="ScarsDetailVBox" type="VBoxContainer" parent="Modals/ScarsDetailPanel"]
+[node name="ScarsDetailVBox" type="VBoxContainer" parent="UI_RunRoot/ScarsDetailPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
@@ -827,20 +827,20 @@ offset_right = -12.0
 offset_bottom = -12.0
 theme_override_constants/separation = 8
 
-[node name="ScarsDetailTitle" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
+[node name="ScarsDetailTitle" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "DETTAGLIO CICATRICI"
 
-[node name="ScarsDetailText" type="Label" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
+[node name="ScarsDetailText" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
 autowrap_mode = 2
 clip_text = true
 text = ""
 
-[node name="ScarsDetailClose" type="Button" parent="Modals/ScarsDetailPanel/ScarsDetailVBox"]
+[node name="ScarsDetailClose" type="Button" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
 text = "CHIUDI"
 
-[node name="GameOverModal" type="Control" parent="Modals"]
+[node name="Phase_END_RUN" type="Control" parent="UI_RunRoot"]
 visible = false
 mouse_filter = 2
 z_index = 95
@@ -849,14 +849,14 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="GameOverBlocker" type="ColorRect" parent="Modals/GameOverModal"]
+[node name="GameOverBlocker" type="ColorRect" parent="UI_RunRoot/Phase_END_RUN"]
 mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = -300.0
 color = Color(0, 0, 0, 0)
 
-[node name="GameOverPanel" type="TextureRect" parent="Modals/GameOverModal"]
+[node name="Panel_END_RUN" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN"]
 visible = false
 z_index = 1
 anchor_left = 0.1
@@ -873,7 +873,7 @@ texture = ExtResource("9")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="GameOverVBox" type="VBoxContainer" parent="Modals/GameOverModal/GameOverPanel"]
+[node name="Box_END_RUN" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
@@ -882,79 +882,79 @@ offset_right = -12.0
 offset_bottom = -12.0
 theme_override_constants/separation = 10
 
-[node name="VerdictHeader" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "VERDETTO"
 
-[node name="VerdictOutcome" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Lbl_END_RUN_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
 text = ""
 
-[node name="VerdictSentenceLabel" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = ""
 
-[node name="VerdictChargeLabel" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = ""
 
-[node name="VerdictSections" type="VBoxContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Box_END_RUN_DETAILS" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="PactsHeader" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections"]
+[node name="Lbl_END_RUN_PACTS_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 text = "PATTI FIRMATI"
 
-[node name="PactsText" type="RichTextLabel" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections"]
+[node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 size_flags_horizontal = 3
 bbcode_enabled = false
 fit_content = false
 autowrap_mode = 2
 text = ""
 
-[node name="CondanneHeader" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections"]
+[node name="Lbl_END_RUN_CONDANNE_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 text = "CONDANNE"
 
-[node name="CondanneText" type="RichTextLabel" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections"]
+[node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 size_flags_horizontal = 3
 bbcode_enabled = false
 fit_content = false
 autowrap_mode = 2
 text = ""
 
-[node name="CrowdSection" type="VBoxContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections"]
+[node name="Box_END_RUN_CROWD" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 visible = false
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="CrowdHeader" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/CrowdSection"]
+[node name="Lbl_END_RUN_CROWD_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
 text = "ULTIMA VOCE"
 
-[node name="CrowdText" type="Label" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/VerdictSections/CrowdSection"]
+[node name="Lbl_END_RUN_CROWD_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
 size_flags_horizontal = 3
 autowrap_mode = 2
 clip_text = true
 text = ""
 
-[node name="GameOverScroll" type="ScrollContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Box_END_RUN_SCROLL" type="ScrollContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false
 size_flags_horizontal = 3
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="GameOverMargin" type="MarginContainer" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll"]
+[node name="Box_END_RUN_MARGIN" type="MarginContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL"]
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 40
 theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 32
 
-[node name="EndingText" type="RichTextLabel" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox/GameOverScroll/GameOverMargin"]
+[node name="Lbl_END_RUN_FOOTER" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
@@ -965,17 +965,17 @@ theme_override_colors/font_color = Color(0.32, 0.24, 0.16, 1)
 theme_override_constants/line_separation = 4
 text = ""
 
-[node name="RestartButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Btn_END_RUN_RESTART" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 text = "NUOVA RUN"
 
-[node name="NextBetButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false
 text = "NEXT BET"
 
-[node name="QuitButton" type="Button" parent="Modals/GameOverModal/GameOverPanel/GameOverVBox"]
+[node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 text = "TORNA AL MENU"
 
-[node name="WaxSeal" type="TextureRect" parent="Modals/GameOverModal/GameOverPanel"]
+[node name="WaxSeal" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
 z_index = 2
 anchor_left = 1.0
 anchor_top = 1.0
@@ -988,7 +988,7 @@ offset_bottom = -16.0
 mouse_filter = 1
 texture = ExtResource("5")
 
-[node name="CountdownLabel" type="Label" parent="Modals"]
+[node name="CountdownLabel" type="Label" parent="UI_RunRoot"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -1002,7 +1002,7 @@ horizontal_alignment = 1
 visible = false
 text = ""
 
-[node name="FastCountdownLabel" type="Label" parent="Modals"]
+[node name="FastCountdownLabel" type="Label" parent="UI_RunRoot"]
 anchor_left = 0.5
 anchor_top = 0.0
 anchor_right = 0.5
@@ -1016,7 +1016,7 @@ horizontal_alignment = 1
 visible = false
 text = "FAST: 12s"
 
-[node name="FastBlinkTimer" type="Timer" parent="Modals"]
+[node name="FastBlinkTimer" type="Timer" parent="UI_RunRoot"]
 wait_time = 0.25
 one_shot = false
 autostart = false

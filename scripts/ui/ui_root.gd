@@ -783,8 +783,8 @@ func _hide_arena_resolution_overlay() -> void:
 		arena_resolution_label.visible = false
 
 func _on_buy_token_pressed() -> void:
-	if GameEvents.has_signal("request_purchase_token"):
-		GameEvents.request_purchase_token.emit()
+	# Legacy token shop removed from RunManager flow.
+	pass
 
 func _on_seed_apply_pressed() -> void:
 	if seed_input == null:
@@ -1807,11 +1807,8 @@ func _request_reset() -> void:
 	_refresh_modal_dimmer()
 
 func _request_next_bet() -> void:
-	if game_over_panel != null and game_over_panel.visible:
-		return
-
-	if GameEvents.has_signal("request_next_bet"):
-		GameEvents.request_next_bet.emit()
+	# Legacy next-bet request removed; current flow advances via RunManager level-3 events.
+	pass
 
 func _request_retry() -> void:
 	_set_game_over_modal(false)

@@ -66,17 +66,12 @@ extends Node
 # - player_xp_changed: emitted by RunManager; consumed by UIRoot.
 # - player_level_changed: emitted by RunManager; consumed by UIRoot.
 # - upgrade_tokens_changed: emitted by RunManager; consumed by UIRoot.
-# - request_purchase_upgrade: emitted by UI; consumed by RunManager.
-# - request_purchase_token: emitted by UI; consumed by RunManager.
 # - request_place_bet: emitted by UIRoot; consumed by RunManager.
 # - request_open_bet_ui: emitted by UI; consumed by RunManager.
-# - request_consume_upgrade_shop: emitted by UI; consumed by RunManager.
 # - request_new_run: emitted by MainMenu; consumed by RunManager.
 # - request_reset_run: emitted by UI/debug; consumed by RunManager.
 # - request_retry_run: emitted by UI; consumed by RunManager.
 # - request_continue_run: emitted by MainMenu; consumed by RunManager.
-# - request_next_bet: emitted by UI; consumed by RunManager.
-# - request_add_coins: emitted by UI/debug; consumed by RunManager.
 # - request_push_luck_cashout: emitted by UI; consumed by RunManager.
 # - request_push_luck_double: emitted by UI; consumed by RunManager.
 # - request_intermediate_choice: emitted by UI; consumed by RunManager.
@@ -142,11 +137,8 @@ signal difficulty_tier_changed(tier: int, multiplier: float)
 signal player_xp_changed(xp: int, xp_to_next: int)
 signal player_level_changed(level: int)
 signal upgrade_tokens_changed(tokens: int)
-signal request_purchase_upgrade(upgrade_key: String)
-signal request_purchase_token
 signal request_place_bet(bet_id: String, stake: int)
 signal request_open_bet_ui
-signal request_consume_upgrade_shop
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: GameEvents autoload exists; RunManager listens to request_new_run.
 # Postconditions: RunManager starts a new run and emits run_started for UI refresh.
@@ -154,8 +146,6 @@ signal request_new_run
 signal request_reset_run
 signal request_retry_run
 signal request_continue_run
-signal request_next_bet
-signal request_add_coins(amount: int)
 signal request_push_luck_cashout
 signal request_push_luck_double
 signal request_intermediate_choice(choice_id: String)
@@ -222,17 +212,12 @@ func _ready() -> void:
 	_connect_noop(player_xp_changed)
 	_connect_noop(player_level_changed)
 	_connect_noop(upgrade_tokens_changed)
-	_connect_noop(request_purchase_upgrade)
-	_connect_noop(request_purchase_token)
 	_connect_noop(request_place_bet)
 	_connect_noop(request_open_bet_ui)
-	_connect_noop(request_consume_upgrade_shop)
 	_connect_noop(request_new_run)
 	_connect_noop(request_reset_run)
 	_connect_noop(request_retry_run)
 	_connect_noop(request_continue_run)
-	_connect_noop(request_next_bet)
-	_connect_noop(request_add_coins)
 	_connect_noop(request_push_luck_cashout)
 	_connect_noop(request_push_luck_double)
 	_connect_noop(request_intermediate_choice)

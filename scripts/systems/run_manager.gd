@@ -1426,7 +1426,65 @@ func _fail_flow(message: String) -> void:
 	_run_state.forced_ending_id = &"THE_FOOL"
 	_enter_end_run("RUN_FAILED")
 
+func request_new_game() -> void:
+	if _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice:
+		print("RunManager: forcing new run while flow is active.")
+	_start_new_run()
+
+func request_confirm_pact() -> void:
+	if not _waiting_for_bet or _phase != RunPhase.BET_PRESENT:
+		push_error("RunManager: request_confirm_pact in wrong phase %s" % [str(_phase)])
+		return
+	var pending_bet_id: StringName = _run_state.last_selected_bet_id
+	if pending_bet_id == &"":
+		push_error("RunManager: request_confirm_pact has no selected pact to confirm")
+		return
+	_confirm_pact_with_bet_id(pending_bet_id)
+
+func request_choose_mid(index: int) -> void:
+	if not _waiting_for_intermediate_choice or _phase != RunPhase.INTERMEDIATE_CHOICE:
+		push_error("RunManager: request_choose_mid in wrong phase %s" % [str(_phase)])
+		return
+	if index == 0:
+		_apply_intermediate_choice("placa")
+		return
+	if index == 1:
+		_apply_intermediate_choice("provoca")
+		return
+	push_error("RunManager: request_choose_mid invalid index %d" % index)
+
+func request_push_your_luck() -> void:
+	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
+		push_error("RunManager: request_push_your_luck in wrong phase %s" % [str(_phase)])
+		return
+	_push_your_luck()
+
+func request_take_payout() -> void:
+	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
+		push_error("RunManager: request_take_payout in wrong phase %s" % [str(_phase)])
+		return
+	_take_payout()
+
+func request_quit_to_menu() -> void:
+	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
+	set_phase(RunPhase.MAIN_MENU)
+
+func request_load_continue() -> void:
+	if _phase != RunPhase.MAIN_MENU and _phase != RunPhase.NONE:
+		push_error("RunManager: request_load_continue in wrong phase %s" % [str(_phase)])
+		return
+	var payload: Dictionary = _save_system.load_run_payload()
+	if payload.is_empty():
+		return
+	if not _apply_run_save_payload(payload):
+		_save_system.clear_run()
+		return
+	_resume_run_from_save(_run_state.run_save_flow_step, _run_state.run_save_flow_bet_id)
+
 func start_new_run() -> void:
+	request_new_game()
+
+func _start_new_run() -> void:
 	_run_state.run_start_time_msec = Time.get_ticks_msec()
 	_set_phase(RunPhase.RUN_INIT, "start_new_run")
 	if LEVEL3_ENABLED:
@@ -1519,7 +1577,7 @@ func start_new_run() -> void:
 	_log_runtime_state("waiting_for_bet")
 
 func start_run() -> void:
-	_start_level3_run()
+	request_new_game()
 
 func _start_level3_run() -> void:
 	_run_state.run_start_time_msec = Time.get_ticks_msec()
@@ -1640,6 +1698,12 @@ func start_arena() -> void:
 	_open_level3_bet_ui()
 
 func select_bet(bet_id: StringName) -> void:
+	if not _waiting_for_bet or _phase != RunPhase.BET_PRESENT:
+		push_error("RunManager: select_bet in wrong phase %s" % [str(_phase)])
+		return
+	_confirm_pact_with_bet_id(bet_id)
+
+func _confirm_pact_with_bet_id(bet_id: StringName) -> void:
 	if not _waiting_for_bet:
 		return
 	if _run_state.run_is_over or _is_game_over:
@@ -2950,14 +3014,12 @@ func _start_next_arena() -> void:
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
-	if _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice:
-		print("RunManager: forcing new run while flow is active.")
 	_save_system.clear_run()
-	start_new_run()
+	request_new_game()
 
 func _on_request_reset_run() -> void:
 	_save_system.clear_run()
-	start_new_run()
+	request_new_game()
 
 func _on_request_retry_run() -> void:
 	if LEVEL3_ENABLED:
@@ -2966,18 +3028,11 @@ func _on_request_retry_run() -> void:
 	retry_current_bet()
 
 func _on_request_continue_run() -> void:
-	var payload: Dictionary = _save_system.load_run_payload()
-	if payload.is_empty():
-		return
-	if not _apply_run_save_payload(payload):
-		_save_system.clear_run()
-		return
-	_resume_run_from_save(_run_state.run_save_flow_step, _run_state.run_save_flow_bet_id)
+	request_load_continue()
 
 func _on_request_show_main_menu() -> void:
 	print_debug("[FLOW] request_show_main_menu_received")
-	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
-	set_phase(RunPhase.MAIN_MENU)
+	request_quit_to_menu()
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	if not LEVEL3_ENABLED:
@@ -2986,8 +3041,16 @@ func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	select_bet(StringName(bet_id))
 
 func _on_request_intermediate_choice(choice_id: String) -> void:
-	if not _waiting_for_intermediate_choice and _phase != RunPhase.INTERMEDIATE_CHOICE:
+	var normalized_choice: String = choice_id.strip_edges().to_lower()
+	if normalized_choice == "placa":
+		request_choose_mid(0)
 		return
+	if normalized_choice == "provoca":
+		request_choose_mid(1)
+		return
+	push_error("RunManager: request_choose_mid invalid choice '%s'" % choice_id)
+
+func _apply_intermediate_choice(choice_id: String) -> void:
 	print_debug("[FLOW] intermediate_choice_received :: arena=%d, choice=%s" % [_run_state.arena_index, choice_id])
 	_waiting_for_intermediate_choice = false
 	_run_state.intermediate_double_disabled_once = false
@@ -3031,8 +3094,9 @@ func _on_post_arena_choice_selected(choice_id: StringName) -> void:
 	_handle_push_luck_condanna()
 
 func _on_request_push_luck_cashout() -> void:
-	if not _waiting_for_push_luck:
-		return
+	request_take_payout()
+
+func _take_payout() -> void:
 	print_debug("[FLOW] push_luck_cashout_received :: arena=%d" % _run_state.arena_index)
 	var audience_policy: Dictionary = _get_audience_cashout_policy()
 	if not bool(audience_policy.get("cashout_enabled", true)):
@@ -3110,8 +3174,9 @@ func _handle_push_luck_condanna() -> void:
 	_open_bet_ui(true)
 
 func _on_request_push_luck_double() -> void:
-	if not _waiting_for_push_luck:
-		return
+	request_push_your_luck()
+
+func _push_your_luck() -> void:
 	print_debug("[FLOW] push_luck_double_received :: arena=%d" % _run_state.arena_index)
 	if LEVEL3_ENABLED:
 		var lock_reason: String = _get_double_lock_reason()

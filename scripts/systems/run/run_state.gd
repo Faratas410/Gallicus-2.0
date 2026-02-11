@@ -30,6 +30,7 @@ var last_scar_arena_index: int = -1000
 
 var bet_chain_level: int = 1
 var current_bet_id: String = ""
+var scars_payload: Array[Dictionary] = []
 var level3_reward_tier: int = 1
 var level3_next_loss_hp_penalty: int = 0
 var level3_target_arenas: int = 0

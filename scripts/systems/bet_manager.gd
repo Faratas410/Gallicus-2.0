@@ -1,5 +1,7 @@
 extends Node
 
+const LEVEL3_DISABLED := true
+
 const BETS_PATH: String = "res://data/bets.gd"
 
 const BET_COWARD: String = "COWARD"
@@ -15,6 +17,9 @@ var _run_manager: Node
 var _arena: Node
 
 func _ready() -> void:
+	if LEVEL3_DISABLED:
+		queue_free()
+		return
 	_run_manager = get_parent()
 	_load_bets()
 	add_to_group("bet_manager")

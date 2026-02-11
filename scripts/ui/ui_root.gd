@@ -159,7 +159,6 @@ const POST_BET_TEXTS: Dictionary = {
 
 var _enemy_bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")
 var _bets_by_id: Dictionary = {}
-var _bet_manager: Node
 var _run_manager: Node
 var _arena: Node
 var _player: Node = null
@@ -2492,15 +2491,3 @@ func _get_enemies_alive() -> int:
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
-
-func _is_bet_active() -> bool:
-	var manager: Node = _get_bet_manager()
-	if manager and manager.has_method("is_bet_active"):
-		return manager.is_bet_active()
-	return false
-
-func _get_bet_manager() -> Node:
-	if _bet_manager and is_instance_valid(_bet_manager):
-		return _bet_manager
-	_bet_manager = get_tree().get_first_node_in_group("bet_manager")
-	return _bet_manager

@@ -18,7 +18,6 @@ var _arena: Node
 
 func _ready() -> void:
 	if LEVEL3_DISABLED:
-		queue_free()
 		return
 	_run_manager = get_parent()
 	_load_bets()
@@ -26,14 +25,16 @@ func _ready() -> void:
 	var player_damaged_callable: Callable = Callable(self, "_on_player_damaged")
 	if not GameEvents.player_damaged.is_connected(player_damaged_callable):
 		GameEvents.player_damaged.connect(player_damaged_callable)
-	var request_place_bet_callable: Callable = Callable(self, "_on_request_place_bet")
-	if GameEvents.has_signal("request_place_bet") and not GameEvents.request_place_bet.is_connected(request_place_bet_callable):
-		GameEvents.request_place_bet.connect(request_place_bet_callable)
 	var request_open_bet_callable: Callable = Callable(self, "_on_request_open_bet_ui")
 	if GameEvents.has_signal("request_open_bet_ui") and not GameEvents.request_open_bet_ui.is_connected(request_open_bet_callable):
 		GameEvents.request_open_bet_ui.connect(request_open_bet_callable)
 	_try_connect_player_damage()
 	_try_connect_arena()
+
+func _enter_tree() -> void:
+	if LEVEL3_DISABLED:
+		queue_free()
+		return
 
 func _try_connect_player_damage() -> void:
 	var player: Node = get_tree().get_first_node_in_group("player")
@@ -88,9 +89,6 @@ func place_bet(bet_id: String, _stake: int) -> bool:
 	GameEvents.bet_ui_closed.emit()
 	GameEvents.bet_closed.emit()
 	return true
-
-func _on_request_place_bet(bet_id: String, stake: int) -> void:
-	place_bet(bet_id, stake)
 
 func _on_request_open_bet_ui() -> void:
 	open_bet_ui_before_arena()

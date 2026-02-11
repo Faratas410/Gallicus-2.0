@@ -31,15 +31,20 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 
 ## Replacement mapping tracker (Patch 1 scaffold)
 
-### Buttons
-- Official assets selected: _TBD_
-- Legacy references to replace: _TBD_
-- Notes: _TBD_
+### Buttons (Main Menu pilot)
+- Official assets selected:
+  - `res://ui/official/atlas/at_button_primary_normal.tres` (`Rect2(0, 160, 48, 16)` from `UI assets (1x).png`)
+  - `res://ui/official/atlas/at_button_primary_hover.tres` (`Rect2(48, 160, 48, 16)`)
+  - `res://ui/official/atlas/at_button_primary_pressed.tres` (`Rect2(96, 160, 48, 16)`)
+  - `res://ui/official/atlas/at_button_primary_disabled.tres` (`Rect2(0, 160, 48, 16)`, muted via `modulate_color`)
+- Applied on scene: `res://scenes/Main.tscn` main menu buttons (`ContinueButton`, `NewGameButton`, `LoadGameButton`, `AchievementsButton`, `SettingsButton`, `CreditsButton`) through local `theme_override_styles/*`.
+- Legacy references replaced: removed main-menu dependency on `res://assets/ui/gallicus_ui_theme.tres` for button rendering in this scene.
 
-### Panels / Background boxes
-- Official assets selected: _TBD_
-- Legacy references to replace: _TBD_
-- Notes: _TBD_
+### Panels / Background boxes (Main Menu pilot)
+- Official assets selected:
+  - `res://ui/official/atlas/at_panel_main.tres` (`Rect2(0, 0, 48, 48)` from `UI assets (1x).png`)
+- Applied on scene: `res://scenes/Main.tscn` node `MenuLayer/MainMenu/CenterContainer/MainPanel` via `res://ui/official/styleboxes/sb_panel_main.tres`.
+- Legacy references replaced: no legacy panel texture remained on the visible main menu root container (new `MainPanel` is official atlas-backed).
 
 ### Banners / Dividers
 - Official assets selected: _TBD_

@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const LEVEL3_PASSIVE_MODE := true
+
 signal health_changed(current: int, max: int)
 signal died
 
@@ -32,6 +34,11 @@ func _ready() -> void:
 	add_to_group("enemies")
 	_reset_to_base()
 	_emit_health()
+	if LEVEL3_PASSIVE_MODE:
+		ai_locked = true
+		set_process(false)
+		set_physics_process(false)
+		return
 	if _is_level3_mode():
 		var visual: CanvasItem = get_node_or_null("Visual") as CanvasItem
 		if visual != null:
@@ -40,6 +47,10 @@ func _ready() -> void:
 		set_physics_process(false)
 
 func _physics_process(delta: float) -> void:
+	if LEVEL3_PASSIVE_MODE:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	if ai_locked:
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -68,6 +79,8 @@ func set_ai_locked(locked: bool) -> void:
 	ai_locked = locked
 
 func take_damage(amount: int) -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _is_dead:
 		return
 	if amount <= 0:
@@ -78,6 +91,8 @@ func take_damage(amount: int) -> void:
 		_die()
 
 func _die() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _is_dead:
 		return
 	_is_dead = true
@@ -91,6 +106,8 @@ func _die() -> void:
 	queue_free()
 
 func _try_touch_damage() -> void:
+	if LEVEL3_PASSIVE_MODE:
+		return
 	if _target == null or not is_instance_valid(_target):
 		return
 	if _touch_cd > 0.0:

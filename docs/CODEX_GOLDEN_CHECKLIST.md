@@ -1,3 +1,14 @@
+# Codex Golden Checklist
+
+**Status:** CANON  
+**Scope:** Non-negotiable technical, architecture, and patch invariants for Codex operations.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/FASE_10_FREEZE.md (operational freeze framing).
+
+## Overlap
+- Overlaps with: docs/FASE_10_FREEZE.md (operational freeze framing).
+
 🟡 GALlicus — GOLDEN CHECKLIST (Codex Edition · Level 3)
 
 Questa checklist definisce i limiti di sicurezza entro cui Codex può operare.

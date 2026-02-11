@@ -1,7 +1,18 @@
 # Codex 1.0 Gap Report
 
+**Status:** REPORT  
+**Scope:** Historical gap analysis snapshot for Codex 1.0 alignment and verification gaps.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** This is historical; not canon.
+
+Overlaps with: docs/level3_integrity_audit_report.md, docs/level3_open_questions_log.md.
+
+## Overlap
+- Overlaps with: docs/level3_integrity_audit_report.md, docs/level3_open_questions_log.md.
+
 ## Build status
-- Main.tscn avvia? **Non verificato** (richiede run in Godot 4.5.1).
+- Main.tscn avvia? **Non verificato** (richiede run in Godot 4.6).
 - Warning count: **Non verificato** (atteso 0, serve apertura in editor).
 
 ## Flow checklist
@@ -41,5 +52,5 @@
 - Presenza cartella `scripts/legacy/` (non verificato se referenziata nelle scene runtime).
 
 ## Stop list
-- Verifica avvio `Main.tscn` e warning count: richiede esecuzione di Godot 4.5.1.
+- Verifica avvio `Main.tscn` e warning count: richiede esecuzione di Godot 4.6.
 - QA runtime completo del flusso (8–15 min) per confermare checklist.

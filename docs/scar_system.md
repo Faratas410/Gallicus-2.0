@@ -1,3 +1,14 @@
+# Scar System
+
+**Status:** SUPPORTING  
+**Scope:** Design and behavior notes for scars as persistent run consequences.  
+**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/bet_progression.md, docs/meta_progression.md.
+
+## Overlap
+- Overlaps with: docs/bet_progression.md, docs/meta_progression.md.
+
 GALLICUS · SCAR SYSTEM
 
 Versione: 1.0 — Fondazionale

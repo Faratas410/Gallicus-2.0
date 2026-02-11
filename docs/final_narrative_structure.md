@@ -1,3 +1,14 @@
+# Final Narrative Structure
+
+**Status:** SUPPORTING  
+**Scope:** Narrative structure reference for run meaning, verdict framing, and diegetic closure.  
+**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/the_register.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+
+## Overlap
+- Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+
 GALLICUS · STRUTTURA NARRATIVA FINALE
 
 Versione: 1.0 — Lettura del Registro

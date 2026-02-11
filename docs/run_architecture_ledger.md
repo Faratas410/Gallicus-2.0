@@ -1,6 +1,13 @@
 # Run Architecture Ledger
 
-**Status:** canonical guardrails for the modular run flow.
+**Status:** CANON  
+**Scope:** Authoritative run architecture ownership ledger and extension rules.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/flow_wiring_contract.md, docs/FLOW_OFFICIAL_EA.md.
+
+## Overlap
+- Overlaps with: docs/flow_wiring_contract.md, docs/FLOW_OFFICIAL_EA.md.
 
 ## Core authority
 

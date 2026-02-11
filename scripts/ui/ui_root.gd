@@ -241,6 +241,14 @@ var _sentence_banner_sequence_id: int = 0
 var _is_signing: bool = false
 var _bet_confirm_default_text: String = ""
 var _phase_node_map: Dictionary = {}
+const _PHASE_CONTAINER_PATHS: Array[String] = [
+	"UI_RunRoot/Phase_INTRO",
+	"UI_RunRoot/Phase_FIRST_REACTION",
+	"UI_RunRoot/Phase_MID_CHOICE",
+	"UI_RunRoot/Phase_PUSH_YOUR_LUCK",
+	"UI_RunRoot/Phase_RESOLUTION",
+	"UI_RunRoot/Phase_END_RUN",
+]
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -252,6 +260,7 @@ func _ready() -> void:
 		_has_seen_controls = false
 		_controls_first_run_active = true
 	_init_phase_node_map()
+	_verify_phase_paths()
 	var coins_changed_callable: Callable = Callable(self, "_on_coins_changed")
 	if not GameEvents.coins_changed.is_connected(coins_changed_callable):
 		GameEvents.coins_changed.connect(coins_changed_callable)
@@ -473,20 +482,28 @@ func _init_phase_node_map() -> void:
 		RUN_PHASE_GAME_OVER: game_over_modal,
 	}
 
+func _verify_phase_paths() -> void:
+	for path: String in _PHASE_CONTAINER_PATHS:
+		if get_node_or_null(path) == null:
+			push_error("UI: missing node at %s" % path)
+
 func show_phase(phase: int) -> void:
-	if modals_root == null:
+	if _phase_node_map.is_empty():
+		push_error("UI: missing phase mapping for %s" % str(phase))
 		return
-	for child: Node in modals_root.get_children():
-		var control_child: Control = child as Control
-		if control_child == null:
-			continue
-		if control_child.name.begins_with("Phase_"):
-			control_child.visible = false
+	for mapped_phase_key: Variant in _phase_node_map.keys():
+		var mapped_phase: int = int(mapped_phase_key)
+		var phase_node: Control = _phase_node_map.get(mapped_phase, null) as Control
+		if phase_node != null:
+			phase_node.visible = false
 	var target: Control = _phase_node_map.get(phase, null) as Control
-	if target != null:
-		target.visible = true
-		_current_modal = target
-		print_debug("[FLOW][UI] show_phase=%d node=%s" % [phase, String(target.name)])
+	if target == null:
+		push_error("UI: missing phase mapping for %s" % str(phase))
+		_refresh_modal_dimmer()
+		return
+	target.visible = true
+	_current_modal = target
+	print_debug("[FLOW][UI] show_phase=%d node=%s" % [phase, String(target.name)])
 	_refresh_modal_dimmer()
 
 func _validate_ui_boot() -> bool:

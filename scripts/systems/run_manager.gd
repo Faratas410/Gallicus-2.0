@@ -1369,10 +1369,10 @@ func _validate_boot() -> bool:
 		else:
 			var required_ui_paths: Array[String] = [
 				"UI_RunRoot/Phase_INTRO",
+				"UI_RunRoot/Phase_FIRST_REACTION",
 				"UI_RunRoot/Phase_RESOLUTION",
 				"UI_RunRoot/Phase_MID_CHOICE",
 				"UI_RunRoot/Phase_PUSH_YOUR_LUCK",
-				"UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK",
 				"UI_RunRoot/Phase_END_RUN",
 			]
 			for ui_path: String in required_ui_paths:
@@ -4213,7 +4213,6 @@ func _enter_end_run(reason: String) -> void:
 func _enter_game_over() -> void:
 	if _is_game_over:
 		return
-	_emit_ui(_build_phase_ui_payload(RunPhase.GAME_OVER, "FINE CORSA", "Il verdetto è stato inciso."))
 	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null or _sanity_ui_root.get_node_or_null("UI_RunRoot/Phase_END_RUN") == null:
 		push_error("SANITY FAIL FLOW: ending panel missing")
@@ -4610,7 +4609,7 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 		return
 	_phase = next
 	if not _run_enter_phase(next):
-		push_error("RunManager: missing enter handler for phase %s" % [str(next)])
+		push_error("RunManager: missing enter handler for phase %s" % str(next))
 	if OS.is_debug_build() and reason != "":
 		print_debug("RunManager flow phase:", int(next), "-", reason)
 

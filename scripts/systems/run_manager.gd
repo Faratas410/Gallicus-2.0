@@ -1368,12 +1368,12 @@ func _validate_boot() -> bool:
 			errors.append("UI root missing at path 'UI'")
 		else:
 			var required_ui_paths: Array[String] = [
-				"Modals/BetModal",
-				"Modals/ResolveRitualModal",
-				"Modals/IntermediateChoiceModal",
-				"Modals/PushLuckModal",
-				"Modals/PushLuckModal/PushLuckPanel",
-				"Modals/GameOverModal",
+				"UI_RunRoot/Phase_INTRO",
+				"UI_RunRoot/Phase_RESOLUTION",
+				"UI_RunRoot/Phase_MID_CHOICE",
+				"UI_RunRoot/Phase_PUSH_YOUR_LUCK",
+				"UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK",
+				"UI_RunRoot/Phase_END_RUN",
 			]
 			for ui_path: String in required_ui_paths:
 				if _sanity_ui_root.get_node_or_null(ui_path) == null:
@@ -1787,7 +1787,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 func _start_resolve_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
-	if not _ensure_flow_panel("Modals/ResolveRitualModal", "resolve ritual"):
+	if not _ensure_flow_panel("UI_RunRoot/Phase_RESOLUTION", "resolve ritual"):
 		return
 	_resolving_ritual = true
 	_resolve_ritual_sequence_id += 1
@@ -3711,7 +3711,7 @@ func _open_intermediate_choice(bet_id: StringName) -> void:
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
 
 func _enter_mid_choice() -> void:
-	if not _ensure_flow_panel("Modals/IntermediateChoiceModal", "intermediate choice"):
+	if not _ensure_flow_panel("UI_RunRoot/Phase_MID_CHOICE", "intermediate choice"):
 		return
 	_waiting_for_intermediate_choice = true
 	_waiting_for_push_luck = false
@@ -3726,7 +3726,7 @@ func _open_push_luck_choice(bet_id: StringName) -> void:
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 
 func _enter_push_your_luck() -> void:
-	if not _ensure_flow_panel("Modals/PushLuckModal", "push luck choice"):
+	if not _ensure_flow_panel("UI_RunRoot/Phase_PUSH_YOUR_LUCK", "push luck choice"):
 		return
 	_waiting_for_push_luck = true
 	_close_audience_context_line()
@@ -4215,7 +4215,7 @@ func _enter_game_over() -> void:
 		return
 	_emit_ui(_build_phase_ui_payload(RunPhase.GAME_OVER, "FINE CORSA", "Il verdetto è stato inciso."))
 	_refresh_sanity_ui_root()
-	if _sanity_ui_root == null or _sanity_ui_root.get_node_or_null("Modals/GameOverModal") == null:
+	if _sanity_ui_root == null or _sanity_ui_root.get_node_or_null("UI_RunRoot/Phase_END_RUN") == null:
 		push_error("SANITY FAIL FLOW: ending panel missing")
 		get_tree().paused = true
 		return

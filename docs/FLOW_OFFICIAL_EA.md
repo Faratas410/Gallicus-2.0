@@ -1,5 +1,16 @@
 # GAL LICUS — Flow Ufficiale EA (Repo-Aligned Contract)
 
+**Status:** SUPPORTING  
+**Scope:** Repository-aligned Level 3 flow narrative and signal sequence reference.  
+**Source of truth:** docs/flow_wiring_contract.md, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/game_flow_v2.md, docs/game_flow.md, docs/flow_wiring_contract.md.
+- Candidate for archive after consolidation patch if fully subsumed by canonical flow contract.
+
+## Overlap
+- Overlaps with: docs/game_flow_v2.md, docs/game_flow.md, docs/flow_wiring_contract.md.
+- Candidate for archive after consolidation patch if fully subsumed by canonical flow contract.
+
 ## Scopo
 Documento canonico del flow “Level 3” implementato nel repo corrente.
 Serve per debugging, prevenzione regressioni e memoria dei passaggi.

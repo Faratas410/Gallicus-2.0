@@ -1,5 +1,16 @@
 # Gallicus — Level 3 Open Questions Log
 
+**Status:** REPORT  
+**Scope:** Historical open questions and unresolved risks captured during Level 3 hardening.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** This is historical; not canon.
+
+Overlaps with: docs/level3_integrity_audit_report.md, docs/codex_report_1_0_gap.md.
+
+## Overlap
+- Overlaps with: docs/level3_integrity_audit_report.md, docs/codex_report_1_0_gap.md.
+
 Documento tecnico di rischio/ambiguità. Non definisce il canone: raccoglie elementi da verificare o isolare.
 
 ## SECTION A — Architectural Ambiguities

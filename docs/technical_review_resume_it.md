@@ -1,5 +1,16 @@
 # Gallicus 2.0 — Review tecnico (resume per presentazione)
 
+**Status:** SUPPORTING  
+**Scope:** Italian technical review snapshot of architecture, systems, and status.  
+**Source of truth:** docs/run_architecture_ledger.md, docs/repo_map.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/technical_resume_level3_canonical_it.md, docs/repo_map.md.
+- Candidate for archive after consolidation patch if merged into one maintained summary.
+
+## Overlap
+- Overlaps with: docs/technical_resume_level3_canonical_it.md, docs/repo_map.md.
+- Candidate for archive after consolidation patch if merged into one maintained summary.
+
 ## 1) Cos’è il progetto in pratica
 Gallicus è un action/arena game in Godot 4.6 costruito intorno a un loop di **scommessa → arena → giudizio → scelta di continuazione**, dove il cuore non è l’ottimizzazione ma il rischio crescente. L’autorità del flow è centralizzata nel `RunManager`, mentre UI e scene visuali reagiscono agli eventi senza decidere la logica. 
 

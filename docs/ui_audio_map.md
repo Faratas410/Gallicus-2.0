@@ -1,5 +1,14 @@
 # UI Audio Map
 
+**Status:** SUPPORTING  
+**Scope:** UI-to-audio mood mapping for menu, arena, boss, and ending phases.  
+**Source of truth:** docs/audio_paths.md, docs/ui_official_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/audio_paths.md.
+
+## Overlap
+- Overlaps with: docs/audio_paths.md.
+
 ## Main menu / idle ambience
 - Ambient2.mp3
 - Ambient4.mp3

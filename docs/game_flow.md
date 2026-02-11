@@ -1,3 +1,18 @@
+# Game Flow
+
+**Status:** ARCHIVE-CANDIDATE  
+**Scope:** Legacy game flow write-up retained for traceability while superseded by canonical contracts.  
+**Source of truth:** docs/flow_wiring_contract.md, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** Superseded in practice by docs/flow_wiring_contract.md and docs/game_flow_v2.md.
+
+Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+- Candidate for archive after consolidation patch.
+
+## Overlap
+- Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+- Candidate for archive after consolidation patch.
+
 GALLICUS · GAME FLOW DIEGETICO
 
 Versione: 1.0 — Prima Incisione

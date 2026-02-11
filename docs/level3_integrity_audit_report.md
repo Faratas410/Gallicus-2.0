@@ -1,5 +1,16 @@
 # Level 3 Runtime Integrity Audit Report
 
+**Status:** REPORT  
+**Scope:** Historical Level 3 integrity audit findings and risk flags.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** This is historical; not canon.
+
+Overlaps with: docs/level3_open_questions_log.md, docs/codex_report_1_0_gap.md.
+
+## Overlap
+- Overlaps with: docs/level3_open_questions_log.md, docs/codex_report_1_0_gap.md.
+
 ## Scope
 - Audit statico (repo-wide) su runtime Level 3.
 - **Doc-only**: nessuna modifica codice.
@@ -218,4 +229,3 @@ Verifica target:
 4. **Il runtime è deterministico?**
    - **Non completamente determinabile staticamente** (UNCERTAIN).
    - Strutturalmente migliorato sul single-authority degli output `run_*`, ma i path paralleli intent riducono la garanzia di determinismo assoluto.
-

@@ -1,5 +1,14 @@
 # Audio path hygiene
 
+**Status:** SUPPORTING  
+**Scope:** Canonical runtime audio path policy and tracked Music assets.  
+**Source of truth:** docs/repo_map.md, docs/ui_audio_map.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/ui_audio_map.md.
+
+## Overlap
+- Overlaps with: docs/ui_audio_map.md.
+
 Canonical runtime audio location: `res://Music/`.
 
 Rules:

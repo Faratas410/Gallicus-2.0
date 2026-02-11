@@ -1,5 +1,14 @@
 # UI Official Ledger (Foundation Patch)
 
+**Status:** CANON  
+**Scope:** Official UI asset and theme ledger, including authority and replacement policy.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/repo_map.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/repo_map.md, docs/technical_review_resume_it.md.
+
+## Overlap
+- Overlaps with: docs/repo_map.md, docs/technical_review_resume_it.md.
+
 ## Scope
 - Patch type: Foundation only (no scene-wide texture replacement in this patch).
 - Source-of-truth UI asset folder: `res://UI Official/`.

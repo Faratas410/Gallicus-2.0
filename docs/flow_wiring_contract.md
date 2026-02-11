@@ -1,5 +1,14 @@
 # Flow Wiring Contract (Level 3)
 
+**Status:** CANON  
+**Scope:** Official runtime wiring contract for flow events, ownership boundaries, and phase transitions.  
+**Source of truth:** docs/run_architecture_ledger.md, docs/CODEX_GOLDEN_CHECKLIST.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+
+## Overlap
+- Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+
 This document is a repo-only wiring contract for debugging the Level 3 flow without Godot.
 It records the expected UI paths, required GameEvents signals, and connection points that
 RunManager depends on.

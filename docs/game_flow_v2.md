@@ -1,3 +1,14 @@
+# Game Flow V2
+
+**Status:** SUPPORTING  
+**Scope:** Updated flow narrative aligned to current Level 3 run loop.  
+**Source of truth:** docs/flow_wiring_contract.md, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow.md.
+
+## Overlap
+- Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow.md.
+
 GALLICUS · GAME FLOW — FASE 2
 
 Versione: 2.0 — Emergenza dell’Anomalia

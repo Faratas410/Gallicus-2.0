@@ -1,3 +1,14 @@
+# Felix Gallicus
+
+**Status:** DRAFT  
+**Scope:** Narrative dossier around Felix Gallicus as a diegetic extreme case.  
+**Source of truth:** docs/final_narrative_structure.md, docs/the_register.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/registry_corruption.md, docs/registry_silence.md.
+
+## Overlap
+- Overlaps with: docs/registry_corruption.md, docs/registry_silence.md.
+
 GALLICUS · FELIX GALLICUS
 
 Versione: 1.0 — Anomalia Registrata

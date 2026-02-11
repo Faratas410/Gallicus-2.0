@@ -1,5 +1,16 @@
 # GALLICUS · CORRUZIONE DEL REGISTRO
 
+**Status:** DRAFT  
+**Scope:** Narrative/fiction draft about Registro corruption scenarios and implications.  
+**Source of truth:** docs/the_register.md, docs/final_narrative_structure.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/registry_silence.md, docs/felix_gallicus.md.
+- Candidate for archive after consolidation patch if merged into final narrative canon.
+
+## Overlap
+- Overlaps with: docs/registry_silence.md, docs/felix_gallicus.md.
+- Candidate for archive after consolidation patch if merged into final narrative canon.
+
 Versione: 1.0 — Degradazione Controllata
 
 ## 0. PRINCIPIO FONDANTE

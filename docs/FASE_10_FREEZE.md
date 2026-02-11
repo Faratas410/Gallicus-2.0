@@ -1,5 +1,16 @@
 # FASE 10 — FREEZE
 
+**Status:** SUPPORTING  
+**Scope:** Operational freeze policy for patch scope and stop conditions.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/00_RISK_DRIVEN_DESIGN_BIBLE  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/CODEX_GOLDEN_CHECKLIST.md.
+- Candidate for archive after consolidation patch if freeze policy is merged into canon operations docs.
+
+## Overlap
+- Overlaps with: docs/CODEX_GOLDEN_CHECKLIST.md.
+- Candidate for archive after consolidation patch if freeze policy is merged into canon operations docs.
+
 ## TASK 10.1 — Freeze di design
 
 ### Scopo

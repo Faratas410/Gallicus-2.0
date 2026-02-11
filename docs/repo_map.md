@@ -1,6 +1,13 @@
 # Gallicus — Repo Map
 
-**Last updated:** 2026-01-30
+**Status:** CANON  
+**Scope:** Authoritative repository map and system ownership overview for runtime and UI.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/run_architecture_ledger.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/runtime_architecture_split.md, docs/technical_review_resume_it.md.
+
+## Overlap
+- Overlaps with: docs/runtime_architecture_split.md, docs/technical_review_resume_it.md.
 
 ## Project Invariants (Golden Checklist snapshot)
 - **Engine:** Godot 4.6

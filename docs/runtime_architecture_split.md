@@ -1,5 +1,14 @@
 # Runtime Architecture Split (Phase 3)
 
+**Status:** SUPPORTING  
+**Scope:** High-level split between canonical runtime and legacy/non-runtime code surfaces.  
+**Source of truth:** docs/run_architecture_ledger.md, docs/repo_map.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+
+## Overlap
+- Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+
 ## Runtime L3 (active path)
 
 Runtime L3 includes the active boot and orchestration path used by the game flow:

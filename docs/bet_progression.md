@@ -1,3 +1,14 @@
+# Bet Progression
+
+**Status:** SUPPORTING  
+**Scope:** Design doctrine for bet progression and risk escalation tone.  
+**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/game_flow_v2.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/game_flow.md, docs/game_flow_v2.md.
+
+## Overlap
+- Overlaps with: docs/game_flow.md, docs/game_flow_v2.md.
+
 GALLICUS · PROGRESSIONE DELLE SCOMMESSE
 
 Versione: 1.0 — Fondazionale

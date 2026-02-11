@@ -1,5 +1,14 @@
 # GALLICUS · META PROGRESSIONE
 
+**Status:** SUPPORTING  
+**Scope:** Meta-progression design boundaries and unlock philosophy.  
+**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/CODEX_GOLDEN_CHECKLIST.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/bet_progression.md, docs/scar_system.md.
+
+## Overlap
+- Overlaps with: docs/bet_progression.md, docs/scar_system.md.
+
 Versione: 1.0 — Persistenza della Conoscenza
 
 ## 0. PRINCIPIO FONDANTE

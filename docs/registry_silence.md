@@ -1,5 +1,16 @@
 # GALLICUS · IL SILENZIO DEL REGISTRO
 
+**Status:** DRAFT  
+**Scope:** Narrative/fiction draft about Registro silence patterns and classification failure.  
+**Source of truth:** docs/the_register.md, docs/final_narrative_structure.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/registry_corruption.md, docs/felix_gallicus.md.
+- Candidate for archive after consolidation patch if merged into final narrative canon.
+
+## Overlap
+- Overlaps with: docs/registry_corruption.md, docs/felix_gallicus.md.
+- Candidate for archive after consolidation patch if merged into final narrative canon.
+
 Versione: 1.0 — Evento Limite
 
 ## 0. PRINCIPIO FONDANTE

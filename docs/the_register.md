@@ -1,3 +1,14 @@
+# The Register
+
+**Status:** SUPPORTING  
+**Scope:** Diegetic authority definition for the Registro system and classification logic.  
+**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/final_narrative_structure.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+
+## Overlap
+- Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+
 GALLICUS · IL REGISTRO
 
 Versione: 1.0 — Autorità Diegetica

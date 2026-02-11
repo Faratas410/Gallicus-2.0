@@ -26,14 +26,14 @@ extends Node
 # - audience_context_line_emitted: emitted by RunManager; consumed by UIRoot.
 # - register_annotation: emitted by RunManager; consumed by UIRoot.
 # - condanna_registered: emitted by RunManager; consumed by MainMenu.
-# - bet_failed: emitted by RunManager/BetManager; consumed by UIRoot.
+# - bet_failed: emitted by RunManager; consumed by UIRoot.
 # - coins_changed: emitted by RunManager; consumed by UIRoot.
 # - tokens_changed: emitted by RunManager; consumed by UIRoot.
 # - enemy_killed: emitted by Arena/combat; consumed by RunManager.
 # - escalation_changed: emitted by RunManager; consumed by UIRoot.
 # - level_changed: emitted by RunManager; consumed by UIRoot.
 # - xp_changed: emitted by RunManager; consumed by UIRoot.
-# - bet_placed: emitted by RunManager/BetManager; consumed by UIRoot.
+# - bet_placed: emitted by RunManager; consumed by UIRoot.
 # - bet_confirmed: emitted by bet UI/flow; consumed by RunManager.
 # - bet_sealed: emitted by RunManager; consumed by RunManager/UI.
 # - bet_selected: emitted by UIRoot; consumed by RunManager.
@@ -67,7 +67,6 @@ extends Node
 # - player_level_changed: emitted by RunManager; consumed by UIRoot.
 # - upgrade_tokens_changed: emitted by RunManager; consumed by UIRoot.
 # - request_place_bet: emitted by UIRoot; consumed by RunManager.
-# - request_open_bet_ui: emitted by UI; consumed by RunManager.
 # - request_new_run: emitted by MainMenu; consumed by RunManager.
 # - request_reset_run: emitted by UI/debug; consumed by RunManager.
 # - request_retry_run: emitted by UI; consumed by RunManager.
@@ -138,7 +137,6 @@ signal player_xp_changed(xp: int, xp_to_next: int)
 signal player_level_changed(level: int)
 signal upgrade_tokens_changed(tokens: int)
 signal request_place_bet(bet_id: String, stake: int)
-signal request_open_bet_ui
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: GameEvents autoload exists; RunManager listens to request_new_run.
 # Postconditions: RunManager starts a new run and emits run_started for UI refresh.
@@ -213,7 +211,6 @@ func _ready() -> void:
 	_connect_noop(player_level_changed)
 	_connect_noop(upgrade_tokens_changed)
 	_connect_noop(request_place_bet)
-	_connect_noop(request_open_bet_ui)
 	_connect_noop(request_new_run)
 	_connect_noop(request_reset_run)
 	_connect_noop(request_retry_run)

@@ -1,3 +1,7 @@
+# LEVEL 3 RUNTIME:
+# This script must remain passive.
+# Gameplay logic preserved only for legacy mode.
+
 extends Node2D
 
 const LEVEL3_PASSIVE_MODE := true

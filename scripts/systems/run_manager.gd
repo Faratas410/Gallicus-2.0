@@ -1189,18 +1189,31 @@ var _session_id: String = ""
 var _run_counter: int = 0
 var _last_request: String = ""
 var _events_wired: bool = false
+var _last_phase_change_ms: int = 0
+var _last_ui_render_ms: int = 0
+var _last_activity_ms: int = 0
+var _watchdog_enabled: bool = true
+
+const WATCHDOG_STALL_MS: int = 6000
 
 func _ready() -> void:
 	print("RunManager ready")
 	_arena_themes = ArenaThemes.new()
 	_session_id = str(Time.get_unix_time_from_system())
 	_flow_logger.set_session(_session_id)
+	var now_ms: int = Time.get_ticks_msec()
+	_last_phase_change_ms = now_ms
+	_last_ui_render_ms = now_ms
+	_last_activity_ms = now_ms
 	add_to_group("run_manager")
 	_apply_saved_language()
 	if not _validate_game_events_signals():
 		return
 	_arena_layout_rng.randomize()
 	_connect_gameevents()
+
+func _process(_delta: float) -> void:
+	_watchdog_tick()
 
 
 func _connect_gameevents() -> void:
@@ -1421,7 +1434,7 @@ func request_new_game() -> void:
 	_start_new_run()
 
 func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase]) -> bool:
-	_last_request = request_name
+	_touch_request_activity(request_name)
 	for allowed_phase: RunPhase in allowed_phases:
 		if _phase == allowed_phase:
 			return true
@@ -1433,12 +1446,15 @@ func _flow_snapshot(note: String) -> String:
 	lines.push_back("note=%s" % note)
 	lines.push_back("phase=%s" % str(_phase))
 	lines.push_back("last_request=%s" % _last_request)
+	lines.push_back("last_phase_change_ms=%d" % _last_phase_change_ms)
+	lines.push_back("last_ui_render_ms=%d" % _last_ui_render_ms)
+	lines.push_back("last_activity_ms=%d" % _last_activity_ms)
 	lines.push_back("last_flow:\n%s" % _flow_logger.dump_last(60))
 	return "\n".join(lines)
 
 
 func request_confirm_pact() -> void:
-	_last_request = "request_confirm_pact()"
+	_touch_request_activity("request_confirm_pact()")
 	if not _waiting_for_bet or _phase != RunPhase.BET_PRESENT:
 		push_error("RunManager: request_confirm_pact in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_confirm_pact")])
 		return
@@ -1449,7 +1465,7 @@ func request_confirm_pact() -> void:
 	_confirm_pact_with_bet_id(pending_bet_id)
 
 func request_choose_mid(index: int) -> void:
-	_last_request = "request_choose_mid(index=%d)" % index
+	_touch_request_activity("request_choose_mid(index=%d)" % index)
 	if not _waiting_for_intermediate_choice or _phase != RunPhase.INTERMEDIATE_CHOICE:
 		push_error("RunManager: request_choose_mid in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_choose_mid")])
 		return
@@ -1462,26 +1478,26 @@ func request_choose_mid(index: int) -> void:
 	push_error("RunManager: request_choose_mid invalid index %d\nSNAPSHOT:\n%s" % [index, _flow_snapshot("request_choose_mid_invalid")])
 
 func request_push_your_luck() -> void:
-	_last_request = "request_push_your_luck()"
+	_touch_request_activity("request_push_your_luck()")
 	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
 		push_error("RunManager: request_push_your_luck in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_push_your_luck")])
 		return
 	_push_your_luck()
 
 func request_take_payout() -> void:
-	_last_request = "request_take_payout()"
+	_touch_request_activity("request_take_payout()")
 	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
 		push_error("RunManager: request_take_payout in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_take_payout")])
 		return
 	_take_payout()
 
 func request_quit_to_menu() -> void:
-	_last_request = "request_show_main_menu()"
+	_touch_request_activity("request_show_main_menu()")
 	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
 	set_phase(RunPhase.MAIN_MENU)
 
 func request_load_continue() -> void:
-	_last_request = "request_load_continue()"
+	_touch_request_activity("request_load_continue()")
 	if _phase != RunPhase.MAIN_MENU and _phase != RunPhase.NONE:
 		push_error("RunManager: request_load_continue in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_load_continue")])
 		return
@@ -1497,6 +1513,7 @@ func start_new_run() -> void:
 	request_new_game()
 
 func _start_new_run() -> void:
+	_watchdog_enabled = true
 	_run_counter += 1
 	_flow_logger.set_run_id(_run_counter)
 	_run_state.run_start_time_msec = Time.get_ticks_msec()
@@ -3029,21 +3046,21 @@ func _start_next_arena() -> void:
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
-	_last_request = "request_new_run()"
+	_touch_request_activity("request_new_run()")
 	if not _guard_request_phase("request_new_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
 		return
 	_save_system.clear_run()
 	request_new_game()
 
 func _on_request_reset_run() -> void:
-	_last_request = "request_reset_run()"
+	_touch_request_activity("request_reset_run()")
 	if not _guard_request_phase("request_reset_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
 		return
 	_save_system.clear_run()
 	request_new_game()
 
 func _on_request_retry_run() -> void:
-	_last_request = "request_retry_run()"
+	_touch_request_activity("request_retry_run()")
 	if not _guard_request_phase("request_retry_run", [RunPhase.GAME_OVER]):
 		return
 	if LEVEL3_ENABLED:
@@ -3052,20 +3069,20 @@ func _on_request_retry_run() -> void:
 	retry_current_bet()
 
 func _on_request_continue_run() -> void:
-	_last_request = "request_continue_run()"
+	_touch_request_activity("request_continue_run()")
 	if not _guard_request_phase("request_continue_run", [RunPhase.MAIN_MENU, RunPhase.NONE]):
 		return
 	request_load_continue()
 
 func _on_request_show_main_menu() -> void:
-	_last_request = "request_show_main_menu()"
+	_touch_request_activity("request_show_main_menu()")
 	if not _guard_request_phase("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION, RunPhase.GAME_OVER]):
 		return
 	print_debug("[FLOW] request_show_main_menu_received")
 	request_quit_to_menu()
 
 func _on_request_intro_apply_seed(seed_text: String) -> void:
-	_last_request = "request_intro_apply_seed(seed_text=%s)" % seed_text
+	_touch_request_activity("request_intro_apply_seed(seed_text=%s)" % seed_text)
 	if not _guard_request_phase("request_intro_apply_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
 		return
 	var normalized_text: String = seed_text.strip_edges()
@@ -3082,7 +3099,7 @@ func _on_request_intro_apply_seed(seed_text: String) -> void:
 		_enter_bet_present()
 
 func _on_request_intro_select_bet(bet_id: String) -> void:
-	_last_request = "request_intro_select_bet(bet_id=%s)" % bet_id
+	_touch_request_activity("request_intro_select_bet(bet_id=%s)" % bet_id)
 	if not _guard_request_phase("request_intro_select_bet", [RunPhase.BET_PRESENT]):
 		return
 	if not _waiting_for_bet:
@@ -3105,13 +3122,13 @@ func _on_request_intro_select_bet(bet_id: String) -> void:
 	_enter_bet_present()
 
 func _on_request_intro_confirm() -> void:
-	_last_request = "request_intro_confirm()"
+	_touch_request_activity("request_intro_confirm()")
 	if not _guard_request_phase("request_intro_confirm", [RunPhase.BET_PRESENT]):
 		return
 	request_confirm_pact()
 
 func _on_request_intro_buy_token() -> void:
-	_last_request = "request_intro_buy_token()"
+	_touch_request_activity("request_intro_buy_token()")
 	if not _guard_request_phase("request_intro_buy_token", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
 		return
 	if not purchase_token():
@@ -3123,21 +3140,21 @@ func _on_request_intro_buy_token() -> void:
 		_enter_bet_present()
 
 func _on_request_mid_choice_select(index: int) -> void:
-	_last_request = "request_mid_choice_select(index=%d)" % index
+	_touch_request_activity("request_mid_choice_select(index=%d)" % index)
 	_flow_logger.log_request("request_mid_choice_select", "index=%d" % index)
 	if not _guard_request_phase("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE]):
 		return
 	request_choose_mid(index)
 
 func _on_request_pyl_cashout() -> void:
-	_last_request = "request_pyl_cashout()"
+	_touch_request_activity("request_pyl_cashout()")
 	_flow_logger.log_request("request_pyl_cashout")
 	if not _guard_request_phase("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK]):
 		return
 	request_take_payout()
 
 func _on_request_pyl_condanna() -> void:
-	_last_request = "request_pyl_condanna()"
+	_touch_request_activity("request_pyl_condanna()")
 	_flow_logger.log_request("request_pyl_condanna")
 	if not _guard_request_phase("request_pyl_condanna", [RunPhase.PUSH_YOUR_LUCK]):
 		return
@@ -3147,20 +3164,20 @@ func _on_request_pyl_condanna() -> void:
 	_handle_push_luck_condanna()
 
 func _on_request_pyl_double() -> void:
-	_last_request = "request_pyl_double()"
+	_touch_request_activity("request_pyl_double()")
 	_flow_logger.log_request("request_pyl_double")
 	if not _guard_request_phase("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK]):
 		return
 	request_push_your_luck()
 
 func _on_request_end_run_restart() -> void:
-	_last_request = "request_end_run_restart()"
+	_touch_request_activity("request_end_run_restart()")
 	if not _guard_request_phase("request_end_run_restart", [RunPhase.GAME_OVER]):
 		return
 	request_new_game()
 
 func _on_request_end_run_next_bet() -> void:
-	_last_request = "request_end_run_next_bet()"
+	_touch_request_activity("request_end_run_next_bet()")
 	if not _guard_request_phase("request_end_run_next_bet", [RunPhase.GAME_OVER]):
 		return
 	if LEVEL3_ENABLED:
@@ -3169,13 +3186,13 @@ func _on_request_end_run_next_bet() -> void:
 	retry_current_bet()
 
 func _on_request_end_run_quit() -> void:
-	_last_request = "request_end_run_quit()"
+	_touch_request_activity("request_end_run_quit()")
 	if not _guard_request_phase("request_end_run_quit", [RunPhase.GAME_OVER]):
 		return
 	request_quit_to_menu()
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
-	_last_request = "request_place_bet(bet_id=%s)" % bet_id
+	_touch_request_activity("request_place_bet(bet_id=%s)" % bet_id)
 	if not _guard_request_phase("request_place_bet", [RunPhase.BET_PRESENT]):
 		return
 	if not LEVEL3_ENABLED:
@@ -3184,7 +3201,7 @@ func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	select_bet(StringName(bet_id))
 
 func _on_request_intermediate_choice(choice_id: String) -> void:
-	_last_request = "request_intermediate_choice(choice_id=%s)" % choice_id
+	_touch_request_activity("request_intermediate_choice(choice_id=%s)" % choice_id)
 	if not _guard_request_phase("request_intermediate_choice", [RunPhase.INTERMEDIATE_CHOICE]):
 		return
 	var normalized_choice: String = choice_id.strip_edges().to_lower()
@@ -3240,7 +3257,7 @@ func _on_post_arena_choice_selected(choice_id: StringName) -> void:
 	_handle_push_luck_condanna()
 
 func _on_request_push_luck_cashout() -> void:
-	_last_request = "request_push_luck_cashout()"
+	_touch_request_activity("request_push_luck_cashout()")
 	if not _guard_request_phase("request_push_luck_cashout", [RunPhase.PUSH_YOUR_LUCK]):
 		return
 	request_take_payout()
@@ -3323,7 +3340,7 @@ func _handle_push_luck_condanna() -> void:
 	_open_bet_ui(true)
 
 func _on_request_push_luck_double() -> void:
-	_last_request = "request_push_luck_double()"
+	_touch_request_activity("request_push_luck_double()")
 	if not _guard_request_phase("request_push_luck_double", [RunPhase.PUSH_YOUR_LUCK]):
 		return
 	request_push_your_luck()
@@ -3397,7 +3414,7 @@ func _push_your_luck() -> void:
 	_spawn_wave_or_enemies()
 
 func _on_request_set_run_seed(run_seed: int) -> void:
-	_last_request = "request_set_run_seed(run_seed=%d)" % run_seed
+	_touch_request_activity("request_set_run_seed(run_seed=%d)" % run_seed)
 	if not _guard_request_phase("request_set_run_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
 		return
 	_run_state.debug_seed_override_active = true
@@ -3407,7 +3424,7 @@ func _on_request_set_run_seed(run_seed: int) -> void:
 		start_new_run()
 
 func _on_request_clear_run_seed() -> void:
-	_last_request = "request_clear_run_seed()"
+	_touch_request_activity("request_clear_run_seed()")
 	if not _guard_request_phase("request_clear_run_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
 		return
 	_run_state.debug_seed_override_active = false
@@ -3417,7 +3434,7 @@ func _on_request_clear_run_seed() -> void:
 		start_new_run()
 
 func _on_request_skip_arena_resolution() -> void:
-	_last_request = "request_skip_arena_resolution()"
+	_touch_request_activity("request_skip_arena_resolution()")
 	if not _guard_request_phase("request_skip_arena_resolution", [RunPhase.RESOLUTION, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK]):
 		return
 	if _run_state.run_is_over or _is_game_over:
@@ -3750,7 +3767,7 @@ func _on_run_failed() -> void:
 	_on_request_fail_run("RUN_FAILED")
 
 func _on_request_fail_run(reason: String = "") -> void:
-	_last_request = "request_fail_run(reason=%s)" % reason
+	_touch_request_activity("request_fail_run(reason=%s)" % reason)
 	if not _guard_request_phase("request_fail_run", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET]):
 		return
 	if _is_game_over or _run_failed_emitted:
@@ -3892,6 +3909,9 @@ func _build_push_luck_ui_payload(bet_id: StringName) -> RunUiPayload:
 func _emit_ui(payload: RunUiPayload) -> void:
 	if payload == null:
 		return
+	var now_ms: int = Time.get_ticks_msec()
+	_last_ui_render_ms = now_ms
+	_last_activity_ms = now_ms
 	_flow_logger.log_ui("emit_payload", "phase=%s" % str(payload.phase))
 	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null:
@@ -4743,12 +4763,48 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 		return
 	var previous_phase: RunPhase = _phase
 	_flow_logger.log_phase(str(next), "from=%s reason=%s" % [str(previous_phase), reason])
+	var now_ms: int = Time.get_ticks_msec()
+	_last_phase_change_ms = now_ms
+	_last_activity_ms = now_ms
 	_phase = next
 	if not _run_enter_phase(next):
 		push_error("RunManager: missing _enter_* for phase %s\nLAST_FLOW:\n%s" % [str(next), _flow_logger.dump_last(30)])
 		return
 	if OS.is_debug_build() and reason != "":
 		print_debug("RunManager flow phase:", int(next), "-", reason)
+
+func _touch_request_activity(request_name: String) -> void:
+	_last_request = request_name
+	_last_activity_ms = Time.get_ticks_msec()
+
+func _watchdog_stall_hint(now_ms: int) -> String:
+	var phase_age_ms: int = now_ms - _last_phase_change_ms
+	var ui_age_ms: int = now_ms - _last_ui_render_ms
+	var activity_age_ms: int = now_ms - _last_activity_ms
+	if phase_age_ms > WATCHDOG_STALL_MS and ui_age_ms > WATCHDOG_STALL_MS:
+		if _last_request == "":
+			return "request not received"
+		return "phase handler missing"
+	if phase_age_ms <= WATCHDOG_STALL_MS and ui_age_ms > WATCHDOG_STALL_MS:
+		return "UI render missing"
+	if phase_age_ms > WATCHDOG_STALL_MS and ui_age_ms <= WATCHDOG_STALL_MS:
+		return "likely waiting for input"
+	if activity_age_ms > WATCHDOG_STALL_MS:
+		return "request not received"
+	return "unknown"
+
+func _watchdog_tick() -> void:
+	if not _watchdog_enabled:
+		return
+	if _phase == RunPhase.NONE or _phase == RunPhase.MAIN_MENU:
+		return
+	var now_ms: int = Time.get_ticks_msec()
+	if now_ms - _last_activity_ms <= WATCHDOG_STALL_MS:
+		return
+	var stall_ms: int = now_ms - _last_activity_ms
+	var hint: String = _watchdog_stall_hint(now_ms)
+	push_error("WATCHDOG: stalled for %dms | hint=%s | %s" % [stall_ms, hint, _flow_snapshot("stall")])
+	_watchdog_enabled = false
 
 func _has_enter_phase_handler(next: RunPhase) -> bool:
 	match next:

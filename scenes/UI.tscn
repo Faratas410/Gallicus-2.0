@@ -123,10 +123,18 @@ theme_override_constants/separation = 8
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
 
-[node name="BetBadgeTitle" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText"]
+[node name="BetBadgeTitlePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="BetBadgeTitle" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText/BetBadgeTitlePanel"]
 text = "SCOMMESSA"
 
-[node name="BetBadgeValue" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText"]
+[node name="BetBadgeValuePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="BetBadgeValue" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeText/BetBadgeValuePanel"]
 autowrap_mode = 2
 text = "—"
 
@@ -379,7 +387,17 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 
-[node name="Lbl_DebugOverlay" type="RichTextLabel" parent="UI_RunRoot/DebugOverlay"]
+[node name="Lbl_DebugOverlayPanel" type="PanelContainer" parent="UI_RunRoot/DebugOverlay"]
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = -8.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="Lbl_DebugOverlay" type="RichTextLabel" parent="UI_RunRoot/DebugOverlay/Lbl_DebugOverlayPanel"]
 unique_name_in_owner = true
 mouse_filter = 2
 anchor_right = 1.0
@@ -483,13 +501,21 @@ offset_right = -24.0
 offset_bottom = -24.0
 theme_override_constants/separation = 12
 
-[node name="Lbl_FIRST_REACTION_TITLE" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
+[node name="Lbl_FIRST_REACTION_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_FIRST_REACTION_TITLE" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "IL PATTO È SIGILLATO."
 
-[node name="Lbl_FIRST_REACTION_BODY" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
+[node name="Lbl_FIRST_REACTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_FIRST_REACTION_BODY" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel"]
 horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
@@ -533,13 +559,21 @@ offset_right = -24.0
 offset_bottom = -24.0
 theme_override_constants/separation = 12
 
-[node name="Lbl_RESOLUTION_TITLE" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+[node name="Lbl_RESOLUTION_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_RESOLUTION_TITLE" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "RITO DI GIUDIZIO"
 
-[node name="Lbl_RESOLUTION_BODY" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+[node name="Lbl_RESOLUTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_RESOLUTION_BODY" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel"]
 horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
@@ -585,7 +619,11 @@ offset_right = -16.0
 offset_bottom = -16.0
 theme_override_constants/separation = 12
 
-[node name="Lbl_MID_CHOICE_TITLE" type="Label" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
+[node name="Lbl_MID_CHOICE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_MID_CHOICE_TITLE" type="Label" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLEPanel"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
@@ -665,18 +703,30 @@ offset_right = 0.0
 offset_bottom = 0.0
 theme_override_constants/separation = 12
 
-[node name="Lbl_INTRO_TITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
+[node name="Lbl_INTRO_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_TITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLEPanel"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "Scommessa Arena"
 
-[node name="Lbl_INTRO_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
+[node name="Lbl_INTRO_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel"]
 visible = false
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "ARENA SPECIALE"
 
-[node name="Lbl_INTRO_HINT" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
+[node name="Lbl_INTRO_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_HINT" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINTPanel"]
 visible = false
 autowrap_mode = 2
 size_flags_horizontal = 3
@@ -688,7 +738,11 @@ text = "FOCUS: Leggi prima la CONDANNA."
 [node name="SeedRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 theme_override_constants/separation = 6
 
-[node name="Lbl_INTRO_BODY" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
+[node name="Lbl_INTRO_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_BODY" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODYPanel"]
 text = "Seed (opzionale)"
 
 [node name="SeedInput" type="LineEdit" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
@@ -704,7 +758,11 @@ text = "APPLICA"
 
 [node name="StakeRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 
-[node name="Lbl_INTRO_BODY_STAKE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow"]
+[node name="Lbl_INTRO_BODY_STAKEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_BODY_STAKE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKEPanel"]
 text = "Stake"
 
 [node name="StakeInput" type="SpinBox" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow"]
@@ -753,7 +811,11 @@ visible = false
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="Lbl_INTRO_FOOTER" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
+[node name="Lbl_INTRO_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_FOOTER" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel"]
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Selezione: -"
@@ -783,7 +845,11 @@ custom_minimum_size = Vector2(0, 40)
 size_flags_horizontal = 3
 text = "BUY TOKEN (100c)"
 
-[node name="Lbl_INTRO_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox"]
+[node name="Lbl_INTRO_CHOICE_0Panel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Lbl_INTRO_CHOICE_0Panel"]
 visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -791,7 +857,11 @@ theme_override_font_sizes/font_size = 18
 modulate = Color(0.75, 0.72, 0.6, 1)
 text = "Disponibile dopo l'arena in corso."
 
-[node name="Lbl_INTRO_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow"]
+[node name="Lbl_INTRO_CHOICE_1Panel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_INTRO_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/Lbl_INTRO_CHOICE_1Panel"]
 autowrap_mode = 2
 clip_text = true
 theme_override_font_sizes/font_size = 18
@@ -840,28 +910,48 @@ offset_right = -12.0
 offset_bottom = -12.0
 theme_override_constants/separation = 12
 
-[node name="Lbl_PUSH_YOUR_LUCK_TITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+[node name="Lbl_PUSH_YOUR_LUCK_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_TITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "PUSH YOUR LUCK"
 
-[node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+[node name="Lbl_PUSH_YOUR_LUCK_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel"]
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Incassa ora o raddoppia il rischio"
 
-[node name="Lbl_PUSH_YOUR_LUCK_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+[node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel"]
 visible = false
 theme_override_font_sizes/font_size = 20
 text = ""
 
-[node name="Lbl_PUSH_YOUR_LUCK_HINT" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+[node name="Lbl_PUSH_YOUR_LUCK_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_HINT" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINTPanel"]
 visible = false
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
 text = ""
 
-[node name="Lbl_PUSH_YOUR_LUCK_FOOTER" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+[node name="Lbl_PUSH_YOUR_LUCK_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_FOOTER" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTERPanel"]
 autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -886,7 +976,11 @@ custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "INCASSA ORA"
 
-[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
+[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel"]
 visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -907,7 +1001,11 @@ custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "CONDANNA"
 
-[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
+[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel"]
 horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 16
@@ -927,7 +1025,11 @@ custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "RADDOPPIA"
 
-[node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
+[node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel"]
 visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -959,12 +1061,20 @@ offset_right = -12.0
 offset_bottom = -12.0
 theme_override_constants/separation = 8
 
-[node name="ScarsDetailTitle" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
+[node name="ScarsDetailTitlePanel" type="PanelContainer" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="ScarsDetailTitle" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTitlePanel"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "DETTAGLIO CICATRICI"
 
-[node name="ScarsDetailText" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
+[node name="ScarsDetailTextPanel" type="PanelContainer" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="ScarsDetailText" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel"]
 autowrap_mode = 2
 clip_text = true
 text = ""
@@ -1018,23 +1128,39 @@ offset_right = -12.0
 offset_bottom = -12.0
 theme_override_constants/separation = 10
 
-[node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+[node name="Lbl_END_RUN_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLEPanel"]
 theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "VERDETTO"
 
-[node name="Lbl_END_RUN_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+[node name="Lbl_END_RUN_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel"]
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
 text = ""
 
-[node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+[node name="Lbl_END_RUN_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODYPanel"]
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = ""
 
-[node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+[node name="Lbl_END_RUN_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel"]
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = ""
@@ -1043,20 +1169,36 @@ text = ""
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="Lbl_END_RUN_PACTS_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Lbl_END_RUN_PACTS_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_PACTS_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_TITLEPanel"]
 text = "PATTI FIRMATI"
 
-[node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Lbl_END_RUN_PACTS_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel"]
 size_flags_horizontal = 3
 bbcode_enabled = false
 fit_content = false
 autowrap_mode = 2
 text = ""
 
-[node name="Lbl_END_RUN_CONDANNE_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Lbl_END_RUN_CONDANNE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_CONDANNE_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_TITLEPanel"]
 text = "CONDANNE"
 
-[node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Lbl_END_RUN_CONDANNE_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel"]
 size_flags_horizontal = 3
 bbcode_enabled = false
 fit_content = false
@@ -1068,10 +1210,18 @@ visible = false
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="Lbl_END_RUN_CROWD_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
+[node name="Lbl_END_RUN_CROWD_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_CROWD_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel"]
 text = "ULTIMA VOCE"
 
-[node name="Lbl_END_RUN_CROWD_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
+[node name="Lbl_END_RUN_CROWD_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_CROWD_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel"]
 size_flags_horizontal = 3
 autowrap_mode = 2
 clip_text = true
@@ -1090,7 +1240,11 @@ theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 32
 
-[node name="Lbl_END_RUN_FOOTER" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN"]
+[node name="Lbl_END_RUN_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="Lbl_END_RUN_FOOTER" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true

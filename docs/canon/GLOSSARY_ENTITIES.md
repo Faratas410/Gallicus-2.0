@@ -15,6 +15,10 @@ Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_si
 - [Scar](#scar)
 - [Bet](#bet)
 - [Meta progression](#meta-progression)
+- [Run](#run)
+- [End state](#end-state)
+- [Condemnation](#condemnation)
+- [Pact](#pact)
 
 ## The Register
 
@@ -99,6 +103,55 @@ Details: Persistono unlock/gating/reward secondo regole documentate.
 Appears in: Meta
 
 Related: Bet progression, Scar, Core loop
+
+
+## Run
+
+Type: Runtime concept
+
+One-liner: Un ciclo completo di gioco governato da un solo RunManager, dall’avvio all’esito finale.
+
+Details: Include selezione/rischio, progressione di fase e chiusura; è l’unità operativa canonica per stato e outcome.
+
+Appears in: Runtime / Mechanics
+
+Related: Bet, Scar, End state
+
+## End state
+
+Type: Outcome
+
+One-liner: Esito terminale di una run, con chiusura amministrativa del circuito decisionale.
+
+Details: Comprende fallimento/successo/chiusura registrale secondo i vincoli definiti nei canon meccanici e narrativi.
+
+Appears in: Run / Mechanics / Lore
+
+Related: Run, The Register, Condemnation
+
+## Condemnation
+
+Type: Outcome class
+
+One-liner: Classe di esito negativo/irreversibile usata per formalizzare il costo finale di una traiettoria di rischio.
+
+Details: Citata in design come “condanna”; non è premio, ma certificazione di perdita coerente con il patto accettato.
+
+Appears in: Mechanics / Lore
+
+Related: End state, Scar, Bet
+
+## Pact
+
+Type: System contract
+
+One-liner: Accordo di rischio esplicito che vincola la run a condizioni e conseguenze definite.
+
+Details: Presente nel flow runtime e nella UI come momento di firma; abilita payoff solo con tradeoff irreversibili.
+
+Appears in: Runtime / Mechanics / UI
+
+Related: Bet, Run, Condemnation
 
 ## SOURCE: Glossary extraction notes
 

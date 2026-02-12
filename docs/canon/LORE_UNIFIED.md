@@ -8,12 +8,12 @@ Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_si
 
 ## Index
 
-- [Premessa / tono](#premessa--tono)
-- [The Register](#the-register)
-- [Felix Gallicus](#felix-gallicus)
-- [Registry: Silence / Corruption](#registry-silence--corruption)
-- [Final narrative structure](#final-narrative-structure)
-- [Merged sources (verbatim)](#source-docsthe_registermd)
+- [SOURCE: the_register](#source-docstheregistermd)
+- [SOURCE: felix_gallicus](#source-docsfelixgallicusmd)
+- [Registry: Silence](#source-docsregistrysilencemd)
+- [Registry: Corruption](#source-docsregistrycorruptionmd)
+- [Moved from Mechanics (boundary cleanup)](#source-moved-from-docscanonmechanicsunifiedmd)
+- [Final narrative structure](#source-docsfinalnarrativestructuremd)
 
 ## SOURCE: docs/the_register.md
 
@@ -865,6 +865,39 @@ La corruzione accade, non si cerca.
 La perde quando deve continuare a funzionare  
 senza poter più garantire una risposta.**
 
+
+## SOURCE: moved from docs/canon/MECHANICS_UNIFIED.md
+
+### Registry references (moved from Mechanics)
+
+Il Registro:
+
+- riconosce pattern già osservati
+- introduce riferimenti a precedenti
+- modifica il linguaggio in modo impercettibile
+
+Non dice:
+
+“Hai già fatto questo.”
+
+Ma suggerisce:
+
+“Questo profilo è noto.”
+
+### Felix in meta-progression (moved from Mechanics)
+
+Felix Gallicus non sblocca nulla direttamente.
+
+Ma:
+
+- la sua esistenza giustifica nuove anomalie
+- abilita configurazioni non classificabili
+- permette al Registro di “tollerare” deviazioni maggiori
+
+Felix è:
+
+una scusa storica per spingere il sistema oltre se stesso.
+
 ## SOURCE: docs/final_narrative_structure.md
 
 # Final Narrative Structure
@@ -1105,4 +1138,3 @@ perché la storia è già accaduta.
 
 Il Registro stabilisce solo
 che non puoi più cambiarla.**
-

@@ -1,10 +1,10 @@
 # Level3 Open Questions Log
 
-# DEPRECATED — moved to docs/reports/INDEX.md
+# DEPRECATED — moved to docs/reports/level3_open_questions_log.md
 
-This file is kept for history. Canon lives at: `docs/reports/INDEX.md`.
+This file is kept for history. Canon lives at: `docs/reports/level3_open_questions_log.md`.
 
-Content migrated to `docs/reports/INDEX.md` in the documentation consolidation patch (canon by category).
+Content migrated to `docs/reports/level3_open_questions_log.md` in the documentation consolidation patch (canon by category).
 
 ## Legacy index
 

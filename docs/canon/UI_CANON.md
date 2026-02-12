@@ -8,11 +8,11 @@ Last merged from: docs/ui_official_ledger.md, docs/ui_audio_map.md, docs/audio_p
 
 ## Index
 
-- [UI rules](#ui-rules)
-- [Theme/font source of truth](#themefont-source-of-truth)
-- [UI nodes canonical paths](#ui-nodes-canonical-paths)
-- [UI audio mapping](#ui-audio-mapping)
-- [Merged sources (verbatim)](#source-docsui_official_ledgermd)
+- [Scope](#scope)
+- [Non-negotiable visual rules](#non-negotiable-visual-rules)
+- [Theme assignment point](#theme-assignment-point-single-authority)
+- [Main menu / idle ambience](#main-menu-idle-ambience)
+- [Arena tension](#arena-tension)
 
 ## SOURCE: docs/ui_official_ledger.md
 

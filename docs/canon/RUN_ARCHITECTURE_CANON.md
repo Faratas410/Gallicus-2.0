@@ -8,11 +8,11 @@ Last merged from: docs/run_architecture_ledger.md, docs/runtime_architecture_spl
 
 ## Index
 
-- [Autorità e invarianti runtime](#autorità-e-invarianti-runtime)
-- [Contratto di wiring](#contratto-di-wiring)
-- [Run phases](#run-phases)
-- [Debug/watchdog/flow logger](#debugwatchdogflow-logger)
-- [Merged sources (verbatim)](#source-docsrun_architecture_ledgermd)
+- [Core authority](#core-authority)
+- [Phase contract](#phase-contract)
+- [Event rules (GameEvents)](#event-rules-gameevents)
+- [GameEvents signals](#gameevents-signals-required-for-level-3-flow)
+- [Runtime L3 (active path)](#runtime-l3-active-path)
 
 ## SOURCE: docs/run_architecture_ledger.md
 

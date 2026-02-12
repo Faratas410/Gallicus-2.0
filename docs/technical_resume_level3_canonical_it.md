@@ -1,10 +1,10 @@
 # Technical Resume Level3 Canonical It
 
-# DEPRECATED — moved to docs/reports/INDEX.md
+# DEPRECATED — moved to docs/reports/technical_resume_level3_canonical_it.md
 
-This file is kept for history. Canon lives at: `docs/reports/INDEX.md`.
+This file is kept for history. Canon lives at: `docs/reports/technical_resume_level3_canonical_it.md`.
 
-Content migrated to `docs/reports/INDEX.md` in the documentation consolidation patch (canon by category).
+Content migrated to `docs/reports/technical_resume_level3_canonical_it.md` in the documentation consolidation patch (canon by category).
 
 ## Legacy index
 

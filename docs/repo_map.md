@@ -2,7 +2,7 @@
 
 **Status:** CANON  
 **Scope:** Authoritative repository map and system ownership overview for runtime and UI.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/run_architecture_ledger.md  
+**Source of truth:** docs/canon/PROCESS_AND_FREEZE.md, docs/canon/RUN_ARCHITECTURE_CANON.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/runtime_architecture_split.md, docs/technical_review_resume_it.md.
 
@@ -78,7 +78,7 @@ Core scenes (examples):
 - `res://scenes/legacy/` and `res://scripts/legacy/` are **not referenced by the entry point** (`Main.tscn`).
 
 ## Architecture docs
-- `res://docs/run_architecture_ledger.md` (run modular boundaries, authority, and phase-add checklist)
+- `res://docs/canon/RUN_ARCHITECTURE_CANON.md` (run modular boundaries, authority, phase contracts, and extension checklist)
 
 ## Documentation canon
 

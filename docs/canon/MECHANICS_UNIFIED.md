@@ -8,14 +8,11 @@ Last merged from: docs/game_flow.md, docs/game_flow_v2.md, docs/FLOW_OFFICIAL_EA
 
 ## Index
 
-- [Core loop](#core-loop)
-- [Flow 1 — Pre-corruption](#flow-1--pre-corruption)
-- [Flow 2 — Post-corruption](#flow-2--post-corruption)
-- [Bet system + progression](#bet-system--progression)
-- [Scar system](#scar-system)
-- [Meta progression](#meta-progression)
-- [End-run outcomes](#end-run--fail--success-outcomes)
-- [Merged sources (verbatim)](#source-docsgame_flowmd)
+- [Flow canonico (ordine fisso)](#flow-canonico-ordine-fisso)
+- [Checkpoints autosave (canonici)](#checkpoints-autosave-canonici)
+- [SOURCE: bet progression](#source-docsbetprogressionmd)
+- [SOURCE: meta progression](#source-docsmetaprogressionmd)
+- [SOURCE: scar system](#source-docsscarsystemmd)
 
 ## SOURCE: docs/game_flow.md
 
@@ -841,24 +838,14 @@ Esempi ammessi:
 
 👉 Ogni sblocco aumenta il rischio potenziale, mai la sicurezza.
 
-### 2.2 Il Registro “ricorda” il player
+### 2.2 Registry references (boundary note)
 
-Il Registro:
+La descrizione diegetica di come il Registro "ricorda" il player è stata spostata in `docs/canon/LORE_UNIFIED.md` per separazione categorie.
 
-- riconosce pattern già osservati
-- introduce riferimenti a precedenti
-- modifica il linguaggio in modo impercettibile
+In Mechanics resta solo il vincolo runtime:
 
-Non dice:
-
-“Hai già fatto questo.”
-
-Ma suggerisce:
-
-“Questo profilo è noto.”
-
-⚠️ Nessuna memoria esplicita.  
-⚠️ Nessuna schermata riassuntiva.
+- nessuna memoria esplicita lato UI
+- nessuna schermata riassuntiva persistente
 
 ## 3. COSA NON PERSISTE (DIVIETI ASSOLUTI)
 
@@ -878,19 +865,14 @@ più facile
 
 👉 è illegale.
 
-## 4. RUOLO DI FELIX NELLA META-PROGRESSIONE
+## 4. RUOLO DI FELIX NELLA META-PROGRESSIONE (boundary note)
 
-Felix Gallicus non sblocca nulla direttamente.
+Le implicazioni narrative su Felix Gallicus sono state spostate in `docs/canon/LORE_UNIFIED.md` per evitare leak cross-category.
 
-Ma:
+In Mechanics resta solo il vincolo sistemico:
 
-- la sua esistenza giustifica nuove anomalie
-- abilita configurazioni non classificabili
-- permette al Registro di “tollerare” deviazioni maggiori
-
-Felix è:
-
-una scusa storica per spingere il sistema oltre se stesso.
+- la meta progression non sblocca vantaggi numerici
+- le nuove opzioni aumentano rischio e irreversibilità
 
 ## 5. STRUTTURA DEGLI SBLOCCHI
 
@@ -1116,4 +1098,3 @@ una run può arrivare al finale senza Scar rilevanti
 le Scar sono percepite come “malus”
 
 il player tenta di “ottimizzarle”.
-

@@ -1184,6 +1184,7 @@ var _bet_system: RunBetSystem = BetSystemScript.new()
 var _scar_system: RunScarSystem = ScarSystemScript.new()
 var _scar_catalog: ScarCatalog = ScarCatalog.new()
 var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
+var _gameevents_connected: bool = false
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -1197,6 +1198,10 @@ func _ready() -> void:
 
 
 func _connect_gameevents() -> void:
+	if _gameevents_connected:
+		push_error("RunManager: _connect_gameevents called more than once")
+		return
+	_gameevents_connected = true
 	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
 	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
 		GameEvents.bet_placed.connect(bet_placed_callable)
@@ -1233,6 +1238,39 @@ func _connect_gameevents() -> void:
 	var request_intermediate_callable: Callable = Callable(self, "_on_request_intermediate_choice")
 	if GameEvents.has_signal("request_intermediate_choice") and not GameEvents.request_intermediate_choice.is_connected(request_intermediate_callable):
 		GameEvents.request_intermediate_choice.connect(request_intermediate_callable)
+	var request_intro_apply_seed_callable: Callable = Callable(self, "_on_request_intro_apply_seed")
+	if GameEvents.has_signal("request_intro_apply_seed") and not GameEvents.request_intro_apply_seed.is_connected(request_intro_apply_seed_callable):
+		GameEvents.request_intro_apply_seed.connect(request_intro_apply_seed_callable)
+	var request_intro_select_bet_callable: Callable = Callable(self, "_on_request_intro_select_bet")
+	if GameEvents.has_signal("request_intro_select_bet") and not GameEvents.request_intro_select_bet.is_connected(request_intro_select_bet_callable):
+		GameEvents.request_intro_select_bet.connect(request_intro_select_bet_callable)
+	var request_intro_confirm_callable: Callable = Callable(self, "_on_request_intro_confirm")
+	if GameEvents.has_signal("request_intro_confirm") and not GameEvents.request_intro_confirm.is_connected(request_intro_confirm_callable):
+		GameEvents.request_intro_confirm.connect(request_intro_confirm_callable)
+	var request_intro_buy_token_callable: Callable = Callable(self, "_on_request_intro_buy_token")
+	if GameEvents.has_signal("request_intro_buy_token") and not GameEvents.request_intro_buy_token.is_connected(request_intro_buy_token_callable):
+		GameEvents.request_intro_buy_token.connect(request_intro_buy_token_callable)
+	var request_mid_choice_select_callable: Callable = Callable(self, "_on_request_mid_choice_select")
+	if GameEvents.has_signal("request_mid_choice_select") and not GameEvents.request_mid_choice_select.is_connected(request_mid_choice_select_callable):
+		GameEvents.request_mid_choice_select.connect(request_mid_choice_select_callable)
+	var request_pyl_cashout_callable: Callable = Callable(self, "_on_request_pyl_cashout")
+	if GameEvents.has_signal("request_pyl_cashout") and not GameEvents.request_pyl_cashout.is_connected(request_pyl_cashout_callable):
+		GameEvents.request_pyl_cashout.connect(request_pyl_cashout_callable)
+	var request_pyl_condanna_callable: Callable = Callable(self, "_on_request_pyl_condanna")
+	if GameEvents.has_signal("request_pyl_condanna") and not GameEvents.request_pyl_condanna.is_connected(request_pyl_condanna_callable):
+		GameEvents.request_pyl_condanna.connect(request_pyl_condanna_callable)
+	var request_pyl_double_callable: Callable = Callable(self, "_on_request_pyl_double")
+	if GameEvents.has_signal("request_pyl_double") and not GameEvents.request_pyl_double.is_connected(request_pyl_double_callable):
+		GameEvents.request_pyl_double.connect(request_pyl_double_callable)
+	var request_end_run_restart_callable: Callable = Callable(self, "_on_request_end_run_restart")
+	if GameEvents.has_signal("request_end_run_restart") and not GameEvents.request_end_run_restart.is_connected(request_end_run_restart_callable):
+		GameEvents.request_end_run_restart.connect(request_end_run_restart_callable)
+	var request_end_run_next_bet_callable: Callable = Callable(self, "_on_request_end_run_next_bet")
+	if GameEvents.has_signal("request_end_run_next_bet") and not GameEvents.request_end_run_next_bet.is_connected(request_end_run_next_bet_callable):
+		GameEvents.request_end_run_next_bet.connect(request_end_run_next_bet_callable)
+	var request_end_run_quit_callable: Callable = Callable(self, "_on_request_end_run_quit")
+	if GameEvents.has_signal("request_end_run_quit") and not GameEvents.request_end_run_quit.is_connected(request_end_run_quit_callable):
+		GameEvents.request_end_run_quit.connect(request_end_run_quit_callable)
 	var request_reset_callable: Callable = Callable(self, "_on_request_reset_run")
 	if GameEvents.has_signal("request_reset_run") and not GameEvents.request_reset_run.is_connected(request_reset_callable):
 		GameEvents.request_reset_run.connect(request_reset_callable)
@@ -3033,6 +3071,94 @@ func _on_request_continue_run() -> void:
 
 func _on_request_show_main_menu() -> void:
 	print_debug("[FLOW] request_show_main_menu_received")
+	request_quit_to_menu()
+
+func _on_request_intro_apply_seed(seed_text: String) -> void:
+	if _phase != RunPhase.BET_PRESENT and _phase != RunPhase.RUN_INIT:
+		push_error("RunManager: request_intro_apply_seed in wrong phase %s" % [str(_phase)])
+		return
+	var normalized_text: String = seed_text.strip_edges()
+	if normalized_text == "":
+		_on_request_clear_run_seed()
+		return
+	if not normalized_text.is_valid_int():
+		push_error("RunManager: request_intro_apply_seed invalid seed '%s'" % seed_text)
+		return
+	_on_request_set_run_seed(int(normalized_text))
+	if _phase == RunPhase.RUN_INIT:
+		_enter_intro()
+	else:
+		_enter_bet_present()
+
+func _on_request_intro_select_bet(bet_id: String) -> void:
+	if _phase != RunPhase.BET_PRESENT or not _waiting_for_bet:
+		push_error("RunManager: request_intro_select_bet in wrong phase %s" % [str(_phase)])
+		return
+	var selected_bet_id: StringName = StringName(bet_id.strip_edges())
+	if selected_bet_id == &"":
+		push_error("RunManager: request_intro_select_bet missing bet id")
+		return
+	var offer_has_bet: bool = false
+	for offer_value in _run_state.level3_current_offer:
+		var offer_entry: Dictionary = offer_value as Dictionary
+		if StringName(str(offer_entry.get("id", ""))) == selected_bet_id:
+			offer_has_bet = true
+			break
+	if not offer_has_bet:
+		push_error("RunManager: request_intro_select_bet invalid bet '%s'" % bet_id)
+		return
+	_run_state.last_selected_bet_id = selected_bet_id
+	_enter_bet_present()
+
+func _on_request_intro_confirm() -> void:
+	request_confirm_pact()
+
+func _on_request_intro_buy_token() -> void:
+	if _phase != RunPhase.BET_PRESENT and _phase != RunPhase.RUN_INIT:
+		push_error("RunManager: request_intro_buy_token in wrong phase %s" % [str(_phase)])
+		return
+	if not purchase_token():
+		push_error("RunManager: request_intro_buy_token failed (insufficient coins or invalid cost)")
+		return
+	if _phase == RunPhase.RUN_INIT:
+		_enter_intro()
+	else:
+		_enter_bet_present()
+
+func _on_request_mid_choice_select(index: int) -> void:
+	request_choose_mid(index)
+
+func _on_request_pyl_cashout() -> void:
+	request_take_payout()
+
+func _on_request_pyl_condanna() -> void:
+	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
+		push_error("RunManager: request_pyl_condanna in wrong phase %s" % [str(_phase)])
+		return
+	_handle_push_luck_condanna()
+
+func _on_request_pyl_double() -> void:
+	request_push_your_luck()
+
+func _on_request_end_run_restart() -> void:
+	if _phase != RunPhase.GAME_OVER:
+		push_error("RunManager: request_end_run_restart in wrong phase %s" % [str(_phase)])
+		return
+	request_new_game()
+
+func _on_request_end_run_next_bet() -> void:
+	if _phase != RunPhase.GAME_OVER:
+		push_error("RunManager: request_end_run_next_bet in wrong phase %s" % [str(_phase)])
+		return
+	if LEVEL3_ENABLED:
+		_start_level3_run()
+		return
+	retry_current_bet()
+
+func _on_request_end_run_quit() -> void:
+	if _phase != RunPhase.GAME_OVER:
+		push_error("RunManager: request_end_run_quit in wrong phase %s" % [str(_phase)])
+		return
 	request_quit_to_menu()
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:

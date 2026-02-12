@@ -147,6 +147,17 @@ signal request_continue_run
 signal request_push_luck_cashout
 signal request_push_luck_double
 signal request_intermediate_choice(choice_id: String)
+signal request_intro_apply_seed(seed_text: String)
+signal request_intro_select_bet(bet_id: String)
+signal request_intro_confirm
+signal request_intro_buy_token
+signal request_mid_choice_select(index: int)
+signal request_pyl_cashout
+signal request_pyl_condanna
+signal request_pyl_double
+signal request_end_run_restart
+signal request_end_run_next_bet
+signal request_end_run_quit
 signal request_set_run_seed(seed: int)
 signal request_clear_run_seed
 signal request_skip_arena_resolution
@@ -218,6 +229,17 @@ func _ready() -> void:
 	_connect_noop(request_push_luck_cashout)
 	_connect_noop(request_push_luck_double)
 	_connect_noop(request_intermediate_choice)
+	_connect_noop(request_intro_apply_seed)
+	_connect_noop(request_intro_select_bet)
+	_connect_noop(request_intro_confirm)
+	_connect_noop(request_intro_buy_token)
+	_connect_noop(request_mid_choice_select)
+	_connect_noop(request_pyl_cashout)
+	_connect_noop(request_pyl_condanna)
+	_connect_noop(request_pyl_double)
+	_connect_noop(request_end_run_restart)
+	_connect_noop(request_end_run_next_bet)
+	_connect_noop(request_end_run_quit)
 	_connect_noop(request_set_run_seed)
 	_connect_noop(request_clear_run_seed)
 	_connect_noop(request_skip_arena_resolution)

@@ -187,7 +187,10 @@ theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 6
 
-[node name="ScarPopup" type="RichTextLabel" parent="HUD/ScarPopupPanel/ScarPopupMargin"]
+[node name="ScarPopupTextPanel" type="PanelContainer" parent="HUD/ScarPopupPanel/ScarPopupMargin"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ScarPopup" type="RichTextLabel" parent="HUD/ScarPopupPanel/ScarPopupMargin/ScarPopupTextPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 bbcode_enabled = true
@@ -337,15 +340,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/separation = 4
 
-[node name="SentenceTitle" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+[node name="SentenceTitlePanel" type="PanelContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="SentenceTitle" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitlePanel"]
 horizontal_alignment = 1
 text = "SENTENZA"
 
-[node name="SentenceRule" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+[node name="SentenceRulePanel" type="PanelContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="SentenceRule" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRulePanel"]
 horizontal_alignment = 1
 text = "VINCI"
 
-[node name="SentenceDoom" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+[node name="SentenceDoomPanel" type="PanelContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="SentenceDoom" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoomPanel"]
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "SE FALLISCI: LA CICATRICE TI RESTA."

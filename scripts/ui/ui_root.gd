@@ -104,7 +104,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var intro_select_fast_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST") as Button
 @onready var seed_input: LineEdit = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
 @onready var seed_apply_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED") as Button
-@onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
+@onready var _debug_overlay: Control = %DebugOverlay
+@onready var _debug_label: RichTextLabel = %Lbl_DebugOverlay
 @onready var debug_tools_panel: Panel = get_node_or_null("HUD/DebugTools") as Panel
 @onready var debug_seed_input: LineEdit = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedInput") as LineEdit
 @onready var debug_seed_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedButton") as Button
@@ -406,8 +407,8 @@ func _ready() -> void:
 					bet_confirm_button.pressed.connect(confirm_callable)
 			_wire_seed_input()
 
-	if debug_overlay != null:
-		debug_overlay.visible = false
+	if _debug_overlay != null:
+		_debug_overlay.visible = false
 	if debug_tools_panel != null:
 		debug_tools_panel.visible = OS.is_debug_build()
 		_wire_debug_tools()
@@ -470,7 +471,7 @@ func _ready() -> void:
 	if p != null:
 		_bind_player(p)
 
-	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, debug_overlay != null])
+	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, _debug_overlay != null])
 
 func _init_phase_node_map() -> void:
 	_phase_node_map = {
@@ -1250,7 +1251,8 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_scars = []
 	for scar_value in scars_value:
 		_debug_scars.append(str(scar_value))
-	_refresh_debug_overlay()
+	if _debug_overlay != null and _debug_overlay.visible:
+		_refresh_debug_overlay()
 
 func _on_escalation_changed(level: int, max_value: int) -> void:
 	_escalation_level = level
@@ -2495,25 +2497,39 @@ func _reset_fast_countdown() -> void:
 	if fast_countdown_label != null:
 		fast_countdown_label.visible = false
 
-func _refresh_debug_overlay() -> void:
-	if debug_overlay == null:
+func _update_debug_overlay(text: String) -> void:
+	if _debug_label == null:
 		return
-	var scars_text: String = "-"
-	if _debug_scars.size() > 0:
-		scars_text = ", ".join(_debug_scars)
-	debug_overlay.text = "Seed: %d\nArena: %d\nEscalation: %d\nEnemy: %s\nActive Bet: %s\nScars: [%s]" % [
-		_debug_seed,
-		_debug_arena_index,
-		_debug_escalation,
-		_debug_enemy_profile,
-		_debug_active_bet,
-		scars_text
-	]
-	if _debug_special_arena != "":
-		debug_overlay.text += "\nSpecial: %s" % _debug_special_arena
+	_debug_label.text = text
+
+func _refresh_debug_overlay() -> void:
+	if _debug_overlay == null:
+		return
+	var manager: Node = _get_run_manager()
+	if manager == null:
+		_update_debug_overlay("Phase: -\nLast request: -\nLast UI render ms: -\nFlow tail:\nRunManager not found")
+		return
+	var phase_name: String = "-"
+	if manager.has_method("get_debug_phase_name"):
+		phase_name = str(manager.call("get_debug_phase_name"))
+	var last_request: String = "-"
+	if manager.has_method("get_debug_last_request"):
+		last_request = str(manager.call("get_debug_last_request"))
+	var last_ui_render_ms: int = -1
+	if manager.has_method("get_debug_last_ui_render_ms"):
+		last_ui_render_ms = int(manager.call("get_debug_last_ui_render_ms"))
+	var flow_tail: String = "-"
+	if manager.has_method("get_debug_flow_tail"):
+		flow_tail = str(manager.call("get_debug_flow_tail", 10))
+	_update_debug_overlay("Phase: %s\nLast request: %s\nLast UI render ms: %d\nFlow tail:\n%s" % [
+		phase_name,
+		last_request,
+		last_ui_render_ms,
+		flow_tail,
+	])
 
 func _process(_delta: float) -> void:
-	if debug_overlay == null or not debug_overlay.visible:
+	if _debug_overlay == null or not _debug_overlay.visible:
 		return
 	_refresh_debug_overlay()
 
@@ -2531,14 +2547,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			_controls_first_run_active = false
 			controls_hint_panel.visible = false
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_F1:
-			if debug_overlay != null:
-				debug_overlay.visible = not debug_overlay.visible
-				_refresh_debug_overlay()
+		if event.keycode == KEY_F3:
+			if _debug_overlay != null:
+				_debug_overlay.visible = not _debug_overlay.visible
+				if _debug_overlay.visible:
+					_refresh_debug_overlay()
 		if OS.is_debug_build():
 			if event.keycode == KEY_F2:
 				DisplayServer.clipboard_set(str(_debug_seed))
-			if event.keycode == KEY_F3:
+			if event.keycode == KEY_F4:
 				var clipboard_text: String = DisplayServer.clipboard_get()
 				if clipboard_text.is_valid_int() and GameEvents.has_signal("request_set_run_seed"):
 					GameEvents.request_set_run_seed.emit(int(clipboard_text))

@@ -306,6 +306,49 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
+[node name="DebugOverlay" type="Control" parent="UI_RunRoot"]
+unique_name_in_owner = true
+visible = false
+z_index = 200
+mouse_filter = 2
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -420.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 220.0
+
+[node name="Panel" type="PanelContainer" parent="UI_RunRoot/DebugOverlay"]
+mouse_filter = 2
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Margin" type="MarginContainer" parent="UI_RunRoot/DebugOverlay/Panel"]
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="Lbl_DebugOverlay" type="RichTextLabel" parent="UI_RunRoot/DebugOverlay"]
+unique_name_in_owner = true
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = -8.0
+fit_content = true
+bbcode_enabled = false
+scroll_active = false
+autowrap_mode = 2
+text = "Flow debug overlay"
+
 [node name="ModalDimmer" type="ColorRect" parent="UI_RunRoot"]
 visible = false
 z_index = 0

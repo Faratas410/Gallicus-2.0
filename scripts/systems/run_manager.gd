@@ -4755,6 +4755,46 @@ func is_visual_only() -> bool:
 		return true
 	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice or _run_state.run_is_over or _is_game_over
 
+func get_debug_phase_name() -> String:
+	match _phase:
+		RunPhase.NONE:
+			return "NONE"
+		RunPhase.PREP:
+			return "PREP"
+		RunPhase.LIVE:
+			return "LIVE"
+		RunPhase.GAME_OVER:
+			return "GAME_OVER"
+		RunPhase.MAIN_MENU:
+			return "MAIN_MENU"
+		RunPhase.RUN_INIT:
+			return "RUN_INIT"
+		RunPhase.BET_PRESENT:
+			return "BET_PRESENT"
+		RunPhase.BET_COMMITTED:
+			return "BET_COMMITTED"
+		RunPhase.POST_BET_MESSAGES:
+			return "POST_BET_MESSAGES"
+		RunPhase.INTERMEDIATE_CHOICE:
+			return "INTERMEDIATE_CHOICE"
+		RunPhase.PUSH_YOUR_LUCK:
+			return "PUSH_YOUR_LUCK"
+		RunPhase.NEXT_BET:
+			return "NEXT_BET"
+		RunPhase.RESOLUTION:
+			return "RESOLUTION"
+		_:
+			return str(_phase)
+
+func get_debug_last_request() -> String:
+	return _last_request
+
+func get_debug_last_ui_render_ms() -> int:
+	return _last_ui_render_ms
+
+func get_debug_flow_tail(lines: int = 10) -> String:
+	return _flow_logger.dump_last(lines)
+
 func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return

@@ -553,15 +553,15 @@ Serve per debugging, prevenzione regressioni e memoria dei passaggi.
 1) RunManager è autorità di stato e progressione.
 2) UI è reattiva (emette solo request_*).
 3) Comunicazione cross-layer solo via GameEvents.
-4) Il flow è implicito (funzioni + segnali), non esiste una state machine enum.
+4) Il flow runtime è esplicito via `RunPhase` enum in `run_manager.gd`.
 
 ## Nomi reali (GameEvents)
 - Avvio/continua: request_new_run, request_continue_run
-- Betting: request_open_bet_ui, request_place_bet, bet_ui_opened, bet_placed
+- Betting: request_place_bet, bet_ui_opened, bet_placed
 - Rituali: pact_sealed_opened/closed, resolve_ritual_opened/closed
 - Arena: arena_started, arena_completed (emette solo arena_index)
-- Post-arena: request_intermediate_choice, push_luck_opened,
-  request_push_luck_cashout, request_push_luck_double
+- Post-arena: request_mid_choice_select, push_luck_opened,
+  request_pyl_cashout, request_pyl_double
 - Run end: run_finale_selected, run_failed
 - Menu return: request_show_main_menu
 - Save: SaveManager.clear_run() chiamato in end-run
@@ -571,16 +571,16 @@ Serve per debugging, prevenzione regressioni e memoria dei passaggi.
 ## Flow canonico (ordine fisso)
 
 ### 0) MENU
-STATE mentale: MENU_IDLE  
+RunPhase: MAIN_MENU  
 UI: menu principale  
 UI → RunManager: request_new_run, request_continue_run
 
 ### 1) RUN START (Level 3)
-STATE mentale: RUN_INIT  
+RunPhase: RUN_INIT  
 RunManager: _start_level3_run() → run_started → start_arena()
 
 ### 2) ARENA SETUP
-STATE mentale: ARENA_SETUP  
+RunPhase: BET_PRESENT (entry dopo setup arena)  
 RunManager: start_arena():
 - arena_index++
 - tema/special arena
@@ -588,12 +588,12 @@ RunManager: start_arena():
 - apre betting Level 3
 
 ### 3) BET UI OPEN
-STATE mentale: BET_OFFER  
+RunPhase: BET_PRESENT  
 RunManager → UI: bet_ui_opened  
 UI → RunManager: request_place_bet(bet_id)
 
 ### 4) BET SELECTED + CHECKPOINT
-STATE mentale: BET_SIGNED  
+RunPhase: BET_COMMITTED  
 RunManager: select_bet():
 - registra bets_history/condanne
 - emette bet_placed
@@ -602,17 +602,17 @@ RunManager: select_bet():
 - avvia rituali/risoluzione
 
 ### 5) RITUAL 1 — PACT SEALED
-STATE mentale: PACT_SEAL_RITUAL  
+RunPhase: BET_COMMITTED (rituale in flow interno)  
 RunManager → UI: pact_sealed_opened  
 Chiusura: pact_sealed_closed emesso dal RunManager (timer/flow interno)
 
 ### 6) RITUAL 2 — RESOLVE RITUAL
-STATE mentale: RESOLVE_RITUAL  
+RunPhase: RESOLUTION  
 RunManager → UI: resolve_ritual_opened  
 Chiusura: resolve_ritual_closed emesso dal RunManager
 
 ### 7) ARENA RESOLVE
-STATE mentale: ARENA_RESOLVE  
+RunPhase: RESOLUTION  
 RunManager:
 - arena_started
 - arena_completed(arena_index)
@@ -620,24 +620,24 @@ RunManager:
 AUTOSAVE: RUN_FLOW_INTERMEDIATE_CHOICE (subito dopo la risoluzione)
 
 ### 8) POST-ARENA — GESTURE
-STATE mentale: POST_ARENA_GESTURE  
+RunPhase: INTERMEDIATE_CHOICE  
 RunManager → UI: apertura scelta gesto  
-UI → RunManager: request_intermediate_choice(placa|provoca)  
+UI → RunManager: request_mid_choice_select(0|1)  
 AUTOSAVE: RUN_FLOW_PUSH_LUCK
 
 ### 9) PUSH YOUR LUCK
-STATE mentale: PUSH_LUCK  
+RunPhase: PUSH_YOUR_LUCK  
 RunManager → UI: push_luck_opened(payload)  
 UI → RunManager:
-- request_push_luck_cashout
-- request_push_luck_double
+- request_pyl_cashout
+- request_pyl_double
 
 Checkpoint:
 - Double → AUTOSAVE RUN_FLOW_BET_OFFER e ritorno a ARENA_SETUP
 - Cashout → end-run (nessun autosave; clear_run a fine)
 
 ### 10) RUN END — VERDETTO
-STATE mentale: RUN_END_VERDICT  
+RunPhase: GAME_OVER  
 RunManager:
 - SaveManager.clear_run()
 - run_finale_selected(payload)

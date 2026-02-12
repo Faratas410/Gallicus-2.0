@@ -1469,6 +1469,13 @@ func request_new_game() -> void:
 		print("RunManager: forcing new run while flow is active.")
 	_start_new_run()
 
+func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase]) -> bool:
+	for allowed_phase: RunPhase in allowed_phases:
+		if _phase == allowed_phase:
+			return true
+	push_error("RunManager: %s in wrong phase %s (allowed=%s)" % [request_name, str(_phase), str(allowed_phases)])
+	return false
+
 func request_confirm_pact() -> void:
 	if not _waiting_for_bet or _phase != RunPhase.BET_PRESENT:
 		push_error("RunManager: request_confirm_pact in wrong phase %s" % [str(_phase)])
@@ -3053,14 +3060,20 @@ func _start_next_arena() -> void:
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
+	if not _guard_request_phase("request_new_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
+		return
 	_save_system.clear_run()
 	request_new_game()
 
 func _on_request_reset_run() -> void:
+	if not _guard_request_phase("request_reset_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
+		return
 	_save_system.clear_run()
 	request_new_game()
 
 func _on_request_retry_run() -> void:
+	if not _guard_request_phase("request_retry_run", [RunPhase.GAME_OVER]):
+		return
 	if LEVEL3_ENABLED:
 		_start_level3_run()
 		return
@@ -3070,6 +3083,8 @@ func _on_request_continue_run() -> void:
 	request_load_continue()
 
 func _on_request_show_main_menu() -> void:
+	if not _guard_request_phase("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION, RunPhase.GAME_OVER]):
+		return
 	print_debug("[FLOW] request_show_main_menu_received")
 	request_quit_to_menu()
 
@@ -3126,9 +3141,13 @@ func _on_request_intro_buy_token() -> void:
 		_enter_bet_present()
 
 func _on_request_mid_choice_select(index: int) -> void:
+	if not _guard_request_phase("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE]):
+		return
 	request_choose_mid(index)
 
 func _on_request_pyl_cashout() -> void:
+	if not _guard_request_phase("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK]):
+		return
 	request_take_payout()
 
 func _on_request_pyl_condanna() -> void:
@@ -3138,6 +3157,8 @@ func _on_request_pyl_condanna() -> void:
 	_handle_push_luck_condanna()
 
 func _on_request_pyl_double() -> void:
+	if not _guard_request_phase("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK]):
+		return
 	request_push_your_luck()
 
 func _on_request_end_run_restart() -> void:
@@ -3162,12 +3183,16 @@ func _on_request_end_run_quit() -> void:
 	request_quit_to_menu()
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
+	if not _guard_request_phase("request_place_bet", [RunPhase.BET_PRESENT]):
+		return
 	if not LEVEL3_ENABLED:
 		return
 	print_debug("[FLOW] bet_choice_received :: arena=%d, bet_id=%s" % [_run_state.arena_index, bet_id])
 	select_bet(StringName(bet_id))
 
 func _on_request_intermediate_choice(choice_id: String) -> void:
+	if not _guard_request_phase("request_intermediate_choice", [RunPhase.INTERMEDIATE_CHOICE]):
+		return
 	var normalized_choice: String = choice_id.strip_edges().to_lower()
 	if normalized_choice == "placa":
 		request_choose_mid(0)
@@ -3221,6 +3246,8 @@ func _on_post_arena_choice_selected(choice_id: StringName) -> void:
 	_handle_push_luck_condanna()
 
 func _on_request_push_luck_cashout() -> void:
+	if not _guard_request_phase("request_push_luck_cashout", [RunPhase.PUSH_YOUR_LUCK]):
+		return
 	request_take_payout()
 
 func _take_payout() -> void:
@@ -3301,6 +3328,8 @@ func _handle_push_luck_condanna() -> void:
 	_open_bet_ui(true)
 
 func _on_request_push_luck_double() -> void:
+	if not _guard_request_phase("request_push_luck_double", [RunPhase.PUSH_YOUR_LUCK]):
+		return
 	request_push_your_luck()
 
 func _push_your_luck() -> void:
@@ -4733,9 +4762,10 @@ func is_visual_only() -> bool:
 func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
+	var previous_phase: RunPhase = _phase
 	_phase = next
 	if not _run_enter_phase(next):
-		push_error("RunManager: missing enter handler for phase %s" % str(next))
+		push_error("RunManager: missing enter handler for phase %s (from=%s, reason=%s)" % [str(next), str(previous_phase), reason])
 	if OS.is_debug_build() and reason != "":
 		print_debug("RunManager flow phase:", int(next), "-", reason)
 

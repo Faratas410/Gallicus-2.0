@@ -490,6 +490,11 @@ func _verify_phase_paths() -> void:
 	for path: String in _PHASE_CONTAINER_PATHS:
 		if get_node_or_null(path) == null:
 			push_error("UI: missing node at %s" % path)
+	for phase_key: Variant in _phase_node_map.keys():
+		var mapped_phase: int = int(phase_key)
+		var mapped_node: Control = _phase_node_map.get(mapped_phase, null) as Control
+		if mapped_node == null:
+			push_error("UI: missing phase mapping target for %s" % str(mapped_phase))
 
 func show_phase(phase: int) -> void:
 	if _phase_node_map.is_empty():
@@ -502,7 +507,7 @@ func show_phase(phase: int) -> void:
 			phase_node.visible = false
 	var target: Control = _phase_node_map.get(phase, null) as Control
 	if target == null:
-		push_error("UI: missing phase mapping for %s" % str(phase))
+		push_error("UI: missing phase mapping for %s (known=%s)" % [str(phase), str(_phase_node_map.keys())])
 		_refresh_modal_dimmer()
 		return
 	target.visible = true

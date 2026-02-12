@@ -11,7 +11,20 @@ enum Level {
 const BUFFER_SIZE: int = 200
 
 var level: int = Level.INFO
+var include_timestamp: bool = false
+var include_context_ids: bool = true
+var session_id: String = ""
+var run_id: int = 0
 var _buffer: Array[String] = []
+
+func _ts() -> String:
+	return str(Time.get_unix_time_from_system())
+
+func set_session(id: String) -> void:
+	session_id = id
+
+func set_run_id(id: int) -> void:
+	run_id = id
 
 func _append(line: String) -> void:
 	_buffer.push_back(line)
@@ -21,7 +34,12 @@ func _append(line: String) -> void:
 func log(tag: String, details: String = "") -> void:
 	if level == Level.OFF:
 		return
-	var line: String = "[FLOW] %s :: %s" % [tag, details]
+	var log_details: String = details
+	if include_context_ids:
+		log_details = "sid=%s rid=%d | %s" % [session_id, run_id, details]
+	var line: String = "[FLOW] %s :: %s" % [tag, log_details]
+	if include_timestamp:
+		line = "[FLOW][%s] %s :: %s" % [_ts(), tag, log_details]
 	_append(line)
 	print_debug(line)
 

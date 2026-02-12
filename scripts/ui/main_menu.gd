@@ -19,7 +19,8 @@ const ArenaThemes = preload("res://data/arena_themes.gd")
 @onready var credits_panel: Control = get_node("CreditsPanel") as Control
 @onready var settings_panel: Control = get_node("SettingsPanel") as Control
 @onready var continue_button: Button = get_node("CenterContainer/MenuVBox/ContinueButton") as Button
-@onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintLabel") as Label
+@onready var continue_hint_panel: PanelContainer = get_node("CenterContainer/MenuVBox/ContinueHintPanel") as PanelContainer
+@onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintPanel/ContinueHintLabel") as Label
 @onready var new_game_button: Button = get_node("CenterContainer/MenuVBox/NewGameButton") as Button
 @onready var load_game_button: Button = get_node("CenterContainer/MenuVBox/LoadGameButton") as Button
 @onready var achievements_button: Button = get_node("CenterContainer/MenuVBox/AchievementsButton") as Button
@@ -37,11 +38,11 @@ const ArenaThemes = preload("res://data/arena_themes.gd")
 @onready var credits_back_button: Button = get_node("CreditsPanel/CreditsCenter/CreditsVBox/CreditsBackButton") as Button
 @onready var settings_back_button: Button = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsBackButton") as Button
 @onready var brightness_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessSlider") as HSlider
-@onready var brightness_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessValue") as Label
+@onready var brightness_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessValuePanel/BrightnessValue") as Label
 @onready var language_option: OptionButton = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageOption") as OptionButton
-@onready var language_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageValue") as Label
+@onready var language_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageValuePanel/LanguageValue") as Label
 @onready var master_volume_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeSlider") as HSlider
-@onready var master_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeValue") as Label
+@onready var master_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeValuePanel/MasterVolumeValue") as Label
 @onready var fullscreen_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/FullscreenToggle") as CheckBox
 @onready var brightness_modulate: CanvasModulate = get_node("../../BrightnessModulate") as CanvasModulate
 
@@ -280,6 +281,7 @@ func _on_condanna_mouse_exited() -> void:
 func _refresh_continue_button() -> void:
 	var has_run_save: bool = SaveManager.has_run_save()
 	continue_button.disabled = not has_run_save
+	continue_hint_panel.visible = not has_run_save
 	continue_hint_label.visible = not has_run_save
 	if not has_run_save:
 		continue_hint_label.text = "Nessuna partita salvata."
@@ -291,12 +293,14 @@ func _on_continue_pressed() -> void:
 		var run_manager: Node = _get_run_manager()
 		if run_manager == null:
 			continue_hint_label.text = "In arrivo."
+			continue_hint_panel.visible = true
 			continue_hint_label.visible = true
 			return
 		GameEvents.request_continue_run.emit()
 		_hide_menu()
 	else:
 		continue_hint_label.text = "In arrivo."
+		continue_hint_panel.visible = true
 		continue_hint_label.visible = true
 
 func _on_new_game_pressed() -> void:
@@ -310,6 +314,7 @@ func _on_new_game_pressed() -> void:
 		_hide_menu()
 	else:
 		continue_hint_label.text = "In arrivo."
+		continue_hint_panel.visible = true
 		continue_hint_label.visible = true
 
 func _on_achievements_pressed() -> void:

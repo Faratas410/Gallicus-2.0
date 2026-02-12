@@ -113,7 +113,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var debug_skip_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/SkipArenaButton") as Button
 @onready var debug_copy_log_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/CopyLogButton") as Button
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
-@onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopup") as RichTextLabel
+@onready var scar_popup_panel: PanelContainer = get_node_or_null("HUD/ScarPopupPanel") as PanelContainer
+@onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopupPanel/ScarPopupMargin/ScarPopup") as RichTextLabel
 @onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
 @onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabel") as Label
 @onready var register_blocker: Control = get_node_or_null("HUD/RegisterAnnotationBlocker") as Control
@@ -160,7 +161,7 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var quit_button: Button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT") as Button
 @onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
 @onready var scars_panel: Panel = get_node_or_null("HUD/ScarsPanel") as Panel
-@onready var scars_label: Label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabel") as Label
+@onready var scars_label: Label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
 @onready var countdown_label: Label = get_node_or_null("UI_RunRoot/CountdownLabel") as Label
 @onready var fast_countdown_label: Label = get_node_or_null("UI_RunRoot/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("UI_RunRoot/FastBlinkTimer") as Timer
@@ -414,8 +415,8 @@ func _ready() -> void:
 		_wire_debug_tools()
 	if level_up_popup != null:
 		level_up_popup.visible = false
-	if scar_popup != null:
-		scar_popup.visible = false
+	if scar_popup_panel != null:
+		scar_popup_panel.visible = false
 	if arena_resolution_label != null:
 		arena_resolution_label.visible = false
 
@@ -820,25 +821,27 @@ func _show_scar_popup(scar: Dictionary) -> void:
 	if effect_text != "":
 		text_lines.append("[b]Effetto:[/b] %s" % effect_text)
 	scar_popup.text = "\n".join(text_lines)
-	scar_popup.visible = true
-	scar_popup.modulate.a = 0.0
-	scar_popup.scale = Vector2(0.96, 0.96)
+	if scar_popup_panel == null:
+		return
+	scar_popup_panel.visible = true
+	scar_popup_panel.modulate.a = 0.0
+	scar_popup_panel.scale = Vector2(0.96, 0.96)
 	if _scar_popup_tween != null and _scar_popup_tween.is_valid():
 		_scar_popup_tween.kill()
 	_scar_popup_tween = create_tween()
 	_scar_popup_tween.set_trans(Tween.TRANS_QUAD)
 	_scar_popup_tween.set_ease(Tween.EASE_OUT)
-	_scar_popup_tween.tween_property(scar_popup, "modulate:a", 1.0, 0.15)
-	_scar_popup_tween.parallel().tween_property(scar_popup, "scale", Vector2(1.02, 1.02), 0.15)
+	_scar_popup_tween.tween_property(scar_popup_panel, "modulate:a", 1.0, 0.15)
+	_scar_popup_tween.parallel().tween_property(scar_popup_panel, "scale", Vector2(1.02, 1.02), 0.15)
 	_scar_popup_tween.tween_interval(1.0)
 	_scar_popup_tween.set_ease(Tween.EASE_IN)
-	_scar_popup_tween.tween_property(scar_popup, "modulate:a", 0.0, 0.25)
-	_scar_popup_tween.parallel().tween_property(scar_popup, "scale", Vector2(0.98, 0.98), 0.25)
+	_scar_popup_tween.tween_property(scar_popup_panel, "modulate:a", 0.0, 0.25)
+	_scar_popup_tween.parallel().tween_property(scar_popup_panel, "scale", Vector2(0.98, 0.98), 0.25)
 	_scar_popup_tween.tween_callback(Callable(self, "_hide_scar_popup"))
 
 func _hide_scar_popup() -> void:
-	if scar_popup != null:
-		scar_popup.visible = false
+	if scar_popup_panel != null:
+		scar_popup_panel.visible = false
 
 func _should_show_arena_resolution_overlay() -> bool:
 	if arena_resolution_label == null:

@@ -8,6 +8,10 @@
 [ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/accept/box.png" id="6"]
 [ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/accept/PRESSED.png" id="7"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/font_title_outline.tres" id="8"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="9"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="10"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="11"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="12"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
@@ -125,6 +129,10 @@ size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="BetOption1" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
+theme_override_styles/normal = ExtResource("9")
+theme_override_styles/hover = ExtResource("10")
+theme_override_styles/pressed = ExtResource("11")
+theme_override_styles/disabled = ExtResource("12")
 custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
 toggle_mode = true
@@ -172,6 +180,10 @@ text = "✅ PATTO: ..."
 theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="BetOption2" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
+theme_override_styles/normal = ExtResource("9")
+theme_override_styles/hover = ExtResource("10")
+theme_override_styles/pressed = ExtResource("11")
+theme_override_styles/disabled = ExtResource("12")
 custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
 toggle_mode = true
@@ -219,6 +231,10 @@ text = "✅ PATTO: ..."
 theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="BetOption3" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
+theme_override_styles/normal = ExtResource("9")
+theme_override_styles/hover = ExtResource("10")
+theme_override_styles/pressed = ExtResource("11")
+theme_override_styles/disabled = ExtResource("12")
 custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
 toggle_mode = true
@@ -269,5 +285,7 @@ theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 text = "SIGILLA"
 disabled = true
 size_flags_horizontal = 3
-theme_override_styles/normal = SubResource("StyleBoxTexture_3")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_4")
+theme_override_styles/normal = ExtResource("9")
+theme_override_styles/hover = ExtResource("10")
+theme_override_styles/pressed = ExtResource("11")
+theme_override_styles/disabled = ExtResource("12")

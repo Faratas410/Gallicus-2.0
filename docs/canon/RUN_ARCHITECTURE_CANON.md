@@ -1,0 +1,366 @@
+# CANON — RUN ARCHITECTURE CANON
+
+Status: Single source of truth
+
+If another doc conflicts, this doc wins.
+
+Last merged from: docs/run_architecture_ledger.md, docs/runtime_architecture_split.md, docs/flow_wiring_contract.md, docs/run_ui_phase_paths_and_names.md
+
+## Index
+
+- [Autorità e invarianti runtime](#autorità-e-invarianti-runtime)
+- [Contratto di wiring](#contratto-di-wiring)
+- [Run phases](#run-phases)
+- [Debug/watchdog/flow logger](#debugwatchdogflow-logger)
+- [Merged sources (verbatim)](#source-docsrun_architecture_ledgermd)
+
+## SOURCE: docs/run_architecture_ledger.md
+
+# Run Architecture Ledger
+
+**Status:** CANON  
+**Scope:** Authoritative run architecture ownership ledger and extension rules.  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/flow_wiring_contract.md, docs/FLOW_OFFICIAL_EA.md.
+
+## Overlap
+- Overlaps with: docs/flow_wiring_contract.md, docs/FLOW_OFFICIAL_EA.md.
+
+## Core authority
+
+- `RunManager` (`res://scripts/systems/run_manager.gd`) is the **only** flow authority.
+- `RunManager` is the only runtime owner allowed to:
+  - advance phases,
+  - apply outcomes to `RunState`,
+  - emit global outcome events through `GameEvents`.
+- No parallel flow controller is allowed.
+
+## RunManager Responsibilities (Current Canon)
+
+`RunManager` currently owns and coordinates the following runtime responsibilities:
+
+### Owns
+
+- Phase state machine ownership (`RunPhase`) and progression authority.
+- Request handling via `GameEvents` request signals.
+- `RunState` mutation as the single source of gameplay state changes.
+- Phase transitions exclusively via `_set_phase(...)`.
+- UI trigger authority (`emit payload` / `show_phase`), while keeping UI reactive.
+- Watchdog activity tracking and stall monitoring hooks.
+- Session/run correlation id lifecycle used by `FlowLogger` traces.
+
+### Does NOT Own
+
+- Rendering and visual composition.
+- Direct UI node mutation as gameplay authority.
+- Economy legacy systems (`coins`/`tokens`): partially purged, no new authority expansion.
+- Logging internals: delegated to `FlowLogger`.
+
+## Flow Observability Stack
+
+### FlowLogger
+
+- `RefCounted` helper dedicated to run-flow observability.
+- Multi-level logging support for flow diagnostics.
+- In-memory ring buffer tail (bounded size) for recent events.
+- Structured logging entry points:
+  - `log_phase(...)`
+  - `log_request(...)`
+  - `log_ui(...)`
+- `dump_last(...)` support for targeted tail inspection.
+
+### Watchdog
+
+- Tracks activity markers generated during flow progression.
+- Single-shot stall detection for dead-flow diagnosis.
+- Snapshot capture via `_flow_snapshot()`.
+- No automatic gameplay state mutation when watchdog signals are emitted.
+
+### Debug Overlay
+
+- Toggle path: `F3`.
+- Read-only inspection of:
+  - current phase,
+  - last request,
+  - last UI render,
+  - flow tail.
+- Diagnostic-only surface: no authority and no flow mutation rights.
+
+## Phase Contract
+
+The phase contract is explicit and mandatory:
+
+- `_set_phase()` is the **only** method allowed to mutate `RunPhase`.
+- Every `_enter_*()` must trigger exactly one UI render.
+- Every request handler must, in order:
+  1. guard current phase validity,
+  2. mutate `RunState`,
+  3. call `_set_phase(next)`.
+
+## Module boundaries
+
+- `res://scripts/systems/run/*` = pure-ish run systems.
+  - Operate on passed state/data.
+  - No `get_tree()` traversal.
+  - No direct `GameEvents` emission.
+- `res://scripts/content/*` = catalogs / lookup content.
+  - Data lookup only.
+  - No flow decisions.
+- `res://scripts/ui/run_ui_payload.gd` = UI projection contract.
+  - `RunManager` builds payloads.
+  - UI consumes payloads reactively.
+- `SaveSystem` (`res://scripts/systems/run/save_system.gd`)
+  - serializes/deserializes `RunState` only.
+  - no phase orchestration and no UI authority.
+
+## Event rules (GameEvents)
+
+- `request_*` events are **inputs** (intent from UI/external triggers).
+- Outcome/global events are emitted only by `RunManager` after state transitions.
+- Systems do not publish global events directly.
+
+## Dependency direction (allowed)
+
+- `RunManager` → `RunState`
+- `RunManager` → `scripts/systems/run/*`
+- `RunManager` → `scripts/content/*`
+- `RunManager` → `RunUiPayload` → UI render scripts
+- `RunManager` ↔ `GameEvents` (request in, outcome out)
+- `RunManager` → `SaveSystem` (`RunState` persistence)
+
+Forbidden direction examples:
+
+- UI → phase mutation
+- systems/run/* → `GameEvents.emit_*`
+- systems/run/* → scene-tree authority (`get_tree`) for flow control
+- catalogs → gameplay mutation
+
+## Where to add things
+
+- **New gameplay rule:** add/update a run system under `scripts/systems/run/*`, then integrate in `RunManager`.
+- **New content (bets/scars/outcomes data):** add/update catalogs under `scripts/content/*`.
+- **New UI presentation:** extend `RunUiPayload` and update UI render scripts; keep decisions in `RunManager`.
+
+## Recipe: add a new phase
+
+1. Add enum value in `RunPhase`.
+2. Implement matching `_enter_*` in `RunManager`.
+3. Build/update `RunUiPayload` for that phase.
+4. Add UI render handling for the new payload/phase.
+5. Add `request_*` handler(s) in `RunManager`.
+6. Hook outcome + catalog usage if the phase needs new data/effects.
+
+## SOURCE: docs/runtime_architecture_split.md
+
+# Runtime Architecture Split (Phase 3)
+
+**Status:** SUPPORTING  
+**Scope:** High-level split between canonical runtime and legacy/non-runtime code surfaces.  
+**Source of truth:** docs/run_architecture_ledger.md, docs/repo_map.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+
+## Overlap
+- Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+
+## Runtime L3 (active path)
+
+Runtime L3 includes the active boot and orchestration path used by the game flow:
+
+- `res://scenes/Main.tscn`
+- `res://scripts/systems/run_manager.gd` (single RunManager)
+- `res://scripts/systems/game_events.gd` (Autoload event bus)
+- Active UI scenes/scripts under `res://scenes/ui/` and `res://scripts/ui/`
+- L3 visual core kept in active path:
+  - `res://scripts/Arena.gd`
+  - `res://scripts/Player.gd`
+  - `res://scripts/entities/enemy_basic.gd`
+
+## Legacy runtime (non-L3)
+
+Legacy gameplay systems are confined under `res://legacy_runtime/`:
+
+- Gameplay scripts:
+  - `res://legacy_runtime/gameplay/player_legacy.gd`
+  - `res://legacy_runtime/gameplay/enemy_legacy.gd`
+- Legacy scene:
+  - `res://legacy_runtime/scenes/Enemy.tscn`
+- Legacy pickups:
+  - `res://legacy_runtime/pickups/Pickup.gd`
+  - `res://legacy_runtime/pickups/PickupSpawner.gd`
+  - `res://legacy_runtime/pickups/Pickup_Heal.tscn`
+  - `res://legacy_runtime/pickups/Pickup_Coins.tscn`
+  - `res://legacy_runtime/pickups/Pickup_SpeedBoost.tscn`
+
+## Rule
+
+No file under `res://legacy_runtime/` may be referenced by:
+
+- `res://scenes/Main.tscn`
+- `res://scripts/systems/run_manager.gd`
+
+This keeps Level 3 runtime active and boot-safe while preserving legacy gameplay assets in an isolated namespace.
+
+## SOURCE: docs/flow_wiring_contract.md
+
+# Flow Wiring Contract (Level 3)
+
+**Status:** CANON  
+**Scope:** Official runtime wiring contract for flow events, ownership boundaries, and phase transitions.  
+**Source of truth:** docs/run_architecture_ledger.md, docs/CODEX_GOLDEN_CHECKLIST.md  
+**Last updated:** 2026-02-11  
+**Notes:** Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+
+## Overlap
+- Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+
+This document is a repo-only wiring contract for debugging the Level 3 flow without Godot.
+It records the expected UI paths, required GameEvents signals, and connection points that
+RunManager depends on.
+
+## UI Root
+
+* **Expected path:** `UI` under the current scene (`res://scenes/Main.tscn`).
+* **Fallback path:** `/root/Main/UI`.
+* **Resolution in RunManager:** `_refresh_sanity_ui_root()` stores the resolved node in `_sanity_ui_root`.
+
+## Critical UI Panels (Level 3 flow)
+
+These panels must exist and must not be freed while a run is active.
+
+| Panel | Expected path | Scene | Notes |
+| --- | --- | --- | --- |
+| Bet UI panel | `Modals/BetModal` | `res://scenes/UI.tscn` | **must exist** / **must not be freed** |
+| Pact sealed panel | `Modals/PactSealedModal` | `res://scenes/UI.tscn` | **must exist** / **must not be freed** |
+| Resolve ritual panel | `Modals/ResolveRitualModal` | `res://scenes/UI.tscn` | **must exist** / **must not be freed** |
+| Ending panel | `Modals/GameOverModal` | `res://scenes/UI.tscn` | **must exist** / **must not be freed** |
+
+## GameEvents Signals (required for Level 3 flow)
+
+> If a signal’s emitter/listener cannot be proven from code, it is marked as:
+> **UNKNOWN (needs editor validation)**.
+
+| Signal | Emitted by | Listened by | Connection (file/func) |
+| --- | --- | --- | --- |
+| `request_new_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_new_game_pressed` → `scripts/systems/run_manager.gd::_ready` |
+| `request_continue_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_continue_pressed` → `scripts/systems/run_manager.gd::_ready` |
+| `request_open_bet_ui` | UNKNOWN (needs editor validation) | BetManager | `scripts/systems/bet_manager.gd::_ready` |
+| `request_place_bet` | UI Root | RunManager, BetManager | `scripts/ui/ui_root.gd::_place_bet` → `scripts/systems/run_manager.gd::_ready`, `scripts/systems/bet_manager.gd::_ready` |
+| `bet_ui_opened` | RunManager, BetManager | UI Root | `scripts/systems/run_manager.gd::_open_level3_bet_ui`, `scripts/systems/bet_manager.gd::open_bet_ui_before_arena` → `scripts/ui/ui_root.gd::_ready` |
+| `bet_placed` | RunManager, BetManager | UI Root, RunManager | `scripts/systems/run_manager.gd::select_bet`, `scripts/systems/bet_manager.gd::place_bet` → `scripts/ui/ui_root.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
+| `pact_sealed_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` → `scripts/ui/ui_root.gd::_ready` |
+| `pact_sealed_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` → `scripts/ui/ui_root.gd::_ready` |
+| `resolve_ritual_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` → `scripts/ui/ui_root.gd::_ready` |
+| `resolve_ritual_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` → `scripts/ui/ui_root.gd::_ready` |
+| `arena_started` | RunManager | UI Root | `scripts/systems/run_manager.gd::_resolve_ritual_outcome` → `scripts/ui/ui_root.gd::_ready` |
+| `arena_completed` | RunManager | UNKNOWN (needs editor validation) | `scripts/systems/run_manager.gd::_resolve_ritual_outcome` |
+| `request_intermediate_choice` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_intermediate_choice_*` → `scripts/systems/run_manager.gd::_ready` |
+| `push_luck_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_push_luck_choice` → `scripts/ui/ui_root.gd::_ready` |
+| `request_push_luck_cashout` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_push_luck_cashout_pressed` → `scripts/systems/run_manager.gd::_ready` |
+| `request_push_luck_double` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_push_luck_double_pressed` → `scripts/systems/run_manager.gd::_ready` |
+| `run_finale_selected` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_finale` → `scripts/ui/ui_root.gd::_ready` |
+| `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` → `scripts/ui/ui_root.gd::_ready`, `scripts/Arena.gd::_ready` |
+| `request_show_main_menu` | UI Root | MainMenu UI, RunManager (log-only) | `scripts/ui/ui_root.gd::_on_quit_pressed` → `scripts/ui/main_menu.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
+
+## SOURCE: docs/run_ui_phase_paths_and_names.md
+
+# Run UI — Phase Paths and Node Names
+
+This document lists the canonical run UI phase containers and their key node names after the phase-based rename.
+
+Scene: `res://scenes/UI.tscn`
+
+## UI root
+
+- `UI_RunRoot`
+
+## Phase containers
+
+- `UI_RunRoot/Phase_INTRO`
+- `UI_RunRoot/Phase_FIRST_REACTION`
+- `UI_RunRoot/Phase_MID_CHOICE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK`
+- `UI_RunRoot/Phase_RESOLUTION`
+- `UI_RunRoot/Phase_END_RUN`
+
+## Key nodes by phase
+
+### INTRO
+
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLE`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLE`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINT`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODY`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKE`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTER`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Lbl_INTRO_CHOICE_0`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/Lbl_INTRO_CHOICE_1`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM`
+- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Btn_INTRO_BUY_TOKEN`
+
+### FIRST_REACTION
+
+- `UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION`
+- `UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLE`
+- `UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODY`
+
+### MID_CHOICE
+
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE`
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLE`
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0`
+- `UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1`
+
+### PUSH_YOUR_LUCK
+
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODY`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINT`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTER`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Btn_PUSH_YOUR_LUCK_CASHOUT`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE`
+- `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE`
+
+### RESOLUTION
+
+- `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION`
+- `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLE`
+- `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODY`
+
+### END_RUN
+
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINT`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLE`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODY`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTER`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_NEXT_BET`
+- `UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT`
+
+## Script mapping references
+
+- `scripts/ui/ui_root.gd`
+  - onready path bindings for renamed nodes
+  - phase map (`_phase_node_map`) and `show_phase(phase: int)`
+- `scripts/systems/run_manager.gd`
+  - sanity checks and `_ensure_flow_panel(...)` paths updated to `UI_RunRoot/Phase_*`
+

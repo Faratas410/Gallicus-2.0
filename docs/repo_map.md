@@ -79,3 +79,13 @@ Core scenes (examples):
 
 ## Architecture docs
 - `res://docs/run_architecture_ledger.md` (run modular boundaries, authority, and phase-add checklist)
+
+## Documentation canon
+
+- [LORE_UNIFIED](canon/LORE_UNIFIED.md)
+- [GLOSSARY_ENTITIES](canon/GLOSSARY_ENTITIES.md)
+- [MECHANICS_UNIFIED](canon/MECHANICS_UNIFIED.md)
+- [RUN_ARCHITECTURE_CANON](canon/RUN_ARCHITECTURE_CANON.md)
+- [UI_CANON](canon/UI_CANON.md)
+- [PROCESS_AND_FREEZE](canon/PROCESS_AND_FREEZE.md)
+- [Reports index](reports/INDEX.md)

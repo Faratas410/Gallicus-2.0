@@ -1,0 +1,9 @@
+# Reports Index
+
+Elenco report storici e di audit (non canonici di sistema, non unificati).
+
+- [codex_report_1_0_gap.md](codex_report_1_0_gap.md) — Gap analysis della baseline Codex 1.0 e azioni suggerite.
+- [level3_integrity_audit_report.md](level3_integrity_audit_report.md) — Audit di integrità tecnica/architetturale del livello 3.
+- [level3_open_questions_log.md](level3_open_questions_log.md) — Registro domande aperte e punti da chiarire.
+- [technical_review_resume_it.md](technical_review_resume_it.md) — Sintesi review tecnica in italiano.
+- [technical_resume_level3_canonical_it.md](technical_resume_level3_canonical_it.md) — Resume tecnico canonico Level 3 (snapshot storico).

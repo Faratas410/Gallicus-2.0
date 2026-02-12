@@ -59,3 +59,13 @@ This index defines the explicit status of documents in `docs/` and the current o
 - `level3_integrity_audit_report.md` — See file header for scope. **[REPORT]** Owner: Historical integrity audit owner
 - `level3_open_questions_log.md` — See file header for scope. **[REPORT]** Owner: Historical open-questions owner
 - `codex_report_1_0_gap.md` — See file header for scope. **[REPORT]** Owner: Historical gap snapshot owner
+
+## Canonical Docs
+
+- [LORE_UNIFIED](docs/canon/LORE_UNIFIED.md)
+- [GLOSSARY_ENTITIES](docs/canon/GLOSSARY_ENTITIES.md)
+- [MECHANICS_UNIFIED](docs/canon/MECHANICS_UNIFIED.md)
+- [RUN_ARCHITECTURE_CANON](docs/canon/RUN_ARCHITECTURE_CANON.md)
+- [UI_CANON](docs/canon/UI_CANON.md)
+- [PROCESS_AND_FREEZE](docs/canon/PROCESS_AND_FREEZE.md)
+- [Reports index](docs/reports/INDEX.md)

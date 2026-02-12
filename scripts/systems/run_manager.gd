@@ -1185,7 +1185,7 @@ var _scar_system: RunScarSystem = ScarSystemScript.new()
 var _scar_catalog: ScarCatalog = ScarCatalog.new()
 var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
 var _flow_logger: FlowLogger = FlowLogger.new()
-var _gameevents_connected: bool = false
+var _events_wired: bool = false
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -1199,112 +1199,57 @@ func _ready() -> void:
 
 
 func _connect_gameevents() -> void:
-	if _gameevents_connected:
-		push_error("RunManager: _connect_gameevents called more than once")
+	if _events_wired:
 		return
-	_gameevents_connected = true
-	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
-	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
-		GameEvents.bet_placed.connect(bet_placed_callable)
-	var bet_sealed_callable: Callable = Callable(self, "_on_bet_sealed")
-	if GameEvents.has_signal("bet_sealed") and not GameEvents.bet_sealed.is_connected(bet_sealed_callable):
-		GameEvents.bet_sealed.connect(bet_sealed_callable)
-	var bet_confirmed_callable: Callable = Callable(self, "_on_bet_confirmed")
-	if GameEvents.has_signal("bet_confirmed") and not GameEvents.bet_confirmed.is_connected(bet_confirmed_callable):
-		GameEvents.bet_confirmed.connect(bet_confirmed_callable)
-	var request_place_bet_callable: Callable = Callable(self, "_on_request_place_bet")
-	if GameEvents.has_signal("request_place_bet") and not GameEvents.request_place_bet.is_connected(request_place_bet_callable):
-		GameEvents.request_place_bet.connect(request_place_bet_callable)
-	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
-	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
-		GameEvents.betting_opened.connect(betting_opened_callable)
-	var run_failed_callable: Callable = Callable(self, "_on_run_failed")
-	if not GameEvents.run_failed.is_connected(run_failed_callable):
-		GameEvents.run_failed.connect(run_failed_callable)
-	var enemy_killed_callable: Callable = Callable(self, "_on_enemy_killed")
-	if not GameEvents.enemy_killed.is_connected(enemy_killed_callable):
-		GameEvents.enemy_killed.connect(enemy_killed_callable)
-	var request_new_run_callable: Callable = Callable(self, "_on_request_new_run")
-	if GameEvents.has_signal("request_new_run") and not GameEvents.request_new_run.is_connected(request_new_run_callable):
-		GameEvents.request_new_run.connect(request_new_run_callable)
-	var request_cashout_callable: Callable = Callable(self, "_on_request_push_luck_cashout")
-	if GameEvents.has_signal("request_push_luck_cashout") and not GameEvents.request_push_luck_cashout.is_connected(request_cashout_callable):
-		GameEvents.request_push_luck_cashout.connect(request_cashout_callable)
-	var request_double_callable: Callable = Callable(self, "_on_request_push_luck_double")
-	if GameEvents.has_signal("request_push_luck_double") and not GameEvents.request_push_luck_double.is_connected(request_double_callable):
-		GameEvents.request_push_luck_double.connect(request_double_callable)
-	var post_arena_callable: Callable = Callable(self, "_on_post_arena_choice_selected")
-	if GameEvents.has_signal("post_arena_choice_selected") and not GameEvents.post_arena_choice_selected.is_connected(post_arena_callable):
-		GameEvents.post_arena_choice_selected.connect(post_arena_callable)
-	var request_intermediate_callable: Callable = Callable(self, "_on_request_intermediate_choice")
-	if GameEvents.has_signal("request_intermediate_choice") and not GameEvents.request_intermediate_choice.is_connected(request_intermediate_callable):
-		GameEvents.request_intermediate_choice.connect(request_intermediate_callable)
-	var request_intro_apply_seed_callable: Callable = Callable(self, "_on_request_intro_apply_seed")
-	if GameEvents.has_signal("request_intro_apply_seed") and not GameEvents.request_intro_apply_seed.is_connected(request_intro_apply_seed_callable):
-		GameEvents.request_intro_apply_seed.connect(request_intro_apply_seed_callable)
-	var request_intro_select_bet_callable: Callable = Callable(self, "_on_request_intro_select_bet")
-	if GameEvents.has_signal("request_intro_select_bet") and not GameEvents.request_intro_select_bet.is_connected(request_intro_select_bet_callable):
-		GameEvents.request_intro_select_bet.connect(request_intro_select_bet_callable)
-	var request_intro_confirm_callable: Callable = Callable(self, "_on_request_intro_confirm")
-	if GameEvents.has_signal("request_intro_confirm") and not GameEvents.request_intro_confirm.is_connected(request_intro_confirm_callable):
-		GameEvents.request_intro_confirm.connect(request_intro_confirm_callable)
-	var request_intro_buy_token_callable: Callable = Callable(self, "_on_request_intro_buy_token")
-	if GameEvents.has_signal("request_intro_buy_token") and not GameEvents.request_intro_buy_token.is_connected(request_intro_buy_token_callable):
-		GameEvents.request_intro_buy_token.connect(request_intro_buy_token_callable)
-	var request_mid_choice_select_callable: Callable = Callable(self, "_on_request_mid_choice_select")
-	if GameEvents.has_signal("request_mid_choice_select") and not GameEvents.request_mid_choice_select.is_connected(request_mid_choice_select_callable):
-		GameEvents.request_mid_choice_select.connect(request_mid_choice_select_callable)
-	var request_pyl_cashout_callable: Callable = Callable(self, "_on_request_pyl_cashout")
-	if GameEvents.has_signal("request_pyl_cashout") and not GameEvents.request_pyl_cashout.is_connected(request_pyl_cashout_callable):
-		GameEvents.request_pyl_cashout.connect(request_pyl_cashout_callable)
-	var request_pyl_condanna_callable: Callable = Callable(self, "_on_request_pyl_condanna")
-	if GameEvents.has_signal("request_pyl_condanna") and not GameEvents.request_pyl_condanna.is_connected(request_pyl_condanna_callable):
-		GameEvents.request_pyl_condanna.connect(request_pyl_condanna_callable)
-	var request_pyl_double_callable: Callable = Callable(self, "_on_request_pyl_double")
-	if GameEvents.has_signal("request_pyl_double") and not GameEvents.request_pyl_double.is_connected(request_pyl_double_callable):
-		GameEvents.request_pyl_double.connect(request_pyl_double_callable)
-	var request_end_run_restart_callable: Callable = Callable(self, "_on_request_end_run_restart")
-	if GameEvents.has_signal("request_end_run_restart") and not GameEvents.request_end_run_restart.is_connected(request_end_run_restart_callable):
-		GameEvents.request_end_run_restart.connect(request_end_run_restart_callable)
-	var request_end_run_next_bet_callable: Callable = Callable(self, "_on_request_end_run_next_bet")
-	if GameEvents.has_signal("request_end_run_next_bet") and not GameEvents.request_end_run_next_bet.is_connected(request_end_run_next_bet_callable):
-		GameEvents.request_end_run_next_bet.connect(request_end_run_next_bet_callable)
-	var request_end_run_quit_callable: Callable = Callable(self, "_on_request_end_run_quit")
-	if GameEvents.has_signal("request_end_run_quit") and not GameEvents.request_end_run_quit.is_connected(request_end_run_quit_callable):
-		GameEvents.request_end_run_quit.connect(request_end_run_quit_callable)
-	var request_reset_callable: Callable = Callable(self, "_on_request_reset_run")
-	if GameEvents.has_signal("request_reset_run") and not GameEvents.request_reset_run.is_connected(request_reset_callable):
-		GameEvents.request_reset_run.connect(request_reset_callable)
-	var request_retry_callable: Callable = Callable(self, "_on_request_retry_run")
-	if GameEvents.has_signal("request_retry_run") and not GameEvents.request_retry_run.is_connected(request_retry_callable):
-		GameEvents.request_retry_run.connect(request_retry_callable)
-	var request_continue_callable: Callable = Callable(self, "_on_request_continue_run")
-	if GameEvents.has_signal("request_continue_run") and not GameEvents.request_continue_run.is_connected(request_continue_callable):
-		GameEvents.request_continue_run.connect(request_continue_callable)
-	var request_show_menu_callable: Callable = Callable(self, "_on_request_show_main_menu")
-	if GameEvents.has_signal("request_show_main_menu") and not GameEvents.request_show_main_menu.is_connected(request_show_menu_callable):
-		GameEvents.request_show_main_menu.connect(request_show_menu_callable)
-	var request_fail_run_callable: Callable = Callable(self, "_on_request_fail_run")
-	if GameEvents.has_signal("request_fail_run") and not GameEvents.request_fail_run.is_connected(request_fail_run_callable):
-		GameEvents.request_fail_run.connect(request_fail_run_callable)
-	var request_seed_callable: Callable = Callable(self, "_on_request_set_run_seed")
-	if GameEvents.has_signal("request_set_run_seed") and not GameEvents.request_set_run_seed.is_connected(request_seed_callable):
-		GameEvents.request_set_run_seed.connect(request_seed_callable)
-	var request_clear_seed_callable: Callable = Callable(self, "_on_request_clear_run_seed")
-	if GameEvents.has_signal("request_clear_run_seed") and not GameEvents.request_clear_run_seed.is_connected(request_clear_seed_callable):
-		GameEvents.request_clear_run_seed.connect(request_clear_seed_callable)
-	var request_skip_callable: Callable = Callable(self, "_on_request_skip_arena_resolution")
-	if GameEvents.has_signal("request_skip_arena_resolution") and not GameEvents.request_skip_arena_resolution.is_connected(request_skip_callable):
-		GameEvents.request_skip_arena_resolution.connect(request_skip_callable)
-	var modal_opened_callable: Callable = Callable(self, "_on_modal_opened")
-	if GameEvents.has_signal("modal_opened") and not GameEvents.modal_opened.is_connected(modal_opened_callable):
-		GameEvents.modal_opened.connect(modal_opened_callable)
-	var modal_closed_callable: Callable = Callable(self, "_on_modal_closed")
-	if GameEvents.has_signal("modal_closed") and not GameEvents.modal_closed.is_connected(modal_closed_callable):
-		GameEvents.modal_closed.connect(modal_closed_callable)
-	var settings_changed_callable: Callable = Callable(self, "_on_settings_changed")
-	if GameEvents.has_signal("settings_changed") and not GameEvents.settings_changed.is_connected(settings_changed_callable):
-		GameEvents.settings_changed.connect(settings_changed_callable)
+	_events_wired = true
+	var bindings: Array[Array] = [
+		[&"bet_placed", &"_on_bet_placed", false],
+		[&"bet_sealed", &"_on_bet_sealed", true],
+		[&"bet_confirmed", &"_on_bet_confirmed", true],
+		[&"request_place_bet", &"_on_request_place_bet", true],
+		[&"betting_opened", &"_on_betting_opened", false],
+		[&"run_failed", &"_on_run_failed", false],
+		[&"enemy_killed", &"_on_enemy_killed", false],
+		[&"request_new_run", &"_on_request_new_run", true],
+		[&"request_push_luck_cashout", &"_on_request_push_luck_cashout", true],
+		[&"request_push_luck_double", &"_on_request_push_luck_double", true],
+		[&"post_arena_choice_selected", &"_on_post_arena_choice_selected", true],
+		[&"request_intermediate_choice", &"_on_request_intermediate_choice", true],
+		[&"request_intro_apply_seed", &"_on_request_intro_apply_seed", true],
+		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
+		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
+		[&"request_intro_buy_token", &"_on_request_intro_buy_token", true],
+		[&"request_mid_choice_select", &"_on_request_mid_choice_select", true],
+		[&"request_pyl_cashout", &"_on_request_pyl_cashout", true],
+		[&"request_pyl_condanna", &"_on_request_pyl_condanna", true],
+		[&"request_pyl_double", &"_on_request_pyl_double", true],
+		[&"request_end_run_restart", &"_on_request_end_run_restart", true],
+		[&"request_end_run_next_bet", &"_on_request_end_run_next_bet", true],
+		[&"request_end_run_quit", &"_on_request_end_run_quit", true],
+		[&"request_reset_run", &"_on_request_reset_run", true],
+		[&"request_retry_run", &"_on_request_retry_run", true],
+		[&"request_continue_run", &"_on_request_continue_run", true],
+		[&"request_show_main_menu", &"_on_request_show_main_menu", true],
+		[&"request_fail_run", &"_on_request_fail_run", true],
+		[&"request_set_run_seed", &"_on_request_set_run_seed", true],
+		[&"request_clear_run_seed", &"_on_request_clear_run_seed", true],
+		[&"request_skip_arena_resolution", &"_on_request_skip_arena_resolution", true],
+		[&"modal_opened", &"_on_modal_opened", true],
+		[&"modal_closed", &"_on_modal_closed", true],
+		[&"settings_changed", &"_on_settings_changed", true],
+	]
+	for binding: Array in bindings:
+		var signal_name: StringName = binding[0]
+		var handler_name: StringName = binding[1]
+		var requires_has_signal: bool = binding[2]
+		if requires_has_signal and not GameEvents.has_signal(signal_name):
+			continue
+		var signal_ref_variant: Variant = GameEvents.get(signal_name)
+		if signal_ref_variant is Signal:
+			var signal_ref: Signal = signal_ref_variant as Signal
+			var handler: Callable = Callable(self, handler_name)
+			if not signal_ref.is_connected(handler):
+				signal_ref.connect(handler)
 
 func _apply_saved_language() -> void:
 	var saved_language: String = SaveManager.get_language()

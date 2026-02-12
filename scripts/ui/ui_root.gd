@@ -115,12 +115,16 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
 @onready var scar_popup_panel: PanelContainer = get_node_or_null("HUD/ScarPopupPanel") as PanelContainer
 @onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopupPanel/ScarPopupMargin/ScarPopup") as RichTextLabel
-@onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlay") as Label
-@onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabel") as Label
+@onready var arena_resolution_panel: PanelContainer = get_node_or_null("HUD/ArenaResolutionOverlayPanel") as PanelContainer
+@onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlayPanel/ArenaResolutionOverlay") as Label
+@onready var audience_context_panel: PanelContainer = get_node_or_null("HUD/AudienceContextLabelPanel") as PanelContainer
+@onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabelPanel/AudienceContextLabel") as Label
 @onready var register_blocker: Control = get_node_or_null("HUD/RegisterAnnotationBlocker") as Control
-@onready var register_annotation_label: Label = get_node_or_null("HUD/RegisterAnnotationBlocker/RegisterAnnotationLabel") as Label
-@onready var arena_theme_title_label: Label = get_node_or_null("HUD/ArenaThemeTitleLabel") as Label
-@onready var arena_theme_subtitle_label: Label = get_node_or_null("HUD/ArenaThemeSubtitleLabel") as Label
+@onready var register_annotation_label: Label = get_node_or_null("HUD/RegisterAnnotationBlocker/RegisterAnnotationLabelPanel/RegisterAnnotationLabel") as Label
+@onready var arena_theme_title_panel: PanelContainer = get_node_or_null("HUD/ArenaThemeTitleLabelPanel") as PanelContainer
+@onready var arena_theme_title_label: Label = get_node_or_null("HUD/ArenaThemeTitleLabelPanel/ArenaThemeTitleLabel") as Label
+@onready var arena_theme_subtitle_panel: PanelContainer = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel") as PanelContainer
+@onready var arena_theme_subtitle_label: Label = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel/ArenaThemeSubtitleLabel") as Label
 @onready var sentence_banner: Control = get_node_or_null("HUD/SentenceBanner") as Control
 @onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitle") as Label
 @onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRule") as Label
@@ -162,8 +166,10 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
 @onready var scars_panel: Panel = get_node_or_null("HUD/ScarsPanel") as Panel
 @onready var scars_label: Label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
-@onready var countdown_label: Label = get_node_or_null("UI_RunRoot/CountdownLabel") as Label
-@onready var fast_countdown_label: Label = get_node_or_null("UI_RunRoot/FastCountdownLabel") as Label
+@onready var countdown_panel: PanelContainer = get_node_or_null("UI_RunRoot/CountdownLabelPanel") as PanelContainer
+@onready var countdown_label: Label = get_node_or_null("UI_RunRoot/CountdownLabelPanel/CountdownLabel") as Label
+@onready var fast_countdown_panel: PanelContainer = get_node_or_null("UI_RunRoot/FastCountdownLabelPanel") as PanelContainer
+@onready var fast_countdown_label: Label = get_node_or_null("UI_RunRoot/FastCountdownLabelPanel/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("UI_RunRoot/FastBlinkTimer") as Timer
 @onready var enemy_bars: Control = get_node_or_null("WorldUI/EnemyBars") as Control
 @onready var scars_detail_panel: Panel = get_node_or_null("UI_RunRoot/ScarsDetailPanel") as Panel
@@ -419,6 +425,8 @@ func _ready() -> void:
 		scar_popup_panel.visible = false
 	if arena_resolution_label != null:
 		arena_resolution_label.visible = false
+	if arena_resolution_panel != null:
+		arena_resolution_panel.visible = false
 
 	if fast_blink_timer != null:
 		var blink_callable: Callable = Callable(self, "_on_fast_blink_tick")
@@ -855,6 +863,8 @@ func _show_arena_resolution_overlay() -> void:
 	if arena_resolution_label == null:
 		return
 	arena_resolution_label.visible = true
+	if arena_resolution_panel != null:
+		arena_resolution_panel.visible = true
 	arena_resolution_label.modulate.a = 0.0
 	if _arena_resolution_tween != null and _arena_resolution_tween.is_valid():
 		_arena_resolution_tween.kill()
@@ -870,6 +880,8 @@ func _show_arena_resolution_overlay() -> void:
 func _hide_arena_resolution_overlay() -> void:
 	if arena_resolution_label != null:
 		arena_resolution_label.visible = false
+	if arena_resolution_panel != null:
+		arena_resolution_panel.visible = false
 
 func _on_buy_token_pressed() -> void:
 	if GameEvents.has_signal("request_intro_buy_token"):
@@ -903,12 +915,16 @@ func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:
 		return
 	countdown_label.visible = true
+	if countdown_panel != null:
+		countdown_panel.visible = true
 	for i in range(seconds, 0, -1):
 		countdown_label.text = str(i)
 		await get_tree().create_timer(1.0).timeout
 	countdown_label.text = "GO"
 	await get_tree().create_timer(0.5).timeout
 	countdown_label.visible = false
+	if countdown_panel != null:
+		countdown_panel.visible = false
 
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: RunManager emitted GameEvents.run_started; UI nodes are initialized.
@@ -934,6 +950,8 @@ func _on_run_started() -> void:
 	else:
 		if fast_countdown_label != null:
 			fast_countdown_label.visible = true
+			if fast_countdown_panel != null:
+				fast_countdown_panel.visible = true
 			fast_countdown_label.text = "FAST: %ds" % FAST_SELECTION_SECONDS
 			fast_countdown_label.modulate.a = 1.0
 	_set_push_luck_modal(false)
@@ -1004,6 +1022,8 @@ func _on_audience_context_line_emitted(text: String) -> void:
 		return
 	audience_context_label.text = text
 	audience_context_label.visible = text != ""
+	if audience_context_panel != null:
+		audience_context_panel.visible = text != ""
 
 
 
@@ -1535,17 +1555,25 @@ func _update_arena_theme_ui() -> void:
 	if _arena_theme_payload.is_empty():
 		if arena_theme_title_label != null:
 			arena_theme_title_label.visible = false
+		if arena_theme_title_panel != null:
+			arena_theme_title_panel.visible = false
 		if arena_theme_subtitle_label != null:
 			arena_theme_subtitle_label.visible = false
+		if arena_theme_subtitle_panel != null:
+			arena_theme_subtitle_panel.visible = false
 		return
 	var title: String = str(_arena_theme_payload.get("title", ""))
 	var subtitle: String = str(_arena_theme_payload.get("subtitle", ""))
 	if arena_theme_title_label != null:
 		arena_theme_title_label.text = title
 		arena_theme_title_label.visible = title != ""
+		if arena_theme_title_panel != null:
+			arena_theme_title_panel.visible = title != ""
 	if arena_theme_subtitle_label != null:
 		arena_theme_subtitle_label.text = subtitle
 		arena_theme_subtitle_label.visible = subtitle != ""
+		if arena_theme_subtitle_panel != null:
+			arena_theme_subtitle_panel.visible = subtitle != ""
 
 func _update_condanna_focus() -> void:
 	if condanna_focus_label == null:
@@ -1955,11 +1983,15 @@ func _handle_fast_countdown(seconds: int) -> void:
 	if not _fast_countdown_active:
 		_stop_fast_blink()
 		fast_countdown_label.visible = false
+		if fast_countdown_panel != null:
+			fast_countdown_panel.visible = false
 		return
 	if seconds <= 0:
 		_reset_fast_countdown()
 		return
 	fast_countdown_label.visible = true
+	if fast_countdown_panel != null:
+		fast_countdown_panel.visible = true
 	fast_countdown_label.text = "FAST: %ds" % seconds
 	if seconds <= 5:
 		_start_fast_blink()
@@ -2499,6 +2531,8 @@ func _reset_fast_countdown() -> void:
 	_stop_fast_blink()
 	if fast_countdown_label != null:
 		fast_countdown_label.visible = false
+		if fast_countdown_panel != null:
+			fast_countdown_panel.visible = false
 
 func _update_debug_overlay(text: String) -> void:
 	if _debug_label == null:

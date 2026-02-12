@@ -188,7 +188,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "CICATRICE APPLICATA"
 
-[node name="ArenaResolutionOverlay" type="Label" parent="HUD"]
+[node name="ArenaResolutionOverlayPanel" type="PanelContainer" parent="HUD"]
 visible = false
 z_index = 110
 anchor_left = 0.5
@@ -199,11 +199,16 @@ offset_left = -260.0
 offset_top = -16.0
 offset_right = 260.0
 offset_bottom = 16.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ArenaResolutionOverlay" type="Label" parent="HUD/ArenaResolutionOverlayPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "Il patto viene giudicato..."
 
-[node name="AudienceContextLabel" type="Label" parent="HUD"]
+[node name="AudienceContextLabelPanel" type="PanelContainer" parent="HUD"]
 visible = false
 z_index = 111
 anchor_left = 0.5
@@ -214,6 +219,11 @@ offset_left = -320.0
 offset_top = -20.0
 offset_right = 320.0
 offset_bottom = 20.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="AudienceContextLabel" type="Label" parent="HUD/AudienceContextLabelPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "La folla ti guarda."
@@ -225,8 +235,7 @@ mouse_filter = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="RegisterAnnotationLabel" type="Label" parent="HUD/RegisterAnnotationBlocker"]
-mouse_filter = 2
+[node name="RegisterAnnotationLabelPanel" type="PanelContainer" parent="HUD/RegisterAnnotationBlocker"]
 anchor_left = 0.5
 anchor_top = 0.3
 anchor_right = 0.5
@@ -235,11 +244,17 @@ offset_left = -360.0
 offset_top = -18.0
 offset_right = 360.0
 offset_bottom = 18.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="RegisterAnnotationLabel" type="Label" parent="HUD/RegisterAnnotationBlocker/RegisterAnnotationLabelPanel"]
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "Registro: atto annotato."
 
-[node name="ArenaThemeTitleLabel" type="Label" parent="HUD"]
+[node name="ArenaThemeTitleLabelPanel" type="PanelContainer" parent="HUD"]
 visible = false
 z_index = 111
 anchor_left = 0.5
@@ -250,12 +265,17 @@ offset_left = -320.0
 offset_top = -22.0
 offset_right = 320.0
 offset_bottom = 22.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ArenaThemeTitleLabel" type="Label" parent="HUD/ArenaThemeTitleLabelPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Arena del Sigillo"
 
-[node name="ArenaThemeSubtitleLabel" type="Label" parent="HUD"]
+[node name="ArenaThemeSubtitleLabelPanel" type="PanelContainer" parent="HUD"]
 visible = false
 z_index = 111
 anchor_left = 0.5
@@ -266,6 +286,11 @@ offset_left = -320.0
 offset_top = -18.0
 offset_right = 320.0
 offset_bottom = 18.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ArenaThemeSubtitleLabel" type="Label" parent="HUD/ArenaThemeSubtitleLabelPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 horizontal_alignment = 1
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 18
@@ -1111,7 +1136,8 @@ offset_bottom = -16.0
 mouse_filter = 1
 texture = ExtResource("5")
 
-[node name="CountdownLabel" type="Label" parent="UI_RunRoot"]
+[node name="CountdownLabelPanel" type="PanelContainer" parent="UI_RunRoot"]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -1120,12 +1146,17 @@ offset_left = -120.0
 offset_top = -36.0
 offset_right = 120.0
 offset_bottom = 36.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="CountdownLabel" type="Label" parent="UI_RunRoot/CountdownLabelPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
-visible = false
 text = ""
 
-[node name="FastCountdownLabel" type="Label" parent="UI_RunRoot"]
+[node name="FastCountdownLabelPanel" type="PanelContainer" parent="UI_RunRoot"]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.0
 anchor_right = 0.5
@@ -1134,9 +1165,13 @@ offset_left = -140.0
 offset_top = 12.0
 offset_right = 140.0
 offset_bottom = 52.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="FastCountdownLabel" type="Label" parent="UI_RunRoot/FastCountdownLabelPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
-visible = false
 text = "FAST: 12s"
 
 [node name="FastBlinkTimer" type="Timer" parent="UI_RunRoot"]

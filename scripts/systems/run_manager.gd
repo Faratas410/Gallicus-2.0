@@ -1226,7 +1226,6 @@ func _connect_gameevents() -> void:
 		[&"bet_confirmed", &"_on_bet_confirmed", true],
 		[&"request_place_bet", &"_on_request_place_bet", true],
 		[&"betting_opened", &"_on_betting_opened", false],
-		[&"run_failed", &"_on_run_failed", false],
 		[&"enemy_killed", &"_on_enemy_killed", false],
 		[&"request_new_run", &"_on_request_new_run", true],
 		[&"request_push_luck_cashout", &"_on_request_push_luck_cashout", true],
@@ -3762,9 +3761,6 @@ func _connect_player_signals() -> void:
 	var died_callable: Callable = Callable(self, "_on_player_died")
 	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
 		_player.died.connect(died_callable)
-
-func _on_run_failed() -> void:
-	_on_request_fail_run("RUN_FAILED")
 
 func _on_request_fail_run(reason: String = "") -> void:
 	_touch_request_activity("request_fail_run(reason=%s)" % reason)

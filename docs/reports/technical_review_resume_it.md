@@ -2,7 +2,7 @@
 
 **Status:** SUPPORTING  
 **Scope:** Italian technical review snapshot of architecture, systems, and status.  
-**Source of truth:** docs/run_architecture_ledger.md, docs/repo_map.md  
+**Source of truth:** docs/canon/RUN_ARCHITECTURE_CANON.md, docs/repo_map.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/technical_resume_level3_canonical_it.md, docs/repo_map.md.
 - Candidate for archive after consolidation patch if merged into one maintained summary.

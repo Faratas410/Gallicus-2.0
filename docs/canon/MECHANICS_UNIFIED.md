@@ -6,6 +6,13 @@ If another doc conflicts, this doc wins.
 
 Last merged from: docs/game_flow.md, docs/game_flow_v2.md, docs/FLOW_OFFICIAL_EA.md, docs/bet_progression.md, docs/meta_progression.md, docs/scar_system.md
 
+## Canon Contract
+
+This document is authoritative for its category.
+No other file may redefine these concepts.
+All changes to systems described here must update this document in the same PR.
+
+
 ## Index
 
 - [Flow canonico (ordine fisso)](#flow-canonico-ordine-fisso)

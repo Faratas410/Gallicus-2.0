@@ -89,3 +89,13 @@ Core scenes (examples):
 - [UI_CANON](canon/UI_CANON.md)
 - [PROCESS_AND_FREEZE](canon/PROCESS_AND_FREEZE.md)
 - [Reports index](reports/INDEX.md)
+
+## Documentation Governance
+
+Canonical documents live under docs/canon/.
+Any design or runtime change must update:
+- MECHANICS_UNIFIED (if gameplay)
+- RUN_ARCHITECTURE_CANON (if runtime)
+- UI_CANON (if UI)
+- LORE_UNIFIED (if narrative)
+- GLOSSARY_ENTITIES (if new concept)

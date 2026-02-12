@@ -31,15 +31,18 @@ func _append(line: String) -> void:
 	if _buffer.size() > BUFFER_SIZE:
 		_buffer.pop_front()
 
-func log(tag: String, details: String = "") -> void:
+func log(tag: String, message: String = "") -> void:
 	if level == Level.OFF:
 		return
-	var log_details: String = details
+	var log_message: String = tag
+	if not message.is_empty():
+		log_message = "%s :: %s" % [tag, message]
+	var log_details: String = log_message
 	if include_context_ids:
-		log_details = "sid=%s rid=%d | %s" % [session_id, run_id, details]
-	var line: String = "[FLOW] %s :: %s" % [tag, log_details]
+		log_details = "sid=%s rid=%d | %s" % [session_id, run_id, log_message]
+	var line: String = "[FLOW] %s" % log_details
 	if include_timestamp:
-		line = "[FLOW][%s] %s :: %s" % [_ts(), tag, log_details]
+		line = "[FLOW][%s] %s" % [_ts(), log_details]
 	_append(line)
 	print_debug(line)
 

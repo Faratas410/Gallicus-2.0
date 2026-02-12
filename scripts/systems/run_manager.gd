@@ -1425,7 +1425,7 @@ func _fail_flow(message: String) -> void:
 	if _is_game_over:
 		return
 	_run_state.forced_ending_id = &"THE_FOOL"
-	_enter_end_run("RUN_FAILED")
+	_enter_end_run("INFRA_FAILURE")
 
 func request_new_game() -> void:
 	if _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice:
@@ -4399,7 +4399,8 @@ func _enter_game_over() -> void:
 	_update_arena_visual_only()
 	_emit_run_finale()
 	_emit_run_ended()
-	_emit_run_failed()
+	if _run_state.run_end_reason != "INFRA_FAILURE":
+		_emit_run_failed()
 
 func _emit_run_failed() -> void:
 	if _run_failed_emitted:

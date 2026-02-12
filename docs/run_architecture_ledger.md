@@ -18,6 +18,68 @@
   - emit global outcome events through `GameEvents`.
 - No parallel flow controller is allowed.
 
+## RunManager Responsibilities (Current Canon)
+
+`RunManager` currently owns and coordinates the following runtime responsibilities:
+
+### Owns
+
+- Phase state machine ownership (`RunPhase`) and progression authority.
+- Request handling via `GameEvents` request signals.
+- `RunState` mutation as the single source of gameplay state changes.
+- Phase transitions exclusively via `_set_phase(...)`.
+- UI trigger authority (`emit payload` / `show_phase`), while keeping UI reactive.
+- Watchdog activity tracking and stall monitoring hooks.
+- Session/run correlation id lifecycle used by `FlowLogger` traces.
+
+### Does NOT Own
+
+- Rendering and visual composition.
+- Direct UI node mutation as gameplay authority.
+- Economy legacy systems (`coins`/`tokens`): partially purged, no new authority expansion.
+- Logging internals: delegated to `FlowLogger`.
+
+## Flow Observability Stack
+
+### FlowLogger
+
+- `RefCounted` helper dedicated to run-flow observability.
+- Multi-level logging support for flow diagnostics.
+- In-memory ring buffer tail (bounded size) for recent events.
+- Structured logging entry points:
+  - `log_phase(...)`
+  - `log_request(...)`
+  - `log_ui(...)`
+- `dump_last(...)` support for targeted tail inspection.
+
+### Watchdog
+
+- Tracks activity markers generated during flow progression.
+- Single-shot stall detection for dead-flow diagnosis.
+- Snapshot capture via `_flow_snapshot()`.
+- No automatic gameplay state mutation when watchdog signals are emitted.
+
+### Debug Overlay
+
+- Toggle path: `F3`.
+- Read-only inspection of:
+  - current phase,
+  - last request,
+  - last UI render,
+  - flow tail.
+- Diagnostic-only surface: no authority and no flow mutation rights.
+
+## Phase Contract
+
+The phase contract is explicit and mandatory:
+
+- `_set_phase()` is the **only** method allowed to mutate `RunPhase`.
+- Every `_enter_*()` must trigger exactly one UI render.
+- Every request handler must, in order:
+  1. guard current phase validity,
+  2. mutate `RunState`,
+  3. call `_set_phase(next)`.
+
 ## Module boundaries
 
 - `res://scripts/systems/run/*` = pure-ish run systems.

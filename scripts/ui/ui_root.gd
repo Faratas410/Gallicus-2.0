@@ -23,6 +23,10 @@ const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const UI_PARCHMENT_TEXTURE_PATH: String = "res://assets/ui/panels/contract_clean_paper_9slice.png"
 const UI_WAX_SEAL_TEXTURE_PATH: String = "res://assets/ui/overlays/wax_seal_red.png"
+const BUTTON_STYLE_PRIMARY_NORMAL: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_normal.tres")
+const BUTTON_STYLE_PRIMARY_HOVER: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_hover.tres")
+const BUTTON_STYLE_PRIMARY_PRESSED: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_pressed.tres")
+const BUTTON_STYLE_PRIMARY_DISABLED: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_disabled.tres")
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -2063,6 +2067,11 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 
 func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> Button:
 	var button: Button = Button.new()
+	button.add_theme_stylebox_override("normal", BUTTON_STYLE_PRIMARY_NORMAL)
+	button.add_theme_stylebox_override("hover", BUTTON_STYLE_PRIMARY_HOVER)
+	button.add_theme_stylebox_override("pressed", BUTTON_STYLE_PRIMARY_PRESSED)
+	button.add_theme_stylebox_override("disabled", BUTTON_STYLE_PRIMARY_DISABLED)
+	button.add_theme_stylebox_override("focus", BUTTON_STYLE_PRIMARY_HOVER)
 	button.custom_minimum_size = Vector2(0, 190)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL

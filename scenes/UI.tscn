@@ -10,6 +10,10 @@
 [ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/Container.png" id="9"]
 [ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/3/container.png" id="10"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/font_title_outline.tres" id="11"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="12"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="13"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="14"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="15"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("4")
 texture_margin_left = 48.0
@@ -131,7 +135,10 @@ custom_minimum_size = Vector2(360, 0)
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="EscalationLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
+[node name="EscalationLabelPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="EscalationLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel"]
 text = "ESCALATION"
 
 [node name="EscalationBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
@@ -151,7 +158,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 0
 
 
-[node name="ScarPopup" type="RichTextLabel" parent="HUD"]
+[node name="ScarPopupPanel" type="PanelContainer" parent="HUD"]
 visible = false
 z_index = 111
 anchor_left = 0.5
@@ -162,6 +169,19 @@ offset_left = -260.0
 offset_top = -24.0
 offset_right = 260.0
 offset_bottom = 24.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ScarPopupMargin" type="MarginContainer" parent="HUD/ScarPopupPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 6
+
+[node name="ScarPopup" type="RichTextLabel" parent="HUD/ScarPopupPanel/ScarPopupMargin"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 bbcode_enabled = true
 fit_content = true
 horizontal_alignment = 1
@@ -551,12 +571,20 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="Btn_MID_CHOICE_SELECT_0" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "UMILIATI"
 
 [node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
@@ -643,6 +671,10 @@ size_flags_horizontal = 3
 placeholder_text = "Es. 10331"
 
 [node name="Btn_INTRO_APPLY_SEED" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 text = "APPLICA"
 
 [node name="StakeRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
@@ -662,18 +694,30 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
 [node name="Btn_INTRO_SELECT_WIN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDANNA — RADDOPPI O MUORI"
 
 [node name="Btn_INTRO_SELECT_NO_HIT" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDIZIONE — SANGUE INTEGRO"
 
 [node name="Btn_INTRO_SELECT_FAST" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
@@ -690,6 +734,10 @@ autowrap_mode = 2
 text = "Selezione: -"
 
 [node name="Btn_INTRO_CONFIRM" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(120, 40)
 text = "SIGILLA"
 
@@ -702,6 +750,10 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="Btn_INTRO_BUY_TOKEN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 40)
 size_flags_horizontal = 3
 text = "BUY TOKEN (100c)"
@@ -801,6 +853,10 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="Btn_PUSH_YOUR_LUCK_CASHOUT" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "INCASSA ORA"
@@ -818,6 +874,10 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="Btn_PUSH_YOUR_LUCK_CONDANNA" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "CONDANNA"
@@ -834,6 +894,10 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="Btn_PUSH_YOUR_LUCK_DOUBLE" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "RADDOPPIA"
@@ -881,6 +945,10 @@ clip_text = true
 text = ""
 
 [node name="ScarsDetailClose" type="Button" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 text = "CHIUDI"
 
 [node name="Phase_END_RUN" type="Control" parent="UI_RunRoot"]
@@ -1009,13 +1077,25 @@ theme_override_constants/line_separation = 4
 text = ""
 
 [node name="Btn_END_RUN_RESTART" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 text = "NUOVA RUN"
 
 [node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 visible = false
 text = "NEXT BET"
 
 [node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
 text = "TORNA AL MENU"
 
 [node name="WaxSeal" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
@@ -1090,7 +1170,10 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="ScarsTitle" type="Label" parent="HUD/ScarsPanel/ScarsVBox"]
+[node name="ScarsTitlePanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ScarsTitle" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsTitlePanel"]
 autowrap_mode = 2
 text = "CICATRICI"
 
@@ -1106,7 +1189,10 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="ScarsLabel" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries"]
+[node name="ScarsLabelPanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="ScarsLabel" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel"]
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Nessuna cicatrice."

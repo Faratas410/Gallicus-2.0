@@ -190,7 +190,7 @@ const AUDIENCE_PHRASES: Dictionary = {
 }
 
 func _flow_log(tag: String, details: String = "") -> void:
-	print_debug("[FLOW] %s :: %s" % [tag, details])
+	_flow_logger.log(tag, details)
 const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 	AUDIENCE_CONTEXT_PACT_SIGNED: {
 		AUDIENCE_MOOD_FURY: [
@@ -1184,6 +1184,7 @@ var _bet_system: RunBetSystem = BetSystemScript.new()
 var _scar_system: RunScarSystem = ScarSystemScript.new()
 var _scar_catalog: ScarCatalog = ScarCatalog.new()
 var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
+var _flow_logger: FlowLogger = FlowLogger.new()
 var _gameevents_connected: bool = false
 
 func _ready() -> void:

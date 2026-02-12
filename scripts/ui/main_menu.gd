@@ -13,7 +13,7 @@ extends Control
 
 const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
-const MainPanelStylebox: StyleBox = preload("res://ui/official/styleboxes/sb_panel_main.tres")
+const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
@@ -157,14 +157,10 @@ func _build_condanne_list() -> void:
 	condanne_populated = true
 
 func _create_condanna_entry_panel(text: String) -> PanelContainer:
-	var entry_panel := PanelContainer.new()
-	entry_panel.theme_override_styles.panel = MainPanelStylebox
+	var entry_panel: PanelContainer = UIFactoryScript.create_sprite_label(text) as PanelContainer
 	entry_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var entry_label := Label.new()
-	entry_label.text = text
-	entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	var entry_label: Label = entry_panel.get_child(0) as Label
 	entry_label.mouse_filter = Control.MOUSE_FILTER_STOP
-	entry_panel.add_child(entry_label)
 	return entry_panel
 
 func _build_museo_list() -> void:
@@ -224,15 +220,10 @@ func _add_museo_item(text: String) -> void:
 	museo_vbox.add_child(entry_panel)
 
 func _create_museo_entry_panel(text: String) -> PanelContainer:
-	var entry_panel := PanelContainer.new()
-	entry_panel.theme_override_styles.panel = MainPanelStylebox
+	var entry_panel: PanelContainer = UIFactoryScript.create_sprite_label(text) as PanelContainer
 	entry_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var entry_label := Label.new()
-	entry_label.text = text
-	entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	entry_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	var entry_label: Label = entry_panel.get_child(0) as Label
 	entry_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	entry_panel.add_child(entry_label)
 	return entry_panel
 
 func _get_pact_display_name(run_manager: Node, pact_id: StringName) -> String:

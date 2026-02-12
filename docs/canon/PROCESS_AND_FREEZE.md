@@ -210,3 +210,11 @@ non è chiaramente motivata dal sintomo
 Gallicus non deve diventare “più complesso”.
 Deve diventare più coerente.
 
+## Level 3 Stability Seal
+
+Runtime structure and documentation are aligned.
+Any future runtime modification requires updating:
+- RUN_ARCHITECTURE_CANON
+- repo_map.md
+- MECHANICS_UNIFIED (if flow impacted)
+

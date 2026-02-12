@@ -252,20 +252,19 @@ These panels must exist and must not be freed while a run is active.
 | --- | --- | --- | --- |
 | `request_new_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_new_game_pressed` → `scripts/systems/run_manager.gd::_ready` |
 | `request_continue_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_continue_pressed` → `scripts/systems/run_manager.gd::_ready` |
-| `request_open_bet_ui` | UNKNOWN (needs editor validation) | BetManager | `scripts/systems/bet_manager.gd::_ready` |
-| `request_place_bet` | UI Root | RunManager, BetManager | `scripts/ui/ui_root.gd::_place_bet` → `scripts/systems/run_manager.gd::_ready`, `scripts/systems/bet_manager.gd::_ready` |
-| `bet_ui_opened` | RunManager, BetManager | UI Root | `scripts/systems/run_manager.gd::_open_level3_bet_ui`, `scripts/systems/bet_manager.gd::open_bet_ui_before_arena` → `scripts/ui/ui_root.gd::_ready` |
-| `bet_placed` | RunManager, BetManager | UI Root, RunManager | `scripts/systems/run_manager.gd::select_bet`, `scripts/systems/bet_manager.gd::place_bet` → `scripts/ui/ui_root.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
+| `request_place_bet` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_intro_bet_selected` → `scripts/systems/run_manager.gd::_ready` |
+| `bet_ui_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_level3_bet_ui` → `scripts/ui/ui_root.gd::_ready` |
+| `bet_placed` | RunManager | UI Root, RunManager | `scripts/systems/run_manager.gd::select_bet` → `scripts/ui/ui_root.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
 | `pact_sealed_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` → `scripts/ui/ui_root.gd::_ready` |
 | `pact_sealed_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` → `scripts/ui/ui_root.gd::_ready` |
 | `resolve_ritual_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` → `scripts/ui/ui_root.gd::_ready` |
 | `resolve_ritual_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` → `scripts/ui/ui_root.gd::_ready` |
 | `arena_started` | RunManager | UI Root | `scripts/systems/run_manager.gd::_resolve_ritual_outcome` → `scripts/ui/ui_root.gd::_ready` |
 | `arena_completed` | RunManager | UNKNOWN (needs editor validation) | `scripts/systems/run_manager.gd::_resolve_ritual_outcome` |
-| `request_intermediate_choice` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_intermediate_choice_*` → `scripts/systems/run_manager.gd::_ready` |
+| `request_mid_choice_select` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_mid_choice_select` → `scripts/systems/run_manager.gd::_ready` |
 | `push_luck_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_push_luck_choice` → `scripts/ui/ui_root.gd::_ready` |
-| `request_push_luck_cashout` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_push_luck_cashout_pressed` → `scripts/systems/run_manager.gd::_ready` |
-| `request_push_luck_double` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_push_luck_double_pressed` → `scripts/systems/run_manager.gd::_ready` |
+| `request_pyl_cashout` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` → `scripts/systems/run_manager.gd::_ready` |
+| `request_pyl_double` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` → `scripts/systems/run_manager.gd::_ready` |
 | `run_finale_selected` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_finale` → `scripts/ui/ui_root.gd::_ready` |
 | `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` → `scripts/ui/ui_root.gd::_ready`, `scripts/Arena.gd::_ready` |
 | `request_show_main_menu` | UI Root | MainMenu UI, RunManager (log-only) | `scripts/ui/ui_root.gd::_on_quit_pressed` → `scripts/ui/main_menu.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
@@ -370,4 +369,3 @@ Scene: `res://scenes/UI.tscn`
   - phase map (`_phase_node_map`) and `show_phase(phase: int)`
 - `scripts/systems/run_manager.gd`
   - sanity checks and `_ensure_flow_panel(...)` paths updated to `UI_RunRoot/Phase_*`
-

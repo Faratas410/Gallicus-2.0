@@ -8,10 +8,8 @@ Last merged from: docs/FASE_10_FREEZE.md, docs/CODEX_GOLDEN_CHECKLIST.md
 
 ## Index
 
-- [Codex operational workflow](#codex-operational-workflow)
-- [Freeze phase](#freeze-phase)
-- [PR checklist and acceptance](#pr-checklist-and-acceptance)
-- [Merged sources (verbatim)](#source-docsfase_10_freezemd)
+- [TASK 10.1 — Freeze di design](#task-101-freeze-di-design)
+- [SOURCE: CODEX_GOLDEN_CHECKLIST](#source-docscodexgoldenchecklistmd)
 
 ## SOURCE: docs/FASE_10_FREEZE.md
 

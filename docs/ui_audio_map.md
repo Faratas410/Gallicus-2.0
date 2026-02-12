@@ -1,33 +1,12 @@
-# UI Audio Map
+# Ui Audio Map
 
-**Status:** SUPPORTING  
-**Scope:** UI-to-audio mood mapping for menu, arena, boss, and ending phases.  
-**Source of truth:** docs/audio_paths.md, docs/ui_official_ledger.md  
-**Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/audio_paths.md.
+# DEPRECATED — moved to docs/canon/UI_CANON.md
 
-## Overlap
-- Overlaps with: docs/audio_paths.md.
+This file is kept for history. Canon lives at: `docs/canon/UI_CANON.md`.
 
-## Main menu / idle ambience
-- Ambient2.mp3
-- Ambient4.mp3
-- Darkness.mp3
+Content migrated to `docs/canon/UI_CANON.md` in the documentation consolidation patch (canon by category).
 
-## Arena tension
-- HellfireEchoes.mp3
-- Infernal.mp3
-- Doomfire.mp3
+## Legacy index
 
-## Boss / escalation
-- TyrantsOfHell.mp3
-- MarchOfDemonicLegions.mp3
-- ApocalypticCarnage.mp3
-
-## End run / verdict
-- LamentOfTheFallen.mp3
-- ScreamsFromTheVoid.mp3
-
-## Credits
-- CreditsOrCutscene1.mp3
-- PianoMarch.mp3
+- Historical source retained via git history.
+- Use canonical document for all active references.

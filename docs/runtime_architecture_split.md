@@ -1,48 +1,12 @@
-# Runtime Architecture Split (Phase 3)
+# Runtime Architecture Split
 
-**Status:** SUPPORTING  
-**Scope:** High-level split between canonical runtime and legacy/non-runtime code surfaces.  
-**Source of truth:** docs/run_architecture_ledger.md, docs/repo_map.md  
-**Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+# DEPRECATED — moved to docs/canon/RUN_ARCHITECTURE_CANON.md
 
-## Overlap
-- Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+This file is kept for history. Canon lives at: `docs/canon/RUN_ARCHITECTURE_CANON.md`.
 
-## Runtime L3 (active path)
+Content migrated to `docs/canon/RUN_ARCHITECTURE_CANON.md` in the documentation consolidation patch (canon by category).
 
-Runtime L3 includes the active boot and orchestration path used by the game flow:
+## Legacy index
 
-- `res://scenes/Main.tscn`
-- `res://scripts/systems/run_manager.gd` (single RunManager)
-- `res://scripts/systems/game_events.gd` (Autoload event bus)
-- Active UI scenes/scripts under `res://scenes/ui/` and `res://scripts/ui/`
-- L3 visual core kept in active path:
-  - `res://scripts/Arena.gd`
-  - `res://scripts/Player.gd`
-  - `res://scripts/entities/enemy_basic.gd`
-
-## Legacy runtime (non-L3)
-
-Legacy gameplay systems are confined under `res://legacy_runtime/`:
-
-- Gameplay scripts:
-  - `res://legacy_runtime/gameplay/player_legacy.gd`
-  - `res://legacy_runtime/gameplay/enemy_legacy.gd`
-- Legacy scene:
-  - `res://legacy_runtime/scenes/Enemy.tscn`
-- Legacy pickups:
-  - `res://legacy_runtime/pickups/Pickup.gd`
-  - `res://legacy_runtime/pickups/PickupSpawner.gd`
-  - `res://legacy_runtime/pickups/Pickup_Heal.tscn`
-  - `res://legacy_runtime/pickups/Pickup_Coins.tscn`
-  - `res://legacy_runtime/pickups/Pickup_SpeedBoost.tscn`
-
-## Rule
-
-No file under `res://legacy_runtime/` may be referenced by:
-
-- `res://scenes/Main.tscn`
-- `res://scripts/systems/run_manager.gd`
-
-This keeps Level 3 runtime active and boot-safe while preserving legacy gameplay assets in an isolated namespace.
+- Historical source retained via git history.
+- Use canonical document for all active references.

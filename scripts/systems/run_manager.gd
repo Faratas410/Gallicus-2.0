@@ -1419,7 +1419,7 @@ func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase])
 	for allowed_phase: RunPhase in allowed_phases:
 		if _phase == allowed_phase:
 			return true
-	push_error("RunManager: %s in wrong phase %s (allowed=%s)" % [request_name, str(_phase), str(allowed_phases)])
+	push_error("RunManager: %s in wrong phase %s (allowed=%s)\nLAST_FLOW:\n%s" % [request_name, str(_phase), str(allowed_phases), _flow_logger.dump_last(30)])
 	return false
 
 func request_confirm_pact() -> void:
@@ -3091,16 +3091,19 @@ func _on_request_intro_buy_token() -> void:
 		_enter_bet_present()
 
 func _on_request_mid_choice_select(index: int) -> void:
+	_flow_logger.log_request("request_mid_choice_select", "index=%d" % index)
 	if not _guard_request_phase("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE]):
 		return
 	request_choose_mid(index)
 
 func _on_request_pyl_cashout() -> void:
+	_flow_logger.log_request("request_pyl_cashout")
 	if not _guard_request_phase("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK]):
 		return
 	request_take_payout()
 
 func _on_request_pyl_condanna() -> void:
+	_flow_logger.log_request("request_pyl_condanna")
 	if not _guard_request_phase("request_pyl_condanna", [RunPhase.PUSH_YOUR_LUCK]):
 		return
 	if not _waiting_for_push_luck:
@@ -3109,6 +3112,7 @@ func _on_request_pyl_condanna() -> void:
 	_handle_push_luck_condanna()
 
 func _on_request_pyl_double() -> void:
+	_flow_logger.log_request("request_pyl_double")
 	if not _guard_request_phase("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK]):
 		return
 	request_push_your_luck()
@@ -3841,6 +3845,7 @@ func _build_push_luck_ui_payload(bet_id: StringName) -> RunUiPayload:
 func _emit_ui(payload: RunUiPayload) -> void:
 	if payload == null:
 		return
+	_flow_logger.log_ui("emit_payload", "phase=%s" % str(payload.phase))
 	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null:
 		return
@@ -4687,13 +4692,13 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
 	if not _has_enter_phase_handler(next):
-		push_error("RunManager: missing _enter_* for phase %s" % str(next))
+		push_error("RunManager: missing _enter_* for phase %s\nLAST_FLOW:\n%s" % [str(next), _flow_logger.dump_last(30)])
 		return
 	var previous_phase: RunPhase = _phase
-	_flow_log("PHASE", "%s -> %s (%s)" % [str(previous_phase), str(next), reason])
+	_flow_logger.log_phase(str(next), "from=%s reason=%s" % [str(previous_phase), reason])
 	_phase = next
 	if not _run_enter_phase(next):
-		push_error("RunManager: missing _enter_* for phase %s" % str(next))
+		push_error("RunManager: missing _enter_* for phase %s\nLAST_FLOW:\n%s" % [str(next), _flow_logger.dump_last(30)])
 		return
 	if OS.is_debug_build() and reason != "":
 		print_debug("RunManager flow phase:", int(next), "-", reason)

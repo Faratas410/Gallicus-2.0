@@ -3026,6 +3026,8 @@ func _on_request_retry_run() -> void:
 	retry_current_bet()
 
 func _on_request_continue_run() -> void:
+	if not _guard_request_phase("request_continue_run", [RunPhase.MAIN_MENU, RunPhase.NONE]):
+		return
 	request_load_continue()
 
 func _on_request_show_main_menu() -> void:
@@ -3035,8 +3037,7 @@ func _on_request_show_main_menu() -> void:
 	request_quit_to_menu()
 
 func _on_request_intro_apply_seed(seed_text: String) -> void:
-	if _phase != RunPhase.BET_PRESENT and _phase != RunPhase.RUN_INIT:
-		push_error("RunManager: request_intro_apply_seed in wrong phase %s" % [str(_phase)])
+	if not _guard_request_phase("request_intro_apply_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
 		return
 	var normalized_text: String = seed_text.strip_edges()
 	if normalized_text == "":
@@ -3052,7 +3053,9 @@ func _on_request_intro_apply_seed(seed_text: String) -> void:
 		_enter_bet_present()
 
 func _on_request_intro_select_bet(bet_id: String) -> void:
-	if _phase != RunPhase.BET_PRESENT or not _waiting_for_bet:
+	if not _guard_request_phase("request_intro_select_bet", [RunPhase.BET_PRESENT]):
+		return
+	if not _waiting_for_bet:
 		push_error("RunManager: request_intro_select_bet in wrong phase %s" % [str(_phase)])
 		return
 	var selected_bet_id: StringName = StringName(bet_id.strip_edges())
@@ -3072,11 +3075,12 @@ func _on_request_intro_select_bet(bet_id: String) -> void:
 	_enter_bet_present()
 
 func _on_request_intro_confirm() -> void:
+	if not _guard_request_phase("request_intro_confirm", [RunPhase.BET_PRESENT]):
+		return
 	request_confirm_pact()
 
 func _on_request_intro_buy_token() -> void:
-	if _phase != RunPhase.BET_PRESENT and _phase != RunPhase.RUN_INIT:
-		push_error("RunManager: request_intro_buy_token in wrong phase %s" % [str(_phase)])
+	if not _guard_request_phase("request_intro_buy_token", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
 		return
 	if not purchase_token():
 		push_error("RunManager: request_intro_buy_token failed (insufficient coins or invalid cost)")
@@ -3097,7 +3101,9 @@ func _on_request_pyl_cashout() -> void:
 	request_take_payout()
 
 func _on_request_pyl_condanna() -> void:
-	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
+	if not _guard_request_phase("request_pyl_condanna", [RunPhase.PUSH_YOUR_LUCK]):
+		return
+	if not _waiting_for_push_luck:
 		push_error("RunManager: request_pyl_condanna in wrong phase %s" % [str(_phase)])
 		return
 	_handle_push_luck_condanna()
@@ -3108,14 +3114,12 @@ func _on_request_pyl_double() -> void:
 	request_push_your_luck()
 
 func _on_request_end_run_restart() -> void:
-	if _phase != RunPhase.GAME_OVER:
-		push_error("RunManager: request_end_run_restart in wrong phase %s" % [str(_phase)])
+	if not _guard_request_phase("request_end_run_restart", [RunPhase.GAME_OVER]):
 		return
 	request_new_game()
 
 func _on_request_end_run_next_bet() -> void:
-	if _phase != RunPhase.GAME_OVER:
-		push_error("RunManager: request_end_run_next_bet in wrong phase %s" % [str(_phase)])
+	if not _guard_request_phase("request_end_run_next_bet", [RunPhase.GAME_OVER]):
 		return
 	if LEVEL3_ENABLED:
 		_start_level3_run()
@@ -3123,8 +3127,7 @@ func _on_request_end_run_next_bet() -> void:
 	retry_current_bet()
 
 func _on_request_end_run_quit() -> void:
-	if _phase != RunPhase.GAME_OVER:
-		push_error("RunManager: request_end_run_quit in wrong phase %s" % [str(_phase)])
+	if not _guard_request_phase("request_end_run_quit", [RunPhase.GAME_OVER]):
 		return
 	request_quit_to_menu()
 
@@ -3347,6 +3350,8 @@ func _push_your_luck() -> void:
 	_spawn_wave_or_enemies()
 
 func _on_request_set_run_seed(run_seed: int) -> void:
+	if not _guard_request_phase("request_set_run_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
+		return
 	_run_state.debug_seed_override_active = true
 	_run_state.debug_seed_override = run_seed
 	print("Debug seed override set:", run_seed)
@@ -3354,6 +3359,8 @@ func _on_request_set_run_seed(run_seed: int) -> void:
 		start_new_run()
 
 func _on_request_clear_run_seed() -> void:
+	if not _guard_request_phase("request_clear_run_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
+		return
 	_run_state.debug_seed_override_active = false
 	_run_state.debug_seed_override = 0
 	print("Debug seed override cleared")
@@ -3361,6 +3368,8 @@ func _on_request_clear_run_seed() -> void:
 		start_new_run()
 
 func _on_request_skip_arena_resolution() -> void:
+	if not _guard_request_phase("request_skip_arena_resolution", [RunPhase.RESOLUTION, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK]):
+		return
 	if _run_state.run_is_over or _is_game_over:
 		return
 	if not OS.is_debug_build():
@@ -3691,6 +3700,8 @@ func _on_run_failed() -> void:
 	_on_request_fail_run("RUN_FAILED")
 
 func _on_request_fail_run(reason: String = "") -> void:
+	if not _guard_request_phase("request_fail_run", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET]):
+		return
 	if _is_game_over or _run_failed_emitted:
 		return
 	GameEvents.set_gameplay_enabled(false)
@@ -4675,12 +4686,24 @@ func is_visual_only() -> bool:
 func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
+	if not _has_enter_phase_handler(next):
+		push_error("RunManager: missing _enter_* for phase %s" % str(next))
+		return
 	var previous_phase: RunPhase = _phase
+	_flow_log("PHASE", "%s -> %s (%s)" % [str(previous_phase), str(next), reason])
 	_phase = next
 	if not _run_enter_phase(next):
-		push_error("RunManager: missing enter handler for phase %s (from=%s, reason=%s)" % [str(next), str(previous_phase), reason])
+		push_error("RunManager: missing _enter_* for phase %s" % str(next))
+		return
 	if OS.is_debug_build() and reason != "":
 		print_debug("RunManager flow phase:", int(next), "-", reason)
+
+func _has_enter_phase_handler(next: RunPhase) -> bool:
+	match next:
+		RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET, RunPhase.GAME_OVER:
+			return true
+		_:
+			return false
 
 func _run_enter_phase(next: RunPhase) -> bool:
 	match next:

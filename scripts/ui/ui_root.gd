@@ -34,12 +34,12 @@ const RUN_PHASE_MAIN_MENU: int = 10
 const RUN_PHASE_RUN_INIT: int = 11
 const RUN_PHASE_BET_PRESENT: int = 12
 const RUN_PHASE_BET_COMMITTED: int = 13
-const RUN_PHASE_POST_BET_MESSAGES: int = 14
-const RUN_PHASE_INTERMEDIATE_CHOICE: int = 15
+const RUN_PHASE_FIRST_REACTION: int = 14
+const RUN_PHASE_MID_CHOICE: int = 15
 const RUN_PHASE_PUSH_YOUR_LUCK: int = 16
 const RUN_PHASE_NEXT_BET: int = 17
 const RUN_PHASE_RESOLUTION: int = 18
-const RUN_PHASE_GAME_OVER: int = 2
+const RUN_PHASE_END_RUN: int = 2
 const POST_BET_TEXTS: Dictionary = {
 	"CASH_OUT": [
 		"Hai incassato. La folla mormora.",
@@ -478,18 +478,20 @@ func _init_phase_node_map() -> void:
 		RUN_PHASE_RUN_INIT: bet_modal,
 		RUN_PHASE_BET_PRESENT: bet_modal,
 		RUN_PHASE_BET_COMMITTED: pact_sealed_modal,
-		RUN_PHASE_POST_BET_MESSAGES: pact_sealed_modal,
-		RUN_PHASE_INTERMEDIATE_CHOICE: intermediate_choice_modal,
+		RUN_PHASE_FIRST_REACTION: pact_sealed_modal,
+		RUN_PHASE_MID_CHOICE: intermediate_choice_modal,
 		RUN_PHASE_PUSH_YOUR_LUCK: push_luck_modal,
 		RUN_PHASE_NEXT_BET: bet_modal,
 		RUN_PHASE_RESOLUTION: resolve_ritual_modal,
-		RUN_PHASE_GAME_OVER: game_over_modal,
+		RUN_PHASE_END_RUN: game_over_modal,
 	}
 
 func _verify_phase_paths() -> void:
+	if get_node_or_null("UI_RunRoot") == null:
+		push_error("UI: missing node UI_RunRoot")
 	for path: String in _PHASE_CONTAINER_PATHS:
 		if get_node_or_null(path) == null:
-			push_error("UI: missing node at %s" % path)
+			push_error("UI: missing node %s" % path)
 	for phase_key: Variant in _phase_node_map.keys():
 		var mapped_phase: int = int(phase_key)
 		var mapped_node: Control = _phase_node_map.get(mapped_phase, null) as Control
@@ -507,7 +509,7 @@ func show_phase(phase: int) -> void:
 			phase_node.visible = false
 	var target: Control = _phase_node_map.get(phase, null) as Control
 	if target == null:
-		push_error("UI: missing phase mapping for %s (known=%s)" % [str(phase), str(_phase_node_map.keys())])
+		push_error("UI: unmapped phase %s" % str(phase))
 		_refresh_modal_dimmer()
 		return
 	target.visible = true

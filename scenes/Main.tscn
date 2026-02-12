@@ -65,7 +65,10 @@ theme_override_styles/panel = ExtResource("7")
 alignment = 1
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+[node name="TitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="TitleLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/TitlePanel"]
 horizontal_alignment = 1
 text = "GALLICUS"
 theme_override_colors/font_color = Color(0.95, 0.91, 0.8, 1)
@@ -78,7 +81,10 @@ theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
-[node name="ContinueHintLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+[node name="ContinueHintPanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="ContinueHintLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/ContinueHintPanel"]
 visible = false
 horizontal_alignment = 1
 text = "Nessuna partita salvata."
@@ -132,11 +138,17 @@ anchor_bottom = 1.0
 alignment = 1
 theme_override_constants/separation = 12
 
-[node name="AchievementsTitle" type="Label" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+[node name="AchievementsTitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="AchievementsTitle" type="Label" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/AchievementsTitlePanel"]
 horizontal_alignment = 1
 text = "ARCHIVIO DELLE CONDANNE"
 
-[node name="ArchivioDisclaimer" type="Label" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+[node name="ArchivioDisclaimerPanel" type="PanelContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="ArchivioDisclaimer" type="Label" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/ArchivioDisclaimerPanel"]
 horizontal_alignment = 1
 text = "Registro consultivo. Nessuna ricompensa."
 
@@ -146,9 +158,17 @@ theme_override_constants/separation = 12
 
 [node name="CondanneTabButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox"]
 text = "CONDANNE"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")
 
 [node name="MuseoTabButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox"]
 text = "MUSEO"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")
 
 [node name="CondanneContainer" type="VBoxContainer" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
 size_flags_horizontal = 3
@@ -183,6 +203,10 @@ theme_override_constants/separation = 6
 
 [node name="BackButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
 text = "INDIETRO"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")
 
 [node name="CondannaTooltip" type="PanelContainer" parent="MenuLayer/MainMenu/AchievementsPanel"]
 visible = false
@@ -213,17 +237,27 @@ anchor_bottom = 1.0
 alignment = 1
 theme_override_constants/separation = 12
 
-[node name="CreditsTitle" type="Label" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
+[node name="CreditsTitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="CreditsTitle" type="Label" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox/CreditsTitlePanel"]
 horizontal_alignment = 1
 text = "CREDITI"
 
-[node name="CreditsBody" type="Label" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
+[node name="CreditsBodyPanel" type="PanelContainer" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="CreditsBody" type="Label" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox/CreditsBodyPanel"]
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)"
 
 [node name="CreditsBackButton" type="Button" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
 text = "INDIETRO"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")
 
 [node name="SettingsPanel" type="Control" parent="MenuLayer/MainMenu"]
 visible = false
@@ -239,11 +273,17 @@ anchor_bottom = 1.0
 alignment = 1
 theme_override_constants/separation = 12
 
-[node name="SettingsTitle" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="SettingsTitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="SettingsTitle" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsTitlePanel"]
 horizontal_alignment = 1
 text = "IMPOSTAZIONI"
 
-[node name="BrightnessLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="BrightnessLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="BrightnessLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/BrightnessLabelPanel"]
 text = "LUMINOSITÀ"
 
 [node name="BrightnessSlider" type="HSlider" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
@@ -252,24 +292,39 @@ max_value = 1.4
 step = 0.05
 value = 1.0
 
-[node name="BrightnessValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="BrightnessValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="BrightnessValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/BrightnessValuePanel"]
 horizontal_alignment = 1
 text = "Luminosità: 1.00"
 
-[node name="LanguageLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="LanguageLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="LanguageLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/LanguageLabelPanel"]
 text = "LINGUA"
 
 [node name="LanguageOption" type="OptionButton" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 
-[node name="LanguagePlaceholder" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="LanguagePlaceholderPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="LanguagePlaceholder" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/LanguagePlaceholderPanel"]
 horizontal_alignment = 1
 text = "(Placeholder)"
 
-[node name="LanguageValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="LanguageValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="LanguageValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/LanguageValuePanel"]
 horizontal_alignment = 1
 text = "Lingua selezionata: Italiano"
 
-[node name="VolumeLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="VolumeLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="VolumeLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/VolumeLabelPanel"]
 text = "VOLUME MASTER"
 
 [node name="MasterVolumeSlider" type="HSlider" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
@@ -278,7 +333,10 @@ max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="MasterVolumeValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+[node name="MasterVolumeValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+theme_override_styles/panel = ExtResource("7")
+
+[node name="MasterVolumeValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeValuePanel"]
 horizontal_alignment = 1
 text = "Volume: 100%"
 
@@ -287,3 +345,7 @@ text = "Fullscreen"
 
 [node name="SettingsBackButton" type="Button" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 text = "INDIETRO"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")

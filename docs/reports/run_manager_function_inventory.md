@@ -1,5 +1,16 @@
 # RunManager Function Inventory Report
 
+## Current Refactor Status
+
+- `_flow_log` extracted to `flow_logger.gd` (`FlowLogger` integration active in `RunManager`).
+- `GameEvents` wiring migrated to table-driven registration with guard checks.
+- Legacy purge pass 1 completed. Removed legacy-facing functions:
+  - `get_tokens()`
+  - `buy_token()`
+  - `spend_tokens()`
+- Watchdog added for activity markers and stall hint diagnostics.
+- Debug getters added for overlay/read-only diagnostics.
+
 - Scope: `scripts/systems/run_manager.gd` (read-only audit).
 - Total functions: **303**.
 - Signals defined in RunManager: **0**.

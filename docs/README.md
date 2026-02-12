@@ -26,6 +26,9 @@ This index defines the explicit status of documents in `docs/` and the current o
 
 ## Runtime Architecture
 - `run_architecture_ledger.md` — Canonical ownership of run flow, systems, and extension rules. **[CANON]** Owner: RunManager authority
+- `Flow Observability Stack` — Operational layer composed of `FlowLogger`, `Watchdog`, and RunManager flow snapshots. **[CANON via run_architecture_ledger.md]** Owner: RunManager observability authority
+- `Debug Overlay` — Read-only F3 diagnostics surface for phase/request/UI tail inspection. **[CANON via run_architecture_ledger.md]** Owner: RunManager debug authority
+- `Watchdog` — Stall-detection and activity-tracking diagnostics with no gameplay authority. **[CANON via run_architecture_ledger.md]** Owner: RunManager diagnostics authority
 - `flow_wiring_contract.md` — Canonical runtime flow wiring contract and event boundaries. **[CANON]** Owner: Flow wiring contract authority
 - `FLOW_OFFICIAL_EA.md` — See file header for scope. **[SUPPORTING]** Owner: Flow narrative reference authority
 - `runtime_architecture_split.md` — See file header for scope. **[SUPPORTING]** Owner: Runtime split reference owner
@@ -52,6 +55,7 @@ This index defines the explicit status of documents in `docs/` and the current o
 - `audio_paths.md` — See file header for scope. **[SUPPORTING]** Owner: Audio path policy authority
 
 ## Reports / Temporary
+- `reports/run_manager_function_inventory.md` — RunManager function inventory and refactor snapshot. **[REPORT]** Owner: Runtime audit owner
 - `level3_integrity_audit_report.md` — See file header for scope. **[REPORT]** Owner: Historical integrity audit owner
 - `level3_open_questions_log.md` — See file header for scope. **[REPORT]** Owner: Historical open-questions owner
 - `codex_report_1_0_gap.md` — See file header for scope. **[REPORT]** Owner: Historical gap snapshot owner

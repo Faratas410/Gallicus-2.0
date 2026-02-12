@@ -99,6 +99,9 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var bet_confirm_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow") as Control
 @onready var bet_confirm_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTER") as Label
 @onready var bet_confirm_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM") as Button
+@onready var intro_select_win_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN") as Button
+@onready var intro_select_no_hit_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT") as Button
+@onready var intro_select_fast_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST") as Button
 @onready var seed_input: LineEdit = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
 @onready var seed_apply_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED") as Button
 @onready var debug_overlay: Label = get_node_or_null("HUD/DebugOverlay") as Label
@@ -446,6 +449,7 @@ func _ready() -> void:
 				scars_detail_close.pressed.connect(close_callable)
 	_wire_intermediate_choice_buttons()
 	_wire_push_luck_buttons()
+	_wire_intro_phase_buttons()
 
 	var arena: Node = get_tree().get_first_node_in_group("arena")
 	if arena != null and arena.has_signal("player_spawned"):
@@ -648,6 +652,20 @@ func _wire_seed_input() -> void:
 	if not seed_apply_button.pressed.is_connected(seed_callable):
 		seed_apply_button.pressed.connect(seed_callable)
 
+func _wire_intro_phase_buttons() -> void:
+	if intro_select_win_button != null:
+		var win_callable: Callable = Callable(self, "_on_bet_win_pressed")
+		if not intro_select_win_button.pressed.is_connected(win_callable):
+			intro_select_win_button.pressed.connect(win_callable)
+	if intro_select_no_hit_button != null:
+		var no_hit_callable: Callable = Callable(self, "_on_bet_no_hit_pressed")
+		if not intro_select_no_hit_button.pressed.is_connected(no_hit_callable):
+			intro_select_no_hit_button.pressed.connect(no_hit_callable)
+	if intro_select_fast_button != null:
+		var fast_callable: Callable = Callable(self, "_on_bet_fast_pressed")
+		if not intro_select_fast_button.pressed.is_connected(fast_callable):
+			intro_select_fast_button.pressed.connect(fast_callable)
+
 func _refresh_buy_token_ui() -> void:
 	if buy_token_button == null:
 		return
@@ -843,22 +861,15 @@ func _hide_arena_resolution_overlay() -> void:
 		arena_resolution_label.visible = false
 
 func _on_buy_token_pressed() -> void:
-	# Legacy token shop removed from RunManager flow.
-	pass
+	if GameEvents.has_signal("request_intro_buy_token"):
+		GameEvents.request_intro_buy_token.emit()
 
 func _on_seed_apply_pressed() -> void:
 	if seed_input == null:
 		return
 	var text_value: String = seed_input.text.strip_edges()
-	if text_value == "":
-		if GameEvents.has_signal("request_clear_run_seed"):
-			GameEvents.request_clear_run_seed.emit()
-		return
-	if not text_value.is_valid_int():
-		return
-	var seed_value: int = int(text_value)
-	if GameEvents.has_signal("request_set_run_seed"):
-		GameEvents.request_set_run_seed.emit(seed_value)
+	if GameEvents.has_signal("request_intro_apply_seed"):
+		GameEvents.request_intro_apply_seed.emit(text_value)
 
 func _ensure_token_icons() -> void:
 	if coins_icon != null and coins_icon.texture == null:
@@ -1813,13 +1824,13 @@ func _wire_intermediate_choice_buttons() -> void:
 
 func _on_intermediate_choice_placa_pressed() -> void:
 	_set_intermediate_choice_modal(false)
-	if GameEvents.has_signal("request_intermediate_choice"):
-		GameEvents.request_intermediate_choice.emit("placa")
+	if GameEvents.has_signal("request_mid_choice_select"):
+		GameEvents.request_mid_choice_select.emit(0)
 
 func _on_intermediate_choice_provoca_pressed() -> void:
 	_set_intermediate_choice_modal(false)
-	if GameEvents.has_signal("request_intermediate_choice"):
-		GameEvents.request_intermediate_choice.emit("provoca")
+	if GameEvents.has_signal("request_mid_choice_select"):
+		GameEvents.request_mid_choice_select.emit(1)
 
 func _wire_debug_tools() -> void:
 	if not OS.is_debug_build():
@@ -1865,37 +1876,36 @@ func _on_debug_copy_log_pressed() -> void:
 	DisplayServer.clipboard_set(_debug_run_log)
 
 func _on_push_luck_cashout_pressed() -> void:
-	if GameEvents.has_signal("post_arena_choice_selected"):
-		GameEvents.post_arena_choice_selected.emit(&"CASH_OUT")
-	if GameEvents.has_signal("request_push_luck_cashout"):
-		GameEvents.request_push_luck_cashout.emit()
+	if GameEvents.has_signal("request_pyl_cashout"):
+		GameEvents.request_pyl_cashout.emit()
 
 func _on_push_luck_condanna_pressed() -> void:
-	if GameEvents.has_signal("request_push_luck_cashout"):
-		GameEvents.request_push_luck_cashout.emit()
-	if GameEvents.has_signal("post_arena_choice_selected"):
-		GameEvents.post_arena_choice_selected.emit(&"CONDANNA")
+	if GameEvents.has_signal("request_pyl_condanna"):
+		GameEvents.request_pyl_condanna.emit()
 
 func _on_push_luck_double_pressed() -> void:
-	if GameEvents.has_signal("post_arena_choice_selected"):
-		GameEvents.post_arena_choice_selected.emit(&"CONTINUE")
-	if GameEvents.has_signal("request_push_luck_double"):
-		GameEvents.request_push_luck_double.emit()
+	if GameEvents.has_signal("request_pyl_double"):
+		GameEvents.request_pyl_double.emit()
 
 func _on_bet_win_pressed() -> void:
-	_place_bet("DOUBLE_OR_DIE")
+	if GameEvents.has_signal("request_intro_select_bet"):
+		GameEvents.request_intro_select_bet.emit("DOUBLE_OR_DIE")
 
 func _on_bet_no_hit_pressed() -> void:
-	_place_bet("FLAWLESS_BLOOD")
+	if GameEvents.has_signal("request_intro_select_bet"):
+		GameEvents.request_intro_select_bet.emit("FLAWLESS_BLOOD")
 
 func _on_bet_fast_pressed() -> void:
-	_place_bet("CASH_OUT")
+	if GameEvents.has_signal("request_intro_select_bet"):
+		GameEvents.request_intro_select_bet.emit("CASH_OUT")
 
 func _on_restart_pressed() -> void:
-	_request_reset()
+	if GameEvents.has_signal("request_end_run_restart"):
+		GameEvents.request_end_run_restart.emit()
 
 func _on_retry_pressed() -> void:
-	_request_retry()
+	if GameEvents.has_signal("request_end_run_next_bet"):
+		GameEvents.request_end_run_next_bet.emit()
 
 func _request_reset() -> void:
 	_set_game_over_modal(false)
@@ -1917,11 +1927,8 @@ func _request_retry() -> void:
 	_refresh_modal_dimmer()
 
 func _on_quit_pressed() -> void:
-	_set_game_over_modal(false)
-	if GameEvents.has_signal("request_show_main_menu"):
-		GameEvents.request_show_main_menu.emit()
-	_hide_scars_detail()
-	_refresh_modal_dimmer()
+	if GameEvents.has_signal("request_end_run_quit"):
+		GameEvents.request_end_run_quit.emit()
 
 func _on_player_health_changed(current: int, max_value: int) -> void:
 	if player_hp_bar == null or player_hp_label == null:
@@ -2162,26 +2169,8 @@ func _on_bet_choice_pressed(bet_id: String) -> void:
 	_place_bet(bet_id)
 
 func _on_bet_confirm_pressed() -> void:
-	if _pending_confirm_bet_id == "":
-		return
-	if _is_signing:
-		return
-	_is_signing = true
-	if bet_confirm_button != null:
-		if _bet_confirm_default_text == "":
-			_bet_confirm_default_text = bet_confirm_button.text
-		bet_confirm_button.text = "FIRMA IN CORSO..."
-		bet_confirm_button.disabled = true
-	for button: Button in _bet_buttons:
-		button.disabled = true
-	var confirm_bet_id: String = _pending_confirm_bet_id
-	await get_tree().create_timer(0.7).timeout
-	if not _is_signing:
-		return
-	if _pending_confirm_bet_id == "":
-		_reset_bet_confirmation()
-		return
-	_place_bet(confirm_bet_id)
+	if GameEvents.has_signal("request_intro_confirm"):
+		GameEvents.request_intro_confirm.emit()
 
 func _place_bet(bet_id: String) -> void:
 	_selected_bet_id = bet_id

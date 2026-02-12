@@ -3498,29 +3498,16 @@ func spend_coins(amount: int) -> bool:
 	return true
 
 func get_coins() -> int:
+	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
 	return int(run.get("coins", 0))
 
-func get_tokens() -> int:
-	return int(run.get("upgrade_tokens", 0))
-
 func get_buy_token_cost() -> int:
+	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
 	return token_purchase_cost_coins
 
 func get_token_buy_cost() -> int:
+	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
 	return token_purchase_cost_coins
-
-func buy_token() -> bool:
-	return purchase_token()
-
-func spend_tokens(amount: int) -> bool:
-	if amount <= 0:
-		return true
-	if int(run.get("upgrade_tokens", 0)) < amount:
-		return false
-	run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) - amount
-	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	return true
 
 func purchase_token() -> bool:
 	# Compra 1 token pagando coins.
@@ -3687,18 +3674,6 @@ func get_difficulty_multiplier() -> float:
 		return float(tier_multipliers[tier])
 	return float(tier_multipliers[tier_multipliers.size() - 1])
 
-func get_upgrade_tokens() -> int:
-	return int(run.get("upgrade_tokens", 0))
-
-func consume_upgrade_token() -> bool:
-	var t: int = int(run.get("upgrade_tokens", 0))
-	if t <= 0:
-		return false
-	run["upgrade_tokens"] = t - 1
-	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	return true
-
 func _recompute_difficulty_tier(force_emit: bool) -> void:
 	var lvl: int = int(run.get("level", 1))
 	var new_tier: int = 0
@@ -3780,14 +3755,6 @@ func _on_request_fail_run(reason: String = "") -> void:
 
 func _on_player_died() -> void:
 	_enter_end_run("death")
-
-func _soft_reset() -> void:
-	if _arena and _arena.has_method("soft_reset"):
-		_arena.call("soft_reset")
-	run["arena_index"] = 0
-	_player = _resolve_player()
-	_reset_bet_chain()
-	_open_bet_ui(false)
 
 func handle_bet_failed(bet_id: String) -> void:
 	if _is_game_over:

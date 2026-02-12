@@ -2,7 +2,7 @@
 
 **Status:** REPORT  
 **Scope:** Historical gap analysis snapshot for Codex 1.0 alignment and verification gaps.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/run_architecture_ledger.md  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/canon/RUN_ARCHITECTURE_CANON.md  
 **Last updated:** 2026-02-11  
 **Notes:** This is historical; not canon.
 

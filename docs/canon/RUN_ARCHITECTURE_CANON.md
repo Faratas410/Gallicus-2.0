@@ -6,6 +6,13 @@ If another doc conflicts, this doc wins.
 
 Last merged from: docs/run_architecture_ledger.md, docs/runtime_architecture_split.md, docs/flow_wiring_contract.md, docs/run_ui_phase_paths_and_names.md
 
+## Canon Contract
+
+This document is authoritative for its category.
+No other file may redefine these concepts.
+All changes to systems described here must update this document in the same PR.
+
+
 ## Index
 
 - [Core authority](#core-authority)

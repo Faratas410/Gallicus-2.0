@@ -6,6 +6,13 @@ If another doc conflicts, this doc wins.
 
 Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_silence.md, docs/registry_corruption.md, docs/final_narrative_structure.md
 
+## Canon Contract
+
+This document is authoritative for its category.
+No other file may redefine these concepts.
+All changes to systems described here must update this document in the same PR.
+
+
 ## Index
 
 - [SOURCE: the_register](#source-docstheregistermd)

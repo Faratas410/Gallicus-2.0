@@ -6,6 +6,13 @@ If another doc conflicts, this doc wins.
 
 Last merged from: docs/ui_official_ledger.md, docs/ui_audio_map.md, docs/audio_paths.md
 
+## Canon Contract
+
+This document is authoritative for its category.
+No other file may redefine these concepts.
+All changes to systems described here must update this document in the same PR.
+
+
 ## Index
 
 - [Scope](#scope)

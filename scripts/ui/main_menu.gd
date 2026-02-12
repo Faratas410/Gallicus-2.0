@@ -13,6 +13,7 @@ extends Control
 
 const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
+const MainPanelStylebox: StyleBox = preload("res://ui/official/styleboxes/sb_panel_main.tres")
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
@@ -146,16 +147,25 @@ func _build_condanne_list() -> void:
 		return
 	var condanne: Array[CondannaData] = CondannaDataScript.defaults()
 	for condanna in condanne:
-		var entry_label := Label.new()
-		entry_label.text = "— %s" % condanna.title
-		entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-		entry_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		var entry_panel: PanelContainer = _create_condanna_entry_panel("— %s" % condanna.title)
+		var entry_label: Label = entry_panel.get_child(0) as Label
 		condanna_entries[condanna.id] = entry_label
 		_apply_condanna_style(condanna.id, entry_label)
 		entry_label.mouse_entered.connect(_on_condanna_mouse_entered.bind(condanna))
 		entry_label.mouse_exited.connect(_on_condanna_mouse_exited)
-		condanne_vbox.add_child(entry_label)
+		condanne_vbox.add_child(entry_panel)
 	condanne_populated = true
+
+func _create_condanna_entry_panel(text: String) -> PanelContainer:
+	var entry_panel := PanelContainer.new()
+	entry_panel.theme_override_styles.panel = MainPanelStylebox
+	entry_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var entry_label := Label.new()
+	entry_label.text = text
+	entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	entry_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	entry_panel.add_child(entry_label)
+	return entry_panel
 
 func _build_museo_list() -> void:
 	if museo_vbox == null:

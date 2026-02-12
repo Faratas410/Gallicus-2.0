@@ -216,20 +216,24 @@ func _build_museo_list() -> void:
 		_add_museo_item("Voci dure: +%d" % harsh_total)
 
 func _add_museo_header(text: String) -> void:
-	var label := Label.new()
-	label.text = text
-	label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	museo_vbox.add_child(label)
+	var entry_panel: PanelContainer = _create_museo_entry_panel(text)
+	museo_vbox.add_child(entry_panel)
 
 func _add_museo_item(text: String) -> void:
-	var label := Label.new()
-	label.text = text
-	label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	museo_vbox.add_child(label)
+	var entry_panel: PanelContainer = _create_museo_entry_panel(text)
+	museo_vbox.add_child(entry_panel)
+
+func _create_museo_entry_panel(text: String) -> PanelContainer:
+	var entry_panel := PanelContainer.new()
+	entry_panel.theme_override_styles.panel = MainPanelStylebox
+	entry_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var entry_label := Label.new()
+	entry_label.text = text
+	entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	entry_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	entry_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	entry_panel.add_child(entry_label)
+	return entry_panel
 
 func _get_pact_display_name(run_manager: Node, pact_id: StringName) -> String:
 	if run_manager != null and run_manager.has_method("get_level3_pact_title"):

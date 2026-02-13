@@ -37,7 +37,7 @@
   - `Main.tscn` (entry)
   - `Arena.tscn`
   - `Player.tscn`
-  - `UI.tscn`
+  - `UI.tscn` (HUD includes sprite-backed `GloryPanel/GloryValueLabel` bound by `scripts/ui/ui_root.gd`)
 - Arena variants:
   - `arenas/Arena_01_TrainingYard.tscn`
   - `arenas/Arena_02_OwlSanctum.tscn`

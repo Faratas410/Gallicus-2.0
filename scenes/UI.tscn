@@ -134,6 +134,39 @@ size_flags_horizontal = 3
 autowrap_mode = 2
 text = "—"
 
+[node name="GloryPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
+mouse_filter = 2
+custom_minimum_size = Vector2(360, 0)
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+
+[node name="GloryMargin" type="MarginContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="GloryContent" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 2
+
+[node name="GloryTitlePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="GloryTitle" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryTitlePanel"]
+text = "GLORY"
+
+[node name="GloryValuePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1")
+size_flags_horizontal = 3
+
+[node name="GloryValueLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel"]
+text = "0"
+
 [node name="EscalationRow" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 custom_minimum_size = Vector2(360, 0)
 size_flags_horizontal = 3

@@ -70,6 +70,7 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
 @onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
 @onready var bet_badge_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
+@onready var glory_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
 @onready var escalation_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as ProgressBar
 @onready var hud_root: Control = get_node_or_null("HUD") as Control
 @onready var bet_modal: Control = _req("UI_RunRoot/Phase_INTRO") as Control
@@ -201,6 +202,7 @@ var _xp_to_next: int = 6
 var _level: int = 1
 var _tokens: int = 0
 var _coins: int = 0
+var _glory: int = 0
 var _escalation_level: int = 0
 var _escalation_max: int = 0
 var _popup_tween: Tween = null
@@ -1274,6 +1276,7 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_active_bet = str(payload.get("active_bet_id", ""))
 	_debug_enemy_profile = str(payload.get("enemy_profile", ""))
 	_debug_special_arena = str(payload.get("special_arena_id", ""))
+	_set_glory_value(int(payload.get("glory", 0)))
 	var scars_value: Array = payload.get("scars", []) as Array
 	_debug_scars = []
 	for scar_value in scars_value:
@@ -1346,6 +1349,11 @@ func _on_coins_changed(coins: int) -> void:
 		coins_label.text = "Coins: %d" % coins
 	_coins = coins
 	_refresh_buy_token_ui()
+
+func _set_glory_value(glory: int) -> void:
+	_glory = maxi(glory, 0)
+	if glory_value_label != null:
+		glory_value_label.text = str(_glory)
 
 func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	var bet_label: String = _get_bet_name(_bet_id)

@@ -116,6 +116,9 @@ const RUN_FLOW_PUSH_LUCK: StringName = &"PUSH_LUCK"
 const RUN_FLOW_BET_OFFER: StringName = &"BET_OFFER"
 const CORRUPTION_DOUBLE: int = 1
 const CORRUPTION_PACT_HIGH: int = 1
+const GLORY_PER_SUCCESS: int = 1
+const GLORY_MULT_BASE: int = 1
+const GLORY_MULT_STEPS: Array[int] = [1, 2, 4, 7, 11]
 
 const CONDANNA_NON_MI_FERMERO: StringName = &"CONDANNA_NON_MI_FERMERO"
 const CONDANNA_ANCORA: StringName = &"CONDANNA_ANCORA"
@@ -1200,6 +1203,7 @@ var _last_ui_render_ms: int = 0
 var _last_activity_ms: int = 0
 var _watchdog_enabled: bool = true
 var _registry_has_precedent: bool = false
+var _glory_multiplier: int = GLORY_MULT_BASE
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1548,6 +1552,8 @@ func _start_new_run() -> void:
 	_run_state.push_luck_cashouts = 0
 	_run_state.push_luck_doubles = 0
 	_run_state.max_push_luck_chain = 1
+	_run_state.glory = 0
+	_glory_multiplier = GLORY_MULT_BASE
 	_run_state.post_bet_pending_bet_id = &""
 	_run_state.post_bet_sequence_id = 0
 	_run_state.intermediate_pending_bet_id = &""
@@ -1669,6 +1675,7 @@ func _start_level3_run() -> void:
 
 	_run_state = RunState.new()
 	_run_state.reset()
+	_glory_multiplier = GLORY_MULT_BASE
 	_run_state.run_seed = _get_run_seed_value()
 	_run_state.arena_index = 0
 	_flow_log("run_started", "arena=%d, bet_id=, save_present=%s" % [_run_state.arena_index, str(_save_system.has_run_save())])
@@ -1870,6 +1877,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss_ritual(bet_id, result)
 	else:
+		_apply_glory_on_success()
 		_run_state.last_action_was_rilancio = false
 		_run_state.risky_choice_made_recently = false
 		_apply_level3_reward(bet_id, _run_state.level3_reward_tier)
@@ -1933,6 +1941,7 @@ func _enter_resolution() -> void:
 		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss(bet_id, result)
 	else:
+		_apply_glory_on_success()
 		_handle_level3_win(bet_id, result)
 		var player: Node = _resolve_player()
 		var current_hp: int = -1
@@ -2218,8 +2227,18 @@ func _emit_run_debug_state() -> void:
 		"special_arena_id": String(_run_state.special_arena_id),
 		"special_arena_active": _run_state.special_arena_active,
 		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
+		"glory": _run_state.glory,
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
+
+func _apply_glory_on_success() -> void:
+	var increment: int = GLORY_PER_SUCCESS * _glory_multiplier
+	_run_state.glory = maxi(_run_state.glory + increment, 0)
+
+func _update_glory_multiplier_from_doubles(double_count: int) -> void:
+	var safe_count: int = maxi(double_count, 0)
+	var idx: int = mini(safe_count, GLORY_MULT_STEPS.size() - 1)
+	_glory_multiplier = GLORY_MULT_STEPS[idx]
 
 func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
@@ -2292,6 +2311,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_state = RunState.new()
 	_run_state.reset()
 	_run_state.from_dict(run_state_data)
+	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
 	if _run_state.run_save_flow_step == &"":
 		_run_state.run_save_flow_step = RUN_FLOW_BET_OFFER
 	if _run_state.run_seed <= 0:
@@ -3408,6 +3428,7 @@ func _push_your_luck() -> void:
 		_run_state.level3_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
 		_run_state.level3_doubles += 1
 		_run_state.doubles += 1
+		_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
 		_run_state.corruption += CORRUPTION_DOUBLE
 		_run_state.level3_max_escalation = maxi(_run_state.level3_max_escalation, _run_state.escalation_level)
 		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
@@ -4724,26 +4745,19 @@ func _get_final_state_label(ending_id: StringName) -> String:
 			return "non definito"
 
 func _update_hidden_run_metrics() -> void:
-	var glory_value: int = 0
 	var corruption_value: int = 0
 	for bet_id: StringName in _run_state.bets_history:
 		var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
-		if behavior_id == BET_CASH_OUT:
-			glory_value += 1
-		elif behavior_id == BET_DOUBLE_OR_DIE_L3:
-			glory_value += 2
+		if behavior_id == BET_DOUBLE_OR_DIE_L3:
 			corruption_value += 3
 		elif _is_high_risk_behavior(behavior_id):
-			glory_value += 2
 			corruption_value += 2
 		else:
-			glory_value += 1
 			corruption_value += 1
 	corruption_value += maxi(_run_state.escalation_level - 1, 0)
 	corruption_value += maxi(_run_state.level3_max_escalation - 2, 0)
 	corruption_value += _run_state.doubles
-	glory_value += _run_state.arenas_cleared
-	_run_state.glory = maxi(glory_value, 0)
+	_run_state.glory = maxi(_run_state.glory, 0)
 	_run_state.corruption = maxi(corruption_value, 0)
 
 func _is_high_risk_behavior(behavior_id: StringName) -> bool:

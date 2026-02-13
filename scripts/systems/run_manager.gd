@@ -4564,6 +4564,8 @@ func _select_run_finale() -> Dictionary:
 	var ending_id: StringName = _run_state.forced_ending_id
 	var run_completed: bool = _run_state.level3_target_arenas > 0 and _run_state.arena_index >= _run_state.level3_target_arenas
 	_update_hidden_run_metrics()
+	if _registry_has_precedent and ending_id == &"THE_LIBERTY":
+		ending_id = &""
 	if ending_id == &"":
 		if _run_state.corruption >= FALL_THRESHOLD:
 			ending_id = &"THE_FALL"

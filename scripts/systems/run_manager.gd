@@ -4493,11 +4493,29 @@ func _emit_run_finale() -> void:
 	if bool(finale.get("classified_terminal", false)) and not _registry_has_precedent:
 		SaveManager.set_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 		_registry_has_precedent = true
+	_log_balance_terminal_metrics(finale)
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
 	_emit_run_log(finale)
 	_export_run_summary(finale)
+
+func _log_balance_terminal_metrics(finale: Dictionary) -> void:
+	if not OS.is_debug_build():
+		return
+	var terminal_classification: String = str(finale.get("ending_id", ""))
+	print(
+		"[BALANCE] doubles=%d escalation=%d glory=%d coins=%d corruption=%d finale=%s precedent=%s"
+		% [
+			_run_state.level3_doubles,
+			_run_state.level3_max_escalation,
+			_run_state.glory,
+			int(run.get("coins", 0)),
+			_run_state.corruption,
+			terminal_classification,
+			str(_registry_has_precedent),
+		]
+	)
 
 func _should_emit_registry_silence() -> bool:
 	if _run_state.registry_silence_evaluated:

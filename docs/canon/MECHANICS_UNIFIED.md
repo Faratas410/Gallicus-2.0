@@ -1105,3 +1105,63 @@ una run può arrivare al finale senza Scar rilevanti
 le Scar sono percepite come “malus”
 
 il player tenta di “ottimizzarle”.
+
+
+## Registry State & Destiny Conditions (Mechanical Addendum)
+
+- Global persistent hidden flag: `registry_has_precedent` (default `false`).
+- `registry_has_precedent` becomes `true` after the first completed run with a classified terminal outcome.
+- The player is never informed explicitly.
+
+### Hidden run metrics
+
+Each run tracks hidden integers:
+
+- `glory`
+- `corruption`
+
+`corruption` increases from:
+
+- double decisions,
+- high-risk pact selections,
+- repeated escalation,
+- and slightly through standard resolutions.
+
+No UI bar or direct corruption readout is allowed.
+
+### Liberty condition (first era only)
+
+`LIBERTY` can be generated only when all constraints are true:
+
+- `registry_has_precedent == false`
+- `glory >= liberty_threshold`
+- `corruption < moral_threshold`
+
+If `registry_has_precedent == true`, `LIBERTY` is not eligible even if numeric thresholds are met.
+
+### Fall condition
+
+`FALL` is generated when:
+
+- `corruption >= fall_threshold`
+
+`FALL` remains possible regardless of registry state.
+
+### Registry systemic effect after precedent
+
+When `registry_has_precedent == true`, generation is subtly shifted:
+
+- pact difficulty curves increase,
+- escalation risk grows faster,
+- recovery opportunities reduce in frequency,
+- narrative tone darkens.
+
+No explicit gameplay modifier UI is exposed.
+
+### Invariants
+
+- Runs remain mechanically self-contained.
+- Registry state never rewrites completed runs.
+- Corruption does not directly alter player stats.
+- Registry state affects generation probabilities and liberty eligibility only.
+- Outcome emission still passes through the standard terminal flow authority.

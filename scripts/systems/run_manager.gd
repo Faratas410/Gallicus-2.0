@@ -374,6 +374,10 @@ const ESCALATION_MAX: int = 10
 const ESCALATION_HIGH_THRESHOLD: int = 6
 const SCAR_REFUSE_CASHOUT_THRESHOLD: int = 3
 const REGISTRY_SILENCE_ROLL_MAX: int = 50000
+const REGISTRY_PRECEDENT_ID: StringName = &"REGISTRY_HAS_PRECEDENT"
+const LIBERTY_THRESHOLD: int = 8
+const MORAL_THRESHOLD: int = 8
+const FALL_THRESHOLD: int = 14
 const SCAR_RISK_ESCALATION_THRESHOLD: int = 7
 const SCAR_MIN_ARENA_INTERVAL: int = 1
 const IRREVERSIBLE_BET_IDS: Array[StringName] = [
@@ -1193,6 +1197,7 @@ var _last_phase_change_ms: int = 0
 var _last_ui_render_ms: int = 0
 var _last_activity_ms: int = 0
 var _watchdog_enabled: bool = true
+var _registry_has_precedent: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1211,6 +1216,7 @@ func _ready() -> void:
 		return
 	_arena_layout_rng.randomize()
 	_connect_gameevents()
+	_registry_has_precedent = SaveManager.has_unlocked(REGISTRY_PRECEDENT_ID)
 
 func _process(_delta: float) -> void:
 	_watchdog_tick()
@@ -2144,20 +2150,30 @@ func _pick_weighted_bets(bets: Array[Dictionary], desired_count: int) -> Array[D
 func _weighted_pick_index(pool: Array[Dictionary]) -> int:
 	var total_weight: int = 0
 	for bet_value: Dictionary in pool:
-		var weight: int = int(bet_value.get("weight", 1))
-		weight = maxi(weight, 0)
+		var weight: int = _get_bet_weight_with_registry_precedent(bet_value)
 		total_weight += weight
 	if total_weight <= 0:
 		return 0
 	var roll: int = _level3_rng.randi_range(1, total_weight)
 	var running: int = 0
 	for idx in range(pool.size()):
-		var weight: int = int(pool[idx].get("weight", 1))
-		weight = maxi(weight, 0)
+		var weight: int = _get_bet_weight_with_registry_precedent(pool[idx])
 		running += weight
 		if roll <= running:
 			return idx
 	return maxi(pool.size() - 1, 0)
+
+func _get_bet_weight_with_registry_precedent(bet: Dictionary) -> int:
+	var weight: int = int(bet.get("weight", 1))
+	weight = maxi(weight, 0)
+	if not _registry_has_precedent:
+		return weight
+	var behavior_id: StringName = _get_level3_bet_behavior(StringName(str(bet.get("id", ""))))
+	if behavior_id == BET_CASH_OUT:
+		weight = maxi(weight - 1, 0)
+	elif _is_high_risk_behavior(behavior_id):
+		weight += 1
+	return weight
 
 func _get_run_seed_value() -> int:
 	if _run_state.debug_seed_override_active:
@@ -2671,10 +2687,13 @@ func _get_active_scar_ids() -> Array[StringName]:
 
 func _resolve_level3_arena() -> ArenaResult:
 	var result: ArenaResult = ArenaResult.new()
+	var effective_escalation: int = _run_state.escalation_level
+	if _registry_has_precedent:
+		effective_escalation += 1
 	var payload: Dictionary = _outcome_system.resolve_level3_arena(
 		_level3_rng,
 		_compute_level3_seed(_run_state.active_bet_id),
-		_run_state.escalation_level,
+		effective_escalation,
 		_get_active_scar_ids(),
 		_run_state.enemy_profile,
 		LEVEL3_ENEMY_PROFILES
@@ -4195,6 +4214,9 @@ func _get_audience_cashout_policy() -> Dictionary:
 	elif score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
 		cashout_modifier = AUDIENCE_CASHOUT_PENALTY_MULTIPLIER
 		cashout_modifier_text = "Incasso penalizzato: x%.1f" % cashout_modifier
+	if _registry_has_precedent and cashout_enabled:
+		cashout_modifier = cashout_modifier * 0.95
+		cashout_modifier_text = "Incasso penalizzato: x%.2f" % cashout_modifier
 	return {
 		"cashout_enabled": cashout_enabled,
 		"cashout_lock_reason": cashout_lock_reason,
@@ -4442,6 +4464,9 @@ func _emit_run_finale() -> void:
 	if _should_emit_registry_silence():
 		return
 	var finale: Dictionary = _select_run_finale()
+	if bool(finale.get("classified_terminal", false)) and not _registry_has_precedent:
+		SaveManager.set_unlocked(REGISTRY_PRECEDENT_ID)
+		_registry_has_precedent = true
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
@@ -4538,6 +4563,12 @@ func _select_run_finale() -> Dictionary:
 	var scar_count: int = _run_state.scars_history.size()
 	var ending_id: StringName = _run_state.forced_ending_id
 	var run_completed: bool = _run_state.level3_target_arenas > 0 and _run_state.arena_index >= _run_state.level3_target_arenas
+	_update_hidden_run_metrics()
+	if ending_id == &"":
+		if _run_state.corruption >= FALL_THRESHOLD:
+			ending_id = &"THE_FALL"
+		elif (not _registry_has_precedent) and _run_state.glory >= LIBERTY_THRESHOLD and _run_state.corruption < MORAL_THRESHOLD:
+			ending_id = &"THE_LIBERTY"
 	if ending_id == &"":
 		if _run_state.run_end_reason == "DOUBLE_OR_DIE":
 			ending_id = &"THE_FOOL"
@@ -4578,6 +4609,10 @@ func _select_run_finale() -> Dictionary:
 			title = "IL BENEAMATO"
 		&"THE_MARTYR":
 			title = "IL MARTIRE"
+		&"THE_LIBERTY":
+			title = "LIBERTÀ"
+		&"THE_FALL":
+			title = "CADUTA"
 
 	var bet_names: Array[String] = []
 	for bet_id: StringName in _run_state.level3_bets_used:
@@ -4609,6 +4644,9 @@ func _select_run_finale() -> Dictionary:
 		"condanne_this_run": _run_state.condanne_this_run.duplicate(),
 		"last_crowd_line": _run_state.last_audience_context_line,
 		"outcome": outcome,
+		"classified_terminal": ending_id != &"",
+		"glory": _run_state.glory,
+		"corruption": _run_state.corruption,
 	}
 
 
@@ -4671,8 +4709,38 @@ func _get_final_state_label(ending_id: StringName) -> String:
 			return "conforme al pubblico"
 		&"THE_MARTYR":
 			return "consumo completo"
+		&"THE_LIBERTY":
+			return "libertà registrata"
+		&"THE_FALL":
+			return "caduta amministrativa"
 		_:
 			return "non definito"
+
+func _update_hidden_run_metrics() -> void:
+	var glory_value: int = 0
+	var corruption_value: int = 0
+	for bet_id: StringName in _run_state.bets_history:
+		var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
+		if behavior_id == BET_CASH_OUT:
+			glory_value += 1
+		elif behavior_id == BET_DOUBLE_OR_DIE_L3:
+			glory_value += 2
+			corruption_value += 3
+		elif _is_high_risk_behavior(behavior_id):
+			glory_value += 2
+			corruption_value += 2
+		else:
+			glory_value += 1
+			corruption_value += 1
+	corruption_value += maxi(_run_state.escalation_level - 1, 0)
+	corruption_value += maxi(_run_state.level3_max_escalation - 2, 0)
+	corruption_value += _run_state.doubles
+	glory_value += _run_state.arenas_cleared
+	_run_state.glory = maxi(glory_value, 0)
+	_run_state.corruption = maxi(corruption_value, 0)
+
+func _is_high_risk_behavior(behavior_id: StringName) -> bool:
+	return behavior_id == BET_DOUBLE_OR_DIE_L3 or behavior_id == BET_DEBT_CHAIN or behavior_id == BET_BLOOD_TAX or behavior_id == BET_LAST_BREATH
 
 func _has_used_bet(bet_id: StringName) -> bool:
 	for used_bet: StringName in _run_state.level3_bets_used:

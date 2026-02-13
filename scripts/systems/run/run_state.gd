@@ -84,6 +84,8 @@ var debug_seed_override: int = 0
 var run_start_time_msec: int = 0
 var run_save_flow_step: StringName = &""
 var run_save_flow_bet_id: StringName = &""
+var glory: int = 0
+var corruption: int = 0
 
 func reset() -> void:
 	run_seed = 0
@@ -169,6 +171,8 @@ func reset() -> void:
 	run_start_time_msec = 0
 	run_save_flow_step = &""
 	run_save_flow_bet_id = &""
+	glory = 0
+	corruption = 0
 
 func to_dict() -> Dictionary:
 	return {
@@ -250,6 +254,8 @@ func to_dict() -> Dictionary:
 		"run_start_time_msec": run_start_time_msec,
 		"run_save_flow_step": String(run_save_flow_step),
 		"run_save_flow_bet_id": String(run_save_flow_bet_id),
+		"glory": glory,
+		"corruption": corruption,
 	}
 
 func from_dict(d: Dictionary) -> void:
@@ -331,6 +337,8 @@ func from_dict(d: Dictionary) -> void:
 	run_start_time_msec = int(d.get("run_start_time_msec", 0))
 	run_save_flow_step = StringName(str(d.get("run_save_flow_step", "")))
 	run_save_flow_bet_id = StringName(str(d.get("run_save_flow_bet_id", "")))
+	glory = int(d.get("glory", 0))
+	corruption = int(d.get("corruption", 0))
 
 func _serialize_stringname_array(items: Array) -> Array[String]:
 	var values: Array[String] = []

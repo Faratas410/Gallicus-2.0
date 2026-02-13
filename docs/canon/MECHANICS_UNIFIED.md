@@ -1147,6 +1147,21 @@ It is incremented only by RunManager at authoritative ingestion points:
 
 No UI exposure is allowed.
 
+### Glory scope
+
+Run runtime keeps an internal per-run integer `glory` (default `0`) in `RunState`.
+It is reset at new-run creation and serialized in run save/load payloads with the run state.
+
+`glory` is incremented only by RunManager on successful arena resolution outcomes:
+
+- `glory += GLORY_PER_SUCCESS * glory_multiplier`
+- `GLORY_PER_SUCCESS = 1`
+- `glory_multiplier` starts at `1` and increases only on push-your-luck `double/continue`
+  according to the authoritative RunManager step table (`1, 2, 4, 7, 11`).
+
+Glory is displayed in HUD as a numeric value only (no explanatory gameplay logic in UI).
+
+
 ### Invariants
 
 - Runs remain mechanically self-contained.

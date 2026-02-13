@@ -169,3 +169,10 @@ Related: Bet, Run, Condemnation
 - SOURCE: docs/scar_system.md
 - SOURCE: docs/bet_progression.md
 - SOURCE: docs/meta_progression.md
+
+
+## Registry Precedent State
+
+One-liner: Hidden persistent boolean flag used by the Registro to gate liberty eligibility and shift generation pressure after the first classified terminal outcome.
+
+Details: Default `false`; set to `true` after first classified terminal run; never shown directly in UI; affects probabilities and eligibility, not combat rules.

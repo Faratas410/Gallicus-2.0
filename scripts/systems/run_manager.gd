@@ -1167,7 +1167,7 @@ var _run_failed_emitted: bool = false
 var _run_ended_emitted: bool = false
 var _is_game_over: bool = false
 var _phase: RunPhase = RunPhase.NONE
-var phase: RunPhase = RunPhase.PREP
+var _gameplay_phase: RunPhase = RunPhase.PREP
 var _pending_resolution_bet_id: StringName = &""
 var _pending_push_luck_bet_id: StringName = &""
 var _prep_sequence_id: int = 0
@@ -1505,7 +1505,6 @@ func request_take_payout() -> void:
 func request_quit_to_menu() -> void:
 	_touch_request_activity("request_show_main_menu()")
 	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
-	set_phase(RunPhase.MAIN_MENU)
 
 func request_load_continue() -> void:
 	_touch_request_activity("request_load_continue()")
@@ -1576,7 +1575,7 @@ func _start_new_run() -> void:
 	_resolve_ritual_reward_applied = false
 	_reset_bet_chain()
 	_reset_scars()
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 
 	_ensure_arena_and_player()
@@ -1605,9 +1604,9 @@ func _start_new_run() -> void:
 		_log_runtime_state("new_run_ready")
 		for _i in range(3, 0, -1):
 			await get_tree().create_timer(1.0).timeout
-			if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
+			if current_id != _prep_sequence_id or _phase == RunPhase.GAME_OVER:
 				return
-		if current_id != _prep_sequence_id or phase == RunPhase.GAME_OVER:
+		if current_id != _prep_sequence_id or _phase == RunPhase.GAME_OVER:
 			return
 	var live_player: Node = _resolve_player()
 	if live_player == null or not live_player.is_inside_tree():
@@ -1616,7 +1615,7 @@ func _start_new_run() -> void:
 		live_player = _resolve_player()
 		if live_player == null or not live_player.is_inside_tree():
 			return
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_open_bet_ui(false)
 	_log_runtime_state("waiting_for_bet")
 
@@ -1717,7 +1716,7 @@ func _start_level3_run() -> void:
 
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	_emit_run_debug_state()
 	start_arena()
@@ -1861,7 +1860,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		return
 	_resolving_arena = true
 	_update_arena_visual_only()
-	set_phase(RunPhase.LIVE)
+	_set_runtime_gate_phase(RunPhase.LIVE)
 	GameEvents.arena_started.emit(_run_state.arena_index)
 	_play_arena_resolution_fx()
 	_apply_special_arena_pre_resolution()
@@ -1920,7 +1919,7 @@ func _enter_resolution() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.RESOLUTION, "RISOLUZIONE", "L'arena decide il prezzo del patto."))
 	_resolving_arena = true
 	_update_arena_visual_only()
-	set_phase(RunPhase.LIVE)
+	_set_runtime_gate_phase(RunPhase.LIVE)
 	var bet_id: StringName = _pending_resolution_bet_id
 	if bet_id == &"":
 		bet_id = _run_state.active_bet_id
@@ -2014,7 +2013,7 @@ func start_next_bet_round() -> void:
 		return
 	_set_phase(RunPhase.NEXT_BET, "start_next_bet_round")
 	_waiting_for_bet = false
-	set_phase(RunPhase.LIVE)
+	_set_runtime_gate_phase(RunPhase.LIVE)
 	_clear_enemies()
 	_spawn_wave_or_enemies()
 
@@ -2044,7 +2043,7 @@ func _open_bet_ui(_from_victory: bool = false) -> void:
 	_set_phase(RunPhase.BET_PRESENT, "open_bet_ui")
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
 
@@ -2055,7 +2054,7 @@ func _open_level3_bet_ui() -> void:
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
 	_resolve_ritual_reward_applied = false
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
@@ -2361,7 +2360,7 @@ func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
 	_waiting_for_intermediate_choice = false
 	_run_state.intermediate_pending_bet_id = &""
 	_run_state.post_bet_pending_bet_id = &""
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	var resolved_bet: StringName = bet_id
 	if resolved_bet == &"" and _run_state.current_bet_id != "":
@@ -2744,7 +2743,7 @@ func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
 func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[StringName]:
 	_waiting_for_push_luck = false
 	_waiting_for_bet = false
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
 	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
 	var consequence: Dictionary = _outcome_system.build_level3_loss_consequence(
@@ -2789,7 +2788,7 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Array[StringName]:
 	_waiting_for_push_luck = false
 	_waiting_for_bet = false
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	var scars_applied: Array[StringName] = []
 	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
 	var consequence: Dictionary = _outcome_system.build_level3_loss_consequence(
@@ -3453,7 +3452,7 @@ func _push_your_luck() -> void:
 	_run_state.push_luck_doubles += 1
 	_run_state.max_push_luck_chain = maxi(_run_state.max_push_luck_chain, _run_state.bet_chain_level)
 	_try_apply_cracked_bones_scar(bet_id, _run_state.bet_chain_level)
-	set_phase(RunPhase.LIVE)
+	_set_runtime_gate_phase(RunPhase.LIVE)
 	_clear_enemies()
 	_spawn_wave_or_enemies()
 
@@ -3599,7 +3598,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	_run_state.bet_chain_level = 1
 	_append_pact_log_entry(StringName(_bet_id), "")
 	GameEvents.betting_closed.emit()
-	set_phase(RunPhase.LIVE)
+	_set_runtime_gate_phase(RunPhase.LIVE)
 	load_next_arena()
 	_start_next_arena()
 
@@ -3629,7 +3628,7 @@ func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_
 		"sentence_id": String(sentence_id),
 	}
 	GameEvents.betting_closed.emit()
-	set_phase(RunPhase.LIVE)
+	_set_runtime_gate_phase(RunPhase.LIVE)
 	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, &"")
 	_emit_audience_context_line(AUDIENCE_CONTEXT_PACT_SIGNED)
 	load_next_arena()
@@ -3675,7 +3674,7 @@ func _on_player_spawned(player: Node) -> void:
 func _on_enemy_killed(exp_value: int) -> void:
 	if _is_game_over:
 		return
-	if phase != RunPhase.LIVE:
+	if _gameplay_phase != RunPhase.LIVE:
 		return
 	var gained: int = exp_per_enemy
 	if exp_value > 0:
@@ -3904,7 +3903,7 @@ func _enter_mid_choice() -> void:
 	_waiting_for_intermediate_choice = true
 	_waiting_for_push_luck = false
 	_close_audience_context_line()
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	_emit_ui(_build_intermediate_choice_ui_payload())
 
@@ -3918,7 +3917,7 @@ func _enter_push_your_luck() -> void:
 		return
 	_waiting_for_push_luck = true
 	_close_audience_context_line()
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	var bet_id: StringName = _pending_push_luck_bet_id
 	_pending_push_luck_bet_id = &""
@@ -4352,7 +4351,7 @@ func retry_current_bet() -> void:
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_reset_bet_chain()
-	set_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	GameEvents.set_gameplay_enabled(false)
 	run["arena_index"] = maxi(int(run.get("arena_index", 0)) - 1, 0)
 	if _arena and _arena.has_method("soft_reset"):
@@ -4443,7 +4442,7 @@ func _enter_game_over() -> void:
 	if _run_state.run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
 		_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
 	_waiting_for_bet = false
-	set_phase(RunPhase.GAME_OVER)
+	_set_runtime_gate_phase(RunPhase.GAME_OVER)
 	_update_arena_visual_only()
 	_emit_run_finale()
 	_emit_run_ended()
@@ -4857,7 +4856,7 @@ func get_arena_index() -> int:
 	return int(run.get("arena_index", 0))
 
 func is_live() -> bool:
-	return phase == RunPhase.LIVE
+	return _gameplay_phase == RunPhase.LIVE
 
 func is_level3_mode() -> bool:
 	return LEVEL3_ENABLED
@@ -5019,17 +5018,20 @@ func _enter_end_run_phase() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.GAME_OVER, "FINE RUN"))
 
 func set_phase(p: Variant) -> void:
-	# Supporta sia RunPhase che int (es. valori serializzati / segnali legacy).
+	# Legacy wrapper: usa il canale canonico (_set_phase) come unica autorità del flow.
 	if typeof(p) == TYPE_INT:
-		phase = (p as int) as RunPhase
+		_set_phase((p as int) as RunPhase, "legacy_set_phase")
 	else:
-		phase = p as RunPhase
-	GameEvents.run_phase_changed.emit(int(phase))
+		_set_phase(p as RunPhase, "legacy_set_phase")
+
+func _set_runtime_gate_phase(next: RunPhase) -> void:
+	_gameplay_phase = next
+	GameEvents.run_phase_changed.emit(int(_gameplay_phase))
 	_apply_phase()
 
 func _apply_phase() -> void:
 	if GameEvents.has_method("set_gameplay_enabled"):
-		var gameplay_enabled: bool = phase == RunPhase.LIVE and not is_visual_only()
+		var gameplay_enabled: bool = _gameplay_phase == RunPhase.LIVE and not is_visual_only()
 		GameEvents.set_gameplay_enabled(gameplay_enabled)
 
 func _update_arena_visual_only() -> void:

@@ -4,7 +4,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_silence.md, docs/registry_corruption.md, docs/scar_system.md, docs/bet_progression.md, docs/meta_progression.md
+Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_silence.md, docs/registry_corruption.md, docs/scar_system.md, docs/bet_progression.md, docs/meta_progression.md, canon addendum "Registro, Precedente e Seconda Era"
 
 ## Canon Contract
 
@@ -17,6 +17,7 @@ All changes to systems described here must update this document in the same PR.
 
 - [The Register](#the-register)
 - [Felix Gallicus](#felix-gallicus)
+- [Owls (Gufi)](#owls-gufi)
 - [Registry: Silence](#registry-silence)
 - [Registry: Corruption](#registry-corruption)
 - [Scar](#scar)
@@ -50,6 +51,18 @@ Details: Non appare in scena; emerge come precedente nei log.
 Appears in: Meta / Run
 
 Related: The Register, Final narrative structure
+
+## Owls (Gufi)
+
+Type: Institution
+
+One-liner: Amministrazione dell’Arena che gestisce Registro, quote e legittimazione spettacolare del rischio.
+
+Details: Non sono entità soprannaturali né autorità morali; operano come apparato gestionale che monetizza instabilità e reiterazione dopo il precedente.
+
+Appears in: Lore / Meta
+
+Related: The Register, Registry Precedent State, Felix Gallicus
 
 ## Registry: Silence
 
@@ -173,6 +186,6 @@ Related: Bet, Run, Condemnation
 
 ## Registry Precedent State
 
-One-liner: Hidden persistent boolean flag used by the Registro to gate liberty eligibility and shift generation pressure after the first classified terminal outcome.
+One-liner: Hidden persistent boolean flag that marks the transition from Registro Integro to Registro con Precedente.
 
-Details: Default `false`; set to `true` after first classified terminal run; never shown directly in UI; affects probabilities and eligibility, not combat rules.
+Details: Default `false`; set to `true` after first classified terminal run; never shown directly in UI; once active, liberty is no longer eligible and generation pressure shifts toward reiteration without direct combat-stat changes.

@@ -4,7 +4,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_silence.md, docs/registry_corruption.md, docs/final_narrative_structure.md
+Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_silence.md, docs/registry_corruption.md, docs/final_narrative_structure.md, canon addendum "Registro, Precedente e Seconda Era"
 
 ## Canon Contract
 
@@ -21,6 +21,7 @@ All changes to systems described here must update this document in the same PR.
 - [Registry: Corruption](#source-docsregistrycorruptionmd)
 - [Moved from Mechanics (boundary cleanup)](#source-moved-from-docscanonmechanicsunifiedmd)
 - [Final narrative structure](#source-docsfinalnarrativestructuremd)
+- [Canon addendum: Registro, Precedente e Seconda Era](#canon-addendum--registro-precedente-e-seconda-era)
 
 ## SOURCE: docs/the_register.md
 
@@ -1145,3 +1146,128 @@ perché la storia è già accaduta.
 
 Il Registro stabilisce solo
 che non puoi più cambiarla.**
+
+## Canon addendum — Registro, Precedente e Seconda Era
+
+### 1. Stato del Registro
+
+Il Registro è una struttura amministrativa dell’Arena.
+Non è un artefatto mistico.
+Non è un’entità cosciente.
+È il sistema di archiviazione, classificazione e legittimazione delle condanne e delle scommesse.
+
+Il Registro può trovarsi in due stati canonici.
+
+#### 1.1 Registro integro
+
+Condizione:
+
+- Nessun precedente registrato.
+
+Proprietà:
+
+- Le classificazioni sono coerenti.
+- Le anomalie vengono chiuse.
+- La libertà è generabile come esito raro ma possibile.
+- Le pagine vengono archiviate senza eco.
+
+In questo stato, una run può concludersi con una vera liberazione.
+
+#### 1.2 Registro con precedente
+
+Condizione:
+
+- Almeno una run completa è stata archiviata come esito definitivo.
+
+Effetto:
+
+- Il Registro possiede memoria strutturale.
+- Le nuove run non sono più generate in stato di innocenza sistemica.
+
+Proprietà:
+
+- La libertà non è più generabile.
+- Le condizioni che permettevano l’uscita non si presenteranno più.
+- Le classificazioni tendono verso la reiterazione.
+- Le anomalie diventano materiale narrativo.
+
+Il giocatore non viene informato di questo stato.
+
+### 2. Libertà
+
+La libertà è un esito reale ma temporalmente limitato.
+
+Regola canonica:
+
+- La libertà è ottenibile solo in stato di Registro Integro.
+- Dopo la registrazione del primo precedente, la libertà non è più raggiungibile.
+
+Non esiste annuncio interno.
+Non esiste comunicazione esplicita.
+Il sistema si limita a non generare più quella condizione.
+
+### 3. Corruzione del Registro
+
+La corruzione non è una variabile numerica.
+Non è una barra.
+Non è un effetto mistico.
+
+È la conseguenza della memoria.
+
+Manifestazioni:
+
+- Linguaggio alterato.
+- Ricorrenza di pattern.
+- Pluricondannati più frequenti.
+- Tono progressivamente deformato.
+- Enfatizzazione delle cicatrici.
+
+La corruzione non altera direttamente il gameplay.
+Altera la narrazione, la classificazione e il contesto.
+
+### 4. I Gufi
+
+I Gufi sono l’amministrazione dell’Arena.
+
+Non sono entità soprannaturali.
+Non sono custodi morali.
+Non sono narratori.
+
+Funzioni:
+
+- Gestione del Registro.
+- Controllo delle quote.
+- Produzione della leggenda.
+- Incentivazione del rischio.
+
+In stato di Registro Integro:
+
+- I Gufi mantengono ordine e coerenza.
+
+Dopo il precedente:
+
+- I Gufi sfruttano l’instabilità.
+- Le anomalie diventano spettacolo.
+- I pluricondannati diventano prodotto premium.
+
+I Gufi non bloccano la libertà.
+Rendono più profittevole la sua assenza.
+
+### 5. Felix Gallicus
+
+Felix non è prova di libertà.
+Felix è simbolo di permanenza.
+
+È la figura che legittima la reiterazione.
+È il nome che giustifica l’eternità nell’Arena.
+
+Felix è marchio.
+Non eccezione.
+
+### 6. Invarianti canonici
+
+- Ogni run ha destino proprio.
+- Nessuna run viene invalidata retroattivamente.
+- La corruzione non modifica direttamente le meccaniche.
+- Il sistema non rivela mai esplicitamente lo stato del Registro.
+- Il giocatore non riceve conferma che la libertà sia stata resa impossibile.

@@ -1113,55 +1113,34 @@ il player tenta di “ottimizzarle”.
 - `registry_has_precedent` becomes `true` after the first completed run with a classified terminal outcome.
 - The player is never informed explicitly.
 
-### Hidden run metrics
-
-Each run tracks hidden integers:
-
-- `glory`
-- `corruption`
-
-`corruption` increases from:
-
-- double decisions,
-- high-risk pact selections,
-- repeated escalation,
-- and slightly through standard resolutions.
-
-No UI bar or direct corruption readout is allowed.
-
 ### Liberty condition (first era only)
 
-`LIBERTY` can be generated only when all constraints are true:
+`LIBERTY` is eligible only when:
 
 - `registry_has_precedent == false`
-- `glory >= liberty_threshold`
-- `corruption < moral_threshold`
+- all hidden generation constraints for liberation are satisfied.
 
-If `registry_has_precedent == true`, `LIBERTY` is not eligible even if numeric thresholds are met.
-
-### Fall condition
-
-`FALL` is generated when:
-
-- `corruption >= fall_threshold`
-
-`FALL` remains possible regardless of registry state.
+If `registry_has_precedent == true`, `LIBERTY` is never eligible.
 
 ### Registry systemic effect after precedent
 
-When `registry_has_precedent == true`, generation is subtly shifted:
+When `registry_has_precedent == true`, generation shifts toward reiteration pressure:
 
-- pact difficulty curves increase,
-- escalation risk grows faster,
-- recovery opportunities reduce in frequency,
-- narrative tone darkens.
+- liberation paths are not generated,
+- anomaly recurrence becomes more frequent,
+- classification outcomes prefer continuity over closure.
 
 No explicit gameplay modifier UI is exposed.
+
+### Corruption scope
+
+`Registry Corruption` is not a numeric gameplay variable and not a player-facing bar.
+It is a narrative-classification layer expressed through language, recurrence and contextual tone.
 
 ### Invariants
 
 - Runs remain mechanically self-contained.
 - Registry state never rewrites completed runs.
-- Corruption does not directly alter player stats.
+- Corruption does not directly alter combat mechanics or player stats.
 - Registry state affects generation probabilities and liberty eligibility only.
 - Outcome emission still passes through the standard terminal flow authority.

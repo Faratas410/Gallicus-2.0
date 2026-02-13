@@ -114,6 +114,8 @@ const RUN_FLOW_BET_SIGNED: StringName = &"BET_SIGNED"
 const RUN_FLOW_INTERMEDIATE_CHOICE: StringName = &"INTERMEDIATE_CHOICE"
 const RUN_FLOW_PUSH_LUCK: StringName = &"PUSH_LUCK"
 const RUN_FLOW_BET_OFFER: StringName = &"BET_OFFER"
+const CORRUPTION_DOUBLE: int = 1
+const CORRUPTION_PACT_HIGH: int = 1
 
 const CONDANNA_NON_MI_FERMERO: StringName = &"CONDANNA_NON_MI_FERMERO"
 const CONDANNA_ANCORA: StringName = &"CONDANNA_ANCORA"
@@ -1753,6 +1755,7 @@ func _confirm_pact_with_bet_id(bet_id: StringName) -> void:
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
 		_run_state.last_signed_pact_id = bet_id
+		_register_pact_corruption(bet_id)
 		var bet_data: Dictionary = _get_bet_data(String(bet_id))
 		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
 		if archetype == ARCH_EGO or archetype == ARCH_TIME:
@@ -1785,6 +1788,7 @@ func _register_level3_bet_choice(bet_id: StringName) -> void:
 		_run_state.bets_history.append(bet_id)
 		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
 		_run_state.last_signed_pact_id = bet_id
+		_register_pact_corruption(bet_id)
 		var bet_data: Dictionary = _get_bet_data(String(bet_id))
 		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
 		if archetype == ARCH_EGO or archetype == ARCH_TIME:
@@ -3404,6 +3408,7 @@ func _push_your_luck() -> void:
 		_run_state.level3_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
 		_run_state.level3_doubles += 1
 		_run_state.doubles += 1
+		_run_state.corruption += CORRUPTION_DOUBLE
 		_run_state.level3_max_escalation = maxi(_run_state.level3_max_escalation, _run_state.escalation_level)
 		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 		_emit_escalation_changed()
@@ -4743,6 +4748,14 @@ func _update_hidden_run_metrics() -> void:
 
 func _is_high_risk_behavior(behavior_id: StringName) -> bool:
 	return behavior_id == BET_DOUBLE_OR_DIE_L3 or behavior_id == BET_DEBT_CHAIN or behavior_id == BET_BLOOD_TAX or behavior_id == BET_LAST_BREATH
+
+func _register_pact_corruption(bet_id: StringName) -> void:
+	if bet_id == &"":
+		return
+	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
+	if not _is_high_risk_behavior(behavior_id):
+		return
+	_run_state.corruption += CORRUPTION_PACT_HIGH
 
 func _has_used_bet(bet_id: StringName) -> bool:
 	for used_bet: StringName in _run_state.level3_bets_used:

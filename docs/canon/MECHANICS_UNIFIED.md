@@ -642,6 +642,8 @@ RunManager:
 - SaveManager.clear_run()
 - run_finale_selected(payload)
 - se loss: run_failed
+- classificazione terminale `THE_FALL` se corruzione hidden per-run `>= 5`
+- `THE_FALL` non viene classificato quando `run_end_reason == "INFRA_FAILURE"`
 UI:
 - VERDETTO
 - bottoni: Nuova Run / Torna al Menu (request_show_main_menu)

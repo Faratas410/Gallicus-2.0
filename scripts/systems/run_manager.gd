@@ -379,7 +379,7 @@ const REGISTRY_SILENCE_ROLL_MAX: int = 50000
 const UNLOCK_REGISTRY_PRECEDENT: StringName = &"registry_precedent"
 const LIBERTY_THRESHOLD: int = 8
 const MORAL_THRESHOLD: int = 8
-const FALL_THRESHOLD: int = 14
+const FALL_THRESHOLD: int = 5
 const SCAR_RISK_ESCALATION_THRESHOLD: int = 7
 const SCAR_MIN_ARENA_INTERVAL: int = 1
 const IRREVERSIBLE_BET_IDS: Array[StringName] = [
@@ -4572,7 +4572,7 @@ func _select_run_finale() -> Dictionary:
 	if _registry_has_precedent and ending_id == &"THE_LIBERTY":
 		ending_id = &""
 	if ending_id == &"":
-		if _run_state.corruption >= FALL_THRESHOLD:
+		if _run_state.run_end_reason != "INFRA_FAILURE" and _run_state.corruption >= FALL_THRESHOLD:
 			ending_id = &"THE_FALL"
 		elif (not _registry_has_precedent) and _run_state.glory >= LIBERTY_THRESHOLD and _run_state.corruption < MORAL_THRESHOLD:
 			ending_id = &"THE_LIBERTY"

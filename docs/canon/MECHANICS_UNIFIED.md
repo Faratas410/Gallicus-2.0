@@ -1137,6 +1137,14 @@ No explicit gameplay modifier UI is exposed.
 `Registry Corruption` is not a numeric gameplay variable and not a player-facing bar.
 It is a narrative-classification layer expressed through language, recurrence and contextual tone.
 
+Run runtime keeps an internal per-run integer `corruption` (default `0`) in `RunState`.
+It is incremented only by RunManager at authoritative ingestion points:
+
+- push-your-luck `double` requests (`+1`),
+- high-risk pact selection (`+1`).
+
+No UI exposure is allowed.
+
 ### Invariants
 
 - Runs remain mechanically self-contained.

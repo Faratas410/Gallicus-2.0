@@ -47,13 +47,13 @@ func log(tag: String, message: String = "") -> void:
 	print_debug(line)
 
 func log_phase(phase_name: String, note: String = "") -> void:
-	log("PHASE", "%s :: %s" % [phase_name, note])
+	print("[FLOW] %s :: %s" % ["PHASE", "%s :: %s" % [phase_name, note]])
 
 func log_request(name: String, note: String = "") -> void:
-	log("REQ", "%s :: %s" % [name, note])
+	print("[FLOW] %s :: %s" % ["REQ", "%s :: %s" % [name, note]])
 
 func log_ui(action: String, note: String = "") -> void:
-	log("UI", "%s :: %s" % [action, note])
+	print("[FLOW] %s :: %s" % ["UI", "%s :: %s" % [action, note]])
 
 func dump_last(n: int = 50) -> String:
 	var safe_n: int = maxi(0, n)

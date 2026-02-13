@@ -374,7 +374,7 @@ const ESCALATION_MAX: int = 10
 const ESCALATION_HIGH_THRESHOLD: int = 6
 const SCAR_REFUSE_CASHOUT_THRESHOLD: int = 3
 const REGISTRY_SILENCE_ROLL_MAX: int = 50000
-const REGISTRY_PRECEDENT_ID: StringName = &"REGISTRY_HAS_PRECEDENT"
+const UNLOCK_REGISTRY_PRECEDENT: StringName = &"registry_precedent"
 const LIBERTY_THRESHOLD: int = 8
 const MORAL_THRESHOLD: int = 8
 const FALL_THRESHOLD: int = 14
@@ -1216,7 +1216,7 @@ func _ready() -> void:
 		return
 	_arena_layout_rng.randomize()
 	_connect_gameevents()
-	_registry_has_precedent = SaveManager.has_unlocked(REGISTRY_PRECEDENT_ID)
+	_registry_has_precedent = SaveManager.has_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 
 func _process(_delta: float) -> void:
 	_watchdog_tick()
@@ -4465,7 +4465,7 @@ func _emit_run_finale() -> void:
 		return
 	var finale: Dictionary = _select_run_finale()
 	if bool(finale.get("classified_terminal", false)) and not _registry_has_precedent:
-		SaveManager.set_unlocked(REGISTRY_PRECEDENT_ID)
+		SaveManager.set_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 		_registry_has_precedent = true
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)

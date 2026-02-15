@@ -86,11 +86,14 @@ jobs:
             cd tools/godot
             unzip -o godot.zip
             chmod +x Godot_v4.6-stable_linux.x86_64
-            GODOT_BIN=./Godot_v4.6-stable_linux.x86_64
-            echo "Using Godot binary: $GODOT_BIN"
+          )
 
-            xvfb-run -a "$GODOT_BIN" --headless --path ../.. --quit-after 10 2>&1
-          ) | tee smoke.log
+          cd ..
+          GODOT_BIN=./Gallicus-2.0/tools/godot/Godot_v4.6-stable_linux.x86_64
+          echo "Using Godot binary: $GODOT_BIN"
+
+          xvfb-run -a "$GODOT_BIN" --headless --path Gallicus-2.0 --quit-after 10 2>&1 | tee Gallicus-2.0/smoke.log
+          cd Gallicus-2.0
 
           echo "---- SMOKE LOG ----"
           tail -n 200 smoke.log

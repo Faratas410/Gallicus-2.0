@@ -8,6 +8,8 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    env:
+      GALLICUS_PROJECT_ROOT: "Gallicus-2.0"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,7 +63,8 @@ jobs:
       - name: Verify res:// references (case-sensitive)
         run: |
           set -e
-          python tools/ci/verify_res_paths.py
+          cd "$GALLICUS_PROJECT_ROOT"
+          python ../tools/ci/verify_res_paths.py
 
       - name: Download Godot 4.6 headless
         run: |

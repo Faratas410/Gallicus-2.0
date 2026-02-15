@@ -58,6 +58,11 @@ jobs:
           echo "Fix the asset in repo (file is likely corrupted/text/empty)."
           exit 1
 
+      - name: Verify res:// references (case-sensitive)
+        run: |
+          set -e
+          python tools/ci/verify_res_paths.py
+
       - name: Download Godot 4.6 headless
         run: |
           set -e

@@ -15,7 +15,48 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb
+          sudo apt-get install -y wget unzip xvfb git-lfs
+
+
+      - name: Validate weapon_sword.png is a real PNG (auto LFS pull if needed)
+        run: |
+          set -e
+          TARGET="assets/sprites/weapon_sword.png"
+          echo "Validating $TARGET"
+          ls -lah "$TARGET"
+
+          echo "---- HEAD (3 lines) ----"
+          head -n 3 "$TARGET" || true
+
+          echo "---- MAGIC (8 bytes hex) ----"
+          head -c 8 "$TARGET" | xxd -p -c 8
+
+          MAGIC=$(head -c 8 "$TARGET" | xxd -p -c 8 | tr -d '\n')
+          if [ "$MAGIC" = "89504e470d0a1a0a" ]; then
+            echo "PNG OK: $TARGET"
+            exit 0
+          fi
+
+          if head -n 1 "$TARGET" | grep -q "version https://git-lfs.github.com/spec"; then
+            echo "Detected Git LFS pointer. Pulling LFS files..."
+            git lfs install
+            git lfs pull
+
+            echo "Re-checking PNG magic after LFS pull..."
+            head -c 8 "$TARGET" | xxd -p -c 8
+            MAGIC2=$(head -c 8 "$TARGET" | xxd -p -c 8 | tr -d '\n')
+            if [ "$MAGIC2" = "89504e470d0a1a0a" ]; then
+              echo "PNG OK after LFS pull: $TARGET"
+              exit 0
+            fi
+
+            echo "ERROR: LFS pull did not produce a valid PNG for $TARGET"
+            exit 1
+          fi
+
+          echo "ERROR: $TARGET is not a valid PNG and is not an LFS pointer."
+          echo "Fix the asset in repo (file is likely corrupted/text/empty)."
+          exit 1
 
       - name: Download Godot 4.6 headless
         run: |

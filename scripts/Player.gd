@@ -10,8 +10,8 @@ signal health_changed(current: int, max: int)
 signal took_damage(amount: int)
 signal died
 
-var _sword_tex_idle: Texture2D = null
-var _sword_tex_swing: Texture2D = null
+const SWORD_TEX_IDLE: Texture2D = preload("res://assets/sprites/weapon_sword.png")
+const SWORD_TEX_SWING: Texture2D = preload("res://assets/sprites/weapon_sword.png")
 const DAMAGE_INVULN_SECONDS: float = 0.25
 
 @export var move_speed: float = 220.0
@@ -51,10 +51,6 @@ var input_locked: bool = false
 @onready var body_sprite: Sprite2D = get_node_or_null("Visual") as Sprite2D
 
 func _ready() -> void:
-	if _sword_tex_idle == null:
-		_sword_tex_idle = load("res://assets/sprites/weapon_sword.png") as Texture2D
-	if _sword_tex_swing == null:
-		_sword_tex_swing = load("res://assets/sprites/weapon_sword.png") as Texture2D
 	_base_max_health = max_health
 	_base_light_damage = light_damage
 	_base_heavy_damage = heavy_damage
@@ -62,7 +58,7 @@ func _ready() -> void:
 	_emit_health()
 	_ensure_placeholder_sprite()
 	if sword_sprite != null:
-		sword_sprite.texture = _sword_tex_idle
+		sword_sprite.texture = SWORD_TEX_IDLE
 	if _is_level3_mode():
 		if body_sprite != null:
 			body_sprite.visible = false
@@ -157,8 +153,8 @@ func _update_sword_idle_pose() -> void:
 		return
 	if _is_swinging:
 		return
-	if sword_sprite.texture != _sword_tex_idle:
-		sword_sprite.texture = _sword_tex_idle
+	if sword_sprite.texture != SWORD_TEX_IDLE:
+		sword_sprite.texture = SWORD_TEX_IDLE
 
 	var card: Vector2 = _dir_to_cardinal(_last_aim_dir)
 	sword_sprite.z_index = 10
@@ -206,7 +202,7 @@ func _play_sword_swing() -> void:
 		base_rot = deg_to_rad(-90)
 
 	_is_swinging = true
-	sword_sprite.texture = _sword_tex_swing
+	sword_sprite.texture = SWORD_TEX_SWING
 	sword_sprite.rotation = base_rot
 	sword_sprite.z_index = 10
 	if card == Vector2.UP:

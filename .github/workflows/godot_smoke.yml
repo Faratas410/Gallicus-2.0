@@ -1,0 +1,120 @@
+name: Godot Smoke (Headless)
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      GALLICUS_PROJECT_ROOT: "."
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb git-lfs
+
+
+      - name: Validate weapon_sword.png is a real PNG (auto LFS pull if needed)
+        run: |
+          set -e
+          TARGET="assets/sprites/weapon_sword.png"
+          echo "Validating $TARGET"
+          ls -lah "$TARGET"
+
+          echo "---- HEAD (3 lines) ----"
+          head -n 3 "$TARGET" || true
+
+          echo "---- MAGIC (8 bytes hex) ----"
+          head -c 8 "$TARGET" | xxd -p -c 8
+
+          MAGIC=$(head -c 8 "$TARGET" | xxd -p -c 8 | tr -d '\n')
+          if [ "$MAGIC" = "89504e470d0a1a0a" ]; then
+            echo "PNG OK: $TARGET"
+            exit 0
+          fi
+
+          if head -n 1 "$TARGET" | grep -q "version https://git-lfs.github.com/spec"; then
+            echo "Detected Git LFS pointer. Pulling LFS files..."
+            git lfs install
+            git lfs pull
+
+            echo "Re-checking PNG magic after LFS pull..."
+            head -c 8 "$TARGET" | xxd -p -c 8
+            MAGIC2=$(head -c 8 "$TARGET" | xxd -p -c 8 | tr -d '\n')
+            if [ "$MAGIC2" = "89504e470d0a1a0a" ]; then
+              echo "PNG OK after LFS pull: $TARGET"
+              exit 0
+            fi
+
+            echo "ERROR: LFS pull did not produce a valid PNG for $TARGET"
+            exit 1
+          fi
+
+          echo "ERROR: $TARGET is not a valid PNG and is not an LFS pointer."
+          echo "Fix the asset in repo (file is likely corrupted/text/empty)."
+          exit 1
+
+      - name: Verify res:// references (case-sensitive)
+        run: |
+          set -e
+          python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
+
+      - name: Download Godot 4.6 headless
+        run: |
+          set -e
+          mkdir -p tools/godot
+          cd tools/godot
+          wget -O godot.zip "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
+          unzip -o godot.zip
+          chmod +x godot* Godot* || true
+          ls -la
+
+      - name: Run headless smoke
+        env:
+          GALLICUS_SMOKE: "1"
+          GALLICUS_SMOKE_TRIGGER_NEW_RUN: "1"
+          GALLICUS_SMOKE_SCENARIO: "BET_PRESENT"
+          GALLICUS_SMOKE_TIMEOUT_SEC: "10"
+        run: |
+          set -e
+
+          (
+            cd tools/godot
+            unzip -o godot.zip
+            chmod +x Godot_v4.6-stable_linux.x86_64
+          )
+
+          GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
+          echo "Using Godot binary: $GODOT_BIN"
+
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 10 2>&1 | tee smoke.log
+
+          echo "---- SMOKE LOG ----"
+          tail -n 200 smoke.log
+
+          if grep -E "ERROR|Error" -n smoke.log; then
+            echo "Found ERROR in log."
+            exit 1
+          fi
+          if grep -E "WARNING|Warning" -n smoke.log; then
+            echo "Found WARNING in log (warnings = errors)."
+            exit 1
+          fi
+
+          grep -q "SMOKE:BOOT_OK" smoke.log
+          grep -q "SMOKE:PHASE=MAIN_MENU" smoke.log
+
+          if [ "$GALLICUS_SMOKE_TRIGGER_NEW_RUN" = "1" ]; then
+            grep -q "SMOKE:NEW_RUN_REQUESTED" smoke.log
+            grep -q "SMOKE:PHASE=RUN_INIT" smoke.log
+          fi
+
+          if [ "$GALLICUS_SMOKE_SCENARIO" = "BET_PRESENT" ]; then
+            grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log
+          fi

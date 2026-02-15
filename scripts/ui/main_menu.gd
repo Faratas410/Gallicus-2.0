@@ -14,6 +14,8 @@ extends Control
 const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
+const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
+const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
@@ -53,6 +55,7 @@ const CONDANNA_UNLOCKED_ALPHA: float = 1.0
 const CONDANNA_LOCKED_ALPHA: float = 0.35
 const RUN_PHASE_MAIN_MENU: int = 10
 
+var _language_fallback_logged: bool = false
 var selected_language: String = "Italiano"
 var condanne_populated: bool = false
 var condanna_entries: Dictionary = {}
@@ -447,9 +450,26 @@ func _apply_language(locale: String) -> void:
 	var target_locale: String = locale.to_lower()
 	if target_locale != "it" and target_locale != "en":
 		target_locale = "it"
-	TranslationServer.set_locale(target_locale)
-	selected_language = _language_label_from_locale(target_locale)
+	var resolved_locale: String = _resolve_available_locale(target_locale)
+	TranslationServer.set_locale(resolved_locale)
+	selected_language = _language_label_from_locale(resolved_locale)
 	_update_language_label()
+
+func _resolve_available_locale(target_locale: String) -> String:
+	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH
+	if ResourceLoader.exists(requested_path):
+		return target_locale
+	var fallback_locale: String = "en" if target_locale == "it" else "it"
+	var fallback_path: String = I18N_IT_PATH if fallback_locale == "it" else I18N_EN_PATH
+	if ResourceLoader.exists(fallback_path):
+		if not _language_fallback_logged:
+			print("[I18N] Missing translation resource ", requested_path, ". Fallback locale: ", fallback_locale)
+			_language_fallback_logged = true
+		return fallback_locale
+	if not _language_fallback_logged:
+		print("[I18N] Missing translation resources for locales: ", target_locale, " and ", fallback_locale)
+		_language_fallback_logged = true
+	return target_locale
 
 func _emit_settings_changed() -> void:
 	if GameEvents.has_signal("settings_changed"):

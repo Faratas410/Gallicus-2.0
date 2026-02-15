@@ -5040,7 +5040,7 @@ func _enter_end_run_phase() -> void:
 func set_phase(p: Variant) -> void:
 	# Legacy wrapper: usa il canale canonico (_set_phase) come unica autorità del flow.
 	if typeof(p) == TYPE_INT:
-		_set_phase(RunPhase(p as int), "legacy_set_phase")
+		_set_phase(p as RunPhase, "legacy_set_phase")
 	else:
 		_set_phase(p as RunPhase, "legacy_set_phase")
 

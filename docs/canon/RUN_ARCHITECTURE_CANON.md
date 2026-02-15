@@ -99,6 +99,7 @@ All changes to systems described here must update this document in the same PR.
 The phase contract is explicit and mandatory:
 
 - `_set_phase()` is the **only** method allowed to mutate `RunPhase`.
+- Boot must enter `MAIN_MENU` via `_set_phase(...)` before any `request_new_run` handling.
 - Any gameplay enable/disable gate phase must be stored in a separate non-authoritative runtime variable and must not mutate `RunPhase` directly.
 - Every `_enter_*()` must trigger exactly one UI render.
 - Every request handler must, in order:

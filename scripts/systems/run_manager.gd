@@ -1343,8 +1343,7 @@ func _boot() -> void:
 			_arena.player_spawned.connect(player_spawned_callable)
 	print("Boot: arena=", _arena, " player=", _player)
 	print("Player in tree:", _player != null and _player.is_inside_tree())
-	print("Starting new run")
-	start_new_run()
+	_set_phase(RunPhase.MAIN_MENU, "boot")
 	_log_runtime_state("boot_complete")
 
 func _validate_game_events_signals() -> bool:

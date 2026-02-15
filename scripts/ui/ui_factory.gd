@@ -6,7 +6,7 @@ const BodyFont: Font = preload("res://assets/ui/fonts/font_body.tres")
 
 static func create_sprite_label(text: String) -> PanelContainer:
 	var entry_panel := PanelContainer.new()
-	entry_panel.theme_override_styles.panel = MainPanelStylebox
+	entry_panel.add_theme_stylebox_override("panel", MainPanelStylebox)
 	var entry_label := Label.new()
 	entry_label.text = text
 	entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF

@@ -110,6 +110,9 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 }
 const RUN_SAVE_SCHEMA_VERSION: int = 1
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
+const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
+const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
+
 const RUN_FLOW_BET_SIGNED: StringName = &"BET_SIGNED"
 const RUN_FLOW_INTERMEDIATE_CHOICE: StringName = &"INTERMEDIATE_CHOICE"
 const RUN_FLOW_PUSH_LUCK: StringName = &"PUSH_LUCK"
@@ -1199,6 +1202,7 @@ var _run_counter: int = 0
 var _last_request: String = ""
 var _events_wired: bool = false
 var _last_phase_change_ms: int = 0
+var _language_fallback_logged: bool = false
 var _last_ui_render_ms: int = 0
 var _last_activity_ms: int = 0
 var _watchdog_enabled: bool = true
@@ -1288,7 +1292,23 @@ func _apply_language(locale: String) -> void:
 	var target_locale: String = locale.strip_edges().to_lower()
 	if target_locale != "it" and target_locale != "en":
 		target_locale = "it"
-	TranslationServer.set_locale(target_locale)
+	TranslationServer.set_locale(_resolve_available_locale(target_locale))
+
+func _resolve_available_locale(target_locale: String) -> String:
+	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH
+	if ResourceLoader.exists(requested_path):
+		return target_locale
+	var fallback_locale: String = "en" if target_locale == "it" else "it"
+	var fallback_path: String = I18N_IT_PATH if fallback_locale == "it" else I18N_EN_PATH
+	if ResourceLoader.exists(fallback_path):
+		if not _language_fallback_logged:
+			print("[I18N] Missing translation resource ", requested_path, ". Fallback locale: ", fallback_locale)
+			_language_fallback_logged = true
+		return fallback_locale
+	if not _language_fallback_logged:
+		print("[I18N] Missing translation resources for locales: ", target_locale, " and ", fallback_locale)
+		_language_fallback_logged = true
+	return target_locale
 
 func _on_settings_changed(payload: Dictionary) -> void:
 	if payload.has("language"):
@@ -3344,14 +3364,14 @@ func _take_payout() -> void:
 		end_run(&"")
 		return
 	var bet_id: String = _run_state.current_bet_id
-	var bonus_tier: int = _consume_intermediate_choice_bonus()
+	var bonus_tier_local: int = _consume_intermediate_choice_bonus()
 	_waiting_for_push_luck = false
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_CASH_OUT)
 	_run_state.push_luck_cashouts += 1
 	if bet_id != "":
-		_apply_bet_reward_scaled(bet_id, _run_state.bet_chain_level + bonus_tier)
+		_apply_bet_reward_scaled(bet_id, _run_state.bet_chain_level + bonus_tier_local)
 	_reset_bet_chain()
 	_open_bet_ui(true)
 	_autosave_run_checkpoint(RUN_FLOW_BET_OFFER, &"")
@@ -5020,7 +5040,7 @@ func _enter_end_run_phase() -> void:
 func set_phase(p: Variant) -> void:
 	# Legacy wrapper: usa il canale canonico (_set_phase) come unica autorità del flow.
 	if typeof(p) == TYPE_INT:
-		_set_phase((p as int) as RunPhase, "legacy_set_phase")
+		_set_phase(RunPhase(p as int), "legacy_set_phase")
 	else:
 		_set_phase(p as RunPhase, "legacy_set_phase")
 

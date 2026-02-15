@@ -35,10 +35,16 @@ jobs:
           GALLICUS_SMOKE_TIMEOUT_SEC: "10"
         run: |
           set -e
-          GODOT_BIN=$(find tools/godot -maxdepth 1 -type f \( -name 'godot*' -o -name 'Godot*' \) | head -n 1)
-          echo "Using Godot binary: $GODOT_BIN"
 
-          xvfb-run -a "$GODOT_BIN" --headless --path . --quit-after 10 2>&1 | tee smoke.log
+          (
+            cd tools/godot
+            unzip -o godot.zip
+            chmod +x Godot_v4.6-stable_linux.x86_64
+            GODOT_BIN=./Godot_v4.6-stable_linux.x86_64
+            echo "Using Godot binary: $GODOT_BIN"
+
+            xvfb-run -a "$GODOT_BIN" --headless --path ../.. --quit-after 10 2>&1
+          ) | tee smoke.log
 
           echo "---- SMOKE LOG ----"
           tail -n 200 smoke.log

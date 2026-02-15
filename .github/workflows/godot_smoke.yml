@@ -1,0 +1,65 @@
+name: Godot Smoke (Headless)
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb
+
+      - name: Download Godot 4.6 headless
+        run: |
+          set -e
+          mkdir -p tools/godot
+          cd tools/godot
+          wget -O godot.zip "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
+          unzip -o godot.zip
+          chmod +x godot* Godot* || true
+          ls -la
+
+      - name: Run headless smoke
+        env:
+          GALLICUS_SMOKE: "1"
+          GALLICUS_SMOKE_TRIGGER_NEW_RUN: "1"
+          GALLICUS_SMOKE_SCENARIO: "BET_PRESENT"
+          GALLICUS_SMOKE_TIMEOUT_SEC: "10"
+        run: |
+          set -e
+          GODOT_BIN=$(find tools/godot -maxdepth 1 -type f \( -name 'godot*' -o -name 'Godot*' \) | head -n 1)
+          echo "Using Godot binary: $GODOT_BIN"
+
+          xvfb-run -a "$GODOT_BIN" --headless --path . --quit-after 10 2>&1 | tee smoke.log
+
+          echo "---- SMOKE LOG ----"
+          tail -n 200 smoke.log
+
+          if grep -E "ERROR|Error" -n smoke.log; then
+            echo "Found ERROR in log."
+            exit 1
+          fi
+          if grep -E "WARNING|Warning" -n smoke.log; then
+            echo "Found WARNING in log (warnings = errors)."
+            exit 1
+          fi
+
+          grep -q "SMOKE:BOOT_OK" smoke.log
+          grep -q "SMOKE:PHASE=MAIN_MENU" smoke.log
+
+          if [ "$GALLICUS_SMOKE_TRIGGER_NEW_RUN" = "1" ]; then
+            grep -q "SMOKE:NEW_RUN_REQUESTED" smoke.log
+            grep -q "SMOKE:PHASE=RUN_INIT" smoke.log
+          fi
+
+          if [ "$GALLICUS_SMOKE_SCENARIO" = "BET_PRESENT" ]; then
+            grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log
+          fi

@@ -4,6 +4,7 @@
 
 extends Node2D
 
+const GameConstants: Script = preload("res://scripts/systems/constants.gd")
 const LEVEL3_PASSIVE_MODE := true
 
 signal player_spawned(player: Node2D)

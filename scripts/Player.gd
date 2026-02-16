@@ -83,6 +83,9 @@ func _ready() -> void:
 		input_locked = not GameEvents.gameplay_enabled
 
 func _physics_process(delta: float) -> void:
+	if _is_movement_disabled():
+		velocity = Vector2.ZERO
+		return
 	if _is_combat_runtime_disabled():
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -118,6 +121,11 @@ func set_input_locked(locked: bool) -> void:
 	input_locked = locked
 
 func _is_combat_runtime_disabled() -> bool:
+	if LEVEL3_PASSIVE_MODE:
+		return true
+	return _is_level3_mode()
+
+func _is_movement_disabled() -> bool:
 	if LEVEL3_PASSIVE_MODE:
 		return true
 	return _is_level3_mode()
@@ -314,6 +322,11 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 	_emit_health()
 
 func apply_scar_modifiers(heal_multiplier: float, dodge_cooldown_multiplier: float, dodge_speed_multiplier: float) -> void:
+	if _is_movement_disabled():
+		_heal_multiplier = maxf(heal_multiplier, 0.0)
+		_dodge_cooldown_multiplier = 1.0
+		_dodge_speed_multiplier = 1.0
+		return
 	_heal_multiplier = maxf(heal_multiplier, 0.0)
 	_dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 0.1)
 	_dodge_speed_multiplier = maxf(dodge_speed_multiplier, 0.1)
@@ -333,6 +346,10 @@ func heal(amount: int) -> void:
 	_emit_health()
 
 func apply_speed_boost(mult: float, seconds: float) -> void:
+	if _is_movement_disabled():
+		velocity = Vector2.ZERO
+		_speed_multiplier = 1.0
+		return
 	if mult <= 0.0 or seconds <= 0.0:
 		return
 	_speed_multiplier = maxf(_speed_multiplier, mult)

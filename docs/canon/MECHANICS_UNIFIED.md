@@ -871,6 +871,7 @@ Tra le run non devono mai persistere:
 Runtime enforcement note (Level 3): active run flow does not use XP/level-up/upgrade-token progression signals or UI loops.
 Runtime enforcement note (Level 3): stat upgrades (`hp_bonus`, `light_bonus`, `heavy_bonus`) have no gameplay effect; outcome resolution remains bet-curve/random flow authority.
 Runtime enforcement note (Level 3): combat runtime is disabled (no real HP damage/death authority); success/failure is resolved by bet/RNG flow only.
+Runtime enforcement note (Level 3): player movement runtime is inert (no physics-driven movement authority, `move_and_slide` not executed in Level 3 path).
 
 Se qualcosa rende la prossima run:
 

@@ -6,16 +6,12 @@ extends Node2D
 
 const LEVEL3_PASSIVE_MODE := true
 
-signal health_changed(current: int, max: int)
-signal took_damage(amount: int)
 signal died
 
 var _sword_tex_idle: Texture2D = null
 var _sword_tex_swing: Texture2D = null
-const DAMAGE_INVULN_SECONDS: float = 0.25
 
 @export var move_speed: float = 220.0
-@export var max_health: int = 100
 @export var light_damage: int = 12
 @export var heavy_damage: int = 25
 @export var light_range: float = 60.0
@@ -31,7 +27,6 @@ const DAMAGE_INVULN_SECONDS: float = 0.25
 @export var arena_bounds_size: Vector2 = Vector2(1024.0, 768.0)
 @export var arena_bounds_margin: float = 16.0
 
-var _current_health: int
 var _attack_timer: float = 0.0
 var _dodge_timer: float = 0.0
 var _is_blocking: bool = false
@@ -39,10 +34,8 @@ var _speed_multiplier: float = 1.0
 var _speed_boost_token: int = 0
 var _last_aim_dir: Vector2 = Vector2.UP
 var _is_swinging: bool = false
-var _base_max_health: int = 0
 var _base_light_damage: int = 0
 var _base_heavy_damage: int = 0
-var _damage_invuln: float = 0.0
 var _heal_multiplier: float = 1.0
 var _dodge_cooldown_multiplier: float = 1.0
 var _dodge_speed_multiplier: float = 1.0
@@ -55,11 +48,8 @@ func _ready() -> void:
 		_sword_tex_idle = load("res://assets/sprites/weapon_sword.png") as Texture2D
 	if _sword_tex_swing == null:
 		_sword_tex_swing = load("res://assets/sprites/weapon_sword.png") as Texture2D
-	_base_max_health = max_health
 	_base_light_damage = light_damage
 	_base_heavy_damage = heavy_damage
-	_current_health = max_health
-	_emit_health()
 	_ensure_placeholder_sprite()
 	if sword_sprite != null:
 		sword_sprite.texture = _sword_tex_idle
@@ -228,67 +218,6 @@ func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) ->
 		if enemy_node.has_method("take_damage"):
 			enemy_node.call("take_damage", damage)
 
-func take_damage(amount: int) -> void:
-	if _is_combat_runtime_disabled():
-		return
-	if _damage_invuln > 0.0:
-		return
-	var final_damage: int = amount
-	if _is_blocking:
-		var effective_reduction: float = block_reduction / maxf(_dodge_cooldown_multiplier, 0.1)
-		effective_reduction = clampf(effective_reduction, 0.0, 1.0)
-		final_damage = int(round(amount * (1.0 - effective_reduction)))
-	if final_damage > 0:
-		_damage_invuln = DAMAGE_INVULN_SECONDS
-		took_damage.emit(final_damage)
-		if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("player_damaged"):
-			GameEvents.player_damaged.emit()
-	_current_health = maxi(_current_health - final_damage, 0)
-	_emit_health()
-	if _current_health <= 0:
-		died.emit()
-		queue_free()
-
-func _emit_health() -> void:
-	if _is_combat_runtime_disabled():
-		return
-	health_changed.emit(_current_health, max_health)
-
-func reset_full_health() -> void:
-	if _is_combat_runtime_disabled():
-		return
-	_current_health = max_health
-	_emit_health()
-
-func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -> void:
-	var manager: Node = get_tree().get_first_node_in_group("run_manager")
-	if manager != null and manager.has_method("is_level3_mode") and bool(manager.call("is_level3_mode")):
-		return
-	if _base_max_health <= 0:
-		_base_max_health = max_health
-	if _base_light_damage <= 0:
-		_base_light_damage = light_damage
-	if _base_heavy_damage <= 0:
-		_base_heavy_damage = heavy_damage
-	var previous_max: int = max_health
-	var previous_current: int = _current_health
-	print("Apply run upgrades: hp_bonus=%d light_bonus=%d heavy_bonus=%d prev_hp=%d/%d" % [
-		max_hp_bonus,
-		light_bonus,
-		heavy_bonus,
-		previous_current,
-		previous_max
-	])
-	max_health = maxi(_base_max_health + max_hp_bonus, 1)
-	light_damage = _base_light_damage + light_bonus
-	heavy_damage = _base_heavy_damage + heavy_bonus
-	if max_health != previous_max:
-		var delta: int = max_health - previous_max
-		_current_health = clampi(previous_current + delta, 0, max_health)
-	else:
-		_current_health = clampi(previous_current, 0, max_health)
-	_emit_health()
-
 func apply_scar_modifiers(heal_multiplier: float, dodge_cooldown_multiplier: float, dodge_speed_multiplier: float) -> void:
 	if _is_movement_disabled():
 		_heal_multiplier = maxf(heal_multiplier, 0.0)
@@ -301,17 +230,6 @@ func apply_scar_modifiers(heal_multiplier: float, dodge_cooldown_multiplier: flo
 
 func get_damage_values() -> Array[int]:
 	return [light_damage, heavy_damage]
-
-func heal(amount: int) -> void:
-	if _is_combat_runtime_disabled():
-		return
-	if amount <= 0:
-		return
-	var scaled: int = int(round(float(amount) * _heal_multiplier))
-	if scaled <= 0:
-		return
-	_current_health = clampi(_current_health + scaled, 0, max_health)
-	_emit_health()
 
 func apply_speed_boost(mult: float, seconds: float) -> void:
 	if _is_movement_disabled():

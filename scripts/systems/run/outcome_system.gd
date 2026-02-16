@@ -82,7 +82,7 @@ func resolve_level3_arena(
 	elif won:
 		outcome_reason = "Esito favorevole con condanna registrata"
 	# Canon ritual vocabulary (Patch 9A).
-	# Legacy keys are kept as temporary aliases for existing callers.
+	# Legacy outcome aliases removed in C4.
 	return {
 		"risk_profile": String(enemy_profile),
 		"pressure_mod": pressure_mod,
@@ -90,12 +90,7 @@ func resolve_level3_arena(
 		"condemnation_flag": took_damage,
 		"outcome_tier": String(outcome_tier),
 		"outcome_reason": outcome_reason,
-		# Deprecated legacy aliases.
-		"enemy_profile": String(enemy_profile),
-		"damage_mod": pressure_mod,
-		"damage_chance": damage_chance,
 		"won": won,
-		"took_damage": took_damage,
 		"notes": notes,
 	}
 
@@ -109,15 +104,13 @@ func build_level3_loss_consequence(
 ) -> Dictionary:
 	if provoke_armed:
 		# Canon ritual vocabulary (Patch 9A).
-		# Legacy keys are kept as temporary aliases for existing callers.
+		# Legacy loss aliases removed in C6B.
 		return {
 			"condemnation_flag": false,
 			"outcome_tier": "TERMINAL",
 			"outcome_reason": "Condanna: Provoca fallita",
-			"provoke_failed": true,
-			"double_or_die_failed": false,
-			# Deprecated legacy aliases.
-			"hp_loss": 0,
+			"corruption_gain": 0,
+			"end_reason": "PROVOCA_FAIL",
 			"apply_next_loss_hp_penalty": false,
 			"clear_next_loss_hp_penalty": true,
 			"scar_id": &"",
@@ -131,15 +124,13 @@ func build_level3_loss_consequence(
 		executioner_bonus = 10
 	if bet_id == BET_DOUBLE_OR_DIE:
 		# Canon ritual vocabulary (Patch 9A).
-		# Legacy keys are kept as temporary aliases for existing callers.
+		# Legacy loss aliases removed in C6B.
 		return {
 			"condemnation_flag": false,
 			"outcome_tier": "TERMINAL",
 			"outcome_reason": "Condanna: Raddoppia o Muori",
-			"provoke_failed": false,
-			"double_or_die_failed": true,
-			# Deprecated legacy aliases.
-			"hp_loss": 0,
+			"corruption_gain": 0,
+			"end_reason": "THE_FOOL",
 			"apply_next_loss_hp_penalty": false,
 			"clear_next_loss_hp_penalty": false,
 			"scar_id": &"",
@@ -176,15 +167,13 @@ func build_level3_loss_consequence(
 	if next_loss_hp_penalty > 0:
 		hp_loss += next_loss_hp_penalty
 	# Canon ritual vocabulary (Patch 9A).
-	# Legacy keys are kept as temporary aliases for existing callers.
+	# Legacy loss aliases removed in C6B.
 	return {
 		"condemnation_flag": hp_loss > 0 or scar_id != &"",
 		"outcome_tier": "ADVERSE",
 		"outcome_reason": scar_origin,
-		"provoke_failed": false,
-		"double_or_die_failed": false,
-		# Deprecated legacy aliases.
-		"hp_loss": hp_loss,
+		"corruption_gain": maxi(hp_loss * 10, 0),
+		"end_reason": "",
 		"apply_next_loss_hp_penalty": next_loss_hp_penalty > 0,
 		"clear_next_loss_hp_penalty": true,
 		"scar_id": scar_id,

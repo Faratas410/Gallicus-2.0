@@ -168,8 +168,6 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var scars_detail_close: Button = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
 
 
-var player_hp_bar: ProgressBar = null
-var player_hp_label: Label = null
 var _bets_by_id: Dictionary = {}
 var _run_manager: Node
 var _arena: Node
@@ -1663,13 +1661,6 @@ func _on_quit_pressed() -> void:
 	if GameEvents.has_signal("request_end_run_quit"):
 		GameEvents.request_end_run_quit.emit()
 
-func _on_player_health_changed(current: int, max_value: int) -> void:
-	if player_hp_bar == null or player_hp_label == null:
-		return
-	player_hp_bar.max_value = max_value
-	player_hp_bar.value = current
-	player_hp_label.text = "HP: %d/%d" % [current, max_value]
-
 func _handle_fast_countdown(seconds: int) -> void:
 	if fast_countdown_label == null:
 		return
@@ -1717,22 +1708,7 @@ func _on_player_spawned(p: Node) -> void:
 	_bind_player(p)
 
 func _bind_player(p: Node) -> void:
-	if _player != null and _player.has_signal("health_changed"):
-		var health_callable: Callable = Callable(self, "_on_player_health_changed")
-		if _player.health_changed.is_connected(health_callable):
-			_player.health_changed.disconnect(health_callable)
-
 	_player = p
-
-	if _player != null and _player.has_signal("health_changed"):
-		var health_callable: Callable = Callable(self, "_on_player_health_changed")
-		if not _player.health_changed.is_connected(health_callable):
-			_player.health_changed.connect(health_callable)
-
-	if _player != null and _player.has_method("get_health"):
-		var h: Array = _player.call("get_health")
-		if h.size() >= 2:
-			_on_player_health_changed(int(h[0]), int(h[1]))
 
 func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 	if bet_buttons_container == null:

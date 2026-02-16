@@ -4,19 +4,16 @@ class_name RunScarSystem
 func compute_modifiers(
 	scars: Array[Dictionary],
 	scar_open_wound: StringName,
-	scar_cracked_bones: StringName,
-	scar_open_wound_hp_penalty: int
+	scar_cracked_bones: StringName
 ) -> Dictionary:
 	var heal_multiplier: float = 1.0
 	var dodge_cooldown_multiplier: float = 1.0
 	var dodge_speed_multiplier: float = 1.0
-	var max_hp_penalty: int = 0
 	for scar: Dictionary in scars:
 		var scar_id: StringName = StringName(str(scar.get("id", "")))
 		match scar_id:
 			scar_open_wound:
 				heal_multiplier = minf(heal_multiplier, 0.6)
-				max_hp_penalty -= scar_open_wound_hp_penalty
 			scar_cracked_bones:
 				dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 1.4)
 				dodge_speed_multiplier = minf(dodge_speed_multiplier, 0.85)
@@ -26,7 +23,6 @@ func compute_modifiers(
 		"heal_multiplier": heal_multiplier,
 		"dodge_cooldown_multiplier": dodge_cooldown_multiplier,
 		"dodge_speed_multiplier": dodge_speed_multiplier,
-		"max_hp_penalty": max_hp_penalty,
 	}
 
 func build_scar_payload(

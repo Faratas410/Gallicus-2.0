@@ -15,6 +15,8 @@
 - Single flow authority: `res://scripts/systems/run_manager.gd` (group `run_manager`)
 - Global event authority: `res://scripts/systems/game_events.gd` (`GameEvents` autoload)
 - Allowed runtime groups: `run_manager`, `arena`, `player`, `enemies`
+- Level 3 run payload runtime fields: `arena_index`, `coins`, `corruption`, `upgrades` (`corruption` capped at 100).
+- Active Level 3 runtime authority excludes combat/health/enemy gameplay systems; arena/player/enemies groups remain reserved labels for visual/passive runtime wiring only.
 
 ## Top-level repository layout
 - `project.godot` — Godot project configuration.

@@ -48,7 +48,6 @@ extends Node
 # - push_luck_opened: emitted by RunManager; consumed by UIRoot.
 # - push_luck_closed: emitted by RunManager; consumed by UIRoot.
 # - post_arena_choice_selected: emitted by UIRoot; consumed by RunManager.
-# - player_damaged: emitted by combat systems; consumed by RunManager/UI.
 # - run_phase_changed: emitted by RunManager; consumed by UI/systems.
 # - countdown_requested: emitted by RunManager; consumed by UIRoot.
 # - gameplay_enabled_changed: emitted by GameEvents.set_gameplay_enabled; consumed by UI/systems.
@@ -110,7 +109,6 @@ signal intermediate_choice_opened
 signal push_luck_opened(payload: Dictionary)
 signal push_luck_closed
 signal post_arena_choice_selected(choice_id: StringName)
-signal player_damaged
 signal run_phase_changed(phase: int)
 signal countdown_requested(seconds: int)
 signal gameplay_enabled_changed(enabled: bool)
@@ -190,7 +188,6 @@ func _ready() -> void:
 	_connect_noop(push_luck_opened)
 	_connect_noop(push_luck_closed)
 	_connect_noop(post_arena_choice_selected)
-	_connect_noop(player_damaged)
 	_connect_noop(run_phase_changed)
 	_connect_noop(countdown_requested)
 	_connect_noop(gameplay_enabled_changed)

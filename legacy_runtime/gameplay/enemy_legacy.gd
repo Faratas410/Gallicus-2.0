@@ -1,4 +1,4 @@
-# DEPRECATED: runtime Enemy is res://scripts/entities/enemy_basic.gd via scenes/enemies/EnemyBasic.tscn. Do not edit.
+# DEPRECATED: legacy enemy runtime artifact. Do not edit.
 extends CharacterBody2D
 
 signal died

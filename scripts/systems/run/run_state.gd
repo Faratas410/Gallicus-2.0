@@ -15,7 +15,6 @@ var cashouts: int = 0
 var doubles: int = 0
 var max_escalation: int = 0
 var arenas_cleared: int = 0
-var max_hp_modifier: int = 0
 var audience_score: int = 0
 var refuse_cashout_count_this_run: int = 0
 var last_action_was_rilancio: bool = false
@@ -55,7 +54,6 @@ var level3_cashed_after_high_escalation: bool = false
 var scar_heal_multiplier: float = 1.0
 var scar_dodge_cooldown_multiplier: float = 1.0
 var scar_dodge_speed_multiplier: float = 1.0
-var scar_max_hp_penalty: int = 0
 var push_luck_cashouts: int = 0
 var push_luck_doubles: int = 0
 var max_push_luck_chain: int = 1
@@ -102,7 +100,6 @@ func reset() -> void:
 	doubles = 0
 	max_escalation = 0
 	arenas_cleared = 0
-	max_hp_modifier = 0
 	audience_score = 0
 	refuse_cashout_count_this_run = 0
 	last_action_was_rilancio = false
@@ -142,7 +139,6 @@ func reset() -> void:
 	scar_heal_multiplier = 1.0
 	scar_dodge_cooldown_multiplier = 1.0
 	scar_dodge_speed_multiplier = 1.0
-	scar_max_hp_penalty = 0
 	push_luck_cashouts = 0
 	push_luck_doubles = 0
 	max_push_luck_chain = 1
@@ -188,7 +184,6 @@ func to_dict() -> Dictionary:
 		"doubles": doubles,
 		"max_escalation": max_escalation,
 		"arenas_cleared": arenas_cleared,
-		"max_hp_modifier": max_hp_modifier,
 		"audience_score": audience_score,
 		"refuse_cashout_count_this_run": refuse_cashout_count_this_run,
 		"last_action_was_rilancio": last_action_was_rilancio,
@@ -225,7 +220,6 @@ func to_dict() -> Dictionary:
 		"scar_heal_multiplier": scar_heal_multiplier,
 		"scar_dodge_cooldown_multiplier": scar_dodge_cooldown_multiplier,
 		"scar_dodge_speed_multiplier": scar_dodge_speed_multiplier,
-		"scar_max_hp_penalty": scar_max_hp_penalty,
 		"push_luck_cashouts": push_luck_cashouts,
 		"push_luck_doubles": push_luck_doubles,
 		"max_push_luck_chain": max_push_luck_chain,
@@ -271,7 +265,6 @@ func from_dict(d: Dictionary) -> void:
 	doubles = int(d.get("doubles", 0))
 	max_escalation = int(d.get("max_escalation", 0))
 	arenas_cleared = int(d.get("arenas_cleared", 0))
-	max_hp_modifier = int(d.get("max_hp_modifier", 0))
 	audience_score = int(d.get("audience_score", 0))
 	refuse_cashout_count_this_run = int(d.get("refuse_cashout_count_this_run", 0))
 	last_action_was_rilancio = bool(d.get("last_action_was_rilancio", false))
@@ -308,7 +301,6 @@ func from_dict(d: Dictionary) -> void:
 	scar_heal_multiplier = float(d.get("scar_heal_multiplier", 1.0))
 	scar_dodge_cooldown_multiplier = float(d.get("scar_dodge_cooldown_multiplier", 1.0))
 	scar_dodge_speed_multiplier = float(d.get("scar_dodge_speed_multiplier", 1.0))
-	scar_max_hp_penalty = int(d.get("scar_max_hp_penalty", 0))
 	push_luck_cashouts = int(d.get("push_luck_cashouts", 0))
 	push_luck_doubles = int(d.get("push_luck_doubles", 0))
 	max_push_luck_chain = int(d.get("max_push_luck_chain", 1))

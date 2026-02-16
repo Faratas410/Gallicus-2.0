@@ -62,12 +62,18 @@ All changes to systems described here must update this document in the same PR.
 - Rendering and visual composition.
 - Direct UI node mutation as gameplay authority.
 - Economy/progression legacy systems (`coins`/`tokens`/`xp`/`level`): partially purged; intro token-shop request/cost API and progression event-bus signal wiring are removed from active Level 3 flow and must not be reintroduced as RunManager authority.
-- Run save payload for active Level 3 excludes legacy progression/shop keys (`level`, `xp`, `difficulty_tier`, `upgrade_tokens`, `upgrade_costs`) and keeps only runtime-required fields.
+- Run save payload for active Level 3 excludes legacy progression/shop keys (`level`, `xp`, `difficulty_tier`, `upgrade_tokens`, `upgrade_costs`) and keeps only runtime-required fields (`arena_index`, `coins`, `corruption`, `upgrades`).
+- In active Level 3, `run.corruption` is an integer runtime field with hard cap `100`; it initializes at `0` on new run and is clamped on load.
 - In active Level 3, `run.upgrades` is sanitized to an empty schema (`{}`) on init/load/save; legacy stat keys are ignored.
 - In active Level 3, combat authority is disabled (`Player`/enemy damage-death runtime is inert) and run termination must not originate from player-death signals.
 - In active Level 3, enemy instantiation runtime is removed from `Arena`; `Player` is a visual-only `Node2D` (no CharacterBody2D physics authority), and player/enemy collision-combat runtime is not authoritative.
+- In active Level 3, no combat/health/enemy gameplay authority is active; groups and scene nodes remain visual/passive runtime surfaces only.
 - In active Level 3, enemy combat HUD assets/wiring (enemy health bars) are removed from active UI runtime path.
 - In active Level 3, outcome payload semantics are ritual-only: legacy combat keys are deprecated, and UI bindings must target ritual keys only (no exposed enemy/damage/HP semantics).
+- In active Level 3, `resolve_level3_arena` payload no longer emits legacy aliases (`enemy_profile`, `damage_mod`, `damage_chance`, `took_damage`); runtime flow consumes canonical ritual keys (`risk_profile`, `pressure_mod`, `failure_chance`, `condemnation_flag`, `outcome_tier`, `outcome_reason`) plus flow keys (`won`, `notes`).
+- In active Level 3, RunManager flow consumes `condemnation_flag` as authoritative adverse/condanna signal; legacy `took_damage` alias is non-authoritative and must not drive flow branches.
+- In active Level 3 loss ingestion, RunManager consumes canonical consequence keys `corruption_gain` and `end_reason`; legacy `hp_loss`/`provoke_failed`/`double_or_die_failed` are removed from active Level 3 consequence contract.
+- In active Level 3 run save payload, `run.level3_schema = 2` marks the hard-sealed canonical loss contract boundary.
 - Logging internals: delegated to `FlowLogger`.
 
 ## Flow Observability Stack

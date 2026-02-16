@@ -126,6 +126,7 @@ const RUN_FLOW_BET_SIGNED: StringName = &"BET_SIGNED"
 const RUN_FLOW_INTERMEDIATE_CHOICE: StringName = &"INTERMEDIATE_CHOICE"
 const RUN_FLOW_PUSH_LUCK: StringName = &"PUSH_LUCK"
 const RUN_FLOW_BET_OFFER: StringName = &"BET_OFFER"
+const CORRUPTION_MAX: int = 100
 const CORRUPTION_DOUBLE: int = 1
 const CORRUPTION_PACT_HIGH: int = 1
 const GLORY_PER_SUCCESS: int = 1
@@ -602,7 +603,7 @@ class FinalReport:
 
 class ArenaResult:
 	var won: bool = false
-	var took_damage: bool = false
+	var condemnation_flag: bool = false
 	var notes: Array[StringName] = []
 
 const ARCH_DEBT: StringName = &"DEBT"
@@ -1134,7 +1135,7 @@ const SCAR_OPEN_WOUND_HP_PENALTY: int = 20
 var run: Dictionary = {
 	"arena_index": 0,
 	"coins": 0,
-	"bet_hp_penalty": 0,
+	"corruption": 0,
 	"upgrades": {},
 }
 
@@ -1695,7 +1696,7 @@ func _start_new_run() -> void:
 	_clear_enemies()
 
 	run["coins"] = starting_coins
-	run["bet_hp_penalty"] = 0
+	run["corruption"] = 0
 	if not LEVEL3_ENABLED:
 		_reset_upgrades()
 		_reset_upgrade_costs()
@@ -1802,7 +1803,6 @@ func _start_level3_run() -> void:
 	_run_state.doubles = 0
 	_run_state.max_escalation = 0
 	_run_state.arenas_cleared = 0
-	_run_state.max_hp_modifier = 0
 	_run_state.audience_score = 0
 	_run_state.refuse_cashout_count_this_run = 0
 	_run_state.last_action_was_rilancio = false
@@ -1823,6 +1823,7 @@ func _start_level3_run() -> void:
 	_reset_scars()
 	run["coins"] = starting_coins
 	run["arena_index"] = 0
+	run["corruption"] = 0
 	_reset_upgrades()
 	_reset_upgrade_costs()
 
@@ -1982,7 +1983,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var failed: bool = not result.won
 	var scars_applied: Array[StringName] = []
-	if bet_id == BET_FLAWLESS_BLOOD and result.took_damage:
+	if bet_id == BET_FLAWLESS_BLOOD and result.condemnation_flag:
 		failed = true
 	if failed:
 		_apply_intermediate_loss_penalty_if_needed()
@@ -1993,21 +1994,10 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		_run_state.risky_choice_made_recently = false
 		_apply_level3_reward(bet_id, _run_state.level3_reward_tier)
 		_resolve_ritual_reward_applied = true
-		var player: Node = _resolve_player()
-		var current_hp: int = -1
-		var max_hp: int = -1
-		if player != null:
-			current_hp = _get_player_health_value(player)
-			max_hp = _get_player_max_health_value(player)
-		var hp_available: bool = current_hp >= 0 and max_hp > 0
-		if hp_available:
-			if current_hp == 1 or float(current_hp) / float(max_hp) <= 0.10:
-				_register_condanna(CONDANNA_NON_OGGI)
-		else:
-			var bet_data: Dictionary = _get_bet_data(String(bet_id))
-			var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
-			if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
-				_register_condanna(CONDANNA_NON_OGGI)
+		var bet_data: Dictionary = _get_bet_data(String(bet_id))
+		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
+		if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
+			_register_condanna(CONDANNA_NON_OGGI)
 	_update_last_pact_outcome(bet_id, not failed)
 	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
@@ -2046,7 +2036,7 @@ func _enter_resolution() -> void:
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var failed: bool = not result.won
 	var scars_applied: Array[StringName] = []
-	if bet_id == BET_FLAWLESS_BLOOD and result.took_damage:
+	if bet_id == BET_FLAWLESS_BLOOD and result.condemnation_flag:
 		failed = true
 	if failed:
 		_apply_intermediate_loss_penalty_if_needed()
@@ -2054,21 +2044,10 @@ func _enter_resolution() -> void:
 	else:
 		_apply_glory_on_success()
 		_handle_level3_win(bet_id, result)
-		var player: Node = _resolve_player()
-		var current_hp: int = -1
-		var max_hp: int = -1
-		if player != null:
-			current_hp = _get_player_health_value(player)
-			max_hp = _get_player_max_health_value(player)
-		var hp_available: bool = current_hp >= 0 and max_hp > 0
-		if hp_available:
-			if current_hp == 1 or float(current_hp) / float(max_hp) <= 0.10:
-				_register_condanna(CONDANNA_NON_OGGI)
-		else:
-			var bet_data: Dictionary = _get_bet_data(String(bet_id))
-			var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
-			if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
-				_register_condanna(CONDANNA_NON_OGGI)
+		var bet_data: Dictionary = _get_bet_data(String(bet_id))
+		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
+		if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
+			_register_condanna(CONDANNA_NON_OGGI)
 	_update_last_pact_outcome(bet_id, not failed)
 	_apply_special_arena_post_resolution(result, failed)
 	_log_level3_arena_result(bet_id, result, scars_applied)
@@ -2119,8 +2098,6 @@ func start_next_bet_round() -> void:
 		return
 	if _is_game_over:
 		return
-	if _force_game_over_if_dead():
-		return
 	if _waiting_for_push_luck:
 		return
 	_set_phase(RunPhase.NEXT_BET, "start_next_bet_round")
@@ -2147,8 +2124,6 @@ func restart_run(preserve_coins: bool = true) -> void:
 func _open_bet_ui(_from_victory: bool = false) -> void:
 	if LEVEL3_ENABLED:
 		_open_level3_bet_ui()
-		return
-	if _force_game_over_if_dead():
 		return
 	if _is_game_over:
 		return
@@ -2339,6 +2314,7 @@ func _emit_run_debug_state() -> void:
 		"special_arena_active": _run_state.special_arena_active,
 		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
 		"glory": _run_state.glory,
+		"corruption": int(run.get("corruption", 0)),
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
 
@@ -2363,9 +2339,10 @@ func _build_run_save_payload() -> Dictionary:
 	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
 		upgrades = (run["upgrades"] as Dictionary).duplicate(true)
 	var run_payload: Dictionary = {
+		"level3_schema": 2,
 		"arena_index": int(run.get("arena_index", 0)),
 		"coins": int(run.get("coins", 0)),
-		"bet_hp_penalty": int(run.get("bet_hp_penalty", 0)),
+		"corruption": int(run.get("corruption", 0)),
 		"upgrades": upgrades,
 	}
 	var run_state_payload: Dictionary = _run_state.to_dict()
@@ -2425,9 +2402,12 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_state.pacts_log = _parse_pacts_log(run_state_data.get("pacts_log", []))
 
 	var run_data: Dictionary = payload["run"] as Dictionary
+	var level3_schema: int = int(run_data.get("level3_schema", 1))
 	run["arena_index"] = int(run_data.get("arena_index", _run_state.arena_index))
 	run["coins"] = int(run_data.get("coins", starting_coins))
-	run["bet_hp_penalty"] = int(run_data.get("bet_hp_penalty", 0))
+	run["corruption"] = clampi(int(run_data.get("corruption", 0)), 0, CORRUPTION_MAX)
+	if level3_schema < 2:
+		run["corruption"] = clampi(int(run.get("corruption", 0)), 0, CORRUPTION_MAX)
 	if LEVEL3_ENABLED:
 		run["upgrades"] = {}
 	elif run_data.has("upgrades") and run_data["upgrades"] is Dictionary:
@@ -2793,8 +2773,8 @@ func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_app
 		String(_run_state.enemy_profile),
 		" won=",
 		result.won,
-		" took_damage=",
-		result.took_damage,
+		" condemnation_flag=",
+		result.condemnation_flag,
 		" scars_applied=",
 		scar_names
 	)
@@ -2821,7 +2801,7 @@ func _resolve_level3_arena() -> ArenaResult:
 		LEVEL3_ENEMY_PROFILES
 	)
 	result.won = bool(payload.get("won", false))
-	result.took_damage = bool(payload.get("took_damage", false))
+	result.condemnation_flag = bool(payload.get("condemnation_flag", false))
 	var notes_payload: Array = payload.get("notes", []) as Array
 	result.notes.clear()
 	for note_value: Variant in notes_payload:
@@ -2853,18 +2833,19 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 		_run_state.level3_next_loss_hp_penalty,
 		SCAR_OPEN_WOUND_HP_PENALTY
 	)
-	if bool(consequence.get("provoke_failed", false)):
+	var end_reason: String = str(consequence.get("end_reason", ""))
+	if end_reason == "PROVOCA_FAIL":
 		_run_state.provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
 		_enter_end_run("")
 		return scars_applied
-	if bool(consequence.get("double_or_die_failed", false)):
+	if end_reason == "THE_FOOL":
 		_register_run_end("DOUBLE_OR_DIE")
 		end_run(&"THE_FOOL")
 		return scars_applied
-	var hp_loss: int = int(consequence.get("hp_loss", 0))
-	if hp_loss > 0:
-		_apply_max_hp_loss(hp_loss)
+	var corruption_gain: int = int(consequence.get("corruption_gain", 0))
+	if corruption_gain > 0:
+		run["corruption"] = clampi(int(run.get("corruption", 0)) + corruption_gain, 0, CORRUPTION_MAX)
 	var cashout_lock_min: int = int(consequence.get("cashout_lock_min", -1))
 	if cashout_lock_min >= 0:
 		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, cashout_lock_min)
@@ -2898,18 +2879,19 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 		_run_state.level3_next_loss_hp_penalty,
 		SCAR_OPEN_WOUND_HP_PENALTY
 	)
-	if bool(consequence.get("provoke_failed", false)):
+	var end_reason: String = str(consequence.get("end_reason", ""))
+	if end_reason == "PROVOCA_FAIL":
 		_run_state.provoke_armed = false
 		_register_run_end("PROVOCA_FAIL")
 		_enter_end_run("")
 		return scars_applied
-	if bool(consequence.get("double_or_die_failed", false)):
+	if end_reason == "THE_FOOL":
 		_register_run_end("DOUBLE_OR_DIE")
 		end_run(&"THE_FOOL")
 		return scars_applied
-	var hp_loss: int = int(consequence.get("hp_loss", 0))
-	if hp_loss > 0:
-		_apply_max_hp_loss(hp_loss)
+	var corruption_gain: int = int(consequence.get("corruption_gain", 0))
+	if corruption_gain > 0:
+		run["corruption"] = clampi(int(run.get("corruption", 0)) + corruption_gain, 0, CORRUPTION_MAX)
 	var cashout_lock_min: int = int(consequence.get("cashout_lock_min", -1))
 	if cashout_lock_min >= 0:
 		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, cashout_lock_min)
@@ -2928,18 +2910,6 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	_resolve_ritual_reward_applied = true
 	_emit_run_debug_state()
 	return scars_applied
-
-func _apply_max_hp_loss(amount: int) -> void:
-	if amount <= 0:
-		return
-	var player: Node = _resolve_player()
-	var max_hp: int = _get_player_max_health_value(player)
-	var new_modifier: int = _run_state.max_hp_modifier - amount
-	if max_hp > 0:
-		var floor_limit: int = -maxi(max_hp - 1, 0)
-		new_modifier = maxi(new_modifier, floor_limit)
-	_run_state.max_hp_modifier = new_modifier
-	_apply_run_upgrades_to_player()
 
 func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
 	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
@@ -3118,9 +3088,6 @@ func _reset_or_respawn_player_full() -> void:
 			if player_node is Node2D:
 				(player_node as Node2D).global_position = pos
 			player_path = NodePath("../Arena/Player")
-	if _player != null and _player.has_method("reset_full_health"):
-		_player.call("reset_full_health")
-	_apply_run_upgrades_to_player()
 	_connect_player_signals()
 	_position_player_after_respawn()
 
@@ -3483,17 +3450,8 @@ func _push_your_luck() -> void:
 		_try_register_refused_closure_scar()
 		if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD or _run_state.refuse_cashout_count_this_run >= 3:
 			_run_state.risky_choice_made_recently = true
-		var player: Node = _resolve_player()
-		var current_hp: int = -1
-		var max_hp: int = -1
-		if player != null:
-			current_hp = _get_player_health_value(player)
-			max_hp = _get_player_max_health_value(player)
-		var critical_hp: bool = false
-		if current_hp >= 0 and max_hp > 0:
-			critical_hp = float(current_hp) / float(max_hp) <= 0.20
 		var critical_scars: bool = _run_state.scars_history.size() >= 3
-		if critical_hp or critical_scars:
+		if critical_scars:
 			_register_condanna(CONDANNA_SO_COME_FINISCE)
 		if _run_state.refuse_cashout_count_this_run == 1:
 			_register_condanna(CONDANNA_NON_MI_FERMERO)
@@ -3703,7 +3661,6 @@ func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_
 	_start_next_arena()
 
 func _on_betting_opened() -> void:
-	_force_game_over_if_dead()
 
 func _on_wave_started(_wave: int) -> void:
 	if LEVEL3_ENABLED:
@@ -3734,7 +3691,6 @@ func _on_wave_cleared(_wave: int) -> void:
 
 func _on_player_spawned(player: Node) -> void:
 	_player = player
-	_apply_run_upgrades_to_player()
 	_connect_player_signals()
 	_position_player_after_respawn()
 	_apply_phase()
@@ -3901,20 +3857,7 @@ func handle_bet_failed(bet_id: String) -> void:
 		return
 	if bet_id == BET_PURE_BLOOD:
 		_run_state.failed_high_risk_bets += 1
-		var chain_level: int = _run_state.bet_chain_level
-		_apply_pure_bet_penalty(chain_level)
 	_reset_bet_chain()
-
-func _apply_pure_bet_penalty(chain_level: int) -> void:
-	var scale: int = _get_bet_chain_doom_scale(chain_level)
-	var penalty: int = 10 * scale
-	var current_penalty: int = int(run.get("bet_hp_penalty", 0))
-	var max_health: int = _get_player_max_health_value(_resolve_player())
-	if max_health > 0:
-		penalty = mini(penalty, maxi(max_health - 1, 0))
-	run["bet_hp_penalty"] = current_penalty - penalty
-	_apply_run_upgrades_to_player()
-	_try_apply_open_wound_scar(chain_level)
 
 func _get_bet_chain_doom_scale(chain_level: int) -> int:
 	return _bet_system.get_doom_scale(chain_level)
@@ -4199,7 +4142,7 @@ func _get_double_lock_reason() -> String:
 func _update_audience_after_arena(result: ArenaResult) -> void:
 	var delta: int = 0
 	if result.won:
-		if result.took_damage:
+		if result.condemnation_flag:
 			delta = 1
 		else:
 			delta = 2
@@ -4336,7 +4279,6 @@ func _apply_pure_bet_reward_scaled(scale: int) -> void:
 		bet_pure_light_bonus,
 		bet_pure_heavy_bonus
 	)
-	_apply_run_upgrades_to_player()
 
 func _build_bet_pact_text(bet_id: String, chain_level: int) -> String:
 	return _bet_system.build_pact_text(
@@ -4411,7 +4353,6 @@ func _apply_double_or_die_reward_scaled(scale: int) -> void:
 	if light_bonus <= 0 and heavy_bonus <= 0:
 		return
 	run = _bet_system.apply_double_or_die_reward(run, LEVEL3_ENABLED, scale, light_bonus, heavy_bonus)
-	_apply_run_upgrades_to_player()
 
 func retry_current_bet() -> void:
 	if _is_game_over:
@@ -4427,38 +4368,6 @@ func retry_current_bet() -> void:
 	_clear_enemies()
 	_reset_or_respawn_player_full()
 	_open_bet_ui(false)
-
-func _force_game_over_if_dead() -> bool:
-	var p: Node = get_tree().get_first_node_in_group("player")
-	if p == null:
-		return false
-	var current_health: int = _get_player_health_value(p)
-	if current_health <= 0 and current_health != -1:
-		_enter_end_run("death")
-		return true
-	return false
-
-func _get_player_health_value(p: Node) -> int:
-	if p.has_method("get_current_health"):
-		return int(p.call("get_current_health"))
-	if p.has_meta("current_health"):
-		return int(p.get_meta("current_health"))
-	if p.has_method("get_health"):
-		var h: Array = p.call("get_health")
-		if h.size() > 0:
-			return int(h[0])
-	return -1
-
-func _get_player_max_health_value(p: Node) -> int:
-	if p == null:
-		return -1
-	if p.has_method("get_health"):
-		var h: Array = p.call("get_health")
-		if h.size() > 1:
-			return int(h[1])
-	if p.has_meta("max_health"):
-		return int(p.get_meta("max_health"))
-	return -1
 
 func _enter_end_run(reason: String) -> void:
 	if _is_game_over:
@@ -5145,12 +5054,10 @@ func _reset_scars() -> void:
 	_scars = []
 	_run_state.scars = []
 	_run_state.scars_history = []
-	_run_state.max_hp_modifier = 0
 	_run_state.is_hunted_by_crowd = false
 	_run_state.scar_heal_multiplier = 1.0
 	_run_state.scar_dodge_cooldown_multiplier = 1.0
 	_run_state.scar_dodge_speed_multiplier = 1.0
-	_run_state.scar_max_hp_penalty = 0
 	_emit_scars_updated()
 
 func _emit_scars_updated() -> void:
@@ -5269,14 +5176,11 @@ func _recompute_scar_modifiers() -> void:
 	var modifiers: Dictionary = _scar_system.compute_modifiers(
 		_scars,
 		SCAR_OPEN_WOUND,
-		SCAR_CRACKED_BONES,
-		SCAR_OPEN_WOUND_HP_PENALTY
+		SCAR_CRACKED_BONES
 	)
 	_run_state.scar_heal_multiplier = float(modifiers.get("heal_multiplier", 1.0))
 	_run_state.scar_dodge_cooldown_multiplier = float(modifiers.get("dodge_cooldown_multiplier", 1.0))
 	_run_state.scar_dodge_speed_multiplier = float(modifiers.get("dodge_speed_multiplier", 1.0))
-	_run_state.scar_max_hp_penalty = int(modifiers.get("max_hp_penalty", 0))
-	_apply_run_upgrades_to_player()
 
 func _recompute_scar_synergies() -> void:
 	if _run_state.is_hunted_by_crowd:
@@ -5325,22 +5229,6 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 		"Movimento rallentato e blocco meno efficace."
 	)
 	_add_scar(scar)
-
-func _apply_run_upgrades_to_player() -> void:
-	if _player == null:
-		_player = _resolve_player()
-	if _player == null:
-		return
-	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	var bet_hp_penalty: int = int(run.get("bet_hp_penalty", 0))
-	if _player.has_method("apply_run_upgrades"):
-		_player.call(
-			"apply_run_upgrades",
-			int(upgrades.get("hp_bonus", 0)) + bet_hp_penalty + _run_state.scar_max_hp_penalty + _run_state.max_hp_modifier,
-			int(upgrades.get("light_bonus", 0)),
-			int(upgrades.get("heavy_bonus", 0))
-		)
-	_apply_scar_modifiers_to_player()
 
 func _apply_scar_modifiers_to_player() -> void:
 	if _player == null:

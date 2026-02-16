@@ -559,7 +559,7 @@ Serve per debugging, prevenzione regressioni e memoria dei passaggi.
 
 ### Scopo
 Definire il vocabolario **autoritativo** del payload outcome Level 3 in termini rituali,
-senza semantiche esposte di combattimento (enemy/damage/HP/stats).
+senza semantiche esposte di combattimento (risk-only ritual contract).
 
 ### Schema canonico payload outcome (ritual-only)
 
@@ -568,7 +568,7 @@ Payload minimo raccomandato per `arena_completed` / superfici UI derivate:
 - `risk_profile: String`
   - Profilo di rischio rituale applicato alla risoluzione.
 - `pressure_mod: float`
-  - Modificatore di pressione rituale (non danno, non stat combat).
+  - Modificatore di pressione rituale (no stat semantics).
 - `failure_chance: float`
   - Probabilità di esito avverso rituale determinata da bet/RNG.
 - `condemnation_flag: bool`
@@ -580,26 +580,24 @@ Payload minimo raccomandato per `arena_completed` / superfici UI derivate:
 
 Note canoniche:
 - Autorità outcome Level 3: **solo patto + bet + RNG**.
-- Combat runtime è disabilitato: nessuna autorità di morte/fallimento da HP/damage.
+- Combat runtime è disabilitato: nessuna autorità terminale da sistemi fisici legacy.
+- Runtime Level 3 does not expose or consume legacy penalty signals/fields in active flow/UI wiring.
+- Level 3 run save payload includes `level3_schema = 2` as one-time migration boundary for sealed loss-consequence contract.
 - `glory` e `corruption` restano invarianti run-level in `RunState` e non ridefiniscono semantica combat.
 
-### Legacy combat semantics → mapping deprecato (migrazione)
+### Legacy combat semantics → stato C6B
 
-| Legacy key (deprecated) | Canon key (ritual) | Regola di migrazione |
-| --- | --- | --- |
-| `enemy_profile` | `risk_profile` | Rinominare in profilo di rischio rituale; nessuna esposizione UI come "nemico". |
-| `damage_mod` | `pressure_mod` | Trattare come pressione rituale; proibito descriverlo come modificatore danno. |
-| `damage_chance` | `failure_chance` | Probabilità di esito avverso rituale; non probabilità di danno fisico. |
-| `took_damage` | `condemnation_flag` | Convertire a flag di condanna/esito avverso; proibito testo UI "ha subito danno". |
-| `bet_hp_penalty` | `condemnation_flag` + `outcome_reason` | Migrare la penalità HP a classificazione rituale + motivazione testuale registrale. |
-| `max_hp_penalty` | `condemnation_flag` + `outcome_tier` | Migrare la riduzione max HP a severità/tier rituale dell'esito. |
+Le alias legacy di perdita/esito sono state rimosse dal contratto runtime Level 3 attivo.
+Le superfici runtime e UI devono usare esclusivamente chiavi canoniche rituali.
 
 ### Regola di migrazione (obbligatoria)
 
 - Le legacy keys sono **solo dettaglio implementativo temporaneo**.
 - Le legacy keys non devono essere esposte in UI, HUD, copy o telemetria di prodotto.
 - UI/runtime contract deve bindare esclusivamente alle chiavi rituali canoniche.
-- Ogni nuova surface utente deve evitare lessico enemy/damage/HP/stats nella semantica outcome Level 3.
+- RunManager branching di flow (es. fail di patto e audience delta) deve leggere solo chiavi canoniche rituali (`condemnation_flag`, `corruption_gain`, `end_reason`).
+- In C6B runtime, legacy outcome/loss aliases are removed from active payload emission; migration table remains historical reference only.
+- Ogni nuova surface utente deve mantenere lessico rituale e amministrativo nella semantica outcome Level 3.
 
 ## Nomi reali (GameEvents)
 - Avvio/continua: request_new_run, request_continue_run
@@ -916,7 +914,7 @@ Tra le run non devono mai persistere:
 
 Runtime enforcement note (Level 3): active run flow does not use XP/level-up/upgrade-token progression signals or UI loops.
 Runtime enforcement note (Level 3): stat upgrades (`hp_bonus`, `light_bonus`, `heavy_bonus`) have no gameplay effect; outcome resolution remains bet-curve/random flow authority.
-Runtime enforcement note (Level 3): combat runtime is disabled (no real HP damage/death authority); success/failure is resolved by bet/RNG flow only.
+Runtime enforcement note (Level 3): combat runtime is disabled; success/failure is resolved by bet/RNG flow only.
 Runtime enforcement note (Level 3): Player is visual-only (`Node2D`) and movement runtime is inert (no physics-driven movement authority).
 
 Se qualcosa rende la prossima run:
@@ -1190,12 +1188,14 @@ No explicit gameplay modifier UI is exposed.
 `Registry Corruption` is not a numeric gameplay variable and not a player-facing bar.
 It is a narrative-classification layer expressed through language, recurrence and contextual tone.
 
-Run runtime keeps an internal per-run integer `corruption` (default `0`) in `RunState`.
+Run runtime keeps an internal per-run integer `corruption` (default `0`) as RunManager authoritative runtime field (hard cap `100`).
 It is incremented only by RunManager at authoritative ingestion points:
 
 - push-your-luck `double` requests (`+1`),
-- high-risk pact selection (`+1`).
+- high-risk pact selection (`+1`),
+- Level 3 loss consequences carrying canonical `corruption_gain` (clamped to `100`).
 
+Level 3 loss consequence contract is hard-sealed to canonical `corruption_gain` + `end_reason`; legacy alias keys are removed from active contract.
 No UI exposure is allowed.
 
 ### Glory scope

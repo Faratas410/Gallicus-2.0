@@ -21,8 +21,6 @@ const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
-const UI_PARCHMENT_TEXTURE_PATH: String = "res://assets/ui/panels/contract_clean_paper_9slice.png"
-const UI_WAX_SEAL_TEXTURE_PATH: String = "res://assets/ui/overlays/wax_seal_red.png"
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_pressed.tres"
@@ -551,10 +549,6 @@ func _validate_ui_boot() -> bool:
 	if get_node_or_null(ending_text_path) == null:
 		push_error("SANITY FAIL UI: Ending nodes missing %s" % ending_text_path)
 		return false
-	if not ResourceLoader.exists(UI_PARCHMENT_TEXTURE_PATH):
-		errors.append("missing resource at %s" % UI_PARCHMENT_TEXTURE_PATH)
-	if not ResourceLoader.exists(UI_WAX_SEAL_TEXTURE_PATH):
-		errors.append("missing resource at %s" % UI_WAX_SEAL_TEXTURE_PATH)
 	if sfx_level_up_path != "" and not ResourceLoader.exists(sfx_level_up_path):
 		errors.append("missing resource at %s" % sfx_level_up_path)
 	if sfx_buy_token_path != "" and not ResourceLoader.exists(sfx_buy_token_path):

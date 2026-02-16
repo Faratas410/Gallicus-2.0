@@ -1,6 +1,8 @@
 extends Resource
 class_name CondannaData
 
+const CONDANNA_DATA_SCRIPT: Script = preload("res://data/condanne.gd")
+
 @export var id: StringName
 @export var title: String
 @export var condition_text: String
@@ -11,16 +13,16 @@ static func make(
 		title_value: String,
 		condition_value: String,
 		lore_value: String
-	) -> CondannaData:
-	var condanna := CondannaData.new()
+	):
+	var condanna := CONDANNA_DATA_SCRIPT.new()
 	condanna.id = id_value
 	condanna.title = title_value
 	condanna.condition_text = condition_value
 	condanna.lore_text = lore_value
 	return condanna
 
-static func defaults() -> Array[CondannaData]:
-	var entries: Array[CondannaData] = []
+static func defaults() -> Array:
+	var entries: Array = []
 	entries.append(make(
 		&"CONDANNA_NON_MI_FERMERO",
 		"Non mi fermerò.",

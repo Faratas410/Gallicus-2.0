@@ -1338,6 +1338,7 @@ func _ready() -> void:
 	_connect_gameevents()
 	_registry_has_precedent = SaveManager.has_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 	_start_smoke_timeout_timer()
+	call_deferred("_boot")
 
 func _process(_delta: float) -> void:
 	_watchdog_tick()

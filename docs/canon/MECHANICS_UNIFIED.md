@@ -555,6 +555,52 @@ Serve per debugging, prevenzione regressioni e memoria dei passaggi.
 3) Comunicazione cross-layer solo via GameEvents.
 4) Il flow runtime è esplicito via `RunPhase` enum in `run_manager.gd`.
 
+## Level 3 Outcome Vocabulary (Canon)
+
+### Scopo
+Definire il vocabolario **autoritativo** del payload outcome Level 3 in termini rituali,
+senza semantiche esposte di combattimento (enemy/damage/HP/stats).
+
+### Schema canonico payload outcome (ritual-only)
+
+Payload minimo raccomandato per `arena_completed` / superfici UI derivate:
+
+- `risk_profile: String`
+  - Profilo di rischio rituale applicato alla risoluzione.
+- `pressure_mod: float`
+  - Modificatore di pressione rituale (non danno, non stat combat).
+- `failure_chance: float`
+  - Probabilità di esito avverso rituale determinata da bet/RNG.
+- `condemnation_flag: bool`
+  - Indicatore esplicito che la risoluzione ha prodotto condanna/classificazione avversa.
+- `outcome_tier: String`
+  - Classe rituale dell'esito (es. favorevole / avverso / terminale secondo canon runtime).
+- `outcome_reason: String`
+  - Motivazione rituale/registrale per log/UI (mai linguaggio combat).
+
+Note canoniche:
+- Autorità outcome Level 3: **solo patto + bet + RNG**.
+- Combat runtime è disabilitato: nessuna autorità di morte/fallimento da HP/damage.
+- `glory` e `corruption` restano invarianti run-level in `RunState` e non ridefiniscono semantica combat.
+
+### Legacy combat semantics → mapping deprecato (migrazione)
+
+| Legacy key (deprecated) | Canon key (ritual) | Regola di migrazione |
+| --- | --- | --- |
+| `enemy_profile` | `risk_profile` | Rinominare in profilo di rischio rituale; nessuna esposizione UI come "nemico". |
+| `damage_mod` | `pressure_mod` | Trattare come pressione rituale; proibito descriverlo come modificatore danno. |
+| `damage_chance` | `failure_chance` | Probabilità di esito avverso rituale; non probabilità di danno fisico. |
+| `took_damage` | `condemnation_flag` | Convertire a flag di condanna/esito avverso; proibito testo UI "ha subito danno". |
+| `bet_hp_penalty` | `condemnation_flag` + `outcome_reason` | Migrare la penalità HP a classificazione rituale + motivazione testuale registrale. |
+| `max_hp_penalty` | `condemnation_flag` + `outcome_tier` | Migrare la riduzione max HP a severità/tier rituale dell'esito. |
+
+### Regola di migrazione (obbligatoria)
+
+- Le legacy keys sono **solo dettaglio implementativo temporaneo**.
+- Le legacy keys non devono essere esposte in UI, HUD, copy o telemetria di prodotto.
+- UI/runtime contract deve bindare esclusivamente alle chiavi rituali canoniche.
+- Ogni nuova surface utente deve evitare lessico enemy/damage/HP/stats nella semantica outcome Level 3.
+
 ## Nomi reali (GameEvents)
 - Avvio/continua: request_new_run, request_continue_run
 - Betting: request_place_bet, bet_ui_opened, bet_placed

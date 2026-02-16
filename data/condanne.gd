@@ -13,16 +13,16 @@ static func make(
 		title_value: String,
 		condition_value: String,
 		lore_value: String
-	):
-	var condanna := CONDANNA_DATA_SCRIPT.new()
+		) -> CondannaData:
+	var condanna: CondannaData = CONDANNA_DATA_SCRIPT.new() as CondannaData
 	condanna.id = id_value
 	condanna.title = title_value
 	condanna.condition_text = condition_value
 	condanna.lore_text = lore_value
 	return condanna
 
-static func defaults() -> Array:
-	var entries: Array = []
+static func defaults() -> Array[CondannaData]:
+	var entries: Array[CondannaData] = []
 	entries.append(make(
 		&"CONDANNA_NON_MI_FERMERO",
 		"Non mi fermerò.",

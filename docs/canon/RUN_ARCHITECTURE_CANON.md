@@ -61,7 +61,12 @@ All changes to systems described here must update this document in the same PR.
 
 - Rendering and visual composition.
 - Direct UI node mutation as gameplay authority.
-- Economy legacy systems (`coins`/`tokens`): partially purged, no new authority expansion.
+- Economy/progression legacy systems (`coins`/`tokens`/`xp`/`level`): partially purged; intro token-shop request/cost API and progression event-bus signal wiring are removed from active Level 3 flow and must not be reintroduced as RunManager authority.
+- Run save payload for active Level 3 excludes legacy progression/shop keys (`level`, `xp`, `difficulty_tier`, `upgrade_tokens`, `upgrade_costs`) and keeps only runtime-required fields.
+- In active Level 3, `run.upgrades` is sanitized to an empty schema (`{}`) on init/load/save; legacy stat keys are ignored.
+- In active Level 3, combat authority is disabled (`Player`/enemy damage-death runtime is inert) and run termination must not originate from player-death signals.
+- In active Level 3, enemy instantiation runtime is removed from `Arena`; `Player` is a visual-only `Node2D` (no CharacterBody2D physics authority), and player/enemy collision-combat runtime is not authoritative.
+- In active Level 3, enemy combat HUD assets/wiring (enemy health bars) are removed from active UI runtime path.
 - Logging internals: delegated to `FlowLogger`.
 
 ## Flow Observability Stack
@@ -185,7 +190,6 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
 - L3 visual core kept in active path:
   - `res://scripts/Arena.gd`
   - `res://scripts/Player.gd`
-  - `res://scripts/entities/enemy_basic.gd`
 
 ## Legacy runtime (non-L3)
 
@@ -305,14 +309,11 @@ Scene: `res://scenes/UI.tscn`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODY`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKE`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTER`
-- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Lbl_INTRO_CHOICE_0`
-- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/Lbl_INTRO_CHOICE_1`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM`
-- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Btn_INTRO_BUY_TOKEN`
 
 ### FIRST_REACTION
 

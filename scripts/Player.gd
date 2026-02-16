@@ -2,7 +2,7 @@
 # This script must remain passive.
 # Gameplay logic preserved only for legacy mode.
 
-extends CharacterBody2D
+extends Node2D
 
 const LEVEL3_PASSIVE_MODE := true
 
@@ -82,44 +82,21 @@ func _ready() -> void:
 				GameEvents.gameplay_enabled_changed.connect(gameplay_callable)
 		input_locked = not GameEvents.gameplay_enabled
 
-func _physics_process(delta: float) -> void:
-	if LEVEL3_PASSIVE_MODE:
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	if _is_level3_mode():
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	if input_locked:
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	_attack_timer = maxf(_attack_timer - delta, 0.0)
-	_dodge_timer = maxf(_dodge_timer - delta, 0.0)
-	_damage_invuln = maxf(_damage_invuln - delta, 0.0)
-
-	var input_vector: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if input_vector.length_squared() > 0.001:
-		_last_aim_dir = input_vector.normalized()
-	_update_sword_idle_pose()
-	velocity = input_vector * (move_speed * _speed_multiplier * _dodge_speed_multiplier)
-
-	_is_blocking = Input.is_action_pressed("block")
-
-	if Input.is_action_just_pressed("attack_light"):
-		_try_attack(light_damage, light_range, light_cooldown, light_cone_angle_deg)
-	elif Input.is_action_just_pressed("attack_heavy"):
-		_try_attack(heavy_damage, heavy_range, heavy_cooldown, heavy_cone_angle_deg)
-
-	move_and_slide()
-	_apply_bounds()
-
 func set_input_locked(locked: bool) -> void:
-	if LEVEL3_PASSIVE_MODE:
+	if _is_combat_runtime_disabled():
 		input_locked = true
 		return
 	input_locked = locked
+
+func _is_combat_runtime_disabled() -> bool:
+	if LEVEL3_PASSIVE_MODE:
+		return true
+	return _is_level3_mode()
+
+func _is_movement_disabled() -> bool:
+	if LEVEL3_PASSIVE_MODE:
+		return true
+	return _is_level3_mode()
 
 func _is_level3_mode() -> bool:
 	var manager: Node = get_tree().get_first_node_in_group("run_manager")
@@ -137,6 +114,8 @@ func _apply_bounds() -> void:
 	global_position.y = clampf(global_position.y, -half.y + margin, half.y - margin)
 
 func _try_attack(damage: int, attack_range: float, cooldown: float, cone_angle_deg: float) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	if _attack_timer > 0.0:
 		return
 	_attack_timer = cooldown
@@ -224,6 +203,8 @@ func _play_sword_swing() -> void:
 	)
 
 func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	var aim: Vector2 = _last_aim_dir
 	if aim.length_squared() < 0.0001:
 		aim = Vector2.UP
@@ -248,6 +229,8 @@ func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) ->
 			enemy_node.call("take_damage", damage)
 
 func take_damage(amount: int) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	if _damage_invuln > 0.0:
 		return
 	var final_damage: int = amount
@@ -267,13 +250,20 @@ func take_damage(amount: int) -> void:
 		queue_free()
 
 func _emit_health() -> void:
+	if _is_combat_runtime_disabled():
+		return
 	health_changed.emit(_current_health, max_health)
 
 func reset_full_health() -> void:
+	if _is_combat_runtime_disabled():
+		return
 	_current_health = max_health
 	_emit_health()
 
 func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -> void:
+	var manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if manager != null and manager.has_method("is_level3_mode") and bool(manager.call("is_level3_mode")):
+		return
 	if _base_max_health <= 0:
 		_base_max_health = max_health
 	if _base_light_damage <= 0:
@@ -300,6 +290,11 @@ func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -
 	_emit_health()
 
 func apply_scar_modifiers(heal_multiplier: float, dodge_cooldown_multiplier: float, dodge_speed_multiplier: float) -> void:
+	if _is_movement_disabled():
+		_heal_multiplier = maxf(heal_multiplier, 0.0)
+		_dodge_cooldown_multiplier = 1.0
+		_dodge_speed_multiplier = 1.0
+		return
 	_heal_multiplier = maxf(heal_multiplier, 0.0)
 	_dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 0.1)
 	_dodge_speed_multiplier = maxf(dodge_speed_multiplier, 0.1)
@@ -308,6 +303,8 @@ func get_damage_values() -> Array[int]:
 	return [light_damage, heavy_damage]
 
 func heal(amount: int) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	if amount <= 0:
 		return
 	var scaled: int = int(round(float(amount) * _heal_multiplier))
@@ -317,6 +314,9 @@ func heal(amount: int) -> void:
 	_emit_health()
 
 func apply_speed_boost(mult: float, seconds: float) -> void:
+	if _is_movement_disabled():
+		_speed_multiplier = 1.0
+		return
 	if mult <= 0.0 or seconds <= 0.0:
 		return
 	_speed_multiplier = maxf(_speed_multiplier, mult)

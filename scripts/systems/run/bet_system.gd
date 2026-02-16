@@ -9,12 +9,16 @@ func get_doom_scale(chain_level: int) -> int:
 
 func apply_pure_blood_reward(
 	run_data: Dictionary,
+	level3_enabled: bool,
 	scale: int,
 	hp_bonus: int,
 	light_bonus: int,
 	heavy_bonus: int
 ) -> Dictionary:
 	var result: Dictionary = run_data.duplicate(true)
+	if level3_enabled:
+		result["upgrades"] = {}
+		return result
 	var upgrades: Dictionary = result.get("upgrades", {}) as Dictionary
 	var reward_scale: int = get_reward_scale(scale)
 	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + hp_bonus * reward_scale
@@ -23,8 +27,11 @@ func apply_pure_blood_reward(
 	result["upgrades"] = upgrades
 	return result
 
-func apply_double_or_die_reward(run_data: Dictionary, scale: int, light_bonus: int, heavy_bonus: int) -> Dictionary:
+func apply_double_or_die_reward(run_data: Dictionary, level3_enabled: bool, scale: int, light_bonus: int, heavy_bonus: int) -> Dictionary:
 	var result: Dictionary = run_data.duplicate(true)
+	if level3_enabled:
+		result["upgrades"] = {}
+		return result
 	if light_bonus <= 0 and heavy_bonus <= 0:
 		return result
 	var upgrades: Dictionary = result.get("upgrades", {}) as Dictionary

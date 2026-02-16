@@ -28,11 +28,8 @@ extends Node
 # - condanna_registered: emitted by RunManager; consumed by MainMenu.
 # - bet_failed: emitted by RunManager; consumed by UIRoot.
 # - coins_changed: emitted by RunManager; consumed by UIRoot.
-# - tokens_changed: emitted by RunManager; consumed by UIRoot.
 # - enemy_killed: emitted by Arena/combat; consumed by RunManager.
 # - escalation_changed: emitted by RunManager; consumed by UIRoot.
-# - level_changed: emitted by RunManager; consumed by UIRoot.
-# - xp_changed: emitted by RunManager; consumed by UIRoot.
 # - bet_placed: emitted by RunManager; consumed by UIRoot.
 # - bet_confirmed: emitted by bet UI/flow; consumed by RunManager.
 # - bet_sealed: emitted by RunManager; consumed by RunManager/UI.
@@ -63,9 +60,6 @@ extends Node
 # - settings_closed: emitted by MainMenu/UI; consumed by UIRoot.
 # - settings_changed: emitted by UI; consumed by RunManager.
 # - difficulty_tier_changed: emitted by RunManager; consumed by UI/systems.
-# - player_xp_changed: emitted by RunManager; consumed by UIRoot.
-# - player_level_changed: emitted by RunManager; consumed by UIRoot.
-# - upgrade_tokens_changed: emitted by RunManager; consumed by UIRoot.
 # - request_place_bet: emitted by UIRoot; consumed by RunManager.
 # - request_new_run: emitted by MainMenu; consumed by RunManager.
 # - request_reset_run: emitted by UI/debug; consumed by RunManager.
@@ -96,11 +90,8 @@ signal register_annotation(payload: Dictionary)
 signal condanna_registered(id: StringName)
 signal bet_failed(can_retry: bool)
 signal coins_changed(coins: int)
-signal tokens_changed(tokens: int)
 signal enemy_killed(exp: int)
 signal escalation_changed(level: int, max_value: int)
-signal level_changed(level: int)
-signal xp_changed(xp: int, xp_required: int)
 signal bet_placed(bet_id: String, stake: int, odds: float)
 signal bet_confirmed(pact_id: StringName, condition_id: StringName, sentence_id: StringName)
 signal bet_sealed(bet_choice: Dictionary)
@@ -133,9 +124,6 @@ signal settings_changed(payload: Dictionary)
 
 # --- Progression / Difficulty ---
 signal difficulty_tier_changed(tier: int, multiplier: float)
-signal player_xp_changed(xp: int, xp_to_next: int)
-signal player_level_changed(level: int)
-signal upgrade_tokens_changed(tokens: int)
 signal request_place_bet(bet_id: String, stake: int)
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: GameEvents autoload exists; RunManager listens to request_new_run.
@@ -150,7 +138,6 @@ signal request_intermediate_choice(choice_id: String)
 signal request_intro_apply_seed(seed_text: String)
 signal request_intro_select_bet(bet_id: String)
 signal request_intro_confirm
-signal request_intro_buy_token
 signal request_mid_choice_select(index: int)
 signal request_pyl_cashout
 signal request_pyl_condanna
@@ -183,11 +170,8 @@ func _ready() -> void:
 	_connect_noop(condanna_registered)
 	_connect_noop(bet_failed)
 	_connect_noop(coins_changed)
-	_connect_noop(tokens_changed)
 	_connect_noop(enemy_killed)
 	_connect_noop(escalation_changed)
-	_connect_noop(level_changed)
-	_connect_noop(xp_changed)
 	_connect_noop(bet_placed)
 	_connect_noop(bet_confirmed)
 	_connect_noop(bet_sealed)
@@ -218,9 +202,6 @@ func _ready() -> void:
 	_connect_noop(settings_closed)
 	_connect_noop(settings_changed)
 	_connect_noop(difficulty_tier_changed)
-	_connect_noop(player_xp_changed)
-	_connect_noop(player_level_changed)
-	_connect_noop(upgrade_tokens_changed)
 	_connect_noop(request_place_bet)
 	_connect_noop(request_new_run)
 	_connect_noop(request_reset_run)
@@ -232,7 +213,6 @@ func _ready() -> void:
 	_connect_noop(request_intro_apply_seed)
 	_connect_noop(request_intro_select_bet)
 	_connect_noop(request_intro_confirm)
-	_connect_noop(request_intro_buy_token)
 	_connect_noop(request_mid_choice_select)
 	_connect_noop(request_pyl_cashout)
 	_connect_noop(request_pyl_condanna)

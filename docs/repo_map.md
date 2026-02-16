@@ -44,9 +44,7 @@
   - `arenas/Arena_03_SandPit.tscn`
   - `arenas/Arena_04_IronCorridor.tscn`
 - Entities/UI scenes:
-  - `enemies/EnemyBasic.tscn`
   - `ui/BettingCircle.tscn`
-  - `ui/EnemyHealthBar.tscn`
 
 ### Scripts (`scripts/`)
 - Root gameplay nodes:
@@ -69,11 +67,9 @@
   - `ui/ui_root.gd`
   - `ui/main_menu.gd`
   - `ui/betting_circle_ui.gd`
-  - `ui/enemy_health_bar.gd`
   - `ui/run_ui_payload.gd`
 - Content/entities:
   - `content/scar_catalog.gd`
-  - `entities/enemy_basic.gd`
 
 ### Data (`data/`)
 - `arena_themes.gd`

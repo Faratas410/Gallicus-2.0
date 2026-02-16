@@ -15,7 +15,6 @@ signal enemy_spawned(enemy: Node2D)
 signal enemy_despawned(enemy: Node2D)
 
 @export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
-@export var enemy_scene: PackedScene = preload("res://scenes/enemies/EnemyBasic.tscn")
 @export var arena_radius: float = GameConstants.ARENA_RADIUS
 @export var base_enemy_count: int = GameConstants.ARENA_BASE_ENEMY_COUNT
 @export var debug_spawn_enemy: bool = false
@@ -167,35 +166,13 @@ func _spawn_player() -> void:
 	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
 		_player.died.connect(died_callable)
 
-func _spawn_enemies(count: int) -> void:
+func _spawn_enemies(_count: int) -> void:
 	if LEVEL3_PASSIVE_MODE:
 		return
 	if _is_visual_only():
 		return
-	_enemies_remaining = count
+	_enemies_remaining = 0
 	enemy_count_changed.emit(_enemies_remaining)
-	if _player == null or not is_instance_valid(_player):
-		ensure_player()
-	for i in range(count):
-		var enemy: Node2D = enemy_scene.instantiate() as Node2D
-		add_child(enemy)
-		enemy.add_to_group("enemies")
-		if OS.is_debug_build() and i == 0:
-			var enemy_script: Script = enemy.get_script()
-			var enemy_script_path: String = ""
-			if enemy_script != null:
-				enemy_script_path = enemy_script.resource_path
-			print("Spawned enemy script:", enemy_script_path)
-		var angle: float = _rng.randf_range(0.0, TAU)
-		var radius: float = _rng.randf_range(arena_radius * 0.5, arena_radius)
-		enemy.global_position = global_position + Vector2(cos(angle), sin(angle)) * radius
-
-		# Apply difficulty immediately for newly spawned enemies (senza target)
-		_apply_difficulty_to_enemy(enemy)
-
-		if enemy.has_signal("died"):
-			enemy.died.connect(_on_enemy_died.bind(enemy))
-		enemy_spawned.emit(enemy)
 
 func _apply_difficulty_to_enemy(enemy: Node) -> void:
 	if enemy == null or not is_instance_valid(enemy):
@@ -213,20 +190,7 @@ func _spawn_debug_enemy() -> void:
 		return
 	if _is_visual_only():
 		return
-	if enemy_scene == null:
-		return
-	await get_tree().create_timer(0.2).timeout
-	var enemy: Node2D = enemy_scene.instantiate() as Node2D
-	add_child(enemy)
-	enemy.add_to_group("enemies")
-	enemy.global_position = Vector2(120.0, 0.0)
-	print("Spawned enemy")
-	_apply_difficulty_to_enemy(enemy)
-	if enemy.has_signal("died"):
-		enemy.died.connect(_on_enemy_died.bind(enemy))
-	enemy_spawned.emit(enemy)
-	# stesso comportamento: non aggro immediato
-	_schedule_enemy_aggro_after_delay()
+	return
 
 func _on_enemy_died(enemy: Node2D) -> void:
 	_enemies_remaining = maxi(_enemies_remaining - 1, 0)

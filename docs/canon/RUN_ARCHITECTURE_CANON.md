@@ -65,6 +65,7 @@ All changes to systems described here must update this document in the same PR.
 - Run save payload for active Level 3 excludes legacy progression/shop keys (`level`, `xp`, `difficulty_tier`, `upgrade_tokens`, `upgrade_costs`) and keeps only runtime-required fields.
 - In active Level 3, `run.upgrades` is sanitized to an empty schema (`{}`) on init/load/save; legacy stat keys are ignored.
 - In active Level 3, combat authority is disabled (`Player`/enemy damage-death runtime is inert) and run termination must not originate from player-death signals.
+- In active Level 3, enemy instantiation runtime is removed from `Arena` and player/enemy collision-combat runtime is not authoritative.
 - Logging internals: delegated to `FlowLogger`.
 
 ## Flow Observability Stack
@@ -188,7 +189,6 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
 - L3 visual core kept in active path:
   - `res://scripts/Arena.gd`
   - `res://scripts/Player.gd`
-  - `res://scripts/entities/enemy_basic.gd`
 
 ## Legacy runtime (non-L3)
 

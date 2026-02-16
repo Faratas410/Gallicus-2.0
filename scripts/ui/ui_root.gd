@@ -163,13 +163,11 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var fast_countdown_panel: PanelContainer = get_node_or_null("UI_RunRoot/FastCountdownLabelPanel") as PanelContainer
 @onready var fast_countdown_label: Label = get_node_or_null("UI_RunRoot/FastCountdownLabelPanel/FastCountdownLabel") as Label
 @onready var fast_blink_timer: Timer = get_node_or_null("UI_RunRoot/FastBlinkTimer") as Timer
-@onready var enemy_bars: Control = get_node_or_null("WorldUI/EnemyBars") as Control
 @onready var scars_detail_panel: Panel = get_node_or_null("UI_RunRoot/ScarsDetailPanel") as Panel
 @onready var scars_detail_text: Label = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel/ScarsDetailText") as Label
 @onready var scars_detail_close: Button = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
 
 
-var _enemy_bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")
 var _bets_by_id: Dictionary = {}
 var _run_manager: Node
 var _arena: Node
@@ -196,7 +194,6 @@ var _intermediate_choice_modal_fade_tween: Tween = null
 var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
 var _current_modal: Control = null
-var _enemy_bar_nodes: Dictionary = {}
 var _last_finale_title: String = "RUN FAILED"
 var _last_finale_text: String = ""
 var _last_finale_scars: Array = []
@@ -430,15 +427,6 @@ func _ready() -> void:
 		var arena_player_callable: Callable = Callable(self, "_on_player_spawned")
 		if not arena.player_spawned.is_connected(arena_player_callable):
 			arena.player_spawned.connect(arena_player_callable)
-		if arena.has_signal("enemy_spawned"):
-			var enemy_spawn_callable: Callable = Callable(self, "_on_enemy_spawned")
-			if not arena.enemy_spawned.is_connected(enemy_spawn_callable):
-				arena.enemy_spawned.connect(enemy_spawn_callable)
-		if arena.has_signal("enemy_despawned"):
-			var enemy_despawn_callable: Callable = Callable(self, "_on_enemy_despawned")
-			if not arena.enemy_despawned.is_connected(enemy_despawn_callable):
-				arena.enemy_despawned.connect(enemy_despawn_callable)
-		_sync_enemy_bars()
 
 	var p: Node = get_tree().get_first_node_in_group("player")
 	if p != null:
@@ -524,61 +512,6 @@ func _disable_ui_interactions() -> void:
 	set_process(false)
 	set_process_input(false)
 	set_process_unhandled_input(false)
-
-func _sync_enemy_bars() -> void:
-	if enemy_bars == null:
-		return
-	for enemy_node: Node in get_tree().get_nodes_in_group("enemies"):
-		if enemy_node is Node2D:
-			_ensure_enemy_bar(enemy_node)
-
-func _on_enemy_spawned(enemy: Node2D) -> void:
-	_ensure_enemy_bar(enemy)
-
-func _on_enemy_despawned(enemy: Node2D) -> void:
-	_remove_enemy_bar(enemy)
-
-func _on_enemy_tree_exited(enemy: Node2D) -> void:
-	_remove_enemy_bar(enemy)
-
-func _ensure_enemy_bar(enemy: Node2D) -> void:
-	if enemy_bars == null:
-		return
-	if _enemy_bar_nodes.has(enemy):
-		return
-	var bar: Control = _enemy_bar_scene.instantiate() as Control
-	if bar == null:
-		return
-	enemy_bars.add_child(bar)
-	var anchor: Node2D = _get_enemy_anchor(enemy)
-	if bar.has_method("set_target"):
-		bar.call("set_target", enemy, anchor)
-	if enemy.has_signal("health_changed") and bar.has_method("set_health"):
-		var health_callable: Callable = Callable(bar, "set_health")
-		if not enemy.health_changed.is_connected(health_callable):
-			enemy.health_changed.connect(health_callable)
-	if enemy.has_method("get_health") and bar.has_method("set_health"):
-		var health: Array = enemy.call("get_health") as Array
-		if health.size() >= 2:
-			bar.call("set_health", int(health[0]), int(health[1]))
-	_enemy_bar_nodes[enemy] = bar
-	var exit_callable: Callable = Callable(self, "_on_enemy_tree_exited").bind(enemy)
-	if not enemy.tree_exited.is_connected(exit_callable):
-		enemy.tree_exited.connect(exit_callable)
-
-func _remove_enemy_bar(enemy: Node2D) -> void:
-	if not _enemy_bar_nodes.has(enemy):
-		return
-	var bar: Control = _enemy_bar_nodes[enemy] as Control
-	_enemy_bar_nodes.erase(enemy)
-	if bar != null and is_instance_valid(bar):
-		bar.queue_free()
-
-func _get_enemy_anchor(enemy: Node2D) -> Node2D:
-	var anchor: Node2D = enemy.get_node_or_null("HpAnchor") as Node2D
-	if anchor != null:
-		return anchor
-	return enemy
 
 func _wire_seed_input() -> void:
 	if seed_apply_button == null:

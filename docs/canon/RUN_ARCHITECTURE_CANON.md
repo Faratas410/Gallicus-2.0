@@ -65,7 +65,7 @@ All changes to systems described here must update this document in the same PR.
 - Run save payload for active Level 3 excludes legacy progression/shop keys (`level`, `xp`, `difficulty_tier`, `upgrade_tokens`, `upgrade_costs`) and keeps only runtime-required fields.
 - In active Level 3, `run.upgrades` is sanitized to an empty schema (`{}`) on init/load/save; legacy stat keys are ignored.
 - In active Level 3, combat authority is disabled (`Player`/enemy damage-death runtime is inert) and run termination must not originate from player-death signals.
-- In active Level 3, enemy instantiation runtime is removed from `Arena`, player/enemy collision-combat runtime is not authoritative, and Player physics movement runtime is inert.
+- In active Level 3, enemy instantiation runtime is removed from `Arena`; `Player` is a visual-only `Node2D` (no CharacterBody2D physics authority), and player/enemy collision-combat runtime is not authoritative.
 - Logging internals: delegated to `FlowLogger`.
 
 ## Flow Observability Stack

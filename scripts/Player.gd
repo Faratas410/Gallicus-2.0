@@ -2,7 +2,7 @@
 # This script must remain passive.
 # Gameplay logic preserved only for legacy mode.
 
-extends CharacterBody2D
+extends Node2D
 
 const LEVEL3_PASSIVE_MODE := true
 
@@ -81,38 +81,6 @@ func _ready() -> void:
 			if not GameEvents.gameplay_enabled_changed.is_connected(gameplay_callable):
 				GameEvents.gameplay_enabled_changed.connect(gameplay_callable)
 		input_locked = not GameEvents.gameplay_enabled
-
-func _physics_process(delta: float) -> void:
-	if _is_movement_disabled():
-		velocity = Vector2.ZERO
-		return
-	if _is_combat_runtime_disabled():
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	if input_locked:
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	_attack_timer = maxf(_attack_timer - delta, 0.0)
-	_dodge_timer = maxf(_dodge_timer - delta, 0.0)
-	_damage_invuln = maxf(_damage_invuln - delta, 0.0)
-
-	var input_vector: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if input_vector.length_squared() > 0.001:
-		_last_aim_dir = input_vector.normalized()
-	_update_sword_idle_pose()
-	velocity = input_vector * (move_speed * _speed_multiplier * _dodge_speed_multiplier)
-
-	_is_blocking = Input.is_action_pressed("block")
-
-	if Input.is_action_just_pressed("attack_light"):
-		_try_attack(light_damage, light_range, light_cooldown, light_cone_angle_deg)
-	elif Input.is_action_just_pressed("attack_heavy"):
-		_try_attack(heavy_damage, heavy_range, heavy_cooldown, heavy_cone_angle_deg)
-
-	move_and_slide()
-	_apply_bounds()
 
 func set_input_locked(locked: bool) -> void:
 	if _is_combat_runtime_disabled():
@@ -347,7 +315,6 @@ func heal(amount: int) -> void:
 
 func apply_speed_boost(mult: float, seconds: float) -> void:
 	if _is_movement_disabled():
-		velocity = Vector2.ZERO
 		_speed_multiplier = 1.0
 		return
 	if mult <= 0.0 or seconds <= 0.0:

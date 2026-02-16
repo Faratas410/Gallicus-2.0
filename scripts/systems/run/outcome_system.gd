@@ -29,6 +29,7 @@ func resolve_level3_arena(
 ) -> Dictionary:
 	var base_win: float = 0.66
 	var base_damage: float = 0.4
+	var pressure_mod: float = 0.0
 	var escalation_penalty: float = get_escalation_win_penalty(escalation_level)
 	var escalation_damage: float = get_escalation_damage_penalty(escalation_level)
 	if _contains_scar(active_scar_ids, SCAR_CRACKED_BONES):
@@ -53,6 +54,7 @@ func resolve_level3_arena(
 	if not profile.is_empty():
 		var win_mod: float = float(profile.get("win_mod", 0.0))
 		var damage_mod: float = float(profile.get("damage_mod", 0.0))
+		pressure_mod = damage_mod
 		base_win += win_mod
 		base_damage += damage_mod
 		if enemy_profile == ENEMY_TRICKSTER:
@@ -69,7 +71,29 @@ func resolve_level3_arena(
 		notes.append(&"TOOK_DAMAGE")
 	if enemy_profile != &"":
 		notes.append(StringName("ENEMY_" + String(enemy_profile)))
+	var outcome_tier: StringName = &"ADVERSE"
+	if won:
+		outcome_tier = &"FAVORABLE"
+	if not won and took_damage:
+		outcome_tier = &"TERMINAL"
+	var outcome_reason: String = "Condanna registrata"
+	if won and not took_damage:
+		outcome_reason = "Esito favorevole registrato"
+	elif won:
+		outcome_reason = "Esito favorevole con condanna registrata"
+	# Canon ritual vocabulary (Patch 9A).
+	# Legacy keys are kept as temporary aliases for existing callers.
 	return {
+		"risk_profile": String(enemy_profile),
+		"pressure_mod": pressure_mod,
+		"failure_chance": damage_chance,
+		"condemnation_flag": took_damage,
+		"outcome_tier": String(outcome_tier),
+		"outcome_reason": outcome_reason,
+		# Deprecated legacy aliases.
+		"enemy_profile": String(enemy_profile),
+		"damage_mod": pressure_mod,
+		"damage_chance": damage_chance,
 		"won": won,
 		"took_damage": took_damage,
 		"notes": notes,
@@ -84,9 +108,15 @@ func build_level3_loss_consequence(
 	scar_open_wound_hp_penalty: int
 ) -> Dictionary:
 	if provoke_armed:
+		# Canon ritual vocabulary (Patch 9A).
+		# Legacy keys are kept as temporary aliases for existing callers.
 		return {
+			"condemnation_flag": false,
+			"outcome_tier": "TERMINAL",
+			"outcome_reason": "Condanna: Provoca fallita",
 			"provoke_failed": true,
 			"double_or_die_failed": false,
+			# Deprecated legacy aliases.
 			"hp_loss": 0,
 			"apply_next_loss_hp_penalty": false,
 			"clear_next_loss_hp_penalty": true,
@@ -100,9 +130,15 @@ func build_level3_loss_consequence(
 	if enemy_profile == ENEMY_EXECUTIONER:
 		executioner_bonus = 10
 	if bet_id == BET_DOUBLE_OR_DIE:
+		# Canon ritual vocabulary (Patch 9A).
+		# Legacy keys are kept as temporary aliases for existing callers.
 		return {
+			"condemnation_flag": false,
+			"outcome_tier": "TERMINAL",
+			"outcome_reason": "Condanna: Raddoppia o Muori",
 			"provoke_failed": false,
 			"double_or_die_failed": true,
+			# Deprecated legacy aliases.
 			"hp_loss": 0,
 			"apply_next_loss_hp_penalty": false,
 			"clear_next_loss_hp_penalty": false,
@@ -139,9 +175,15 @@ func build_level3_loss_consequence(
 		hp_loss += executioner_bonus
 	if next_loss_hp_penalty > 0:
 		hp_loss += next_loss_hp_penalty
+	# Canon ritual vocabulary (Patch 9A).
+	# Legacy keys are kept as temporary aliases for existing callers.
 	return {
+		"condemnation_flag": hp_loss > 0 or scar_id != &"",
+		"outcome_tier": "ADVERSE",
+		"outcome_reason": scar_origin,
 		"provoke_failed": false,
 		"double_or_die_failed": false,
+		# Deprecated legacy aliases.
 		"hp_loss": hp_loss,
 		"apply_next_loss_hp_penalty": next_loss_hp_penalty > 0,
 		"clear_next_loss_hp_penalty": true,

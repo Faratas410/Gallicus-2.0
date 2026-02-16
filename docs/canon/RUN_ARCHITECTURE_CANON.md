@@ -67,6 +67,7 @@ All changes to systems described here must update this document in the same PR.
 - In active Level 3, combat authority is disabled (`Player`/enemy damage-death runtime is inert) and run termination must not originate from player-death signals.
 - In active Level 3, enemy instantiation runtime is removed from `Arena`; `Player` is a visual-only `Node2D` (no CharacterBody2D physics authority), and player/enemy collision-combat runtime is not authoritative.
 - In active Level 3, enemy combat HUD assets/wiring (enemy health bars) are removed from active UI runtime path.
+- In active Level 3, outcome payload semantics are ritual-only: legacy combat keys are deprecated, and UI bindings must target ritual keys only (no exposed enemy/damage/HP semantics).
 - Logging internals: delegated to `FlowLogger`.
 
 ## Flow Observability Stack

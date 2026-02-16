@@ -1121,8 +1121,6 @@ const LEGACY_TIER_MULTIPLIERS: Array[float] = [1.00, 1.13, 1.32, 1.56, 1.84]
 const LEGACY_UPGRADE_HP_TOKEN_COST_START: int = 1
 const LEGACY_UPGRADE_LIGHT_TOKEN_COST_START: int = 1
 const LEGACY_UPGRADE_HEAVY_TOKEN_COST_START: int = 1
-const LEGACY_TOKEN_PURCHASE_COST_COINS: int = 100
-
 @export var bet_coward_coin_reward: int = 20
 @export var bet_pure_hp_bonus: int = 30
 @export var bet_pure_light_bonus: int = 2
@@ -1136,21 +1134,8 @@ const SCAR_OPEN_WOUND_HP_PENALTY: int = 20
 var run: Dictionary = {
 	"arena_index": 0,
 	"coins": 0,
-	"level": 1,
-	"xp": 0,
-	"upgrade_tokens": 0,
-	"difficulty_tier": 0,
 	"bet_hp_penalty": 0,
-	"upgrade_costs": {
-		"hp": 1,
-		"light": 1,
-		"heavy": 1,
-	},
-	"upgrades": {
-		"hp_bonus": 0,
-		"light_bonus": 0,
-		"heavy_bonus": 0,
-	},
+	"upgrades": {},
 }
 
 var _arena: Node
@@ -1349,7 +1334,6 @@ func _connect_gameevents() -> void:
 		[&"request_intro_apply_seed", &"_on_request_intro_apply_seed", true],
 		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
 		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
-		[&"request_intro_buy_token", &"_on_request_intro_buy_token", true],
 		[&"request_mid_choice_select", &"_on_request_mid_choice_select", true],
 		[&"request_pyl_cashout", &"_on_request_pyl_cashout", true],
 		[&"request_pyl_condanna", &"_on_request_pyl_condanna", true],
@@ -1712,17 +1696,19 @@ func _start_new_run() -> void:
 
 	run["coins"] = starting_coins
 	run["bet_hp_penalty"] = 0
-	_reset_upgrades()
-	_reset_upgrade_costs()
+	if not LEVEL3_ENABLED:
+		_reset_upgrades()
+		_reset_upgrade_costs()
 	_has_started_run = true
 	run["arena_index"] = 0
 
-	_reset_progression()
+	if not LEVEL3_ENABLED:
+		_reset_progression()
 
 	GameEvents.run_started.emit()
 	GameEvents.set_gameplay_enabled(true)
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
-	_emit_xp_level_ui()
+
 	if not _boot_countdown_skipped:
 		_boot_countdown_skipped = true
 	else:
@@ -2373,21 +2359,13 @@ func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void
 	_save_system.save_run_payload(_build_run_save_payload())
 
 func _build_run_save_payload() -> Dictionary:
-	var upgrade_costs: Dictionary = {}
-	if run.has("upgrade_costs") and run["upgrade_costs"] is Dictionary:
-		upgrade_costs = (run["upgrade_costs"] as Dictionary).duplicate(true)
 	var upgrades: Dictionary = {}
-	if run.has("upgrades") and run["upgrades"] is Dictionary:
+	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
 		upgrades = (run["upgrades"] as Dictionary).duplicate(true)
 	var run_payload: Dictionary = {
 		"arena_index": int(run.get("arena_index", 0)),
 		"coins": int(run.get("coins", 0)),
-		"level": int(run.get("level", 1)),
-		"xp": int(run.get("xp", 0)),
-		"upgrade_tokens": int(run.get("upgrade_tokens", 0)),
-		"difficulty_tier": int(run.get("difficulty_tier", 0)),
 		"bet_hp_penalty": int(run.get("bet_hp_penalty", 0)),
-		"upgrade_costs": upgrade_costs,
 		"upgrades": upgrades,
 	}
 	var run_state_payload: Dictionary = _run_state.to_dict()
@@ -2449,14 +2427,10 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	var run_data: Dictionary = payload["run"] as Dictionary
 	run["arena_index"] = int(run_data.get("arena_index", _run_state.arena_index))
 	run["coins"] = int(run_data.get("coins", starting_coins))
-	run["level"] = int(run_data.get("level", 1))
-	run["xp"] = int(run_data.get("xp", 0))
-	run["upgrade_tokens"] = int(run_data.get("upgrade_tokens", 0))
-	run["difficulty_tier"] = int(run_data.get("difficulty_tier", 0))
 	run["bet_hp_penalty"] = int(run_data.get("bet_hp_penalty", 0))
-	if run_data.has("upgrade_costs") and run_data["upgrade_costs"] is Dictionary:
-		run["upgrade_costs"] = (run_data["upgrade_costs"] as Dictionary).duplicate(true)
-	if run_data.has("upgrades") and run_data["upgrades"] is Dictionary:
+	if LEVEL3_ENABLED:
+		run["upgrades"] = {}
+	elif run_data.has("upgrades") and run_data["upgrades"] is Dictionary:
 		run["upgrades"] = (run_data["upgrades"] as Dictionary).duplicate(true)
 
 	if _run_state.level3_target_arenas <= 0:
@@ -2473,8 +2447,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_level3_rng.seed = _run_state.run_seed
 	GameEvents.set_gameplay_enabled(true)
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
-	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
+
 	_emit_escalation_changed()
 	_emit_run_debug_state()
 	_update_arena_visual_only()
@@ -3294,18 +3267,6 @@ func _on_request_intro_confirm() -> void:
 		return
 	request_confirm_pact()
 
-func _on_request_intro_buy_token() -> void:
-	_touch_request_activity("request_intro_buy_token()")
-	if not _guard_request_phase("request_intro_buy_token", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
-		return
-	if not purchase_token():
-		push_error("RunManager: request_intro_buy_token failed (insufficient coins or invalid cost)")
-		return
-	if _phase == RunPhase.RUN_INIT:
-		_enter_intro()
-	else:
-		_enter_bet_present()
-
 func _on_request_mid_choice_select(index: int) -> void:
 	_touch_request_activity("request_mid_choice_select(index=%d)" % index)
 	_flow_logger.log_request("request_mid_choice_select", "index=%d" % index)
@@ -3692,25 +3653,6 @@ func get_coins() -> int:
 	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
 	return int(run.get("coins", 0))
 
-func get_buy_token_cost() -> int:
-	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
-	return LEGACY_TOKEN_PURCHASE_COST_COINS
-
-func get_token_buy_cost() -> int:
-	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
-	return LEGACY_TOKEN_PURCHASE_COST_COINS
-
-func purchase_token() -> bool:
-	# Compra 1 token pagando coins.
-	if LEGACY_TOKEN_PURCHASE_COST_COINS <= 0:
-		return false
-	if not spend_coins(LEGACY_TOKEN_PURCHASE_COST_COINS):
-		return false
-	run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + 1
-	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	return true
-
 func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	if LEVEL3_ENABLED:
 		return
@@ -3798,6 +3740,8 @@ func _on_player_spawned(player: Node) -> void:
 	_apply_phase()
 
 func _on_enemy_killed(exp_value: int) -> void:
+	if LEVEL3_ENABLED:
+		return
 	if _is_game_over:
 		return
 	if _gameplay_phase != RunPhase.LIVE:
@@ -3811,7 +3755,7 @@ func _on_enemy_killed(exp_value: int) -> void:
 	var leveled: bool = _check_level_up()
 	if leveled:
 		_recompute_difficulty_tier(false)
-	_emit_xp_level_ui()
+
 
 func _xp_needed_for_next(level: int) -> int:
 	# level parte da 1. Per passare a level+1 usiamo LEGACY_EXP_CURVE[level-1] se esiste.
@@ -3839,17 +3783,6 @@ func _check_level_up() -> bool:
 	run["level"] = lvl
 	run["xp"] = xp
 	return leveled
-
-func _emit_xp_level_ui() -> void:
-	var lvl: int = int(run.get("level", 1))
-	var xp: int = int(run.get("xp", 0))
-	var needed: int = _xp_needed_for_next(lvl)
-	GameEvents.player_level_changed.emit(lvl)
-	GameEvents.player_xp_changed.emit(xp, needed)
-	GameEvents.level_changed.emit(lvl)
-	GameEvents.xp_changed.emit(xp, needed)
-	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
-	GameEvents.tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
 
 func get_level() -> int:
 	return int(run.get("level", 1))
@@ -3928,6 +3861,8 @@ func _connect_player_signals() -> void:
 		print("Runtime Player script:", player_script_path)
 	if _player == null:
 		return
+	if LEVEL3_ENABLED:
+		return
 	var died_callable: Callable = Callable(self, "_on_player_died")
 	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
 		_player.died.connect(died_callable)
@@ -3945,6 +3880,8 @@ func _on_request_fail_run(reason: String = "") -> void:
 	_enter_end_run(resolved_reason)
 
 func _on_player_died() -> void:
+	if LEVEL3_ENABLED:
+		return
 	_enter_end_run("death")
 
 func handle_bet_failed(bet_id: String) -> void:
@@ -4389,8 +4326,11 @@ func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 			pass
 
 func _apply_pure_bet_reward_scaled(scale: int) -> void:
+	if LEVEL3_ENABLED:
+		return
 	run = _bet_system.apply_pure_blood_reward(
 		run,
+		LEVEL3_ENABLED,
 		scale,
 		bet_pure_hp_bonus,
 		bet_pure_light_bonus,
@@ -4456,6 +4396,8 @@ func _get_level3_doom_short(bet_id: StringName) -> String:
 	return doom_text
 
 func _apply_double_or_die_reward_scaled(scale: int) -> void:
+	if LEVEL3_ENABLED:
+		return
 	var p: Node = _resolve_player()
 	if p == null:
 		return
@@ -4468,7 +4410,7 @@ func _apply_double_or_die_reward_scaled(scale: int) -> void:
 	var heavy_bonus: int = int(damage_values[1])
 	if light_bonus <= 0 and heavy_bonus <= 0:
 		return
-	run = _bet_system.apply_double_or_die_reward(run, scale, light_bonus, heavy_bonus)
+	run = _bet_system.apply_double_or_die_reward(run, LEVEL3_ENABLED, scale, light_bonus, heavy_bonus)
 	_apply_run_upgrades_to_player()
 
 func retry_current_bet() -> void:
@@ -5162,6 +5104,9 @@ func _position_player_after_respawn() -> void:
 		cam.global_position = (_player as Node2D).global_position
 
 func _reset_upgrades() -> void:
+	if LEVEL3_ENABLED:
+		run["upgrades"] = {}
+		return
 	run["upgrades"] = {
 		"hp_bonus": 0,
 		"light_bonus": 0,

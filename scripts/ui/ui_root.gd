@@ -64,12 +64,6 @@ const POST_BET_TEXTS: Dictionary = {
 }
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
-@onready var tokens_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokensLabel") as Label
-@onready var level_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/LevelRow/LevelLabel") as Label
-@onready var xp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPBar") as ProgressBar
-@onready var xp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/XPRow/XPLabel") as Label
-@onready var player_hp_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPBar") as ProgressBar
-@onready var player_hp_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/PlayerHPRow/PlayerHPContent/PlayerHPLabel") as Label
 @onready var bet_badge_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
 @onready var glory_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
 @onready var escalation_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as ProgressBar
@@ -91,11 +85,6 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var intermediate_choice_placa_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0") as Button
 @onready var intermediate_choice_provoca_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1") as Button
 @onready var bet_panel: Panel = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO") as Panel
-@onready var buy_token_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Btn_INTRO_BUY_TOKEN") as Button
-@onready var buy_token_info: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/Lbl_INTRO_CHOICE_1Panel/Lbl_INTRO_CHOICE_1") as Label
-@onready var buy_token_note: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BuyTokenRow/BuyTokenVBox/Lbl_INTRO_CHOICE_0Panel/Lbl_INTRO_CHOICE_0") as Label
-@onready var coins_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinIcon") as TextureRect
-@onready var tokens_icon: TextureRect = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/TokensRow/TokenIcon") as TextureRect
 @onready var modal_dimmer: ColorRect = get_node_or_null("UI_RunRoot/ModalDimmer") as ColorRect
 @onready var stake_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
 @onready var stake_input: SpinBox = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
@@ -118,7 +107,6 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var debug_restart_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/RestartRunButton") as Button
 @onready var debug_skip_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/SkipArenaButton") as Button
 @onready var debug_copy_log_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/CopyLogButton") as Button
-@onready var level_up_popup: Label = get_node_or_null("HUD/LevelUpPopup") as Label
 @onready var scar_popup_panel: PanelContainer = get_node_or_null("HUD/ScarPopupPanel") as PanelContainer
 @onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopupPanel/ScarPopupMargin/ScarPopupTextPanel/ScarPopup") as RichTextLabel
 @onready var arena_resolution_panel: PanelContainer = get_node_or_null("HUD/ArenaResolutionOverlayPanel") as PanelContainer
@@ -135,8 +123,6 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitlePanel/SentenceTitle") as Label
 @onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRulePanel/SentenceRule") as Label
 @onready var sentence_doom_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoomPanel/SentenceDoom") as Label
-@onready var sfx_level_up: AudioStreamPlayer = get_node_or_null("SFX/SfxLevelUp") as AudioStreamPlayer
-@onready var sfx_buy_token: AudioStreamPlayer = get_node_or_null("SFX/SfxBuyToken") as AudioStreamPlayer
 @onready var game_over_modal: Control = get_node_or_null("UI_RunRoot/Phase_END_RUN") as Control
 @onready var game_over_panel: TextureRect = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN") as TextureRect
 @onready var ending_background: TextureRect = get_node_or_null("UI_RunRoot/EndingBackground") as TextureRect
@@ -182,8 +168,6 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var scars_detail_text: Label = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel/ScarsDetailText") as Label
 @onready var scars_detail_close: Button = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
 
-@export var sfx_level_up_path: String = ""
-@export var sfx_buy_token_path: String = ""
 
 var _enemy_bar_scene: PackedScene = preload("res://scenes/ui/EnemyHealthBar.tscn")
 var _bets_by_id: Dictionary = {}
@@ -198,15 +182,10 @@ var _pending_confirm_bet_id: String = ""
 var _pending_bets: Array = []
 var _current_bet_offer: Array[Dictionary] = []
 var _bet_buttons: Array[Button] = []
-var _xp_current: int = 0
-var _xp_to_next: int = 6
-var _level: int = 1
-var _tokens: int = 0
 var _coins: int = 0
 var _glory: int = 0
 var _escalation_level: int = 0
 var _escalation_max: int = 0
-var _popup_tween: Tween = null
 var _scar_popup_tween: Tween = null
 var _arena_resolution_tween: Tween = null
 var _register_annotation_tween: Tween = null
@@ -217,11 +196,6 @@ var _intermediate_choice_modal_fade_tween: Tween = null
 var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
 var _current_modal: Control = null
-var _last_level: int = 1
-var _last_tokens: int = 0
-var _xp_anim_tween: Tween = null
-var _xp_punch_tween: Tween = null
-var _last_xp_to_next: int = 0
 var _enemy_bar_nodes: Dictionary = {}
 var _last_finale_title: String = "RUN FAILED"
 var _last_finale_text: String = ""
@@ -378,34 +352,13 @@ func _ready() -> void:
 	var countdown_callable: Callable = Callable(self, "_on_countdown_requested")
 	if not GameEvents.countdown_requested.is_connected(countdown_callable):
 		GameEvents.countdown_requested.connect(countdown_callable)
-	var player_level_callable: Callable = Callable(self, "_on_player_level_changed")
-	if not GameEvents.player_level_changed.is_connected(player_level_callable):
-		GameEvents.player_level_changed.connect(player_level_callable)
-	var player_xp_callable: Callable = Callable(self, "_on_player_xp_changed")
-	if not GameEvents.player_xp_changed.is_connected(player_xp_callable):
-		GameEvents.player_xp_changed.connect(player_xp_callable)
-	var level_changed_callable: Callable = Callable(self, "_on_player_level_changed")
-	if not GameEvents.level_changed.is_connected(level_changed_callable):
-		GameEvents.level_changed.connect(level_changed_callable)
-	var xp_changed_callable: Callable = Callable(self, "_on_player_xp_changed")
-	if not GameEvents.xp_changed.is_connected(xp_changed_callable):
-		GameEvents.xp_changed.connect(xp_changed_callable)
-	var tokens_changed_callable: Callable = Callable(self, "_on_tokens_changed")
-	if not GameEvents.tokens_changed.is_connected(tokens_changed_callable):
-		GameEvents.tokens_changed.connect(tokens_changed_callable)
 	var scars_updated_callable: Callable = Callable(self, "_on_scars_updated")
 	if GameEvents.has_signal("scars_updated") and not GameEvents.scars_updated.is_connected(scars_updated_callable):
 		GameEvents.scars_updated.connect(scars_updated_callable)
 	var scar_applied_callable: Callable = Callable(self, "_on_scar_applied")
 	if GameEvents.has_signal("scar_applied") and not GameEvents.scar_applied.is_connected(scar_applied_callable):
 		GameEvents.scar_applied.connect(scar_applied_callable)
-	_ensure_token_icons()
-	_refresh_progression_ui()
 	_refresh_scars_ui([])
-
-	_wire_buy_token_button()
-	_refresh_buy_token_ui()
-	_try_load_sfx_streams()
 
 	if bet_panel == null:
 		push_warning("Bet UI missing, disabling betting panel.")
@@ -432,8 +385,6 @@ func _ready() -> void:
 	if debug_tools_panel != null:
 		debug_tools_panel.visible = OS.is_debug_build()
 		_wire_debug_tools()
-	if level_up_popup != null:
-		level_up_popup.visible = false
 	if scar_popup_panel != null:
 		scar_popup_panel.visible = false
 	if arena_resolution_label != null:
@@ -549,10 +500,6 @@ func _validate_ui_boot() -> bool:
 	if get_node_or_null(ending_text_path) == null:
 		push_error("SANITY FAIL UI: Ending nodes missing %s" % ending_text_path)
 		return false
-	if sfx_level_up_path != "" and not ResourceLoader.exists(sfx_level_up_path):
-		errors.append("missing resource at %s" % sfx_level_up_path)
-	if sfx_buy_token_path != "" and not ResourceLoader.exists(sfx_buy_token_path):
-		errors.append("missing resource at %s" % sfx_buy_token_path)
 	var required_nodes: Array[String] = [
 		"UI_RunRoot/Phase_INTRO",
 		"UI_RunRoot/Phase_RESOLUTION",
@@ -633,44 +580,6 @@ func _get_enemy_anchor(enemy: Node2D) -> Node2D:
 		return anchor
 	return enemy
 
-func _on_player_level_changed(level: int) -> void:
-	_level = maxi(level, 1)
-	if level_label != null:
-		level_label.text = "Level: %d" % _level
-	if _level > _last_level:
-		_show_level_up_popup("+1 TOKEN")
-		_play_sfx(sfx_level_up)
-	_last_level = _level
-
-func _on_player_xp_changed(xp: int, xp_to_next: int) -> void:
-	_animate_xp_bar(xp, xp_to_next)
-	if xp_label != null:
-		xp_label.text = "XP: %d/%d" % [xp, xp_to_next]
-
-func _on_tokens_changed(tokens: int) -> void:
-	_tokens = maxi(tokens, 0)
-	if tokens_label != null:
-		tokens_label.text = "Tokens: %d" % _tokens
-	_last_tokens = _tokens
-	_refresh_buy_token_ui()
-
-func _refresh_progression_ui() -> void:
-	if level_label != null:
-		level_label.text = "Level: %d" % _level
-	if tokens_label != null:
-		tokens_label.text = "Tokens: %d" % _tokens
-	if xp_bar != null:
-		xp_bar.max_value = float(maxi(_xp_to_next, 1))
-	if xp_label != null:
-		xp_label.text = "XP: %d/%d" % [_xp_current, _xp_to_next]
-
-func _wire_buy_token_button() -> void:
-	if buy_token_button == null:
-		return
-	var buy_token_callable: Callable = Callable(self, "_on_buy_token_pressed")
-	if not buy_token_button.pressed.is_connected(buy_token_callable):
-		buy_token_button.pressed.connect(buy_token_callable)
-
 func _wire_seed_input() -> void:
 	if seed_apply_button == null:
 		return
@@ -691,132 +600,6 @@ func _wire_intro_phase_buttons() -> void:
 		var fast_callable: Callable = Callable(self, "_on_bet_fast_pressed")
 		if not intro_select_fast_button.pressed.is_connected(fast_callable):
 			intro_select_fast_button.pressed.connect(fast_callable)
-
-func _refresh_buy_token_ui() -> void:
-	if buy_token_button == null:
-		return
-	var manager: Node = _get_run_manager()
-	if manager == null:
-		buy_token_button.disabled = true
-		buy_token_button.text = "BUY TOKEN"
-		if buy_token_info != null:
-			buy_token_info.text = "-"
-		if buy_token_note != null:
-			buy_token_note.visible = false
-		return
-
-	var cost: int = 100
-	if manager.has_method("get_token_buy_cost"):
-		cost = int(manager.call("get_token_buy_cost"))
-	elif manager.has_method("get_buy_token_cost"):
-		cost = int(manager.call("get_buy_token_cost"))
-	elif manager.has_method("get_token_purchase_cost"):
-		cost = int(manager.call("get_token_purchase_cost"))
-
-	var coins: int = _coins
-	if manager.has_method("get_coins"):
-		coins = int(manager.call("get_coins"))
-
-	buy_token_button.text = "BUY TOKEN (%dc)" % cost
-	var disabled: bool = coins < cost
-	buy_token_button.disabled = disabled
-	if buy_token_info != null:
-		buy_token_info.text = "Coins: %d" % coins
-	if buy_token_note != null:
-		if disabled:
-			buy_token_note.text = "Disponibile con %dc." % cost
-			buy_token_note.visible = true
-		else:
-			buy_token_note.visible = false
-
-func _animate_xp_bar(xp: int, xp_to_next: int) -> void:
-	if xp_bar == null:
-		return
-	_xp_current = maxi(xp, 0)
-	_xp_to_next = maxi(xp_to_next, 1)
-	var maxv: float = float(_xp_to_next)
-	xp_bar.max_value = maxv
-
-	var changed_curve: bool = xp_to_next != _last_xp_to_next and _last_xp_to_next != 0
-	_last_xp_to_next = xp_to_next
-
-	var target: float = float(clamp(_xp_current, 0, _xp_to_next))
-	var current: float = float(xp_bar.value)
-
-	_kill_xp_tweens()
-
-	if target < current:
-		_xp_anim_tween = create_tween()
-		_xp_anim_tween.set_trans(Tween.TRANS_QUAD)
-		_xp_anim_tween.set_ease(Tween.EASE_OUT)
-		var anim_duration: float = 0.14
-		if changed_curve:
-			anim_duration = 0.10
-		_xp_anim_tween.tween_property(xp_bar, "value", target, anim_duration)
-		return
-
-	_xp_anim_tween = create_tween()
-	_xp_anim_tween.set_trans(Tween.TRANS_QUAD)
-	_xp_anim_tween.set_ease(Tween.EASE_OUT)
-	_xp_anim_tween.tween_property(xp_bar, "value", target, 0.18)
-
-	_xp_punch_tween = create_tween()
-	_xp_punch_tween.set_trans(Tween.TRANS_BACK)
-	_xp_punch_tween.set_ease(Tween.EASE_OUT)
-	_xp_punch_tween.tween_property(xp_bar, "scale", Vector2(1.02, 1.02), 0.08)
-	_xp_punch_tween.tween_property(xp_bar, "scale", Vector2.ONE, 0.10)
-
-func _kill_xp_tweens() -> void:
-	if _xp_anim_tween != null and is_instance_valid(_xp_anim_tween):
-		_xp_anim_tween.kill()
-	_xp_anim_tween = null
-	if _xp_punch_tween != null and is_instance_valid(_xp_punch_tween):
-		_xp_punch_tween.kill()
-	_xp_punch_tween = null
-
-func _try_load_sfx_streams() -> void:
-	_safe_assign_stream(sfx_level_up, sfx_level_up_path)
-	_safe_assign_stream(sfx_buy_token, sfx_buy_token_path)
-
-func _safe_assign_stream(player: AudioStreamPlayer, path: String) -> void:
-	if player == null:
-		return
-	if path == "":
-		return
-	if ResourceLoader.exists(path):
-		var stream: Resource = load(path)
-		if stream is AudioStream:
-			player.stream = stream
-
-func _play_sfx(player: AudioStreamPlayer) -> void:
-	if player == null or player.stream == null:
-		return
-	player.stop()
-	player.play()
-
-func _show_level_up_popup(suffix: String) -> void:
-	if level_up_popup == null:
-		return
-	level_up_popup.visible = true
-	level_up_popup.text = "LEVEL UP! %s" % suffix
-	level_up_popup.modulate.a = 0.0
-	level_up_popup.scale = Vector2(0.92, 0.92)
-	if _popup_tween != null and _popup_tween.is_valid():
-		_popup_tween.kill()
-	_popup_tween = create_tween()
-	_popup_tween.set_trans(Tween.TRANS_QUAD)
-	_popup_tween.set_ease(Tween.EASE_OUT)
-	_popup_tween.tween_property(level_up_popup, "modulate:a", 1.0, 0.12)
-	_popup_tween.parallel().tween_property(level_up_popup, "scale", Vector2(1.02, 1.02), 0.12)
-	_popup_tween.tween_interval(0.55)
-	_popup_tween.set_ease(Tween.EASE_IN)
-	_popup_tween.tween_property(level_up_popup, "modulate:a", 0.0, 0.20)
-	_popup_tween.parallel().tween_property(level_up_popup, "scale", Vector2(0.98, 0.98), 0.20)
-	_popup_tween.tween_callback(Callable(self, "_hide_level_up_popup"))
-
-func _hide_level_up_popup() -> void:
-	if level_up_popup != null:
-		level_up_popup.visible = false
 
 func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_popup == null:
@@ -888,33 +671,12 @@ func _hide_arena_resolution_overlay() -> void:
 	if arena_resolution_panel != null:
 		arena_resolution_panel.visible = false
 
-func _on_buy_token_pressed() -> void:
-	if GameEvents.has_signal("request_intro_buy_token"):
-		GameEvents.request_intro_buy_token.emit()
-
 func _on_seed_apply_pressed() -> void:
 	if seed_input == null:
 		return
 	var text_value: String = seed_input.text.strip_edges()
 	if GameEvents.has_signal("request_intro_apply_seed"):
 		GameEvents.request_intro_apply_seed.emit(text_value)
-
-func _ensure_token_icons() -> void:
-	if coins_icon != null and coins_icon.texture == null:
-		coins_icon.texture = _make_solid_icon(Color(1.0, 0.85, 0.25, 1.0))
-	if tokens_icon != null and tokens_icon.texture == null:
-		tokens_icon.texture = _make_solid_icon(Color(0.55, 0.85, 1.0, 1.0))
-
-func _make_solid_icon(c: Color) -> Texture2D:
-	var image: Image = Image.create(8, 8, false, Image.FORMAT_RGBA8)
-	image.fill(c)
-	for x in range(8):
-		image.set_pixel(x, 0, Color(0, 0, 0, 1))
-		image.set_pixel(x, 7, Color(0, 0, 0, 1))
-	for y in range(8):
-		image.set_pixel(0, y, Color(0, 0, 0, 1))
-		image.set_pixel(7, y, Color(0, 0, 0, 1))
-	return ImageTexture.create_from_image(image)
 
 func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:
@@ -945,9 +707,6 @@ func _on_run_started() -> void:
 	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	_reset_bet_confirmation()
-	if level_up_popup != null:
-		level_up_popup.visible = false
-	_refresh_buy_token_ui()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
 	# countdown_requested will drive the actual seconds during the round.
 	if not _fast_countdown_active:
@@ -990,14 +749,6 @@ func _on_run_started() -> void:
 	_hide_scars_detail()
 
 func _on_run_started_ui() -> void:
-	_last_level = 1
-	_last_tokens = 0
-	_last_xp_to_next = 0
-	_kill_xp_tweens()
-	_xp_current = 0
-	if xp_bar != null:
-		xp_bar.value = 0
-	_refresh_buy_token_ui()
 	var player_node: Node = get_tree().get_first_node_in_group("player")
 	if player_node != null:
 		_bind_player(player_node)
@@ -1106,8 +857,6 @@ func _on_run_failed() -> void:
 	_set_bet_modal(false)
 	if escalation_bar != null:
 		escalation_bar.visible = false
-	if level_up_popup != null:
-		level_up_popup.visible = false
 	if special_arena_label != null:
 		special_arena_label.visible = false
 	if condanna_focus_label != null:
@@ -1347,7 +1096,6 @@ func _on_coins_changed(coins: int) -> void:
 	if coins_label != null:
 		coins_label.text = "Coins: %d" % coins
 	_coins = coins
-	_refresh_buy_token_ui()
 
 func _set_glory_value(glory: int) -> void:
 	_glory = maxi(glory, 0)
@@ -1393,7 +1141,6 @@ func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 	_update_special_arena_ui()
 	_update_condanna_focus()
 	_reset_fast_countdown()
-	_refresh_buy_token_ui()
 	_refresh_modal_dimmer()
 	var bet_read_buttons: Array[Button] = []
 	bet_read_buttons.append_array(_bet_buttons)

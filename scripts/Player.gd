@@ -83,11 +83,7 @@ func _ready() -> void:
 		input_locked = not GameEvents.gameplay_enabled
 
 func _physics_process(delta: float) -> void:
-	if LEVEL3_PASSIVE_MODE:
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	if _is_level3_mode():
+	if _is_combat_runtime_disabled():
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
@@ -116,10 +112,15 @@ func _physics_process(delta: float) -> void:
 	_apply_bounds()
 
 func set_input_locked(locked: bool) -> void:
-	if LEVEL3_PASSIVE_MODE:
+	if _is_combat_runtime_disabled():
 		input_locked = true
 		return
 	input_locked = locked
+
+func _is_combat_runtime_disabled() -> bool:
+	if LEVEL3_PASSIVE_MODE:
+		return true
+	return _is_level3_mode()
 
 func _is_level3_mode() -> bool:
 	var manager: Node = get_tree().get_first_node_in_group("run_manager")
@@ -137,6 +138,8 @@ func _apply_bounds() -> void:
 	global_position.y = clampf(global_position.y, -half.y + margin, half.y - margin)
 
 func _try_attack(damage: int, attack_range: float, cooldown: float, cone_angle_deg: float) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	if _attack_timer > 0.0:
 		return
 	_attack_timer = cooldown
@@ -224,6 +227,8 @@ func _play_sword_swing() -> void:
 	)
 
 func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	var aim: Vector2 = _last_aim_dir
 	if aim.length_squared() < 0.0001:
 		aim = Vector2.UP
@@ -248,6 +253,8 @@ func _perform_attack(damage: int, attack_range: float, cone_angle_deg: float) ->
 			enemy_node.call("take_damage", damage)
 
 func take_damage(amount: int) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	if _damage_invuln > 0.0:
 		return
 	var final_damage: int = amount
@@ -267,13 +274,20 @@ func take_damage(amount: int) -> void:
 		queue_free()
 
 func _emit_health() -> void:
+	if _is_combat_runtime_disabled():
+		return
 	health_changed.emit(_current_health, max_health)
 
 func reset_full_health() -> void:
+	if _is_combat_runtime_disabled():
+		return
 	_current_health = max_health
 	_emit_health()
 
 func apply_run_upgrades(max_hp_bonus: int, light_bonus: int, heavy_bonus: int) -> void:
+	var manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if manager != null and manager.has_method("is_level3_mode") and bool(manager.call("is_level3_mode")):
+		return
 	if _base_max_health <= 0:
 		_base_max_health = max_health
 	if _base_light_damage <= 0:
@@ -308,6 +322,8 @@ func get_damage_values() -> Array[int]:
 	return [light_damage, heavy_damage]
 
 func heal(amount: int) -> void:
+	if _is_combat_runtime_disabled():
+		return
 	if amount <= 0:
 		return
 	var scaled: int = int(round(float(amount) * _heal_multiplier))

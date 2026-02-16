@@ -458,11 +458,11 @@ func _apply_language(locale: String) -> void:
 
 func _resolve_available_locale(target_locale: String) -> String:
 	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH
-	if ResourceLoader.exists(requested_path):
+	if FileAccess.file_exists(requested_path):
 		return target_locale
 	var fallback_locale: String = "en" if target_locale == "it" else "it"
 	var fallback_path: String = I18N_IT_PATH if fallback_locale == "it" else I18N_EN_PATH
-	if ResourceLoader.exists(fallback_path):
+	if FileAccess.file_exists(fallback_path):
 		if not _language_fallback_logged:
 			print("[I18N] Missing translation resource ", requested_path, ". Fallback locale: ", fallback_locale)
 			_language_fallback_logged = true

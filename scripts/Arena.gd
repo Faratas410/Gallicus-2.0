@@ -4,6 +4,7 @@
 
 extends Node2D
 
+const GameConstants: Script = preload("res://scripts/systems/constants.gd")
 const LEVEL3_PASSIVE_MODE := true
 
 signal player_spawned(player: Node2D)
@@ -20,11 +21,13 @@ signal enemy_despawned(enemy: Node2D)
 @export var debug_spawn_enemy: bool = false
 @export var enemy_aggro_delay: float = 0.85 # secondi prima che i nemici inizino a inseguire (bilanciamento)
 
-const ARENA_BG_VARIANTS: Array[Texture2D] = [
-	preload("res://assets/backgrounds/sfondo_arena_principale.png"),
-	preload("res://assets/backgrounds/arena/variants/arena_bg_variant_01.png"),
-	preload("res://assets/backgrounds/arena/variants/arena_bg_variant_02.png"),
+const ARENA_BG_VARIANT_PATHS: Array[String] = [
+	"res://assets/backgrounds/sfondo_arena_principale.png",
+	"res://assets/backgrounds/arena/variants/arena_bg_variant_01.png",
+	"res://assets/backgrounds/arena/variants/arena_bg_variant_02.png",
 ]
+
+var _arena_bg_variants: Array[Texture2D] = []
 
 var difficulty_tier: int = 0
 var difficulty_multiplier: float = 1.0
@@ -47,6 +50,7 @@ func _ready() -> void:
 	print("Arena ready")
 	_rng.randomize()
 	add_to_group("arena")
+	_ensure_background_variants_loaded()
 	_apply_background_variant()
 	if LEVEL3_PASSIVE_MODE:
 		set_process(false)
@@ -70,15 +74,24 @@ func _ready() -> void:
 	if debug_spawn_enemy and not _is_visual_only():
 		_spawn_debug_enemy()
 
+func _ensure_background_variants_loaded() -> void:
+	if not _arena_bg_variants.is_empty():
+		return
+	for path: String in ARENA_BG_VARIANT_PATHS:
+		var texture: Texture2D = load(path) as Texture2D
+		if texture != null:
+			_arena_bg_variants.append(texture)
+
+
 func _apply_background_variant() -> void:
 	if _background_sprite == null:
 		_background_sprite = get_node_or_null("Background") as Sprite2D
 	if _background_sprite == null:
 		return
-	if ARENA_BG_VARIANTS.is_empty():
+	if _arena_bg_variants.is_empty():
 		return
-	var index: int = _rng.randi_range(0, ARENA_BG_VARIANTS.size() - 1)
-	var texture: Texture2D = ARENA_BG_VARIANTS[index]
+	var index: int = _rng.randi_range(0, _arena_bg_variants.size() - 1)
+	var texture: Texture2D = _arena_bg_variants[index]
 	if texture == null:
 		return
 	_background_sprite.texture = texture

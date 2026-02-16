@@ -1,6 +1,8 @@
 extends Resource
 class_name CondannaData
 
+const CONDANNA_DATA_SCRIPT: Script = preload("res://data/condanne.gd")
+
 @export var id: StringName
 @export var title: String
 @export var condition_text: String
@@ -11,8 +13,8 @@ static func make(
 		title_value: String,
 		condition_value: String,
 		lore_value: String
-	) -> CondannaData:
-	var condanna := CondannaData.new()
+		) -> CondannaData:
+	var condanna: CondannaData = CONDANNA_DATA_SCRIPT.new() as CondannaData
 	condanna.id = id_value
 	condanna.title = title_value
 	condanna.condition_text = condition_value

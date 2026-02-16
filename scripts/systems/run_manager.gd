@@ -69,6 +69,15 @@ const BET_P3_LIE_MERCY: StringName = &"P3_LIE_MERCY"
 const BET_P3_LIE_DEBT: StringName = &"P3_LIE_DEBT"
 const BET_P3_LIE_APPLAUSE: StringName = &"P3_LIE_APPLAUSE"
 const ArenaThemes = preload("res://data/arena_themes.gd")
+const GameConstants = preload("res://scripts/systems/constants.gd")
+const RunState = preload("res://scripts/systems/run/run_state.gd")
+const SaveSystem = preload("res://scripts/systems/run/save_system.gd")
+const RunBetSystem = preload("res://scripts/systems/run/bet_system.gd")
+const RunScarSystem = preload("res://scripts/systems/run/scar_system.gd")
+const ScarCatalog = preload("res://scripts/content/scar_catalog.gd")
+const RunOutcomeSystem = preload("res://scripts/systems/run/outcome_system.gd")
+const FlowLogger = preload("res://scripts/systems/run/flow_logger.gd")
+const RunUiPayload = preload("res://scripts/ui/run_ui_payload.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
 const ScarSystemScript = preload("res://scripts/systems/run/scar_system.gd")
 const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd")
@@ -1208,8 +1217,109 @@ var _last_activity_ms: int = 0
 var _watchdog_enabled: bool = true
 var _registry_has_precedent: bool = false
 var _glory_multiplier: int = GLORY_MULT_BASE
+var _smoke_driver_timer: Timer = null
+var _smoke_new_run_requested: bool = false
+var _smoke_step_logged_run_init: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
+
+func _is_smoke_mode() -> bool:
+	return OS.get_environment("GALLICUS_SMOKE") == "1"
+
+
+func _phase_to_name(phase: RunPhase) -> String:
+	match phase:
+		RunPhase.NONE:
+			return "NONE"
+		RunPhase.PREP:
+			return "PREP"
+		RunPhase.LIVE:
+			return "LIVE"
+		RunPhase.GAME_OVER:
+			return "GAME_OVER"
+		RunPhase.MAIN_MENU:
+			return "MAIN_MENU"
+		RunPhase.RUN_INIT:
+			return "RUN_INIT"
+		RunPhase.BET_PRESENT:
+			return "BET_PRESENT"
+		RunPhase.BET_COMMITTED:
+			return "BET_COMMITTED"
+		RunPhase.POST_BET_MESSAGES:
+			return "POST_BET_MESSAGES"
+		RunPhase.INTERMEDIATE_CHOICE:
+			return "INTERMEDIATE_CHOICE"
+		RunPhase.PUSH_YOUR_LUCK:
+			return "PUSH_YOUR_LUCK"
+		RunPhase.NEXT_BET:
+			return "NEXT_BET"
+		RunPhase.RESOLUTION:
+			return "RESOLUTION"
+		_:
+			return str(phase)
+
+
+func _start_smoke_timeout_timer() -> void:
+	if not _is_smoke_mode():
+		return
+	var timeout_sec: float = 10.0
+	var raw_timeout: String = OS.get_environment("GALLICUS_SMOKE_TIMEOUT_SEC")
+	if raw_timeout != "":
+		timeout_sec = max(raw_timeout.to_float(), 0.1)
+	var smoke_timer: Timer = Timer.new()
+	smoke_timer.one_shot = true
+	smoke_timer.wait_time = timeout_sec
+	add_child(smoke_timer)
+	smoke_timer.timeout.connect(func() -> void:
+		get_tree().quit(0)
+	)
+	smoke_timer.start()
+
+
+func _smoke_start_scenario() -> void:
+	if not _is_smoke_mode():
+		return
+	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") != "BET_PRESENT":
+		return
+	if _smoke_driver_timer != null and is_instance_valid(_smoke_driver_timer):
+		return
+	_smoke_new_run_requested = false
+	_smoke_step_logged_run_init = false
+	_smoke_driver_timer = Timer.new()
+	_smoke_driver_timer.one_shot = false
+	_smoke_driver_timer.wait_time = 0.1
+	add_child(_smoke_driver_timer)
+	_smoke_driver_timer.timeout.connect(_on_smoke_driver_tick)
+	print("SMOKE:STEP=SCENARIO_BET_PRESENT_START")
+	_smoke_driver_timer.start()
+
+
+func _stop_smoke_driver() -> void:
+	if _smoke_driver_timer == null or not is_instance_valid(_smoke_driver_timer):
+		return
+	_smoke_driver_timer.stop()
+	_smoke_driver_timer.queue_free()
+	_smoke_driver_timer = null
+
+
+func _on_smoke_driver_tick() -> void:
+	if not _is_smoke_mode() or OS.get_environment("GALLICUS_SMOKE_SCENARIO") != "BET_PRESENT":
+		_stop_smoke_driver()
+		return
+	if _phase == RunPhase.BET_PRESENT:
+		print("SMOKE:STEP=BET_PRESENT_REACHED")
+		_stop_smoke_driver()
+		return
+	if _phase == RunPhase.RUN_INIT and not _smoke_step_logged_run_init:
+		_smoke_step_logged_run_init = true
+		print("SMOKE:STEP=RUN_INIT_SEEN")
+	if _phase == RunPhase.MAIN_MENU and not _smoke_new_run_requested:
+		_smoke_new_run_requested = true
+		print("SMOKE:STEP=REQUEST_NEW_RUN")
+		print("SMOKE:NEW_RUN_REQUESTED")
+		print("SMOKE:REQ=request_new_run")
+		GameEvents.request_new_run.emit()
+
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -1227,6 +1337,8 @@ func _ready() -> void:
 	_arena_layout_rng.randomize()
 	_connect_gameevents()
 	_registry_has_precedent = SaveManager.has_unlocked(UNLOCK_REGISTRY_PRECEDENT)
+	_start_smoke_timeout_timer()
+	call_deferred("_boot")
 
 func _process(_delta: float) -> void:
 	_watchdog_tick()
@@ -1344,6 +1456,15 @@ func _boot() -> void:
 	print("Boot: arena=", _arena, " player=", _player)
 	print("Player in tree:", _player != null and _player.is_inside_tree())
 	_set_phase(RunPhase.MAIN_MENU, "boot")
+	if _is_smoke_mode():
+		print("SMOKE:BOOT_OK")
+		print("SMOKE:PHASE=MAIN_MENU")
+		if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "BET_PRESENT":
+			_smoke_start_scenario()
+		elif OS.get_environment("GALLICUS_SMOKE_TRIGGER_NEW_RUN") == "1":
+			print("SMOKE:NEW_RUN_REQUESTED")
+			print("SMOKE:REQ=request_new_run")
+			GameEvents.request_new_run.emit()
 	_log_runtime_state("boot_complete")
 
 func _validate_game_events_signals() -> bool:
@@ -4886,35 +5007,7 @@ func is_visual_only() -> bool:
 	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice or _run_state.run_is_over or _is_game_over
 
 func get_debug_phase_name() -> String:
-	match _phase:
-		RunPhase.NONE:
-			return "NONE"
-		RunPhase.PREP:
-			return "PREP"
-		RunPhase.LIVE:
-			return "LIVE"
-		RunPhase.GAME_OVER:
-			return "GAME_OVER"
-		RunPhase.MAIN_MENU:
-			return "MAIN_MENU"
-		RunPhase.RUN_INIT:
-			return "RUN_INIT"
-		RunPhase.BET_PRESENT:
-			return "BET_PRESENT"
-		RunPhase.BET_COMMITTED:
-			return "BET_COMMITTED"
-		RunPhase.POST_BET_MESSAGES:
-			return "POST_BET_MESSAGES"
-		RunPhase.INTERMEDIATE_CHOICE:
-			return "INTERMEDIATE_CHOICE"
-		RunPhase.PUSH_YOUR_LUCK:
-			return "PUSH_YOUR_LUCK"
-		RunPhase.NEXT_BET:
-			return "NEXT_BET"
-		RunPhase.RESOLUTION:
-			return "RESOLUTION"
-		_:
-			return str(_phase)
+	return _phase_to_name(_phase)
 
 func get_debug_last_request() -> String:
 	return _last_request
@@ -4940,6 +5033,8 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 	if not _run_enter_phase(next):
 		push_error("RunManager: missing _enter_* for phase %s\nLAST_FLOW:\n%s" % [str(next), _flow_logger.dump_last(30)])
 		return
+	if _is_smoke_mode():
+		print("SMOKE:PHASE=%s" % _phase_to_name(next))
 	if OS.is_debug_build() and reason != "":
 		print_debug("RunManager flow phase:", int(next), "-", reason)
 

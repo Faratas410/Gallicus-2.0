@@ -2,17 +2,9 @@
 
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/font_body.tres" id="1"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/font_title_outline.tres" id="10"]
-[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/WHITE.png" id="2"]
-[ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/frame.png" id="3"]
-[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/WHITE.png" id="4"]
-[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/PRESSED.png" id="5"]
-[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/DISABLED/button_2_disabled.png" id="6"]
-[ext_resource type="Texture2D" path="res://OK GUI/BUTTONS/Button 2/DISABLED/PRESSED.png" id="9"]
-[ext_resource type="Texture2D" path="res://OK GUI/Settings/Checkbox/rect.png" id="7"]
-[ext_resource type="Texture2D" path="res://OK GUI/Settings/Checkbox/PRESSED.png" id="8"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
-texture = ExtResource("2")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -23,7 +15,7 @@ content_margin_right = 20.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
-texture = ExtResource("4")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -34,7 +26,7 @@ content_margin_right = 20.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
-texture = ExtResource("5")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -45,7 +37,7 @@ content_margin_right = 20.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
-texture = ExtResource("6")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -56,7 +48,7 @@ content_margin_right = 20.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6"]
-texture = ExtResource("9")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -88,7 +80,7 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5"]
-texture = ExtResource("3")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -152,12 +144,12 @@ theme_types/CheckBox = {
 "font_size": 12
 },
 "icons": {
-"checked": ExtResource("8"),
-"checked_disabled": ExtResource("8"),
-"indeterminate": ExtResource("7"),
-"indeterminate_disabled": ExtResource("7"),
-"unchecked": ExtResource("7"),
-"unchecked_disabled": ExtResource("7")
+"checked": null,
+"checked_disabled": null,
+"indeterminate": null,
+"indeterminate_disabled": null,
+"unchecked": null,
+"unchecked_disabled": null
 },
 "styles": {}
 }

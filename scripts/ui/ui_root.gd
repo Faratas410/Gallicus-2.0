@@ -21,15 +21,16 @@ const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
-const UI_PARCHMENT_TEXTURE_PATH: String = "res://assets/ui/panels/contract_clean_paper_9slice.png"
-const UI_WAX_SEAL_TEXTURE_PATH: String = "res://assets/ui/overlays/wax_seal_red.png"
-const BUTTON_STYLE_PRIMARY_NORMAL: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_normal.tres")
-const BUTTON_STYLE_PRIMARY_HOVER: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_hover.tres")
-const BUTTON_STYLE_PRIMARY_PRESSED: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_pressed.tres")
-const BUTTON_STYLE_PRIMARY_DISABLED: StyleBox = preload("res://ui/official/styleboxes/sb_button_primary_disabled.tres")
+const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://ui/official/styleboxes/sb_button_primary_normal.tres"
+const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb_button_primary_hover.tres"
+const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_pressed.tres"
+const BUTTON_STYLE_PRIMARY_DISABLED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_disabled.tres"
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
+const CondannaData = preload("res://data/condanne.gd")
+const RunUiPayload = preload("res://scripts/ui/run_ui_payload.gd")
+const BettingCircleUI = preload("res://scripts/ui/betting_circle_ui.gd")
 const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
@@ -256,6 +257,10 @@ var _sentence_banner_sequence_id: int = 0
 var _is_signing: bool = false
 var _bet_confirm_default_text: String = ""
 var _phase_node_map: Dictionary = {}
+var _button_style_primary_normal: StyleBox = null
+var _button_style_primary_hover: StyleBox = null
+var _button_style_primary_pressed: StyleBox = null
+var _button_style_primary_disabled: StyleBox = null
 const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_INTRO",
 	"UI_RunRoot/Phase_FIRST_REACTION",
@@ -270,6 +275,10 @@ func _ready() -> void:
 	if not _validate_ui_boot():
 		_disable_ui_interactions()
 		return
+	_button_style_primary_normal = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_NORMAL_PATH)
+	_button_style_primary_hover = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_HOVER_PATH)
+	_button_style_primary_pressed = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_PRESSED_PATH)
+	_button_style_primary_disabled = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_DISABLED_PATH)
 	if controls_hint_panel != null:
 		controls_hint_panel.visible = true
 		_has_seen_controls = false
@@ -540,10 +549,6 @@ func _validate_ui_boot() -> bool:
 	if get_node_or_null(ending_text_path) == null:
 		push_error("SANITY FAIL UI: Ending nodes missing %s" % ending_text_path)
 		return false
-	if not ResourceLoader.exists(UI_PARCHMENT_TEXTURE_PATH):
-		errors.append("missing resource at %s" % UI_PARCHMENT_TEXTURE_PATH)
-	if not ResourceLoader.exists(UI_WAX_SEAL_TEXTURE_PATH):
-		errors.append("missing resource at %s" % UI_WAX_SEAL_TEXTURE_PATH)
 	if sfx_level_up_path != "" and not ResourceLoader.exists(sfx_level_up_path):
 		errors.append("missing resource at %s" % sfx_level_up_path)
 	if sfx_buy_token_path != "" and not ResourceLoader.exists(sfx_buy_token_path):
@@ -2071,13 +2076,22 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 		bet_buttons_container.add_child(button)
 		_bet_buttons.append(button)
 
+func _safe_load_stylebox(path: String) -> StyleBox:
+	if not ResourceLoader.exists(path, "StyleBox"):
+		return null
+	return load(path) as StyleBox
+
 func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> Button:
 	var button: Button = Button.new()
-	button.add_theme_stylebox_override("normal", BUTTON_STYLE_PRIMARY_NORMAL)
-	button.add_theme_stylebox_override("hover", BUTTON_STYLE_PRIMARY_HOVER)
-	button.add_theme_stylebox_override("pressed", BUTTON_STYLE_PRIMARY_PRESSED)
-	button.add_theme_stylebox_override("disabled", BUTTON_STYLE_PRIMARY_DISABLED)
-	button.add_theme_stylebox_override("focus", BUTTON_STYLE_PRIMARY_HOVER)
+	if _button_style_primary_normal != null:
+		button.add_theme_stylebox_override("normal", _button_style_primary_normal)
+	if _button_style_primary_hover != null:
+		button.add_theme_stylebox_override("hover", _button_style_primary_hover)
+		button.add_theme_stylebox_override("focus", _button_style_primary_hover)
+	if _button_style_primary_pressed != null:
+		button.add_theme_stylebox_override("pressed", _button_style_primary_pressed)
+	if _button_style_primary_disabled != null:
+		button.add_theme_stylebox_override("disabled", _button_style_primary_disabled)
 	button.custom_minimum_size = Vector2(0, 190)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL

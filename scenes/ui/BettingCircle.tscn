@@ -1,12 +1,6 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/circle_bg.png" id="2"]
-[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/Container.png" id="3"]
-[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/Container.png" id="4"]
-[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/3/Exclamation Red.png" id="5"]
-[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/accept/box.png" id="6"]
-[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/accept/PRESSED.png" id="7"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/font_title_outline.tres" id="8"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="9"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="10"]
@@ -14,21 +8,21 @@
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="12"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
-texture = ExtResource("4")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
 texture_margin_bottom = 48.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
-texture = ExtResource("3")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
 texture_margin_bottom = 48.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
-texture = ExtResource("6")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -39,7 +33,7 @@ content_margin_right = 20.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
-texture = ExtResource("7")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -50,7 +44,7 @@ content_margin_right = 20.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5"]
-texture = ExtResource("3")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -79,7 +73,7 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 1
-texture = ExtResource("2")
+texture = null
 expand_mode = 1
 stretch_mode = 5
 
@@ -176,7 +170,7 @@ theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
-texture = ExtResource("5")
+texture = null
 expand_mode = 1
 stretch_mode = 5
 
@@ -243,7 +237,7 @@ theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
-texture = ExtResource("5")
+texture = null
 expand_mode = 1
 stretch_mode = 5
 
@@ -310,7 +304,7 @@ theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
-texture = ExtResource("5")
+texture = null
 expand_mode = 1
 stretch_mode = 5
 

@@ -1,6 +1,7 @@
 class_name SaveSystem
 extends RefCounted
 
+const RunState := preload("res://scripts/systems/run/run_state.gd")
 const RUN_SCHEMA_VERSION: int = 1
 const RUN_PATH: String = "user://run.save"
 const RUN_TMP_PATH: String = "%s.tmp" % RUN_PATH

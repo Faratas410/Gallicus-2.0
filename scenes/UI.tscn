@@ -2,30 +2,26 @@
 
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
 [ext_resource type="Theme" path="res://assets/ui/gallicus_ui_theme.tres" id="3"]
-[ext_resource type="Texture2D" path="res://OK GUI/Inventory/Container.png" id="4"]
 [ext_resource type="Texture2D" path="res://assets/ui/overlays/wax_seal_red.png" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
-[ext_resource type="Texture2D" path="res://OK GUI/Backgrounds/1.png" id="7"]
 [ext_resource type="Texture2D" path="res://assets/ui/overlays/vignette_overlay.png" id="8"]
-[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/2/Container.png" id="9"]
-[ext_resource type="Texture2D" path="res://OK GUI/Modal Boxes/3/container.png" id="10"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/font_title_outline.tres" id="11"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="12"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="13"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="14"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="15"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
-texture = ExtResource("4")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
 texture_margin_bottom = 48.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
-texture = ExtResource("9")
+texture = null
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
-texture = ExtResource("10")
+texture = null
 
 [sub_resource type="Animation" id="Animation_1"]
 resource_name = "flicker"
@@ -474,7 +470,7 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
-texture = ExtResource("7")
+texture = null
 expand_mode = 1
 stretch_mode = 5
 
@@ -1159,7 +1155,7 @@ offset_right = 0.0
 offset_bottom = 0.0
 clip_contents = true
 custom_minimum_size = Vector2(960, 720)
-texture = ExtResource("9")
+texture = null
 expand_mode = 1
 stretch_mode = 6
 

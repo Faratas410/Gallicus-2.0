@@ -3,8 +3,6 @@
 [ext_resource type="Script" path="res://scripts/systems/run_manager.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
-[ext_resource type="AudioStream" path="res://Music/Ambient1.mp3" id="4"]
-[ext_resource type="Texture2D" path="res://OK GUI/PNG Utili/frame.png" id="5"]
 [ext_resource type="Theme" path="res://ui/theme/official_theme.tres" id="6"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_panel_main.tres" id="7"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="8"]
@@ -13,7 +11,7 @@
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="11"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
-texture = ExtResource("5")
+texture = null
 texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
@@ -37,7 +35,7 @@ script = ExtResource("1")
 layer = 10
 
 [node name="MenuThemePlayer" type="AudioStreamPlayer" parent="MenuLayer"]
-stream = ExtResource("4")
+stream = null
 autoplay = true
 bus = "Master"
 

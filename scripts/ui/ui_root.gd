@@ -168,6 +168,8 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var scars_detail_close: Button = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
 
 
+var player_hp_bar: ProgressBar = null
+var player_hp_label: Label = null
 var _bets_by_id: Dictionary = {}
 var _run_manager: Node
 var _arena: Node

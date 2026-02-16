@@ -712,10 +712,6 @@ func _refresh_buy_token_ui() -> void:
 		cost = int(manager.call("get_buy_token_cost"))
 	elif manager.has_method("get_token_purchase_cost"):
 		cost = int(manager.call("get_token_purchase_cost"))
-	elif manager.has_variable("token_buy_cost"):
-		cost = int(manager.get("token_buy_cost"))
-	elif manager.has_variable("token_purchase_cost_coins"):
-		cost = int(manager.get("token_purchase_cost_coins"))
 
 	var coins: int = _coins
 	if manager.has_method("get_coins"):

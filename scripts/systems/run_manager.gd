@@ -15,8 +15,8 @@ extends Node
 @export var player_path: NodePath
 @export var starting_coins: int = GameConstants.RUN_STARTING_COINS
 @export var arena_clear_reward: int = GameConstants.ARENA_CLEAR_REWARD
-@export var arena_scene: PackedScene = preload("res://scenes/Arena.tscn")
-@export var player_scene: PackedScene = preload("res://scenes/Player.tscn")
+@export var arena_scene: PackedScene
+@export var player_scene: PackedScene
 @export var arena_layout_offset: Vector2 = Vector2(-640.0, -360.0)
 
 # RUN FLOW (contract)
@@ -1105,37 +1105,23 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	},
 ]
 
-var _arena_scenes: Array[PackedScene] = [
-	preload("res://scenes/arenas/Arena_01_TrainingYard.tscn"),
-	preload("res://scenes/arenas/Arena_02_OwlSanctum.tscn"),
-	preload("res://scenes/arenas/Arena_03_SandPit.tscn"),
-	preload("res://scenes/arenas/Arena_04_IronCorridor.tscn"),
-]
+var _arena_scenes: Array[PackedScene] = []
 var _arena_layout_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 const DEBUG_RUNTIME_LOGS: bool = false
 
-# --- XP / Leveling ---
-@export var starting_level: int = 1
-@export var starting_tokens: int = 0
-@export var exp_per_enemy: int = 1
-@export var exp_curve: Array[int] = [6, 8, 11, 15, 20, 26] # xp necessario per passare al prossimo livello; dopo l'ultimo cresce linearmente.
-@export var exp_curve_tail_step: int = 8
-@export var tokens_per_level: int = 1
-
-# --- Difficulty tiers ---
-@export var levels_per_tier: int = 3
-@export var tier_multipliers: Array[float] = [1.00, 1.13, 1.32, 1.56, 1.84]
-
-@export var upgrade_hp_bonus: int = 20
-@export var upgrade_light_bonus: int = 1
-@export var upgrade_heavy_bonus: int = 1
-
-# Upgrade shop ora usa TOKENS, con costo che cresce dopo ogni acquisto.
-@export var upgrade_hp_token_cost_start: int = 1
-@export var upgrade_light_token_cost_start: int = 1
-@export var upgrade_heavy_token_cost_start: int = 1
-@export var token_purchase_cost_coins: int = 100
+const LEGACY_STARTING_LEVEL: int = 1
+const LEGACY_STARTING_TOKENS: int = 0
+const LEGACY_EXP_PER_ENEMY: int = 1
+const LEGACY_EXP_CURVE: Array[int] = [6, 8, 11, 15, 20, 26]
+const LEGACY_EXP_CURVE_TAIL_STEP: int = 8
+const LEGACY_TOKENS_PER_LEVEL: int = 1
+const LEGACY_LEVELS_PER_TIER: int = 3
+const LEGACY_TIER_MULTIPLIERS: Array[float] = [1.00, 1.13, 1.32, 1.56, 1.84]
+const LEGACY_UPGRADE_HP_TOKEN_COST_START: int = 1
+const LEGACY_UPGRADE_LIGHT_TOKEN_COST_START: int = 1
+const LEGACY_UPGRADE_HEAVY_TOKEN_COST_START: int = 1
+const LEGACY_TOKEN_PURCHASE_COST_COINS: int = 100
 
 @export var bet_coward_coin_reward: int = 20
 @export var bet_pure_hp_bonus: int = 30
@@ -3708,17 +3694,17 @@ func get_coins() -> int:
 
 func get_buy_token_cost() -> int:
 	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
-	return token_purchase_cost_coins
+	return LEGACY_TOKEN_PURCHASE_COST_COINS
 
 func get_token_buy_cost() -> int:
 	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
-	return token_purchase_cost_coins
+	return LEGACY_TOKEN_PURCHASE_COST_COINS
 
 func purchase_token() -> bool:
 	# Compra 1 token pagando coins.
-	if token_purchase_cost_coins <= 0:
+	if LEGACY_TOKEN_PURCHASE_COST_COINS <= 0:
 		return false
-	if not spend_coins(token_purchase_cost_coins):
+	if not spend_coins(LEGACY_TOKEN_PURCHASE_COST_COINS):
 		return false
 	run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + 1
 	GameEvents.upgrade_tokens_changed.emit(int(run.get("upgrade_tokens", 0)))
@@ -3816,7 +3802,7 @@ func _on_enemy_killed(exp_value: int) -> void:
 		return
 	if _gameplay_phase != RunPhase.LIVE:
 		return
-	var gained: int = exp_per_enemy
+	var gained: int = LEGACY_EXP_PER_ENEMY
 	if exp_value > 0:
 		gained = exp_value
 	if gained <= 0:
@@ -3828,15 +3814,15 @@ func _on_enemy_killed(exp_value: int) -> void:
 	_emit_xp_level_ui()
 
 func _xp_needed_for_next(level: int) -> int:
-	# level parte da 1. Per passare a level+1 usiamo exp_curve[level-1] se esiste.
+	# level parte da 1. Per passare a level+1 usiamo LEGACY_EXP_CURVE[level-1] se esiste.
 	var idx: int = maxi(level - 1, 0)
-	if idx < exp_curve.size():
-		return int(exp_curve[idx])
+	if idx < LEGACY_EXP_CURVE.size():
+		return int(LEGACY_EXP_CURVE[idx])
 	# tail lineare
 	var last: int = 5
-	if exp_curve.size() > 0:
-		last = int(exp_curve[exp_curve.size() - 1])
-	var extra: int = (idx - maxi(exp_curve.size() - 1, 0)) * maxi(exp_curve_tail_step, 1)
+	if LEGACY_EXP_CURVE.size() > 0:
+		last = int(LEGACY_EXP_CURVE[LEGACY_EXP_CURVE.size() - 1])
+	var extra: int = (idx - maxi(LEGACY_EXP_CURVE.size() - 1, 0)) * maxi(LEGACY_EXP_CURVE_TAIL_STEP, 1)
 	return last + extra
 
 func _check_level_up() -> bool:
@@ -3847,7 +3833,7 @@ func _check_level_up() -> bool:
 	while xp >= needed and needed > 0:
 		xp -= needed
 		lvl += 1
-		run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + maxi(tokens_per_level, 0)
+		run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + maxi(LEGACY_TOKENS_PER_LEVEL, 0)
 		needed = _xp_needed_for_next(lvl)
 		leveled = true
 	run["level"] = lvl
@@ -3873,17 +3859,17 @@ func get_difficulty_tier() -> int:
 
 func get_difficulty_multiplier() -> float:
 	var tier: int = get_difficulty_tier()
-	if tier_multipliers.size() == 0:
+	if LEGACY_TIER_MULTIPLIERS.size() == 0:
 		return 1.0
-	if tier < tier_multipliers.size():
-		return float(tier_multipliers[tier])
-	return float(tier_multipliers[tier_multipliers.size() - 1])
+	if tier < LEGACY_TIER_MULTIPLIERS.size():
+		return float(LEGACY_TIER_MULTIPLIERS[tier])
+	return float(LEGACY_TIER_MULTIPLIERS[LEGACY_TIER_MULTIPLIERS.size() - 1])
 
 func _recompute_difficulty_tier(force_emit: bool) -> void:
 	var lvl: int = int(run.get("level", 1))
 	var new_tier: int = 0
-	if levels_per_tier > 0:
-		new_tier = int(floor(float(maxi(lvl - 1, 0)) / float(levels_per_tier)))
+	if LEGACY_LEVELS_PER_TIER > 0:
+		new_tier = int(floor(float(maxi(lvl - 1, 0)) / float(LEGACY_LEVELS_PER_TIER)))
 	var old_tier: int = int(run.get("difficulty_tier", 0))
 	run["difficulty_tier"] = new_tier
 	var mult: float = get_difficulty_multiplier()
@@ -5184,16 +5170,16 @@ func _reset_upgrades() -> void:
 
 func _reset_upgrade_costs() -> void:
 	run["upgrade_costs"] = {
-		"hp": upgrade_hp_token_cost_start,
-		"light": upgrade_light_token_cost_start,
-		"heavy": upgrade_heavy_token_cost_start,
+		"hp": LEGACY_UPGRADE_HP_TOKEN_COST_START,
+		"light": LEGACY_UPGRADE_LIGHT_TOKEN_COST_START,
+		"heavy": LEGACY_UPGRADE_HEAVY_TOKEN_COST_START,
 	}
 
 func _reset_progression() -> void:
 	# reset XP/level per run (puoi cambiare in "persistente" più avanti)
-	run["level"] = starting_level
+	run["level"] = LEGACY_STARTING_LEVEL
 	run["xp"] = 0
-	run["upgrade_tokens"] = starting_tokens
+	run["upgrade_tokens"] = LEGACY_STARTING_TOKENS
 	_recompute_difficulty_tier(true)
 
 func _register_condanna(id: StringName) -> void:

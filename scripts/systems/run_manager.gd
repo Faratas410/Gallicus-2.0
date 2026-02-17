@@ -1196,7 +1196,6 @@ var _smoke_fullrun_bet_requested: bool = false
 var _smoke_fullrun_mid_choice_requested: bool = false
 var _smoke_fullrun_push_luck_requested: bool = false
 var _smoke_fullrun_finale_emitted: bool = false
-var _smoke_fullrun_skip_resolution_requested: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1271,7 +1270,6 @@ func _smoke_start_scenario() -> void:
 	_smoke_fullrun_mid_choice_requested = false
 	_smoke_fullrun_push_luck_requested = false
 	_smoke_fullrun_finale_emitted = false
-	_smoke_fullrun_skip_resolution_requested = false
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
@@ -1324,28 +1322,21 @@ func _on_smoke_driver_tick() -> void:
 			print("SMOKE:STEP=BET_PRESENT_REACHED")
 			_stop_smoke_driver()
 		return
-	if _phase != RunPhase.BET_PRESENT:
+	if not _waiting_for_bet:
 		_smoke_fullrun_bet_requested = false
-	if _phase != RunPhase.INTERMEDIATE_CHOICE:
+	if not _waiting_for_intermediate_choice:
 		_smoke_fullrun_mid_choice_requested = false
-	if _phase != RunPhase.PUSH_YOUR_LUCK:
+	if not _waiting_for_push_luck:
 		_smoke_fullrun_push_luck_requested = false
-	if _phase != RunPhase.RESOLUTION:
-		_smoke_fullrun_skip_resolution_requested = false
-	if _phase == RunPhase.RESOLUTION and not _smoke_fullrun_skip_resolution_requested:
-		_smoke_fullrun_skip_resolution_requested = true
-		print("SMOKE:REQ=request_skip_arena_resolution")
-		GameEvents.request_skip_arena_resolution.emit()
-		return
-	if _phase == RunPhase.BET_PRESENT and not _smoke_fullrun_bet_requested:
+	if _waiting_for_bet and not _smoke_fullrun_bet_requested:
 		_smoke_request_fullrun_bet()
 		return
-	if _phase == RunPhase.INTERMEDIATE_CHOICE and not _smoke_fullrun_mid_choice_requested:
+	if _waiting_for_intermediate_choice and not _smoke_fullrun_mid_choice_requested:
 		_smoke_fullrun_mid_choice_requested = true
 		print("SMOKE:REQ=request_mid_choice_select")
 		GameEvents.request_mid_choice_select.emit(0)
 		return
-	if _phase == RunPhase.PUSH_YOUR_LUCK and not _smoke_fullrun_push_luck_requested:
+	if _waiting_for_push_luck and not _smoke_fullrun_push_luck_requested:
 		_smoke_fullrun_push_luck_requested = true
 		print("SMOKE:REQ=request_pyl_condanna")
 		GameEvents.request_pyl_condanna.emit()

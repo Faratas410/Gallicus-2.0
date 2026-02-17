@@ -1195,6 +1195,7 @@ var _smoke_step_logged_run_init: bool = false
 var _smoke_fullrun_bet_requested: bool = false
 var _smoke_fullrun_mid_choice_requested: bool = false
 var _smoke_fullrun_push_luck_requested: bool = false
+var _smoke_fullrun_finale_emitted: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1268,6 +1269,7 @@ func _smoke_start_scenario() -> void:
 	_smoke_fullrun_bet_requested = false
 	_smoke_fullrun_mid_choice_requested = false
 	_smoke_fullrun_push_luck_requested = false
+	_smoke_fullrun_finale_emitted = false
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
@@ -1336,7 +1338,13 @@ func _on_smoke_driver_tick() -> void:
 	if _phase == RunPhase.GAME_OVER:
 		print("SMOKE:STEP=FULL_RUN_GAME_OVER_REACHED")
 		_stop_smoke_driver()
+		if _smoke_fullrun_finale_emitted:
+			get_tree().quit(0)
 
+
+
+func _exit_tree() -> void:
+	_stop_smoke_driver()
 
 func _ready() -> void:
 	print("RunManager ready")
@@ -4529,7 +4537,11 @@ func _emit_run_finale() -> void:
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
 	if _is_smoke_mode() and _get_smoke_scenario() == "FULL_RUN":
+		_smoke_fullrun_finale_emitted = true
 		print("SMOKE:FINALE_EMITTED")
+		if _phase == RunPhase.GAME_OVER:
+			_stop_smoke_driver()
+			get_tree().quit(0)
 	_emit_run_log(finale)
 	_export_run_summary(finale)
 

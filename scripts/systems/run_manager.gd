@@ -1196,6 +1196,8 @@ var _smoke_fullrun_bet_requested: bool = false
 var _smoke_fullrun_mid_choice_requested: bool = false
 var _smoke_fullrun_push_luck_requested: bool = false
 var _smoke_fullrun_finale_emitted: bool = false
+var _smoke_fullrun_fail_run_requested: bool = false
+var _smoke_fullrun_tick_count: int = 0
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1270,6 +1272,8 @@ func _smoke_start_scenario() -> void:
 	_smoke_fullrun_mid_choice_requested = false
 	_smoke_fullrun_push_luck_requested = false
 	_smoke_fullrun_finale_emitted = false
+	_smoke_fullrun_fail_run_requested = false
+	_smoke_fullrun_tick_count = 0
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
@@ -1307,6 +1311,8 @@ func _on_smoke_driver_tick() -> void:
 	if scenario != "BET_PRESENT" and scenario != "FULL_RUN":
 		_stop_smoke_driver()
 		return
+	if scenario == "FULL_RUN":
+		_smoke_fullrun_tick_count += 1
 	if _phase == RunPhase.RUN_INIT and not _smoke_step_logged_run_init:
 		_smoke_step_logged_run_init = true
 		print("SMOKE:STEP=RUN_INIT_SEEN")
@@ -1331,7 +1337,15 @@ func _on_smoke_driver_tick() -> void:
 	if _waiting_for_bet and not _smoke_fullrun_bet_requested:
 		_smoke_request_fullrun_bet()
 		return
-	if (_phase == RunPhase.INTERMEDIATE_CHOICE or _phase == RunPhase.POST_BET_MESSAGES or _phase == RunPhase.RESOLUTION or _waiting_for_intermediate_choice) and not _smoke_fullrun_mid_choice_requested:
+	var should_force_fail_run: bool = (
+		_phase == RunPhase.INTERMEDIATE_CHOICE
+		or _phase == RunPhase.POST_BET_MESSAGES
+		or _phase == RunPhase.RESOLUTION
+		or _waiting_for_intermediate_choice
+		or (_smoke_fullrun_tick_count >= 30 and _phase != RunPhase.MAIN_MENU and _phase != RunPhase.RUN_INIT and _phase != RunPhase.GAME_OVER)
+	)
+	if should_force_fail_run and not _smoke_fullrun_fail_run_requested:
+		_smoke_fullrun_fail_run_requested = true
 		_smoke_fullrun_mid_choice_requested = true
 		print("SMOKE:REQ=request_fail_run")
 		GameEvents.request_fail_run.emit("SMOKE_FULL_RUN")

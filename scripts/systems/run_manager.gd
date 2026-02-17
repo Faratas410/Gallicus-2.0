@@ -2513,10 +2513,18 @@ func _serialize_stringname_array(items: Array) -> Array[String]:
 		values.append(text)
 	return values
 
-func _serialize_run_scars(items: Array[Scar]) -> Array[Dictionary]:
+func _serialize_run_scars(items: Array) -> Array[Dictionary]:
 	var values: Array[Dictionary] = []
-	for item: Scar in items:
-		values.append(item.to_dict())
+	for item in items:
+		if item is Scar:
+			values.append((item as Scar).to_dict())
+		elif item is Dictionary:
+			values.append((item as Dictionary).duplicate(true))
+		elif str(item) != "":
+			values.append({
+				"id": str(item),
+				"trigger": String(SCAR_TRIGGER_IRREVERSIBLE_BET),
+			})
 	return values
 
 func _parse_stringname_array(items: Array) -> Array[StringName]:

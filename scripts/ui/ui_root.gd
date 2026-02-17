@@ -68,37 +68,37 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var glory_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
 @onready var escalation_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as ProgressBar
 @onready var hud_root: Control = get_node_or_null("HUD") as Control
-@onready var bet_modal: Control = _req("UI_RunRoot/Phase_INTRO") as Control
+@onready var bet_modal: Control = _req("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO") as Control
 @onready var betting_circle: BettingCircleUI = get_node_or_null("UI_RunRoot/BettingCircle") as BettingCircleUI
 @onready var modals_root: Control = get_node_or_null("UI_RunRoot") as Control
-@onready var pact_sealed_modal: Control = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION") as Control
-@onready var pact_sealed_panel: Panel = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION") as Panel
-@onready var pact_sealed_title: Label = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel/Lbl_FIRST_REACTION_TITLE") as Label
-@onready var pact_sealed_subtitle: Label = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel/Lbl_FIRST_REACTION_BODY") as Label
-@onready var resolve_ritual_modal: Control = get_node_or_null("UI_RunRoot/Phase_RESOLUTION") as Control
-@onready var resolve_ritual_panel: Panel = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION") as Panel
-@onready var resolve_ritual_title: Label = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel/Lbl_RESOLUTION_TITLE") as Label
-@onready var resolve_ritual_subtitle: Label = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
-@onready var intermediate_choice_modal: Control = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE") as Control
-@onready var intermediate_choice_panel: Panel = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE") as Panel
-@onready var intermediate_choice_label: Label = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLEPanel/Lbl_MID_CHOICE_TITLE") as Label
-@onready var intermediate_choice_placa_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0") as Button
-@onready var intermediate_choice_provoca_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1") as Button
-@onready var bet_panel: Panel = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO") as Panel
+@onready var pact_sealed_modal: Control = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_FIRST_REACTION") as Control
+@onready var pact_sealed_panel: Panel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_FIRST_REACTION/Panel_FIRST_REACTION") as Panel
+@onready var pact_sealed_title: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel/Lbl_FIRST_REACTION_TITLE") as Label
+@onready var pact_sealed_subtitle: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel/Lbl_FIRST_REACTION_BODY") as Label
+@onready var resolve_ritual_modal: Control = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_RESOLUTION") as Control
+@onready var resolve_ritual_panel: Panel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_RESOLUTION/Panel_RESOLUTION") as Panel
+@onready var resolve_ritual_title: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel/Lbl_RESOLUTION_TITLE") as Label
+@onready var resolve_ritual_subtitle: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
+@onready var intermediate_choice_modal: Control = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE") as Control
+@onready var intermediate_choice_panel: Panel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE/Panel_MID_CHOICE") as Panel
+@onready var intermediate_choice_label: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLEPanel/Lbl_MID_CHOICE_TITLE") as Label
+@onready var intermediate_choice_placa_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0") as Button
+@onready var intermediate_choice_provoca_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1") as Button
+@onready var bet_panel: Panel = _req("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO") as Panel
 @onready var modal_dimmer: ColorRect = get_node_or_null("UI_RunRoot/ModalDimmer") as ColorRect
-@onready var stake_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
-@onready var stake_input: SpinBox = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
-@onready var bet_buttons_container: VBoxContainer = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as VBoxContainer
-@onready var special_arena_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel/Lbl_INTRO_SUBTITLE") as Label
-@onready var condanna_focus_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINTPanel/Lbl_INTRO_HINT") as Label
-@onready var bet_confirm_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow") as Control
-@onready var bet_confirm_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
-@onready var bet_confirm_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM") as Button
-@onready var intro_select_win_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN") as Button
-@onready var intro_select_no_hit_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT") as Button
-@onready var intro_select_fast_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST") as Button
-@onready var seed_input: LineEdit = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
-@onready var seed_apply_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED") as Button
+@onready var stake_row: Control = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
+@onready var stake_input: SpinBox = _req("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
+@onready var bet_buttons_container: VBoxContainer = _req("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as VBoxContainer
+@onready var special_arena_label: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel/Lbl_INTRO_SUBTITLE") as Label
+@onready var condanna_focus_label: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINTPanel/Lbl_INTRO_HINT") as Label
+@onready var bet_confirm_row: Control = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow") as Control
+@onready var bet_confirm_label: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
+@onready var bet_confirm_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM") as Button
+@onready var intro_select_win_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN") as Button
+@onready var intro_select_no_hit_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT") as Button
+@onready var intro_select_fast_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST") as Button
+@onready var seed_input: LineEdit = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
+@onready var seed_apply_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED") as Button
 @onready var _debug_overlay: Control = %DebugOverlay
 @onready var _debug_label: RichTextLabel = %Lbl_DebugOverlay
 @onready var debug_tools_panel: Panel = get_node_or_null("HUD/DebugTools") as Panel
@@ -123,38 +123,38 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitlePanel/SentenceTitle") as Label
 @onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRulePanel/SentenceRule") as Label
 @onready var sentence_doom_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoomPanel/SentenceDoom") as Label
-@onready var game_over_modal: Control = get_node_or_null("UI_RunRoot/Phase_END_RUN") as Control
-@onready var game_over_panel: TextureRect = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN") as TextureRect
+@onready var game_over_modal: Control = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN") as Control
+@onready var game_over_panel: TextureRect = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN") as TextureRect
 @onready var ending_background: TextureRect = get_node_or_null("UI_RunRoot/EndingBackground") as TextureRect
 @onready var torch_flicker_overlay: TextureRect = get_node_or_null("UI_RunRoot/TorchFlickerOverlay") as TextureRect
 @onready var torch_flicker_player: AnimationPlayer = get_node_or_null("UI_RunRoot/TorchFlickerPlayer") as AnimationPlayer
-@onready var push_luck_modal: Control = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK") as Control
-@onready var push_luck_panel: Panel = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK") as Panel
-@onready var push_luck_title: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel/Lbl_PUSH_YOUR_LUCK_TITLE") as Label
-@onready var push_luck_info: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel/Lbl_PUSH_YOUR_LUCK_BODY") as Label
-@onready var push_luck_audience_label: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel/Lbl_PUSH_YOUR_LUCK_SUBTITLE") as Label
-@onready var push_luck_audience_reason: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINTPanel/Lbl_PUSH_YOUR_LUCK_HINT") as Label
-@onready var push_luck_details: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTERPanel/Lbl_PUSH_YOUR_LUCK_FOOTER") as Label
-@onready var push_luck_cashout_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Btn_PUSH_YOUR_LUCK_CASHOUT") as Button
-@onready var push_luck_cashout_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_0") as Label
-@onready var push_luck_condanna_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA") as Button
-@onready var push_luck_condanna_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_1") as Label
-@onready var push_luck_double_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE") as Button
-@onready var push_luck_double_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
-@onready var verdict_header: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLEPanel/Lbl_END_RUN_TITLE") as Label
-@onready var verdict_outcome: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel/Lbl_END_RUN_SUBTITLE") as Label
-@onready var verdict_sentence_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODYPanel/Lbl_END_RUN_BODY") as Label
-@onready var verdict_charge_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel/Lbl_END_RUN_HINT") as Label
-@onready var verdict_sections: VBoxContainer = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS") as VBoxContainer
-@onready var verdict_pacts_text: RichTextLabel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
-@onready var verdict_condanne_text: RichTextLabel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel/Lbl_END_RUN_CONDANNE_BODY") as RichTextLabel
-@onready var verdict_crowd_section: VBoxContainer = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD") as VBoxContainer
-@onready var verdict_crowd_text: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel/Lbl_END_RUN_CROWD_BODY") as Label
-@onready var game_over_scroll: ScrollContainer = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL") as ScrollContainer
-@onready var ending_text: RichTextLabel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER") as RichTextLabel
-@onready var restart_button: Button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART") as Button
-@onready var next_bet_button: Button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_NEXT_BET") as Button
-@onready var quit_button: Button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT") as Button
+@onready var push_luck_modal: Control = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK") as Control
+@onready var push_luck_panel: Panel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK") as Panel
+@onready var push_luck_title: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel/Lbl_PUSH_YOUR_LUCK_TITLE") as Label
+@onready var push_luck_info: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel/Lbl_PUSH_YOUR_LUCK_BODY") as Label
+@onready var push_luck_audience_label: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel/Lbl_PUSH_YOUR_LUCK_SUBTITLE") as Label
+@onready var push_luck_audience_reason: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINTPanel/Lbl_PUSH_YOUR_LUCK_HINT") as Label
+@onready var push_luck_details: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTERPanel/Lbl_PUSH_YOUR_LUCK_FOOTER") as Label
+@onready var push_luck_cashout_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Btn_PUSH_YOUR_LUCK_CASHOUT") as Button
+@onready var push_luck_cashout_note: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_0") as Label
+@onready var push_luck_condanna_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA") as Button
+@onready var push_luck_condanna_note: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_1") as Label
+@onready var push_luck_double_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE") as Button
+@onready var push_luck_double_note: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
+@onready var verdict_header: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLEPanel/Lbl_END_RUN_TITLE") as Label
+@onready var verdict_outcome: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel/Lbl_END_RUN_SUBTITLE") as Label
+@onready var verdict_sentence_label: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODYPanel/Lbl_END_RUN_BODY") as Label
+@onready var verdict_charge_label: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel/Lbl_END_RUN_HINT") as Label
+@onready var verdict_sections: VBoxContainer = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS") as VBoxContainer
+@onready var verdict_pacts_text: RichTextLabel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
+@onready var verdict_condanne_text: RichTextLabel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel/Lbl_END_RUN_CONDANNE_BODY") as RichTextLabel
+@onready var verdict_crowd_section: VBoxContainer = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD") as VBoxContainer
+@onready var verdict_crowd_text: Label = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel/Lbl_END_RUN_CROWD_BODY") as Label
+@onready var game_over_scroll: ScrollContainer = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL") as ScrollContainer
+@onready var ending_text: RichTextLabel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER") as RichTextLabel
+@onready var restart_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART") as Button
+@onready var next_bet_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_NEXT_BET") as Button
+@onready var quit_button: Button = get_node_or_null("UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT") as Button
 @onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
 @onready var scars_panel: Panel = get_node_or_null("HUD/ScarsPanel") as Panel
 @onready var scars_label: Label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
@@ -233,12 +233,12 @@ var _button_style_primary_hover: StyleBox = null
 var _button_style_primary_pressed: StyleBox = null
 var _button_style_primary_disabled: StyleBox = null
 const _PHASE_CONTAINER_PATHS: Array[String] = [
-	"UI_RunRoot/Phase_INTRO",
-	"UI_RunRoot/Phase_FIRST_REACTION",
-	"UI_RunRoot/Phase_MID_CHOICE",
-	"UI_RunRoot/Phase_PUSH_YOUR_LUCK",
-	"UI_RunRoot/Phase_RESOLUTION",
-	"UI_RunRoot/Phase_END_RUN",
+	"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO",
+	"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_FIRST_REACTION",
+	"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE",
+	"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK",
+	"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_RESOLUTION",
+	"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN",
 ]
 
 func _ready() -> void:
@@ -484,20 +484,20 @@ func _validate_ui_boot() -> bool:
 	if get_node_or_null("UI_RunRoot/BettingCircle") == null and not ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
 		push_error("SANITY FAIL UI: BetCircle missing")
 		return false
-	var ending_text_path: String = "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER"
+	var ending_text_path: String = "UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER"
 	if get_node_or_null(ending_text_path) == null:
 		push_error("SANITY FAIL UI: Ending nodes missing %s" % ending_text_path)
 		return false
 	var required_nodes: Array[String] = [
-		"UI_RunRoot/Phase_INTRO",
-		"UI_RunRoot/Phase_RESOLUTION",
-		"UI_RunRoot/Phase_MID_CHOICE",
-		"UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE",
-		"UI_RunRoot/Phase_PUSH_YOUR_LUCK",
-		"UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK",
-		"UI_RunRoot/Phase_END_RUN",
-		"UI_RunRoot/Phase_END_RUN/Panel_END_RUN",
-		"UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_RESOLUTION",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_MID_CHOICE/Panel_MID_CHOICE",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_END_RUN/Panel_END_RUN",
+		"UI_RunRoot/SafeMargin/Grid/PhaseStack/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons",
 	]
 	for node_path: String in required_nodes:
 		if get_node_or_null(node_path) == null:

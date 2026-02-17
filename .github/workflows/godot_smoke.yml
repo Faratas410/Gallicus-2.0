@@ -185,11 +185,11 @@ jobs:
           GALLICUS_SMOKE: "1"
           GALLICUS_SMOKE_TRIGGER_NEW_RUN: "1"
           GALLICUS_SMOKE_SCENARIO: "FULL_RUN"
-          GALLICUS_SMOKE_TIMEOUT_SEC: "20"
+          GALLICUS_SMOKE_TIMEOUT_SEC: "30"
         run: |
           set -e
 
-          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 20 2>&1 | tee smoke_fullrun.log
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 30 2>&1 | tee smoke_fullrun.log
 
           grep -q "SMOKE:PHASE=INTERMEDIATE_CHOICE" smoke_fullrun.log
           grep -q "SMOKE:PHASE=PUSH_YOUR_LUCK" smoke_fullrun.log

@@ -1333,8 +1333,8 @@ func _on_smoke_driver_tick() -> void:
 		return
 	if _waiting_for_intermediate_choice and not _smoke_fullrun_mid_choice_requested:
 		_smoke_fullrun_mid_choice_requested = true
-		print("SMOKE:REQ=request_mid_choice_select")
-		GameEvents.request_mid_choice_select.emit(0)
+		print("SMOKE:REQ=request_fail_run")
+		GameEvents.request_fail_run.emit("SMOKE_FULL_RUN")
 		return
 	if _waiting_for_push_luck and not _smoke_fullrun_push_luck_requested:
 		_smoke_fullrun_push_luck_requested = true

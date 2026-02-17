@@ -1322,6 +1322,12 @@ func _on_smoke_driver_tick() -> void:
 			print("SMOKE:STEP=BET_PRESENT_REACHED")
 			_stop_smoke_driver()
 		return
+	if _phase != RunPhase.BET_PRESENT:
+		_smoke_fullrun_bet_requested = false
+	if _phase != RunPhase.INTERMEDIATE_CHOICE:
+		_smoke_fullrun_mid_choice_requested = false
+	if _phase != RunPhase.PUSH_YOUR_LUCK:
+		_smoke_fullrun_push_luck_requested = false
 	if _phase == RunPhase.BET_PRESENT and not _smoke_fullrun_bet_requested:
 		_smoke_request_fullrun_bet()
 		return
@@ -1332,8 +1338,8 @@ func _on_smoke_driver_tick() -> void:
 		return
 	if _phase == RunPhase.PUSH_YOUR_LUCK and not _smoke_fullrun_push_luck_requested:
 		_smoke_fullrun_push_luck_requested = true
-		print("SMOKE:REQ=request_pyl_cashout")
-		GameEvents.request_pyl_cashout.emit()
+		print("SMOKE:REQ=request_pyl_condanna")
+		GameEvents.request_pyl_condanna.emit()
 		return
 	if _phase == RunPhase.GAME_OVER:
 		print("SMOKE:STEP=FULL_RUN_GAME_OVER_REACHED")

@@ -1192,6 +1192,9 @@ var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke_driver_timer: Timer = null
 var _smoke_new_run_requested: bool = false
 var _smoke_step_logged_run_init: bool = false
+var _smoke_fullrun_bet_requested: bool = false
+var _smoke_fullrun_mid_choice_requested: bool = false
+var _smoke_fullrun_push_luck_requested: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1248,21 +1251,29 @@ func _start_smoke_timeout_timer() -> void:
 	smoke_timer.start()
 
 
+func _get_smoke_scenario() -> String:
+	return OS.get_environment("GALLICUS_SMOKE_SCENARIO")
+
+
 func _smoke_start_scenario() -> void:
 	if not _is_smoke_mode():
 		return
-	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") != "BET_PRESENT":
+	var scenario: String = _get_smoke_scenario()
+	if scenario != "BET_PRESENT" and scenario != "FULL_RUN":
 		return
 	if _smoke_driver_timer != null and is_instance_valid(_smoke_driver_timer):
 		return
 	_smoke_new_run_requested = false
 	_smoke_step_logged_run_init = false
+	_smoke_fullrun_bet_requested = false
+	_smoke_fullrun_mid_choice_requested = false
+	_smoke_fullrun_push_luck_requested = false
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
 	add_child(_smoke_driver_timer)
 	_smoke_driver_timer.timeout.connect(_on_smoke_driver_tick)
-	print("SMOKE:STEP=SCENARIO_BET_PRESENT_START")
+	print("SMOKE:STEP=SCENARIO_%s_START" % scenario)
 	_smoke_driver_timer.start()
 
 
@@ -1274,12 +1285,24 @@ func _stop_smoke_driver() -> void:
 	_smoke_driver_timer = null
 
 
+func _smoke_request_fullrun_bet() -> void:
+	if _run_state.level3_current_offer.is_empty():
+		return
+	var bet_data: Dictionary = _run_state.level3_current_offer[0] as Dictionary
+	var bet_id: String = str(bet_data.get("id", "")).strip_edges()
+	if bet_id == "":
+		return
+	_smoke_fullrun_bet_requested = true
+	print("SMOKE:REQ=request_place_bet")
+	GameEvents.request_place_bet.emit(bet_id, 0)
+
+
 func _on_smoke_driver_tick() -> void:
-	if not _is_smoke_mode() or OS.get_environment("GALLICUS_SMOKE_SCENARIO") != "BET_PRESENT":
+	if not _is_smoke_mode():
 		_stop_smoke_driver()
 		return
-	if _phase == RunPhase.BET_PRESENT:
-		print("SMOKE:STEP=BET_PRESENT_REACHED")
+	var scenario: String = _get_smoke_scenario()
+	if scenario != "BET_PRESENT" and scenario != "FULL_RUN":
 		_stop_smoke_driver()
 		return
 	if _phase == RunPhase.RUN_INIT and not _smoke_step_logged_run_init:
@@ -1291,6 +1314,28 @@ func _on_smoke_driver_tick() -> void:
 		print("SMOKE:NEW_RUN_REQUESTED")
 		print("SMOKE:REQ=request_new_run")
 		GameEvents.request_new_run.emit()
+		return
+	if scenario == "BET_PRESENT":
+		if _phase == RunPhase.BET_PRESENT:
+			print("SMOKE:STEP=BET_PRESENT_REACHED")
+			_stop_smoke_driver()
+		return
+	if _phase == RunPhase.BET_PRESENT and not _smoke_fullrun_bet_requested:
+		_smoke_request_fullrun_bet()
+		return
+	if _phase == RunPhase.INTERMEDIATE_CHOICE and not _smoke_fullrun_mid_choice_requested:
+		_smoke_fullrun_mid_choice_requested = true
+		print("SMOKE:REQ=request_mid_choice_select")
+		GameEvents.request_mid_choice_select.emit(0)
+		return
+	if _phase == RunPhase.PUSH_YOUR_LUCK and not _smoke_fullrun_push_luck_requested:
+		_smoke_fullrun_push_luck_requested = true
+		print("SMOKE:REQ=request_pyl_cashout")
+		GameEvents.request_pyl_cashout.emit()
+		return
+	if _phase == RunPhase.GAME_OVER:
+		print("SMOKE:STEP=FULL_RUN_GAME_OVER_REACHED")
+		_stop_smoke_driver()
 
 
 func _ready() -> void:
@@ -1430,7 +1475,8 @@ func _boot() -> void:
 	if _is_smoke_mode():
 		print("SMOKE:BOOT_OK")
 		print("SMOKE:PHASE=MAIN_MENU")
-		if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "BET_PRESENT":
+		var smoke_scenario: String = _get_smoke_scenario()
+		if smoke_scenario == "BET_PRESENT" or smoke_scenario == "FULL_RUN":
 			_smoke_start_scenario()
 		elif OS.get_environment("GALLICUS_SMOKE_TRIGGER_NEW_RUN") == "1":
 			print("SMOKE:NEW_RUN_REQUESTED")
@@ -4474,6 +4520,8 @@ func _emit_run_finale() -> void:
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
+	if _is_smoke_mode() and _get_smoke_scenario() == "FULL_RUN":
+		print("SMOKE:FINALE_EMITTED")
 	_emit_run_log(finale)
 	_export_run_summary(finale)
 

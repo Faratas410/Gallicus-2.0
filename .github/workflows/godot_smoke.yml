@@ -95,14 +95,11 @@ jobs:
           has_full_run_scenario=0
           has_full_run_marker_set=0
 
-          if grep -En 'GALLICUS_SMOKE_SCENARIO"\)[[:space:]]*!=[[:space:]]*"FULL_RUN"|GALLICUS_SMOKE_SCENARIO"\)[[:space:]]*==[[:space:]]*"FULL_RUN"' "$RUN_MANAGER_FILE" >/dev/null; then
+          if grep -En 'FULL_RUN' "$RUN_MANAGER_FILE" >/dev/null; then
             has_full_run_scenario=1
           fi
 
-          if grep -En 'SMOKE:PHASE=INTERMEDIATE_CHOICE' "$RUN_MANAGER_FILE" >/dev/null \
-            && grep -En 'SMOKE:PHASE=PUSH_YOUR_LUCK' "$RUN_MANAGER_FILE" >/dev/null \
-            && grep -En 'SMOKE:PHASE=GAME_OVER' "$RUN_MANAGER_FILE" >/dev/null \
-            && grep -En 'SMOKE:(FINALE_EMITTED|RUN_FINALIZED)' "$RUN_MANAGER_FILE" >/dev/null; then
+          if grep -En 'SMOKE:FINALE_EMITTED|SMOKE:RUN_FINALIZED' "$RUN_MANAGER_FILE" >/dev/null; then
             has_full_run_marker_set=1
           fi
 

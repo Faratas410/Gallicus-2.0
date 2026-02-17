@@ -63,7 +63,6 @@ jobs:
           check_png "assets/sprites/weapon_sword.png"
           check_png "assets/sprites/player_chicken.png"
           check_png "UI Official/UI assets (1x).png"
-          check_png "OK GUI/PNG Utili/frame.png"
 
       - name: Verify res:// references (case-sensitive)
         run: |

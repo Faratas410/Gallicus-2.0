@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GALLICUS_PROJECT_ROOT: "."
+      GODOT_BIN: ./tools/godot/Godot_v4.6-stable_linux.x86_64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,7 +19,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip xvfb git-lfs
-
 
       - name: Git LFS pull (always)
         run: |
@@ -69,6 +69,46 @@ jobs:
           set -e
           python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
 
+      - name: Enforce global GUI theme authority
+        run: |
+          set -e
+          if ! grep -q '^theme/custom="res://ui/theme/official_theme.tres"$' project.godot; then
+            echo "UI governance failure: project.godot must contain theme/custom=\"res://ui/theme/official_theme.tres\" in [gui]."
+            exit 1
+          fi
+
+      - name: Enforce runtime UI theme governance
+        run: |
+          set -e
+          python tools/ci/scan_ui_theme_overrides.py --project-root "$GALLICUS_PROJECT_ROOT"
+
+      - name: Validate FULL_RUN smoke marker support
+        run: |
+          set -e
+          RUN_MANAGER_FILE="scripts/systems/run_manager.gd"
+
+          has_full_run_scenario=0
+          has_full_run_marker_set=0
+
+          if rg -n 'GALLICUS_SMOKE_SCENARIO\"\)\s*!=\s*\"FULL_RUN\"|GALLICUS_SMOKE_SCENARIO\"\)\s*==\s*\"FULL_RUN\"' "$RUN_MANAGER_FILE" >/dev/null; then
+            has_full_run_scenario=1
+          fi
+
+          if rg -n 'SMOKE:PHASE=INTERMEDIATE_CHOICE' "$RUN_MANAGER_FILE" >/dev/null \
+            && rg -n 'SMOKE:PHASE=PUSH_YOUR_LUCK' "$RUN_MANAGER_FILE" >/dev/null \
+            && rg -n 'SMOKE:PHASE=GAME_OVER' "$RUN_MANAGER_FILE" >/dev/null \
+            && rg -n 'SMOKE:(FINALE_EMITTED|RUN_FINALIZED)' "$RUN_MANAGER_FILE" >/dev/null; then
+            has_full_run_marker_set=1
+          fi
+
+          if [ "$has_full_run_scenario" -ne 1 ] || [ "$has_full_run_marker_set" -ne 1 ]; then
+            echo "STOP: FULL_RUN smoke marker set is not fully implemented in current runtime smoke infrastructure."
+            echo "Existing SMOKE markers in $RUN_MANAGER_FILE:"
+            rg -n 'SMOKE:' "$RUN_MANAGER_FILE" || true
+            echo "Furthest explicitly supported smoke scenario in code: BET_PRESENT"
+            exit 1
+          fi
+
       - name: Download Godot 4.6 headless
         run: |
           set -e
@@ -79,7 +119,35 @@ jobs:
           chmod +x godot* Godot* || true
           ls -la
 
-      - name: Run headless smoke
+      - name: Run smoke scenario A (BOOT_ONLY)
+        env:
+          GALLICUS_SMOKE: "1"
+          GALLICUS_SMOKE_TIMEOUT_SEC: "10"
+        run: |
+          set -e
+
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 10 2>&1 | tee smoke_boot.log
+
+          grep -q "SMOKE:BOOT_OK" smoke_boot.log
+          grep -q "SMOKE:PHASE=MAIN_MENU" smoke_boot.log
+
+          if grep -E "ERROR|Error" -n smoke_boot.log; then
+            echo "Found ERROR in smoke_boot.log"
+            tail -n 200 smoke_boot.log
+            exit 1
+          fi
+          if grep -E "WARNING|Warning" -n smoke_boot.log; then
+            echo "Found WARNING in smoke_boot.log (warnings = errors)."
+            tail -n 200 smoke_boot.log
+            exit 1
+          fi
+          if grep -E "STALL|WATCHDOG|DEAD-END" -n smoke_boot.log; then
+            echo "Found stall indicator in smoke_boot.log"
+            tail -n 200 smoke_boot.log
+            exit 1
+          fi
+
+      - name: Run smoke scenario B (NEW_RUN_TO_BET_PRESENT)
         env:
           GALLICUS_SMOKE: "1"
           GALLICUS_SMOKE_TRIGGER_NEW_RUN: "1"
@@ -88,37 +156,85 @@ jobs:
         run: |
           set -e
 
-          (
-            cd tools/godot
-            unzip -o godot.zip
-            chmod +x Godot_v4.6-stable_linux.x86_64
-          )
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 10 2>&1 | tee smoke_betpresent.log
 
-          GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
-          echo "Using Godot binary: $GODOT_BIN"
+          grep -q "SMOKE:NEW_RUN_REQUESTED" smoke_betpresent.log
+          grep -q "SMOKE:PHASE=RUN_INIT" smoke_betpresent.log
+          grep -q "SMOKE:PHASE=BET_PRESENT" smoke_betpresent.log
 
-          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 10 2>&1 | tee smoke.log
-
-          echo "---- SMOKE LOG ----"
-          tail -n 200 smoke.log
-
-          if grep -E "ERROR|Error" -n smoke.log; then
-            echo "Found ERROR in log."
+          if grep -E "ERROR|Error" -n smoke_betpresent.log; then
+            echo "Found ERROR in smoke_betpresent.log"
+            tail -n 200 smoke_betpresent.log
             exit 1
           fi
-          if grep -E "WARNING|Warning" -n smoke.log; then
-            echo "Found WARNING in log (warnings = errors)."
+          if grep -E "WARNING|Warning" -n smoke_betpresent.log; then
+            echo "Found WARNING in smoke_betpresent.log (warnings = errors)."
+            tail -n 200 smoke_betpresent.log
+            exit 1
+          fi
+          if grep -E "STALL|WATCHDOG|DEAD-END" -n smoke_betpresent.log; then
+            echo "Found stall indicator in smoke_betpresent.log"
+            tail -n 200 smoke_betpresent.log
             exit 1
           fi
 
-          grep -q "SMOKE:BOOT_OK" smoke.log
-          grep -q "SMOKE:PHASE=MAIN_MENU" smoke.log
+      - name: Run smoke scenario C (FULL_RUN_TO_GAME_OVER)
+        env:
+          GALLICUS_SMOKE: "1"
+          GALLICUS_SMOKE_TRIGGER_NEW_RUN: "1"
+          GALLICUS_SMOKE_SCENARIO: "FULL_RUN"
+          GALLICUS_SMOKE_TIMEOUT_SEC: "20"
+        run: |
+          set -e
 
-          if [ "$GALLICUS_SMOKE_TRIGGER_NEW_RUN" = "1" ]; then
-            grep -q "SMOKE:NEW_RUN_REQUESTED" smoke.log
-            grep -q "SMOKE:PHASE=RUN_INIT" smoke.log
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 20 2>&1 | tee smoke_fullrun.log
+
+          grep -q "SMOKE:PHASE=INTERMEDIATE_CHOICE" smoke_fullrun.log
+          grep -q "SMOKE:PHASE=PUSH_YOUR_LUCK" smoke_fullrun.log
+          grep -q "SMOKE:PHASE=GAME_OVER" smoke_fullrun.log
+
+          if ! grep -Eq "SMOKE:FINALE_EMITTED|SMOKE:RUN_FINALIZED" smoke_fullrun.log; then
+            echo "STOP: FULL_RUN completed without known finale marker (SMOKE:FINALE_EMITTED or SMOKE:RUN_FINALIZED)."
+            echo "Existing SMOKE markers seen in smoke_fullrun.log:"
+            rg -n "SMOKE:" smoke_fullrun.log || true
+            tail -n 200 smoke_fullrun.log
+            exit 1
           fi
 
-          if [ "$GALLICUS_SMOKE_SCENARIO" = "BET_PRESENT" ]; then
-            grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log
+          if grep -E "ERROR|Error" -n smoke_fullrun.log; then
+            echo "Found ERROR in smoke_fullrun.log"
+            tail -n 200 smoke_fullrun.log
+            exit 1
           fi
+          if grep -E "WARNING|Warning" -n smoke_fullrun.log; then
+            echo "Found WARNING in smoke_fullrun.log (warnings = errors)."
+            tail -n 200 smoke_fullrun.log
+            exit 1
+          fi
+          if grep -E "STALL|WATCHDOG|DEAD-END" -n smoke_fullrun.log; then
+            echo "Found stall indicator in smoke_fullrun.log"
+            tail -n 200 smoke_fullrun.log
+            exit 1
+          fi
+
+      - name: Upload smoke logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-smoke-logs
+          if-no-files-found: warn
+          path: |
+            smoke_boot.log
+            smoke_betpresent.log
+            smoke_fullrun.log
+
+      - name: Upload runtime user/log directories
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-runtime-logs
+          if-no-files-found: warn
+          path: |
+            logs/**
+            .godot/**/logs/**
+            .local/share/godot/app_userdata/**/logs/**

@@ -1196,6 +1196,7 @@ var _smoke_fullrun_bet_requested: bool = false
 var _smoke_fullrun_mid_choice_requested: bool = false
 var _smoke_fullrun_push_luck_requested: bool = false
 var _smoke_fullrun_finale_emitted: bool = false
+var _smoke_fullrun_skip_resolution_requested: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1270,6 +1271,7 @@ func _smoke_start_scenario() -> void:
 	_smoke_fullrun_mid_choice_requested = false
 	_smoke_fullrun_push_luck_requested = false
 	_smoke_fullrun_finale_emitted = false
+	_smoke_fullrun_skip_resolution_requested = false
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
@@ -1328,6 +1330,13 @@ func _on_smoke_driver_tick() -> void:
 		_smoke_fullrun_mid_choice_requested = false
 	if _phase != RunPhase.PUSH_YOUR_LUCK:
 		_smoke_fullrun_push_luck_requested = false
+	if _phase != RunPhase.RESOLUTION:
+		_smoke_fullrun_skip_resolution_requested = false
+	if _phase == RunPhase.RESOLUTION and not _smoke_fullrun_skip_resolution_requested:
+		_smoke_fullrun_skip_resolution_requested = true
+		print("SMOKE:REQ=request_skip_arena_resolution")
+		GameEvents.request_skip_arena_resolution.emit()
+		return
 	if _phase == RunPhase.BET_PRESENT and not _smoke_fullrun_bet_requested:
 		_smoke_request_fullrun_bet()
 		return

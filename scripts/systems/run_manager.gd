@@ -1200,8 +1200,12 @@ var _smoke_quit_pending_frames: int = -1
 var _smoke_cashout_pending_frames: int = -1
 var _smoke_fullrun_cashout_sent: bool = false
 var _smoke_fullrun_quit_sent: bool = false
+var _smoke_fullrun_terminal_phase_seen: bool = false
+var _smoke_fullrun_cashout_sent_ms: int = -1
+var _smoke_fullrun_timeout_stop_reported: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
+const SMOKE_FULLRUN_WAIT_TIMEOUT_MS: int = 5000
 
 func _is_smoke_mode() -> bool:
 	return OS.get_environment("GALLICUS_SMOKE") == "1"
@@ -1251,7 +1255,7 @@ func _start_smoke_timeout_timer() -> void:
 	smoke_timer.wait_time = timeout_sec
 	add_child(smoke_timer)
 	smoke_timer.timeout.connect(func() -> void:
-		get_tree().quit(0)
+		_arm_smoke_quit_next_frame()
 	)
 	smoke_timer.start()
 
@@ -1278,6 +1282,9 @@ func _smoke_start_scenario() -> void:
 	_smoke_cashout_pending_frames = -1
 	_smoke_fullrun_cashout_sent = false
 	_smoke_fullrun_quit_sent = false
+	_smoke_fullrun_terminal_phase_seen = false
+	_smoke_fullrun_cashout_sent_ms = -1
+	_smoke_fullrun_timeout_stop_reported = false
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
@@ -1347,10 +1354,9 @@ func _on_smoke_driver_tick() -> void:
 	if _waiting_for_push_luck and not _smoke_fullrun_push_luck_requested:
 		_smoke_fullrun_push_luck_requested = true
 	if _phase == RunPhase.GAME_OVER:
+		_smoke_fullrun_terminal_phase_seen = true
 		print("SMOKE:STEP=FULL_RUN_GAME_OVER_REACHED")
 		_stop_smoke_driver()
-		if _smoke_fullrun_finale_emitted:
-			_smoke_quit_pending_frames = 1
 
 
 
@@ -1399,14 +1405,25 @@ func _process(_delta: float) -> void:
 			_smoke_cashout_pending_frames = -1
 			if _is_smoke_mode() and _get_smoke_scenario() == "FULL_RUN" and _phase == RunPhase.PUSH_YOUR_LUCK and not _smoke_fullrun_cashout_sent:
 				_smoke_fullrun_cashout_sent = true
+				_smoke_fullrun_cashout_sent_ms = Time.get_ticks_msec()
 				print("SMOKE:REQ=request_pyl_cashout")
 				GameEvents.request_pyl_cashout.emit()
 		else:
 			_smoke_cashout_pending_frames -= 1
+	if _is_smoke_mode() and _get_smoke_scenario() == "FULL_RUN" and _smoke_fullrun_cashout_sent and not _smoke_fullrun_quit_sent:
+		if _phase == RunPhase.GAME_OVER:
+			_smoke_fullrun_terminal_phase_seen = true
+		if _smoke_fullrun_terminal_phase_seen and _smoke_fullrun_finale_emitted:
+			_arm_smoke_quit_next_frame()
+		elif _smoke_fullrun_cashout_sent_ms >= 0 and Time.get_ticks_msec() - _smoke_fullrun_cashout_sent_ms > SMOKE_FULLRUN_WAIT_TIMEOUT_MS and not _smoke_fullrun_timeout_stop_reported:
+			_smoke_fullrun_timeout_stop_reported = true
+			print("SMOKE:STOP timeout_wait_terminal phase=%s last_request=%s" % [_phase_to_name(_phase), _last_request])
+			_arm_smoke_quit_next_frame()
 	if _smoke_quit_pending_frames >= 0:
 		if _smoke_quit_pending_frames == 0:
 			_smoke_quit_pending_frames = -1
 			_smoke_fullrun_quit_sent = true
+			print("SMOKE:QUIT_REQUESTED")
 			get_tree().quit(0)
 			return
 		_smoke_quit_pending_frames -= 1
@@ -4982,8 +4999,11 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 		return
 	if _is_smoke_mode():
 		print("SMOKE:PHASE=%s" % _phase_to_name(next))
-		if _get_smoke_scenario() == "FULL_RUN" and next == RunPhase.PUSH_YOUR_LUCK:
-			_arm_smoke_cashout_next_frame()
+		if _get_smoke_scenario() == "FULL_RUN":
+			if next == RunPhase.PUSH_YOUR_LUCK:
+				_arm_smoke_cashout_next_frame()
+			elif next == RunPhase.GAME_OVER:
+				_smoke_fullrun_terminal_phase_seen = true
 	if OS.is_debug_build() and reason != "":
 		print_debug("RunManager flow phase:", int(next), "-", reason)
 

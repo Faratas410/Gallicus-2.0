@@ -1331,7 +1331,7 @@ func _on_smoke_driver_tick() -> void:
 	if _waiting_for_bet and not _smoke_fullrun_bet_requested:
 		_smoke_request_fullrun_bet()
 		return
-	if _waiting_for_intermediate_choice and not _smoke_fullrun_mid_choice_requested:
+	if (_phase == RunPhase.INTERMEDIATE_CHOICE or _phase == RunPhase.POST_BET_MESSAGES or _phase == RunPhase.RESOLUTION or _waiting_for_intermediate_choice) and not _smoke_fullrun_mid_choice_requested:
 		_smoke_fullrun_mid_choice_requested = true
 		print("SMOKE:REQ=request_fail_run")
 		GameEvents.request_fail_run.emit("SMOKE_FULL_RUN")

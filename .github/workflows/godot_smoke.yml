@@ -95,21 +95,21 @@ jobs:
           has_full_run_scenario=0
           has_full_run_marker_set=0
 
-          if rg -n 'GALLICUS_SMOKE_SCENARIO\"\)\s*!=\s*\"FULL_RUN\"|GALLICUS_SMOKE_SCENARIO\"\)\s*==\s*\"FULL_RUN\"' "$RUN_MANAGER_FILE" >/dev/null; then
+          if grep -En 'GALLICUS_SMOKE_SCENARIO"\)[[:space:]]*!=[[:space:]]*"FULL_RUN"|GALLICUS_SMOKE_SCENARIO"\)[[:space:]]*==[[:space:]]*"FULL_RUN"' "$RUN_MANAGER_FILE" >/dev/null; then
             has_full_run_scenario=1
           fi
 
-          if rg -n 'SMOKE:PHASE=INTERMEDIATE_CHOICE' "$RUN_MANAGER_FILE" >/dev/null \
-            && rg -n 'SMOKE:PHASE=PUSH_YOUR_LUCK' "$RUN_MANAGER_FILE" >/dev/null \
-            && rg -n 'SMOKE:PHASE=GAME_OVER' "$RUN_MANAGER_FILE" >/dev/null \
-            && rg -n 'SMOKE:(FINALE_EMITTED|RUN_FINALIZED)' "$RUN_MANAGER_FILE" >/dev/null; then
+          if grep -En 'SMOKE:PHASE=INTERMEDIATE_CHOICE' "$RUN_MANAGER_FILE" >/dev/null \
+            && grep -En 'SMOKE:PHASE=PUSH_YOUR_LUCK' "$RUN_MANAGER_FILE" >/dev/null \
+            && grep -En 'SMOKE:PHASE=GAME_OVER' "$RUN_MANAGER_FILE" >/dev/null \
+            && grep -En 'SMOKE:(FINALE_EMITTED|RUN_FINALIZED)' "$RUN_MANAGER_FILE" >/dev/null; then
             has_full_run_marker_set=1
           fi
 
           if [ "$has_full_run_scenario" -ne 1 ] || [ "$has_full_run_marker_set" -ne 1 ]; then
             echo "STOP: FULL_RUN smoke marker set is not fully implemented in current runtime smoke infrastructure."
             echo "Existing SMOKE markers in $RUN_MANAGER_FILE:"
-            rg -n 'SMOKE:' "$RUN_MANAGER_FILE" || true
+            grep -En 'SMOKE:' "$RUN_MANAGER_FILE" || true
             echo "Furthest explicitly supported smoke scenario in code: BET_PRESENT"
             exit 1
           fi
@@ -201,7 +201,7 @@ jobs:
           if ! grep -Eq "SMOKE:FINALE_EMITTED|SMOKE:RUN_FINALIZED" smoke_fullrun.log; then
             echo "STOP: FULL_RUN completed without known finale marker (SMOKE:FINALE_EMITTED or SMOKE:RUN_FINALIZED)."
             echo "Existing SMOKE markers seen in smoke_fullrun.log:"
-            rg -n "SMOKE:" smoke_fullrun.log || true
+            grep -En "SMOKE:" smoke_fullrun.log || true
             tail -n 200 smoke_fullrun.log
             exit 1
           fi

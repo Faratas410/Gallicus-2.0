@@ -99,14 +99,12 @@ offset_left = -12.0
 offset_top = -12.0
 offset_right = 12.0
 offset_bottom = 12.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="PaperFront" type="Panel" parent="ContractPanel"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="ContractVBox" type="VBoxContainer" parent="ContractPanel"]
 anchor_left = 0.0
@@ -119,29 +117,20 @@ offset_right = -32.0
 offset_bottom = -28.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 16
 
 [node name="TitleLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="TitleLabel" type="Label" parent="ContractPanel/ContractVBox/TitleLabelPanel"]
 theme_type_variation = &"TitleLabel"
-theme_override_fonts/font = ExtResource("8")
 text = "CIRCOLO SCOMMESSE"
 horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="BetOptions" type="VBoxContainer" parent="ContractPanel/ContractVBox"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 12
 
 [node name="BetOption1" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-theme_override_styles/normal = ExtResource("9")
-theme_override_styles/hover = ExtResource("10")
-theme_override_styles/pressed = ExtResource("11")
-theme_override_styles/disabled = ExtResource("12")
 custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
 toggle_mode = true
@@ -156,17 +145,13 @@ offset_left = 12.0
 offset_top = 10.0
 offset_right = -12.0
 offset_bottom = -10.0
-theme_override_constants/separation = 6
 
 [node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/BetNameLabelPanel"]
 theme_type_variation = &"TitleLabel"
-theme_override_fonts/font = ExtResource("8")
 text = "INCASSA E VAI"
-theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
@@ -176,39 +161,29 @@ stretch_mode = 5
 
 [node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/CondannaLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "❌ CONDANNA: ..."
-theme_override_colors/font_color = Color(0.722, 0.259, 0.259, 1)
 
 [node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/CondizioneLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "⚠️ CONDIZIONE: ..."
-theme_override_colors/font_color = Color(0.851, 0.714, 0.357, 1)
 
 [node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/PattoLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "✅ PATTO: ..."
-theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="BetOption2" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-theme_override_styles/normal = ExtResource("9")
-theme_override_styles/hover = ExtResource("10")
-theme_override_styles/pressed = ExtResource("11")
-theme_override_styles/disabled = ExtResource("12")
 custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
 toggle_mode = true
@@ -223,17 +198,13 @@ offset_left = 12.0
 offset_top = 10.0
 offset_right = -12.0
 offset_bottom = -10.0
-theme_override_constants/separation = 6
 
 [node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/BetNameLabelPanel"]
 theme_type_variation = &"TitleLabel"
-theme_override_fonts/font = ExtResource("8")
 text = "SANGUE INTEGRO"
-theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
@@ -243,39 +214,29 @@ stretch_mode = 5
 
 [node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondannaLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "❌ CONDANNA: ..."
-theme_override_colors/font_color = Color(0.722, 0.259, 0.259, 1)
 
 [node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondizioneLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "⚠️ CONDIZIONE: ..."
-theme_override_colors/font_color = Color(0.851, 0.714, 0.357, 1)
 
 [node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/PattoLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "✅ PATTO: ..."
-theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="BetOption3" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-theme_override_styles/normal = ExtResource("9")
-theme_override_styles/hover = ExtResource("10")
-theme_override_styles/pressed = ExtResource("11")
-theme_override_styles/disabled = ExtResource("12")
 custom_minimum_size = Vector2(0, 120)
 size_flags_horizontal = 3
 toggle_mode = true
@@ -290,17 +251,13 @@ offset_left = 12.0
 offset_top = 10.0
 offset_right = -12.0
 offset_bottom = -10.0
-theme_override_constants/separation = 6
 
 [node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/BetNameLabelPanel"]
 theme_type_variation = &"TitleLabel"
-theme_override_fonts/font = ExtResource("8")
 text = "RADDOPPI O MUORI"
-theme_override_colors/font_color = Color(0.902, 0.827, 0.639, 1)
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
@@ -310,39 +267,29 @@ stretch_mode = 5
 
 [node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondannaLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "❌ CONDANNA: ..."
-theme_override_colors/font_color = Color(0.722, 0.259, 0.259, 1)
 
 [node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondizioneLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "⚠️ CONDIZIONE: ..."
-theme_override_colors/font_color = Color(0.851, 0.714, 0.357, 1)
 
 [node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_5")
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/PattoLabelPanel"]
 autowrap_mode = 2
 clip_text = true
 text = "✅ PATTO: ..."
-theme_override_colors/font_color = Color(0.31, 0.686, 0.486, 1)
 
 [node name="SigillaButton" type="Button" parent="ContractPanel/ContractVBox"]
 text = "SIGILLA"
 disabled = true
 size_flags_horizontal = 3
-theme_override_styles/normal = ExtResource("9")
-theme_override_styles/hover = ExtResource("10")
-theme_override_styles/pressed = ExtResource("11")
-theme_override_styles/disabled = ExtResource("12")

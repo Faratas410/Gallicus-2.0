@@ -60,8 +60,10 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 
 ## Theme assignment point (single authority)
 - Chosen authority: **ProjectSettings → GUI → Theme → Custom** (`project.godot`, `[gui] theme/custom`).
-- Patch 1 decision: **deferred assignment** to avoid immediate broad visual churn while legacy per-scene overrides are still present.
-- Rationale: `Main.tscn` and `UI.tscn` currently contain scene/theme overrides and per-node theme overrides; assignment will be performed in a later controlled replacement patch.
+- Patch decision (active): **assigned** at ProjectSettings level via `project.godot` `[gui] theme/custom="res://ui/theme/official_theme.tres"`.
+- Rationale: establish a single fallback theme authority for controls without altering runtime flow authority; per-scene/per-node overrides remain allowed as localized exceptions during migration.
+- Runtime visual baseline: `res://ui/theme/official_theme.tres` defines non-empty stylebox entries for `Button` states (`normal`, `hover`, `pressed`, `disabled`) and `PanelContainer.panel` using official stylebox resources.
+- Runtime scenes `res://scenes/UI.tscn` and `res://scenes/ui/BettingCircle.tscn` remove local `theme_override_styles/*`, `theme_override_fonts/*`, `theme_override_constants/*`, and `theme_override_colors/*` assignments so controls inherit global theme authority by default.
 
 ## Replacement mapping tracker (Patch 1 scaffold)
 

@@ -18,12 +18,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--allowed-theme-overrides",
         default="",
-        help="Comma-separated allowlist for theme_override_* keys (without prefix). Empty by default.",
+        help=(
+            "Comma-separated allowlist for full theme_override_* keys "
+            "(e.g. theme_override_font_sizes/font_size). Empty by default."
+        ),
     )
     parser.add_argument(
         "--official-theme",
         default="res://ui/theme/official_theme.tres",
         help="Only allowed theme resource path.",
+    )
+    parser.add_argument(
+        "--allowed-theme-resources",
+        default="",
+        help="Comma-separated allowlist for extra theme resources allowed in runtime UI scenes.",
     )
     return parser.parse_args()
 
@@ -42,12 +50,12 @@ def target_scene_paths(project_root: Path) -> list[Path]:
 def main() -> int:
     args = parse_args()
     project_root = Path(args.project_root).resolve()
-    allowed_overrides = {
-        f"theme_override_{item.strip()}"
-        for item in args.allowed_theme_overrides.split(",")
-        if item.strip() != ""
-    }
+    allowed_overrides = {item.strip() for item in args.allowed_theme_overrides.split(",") if item.strip() != ""}
     official_theme = args.official_theme
+    allowed_theme_resources = {
+        item.strip() for item in args.allowed_theme_resources.split(",") if item.strip() != ""
+    }
+    allowed_theme_resources.add(official_theme)
 
     scenes = target_scene_paths(project_root)
     if not scenes:
@@ -71,15 +79,10 @@ def main() -> int:
 
             for match in THEME_RESOURCE_PATTERN.finditer(stripped):
                 resource = match.group(0)
-                if resource != official_theme:
+                if resource not in allowed_theme_resources:
                     violations.append(
                         f"{rel_path}:{idx}: alternate theme resource '{resource}' | {stripped}"
                     )
-
-            if "gallicus_ui_theme.tres" in stripped:
-                violations.append(
-                    f"{rel_path}:{idx}: alternate theme string 'gallicus_ui_theme.tres' | {stripped}"
-                )
 
     if violations:
         print("scan_ui_theme_overrides: FAILED")

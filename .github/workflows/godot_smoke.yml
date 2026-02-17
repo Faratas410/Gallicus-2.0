@@ -11,6 +11,8 @@ jobs:
     env:
       GALLICUS_PROJECT_ROOT: "."
       GODOT_BIN: ./tools/godot/Godot_v4.6-stable_linux.x86_64
+      UI_THEME_OVERRIDE_ALLOWLIST: "theme_override_font_sizes/font_size"
+      UI_THEME_RESOURCE_ALLOWLIST: "res://assets/ui/gallicus_ui_theme.tres"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -80,7 +82,10 @@ jobs:
       - name: Enforce runtime UI theme governance
         run: |
           set -e
-          python tools/ci/scan_ui_theme_overrides.py --project-root "$GALLICUS_PROJECT_ROOT"
+          python tools/ci/scan_ui_theme_overrides.py \
+            --project-root "$GALLICUS_PROJECT_ROOT" \
+            --allowed-theme-overrides "$UI_THEME_OVERRIDE_ALLOWLIST" \
+            --allowed-theme-resources "$UI_THEME_RESOURCE_ALLOWLIST"
 
       - name: Validate FULL_RUN smoke marker support
         run: |

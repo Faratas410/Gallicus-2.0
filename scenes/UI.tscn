@@ -80,42 +80,32 @@ offset_right = 0.0
 offset_bottom = 0.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
-theme_override_constants/separation = 24
 
 [node name="LeftColumn" type="VBoxContainer" parent="HUD/SafeMargin/TopRow"]
 custom_minimum_size = Vector2(360, 0)
 size_flags_horizontal = 0
 size_flags_vertical = 0
-theme_override_constants/separation = 8
 
 [node name="BetBadge" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 mouse_filter = 2
 custom_minimum_size = Vector2(360, 0)
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="BetBadgeMargin" type="MarginContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
 
 [node name="BetBadgeContent" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/separation = 2
 
 [node name="BetBadgeTitlePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="BetBadgeTitle" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeTitlePanel"]
 text = "SCOMMESSA"
 
 [node name="BetBadgeValuePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="BetBadgeValue" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel"]
@@ -126,30 +116,22 @@ text = "—"
 mouse_filter = 2
 custom_minimum_size = Vector2(360, 0)
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="GloryMargin" type="MarginContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
 
 [node name="GloryContent" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/separation = 2
 
 [node name="GloryTitlePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="GloryTitle" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryTitlePanel"]
 text = "GLORY"
 
 [node name="GloryValuePanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="GloryValueLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel"]
@@ -158,10 +140,8 @@ text = "0"
 [node name="EscalationRow" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 custom_minimum_size = Vector2(360, 0)
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
 
 [node name="EscalationLabelPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="EscalationLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel"]
 text = "ESCALATION"
@@ -194,18 +174,12 @@ offset_left = -260.0
 offset_top = -24.0
 offset_right = 260.0
 offset_bottom = 24.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ScarPopupMargin" type="MarginContainer" parent="HUD/ScarPopupPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 6
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 6
 
 [node name="ScarPopupTextPanel" type="PanelContainer" parent="HUD/ScarPopupPanel/ScarPopupMargin"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ScarPopup" type="RichTextLabel" parent="HUD/ScarPopupPanel/ScarPopupMargin/ScarPopupTextPanel"]
 anchor_right = 1.0
@@ -227,7 +201,6 @@ offset_left = -260.0
 offset_top = -16.0
 offset_right = 260.0
 offset_bottom = 16.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ArenaResolutionOverlay" type="Label" parent="HUD/ArenaResolutionOverlayPanel"]
 anchor_right = 1.0
@@ -247,7 +220,6 @@ offset_left = -320.0
 offset_top = -20.0
 offset_right = 320.0
 offset_bottom = 20.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="AudienceContextLabel" type="Label" parent="HUD/AudienceContextLabelPanel"]
 anchor_right = 1.0
@@ -272,7 +244,6 @@ offset_left = -360.0
 offset_top = -18.0
 offset_right = 360.0
 offset_bottom = 18.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="RegisterAnnotationLabel" type="Label" parent="HUD/RegisterAnnotationBlocker/RegisterAnnotationLabelPanel"]
 mouse_filter = 2
@@ -293,7 +264,6 @@ offset_left = -320.0
 offset_top = -22.0
 offset_right = 320.0
 offset_bottom = 22.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ArenaThemeTitleLabel" type="Label" parent="HUD/ArenaThemeTitleLabelPanel"]
 anchor_right = 1.0
@@ -314,7 +284,6 @@ offset_left = -320.0
 offset_top = -18.0
 offset_right = 320.0
 offset_bottom = 18.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ArenaThemeSubtitleLabel" type="Label" parent="HUD/ArenaThemeSubtitleLabelPanel"]
 anchor_right = 1.0
@@ -342,23 +311,16 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_3")
 
 [node name="SentenceMargin" type="MarginContainer" parent="HUD/SentenceBanner/SentencePanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
 
 [node name="SentenceVBox" type="VBoxContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/separation = 4
 
 [node name="SentenceTitlePanel" type="PanelContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="SentenceTitle" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitlePanel"]
@@ -366,7 +328,6 @@ horizontal_alignment = 1
 text = "SENTENZA"
 
 [node name="SentenceRulePanel" type="PanelContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="SentenceRule" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRulePanel"]
@@ -374,7 +335,6 @@ horizontal_alignment = 1
 text = "VINCI"
 
 [node name="SentenceDoomPanel" type="PanelContainer" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="SentenceDoom" type="Label" parent="HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoomPanel"]
@@ -404,11 +364,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 16
 
 [node name="TopHUDRow" type="HBoxContainer" parent="UI_RunRoot/SafeMargin/Grid"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
 
 [node name="LeftHUD" type="Control" parent="UI_RunRoot/SafeMargin/Grid/TopHUDRow"]
 custom_minimum_size = Vector2(320, 0)
@@ -453,10 +411,6 @@ anchor_bottom = 1.0
 
 [node name="Margin" type="MarginContainer" parent="UI_RunRoot/DebugOverlay/Panel"]
 mouse_filter = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 8
 
 [node name="Lbl_DebugOverlayPanel" type="PanelContainer" parent="UI_RunRoot/DebugOverlay"]
 mouse_filter = 2
@@ -466,7 +420,6 @@ offset_left = 10.0
 offset_top = 8.0
 offset_right = -10.0
 offset_bottom = -8.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="Lbl_DebugOverlay" type="RichTextLabel" parent="UI_RunRoot/DebugOverlay/Lbl_DebugOverlayPanel"]
 unique_name_in_owner = true
@@ -561,7 +514,6 @@ offset_top = -120.0
 offset_right = 260.0
 offset_bottom = 120.0
 custom_minimum_size = Vector2(520, 240)
-theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Box_FIRST_REACTION" type="VBoxContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION"]
 anchor_right = 1.0
@@ -570,20 +522,16 @@ offset_left = 24.0
 offset_top = 24.0
 offset_right = -24.0
 offset_bottom = -24.0
-theme_override_constants/separation = 12
 
 [node name="Lbl_FIRST_REACTION_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_FIRST_REACTION_TITLE" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel"]
-theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "IL PATTO È SIGILLATO."
 
 [node name="Lbl_FIRST_REACTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_FIRST_REACTION_BODY" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel"]
@@ -619,7 +567,6 @@ offset_top = -140.0
 offset_right = 280.0
 offset_bottom = 140.0
 custom_minimum_size = Vector2(560, 280)
-theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Box_RESOLUTION" type="VBoxContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION"]
 anchor_right = 1.0
@@ -628,20 +575,16 @@ offset_left = 24.0
 offset_top = 24.0
 offset_right = -24.0
 offset_bottom = -24.0
-theme_override_constants/separation = 12
 
 [node name="Lbl_RESOLUTION_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_RESOLUTION_TITLE" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel"]
-theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "RITO DI GIUDIZIO"
 
 [node name="Lbl_RESOLUTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_RESOLUTION_BODY" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel"]
@@ -679,7 +622,6 @@ offset_right = 240.0
 offset_bottom = 150.0
 clip_contents = true
 custom_minimum_size = Vector2(480, 300)
-theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Box_MID_CHOICE" type="VBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
 anchor_right = 1.0
@@ -688,37 +630,25 @@ offset_left = 16.0
 offset_top = 16.0
 offset_right = -16.0
 offset_bottom = -16.0
-theme_override_constants/separation = 12
 
 [node name="Lbl_MID_CHOICE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_MID_CHOICE_TITLE" type="Label" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLEPanel"]
-theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "SCEGLI IL GESTO"
 
 [node name="Box_MID_CHOICE_CHOICES" type="VBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
 
 [node name="Btn_MID_CHOICE_SELECT_0" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "UMILIATI"
 
 [node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
@@ -745,15 +675,10 @@ offset_right = 280.0
 offset_bottom = 280.0
 clip_contents = true
 custom_minimum_size = Vector2(560, 560)
-theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="BetMargin" type="MarginContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
 
 [node name="BetScroll" type="ScrollContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin"]
 anchor_right = 1.0
@@ -772,19 +697,15 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
 offset_bottom = 0.0
-theme_override_constants/separation = 12
 
 [node name="Lbl_INTRO_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_TITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLEPanel"]
-theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "Scommessa Arena"
 
 [node name="Lbl_INTRO_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel"]
@@ -794,7 +715,6 @@ theme_override_font_sizes/font_size = 18
 text = "ARENA SPECIALE"
 
 [node name="Lbl_INTRO_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_HINT" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINTPanel"]
@@ -807,10 +727,8 @@ theme_override_font_sizes/font_size = 22
 text = "FOCUS: Leggi prima la CONDANNA."
 
 [node name="SeedRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-theme_override_constants/separation = 6
 
 [node name="Lbl_INTRO_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_BODY" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODYPanel"]
@@ -821,16 +739,11 @@ size_flags_horizontal = 3
 placeholder_text = "Es. 10331"
 
 [node name="Btn_INTRO_APPLY_SEED" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 text = "APPLICA"
 
 [node name="StakeRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 
 [node name="Lbl_INTRO_BODY_STAKEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_BODY_STAKE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKEPanel"]
@@ -845,33 +758,20 @@ shortcut_keys_enabled = false
 
 [node name="BetButtons" type="VBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
 
 [node name="Btn_INTRO_SELECT_WIN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDANNA — RADDOPPI O MUORI"
 
 [node name="Btn_INTRO_SELECT_NO_HIT" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "CONDIZIONE — SANGUE INTEGRO"
 
 [node name="Btn_INTRO_SELECT_FAST" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 autowrap_mode = 2
@@ -880,10 +780,8 @@ text = "PATTO — INCASSA E VAI"
 [node name="BetConfirmRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 visible = false
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
 
 [node name="Lbl_INTRO_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_FOOTER" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel"]
@@ -892,10 +790,6 @@ autowrap_mode = 2
 text = "Selezione: -"
 
 [node name="Btn_INTRO_CONFIRM" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(120, 40)
 text = "SIGILLA"
 
@@ -931,7 +825,6 @@ offset_right = 220.0
 offset_bottom = 170.0
 clip_contents = true
 custom_minimum_size = Vector2(440, 340)
-theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Box_PUSH_YOUR_LUCK" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK"]
 anchor_right = 1.0
@@ -940,19 +833,15 @@ offset_left = 12.0
 offset_top = 12.0
 offset_right = -12.0
 offset_bottom = -12.0
-theme_override_constants/separation = 12
 
 [node name="Lbl_PUSH_YOUR_LUCK_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_TITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel"]
-theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "PUSH YOUR LUCK"
 
 [node name="Lbl_PUSH_YOUR_LUCK_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel"]
@@ -961,7 +850,6 @@ theme_override_font_sizes/font_size = 18
 text = "Incassa ora o raddoppia il rischio"
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel"]
@@ -970,7 +858,6 @@ theme_override_font_sizes/font_size = 20
 text = ""
 
 [node name="Lbl_PUSH_YOUR_LUCK_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_HINT" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINTPanel"]
@@ -980,7 +867,6 @@ theme_override_font_sizes/font_size = 18
 text = ""
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTERPanel"]
@@ -993,23 +879,16 @@ text = ""
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICE_0" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
 
 [node name="Btn_PUSH_YOUR_LUCK_CASHOUT" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "INCASSA ORA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel"]
@@ -1022,19 +901,13 @@ text = "Disponibile dopo l'arena in corso."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICE_1" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
 
 [node name="Btn_PUSH_YOUR_LUCK_CONDANNA" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "CONDANNA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel"]
@@ -1046,19 +919,13 @@ text = "NESSUN REWARD"
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICE_2" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
 
 [node name="Btn_PUSH_YOUR_LUCK_DOUBLE" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 text = "RADDOPPIA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel"]
@@ -1082,7 +949,6 @@ offset_right = 220.0
 offset_bottom = 180.0
 clip_contents = true
 custom_minimum_size = Vector2(440, 360)
-theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="ScarsDetailVBox" type="VBoxContainer" parent="UI_RunRoot/ScarsDetailPanel"]
 anchor_right = 1.0
@@ -1091,19 +957,15 @@ offset_left = 12.0
 offset_top = 12.0
 offset_right = -12.0
 offset_bottom = -12.0
-theme_override_constants/separation = 8
 
 [node name="ScarsDetailTitlePanel" type="PanelContainer" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="ScarsDetailTitle" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTitlePanel"]
-theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 text = "DETTAGLIO CICATRICI"
 
 [node name="ScarsDetailTextPanel" type="PanelContainer" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="ScarsDetailText" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel"]
@@ -1112,10 +974,6 @@ clip_text = true
 text = ""
 
 [node name="ScarsDetailClose" type="Button" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 text = "CHIUDI"
 
 [node name="Phase_END_RUN" type="Control" parent="UI_RunRoot"]
@@ -1158,20 +1016,16 @@ offset_left = 12.0
 offset_top = 12.0
 offset_right = -12.0
 offset_bottom = -12.0
-theme_override_constants/separation = 10
 
 [node name="Lbl_END_RUN_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLEPanel"]
-theme_override_fonts/font = ExtResource("11")
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 text = "VERDETTO"
 
 [node name="Lbl_END_RUN_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel"]
@@ -1180,7 +1034,6 @@ horizontal_alignment = 1
 text = ""
 
 [node name="Lbl_END_RUN_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODYPanel"]
@@ -1189,7 +1042,6 @@ horizontal_alignment = 1
 text = ""
 
 [node name="Lbl_END_RUN_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel"]
@@ -1199,17 +1051,14 @@ text = ""
 
 [node name="Box_END_RUN_DETAILS" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
 
 [node name="Lbl_END_RUN_PACTS_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_PACTS_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_TITLEPanel"]
 text = "PATTI FIRMATI"
 
 [node name="Lbl_END_RUN_PACTS_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel"]
@@ -1220,14 +1069,12 @@ autowrap_mode = 2
 text = ""
 
 [node name="Lbl_END_RUN_CONDANNE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CONDANNE_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_TITLEPanel"]
 text = "CONDANNE"
 
 [node name="Lbl_END_RUN_CONDANNE_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel"]
@@ -1240,17 +1087,14 @@ text = ""
 [node name="Box_END_RUN_CROWD" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 visible = false
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
 
 [node name="Lbl_END_RUN_CROWD_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CROWD_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel"]
 text = "ULTIMA VOCE"
 
 [node name="Lbl_END_RUN_CROWD_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CROWD_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel"]
@@ -1267,13 +1111,8 @@ horizontal_scroll_mode = 0
 
 [node name="Box_END_RUN_MARGIN" type="MarginContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL"]
 size_flags_horizontal = 3
-theme_override_constants/margin_left = 40
-theme_override_constants/margin_top = 32
-theme_override_constants/margin_right = 40
-theme_override_constants/margin_bottom = 32
 
 [node name="Lbl_END_RUN_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_FOOTER" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel"]
@@ -1283,30 +1122,16 @@ bbcode_enabled = true
 fit_content = false
 horizontal_alignment = 1
 autowrap_mode = 2
-theme_override_colors/font_color = Color(0.32, 0.24, 0.16, 1)
-theme_override_constants/line_separation = 4
 text = ""
 
 [node name="Btn_END_RUN_RESTART" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 text = "NUOVA RUN"
 
 [node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 visible = false
 text = "NEXT BET"
 
 [node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
 text = "TORNA AL MENU"
 
 [node name="WaxSeal" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
@@ -1332,7 +1157,6 @@ offset_left = -120.0
 offset_top = -36.0
 offset_right = 120.0
 offset_bottom = 36.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="CountdownLabel" type="Label" parent="UI_RunRoot/CountdownLabelPanel"]
 anchor_right = 1.0
@@ -1351,7 +1175,6 @@ offset_left = -140.0
 offset_top = 12.0
 offset_right = 140.0
 offset_bottom = 52.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="FastCountdownLabel" type="Label" parent="UI_RunRoot/FastCountdownLabelPanel"]
 anchor_right = 1.0
@@ -1378,7 +1201,6 @@ offset_right = -24.0
 offset_bottom = 244.0
 clip_contents = true
 custom_minimum_size = Vector2(360, 220)
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ScarsVBox" type="VBoxContainer" parent="HUD/ScarsPanel"]
 anchor_right = 1.0
@@ -1389,10 +1211,8 @@ offset_right = -10.0
 offset_bottom = -10.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 6
 
 [node name="ScarsTitlePanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ScarsTitle" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsTitlePanel"]
 autowrap_mode = 2
@@ -1408,10 +1228,8 @@ vertical_scroll_mode = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
 
 [node name="ScarsLabelPanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries"]
-theme_override_styles/panel = SubResource("StyleBoxTexture_1")
 
 [node name="ScarsLabel" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel"]
 size_flags_horizontal = 3

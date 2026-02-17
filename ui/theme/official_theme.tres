@@ -1,6 +1,11 @@
 [gd_resource type="Theme" format=3]
 
 [ext_resource type="FontVariation" path="res://ui/fonts/italiana_regular_font.tres" id="1_font"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_panel_main.tres" id="2_panel"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="3_btn_normal"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="4_btn_hover"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="5_btn_pressed"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="6_btn_disabled"]
 
 [resource]
 default_font = ExtResource("1_font")
@@ -21,7 +26,12 @@ theme_types/Button = {
 "font_sizes": {
 "font_size": 20
 },
-"styles": {}
+"styles": {
+"disabled": ExtResource("6_btn_disabled"),
+"hover": ExtResource("4_btn_hover"),
+"normal": ExtResource("3_btn_normal"),
+"pressed": ExtResource("5_btn_pressed")
+}
 }
 theme_types/LineEdit = {
 "fonts": {
@@ -51,8 +61,12 @@ theme_types/ProgressBar = {
 "styles": {}
 }
 theme_types/Panel = {
-"styles": {}
+"styles": {
+"panel": ExtResource("2_panel")
+}
 }
 theme_types/PanelContainer = {
-"styles": {}
+"styles": {
+"panel": ExtResource("2_panel")
+}
 }

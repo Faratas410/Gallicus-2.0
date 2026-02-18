@@ -58,6 +58,11 @@ For UI Official pixel-art UI textures that will be adopted in future replacement
 
 Stop-condition note (satisfied): no `.png.import` files are versioned; import defaults above are the canonical tracked template to follow.
 
+## Resolution/stretch baseline (UI hardening)
+- Project display baseline keeps the existing canonical 16:9 internal viewport (`1280x720`) with `window/stretch/mode="viewport"` and `window/stretch/aspect="keep"` to prevent cross-screen distortion.
+- Runtime root UI controls in `res://scenes/Main.tscn` and `res://scenes/UI.tscn` must remain full-rect (`anchor_left/top=0`, `anchor_right/bottom=1`) with expand/fill size flags where applicable for menu/run root containers.
+- `res://scenes/UI.tscn` includes an always-on fallback `ColorRect` background at root level to avoid white-screen output when higher UI layers are hidden.
+
 ## Theme assignment point (single authority)
 - Chosen authority: **ProjectSettings → GUI → Theme → Custom** (`project.godot`, `[gui] theme/custom`).
 - Patch decision (active): **assigned** at ProjectSettings level via `project.godot` `[gui] theme/custom="res://ui/theme/official_theme.tres"`.
@@ -101,6 +106,11 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 - Official assets selected: _TBD_
 - Legacy references to replace: _TBD_
 - Notes: _TBD_
+
+## Visual binding audit baseline (placeholder policy)
+- Runtime scene audit baseline uses a single known-good placeholder texture resource `res://UI Official/UI assets (1x).png` when `TextureRect` bindings are null in active UI scenes.
+- Placeholder assignment is scene-local and diagnostic only; it does not introduce additional theme authority and does not alter runtime flow logic.
+- `TextureRect.texture` placeholders must be real `Texture2D` resources (PNG/AtlasTexture), never `StyleBox*`.
 
 ## Search checklist (where UI assets can hide)
 - `.tscn`: `TextureRect` / `NinePatchRect` texture paths.

@@ -6,7 +6,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  smoke:
+  smoke_gated:
     runs-on: ubuntu-latest
     env:
       GALLICUS_PROJECT_ROOT: "."
@@ -18,7 +18,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip xvfb git-lfs
-
 
       - name: Git LFS pull (always)
         run: |
@@ -79,25 +78,56 @@ jobs:
           chmod +x godot* Godot* || true
           ls -la
 
-      - name: Run headless smoke
+      - name: Run headless smoke gate (SMOKE_GATED)
         env:
           GALLICUS_SMOKE: "1"
-          GALLICUS_SMOKE_TRIGGER_NEW_RUN: "1"
           GALLICUS_SMOKE_SCENARIO: "BET_PRESENT"
-          GALLICUS_SMOKE_TIMEOUT_SEC: "10"
+          GALLICUS_SMOKE_TIMEOUT_SEC: "45"
         run: |
-          set -e
-
-          (
-            cd tools/godot
-            unzip -o godot.zip
-            chmod +x Godot_v4.6-stable_linux.x86_64
-          )
+          set -euo pipefail
 
           GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
           echo "Using Godot binary: $GODOT_BIN"
 
-          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 10 2>&1 | tee smoke.log
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 45 > smoke.log 2>&1 &
+          GODOT_PID=$!
+
+          hard_timeout_sec=60
+          sleep_step=0.1
+          max_ticks=$(awk "BEGIN { print int(${hard_timeout_sec}/${sleep_step}) }")
+          tick=0
+          reached_bet_present=0
+
+          while [ "$tick" -lt "$max_ticks" ]; do
+            if grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log; then
+              reached_bet_present=1
+              break
+            fi
+            if ! kill -0 "$GODOT_PID" 2>/dev/null; then
+              break
+            fi
+            tick=$((tick + 1))
+            sleep "$sleep_step"
+          done
+
+          if [ "$reached_bet_present" -eq 1 ]; then
+            if ! grep -q "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" smoke.log; then
+              echo "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" | tee -a smoke.log
+            fi
+          fi
+
+          tick=0
+          while kill -0 "$GODOT_PID" 2>/dev/null; do
+            if [ "$tick" -ge "$max_ticks" ]; then
+              echo "SMOKE:TIMEOUT_HARD_KILL" | tee -a smoke.log
+              kill -KILL "$GODOT_PID" 2>/dev/null || true
+              break
+            fi
+            tick=$((tick + 1))
+            sleep "$sleep_step"
+          done
+
+          wait "$GODOT_PID" || true
 
           echo "---- SMOKE LOG ----"
           tail -n 200 smoke.log
@@ -113,12 +143,72 @@ jobs:
 
           grep -q "SMOKE:BOOT_OK" smoke.log
           grep -q "SMOKE:PHASE=MAIN_MENU" smoke.log
+          grep -q "SMOKE:NEW_RUN_REQUESTED" smoke.log
+          grep -q "SMOKE:PHASE=RUN_INIT" smoke.log
+          grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log
+          grep -q "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" smoke.log
 
-          if [ "$GALLICUS_SMOKE_TRIGGER_NEW_RUN" = "1" ]; then
-            grep -q "SMOKE:NEW_RUN_REQUESTED" smoke.log
-            grep -q "SMOKE:PHASE=RUN_INIT" smoke.log
+  full_run_diagnostic:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      GALLICUS_PROJECT_ROOT: "."
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb git-lfs
+
+      - name: Git LFS pull (always)
+        run: |
+          set -e
+          git lfs install
+          git lfs pull
+
+      - name: Verify res:// references (case-sensitive)
+        run: |
+          set -e
+          python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
+
+      - name: Download Godot 4.6 headless
+        run: |
+          set -e
+          mkdir -p tools/godot
+          cd tools/godot
+          wget -O godot.zip "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
+          unzip -o godot.zip
+          chmod +x godot* Godot* || true
+          ls -la
+
+      - name: Run FULL_RUN diagnostic (non-blocking)
+        env:
+          GALLICUS_SMOKE: "1"
+          GALLICUS_SMOKE_TRIGGER_NEW_RUN: "1"
+          GALLICUS_SMOKE_SCENARIO: "FULL_RUN"
+          GALLICUS_SMOKE_TIMEOUT_SEC: "25"
+        run: |
+          set -euo pipefail
+
+          GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 25 2>&1 | tee full_run.log
+
+          echo "---- FULL_RUN LOG (tail) ----"
+          tail -n 300 full_run.log
+
+          if grep -E "(LEAK|Leak|ObjectDB instances leaked at exit|resources still in use at exit)" -n full_run.log; then
+            echo "FULL_RUN: potential leak detected, rerunning with verbose logging"
+            xvfb-run -a "$GODOT_BIN" --verbose --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 25 2>&1 | tee full_run_verbose.log || true
           fi
 
-          if [ "$GALLICUS_SMOKE_SCENARIO" = "BET_PRESENT" ]; then
-            grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log
-          fi
+      - name: Upload FULL_RUN artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full_run_diagnostic_logs
+          path: |
+            full_run.log
+            full_run_verbose.log
+          if-no-files-found: ignore

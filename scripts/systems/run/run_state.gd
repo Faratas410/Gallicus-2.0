@@ -84,6 +84,13 @@ var run_save_flow_step: StringName = &""
 var run_save_flow_bet_id: StringName = &""
 var glory: int = 0
 var corruption: int = 0
+var scar_double_count: int = 0
+var scar_pact_count: int = 0
+var volatility: int = 0
+var scar_rng_state: int = 0
+var scar_roll_index: int = 0
+var last_pact_corruption_arena_index: int = -1
+var last_pact_corruption_bet_id: StringName = &""
 
 func reset() -> void:
 	run_seed = 0
@@ -169,6 +176,13 @@ func reset() -> void:
 	run_save_flow_bet_id = &""
 	glory = 0
 	corruption = 0
+	scar_double_count = 0
+	scar_pact_count = 0
+	volatility = 0
+	scar_rng_state = 0
+	scar_roll_index = 0
+	last_pact_corruption_arena_index = -1
+	last_pact_corruption_bet_id = &""
 
 func to_dict() -> Dictionary:
 	return {
@@ -250,6 +264,13 @@ func to_dict() -> Dictionary:
 		"run_save_flow_bet_id": String(run_save_flow_bet_id),
 		"glory": glory,
 		"corruption": corruption,
+		"scar_double_count": scar_double_count,
+		"scar_pact_count": scar_pact_count,
+		"volatility": volatility,
+		"scar_rng_state": scar_rng_state,
+		"scar_roll_index": scar_roll_index,
+		"last_pact_corruption_arena_index": last_pact_corruption_arena_index,
+		"last_pact_corruption_bet_id": String(last_pact_corruption_bet_id),
 	}
 
 func from_dict(d: Dictionary) -> void:
@@ -331,6 +352,13 @@ func from_dict(d: Dictionary) -> void:
 	run_save_flow_bet_id = StringName(str(d.get("run_save_flow_bet_id", "")))
 	glory = int(d.get("glory", 0))
 	corruption = int(d.get("corruption", 0))
+	scar_double_count = int(d.get("scar_double_count", 0))
+	scar_pact_count = int(d.get("scar_pact_count", 0))
+	volatility = int(d.get("volatility", 0))
+	scar_rng_state = int(d.get("scar_rng_state", 0))
+	scar_roll_index = int(d.get("scar_roll_index", 0))
+	last_pact_corruption_arena_index = int(d.get("last_pact_corruption_arena_index", -1))
+	last_pact_corruption_bet_id = StringName(str(d.get("last_pact_corruption_bet_id", "")))
 
 func _serialize_stringname_array(items: Array) -> Array[String]:
 	var values: Array[String] = []

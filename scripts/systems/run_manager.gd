@@ -129,6 +129,11 @@ const RUN_FLOW_BET_OFFER: StringName = &"BET_OFFER"
 const CORRUPTION_MAX: int = 100
 const CORRUPTION_DOUBLE: int = 1
 const CORRUPTION_PACT_HIGH: int = 1
+const SCAR_DOUBLE_BASE_CHANCES: Array[float] = [0.10, 0.20, 0.35, 0.50]
+const SCAR_PACT_BASE_MIN: float = 0.25
+const SCAR_PACT_BASE_MAX: float = 0.55
+const SCAR_PACT_STEP: float = 0.05
+const SCAR_VOLATILITY_SHIFT_CAP: int = 3
 const GLORY_PER_SUCCESS: int = 1
 const GLORY_MULT_BASE: int = 1
 const GLORY_MULT_STEPS: Array[int] = [1, 2, 4, 7, 11]
@@ -1806,6 +1811,10 @@ func _start_level3_run() -> void:
 	_run_state.reset()
 	_glory_multiplier = GLORY_MULT_BASE
 	_run_state.run_seed = _get_run_seed_value()
+	_initialize_scar_rng_state()
+	_run_state.scar_double_count = 0
+	_run_state.scar_pact_count = 0
+	_run_state.volatility = 0
 	_run_state.arena_index = 0
 	_flow_log("run_started", "arena=%d, bet_id=, save_present=%s" % [_run_state.arena_index, str(_save_system.has_run_save())])
 	_run_state.escalation_level = 0
@@ -1841,6 +1850,7 @@ func _start_level3_run() -> void:
 	run["coins"] = starting_coins
 	run["arena_index"] = 0
 	run["corruption"] = 0
+	_run_state.corruption = 0
 	_reset_upgrades()
 	_reset_upgrade_costs()
 
@@ -2316,6 +2326,72 @@ func _compute_level3_offer_seed() -> int:
 	seed_value += String(_run_state.last_selected_bet_id).hash() * 5
 	return seed_value
 
+func _initialize_scar_rng_state() -> void:
+	if _run_state.scar_rng_state != 0:
+		return
+	var derived_seed: int = (_run_state.run_seed * 1103515245 + _run_counter * 12345) & 0x7fffffff
+	if derived_seed <= 0:
+		derived_seed = 1
+	_run_state.scar_rng_state = derived_seed
+	_run_state.scar_roll_index = 0
+
+func _scar_roll(chance: float) -> bool:
+	_initialize_scar_rng_state()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.state = _run_state.scar_rng_state
+	var safe_chance: float = clampf(chance, 0.0, 1.0)
+	var success: bool = rng.randf() <= safe_chance
+	_run_state.scar_rng_state = int(rng.state)
+	_run_state.scar_roll_index += 1
+	return success
+
+func _apply_corruption(delta: int) -> void:
+	if delta <= 0:
+		return
+	run["corruption"] = clampi(int(run.get("corruption", 0)) + delta, 0, CORRUPTION_MAX)
+	_run_state.corruption = int(run.get("corruption", 0))
+
+func _total_passive_scar_count() -> int:
+	return _run_state.scar_double_count + _run_state.scar_pact_count
+
+func _double_scar_base_chance(doubles_count: int) -> float:
+	var idx: int = clampi(doubles_count - 1, 0, SCAR_DOUBLE_BASE_CHANCES.size() - 1)
+	return SCAR_DOUBLE_BASE_CHANCES[idx]
+
+func _try_apply_double_scar_pool(next_doubles_count: int) -> void:
+	var base_chance: float = _double_scar_base_chance(next_doubles_count)
+	var chance: float = base_chance * (1.0 / float(1 + _run_state.scar_double_count))
+	if _scar_roll(chance):
+		_run_state.scar_double_count += 1
+		_apply_corruption(1)
+		_run_state.volatility += 1
+	_apply_corruption(CORRUPTION_DOUBLE)
+	var total_scars: int = _total_passive_scar_count()
+	if total_scars > 0:
+		var pressure_extra: int = mini(total_scars, 2)
+		_apply_corruption(pressure_extra)
+		_run_state.volatility += 1
+
+func _try_apply_pact_scar_pool() -> void:
+	var run_progress: int = mini(_run_state.arena_index, 5)
+	var base_chance: float = clampf(SCAR_PACT_BASE_MIN + SCAR_PACT_STEP * float(run_progress), SCAR_PACT_BASE_MIN, SCAR_PACT_BASE_MAX)
+	var chance: float = base_chance * (1.0 / float(1 + _run_state.scar_pact_count))
+	if not _scar_roll(chance):
+		return
+	_run_state.scar_pact_count += 1
+	_apply_corruption(1)
+	_run_state.volatility += 1
+
+func _compute_volatility_shift() -> int:
+	if _run_state.volatility <= 0:
+		return 0
+	var trigger_chance: float = clampf(0.12 * float(_run_state.volatility), 0.0, 0.66)
+	if not _scar_roll(trigger_chance):
+		return 0
+	var direction: int = 1 if _scar_roll(0.5) else -1
+	var amplitude: int = mini(_run_state.volatility, SCAR_VOLATILITY_SHIFT_CAP)
+	return direction * amplitude
+
 func _emit_run_debug_state() -> void:
 	if not GameEvents.has_signal("run_debug_state_updated"):
 		return
@@ -2332,6 +2408,9 @@ func _emit_run_debug_state() -> void:
 		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
 		"glory": _run_state.glory,
 		"corruption": int(run.get("corruption", 0)),
+		"scar_double_count": _run_state.scar_double_count,
+		"scar_pact_count": _run_state.scar_pact_count,
+		"volatility": _run_state.volatility,
 	}
 	GameEvents.run_debug_state_updated.emit(payload)
 
@@ -2408,6 +2487,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_state = RunState.new()
 	_run_state.reset()
 	_run_state.from_dict(run_state_data)
+	_initialize_scar_rng_state()
 	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
 	if _run_state.run_save_flow_step == &"":
 		_run_state.run_save_flow_step = RUN_FLOW_BET_OFFER
@@ -2425,6 +2505,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	run["corruption"] = clampi(int(run_data.get("corruption", 0)), 0, CORRUPTION_MAX)
 	if level3_schema < 2:
 		run["corruption"] = clampi(int(run.get("corruption", 0)), 0, CORRUPTION_MAX)
+	_run_state.corruption = int(run.get("corruption", 0))
 	if LEVEL3_ENABLED:
 		run["upgrades"] = {}
 	elif run_data.has("upgrades") and run_data["upgrades"] is Dictionary:
@@ -2809,10 +2890,13 @@ func _resolve_level3_arena() -> ArenaResult:
 	var effective_escalation: int = _run_state.escalation_level
 	if _registry_has_precedent:
 		effective_escalation += 1
+	var volatility_shift: int = _compute_volatility_shift()
+	var outcome_seed: int = _compute_level3_seed(_run_state.active_bet_id) + volatility_shift * 97
+	var adjusted_escalation: int = maxi(effective_escalation + volatility_shift, 0)
 	var payload: Dictionary = _outcome_system.resolve_level3_arena(
 		_level3_rng,
-		_compute_level3_seed(_run_state.active_bet_id),
-		effective_escalation,
+		outcome_seed,
+		adjusted_escalation,
 		_get_active_scar_ids(),
 		_run_state.enemy_profile,
 		LEVEL3_ENEMY_PROFILES
@@ -2862,7 +2946,7 @@ func _handle_level3_loss(bet_id: StringName, _result: ArenaResult) -> Array[Stri
 		return scars_applied
 	var corruption_gain: int = int(consequence.get("corruption_gain", 0))
 	if corruption_gain > 0:
-		run["corruption"] = clampi(int(run.get("corruption", 0)) + corruption_gain, 0, CORRUPTION_MAX)
+		_apply_corruption(corruption_gain)
 	var cashout_lock_min: int = int(consequence.get("cashout_lock_min", -1))
 	if cashout_lock_min >= 0:
 		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, cashout_lock_min)
@@ -2908,7 +2992,7 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 		return scars_applied
 	var corruption_gain: int = int(consequence.get("corruption_gain", 0))
 	if corruption_gain > 0:
-		run["corruption"] = clampi(int(run.get("corruption", 0)) + corruption_gain, 0, CORRUPTION_MAX)
+		_apply_corruption(corruption_gain)
 	var cashout_lock_min: int = int(consequence.get("cashout_lock_min", -1))
 	if cashout_lock_min >= 0:
 		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining, cashout_lock_min)
@@ -3487,10 +3571,11 @@ func _push_your_luck() -> void:
 		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
 		_try_register_risk_threshold_scar()
 		_run_state.level3_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
-		_run_state.level3_doubles += 1
+		var next_doubles_count: int = _run_state.level3_doubles + 1
+		_try_apply_double_scar_pool(next_doubles_count)
+		_run_state.level3_doubles = next_doubles_count
 		_run_state.doubles += 1
 		_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
-		_run_state.corruption += CORRUPTION_DOUBLE
 		_run_state.level3_max_escalation = maxi(_run_state.level3_max_escalation, _run_state.escalation_level)
 		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 		_emit_escalation_changed()
@@ -4770,7 +4855,8 @@ func _update_hidden_run_metrics() -> void:
 	corruption_value += maxi(_run_state.level3_max_escalation - 2, 0)
 	corruption_value += _run_state.doubles
 	_run_state.glory = maxi(_run_state.glory, 0)
-	_run_state.corruption = maxi(corruption_value, 0)
+	var runtime_corruption: int = int(run.get("corruption", 0))
+	_run_state.corruption = maxi(maxi(corruption_value, runtime_corruption), 0)
 
 func _is_high_risk_behavior(behavior_id: StringName) -> bool:
 	return behavior_id == BET_DOUBLE_OR_DIE_L3 or behavior_id == BET_DEBT_CHAIN or behavior_id == BET_BLOOD_TAX or behavior_id == BET_LAST_BREATH
@@ -4778,10 +4864,15 @@ func _is_high_risk_behavior(behavior_id: StringName) -> bool:
 func _register_pact_corruption(bet_id: StringName) -> void:
 	if bet_id == &"":
 		return
+	if _run_state.last_pact_corruption_arena_index == _run_state.arena_index and _run_state.last_pact_corruption_bet_id == bet_id:
+		return
 	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
 	if not _is_high_risk_behavior(behavior_id):
 		return
-	_run_state.corruption += CORRUPTION_PACT_HIGH
+	_run_state.last_pact_corruption_arena_index = _run_state.arena_index
+	_run_state.last_pact_corruption_bet_id = bet_id
+	_apply_corruption(CORRUPTION_PACT_HIGH)
+	_try_apply_pact_scar_pool()
 
 func _has_used_bet(bet_id: StringName) -> bool:
 	for used_bet: StringName in _run_state.level3_bets_used:

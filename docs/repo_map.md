@@ -16,6 +16,7 @@
 - Global event authority: `res://scripts/systems/game_events.gd` (`GameEvents` autoload)
 - Allowed runtime groups: `run_manager`, `arena`, `player`, `enemies`
 - Level 3 run payload runtime fields: `arena_index`, `coins`, `corruption`, `upgrades` (`corruption` capped at 100).
+- Level 3 RunState serialized Scar runtime fields: `scar_double_count`, `scar_pact_count`, `volatility`, `scar_rng_state`, `scar_roll_index`, `last_pact_corruption_arena_index`, `last_pact_corruption_bet_id`.
 - Active Level 3 runtime authority excludes combat/health/enemy gameplay systems; arena/player/enemies groups remain reserved labels for visual/passive runtime wiring only.
 
 ## Top-level repository layout

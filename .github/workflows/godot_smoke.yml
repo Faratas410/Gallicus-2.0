@@ -190,8 +190,15 @@ jobs:
           set -e
 
           FULLRUN_CMD='xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60'
+          FULLRUN_VERBOSE_CMD='xvfb-run -a "$GODOT_BIN" --verbose --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60'
           echo "Running FULL_RUN command: $FULLRUN_CMD"
           xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60 2>&1 | tee smoke_fullrun.log
+
+          if grep -q "ObjectDB instances leaked" smoke_fullrun.log; then
+            echo "ObjectDB leak warning detected, running diagnostic rerun with --verbose"
+            echo "Running FULL_RUN verbose command: $FULLRUN_VERBOSE_CMD"
+            xvfb-run -a "$GODOT_BIN" --verbose --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60 2>&1 | tee smoke_fullrun_verbose.log || true
+          fi
 
           grep -q "SMOKE:PHASE=INTERMEDIATE_CHOICE" smoke_fullrun.log
           grep -q "SMOKE:PHASE=PUSH_YOUR_LUCK" smoke_fullrun.log
@@ -212,6 +219,10 @@ jobs:
           fi
           if grep -E "WARNING|Warning" -n smoke_fullrun.log; then
             echo "Found WARNING in smoke_fullrun.log (warnings = errors)."
+            if [ -f smoke_fullrun_verbose.log ]; then
+              echo "--- tail smoke_fullrun_verbose.log ---"
+              tail -n 200 smoke_fullrun_verbose.log
+            fi
             tail -n 200 smoke_fullrun.log
             exit 1
           fi
@@ -231,6 +242,7 @@ jobs:
             smoke_boot.log
             smoke_betpresent.log
             smoke_fullrun.log
+            smoke_fullrun_verbose.log
 
       - name: Upload runtime user/log directories
         if: always()

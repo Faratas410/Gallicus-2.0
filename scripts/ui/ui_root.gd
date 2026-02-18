@@ -241,6 +241,21 @@ const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_END_RUN",
 ]
 
+func _is_smoke_mode() -> bool:
+	return OS.get_environment("GALLICUS_SMOKE") == "1"
+
+
+func _await_seconds_smoke_safe(label: String, seconds: float) -> void:
+	if _is_smoke_mode():
+		print("SMOKE:TIMER_BYPASSED label=%s seconds=%.3f" % [label, seconds])
+		var start_ms: int = Time.get_ticks_msec()
+		var wait_ms: int = maxi(int(seconds * 1000.0), 0)
+		while Time.get_ticks_msec() - start_ms < wait_ms:
+			await get_tree().process_frame
+		return
+	await get_tree().create_timer(seconds).timeout
+
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	if not _validate_ui_boot():
@@ -619,9 +634,9 @@ func show_countdown(seconds: int = 3) -> void:
 		countdown_panel.visible = true
 	for i in range(seconds, 0, -1):
 		countdown_label.text = str(i)
-		await get_tree().create_timer(1.0).timeout
+		await _await_seconds_smoke_safe("ui_countdown_tick", 1.0)
 	countdown_label.text = "GO"
-	await get_tree().create_timer(0.5).timeout
+	await _await_seconds_smoke_safe("ui_countdown_go", 0.5)
 	countdown_label.visible = false
 	if countdown_panel != null:
 		countdown_panel.visible = false
@@ -700,7 +715,7 @@ func _on_sentence_banner_requested(payload: Dictionary) -> void:
 	sentence_banner.visible = true
 	_sentence_banner_sequence_id += 1
 	var sequence_id: int = _sentence_banner_sequence_id
-	await get_tree().create_timer(SENTENCE_BANNER_SECONDS).timeout
+	await _await_seconds_smoke_safe("sentence_banner", SENTENCE_BANNER_SECONDS)
 	if sequence_id != _sentence_banner_sequence_id:
 		return
 	if sentence_banner != null:
@@ -1187,9 +1202,9 @@ func _run_post_bet_queue() -> void:
 		_post_bet_log_index += 1
 		payload["log_index"] = _post_bet_log_index
 		_show_post_bet_payload(payload)
-		await get_tree().create_timer(POST_BET_MESSAGE_TIME_SEC).timeout
+		await _await_seconds_smoke_safe("post_bet_message", POST_BET_MESSAGE_TIME_SEC)
 		_hide_post_bet_payload(payload)
-		await get_tree().create_timer(FADE_OUT_SEC).timeout
+		await _await_seconds_smoke_safe("post_bet_fade_out", FADE_OUT_SEC)
 	_post_bet_running = false
 	arena_message_queue_completed.emit()
 
@@ -1923,7 +1938,7 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 		var button: Button = buttons[index]
 		initial_states[index] = button.disabled
 		button.disabled = true
-	await get_tree().create_timer(MIN_MODAL_READ_TIME_SEC).timeout
+	await _await_seconds_smoke_safe("modal_read_delay", MIN_MODAL_READ_TIME_SEC)
 	for index: int in range(buttons.size()):
 		var button: Button = buttons[index]
 		button.disabled = initial_states[index]

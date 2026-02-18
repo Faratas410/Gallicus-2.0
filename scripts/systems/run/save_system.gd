@@ -8,7 +8,7 @@ const RUN_TMP_PATH: String = "%s.tmp" % RUN_PATH
 const RUN_BAK_PATH: String = "%s.bak" % RUN_PATH
 const RUN_BAK2_PATH: String = "%s.bak2" % RUN_PATH
 const LEVEL3_RUN_SCHEMA_VERSION: int = 2
-const LEVEL3_FORBIDDEN_RUN_KEYS: PackedStringArray = PackedStringArray(["hp", "max_hp", "health", "enemy_profile", "enemy_profiles", "shop_tier", "shop_inventory", "progression", "damage", "damage_mod", "damage_chance", "took_damage"])
+const LEVEL3_FORBIDDEN_RUN_KEYS: Dictionary = {"hp": true, "max_hp": true, "health": true, "enemy_profile": true, "enemy_profiles": true, "shop_tier": true, "shop_inventory": true, "progression": true, "damage": true, "damage_mod": true, "damage_chance": true, "took_damage": true}
 
 func has_run_save() -> bool:
 	return FileAccess.file_exists(RUN_PATH) or FileAccess.file_exists(RUN_BAK_PATH)

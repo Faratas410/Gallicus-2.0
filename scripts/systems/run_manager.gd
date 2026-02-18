@@ -1365,10 +1365,21 @@ func _on_smoke_driver_tick() -> void:
 
 
 
+func _is_smoke_close_notification(what: int) -> bool:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		return true
+	if what == 11:
+		return true
+	return false
+
+
 func _notification(what: int) -> void:
 	if not _is_smoke_mode():
 		return
-	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_PREDELETE or what == NOTIFICATION_EXIT_TREE:
+	if _is_smoke_close_notification(what):
+		print("SMOKE:CLOSE_REQUEST_IGNORED what=%d" % what)
+		return
+	if what == NOTIFICATION_PREDELETE or what == NOTIFICATION_EXIT_TREE:
 		print("SMOKE:NOTIFICATION what=%d" % what)
 		if not _smoke_quit_requested:
 			print("SMOKE:UNEXPECTED_SHUTDOWN what=%d (no quit requested)" % what)
@@ -1439,6 +1450,9 @@ func _ready() -> void:
 	_arena_layout_rng.randomize()
 	_connect_gameevents()
 	_registry_has_precedent = SaveManager.has_unlocked(UNLOCK_REGISTRY_PRECEDENT)
+	if _is_smoke_mode():
+		get_tree().auto_accept_quit = false
+		print("SMOKE:AUTO_ACCEPT_QUIT_DISABLED")
 	_start_smoke_timeout_timer()
 	call_deferred("_boot")
 

@@ -1244,6 +1244,17 @@ func _phase_to_name(phase: RunPhase) -> String:
 		_:
 			return str(phase)
 
+func _await_seconds_smoke_safe(label: String, seconds: float) -> void:
+	if _is_smoke_mode():
+		print("SMOKE:TIMER_BYPASSED label=%s seconds=%.3f" % [label, seconds])
+		var start_ms: int = Time.get_ticks_msec()
+		var wait_ms: int = maxi(int(seconds * 1000.0), 0)
+		while Time.get_ticks_msec() - start_ms < wait_ms:
+			await get_tree().process_frame
+		return
+	await get_tree().create_timer(seconds).timeout
+
+
 
 func _start_smoke_timeout_timer() -> void:
 	if not _is_smoke_mode():
@@ -1891,7 +1902,7 @@ func _start_new_run() -> void:
 		GameEvents.countdown_requested.emit(3)
 		_log_runtime_state("new_run_ready")
 		for _i in range(3, 0, -1):
-			await get_tree().create_timer(1.0).timeout
+			await _await_seconds_smoke_safe("prep_countdown", 1.0)
 			if current_id != _prep_sequence_id or _phase == RunPhase.GAME_OVER:
 				return
 		if current_id != _prep_sequence_id or _phase == RunPhase.GAME_OVER:
@@ -2110,7 +2121,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	_close_audience_context_line()
 	_flow_log("pact_sealed_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.pact_sealed_opened.emit()
-	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
+	await _await_seconds_smoke_safe("pact_sealed", PACT_SEALED_SECONDS)
 	if sequence_id != _pact_sealed_sequence_id:
 		return
 	GameEvents.pact_sealed_closed.emit()
@@ -2133,7 +2144,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	}
 	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.resolve_ritual_opened.emit(payload)
-	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
+	await _await_seconds_smoke_safe("resolve_ritual", RESOLVE_RITUAL_SECONDS)
 	if sequence_id != _resolve_ritual_sequence_id:
 		return
 	GameEvents.resolve_ritual_closed.emit()
@@ -4296,7 +4307,7 @@ func _on_arena_message_queue_completed() -> void:
 	_open_intermediate_choice(bet_id)
 
 func _force_post_bet_choice_fallback(sequence_id: int) -> void:
-	await get_tree().create_timer(POST_BET_QUEUE_FALLBACK_SECONDS).timeout
+	await _await_seconds_smoke_safe("post_bet_queue_fallback", POST_BET_QUEUE_FALLBACK_SECONDS)
 	if sequence_id != _run_state.post_bet_sequence_id:
 		return
 	if _run_state.post_bet_pending_bet_id == &"":

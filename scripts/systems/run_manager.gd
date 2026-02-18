@@ -1166,6 +1166,8 @@ var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke: SmokeDriver = null
 var _smoke_driver_timer: Timer = null
 var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
+var _flow_diagnostics: FlowDiagnostics = FlowDiagnostics.new()
+var _finale_builder: FinaleBuilder = FinaleBuilder.new()
 
 const WATCHDOG_STALL_MS: int = 6000
 

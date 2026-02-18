@@ -1192,6 +1192,7 @@ var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke_driver_timer: Timer = null
 var _smoke_new_run_requested: bool = false
 var _smoke_step_logged_run_init: bool = false
+var _smoke_gate_quit_requested: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1243,6 +1244,8 @@ func _start_smoke_timeout_timer() -> void:
 	smoke_timer.wait_time = timeout_sec
 	add_child(smoke_timer)
 	smoke_timer.timeout.connect(func() -> void:
+		if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "BET_PRESENT":
+			print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
 		get_tree().quit(0)
 	)
 	smoke_timer.start()
@@ -1257,6 +1260,7 @@ func _smoke_start_scenario() -> void:
 		return
 	_smoke_new_run_requested = false
 	_smoke_step_logged_run_init = false
+	_smoke_gate_quit_requested = false
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
@@ -1280,6 +1284,7 @@ func _on_smoke_driver_tick() -> void:
 		return
 	if _phase == RunPhase.BET_PRESENT:
 		print("SMOKE:STEP=BET_PRESENT_REACHED")
+		_smoke_request_gate_quit()
 		_stop_smoke_driver()
 		return
 	if _phase == RunPhase.RUN_INIT and not _smoke_step_logged_run_init:
@@ -1291,6 +1296,18 @@ func _on_smoke_driver_tick() -> void:
 		print("SMOKE:NEW_RUN_REQUESTED")
 		print("SMOKE:REQ=request_new_run")
 		GameEvents.request_new_run.emit()
+
+
+func _smoke_request_gate_quit() -> void:
+	if _smoke_gate_quit_requested:
+		return
+	_smoke_gate_quit_requested = true
+	print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
+	call_deferred("_smoke_quit_gate")
+
+
+func _smoke_quit_gate() -> void:
+	get_tree().quit(0)
 
 
 func _ready() -> void:

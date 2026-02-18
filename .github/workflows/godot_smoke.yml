@@ -78,6 +78,16 @@ jobs:
           chmod +x godot* Godot* || true
           ls -la
 
+      - name: Import project assets (headless editor pass)
+        run: |
+          set -euo pipefail
+          GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
+
+          # Run a headless editor session to generate .godot/imported artifacts
+          xvfb-run -a "$GODOT_BIN" --headless --editor --path "$GALLICUS_PROJECT_ROOT" --quit > import.log 2>&1
+          echo "---- IMPORT LOG (tail) ----"
+          tail -n 200 import.log
+
       - name: Run headless smoke gate (SMOKE_GATED)
         env:
           GALLICUS_SMOKE: "1"

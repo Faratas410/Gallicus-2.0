@@ -1166,8 +1166,6 @@ var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke: SmokeDriver = null
 var _smoke_driver_timer: Timer = null
 var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
-var _flow_diagnostics: FlowDiagnostics
-var _finale_builder: FinaleBuilder
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1556,7 +1554,15 @@ func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase])
 	return false
 
 func _flow_snapshot(note: String) -> String:
-	return _flow_watchdog.build_snapshot(note, str(_phase), _last_request, _last_phase_change_ms, _last_ui_render_ms, _last_activity_ms, _flow_logger.dump_last(60))
+	return _flow_watchdog.build_snapshot(
+		note,
+		str(_phase),
+		_last_request,
+		_last_phase_change_ms,
+		_last_ui_render_ms,
+		_last_activity_ms,
+		_flow_logger.dump_last(60)
+	)
 
 
 func request_confirm_pact() -> void:
@@ -4880,7 +4886,14 @@ func _touch_request_activity(request_name: String) -> void:
 	_last_activity_ms = Time.get_ticks_msec()
 
 func _watchdog_stall_hint(now_ms: int) -> String:
-	return _flow_watchdog.watchdog_stall_hint(now_ms, _last_phase_change_ms, _last_ui_render_ms, _last_activity_ms, _last_request, WATCHDOG_STALL_MS)
+	return _flow_watchdog.watchdog_stall_hint(
+		now_ms,
+		_last_phase_change_ms,
+		_last_ui_render_ms,
+		_last_activity_ms,
+		_last_request,
+		WATCHDOG_STALL_MS
+	)
 
 func _watchdog_tick() -> void:
 	if not _watchdog_enabled:

@@ -1368,6 +1368,8 @@ func _on_smoke_driver_tick() -> void:
 func _is_smoke_close_notification(what: int) -> bool:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		return true
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		return true
 	if what == 11:
 		return true
 	return false
@@ -1377,6 +1379,8 @@ func _notification(what: int) -> void:
 	if not _is_smoke_mode():
 		return
 	if _is_smoke_close_notification(what):
+		print("SMOKE:CLOSE_REQUEST_SEEN file=run_manager.gd what=%d" % what)
+		print("SMOKE:QUIT_REQUEST_HANDLER_BLOCKED file=run_manager.gd line=1379")
 		print("SMOKE:CLOSE_REQUEST_IGNORED what=%d" % what)
 		return
 	if what == NOTIFICATION_PREDELETE or what == NOTIFICATION_EXIT_TREE:
@@ -1434,6 +1438,12 @@ func _arm_smoke_cashout_next_frame() -> void:
 	if _smoke_cashout_pending_frames < 0:
 		_smoke_cashout_pending_frames = 1
 
+func _enter_tree() -> void:
+	if _is_smoke_mode():
+		get_tree().auto_accept_quit = false
+		print("SMOKE:AUTO_ACCEPT_QUIT_DISABLED phase=enter_tree")
+
+
 func _ready() -> void:
 	print("RunManager ready")
 	_arena_themes = ArenaThemes.new()
@@ -1450,9 +1460,6 @@ func _ready() -> void:
 	_arena_layout_rng.randomize()
 	_connect_gameevents()
 	_registry_has_precedent = SaveManager.has_unlocked(UNLOCK_REGISTRY_PRECEDENT)
-	if _is_smoke_mode():
-		get_tree().auto_accept_quit = false
-		print("SMOKE:AUTO_ACCEPT_QUIT_DISABLED")
 	_start_smoke_timeout_timer()
 	call_deferred("_boot")
 

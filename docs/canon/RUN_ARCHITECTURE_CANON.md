@@ -101,10 +101,24 @@ All changes to systems described here must update this document in the same PR.
 
 ### Watchdog
 
+- `RefCounted` helper at `res://scripts/systems/run/flow_watchdog.gd` encapsulates watchdog diagnostics logic (stall hint + snapshot string composition).
+- `RunManager` remains the sole authority for timing source (`Time.get_ticks_msec()`), phase gating, and watchdog enable/disable lifecycle.
 - Tracks activity markers generated during flow progression.
 - Single-shot stall detection for dead-flow diagnosis.
 - Snapshot capture via `_flow_snapshot()`.
 - No automatic gameplay state mutation when watchdog signals are emitted.
+
+### FlowDiagnostics
+
+- `RefCounted` helper at `res://scripts/systems/run/flow_diagnostics.gd` encapsulates diagnostics formatting/composition (debug payload dictionary and error/log string composition).
+- Helper is pure formatting: no phase mutation, no `GameEvents` emission, no scene-tree access.
+- `RunManager` keeps overlay wiring and emission authority (`run_debug_state_updated`).
+
+### FinaleBuilder
+
+- `RefCounted` helper at `res://scripts/systems/run/finale_builder.gd` encapsulates finale payload construction/report text composition from read-only inputs.
+- `RunManager` remains the sole authority for finale timing, ending selection, phase/end-flow decisions, and `GameEvents.run_finale_selected` emission.
+- Helper must remain pure: no `GameEvents` emission, no scene-tree access, no `RunState` mutation.
 
 ### Debug Overlay
 

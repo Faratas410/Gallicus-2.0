@@ -1256,7 +1256,7 @@ func _start_smoke_timeout_timer() -> void:
 	smoke_timer.wait_time = timeout_sec
 	add_child(smoke_timer)
 	smoke_timer.timeout.connect(func() -> void:
-		_smoke_quit("timeout_parachute")
+		smoke_request_quit("timeout_parachute", "run_manager.gd:_start_smoke_timeout_timer")
 	)
 	smoke_timer.start()
 
@@ -1363,7 +1363,15 @@ func _on_smoke_driver_tick() -> void:
 
 
 
+func _notification(what: int) -> void:
+	if not _is_smoke_mode():
+		return
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_PREDELETE or what == NOTIFICATION_EXIT_TREE:
+		print("SMOKE:NOTIFICATION what=%d" % what)
+
 func _exit_tree() -> void:
+	if _is_smoke_mode():
+		print("SMOKE:EXIT_TREE %s" % name)
 	_stop_smoke_driver()
 
 func _wire_smoke_finale_listener() -> void:
@@ -1383,7 +1391,7 @@ func _on_smoke_run_finale_selected(_finale: Dictionary) -> void:
 	_smoke_fullrun_finale_emitted = true
 	print("SMOKE:FINALE_EMITTED")
 
-func _smoke_quit(reason: String) -> void:
+func smoke_request_quit(reason: String, caller: String = "run_manager") -> void:
 	if not _is_smoke_mode() or _get_smoke_scenario() != "FULL_RUN":
 		return
 	if _smoke_fullrun_quit_sent:
@@ -1391,7 +1399,7 @@ func _smoke_quit(reason: String) -> void:
 	if _smoke_quit_pending_frames >= 0:
 		return
 	_smoke_quit_reason = reason
-	print("SMOKE:QUIT_REQUESTED reason=%s" % reason)
+	print("SMOKE:QUIT_REQUESTED reason=%s caller=%s" % [reason, caller])
 	_smoke_quit_pending_frames = 1
 
 func _arm_smoke_cashout_next_frame() -> void:
@@ -1431,17 +1439,18 @@ func _process(_delta: float) -> void:
 				_smoke_fullrun_cashout_sent_ms = Time.get_ticks_msec()
 				print("SMOKE:REQ=request_pyl_cashout")
 				GameEvents.request_pyl_cashout.emit()
+				print("SMOKE:STEP=AFTER_CASHOUT_WAIT_START")
 		else:
 			_smoke_cashout_pending_frames -= 1
 	if _is_smoke_mode() and _get_smoke_scenario() == "FULL_RUN" and _smoke_fullrun_cashout_sent and not _smoke_fullrun_quit_sent:
 		if _phase == RunPhase.GAME_OVER:
 			_smoke_fullrun_terminal_phase_seen = true
 		if _smoke_fullrun_terminal_phase_seen and _smoke_fullrun_finale_emitted:
-			_smoke_quit("full_run_complete")
+			smoke_request_quit("full_run_complete", "run_manager.gd:_process")
 		elif _smoke_fullrun_cashout_sent_ms >= 0 and Time.get_ticks_msec() - _smoke_fullrun_cashout_sent_ms > SMOKE_FULLRUN_WAIT_TIMEOUT_MS and not _smoke_fullrun_timeout_stop_reported:
 			_smoke_fullrun_timeout_stop_reported = true
 			print("SMOKE:FAIL timeout_after_cashout phase=%s last_request=%s" % [_phase_to_name(_phase), _last_request])
-			_smoke_quit("timeout")
+			smoke_request_quit("timeout", "run_manager.gd:_process")
 	if _smoke_quit_pending_frames >= 0:
 		if _smoke_quit_pending_frames == 0:
 			_smoke_quit_pending_frames = -1

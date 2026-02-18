@@ -189,6 +189,8 @@ jobs:
         run: |
           set -e
 
+          FULLRUN_CMD='xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60'
+          echo "Running FULL_RUN command: $FULLRUN_CMD"
           xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60 2>&1 | tee smoke_fullrun.log
 
           grep -q "SMOKE:PHASE=INTERMEDIATE_CHOICE" smoke_fullrun.log

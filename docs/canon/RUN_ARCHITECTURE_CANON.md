@@ -75,6 +75,8 @@ All changes to systems described here must update this document in the same PR.
 - In active Level 3, RunManager flow consumes `condemnation_flag` as authoritative adverse/condanna signal; legacy `took_damage` alias is non-authoritative and must not drive flow branches.
 - In active Level 3 loss ingestion, RunManager consumes canonical consequence keys `corruption_gain` and `end_reason`; legacy `hp_loss`/`provoke_failed`/`double_or_die_failed` are removed from active Level 3 consequence contract.
 - In active Level 3 run save payload, `run.level3_schema = 2` marks the hard-sealed canonical loss contract boundary.
+- Continue-load is strict-sealed: payloads missing `run.level3_schema` or with `run.level3_schema != 2` are rejected without migration, run save is cleared, and flow returns to `MAIN_MENU` via RunManager phase setter.
+- Serialized `run_state.scars` must be canonical `Array[Dictionary]`; legacy scalar scar forms are rejected and trigger the same clear-to-menu gate.
 - Logging internals: delegated to `FlowLogger`.
 
 ## Flow Observability Stack
@@ -89,6 +91,13 @@ All changes to systems described here must update this document in the same PR.
   - `log_request(...)`
   - `log_ui(...)`
 - `dump_last(...)` support for targeted tail inspection.
+
+### SmokeDriver
+
+- `RefCounted` helper at `res://scripts/systems/run/smoke_driver.gd` dedicated to smoke scenario decisions/flags.
+- Consumes environment inputs and phase snapshots only.
+- Must not call `get_tree()` and must not emit `GameEvents`.
+- `RunManager` remains the sole smoke flow authority for timer node ownership, quit gate, and event emission.
 
 ### Watchdog
 
@@ -112,6 +121,7 @@ All changes to systems described here must update this document in the same PR.
 The phase contract is explicit and mandatory:
 
 - `_set_phase()` is the **only** method allowed to mutate `RunPhase`.
+- Legacy `set_phase(...)` wrapper is non-authoritative and fail-fast: it logs + errors and must never mutate `RunPhase`.
 - Boot must enter `MAIN_MENU` via `_set_phase(...)` before any `request_new_run` handling.
 - Any gameplay enable/disable gate phase must be stored in a separate non-authoritative runtime variable and must not mutate `RunPhase` directly.
 - Every `_enter_*()` must trigger exactly one UI render.

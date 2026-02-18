@@ -119,7 +119,6 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 }
 const RUN_SAVE_SCHEMA_VERSION: int = 1
 const LEVEL3_RUN_SCHEMA_VERSION: int = 2
-const LEVEL3_FORBIDDEN_RUN_KEYS: Dictionary = {"hp": true, "max_hp": true, "health": true, "enemy_profile": true, "enemy_profiles": true, "shop_tier": true, "shop_inventory": true, "progression": true, "damage": true, "damage_mod": true, "damage_chance": true, "took_damage": true}
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
@@ -2539,9 +2538,6 @@ func _validate_level3_continue_payload(payload: Dictionary) -> Dictionary:
 	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
 		return {"ok": false, "reason": "missing_run_state"}
 	var run_state_data: Dictionary = payload["run_state"] as Dictionary
-	for key: String in run_state_data.keys():
-		if key in LEVEL3_FORBIDDEN_RUN_KEYS:
-			return {"ok": false, "reason": "legacy_run_state_key:%s" % key}
 	if not run_state_data.has("scars") or not (run_state_data.get("scars") is Array):
 		return {"ok": false, "reason": "missing_or_invalid_scars_array"}
 	var scars_items: Array = run_state_data.get("scars", []) as Array

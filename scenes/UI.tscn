@@ -7,7 +7,7 @@
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="13"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="14"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="15"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/icon_condition.png" id="16"]
+[ext_resource type="Texture2D" path="res://UI Official/UI assets (1x).png" id="16"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0

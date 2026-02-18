@@ -76,7 +76,6 @@ const RunBetSystem = preload("res://scripts/systems/run/bet_system.gd")
 const RunScarSystem = preload("res://scripts/systems/run/scar_system.gd")
 const ScarCatalog = preload("res://scripts/content/scar_catalog.gd")
 const RunOutcomeSystem = preload("res://scripts/systems/run/outcome_system.gd")
-const FlowLogger = preload("res://scripts/systems/run/flow_logger.gd")
 const SmokeDriverScript = preload("res://scripts/systems/run/smoke_driver.gd")
 const RunUiPayload = preload("res://scripts/ui/run_ui_payload.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
@@ -120,7 +119,7 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 }
 const RUN_SAVE_SCHEMA_VERSION: int = 1
 const LEVEL3_RUN_SCHEMA_VERSION: int = 2
-const LEVEL3_FORBIDDEN_RUN_STATE_KEYS: Array[String] = ["hp", "max_hp", "health", "enemy_profile", "enemy_profiles", "shop_tier", "shop_inventory", "progression", "damage", "damage_mod", "damage_chance", "took_damage"]
+const LEVEL3_FORBIDDEN_RUN_KEYS: Dictionary = {"hp": true, "max_hp": true, "health": true, "enemy_profile": true, "enemy_profiles": true, "shop_tier": true, "shop_inventory": true, "progression": true, "damage": true, "damage_mod": true, "damage_chance": true, "took_damage": true}
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
@@ -1316,7 +1315,8 @@ func _ready() -> void:
 	print("RunManager ready")
 	_arena_themes = ArenaThemes.new()
 	_session_id = str(Time.get_unix_time_from_system())
-	_flow_logger.set_session(_session_id)
+	if _flow_logger != null:
+		_flow_logger.set_session(_session_id)
 	var now_ms: int = Time.get_ticks_msec()
 	_last_phase_change_ms = now_ms
 	_last_ui_render_ms = now_ms
@@ -2539,8 +2539,8 @@ func _validate_level3_continue_payload(payload: Dictionary) -> Dictionary:
 	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
 		return {"ok": false, "reason": "missing_run_state"}
 	var run_state_data: Dictionary = payload["run_state"] as Dictionary
-	for key: String in LEVEL3_FORBIDDEN_RUN_STATE_KEYS:
-		if run_state_data.has(key):
+	for key: String in run_state_data.keys():
+		if key in LEVEL3_FORBIDDEN_RUN_KEYS:
 			return {"ok": false, "reason": "legacy_run_state_key:%s" % key}
 	if not run_state_data.has("scars") or not (run_state_data.get("scars") is Array):
 		return {"ok": false, "reason": "missing_or_invalid_scars_array"}

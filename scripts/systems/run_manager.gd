@@ -120,7 +120,7 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 }
 const RUN_SAVE_SCHEMA_VERSION: int = 1
 const LEVEL3_RUN_SCHEMA_VERSION: int = 2
-const LEVEL3_FORBIDDEN_RUN_STATE_KEYS: PackedStringArray = PackedStringArray(["hp", "max_hp", "health", "enemy_profile", "enemy_profiles", "shop_tier", "shop_inventory", "progression", "damage", "damage_mod", "damage_chance", "took_damage"])
+const LEVEL3_FORBIDDEN_RUN_STATE_KEYS: Array[String] = ["hp", "max_hp", "health", "enemy_profile", "enemy_profiles", "shop_tier", "shop_inventory", "progression", "damage", "damage_mod", "damage_chance", "took_damage"]
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"

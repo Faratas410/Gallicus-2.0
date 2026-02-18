@@ -574,33 +574,6 @@ class RegisterState:
 			"flow_phase": String(flow_phase),
 		}
 
-class FinalReport:
-	var opening: String = ""
-	var patterns: Array[String] = []
-	var fracture: String = ""
-	var final_state: String = ""
-	var is_anomalous: bool = false
-	var register_flow_phase: String = ""
-
-	func to_text() -> String:
-		var sections: Array[String] = []
-		sections.append("I. APERTURA — CONSTATAZIONE\n%s" % opening)
-		sections.append("II. CORPO — LETTURA DEI PATTERN\n- %s" % "\n- ".join(patterns))
-		if fracture != "":
-			sections.append("III. FRATTURA\n%s" % fracture)
-		sections.append("Stato finale: %s." % final_state)
-		return "\n\n".join(sections)
-
-	func to_dict() -> Dictionary:
-		return {
-			"opening": opening,
-			"patterns": patterns.duplicate(),
-			"fracture": fracture,
-			"final_state": final_state,
-			"is_anomalous": is_anomalous,
-			"register_flow_phase": register_flow_phase,
-		}
-
 class ArenaResult:
 	var won: bool = false
 	var condemnation_flag: bool = false
@@ -1573,7 +1546,7 @@ func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase])
 	for allowed_phase: RunPhase in allowed_phases:
 		if _phase == allowed_phase:
 			return true
-	push_error("RunManager: %s in wrong phase %s (allowed=%s)\nLAST_FLOW:\n%s\nSNAPSHOT:\n%s" % [request_name, str(_phase), str(allowed_phases), _flow_logger.dump_last(30), _flow_snapshot("wrong_phase")])
+	push_error(_flow_diagnostics.format_wrong_phase_request_error(request_name, str(_phase), str(allowed_phases), _flow_logger.dump_last(30), _flow_snapshot("wrong_phase")))
 	return false
 
 func _flow_snapshot(note: String) -> String:
@@ -2387,22 +2360,7 @@ func _emit_run_debug_state() -> void:
 	if not GameEvents.has_signal("run_debug_state_updated"):
 		return
 	var scars_copy: Array[String] = _serialize_stringname_array(_run_state.scars_history)
-	var payload: Dictionary = {
-		"seed": _run_state.run_seed,
-		"arena_index": _run_state.arena_index,
-		"escalation_level": _run_state.escalation_level,
-		"active_bet_id": String(_run_state.active_bet_id),
-		"enemy_profile": String(_run_state.enemy_profile),
-		"scars": scars_copy,
-		"special_arena_id": String(_run_state.special_arena_id),
-		"special_arena_active": _run_state.special_arena_active,
-		"is_hunted_by_crowd": _run_state.is_hunted_by_crowd,
-		"glory": _run_state.glory,
-		"corruption": int(run.get("corruption", 0)),
-		"scar_double_count": _run_state.scar_double_count,
-		"scar_pact_count": _run_state.scar_pact_count,
-		"volatility": _run_state.volatility,
-	}
+	var payload: Dictionary = _flow_diagnostics.build_run_debug_payload(_run_state.run_seed, _run_state.arena_index, _run_state.escalation_level, String(_run_state.active_bet_id), String(_run_state.enemy_profile), scars_copy, String(_run_state.special_arena_id), _run_state.special_arena_active, _run_state.is_hunted_by_crowd, _run_state.glory, int(run.get("corruption", 0)), _run_state.scar_double_count, _run_state.scar_pact_count, _run_state.volatility)
 	GameEvents.run_debug_state_updated.emit(payload)
 
 func _apply_glory_on_success() -> void:
@@ -4730,39 +4688,10 @@ func _select_run_finale() -> Dictionary:
 			else:
 				ending_id = &"THE_BROKEN"
 
-	var title: String = "IL SOPRAVVISSUTO"
-	var final_report: FinalReport = _build_final_report(ending_id)
-	var text: String = final_report.to_text()
-
-	match ending_id:
-		&"THE_FOOL":
-			title = "LO STOLTO"
-		&"THE_MARKED":
-			title = "IL SEGNATO"
-		&"THE_BROKEN":
-			title = "IL SPEZZATO"
-		&"THE_SURVIVOR":
-			title = "IL SOPRAVVISSUTO"
-		&"THE_DEBTOR":
-			title = "IL DEBITORE"
-		&"THE_CROWD_PET":
-			title = "IL BENEAMATO"
-		&"THE_MARTYR":
-			title = "IL MARTIRE"
-		&"THE_LIBERTY":
-			title = "LIBERTÀ"
-		&"THE_FALL":
-			title = "CADUTA"
-
 	var bet_names: Array[String] = []
 	for bet_id: StringName in _run_state.level3_bets_used:
 		bet_names.append(_get_bet_display_name(String(bet_id)))
 	var pacts_signed: Array[StringName] = _run_state.bets_history.duplicate()
-	var outcome: StringName = &"LOSS"
-	if _run_state.run_end_reason == "CASH_OUT":
-		outcome = &"CASHOUT"
-	elif run_completed:
-		outcome = &"WIN"
 	var stats_payload: Dictionary = {
 		"cashouts": _run_state.level3_cashouts,
 		"doubles": _run_state.level3_doubles,
@@ -4771,90 +4700,39 @@ func _select_run_finale() -> Dictionary:
 		"arena_target": _run_state.level3_target_arenas,
 		"arena_count": _run_state.arena_index,
 	}
-
-	return {
-		"title": title,
-		"text": text,
-		"final_report": final_report.to_dict(),
-		"scars": scars_copy,
+	var anomaly_flow_tag: String = ""
+	match _register_state.flow_phase:
+		RegisterState.FLOW_PHASE_ATTRITO:
+			anomaly_flow_tag = "ATTRITO"
+		RegisterState.FLOW_PHASE_DERIVA:
+			anomaly_flow_tag = "DERIVA"
+		RegisterState.FLOW_PHASE_MEMORIA:
+			anomaly_flow_tag = "MEMORIA"
+		RegisterState.FLOW_PHASE_SOSPENSIONE:
+			anomaly_flow_tag = "SOSPENSIONE"
+		_:
+			anomaly_flow_tag = ""
+	return _finale_builder.build_finale_payload({
 		"ending_id": String(ending_id),
+		"run_end_reason": _run_state.run_end_reason,
+		"run_is_over": _run_state.run_is_over,
+		"bets_history_count": _run_state.bets_history.size(),
+		"refuse_cashout_count_this_run": _run_state.refuse_cashout_count_this_run,
+		"scars_history_count": _run_state.scars_history.size(),
+		"max_escalation": _run_state.max_escalation,
+		"is_anomalous": _register_state.flow_phase != RegisterState.FLOW_PHASE_STABLE,
+		"register_flow_phase": String(_register_state.flow_phase),
+		"anomaly_flow_tag": anomaly_flow_tag,
+		"run_completed": run_completed,
+		"scars": scars_copy,
 		"seed": _run_state.run_seed,
 		"stats": stats_payload,
 		"pacts_signed": pacts_signed,
 		"condanne_this_run": _run_state.condanne_this_run.duplicate(),
 		"last_crowd_line": _run_state.last_audience_context_line,
-		"outcome": outcome,
-		"classified_terminal": ending_id != &"",
 		"glory": _run_state.glory,
 		"corruption": _run_state.corruption,
-	}
-
-
-func _build_final_report(ending_id: StringName) -> FinalReport:
-	var report: FinalReport = FinalReport.new()
-	var is_anomalous: bool = _register_state.flow_phase != RegisterState.FLOW_PHASE_STABLE
-	report.is_anomalous = is_anomalous
-	report.register_flow_phase = String(_register_state.flow_phase)
-
-	if _run_state.run_end_reason == "CASH_OUT":
-		report.opening = "Il soggetto ha interrotto il ciclo prima della definizione."
-	elif _run_state.run_is_over:
-		report.opening = "Il soggetto ha completato il ciclo operativo."
-	else:
-		report.opening = "Il soggetto presenta un profilo registrabile."
-
-	if _run_state.bets_history.size() > 0:
-		report.patterns.append("accettazione ricorrente di condizioni irreversibili")
-	if _run_state.refuse_cashout_count_this_run > 0:
-		report.patterns.append("rifiuto della chiusura quando disponibile")
-	if _run_state.scars_history.size() > 0:
-		report.patterns.append("accumulo di Scar persistenti su più passaggi")
-	if _run_state.max_escalation >= 3:
-		report.patterns.append("reiterazione oltre l'utile con esposizione crescente")
-	if report.patterns.size() < 2:
-		report.patterns.append("sacrificio di opzioni future registrato")
-
-	if is_anomalous:
-		match _register_state.flow_phase:
-			RegisterState.FLOW_PHASE_ATTRITO:
-				report.fracture = "Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente."
-				report.final_state = _get_final_state_label(ending_id)
-			RegisterState.FLOW_PHASE_DERIVA:
-				report.fracture = "Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva."
-				report.final_state = "classificazione non conclusiva"
-			RegisterState.FLOW_PHASE_MEMORIA:
-				report.fracture = "Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta."
-				report.final_state = "classificazione incompleta"
-			RegisterState.FLOW_PHASE_SOSPENSIONE:
-				report.fracture = "Stato registrato con parametri attivi. Chiusura finale non applicabile."
-				report.final_state = "registrato in sospensione"
-			_:
-				report.final_state = _get_final_state_label(ending_id)
-	else:
-		report.final_state = _get_final_state_label(ending_id)
-
-	return report
-
-func _get_final_state_label(ending_id: StringName) -> String:
-	match ending_id:
-		&"THE_FOOL":
-			return "interruzione immediata"
-		&"THE_MARKED":
-			return "segnato"
-		&"THE_BROKEN":
-			return "compromesso"
-		&"THE_DEBTOR":
-			return "in debito attivo"
-		&"THE_CROWD_PET":
-			return "conforme al pubblico"
-		&"THE_MARTYR":
-			return "consumo completo"
-		&"THE_LIBERTY":
-			return "libertà registrata"
-		&"THE_FALL":
-			return "caduta amministrativa"
-		_:
-			return "non definito"
+	})
 
 func _update_hidden_run_metrics() -> void:
 	var corruption_value: int = 0
@@ -4983,7 +4861,7 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
 	if not _has_enter_phase_handler(next):
-		push_error("RunManager: missing _enter_* for phase %s\nLAST_FLOW:\n%s" % [str(next), _flow_logger.dump_last(30)])
+		push_error(_flow_diagnostics.format_missing_enter_phase_error(str(next), _flow_logger.dump_last(30)))
 		return
 	var previous_phase: RunPhase = _phase
 	_flow_logger.log_phase(str(next), "from=%s reason=%s" % [str(previous_phase), reason])
@@ -4992,12 +4870,12 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 	_last_activity_ms = now_ms
 	_phase = next
 	if not _run_enter_phase(next):
-		push_error("RunManager: missing _enter_* for phase %s\nLAST_FLOW:\n%s" % [str(next), _flow_logger.dump_last(30)])
+		push_error(_flow_diagnostics.format_missing_enter_phase_error(str(next), _flow_logger.dump_last(30)))
 		return
 	if _is_smoke_mode():
 		print("SMOKE:PHASE=%s" % _phase_to_name(next))
 	if OS.is_debug_build() and reason != "":
-		print_debug("RunManager flow phase:", int(next), "-", reason)
+		print_debug(_flow_diagnostics.format_phase_debug_line(int(next), reason))
 
 func _touch_request_activity(request_name: String) -> void:
 	_last_request = request_name
@@ -5023,7 +4901,7 @@ func _watchdog_tick() -> void:
 		return
 	var stall_ms: int = now_ms - _last_activity_ms
 	var hint: String = _watchdog_stall_hint(now_ms)
-	push_error("WATCHDOG: stalled for %dms | hint=%s | %s" % [stall_ms, hint, _flow_snapshot("stall")])
+	push_error(_flow_diagnostics.format_watchdog_stall_error(stall_ms, hint, _flow_snapshot("stall")))
 	_watchdog_enabled = false
 
 func _has_enter_phase_handler(next: RunPhase) -> bool:

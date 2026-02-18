@@ -1203,6 +1203,7 @@ var _smoke_fullrun_quit_sent: bool = false
 var _smoke_fullrun_terminal_phase_seen: bool = false
 var _smoke_fullrun_cashout_sent_ms: int = -1
 var _smoke_fullrun_timeout_stop_reported: bool = false
+var _smoke_quit_reason: String = ""
 
 const WATCHDOG_STALL_MS: int = 6000
 const SMOKE_FULLRUN_WAIT_TIMEOUT_MS: int = 5000
@@ -1255,7 +1256,7 @@ func _start_smoke_timeout_timer() -> void:
 	smoke_timer.wait_time = timeout_sec
 	add_child(smoke_timer)
 	smoke_timer.timeout.connect(func() -> void:
-		_arm_smoke_quit_next_frame()
+		_smoke_quit("timeout_parachute")
 	)
 	smoke_timer.start()
 
@@ -1285,11 +1286,13 @@ func _smoke_start_scenario() -> void:
 	_smoke_fullrun_terminal_phase_seen = false
 	_smoke_fullrun_cashout_sent_ms = -1
 	_smoke_fullrun_timeout_stop_reported = false
+	_smoke_quit_reason = ""
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
 	add_child(_smoke_driver_timer)
 	_smoke_driver_timer.timeout.connect(_on_smoke_driver_tick)
+	_wire_smoke_finale_listener()
 	print("SMOKE:STEP=SCENARIO_%s_START" % scenario)
 	_smoke_driver_timer.start()
 
@@ -1363,13 +1366,33 @@ func _on_smoke_driver_tick() -> void:
 func _exit_tree() -> void:
 	_stop_smoke_driver()
 
-func _arm_smoke_quit_next_frame() -> void:
+func _wire_smoke_finale_listener() -> void:
+	if not _is_smoke_mode() or _get_smoke_scenario() != "FULL_RUN":
+		return
+	if not GameEvents.has_signal("run_finale_selected"):
+		return
+	var callable_ref: Callable = Callable(self, "_on_smoke_run_finale_selected")
+	if not GameEvents.run_finale_selected.is_connected(callable_ref):
+		GameEvents.run_finale_selected.connect(callable_ref)
+
+func _on_smoke_run_finale_selected(_finale: Dictionary) -> void:
+	if not _is_smoke_mode() or _get_smoke_scenario() != "FULL_RUN":
+		return
+	if _smoke_fullrun_finale_emitted:
+		return
+	_smoke_fullrun_finale_emitted = true
+	print("SMOKE:FINALE_EMITTED")
+
+func _smoke_quit(reason: String) -> void:
 	if not _is_smoke_mode() or _get_smoke_scenario() != "FULL_RUN":
 		return
 	if _smoke_fullrun_quit_sent:
 		return
-	if _smoke_quit_pending_frames < 0:
-		_smoke_quit_pending_frames = 1
+	if _smoke_quit_pending_frames >= 0:
+		return
+	_smoke_quit_reason = reason
+	print("SMOKE:QUIT_REQUESTED reason=%s" % reason)
+	_smoke_quit_pending_frames = 1
 
 func _arm_smoke_cashout_next_frame() -> void:
 	if not _is_smoke_mode() or _get_smoke_scenario() != "FULL_RUN":
@@ -1414,16 +1437,15 @@ func _process(_delta: float) -> void:
 		if _phase == RunPhase.GAME_OVER:
 			_smoke_fullrun_terminal_phase_seen = true
 		if _smoke_fullrun_terminal_phase_seen and _smoke_fullrun_finale_emitted:
-			_arm_smoke_quit_next_frame()
+			_smoke_quit("full_run_complete")
 		elif _smoke_fullrun_cashout_sent_ms >= 0 and Time.get_ticks_msec() - _smoke_fullrun_cashout_sent_ms > SMOKE_FULLRUN_WAIT_TIMEOUT_MS and not _smoke_fullrun_timeout_stop_reported:
 			_smoke_fullrun_timeout_stop_reported = true
-			print("SMOKE:STOP timeout_wait_terminal phase=%s last_request=%s" % [_phase_to_name(_phase), _last_request])
-			_arm_smoke_quit_next_frame()
+			print("SMOKE:FAIL timeout_after_cashout phase=%s last_request=%s" % [_phase_to_name(_phase), _last_request])
+			_smoke_quit("timeout")
 	if _smoke_quit_pending_frames >= 0:
 		if _smoke_quit_pending_frames == 0:
 			_smoke_quit_pending_frames = -1
 			_smoke_fullrun_quit_sent = true
-			print("SMOKE:QUIT_REQUESTED")
 			get_tree().quit(0)
 			return
 		_smoke_quit_pending_frames -= 1
@@ -4596,10 +4618,8 @@ func _emit_run_finale() -> void:
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
 	if _is_smoke_mode() and _get_smoke_scenario() == "FULL_RUN":
-		_smoke_fullrun_finale_emitted = true
-		print("SMOKE:FINALE_EMITTED")
 		_stop_smoke_driver()
-		_arm_smoke_quit_next_frame()
+		_wire_smoke_finale_listener()
 	_emit_run_log(finale)
 	_export_run_summary(finale)
 

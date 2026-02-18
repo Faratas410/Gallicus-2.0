@@ -1191,9 +1191,19 @@ It is a narrative-classification layer expressed through language, recurrence an
 Run runtime keeps an internal per-run integer `corruption` (default `0`) as RunManager authoritative runtime field (hard cap `100`).
 It is incremented only by RunManager at authoritative ingestion points:
 
-- push-your-luck `double` requests (`+1`),
-- high-risk pact selection (`+1`),
+- push-your-luck `double` requests (canonical `+1`),
+- high-risk pact selection (canonical `+1`),
+- passive Scar pool triggers (double pool / high-risk pact pool),
 - Level 3 loss consequences carrying canonical `corruption_gain` (clamped to `100`).
+
+Level 3 passive Scar contract (RunManager-only):
+
+- Scar triggers are random and save/load deterministic through a sealed per-run RNG state (`scar_rng_state` + `scar_roll_index`).
+- Double Scar pool: chance table by doubles count (`0.10 / 0.20 / 0.35 / 0.50` cap) with per-pool diminishing returns (`1 / (1 + scar_double_count)`).
+- High-risk pact Scar pool: base chance scales with run progress (`arena_index`) and applies the same per-pool diminishing rule (`1 / (1 + scar_pact_count)`).
+- High-risk pact corruption/Scar ingestion is idempotent per pact confirmation context (same `arena_index` + `bet_id` cannot be ingested twice), and guard state is written only on effective high-risk ingestion.
+- Scar triggers are irreversible and not removable.
+- `volatility` is run-scoped and increases only from passive Scar triggers/pressure.
 
 Level 3 loss consequence contract is hard-sealed to canonical `corruption_gain` + `end_reason`; legacy alias keys are removed from active contract.
 No UI exposure is allowed.

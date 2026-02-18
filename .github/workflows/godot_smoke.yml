@@ -68,6 +68,21 @@ jobs:
           set -e
           python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
 
+      - name: Fail on unresolved git conflict markers
+        run: |
+          set -euo pipefail
+
+          if rg -n --no-heading --fixed-strings \
+            -e "<<<<<<<" \
+            -e "=======" \
+            -e ">>>>>>>" \
+            --glob '!.git/*' \
+            . > conflict_markers.log; then
+            echo "ERROR: Unresolved git conflict markers found:"
+            cat conflict_markers.log
+            exit 1
+          fi
+
       - name: Download Godot 4.6 headless
         run: |
           set -e
@@ -187,6 +202,21 @@ jobs:
         run: |
           set -e
           python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
+
+      - name: Fail on unresolved git conflict markers
+        run: |
+          set -euo pipefail
+
+          if rg -n --no-heading --fixed-strings \
+            -e "<<<<<<<" \
+            -e "=======" \
+            -e ">>>>>>>" \
+            --glob '!.git/*' \
+            . > conflict_markers.log; then
+            echo "ERROR: Unresolved git conflict markers found:"
+            cat conflict_markers.log
+            exit 1
+          fi
 
       - name: Download Godot 4.6 headless
         run: |

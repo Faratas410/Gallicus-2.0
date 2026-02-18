@@ -1243,6 +1243,7 @@ func _start_smoke_timeout_timer() -> void:
 	smoke_timer.wait_time = timeout_sec
 	add_child(smoke_timer)
 	smoke_timer.timeout.connect(func() -> void:
+		print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
 		get_tree().quit(0)
 	)
 	smoke_timer.start()

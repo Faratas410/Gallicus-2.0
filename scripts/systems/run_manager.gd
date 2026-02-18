@@ -71,6 +71,7 @@ const BET_P3_LIE_APPLAUSE: StringName = &"P3_LIE_APPLAUSE"
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const GameConstants = preload("res://scripts/systems/constants.gd")
 const SmokeDriverScript = preload("res://scripts/systems/run/smoke_driver.gd")
+const FlowWatchdogScript = preload("res://scripts/systems/run/flow_watchdog.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
 const ScarSystemScript = preload("res://scripts/systems/run/scar_system.gd")
 const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd")
@@ -1191,6 +1192,7 @@ var _registry_has_precedent: bool = false
 var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke: SmokeDriver = null
 var _smoke_driver_timer: Timer = null
+var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
 
 const WATCHDOG_STALL_MS: int = 6000
 
@@ -1575,15 +1577,15 @@ func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase])
 	return false
 
 func _flow_snapshot(note: String) -> String:
-	var lines: Array[String] = []
-	lines.push_back("note=%s" % note)
-	lines.push_back("phase=%s" % str(_phase))
-	lines.push_back("last_request=%s" % _last_request)
-	lines.push_back("last_phase_change_ms=%d" % _last_phase_change_ms)
-	lines.push_back("last_ui_render_ms=%d" % _last_ui_render_ms)
-	lines.push_back("last_activity_ms=%d" % _last_activity_ms)
-	lines.push_back("last_flow:\n%s" % _flow_logger.dump_last(60))
-	return "\n".join(lines)
+	return _flow_watchdog.build_snapshot(
+		note,
+		str(_phase),
+		_last_request,
+		_last_phase_change_ms,
+		_last_ui_render_ms,
+		_last_activity_ms,
+		_flow_logger.dump_last(60)
+	)
 
 
 func request_confirm_pact() -> void:
@@ -5002,20 +5004,14 @@ func _touch_request_activity(request_name: String) -> void:
 	_last_activity_ms = Time.get_ticks_msec()
 
 func _watchdog_stall_hint(now_ms: int) -> String:
-	var phase_age_ms: int = now_ms - _last_phase_change_ms
-	var ui_age_ms: int = now_ms - _last_ui_render_ms
-	var activity_age_ms: int = now_ms - _last_activity_ms
-	if phase_age_ms > WATCHDOG_STALL_MS and ui_age_ms > WATCHDOG_STALL_MS:
-		if _last_request == "":
-			return "request not received"
-		return "phase handler missing"
-	if phase_age_ms <= WATCHDOG_STALL_MS and ui_age_ms > WATCHDOG_STALL_MS:
-		return "UI render missing"
-	if phase_age_ms > WATCHDOG_STALL_MS and ui_age_ms <= WATCHDOG_STALL_MS:
-		return "likely waiting for input"
-	if activity_age_ms > WATCHDOG_STALL_MS:
-		return "request not received"
-	return "unknown"
+	return _flow_watchdog.watchdog_stall_hint(
+		now_ms,
+		_last_phase_change_ms,
+		_last_ui_render_ms,
+		_last_activity_ms,
+		_last_request,
+		WATCHDOG_STALL_MS
+	)
 
 func _watchdog_tick() -> void:
 	if not _watchdog_enabled:
@@ -5023,7 +5019,7 @@ func _watchdog_tick() -> void:
 	if _phase == RunPhase.NONE or _phase == RunPhase.MAIN_MENU:
 		return
 	var now_ms: int = Time.get_ticks_msec()
-	if now_ms - _last_activity_ms <= WATCHDOG_STALL_MS:
+	if not _flow_watchdog.should_report_stall(now_ms, _last_activity_ms, WATCHDOG_STALL_MS):
 		return
 	var stall_ms: int = now_ms - _last_activity_ms
 	var hint: String = _watchdog_stall_hint(now_ms)

@@ -108,7 +108,7 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 - Notes: _TBD_
 
 ## Visual binding audit baseline (placeholder policy)
-- Runtime scene audit baseline uses a single known-good placeholder texture resource `res://UI Official/UI assets (1x).png` when `TextureRect` bindings are null in active UI scenes.
+- Runtime scene audit baseline uses a single known-good placeholder texture resource `res://assets/ui/icons/icon_condition.png` when `TextureRect` bindings are null in active UI scenes.
 - Placeholder assignment is scene-local and diagnostic only; it does not introduce additional theme authority and does not alter runtime flow logic.
 - `TextureRect.texture` placeholders must be real `Texture2D` resources (PNG/AtlasTexture), never `StyleBox*`.
 
@@ -120,7 +120,7 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 
 ## References used
 - `res://UI Official/Reference sheet.png`
-- `res://UI Official/UI assets (1x).png`
+- `res://assets/ui/icons/icon_condition.png`
 - `res://UI Official/Italiana-Regular.ttf`
 
 ## SOURCE: docs/ui_audio_map.md

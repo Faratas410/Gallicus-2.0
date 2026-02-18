@@ -101,6 +101,8 @@ All changes to systems described here must update this document in the same PR.
 
 ### Watchdog
 
+- `RefCounted` helper at `res://scripts/systems/run/flow_watchdog.gd` encapsulates watchdog diagnostics logic (stall hint + snapshot string composition).
+- `RunManager` remains the sole authority for timing source (`Time.get_ticks_msec()`), phase gating, and watchdog enable/disable lifecycle.
 - Tracks activity markers generated during flow progression.
 - Single-shot stall detection for dead-flow diagnosis.
 - Snapshot capture via `_flow_snapshot()`.

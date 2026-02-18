@@ -1286,6 +1286,10 @@ func _ready() -> void:
 	_session_id = str(Time.get_unix_time_from_system())
 	if _flow_logger != null:
 		_flow_logger.set_session(_session_id)
+	if _flow_diagnostics == null:
+		_flow_diagnostics = FlowDiagnostics.new()
+	if _finale_builder == null:
+		_finale_builder = FinaleBuilder.new()
 	var now_ms: int = Time.get_ticks_msec()
 	_last_phase_change_ms = now_ms
 	_last_ui_render_ms = now_ms
@@ -1552,7 +1556,15 @@ func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase])
 	return false
 
 func _flow_snapshot(note: String) -> String:
-	return _flow_watchdog.build_snapshot(note, str(_phase), _last_request, _last_phase_change_ms, _last_ui_render_ms, _last_activity_ms, _flow_logger.dump_last(60))
+	return _flow_watchdog.build_snapshot(
+		note,
+		str(_phase),
+		_last_request,
+		_last_phase_change_ms,
+		_last_ui_render_ms,
+		_last_activity_ms,
+		_flow_logger.dump_last(60)
+	)
 
 
 func request_confirm_pact() -> void:
@@ -4876,7 +4888,14 @@ func _touch_request_activity(request_name: String) -> void:
 	_last_activity_ms = Time.get_ticks_msec()
 
 func _watchdog_stall_hint(now_ms: int) -> String:
-	return _flow_watchdog.watchdog_stall_hint(now_ms, _last_phase_change_ms, _last_ui_render_ms, _last_activity_ms, _last_request, WATCHDOG_STALL_MS)
+	return _flow_watchdog.watchdog_stall_hint(
+		now_ms,
+		_last_phase_change_ms,
+		_last_ui_render_ms,
+		_last_activity_ms,
+		_last_request,
+		WATCHDOG_STALL_MS
+	)
 
 func _watchdog_tick() -> void:
 	if not _watchdog_enabled:

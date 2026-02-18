@@ -1284,6 +1284,10 @@ func _ready() -> void:
 	_session_id = str(Time.get_unix_time_from_system())
 	if _flow_logger != null:
 		_flow_logger.set_session(_session_id)
+	if _flow_diagnostics == null:
+		_flow_diagnostics = FlowDiagnostics.new()
+	if _finale_builder == null:
+		_finale_builder = FinaleBuilder.new()
 	var now_ms: int = Time.get_ticks_msec()
 	_last_phase_change_ms = now_ms
 	_last_ui_render_ms = now_ms

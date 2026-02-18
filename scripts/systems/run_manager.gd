@@ -1196,10 +1196,11 @@ var _smoke_fullrun_bet_requested: bool = false
 var _smoke_fullrun_mid_choice_requested: bool = false
 var _smoke_fullrun_push_luck_requested: bool = false
 var _smoke_fullrun_finale_emitted: bool = false
-var _smoke_quit_pending_frames: int = -1
 var _smoke_cashout_pending_frames: int = -1
+var _smoke_after_cashout_wait_tick_pending: bool = false
 var _smoke_fullrun_cashout_sent: bool = false
 var _smoke_fullrun_quit_sent: bool = false
+var _smoke_quit_requested: bool = false
 var _smoke_fullrun_terminal_phase_seen: bool = false
 var _smoke_fullrun_cashout_sent_ms: int = -1
 var _smoke_fullrun_timeout_stop_reported: bool = false
@@ -1279,10 +1280,11 @@ func _smoke_start_scenario() -> void:
 	_smoke_fullrun_mid_choice_requested = false
 	_smoke_fullrun_push_luck_requested = false
 	_smoke_fullrun_finale_emitted = false
-	_smoke_quit_pending_frames = -1
 	_smoke_cashout_pending_frames = -1
+	_smoke_after_cashout_wait_tick_pending = false
 	_smoke_fullrun_cashout_sent = false
 	_smoke_fullrun_quit_sent = false
+	_smoke_quit_requested = false
 	_smoke_fullrun_terminal_phase_seen = false
 	_smoke_fullrun_cashout_sent_ms = -1
 	_smoke_fullrun_timeout_stop_reported = false
@@ -1368,6 +1370,8 @@ func _notification(what: int) -> void:
 		return
 	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_PREDELETE or what == NOTIFICATION_EXIT_TREE:
 		print("SMOKE:NOTIFICATION what=%d" % what)
+		if not _smoke_quit_requested:
+			print("SMOKE:UNEXPECTED_SHUTDOWN what=%d (no quit requested)" % what)
 
 func _exit_tree() -> void:
 	if _is_smoke_mode():
@@ -1394,13 +1398,22 @@ func _on_smoke_run_finale_selected(_finale: Dictionary) -> void:
 func smoke_request_quit(reason: String, caller: String = "run_manager") -> void:
 	if not _is_smoke_mode() or _get_smoke_scenario() != "FULL_RUN":
 		return
+	if _smoke_quit_requested:
+		return
 	if _smoke_fullrun_quit_sent:
 		return
-	if _smoke_quit_pending_frames >= 0:
-		return
+	_smoke_quit_requested = true
 	_smoke_quit_reason = reason
 	print("SMOKE:QUIT_REQUESTED reason=%s caller=%s" % [reason, caller])
-	_smoke_quit_pending_frames = 1
+	call_deferred("_smoke_quit_on_next_frame")
+
+
+func _smoke_quit_on_next_frame() -> void:
+	if _smoke_fullrun_quit_sent:
+		return
+	await get_tree().process_frame
+	_smoke_fullrun_quit_sent = true
+	get_tree().quit(0)
 
 func _arm_smoke_cashout_next_frame() -> void:
 	if not _is_smoke_mode() or _get_smoke_scenario() != "FULL_RUN":
@@ -1431,6 +1444,9 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_watchdog_tick()
+	if _smoke_after_cashout_wait_tick_pending:
+		_smoke_after_cashout_wait_tick_pending = false
+		print("SMOKE:STEP=AFTER_CASHOUT_WAIT_TICK phase=%s" % _phase_to_name(_phase))
 	if _smoke_cashout_pending_frames >= 0:
 		if _smoke_cashout_pending_frames == 0:
 			_smoke_cashout_pending_frames = -1
@@ -1440,6 +1456,7 @@ func _process(_delta: float) -> void:
 				print("SMOKE:REQ=request_pyl_cashout")
 				GameEvents.request_pyl_cashout.emit()
 				print("SMOKE:STEP=AFTER_CASHOUT_WAIT_START")
+				_smoke_after_cashout_wait_tick_pending = true
 		else:
 			_smoke_cashout_pending_frames -= 1
 	if _is_smoke_mode() and _get_smoke_scenario() == "FULL_RUN" and _smoke_fullrun_cashout_sent and not _smoke_fullrun_quit_sent:
@@ -1451,13 +1468,6 @@ func _process(_delta: float) -> void:
 			_smoke_fullrun_timeout_stop_reported = true
 			print("SMOKE:FAIL timeout_after_cashout phase=%s last_request=%s" % [_phase_to_name(_phase), _last_request])
 			smoke_request_quit("timeout", "run_manager.gd:_process")
-	if _smoke_quit_pending_frames >= 0:
-		if _smoke_quit_pending_frames == 0:
-			_smoke_quit_pending_frames = -1
-			_smoke_fullrun_quit_sent = true
-			get_tree().quit(0)
-			return
-		_smoke_quit_pending_frames -= 1
 
 func _connect_gameevents() -> void:
 	if _events_wired:

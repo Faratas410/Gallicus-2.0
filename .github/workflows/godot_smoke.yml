@@ -110,12 +110,6 @@ jobs:
             sleep "$sleep_step"
           done
 
-          if [ "$reached_bet_present" -eq 1 ]; then
-            if ! grep -q "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" smoke.log; then
-              echo "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" | tee -a smoke.log
-            fi
-          fi
-
           tick=0
           while kill -0 "$GODOT_PID" 2>/dev/null; do
             if [ "$tick" -ge "$max_ticks" ]; then
@@ -147,6 +141,17 @@ jobs:
           grep -q "SMOKE:PHASE=RUN_INIT" smoke.log
           grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log
           grep -q "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" smoke.log
+
+          run_manager_ready_count=$(grep -c "RunManager ready" smoke.log || true)
+          if [ "$run_manager_ready_count" -ne 1 ]; then
+            echo "Expected exactly 1 RunManager ready marker, found $run_manager_ready_count"
+            exit 1
+          fi
+
+          if grep -E "Expected exactly 1 run_manager|run_manager count != 1" -n smoke.log; then
+            echo "Detected duplicate RunManager authority symptom in smoke log."
+            exit 1
+          fi
 
   full_run_diagnostic:
     runs-on: ubuntu-latest

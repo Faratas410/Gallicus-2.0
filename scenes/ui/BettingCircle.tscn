@@ -6,6 +6,7 @@
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="10"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="11"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="12"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player_chicken.png" id="13"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
@@ -73,7 +74,7 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 1
-texture = null
+texture = ExtResource("13")
 expand_mode = 1
 stretch_mode = 5
 
@@ -155,7 +156,7 @@ text = "INCASSA E VAI"
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
-texture = null
+texture = ExtResource("13")
 expand_mode = 1
 stretch_mode = 5
 
@@ -208,7 +209,7 @@ text = "SANGUE INTEGRO"
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
-texture = null
+texture = ExtResource("13")
 expand_mode = 1
 stretch_mode = 5
 
@@ -261,7 +262,7 @@ text = "RADDOPPI O MUORI"
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 custom_minimum_size = Vector2(24, 24)
-texture = null
+texture = ExtResource("13")
 expand_mode = 1
 stretch_mode = 5
 

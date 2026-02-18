@@ -11,6 +11,10 @@
 default_font = ExtResource("1_font")
 default_font_size = 20
 theme_types/Label = {
+"colors": {
+"font_color": Color(0.95, 0.91, 0.8, 1),
+"font_disabled_color": Color(0.55, 0.52, 0.46, 1)
+},
 "fonts": {
 "font": ExtResource("1_font")
 },
@@ -28,7 +32,9 @@ theme_types/Button = {
 },
 "styles": {
 "disabled": ExtResource("6_btn_disabled"),
+"focus": ExtResource("4_btn_hover"),
 "hover": ExtResource("4_btn_hover"),
+"hover_pressed": ExtResource("5_btn_pressed"),
 "normal": ExtResource("3_btn_normal"),
 "pressed": ExtResource("5_btn_pressed")
 }

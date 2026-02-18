@@ -70,14 +70,7 @@ const BET_P3_LIE_DEBT: StringName = &"P3_LIE_DEBT"
 const BET_P3_LIE_APPLAUSE: StringName = &"P3_LIE_APPLAUSE"
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const GameConstants = preload("res://scripts/systems/constants.gd")
-const RunState = preload("res://scripts/systems/run/run_state.gd")
-const SaveSystem = preload("res://scripts/systems/run/save_system.gd")
-const RunBetSystem = preload("res://scripts/systems/run/bet_system.gd")
-const RunScarSystem = preload("res://scripts/systems/run/scar_system.gd")
-const ScarCatalog = preload("res://scripts/content/scar_catalog.gd")
-const RunOutcomeSystem = preload("res://scripts/systems/run/outcome_system.gd")
-const FlowLogger = preload("res://scripts/systems/run/flow_logger.gd")
-const RunUiPayload = preload("res://scripts/ui/run_ui_payload.gd")
+const SmokeDriverScript = preload("res://scripts/systems/run/smoke_driver.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
 const ScarSystemScript = preload("res://scripts/systems/run/scar_system.gd")
 const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd")
@@ -118,6 +111,7 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 	BET_P3_LIE_APPLAUSE: CONDANNA_NON_DOVEVO_PROVARCI,
 }
 const RUN_SAVE_SCHEMA_VERSION: int = 1
+const LEVEL3_RUN_SCHEMA_VERSION: int = 2
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
@@ -1189,20 +1183,26 @@ var _last_request: String = ""
 var _events_wired: bool = false
 var _last_phase_change_ms: int = 0
 var _language_fallback_logged: bool = false
+var _last_save_reject_reason: String = ""
 var _last_ui_render_ms: int = 0
 var _last_activity_ms: int = 0
 var _watchdog_enabled: bool = true
 var _registry_has_precedent: bool = false
 var _glory_multiplier: int = GLORY_MULT_BASE
+var _smoke: SmokeDriver = null
 var _smoke_driver_timer: Timer = null
-var _smoke_new_run_requested: bool = false
-var _smoke_step_logged_run_init: bool = false
-var _smoke_gate_quit_requested: bool = false
 
 const WATCHDOG_STALL_MS: int = 6000
 
+func _smoke_init_if_needed() -> void:
+	if _smoke != null:
+		return
+	_smoke = SmokeDriverScript.new()
+
+
 func _is_smoke_mode() -> bool:
-	return OS.get_environment("GALLICUS_SMOKE") == "1"
+	_smoke_init_if_needed()
+	return _smoke.is_smoke_mode()
 
 
 func _phase_to_name(phase: RunPhase) -> String:
@@ -1240,10 +1240,8 @@ func _phase_to_name(phase: RunPhase) -> String:
 func _start_smoke_timeout_timer() -> void:
 	if not _is_smoke_mode():
 		return
-	var timeout_sec: float = 10.0
-	var raw_timeout: String = OS.get_environment("GALLICUS_SMOKE_TIMEOUT_SEC")
-	if raw_timeout != "":
-		timeout_sec = max(raw_timeout.to_float(), 0.1)
+	_smoke_init_if_needed()
+	var timeout_sec: float = _smoke.get_timeout_seconds()
 	var smoke_timer: Timer = Timer.new()
 	smoke_timer.one_shot = true
 	smoke_timer.wait_time = timeout_sec
@@ -1257,21 +1255,19 @@ func _start_smoke_timeout_timer() -> void:
 
 
 func _smoke_start_scenario() -> void:
-	if not _is_smoke_mode():
-		return
-	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") != "BET_PRESENT":
+	_smoke_init_if_needed()
+	if not _smoke.should_start_bet_present_scenario():
 		return
 	if _smoke_driver_timer != null and is_instance_valid(_smoke_driver_timer):
 		return
-	_smoke_new_run_requested = false
-	_smoke_step_logged_run_init = false
-	_smoke_gate_quit_requested = false
+	var start_logs: PackedStringArray = _smoke.begin_bet_present_scenario()
 	_smoke_driver_timer = Timer.new()
 	_smoke_driver_timer.one_shot = false
 	_smoke_driver_timer.wait_time = 0.1
 	add_child(_smoke_driver_timer)
 	_smoke_driver_timer.timeout.connect(_on_smoke_driver_tick)
-	print("SMOKE:STEP=SCENARIO_BET_PRESENT_START")
+	for line: String in start_logs:
+		print(line)
 	_smoke_driver_timer.start()
 
 
@@ -1284,31 +1280,23 @@ func _stop_smoke_driver() -> void:
 
 
 func _on_smoke_driver_tick() -> void:
-	if not _is_smoke_mode() or OS.get_environment("GALLICUS_SMOKE_SCENARIO") != "BET_PRESENT":
+	_smoke_init_if_needed()
+	var smoke_step: Dictionary = _smoke.on_bet_present_tick(
+		_phase == RunPhase.RUN_INIT,
+		_phase == RunPhase.MAIN_MENU,
+		_phase == RunPhase.BET_PRESENT
+	)
+	var smoke_logs: PackedStringArray = smoke_step.get("logs", PackedStringArray()) as PackedStringArray
+	if bool(smoke_step.get("stop_driver", false)):
 		_stop_smoke_driver()
+	for line: String in smoke_logs:
+		print(line)
+	if bool(smoke_step.get("request_quit_gate", false)):
+		call_deferred("_smoke_quit_gate")
+	if bool(smoke_step.get("stop_driver", false)):
 		return
-	if _phase == RunPhase.BET_PRESENT:
-		print("SMOKE:STEP=BET_PRESENT_REACHED")
-		_smoke_request_gate_quit()
-		_stop_smoke_driver()
-		return
-	if _phase == RunPhase.RUN_INIT and not _smoke_step_logged_run_init:
-		_smoke_step_logged_run_init = true
-		print("SMOKE:STEP=RUN_INIT_SEEN")
-	if _phase == RunPhase.MAIN_MENU and not _smoke_new_run_requested:
-		_smoke_new_run_requested = true
-		print("SMOKE:STEP=REQUEST_NEW_RUN")
-		print("SMOKE:NEW_RUN_REQUESTED")
-		print("SMOKE:REQ=request_new_run")
+	if bool(smoke_step.get("request_new_run", false)):
 		GameEvents.request_new_run.emit()
-
-
-func _smoke_request_gate_quit() -> void:
-	if _smoke_gate_quit_requested:
-		return
-	_smoke_gate_quit_requested = true
-	print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
-	call_deferred("_smoke_quit_gate")
 
 
 func _smoke_quit_gate() -> void:
@@ -1319,7 +1307,8 @@ func _ready() -> void:
 	print("RunManager ready")
 	_arena_themes = ArenaThemes.new()
 	_session_id = str(Time.get_unix_time_from_system())
-	_flow_logger.set_session(_session_id)
+	if _flow_logger != null:
+		_flow_logger.set_session(_session_id)
 	var now_ms: int = Time.get_ticks_msec()
 	_last_phase_change_ms = now_ms
 	_last_ui_render_ms = now_ms
@@ -1648,7 +1637,7 @@ func request_load_continue() -> void:
 	if payload.is_empty():
 		return
 	if not _apply_run_save_payload(payload):
-		_save_system.clear_run()
+		_reject_invalid_continue_payload(_last_save_reject_reason)
 		return
 	_resume_run_from_save(_run_state.run_save_flow_step, _run_state.run_save_flow_bet_id)
 
@@ -2435,7 +2424,7 @@ func _build_run_save_payload() -> Dictionary:
 	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
 		upgrades = (run["upgrades"] as Dictionary).duplicate(true)
 	var run_payload: Dictionary = {
-		"level3_schema": 2,
+		"level3_schema": LEVEL3_RUN_SCHEMA_VERSION,
 		"arena_index": int(run.get("arena_index", 0)),
 		"coins": int(run.get("coins", 0)),
 		"corruption": int(run.get("corruption", 0)),
@@ -2455,17 +2444,35 @@ func _build_run_save_payload() -> Dictionary:
 	}
 
 func _apply_run_save_payload(payload: Dictionary) -> bool:
-	if not payload.has("schema_version"):
+	_last_save_reject_reason = ""
+	var validation: Dictionary = _validate_level3_continue_payload(payload)
+	if not bool(validation.get("ok", false)):
+		_last_save_reject_reason = str(validation.get("reason", "invalid_continue_payload"))
 		return false
-	if typeof(payload.get("schema_version")) != TYPE_INT:
+
+	var run_state_data: Dictionary = payload["run_state"] as Dictionary
+	var parsed_scars: Array[Scar] = _parse_run_scars(run_state_data.get("scars", []) as Array)
+	var parsed_pacts: Array[PactLogEntry] = _parse_pacts_log(run_state_data.get("pacts_log", []))
+	var run_data: Dictionary = payload["run"] as Dictionary
+
+	var next_run_state: RunState = RunState.new()
+	next_run_state.reset()
+	next_run_state.from_dict(run_state_data)
+	if next_run_state.run_save_flow_step == &"":
+		next_run_state.run_save_flow_step = RUN_FLOW_BET_OFFER
+	if next_run_state.run_seed <= 0:
+		_last_save_reject_reason = "invalid_run_seed"
 		return false
-	var schema_version: int = int(payload.get("schema_version", 0))
-	if schema_version != RUN_SAVE_SCHEMA_VERSION:
+	if next_run_state.run_is_over:
+		_last_save_reject_reason = "run_already_over"
 		return false
-	if not payload.has("run") or not (payload["run"] is Dictionary):
-		return false
-	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
-		return false
+
+	next_run_state.scars = parsed_scars
+	next_run_state.pacts_log = parsed_pacts
+	var next_arena_index: int = int(run_data.get("arena_index", next_run_state.arena_index))
+	var next_coins: int = int(run_data.get("coins", starting_coins))
+	var next_corruption: int = clampi(int(run_data.get("corruption", 0)), 0, CORRUPTION_MAX)
+
 	_pact_sealed_sequence_id += 1
 	_resolve_ritual_sequence_id += 1
 	_resolving_ritual = false
@@ -2480,32 +2487,17 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_waiting_for_intermediate_choice = false
+
+	_run_state = next_run_state
 	_run_state.intermediate_pending_bet_id = &""
 	_run_state.post_bet_pending_bet_id = &""
-
-	var run_state_data: Dictionary = payload["run_state"] as Dictionary
-	_run_state = RunState.new()
-	_run_state.reset()
-	_run_state.from_dict(run_state_data)
+	_run_state.corruption = next_corruption
 	_initialize_scar_rng_state()
 	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
-	if _run_state.run_save_flow_step == &"":
-		_run_state.run_save_flow_step = RUN_FLOW_BET_OFFER
-	if _run_state.run_seed <= 0:
-		return false
-	if _run_state.run_is_over:
-		return false
-	_run_state.scars = _parse_run_scars(run_state_data.get("scars", []) as Array)
-	_run_state.pacts_log = _parse_pacts_log(run_state_data.get("pacts_log", []))
 
-	var run_data: Dictionary = payload["run"] as Dictionary
-	var level3_schema: int = int(run_data.get("level3_schema", 1))
-	run["arena_index"] = int(run_data.get("arena_index", _run_state.arena_index))
-	run["coins"] = int(run_data.get("coins", starting_coins))
-	run["corruption"] = clampi(int(run_data.get("corruption", 0)), 0, CORRUPTION_MAX)
-	if level3_schema < 2:
-		run["corruption"] = clampi(int(run.get("corruption", 0)), 0, CORRUPTION_MAX)
-	_run_state.corruption = int(run.get("corruption", 0))
+	run["arena_index"] = next_arena_index
+	run["coins"] = next_coins
+	run["corruption"] = next_corruption
 	if LEVEL3_ENABLED:
 		run["upgrades"] = {}
 	elif run_data.has("upgrades") and run_data["upgrades"] is Dictionary:
@@ -2530,6 +2522,32 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_emit_run_debug_state()
 	_update_arena_visual_only()
 	return true
+
+
+func _validate_level3_continue_payload(payload: Dictionary) -> Dictionary:
+	var save_validation: Dictionary = _save_system.validate_level3_payload(payload)
+	if not bool(save_validation.get("ok", false)):
+		return save_validation
+	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
+		return {"ok": false, "reason": "missing_run_state"}
+	var run_state_data: Dictionary = payload["run_state"] as Dictionary
+	if not run_state_data.has("scars") or not (run_state_data.get("scars") is Array):
+		return {"ok": false, "reason": "missing_or_invalid_scars_array"}
+	var scars_items: Array = run_state_data.get("scars", []) as Array
+	for item in scars_items:
+		if not (item is Dictionary):
+			return {"ok": false, "reason": "invalid_scar_item_type"}
+	return {"ok": true, "reason": ""}
+
+
+func _reject_invalid_continue_payload(reason: String) -> void:
+	var final_reason: String = reason
+	if final_reason == "":
+		final_reason = "invalid_continue_payload"
+	_flow_log("continue_rejected", final_reason)
+	push_warning("RUN_SAVE_REJECTED: %s" % final_reason)
+	_save_system.clear_run()
+	_set_phase(RunPhase.MAIN_MENU, "continue_rejected_invalid_save")
 
 func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
 	_waiting_for_bet = false
@@ -2583,13 +2601,8 @@ func _parse_stringname_array(items: Array) -> Array[StringName]:
 func _parse_run_scars(items: Array) -> Array[Scar]:
 	var values: Array[Scar] = []
 	for item in items:
-		if item is Dictionary:
-			values.append(Scar.from_dict(item as Dictionary))
-		elif str(item) != "":
-			var legacy: Scar = Scar.new()
-			legacy.id = StringName(str(item))
-			legacy.trigger = SCAR_TRIGGER_IRREVERSIBLE_BET
-			values.append(legacy)
+		var scar_data: Dictionary = item as Dictionary
+		values.append(Scar.from_dict(scar_data))
 	return values
 
 func _serialize_scars_detail() -> Array[Dictionary]:
@@ -5078,11 +5091,11 @@ func _enter_end_run_phase() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.GAME_OVER, "FINE RUN"))
 
 func set_phase(p: Variant) -> void:
-	# Legacy wrapper: usa il canale canonico (_set_phase) come unica autorità del flow.
-	if typeof(p) == TYPE_INT:
-		_set_phase(p as RunPhase, "legacy_set_phase")
-	else:
-		_set_phase(p as RunPhase, "legacy_set_phase")
+	var legacy_intent: String = "phase=%s reason=legacy_set_phase" % [str(p)]
+	_flow_log("legacy_set_phase_rejected", legacy_intent)
+	push_error("RunManager: legacy set_phase call rejected (%s)" % legacy_intent)
+	if OS.is_debug_build():
+		assert(false, "RunManager legacy set_phase backdoor invoked")
 
 func _set_runtime_gate_phase(next: RunPhase) -> void:
 	_gameplay_phase = next

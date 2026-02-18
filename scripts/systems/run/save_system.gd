@@ -7,6 +7,8 @@ const RUN_PATH: String = "user://run.save"
 const RUN_TMP_PATH: String = "%s.tmp" % RUN_PATH
 const RUN_BAK_PATH: String = "%s.bak" % RUN_PATH
 const RUN_BAK2_PATH: String = "%s.bak2" % RUN_PATH
+const LEVEL3_RUN_SCHEMA_VERSION: int = 2
+const LEVEL3_FORBIDDEN_RUN_KEYS: Dictionary = {"xp": true, "level": true, "upgrade_tokens": true, "upgrade_costs": true, "difficulty_tier": true}
 
 func has_run_save() -> bool:
 	return FileAccess.file_exists(RUN_PATH) or FileAccess.file_exists(RUN_BAK_PATH)
@@ -37,6 +39,24 @@ func load_run() -> Dictionary:
 		"state": state,
 		"payload": payload,
 	}
+
+
+func validate_level3_payload(payload: Dictionary) -> Dictionary:
+	if not payload.has("schema_version") or typeof(payload.get("schema_version")) != TYPE_INT:
+		return {"ok": false, "reason": "missing_or_invalid_schema_version"}
+	if int(payload.get("schema_version", 0)) != RUN_SCHEMA_VERSION:
+		return {"ok": false, "reason": "unsupported_save_wrapper_schema"}
+	if not payload.has("run") or not (payload.get("run") is Dictionary):
+		return {"ok": false, "reason": "missing_run_payload"}
+	var run_payload: Dictionary = payload.get("run", {}) as Dictionary
+	if not run_payload.has("level3_schema") or typeof(run_payload.get("level3_schema")) != TYPE_INT:
+		return {"ok": false, "reason": "missing_level3_schema"}
+	if int(run_payload.get("level3_schema", 0)) != LEVEL3_RUN_SCHEMA_VERSION:
+		return {"ok": false, "reason": "unsupported_level3_schema"}
+	for key: String in LEVEL3_FORBIDDEN_RUN_KEYS:
+		if run_payload.has(key):
+			return {"ok": false, "reason": "legacy_run_key:%s" % key}
+	return {"ok": true, "reason": ""}
 func save_run_payload(payload: Dictionary) -> bool:
 	var wrapped_payload: Dictionary = {
 		"schema_version": RUN_SCHEMA_VERSION,

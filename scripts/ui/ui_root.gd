@@ -230,6 +230,7 @@ var _sentence_banner_sequence_id: int = 0
 var _is_signing: bool = false
 var _bet_confirm_default_text: String = ""
 var _phase_node_map: Dictionary = {}
+var _last_shown_phase: int = RUN_PHASE_MAIN_MENU
 var _button_style_primary_normal: StyleBox = null
 var _button_style_primary_hover: StyleBox = null
 var _button_style_primary_pressed: StyleBox = null
@@ -461,6 +462,7 @@ func _verify_phase_paths() -> void:
 			push_error("UI: missing phase mapping target for %s" % str(mapped_phase))
 
 func show_phase(phase: int) -> void:
+	_last_shown_phase = phase
 	if _phase_node_map.is_empty():
 		push_error("UI: missing phase mapping for %s" % str(phase))
 		return
@@ -1697,6 +1699,9 @@ func _on_fast_blink_tick() -> void:
 		next_alpha = 0.2
 	fast_countdown_label.modulate.a = next_alpha
 
+func _phase_requires_arena_player_groups() -> bool:
+	return _last_shown_phase > RUN_PHASE_BET_PRESENT
+
 func _refresh_runtime_group_cache(log_missing: bool) -> void:
 	if _run_manager_port != null:
 		_run_manager_port.has_manager()
@@ -1706,10 +1711,11 @@ func _refresh_runtime_group_cache(log_missing: bool) -> void:
 		_arena = _run_manager_port.get_arena()
 	if _arena == null:
 		_arena = get_tree().get_first_node_in_group("arena")
-	if log_missing and _arena == null:
+	var requires_arena_player: bool = _phase_requires_arena_player_groups()
+	if log_missing and requires_arena_player and _arena == null:
 		push_error("UI: missing arena group node")
 	_player = get_tree().get_first_node_in_group("player")
-	if log_missing and _player == null:
+	if log_missing and requires_arena_player and _player == null:
 		push_error("UI: missing player group node")
 	if _player != null:
 		_bind_player(_player)

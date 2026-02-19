@@ -222,6 +222,7 @@ Current MP3 files under `res://Music/`:
 - Active Level 3 HUD contract excludes legacy XP/level-up/token-progression reactive wiring and related level-up SFX/popup handling.
 - Active Level 3 UI↔RunManager contract uses `res://scripts/ui/run_manager_ui_port.gd` as a typed adapter for read-only UI queries, avoiding direct UI-side `has_method` branching while keeping RunManager authority unchanged.
 - `res://scripts/ui/ui_root.gd` keeps a small runtime group-ref cache (`run_manager` via adapter, `arena`, `player`) with explicit refresh on `_ready` and run-start handlers; missing refs must still surface as `push_error` (no silent masking).
+- During pre-`BET_COMMITTED` phases (`BET_PRESENT` and earlier), missing `arena`/`player` group refs are non-invariant and must not emit ERROR logs; from later phases where those refs are required by runtime wiring, missing refs remain ERROR-level.
 
 Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are removed from active runtime path (no enemy combat HUD authority).
 - Runtime enforcement note (Level 3): player HP UI reactive wiring is removed from active runtime path (no `health_changed`/`get_health` bindings in UIRoot).

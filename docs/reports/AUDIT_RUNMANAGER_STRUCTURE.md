@@ -3,8 +3,8 @@
 ## 1. File Overview
 
 - Target: `res://scripts/systems/run_manager.gd`
-- Total lines: **5302**
-- Total functions (`^func`): **315**
+- Total lines: **5198**
+- Total functions (`^func`): **306**
 
 ### High-level contiguous section breakdown
 
@@ -144,3 +144,25 @@ GameEvents-adapter handlers:
 | 3 | `extract_betting_offer_policy` | C3 | 120–180 | Medium | Weighted bet selection and behavior maps are deterministic and data-driven, low scene-tree dependency. |
 | 4 | `extract_arena_theme_special_policy` | C2 | 110–160 | Medium | Theme/special-arena calculations can move to helper while RunManager retains scene mutation calls. |
 | 5 | `extract_scar_state_mutation_kernel` | C6 | 130–210 | Medium | Scar math/recompute helpers are mostly RunState transformations; keep event emission wrappers in manager. |
+
+
+## 8. Patch Log
+
+### C3.1 — Extract betting offer policy + reward text builders
+
+- Added `res://scripts/systems/run/betting_policy.gd` (`RefCounted`) to host deterministic offer-selection policy and audience/cashout reward text builders.
+- RunManager keeps authority for `_set_phase(...)`, `_open_level3_bet_ui`, request handlers, `RunState` mutations, and all `GameEvents` emissions.
+- Migrated deterministic functions from RunManager into helper-backed calls for:
+  - weighted offer selection + anti-repeat filtering
+  - registry precedent offer weight adjustments
+  - audience label/phrase and cashout modifier text construction used by push-luck payloads
+- Result: RunManager reduced to **5198 lines** with no phase/event authority moved out of the manager.
+
+
+### C3.2 — Extract betting/push-luck payload factory
+
+- Added `res://scripts/systems/run/betting_payload_factory.gd` (`RefCounted`) for pure UI payload dictionary assembly.
+- RunManager now delegates bet-offer payload wrapping and push-your-luck payload dictionary formatting to the helper.
+- Audience reward text fragments are normalized through the payload factory before use in UI payload assembly.
+- Phase transitions, request gating, `GameEvents` emission timing, and all `RunState` mutation remain in `RunManager`.
+- Result: RunManager reduced further to **5198 lines** after payload-assembly extraction.

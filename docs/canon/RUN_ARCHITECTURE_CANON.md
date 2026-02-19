@@ -120,6 +120,21 @@ All changes to systems described here must update this document in the same PR.
 - `RunManager` remains the sole authority for finale timing, ending selection, phase/end-flow decisions, and `GameEvents.run_finale_selected` emission.
 - Helper must remain pure: no `GameEvents` emission, no scene-tree access, no `RunState` mutation.
 
+### BettingPolicy
+
+- `RefCounted` helper at `res://scripts/systems/run/betting_policy.gd` encapsulates deterministic betting contract computations.
+- Scope includes weighted offer selection, registry-precedent weight policy, and audience/cashout reward text dictionary building used by push-luck payload assembly.
+- `RunManager` remains sole authority for: phase transitions (`_set_phase(...)`), deciding when bet UI opens/commits, all `GameEvents` emissions, and all `RunState` mutation application.
+- Helper invariants: no `GameEvents` emission, no scene-tree access, no direct `RunState` mutation.
+
+### BettingPayloadFactory
+
+- `RefCounted` helper at `res://scripts/systems/run/betting_payload_factory.gd` encapsulates deterministic UI payload dictionary assembly for bet offer and push-your-luck payloads.
+- Accepts only explicit primitive/dictionary inputs and returns dictionaries with no side effects.
+- `RunManager` remains sole authority for payload emission timing, phase gating, `GameEvents` emission, and `RunState` mutation.
+- Helper invariants: no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access.
+- Payload stability rule: helper output schema is fixed and keys are always emitted with explicit defaults (no optional/missing output keys for declared payload contracts).
+
 ### Debug Overlay
 
 - Toggle path: `F3`.

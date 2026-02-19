@@ -45,7 +45,7 @@ Queste categorie risultano coerenti con il canone Level 3 e con wiring runtime:
 
 ### 2) Public API apparentemente non consumate
 9. `restart_run(preserve_coins = true)`
-10. `get_coins()`
+10. `get_coins()` — REMOVED (PATCH 13)
 11. `handle_bet_failed(bet_id)`
 12. `get_pact_reveal_line(pact_id)`
 

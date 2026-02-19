@@ -78,8 +78,8 @@
 ### Read/condition checks
 
 - `RunManager.spend_coins`: checks affordability (`current coins < amount`).
-- `RunManager.get_coins`: accessor used by UI compatibility path.
-- `UIRoot._refresh_buy_token_ui`: reads current coins (`_coins` cache + `RunManager.get_coins`) and disables buy button if `coins < cost`.
+- `RunManager.get_coins`: legacy compatibility accessor removed in Patch 13 (no consumer in active Level 3 runtime).
+- `UIRoot._refresh_buy_token_ui`: reads current coins from local `_coins` cache and disables buy button if `coins < cost`.
 
 ### Purchase/reward/multiplier-related references
 

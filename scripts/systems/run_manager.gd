@@ -2068,15 +2068,6 @@ func reset_run() -> void:
 	run["coins"] = starting_coins
 	start_new_run()
 
-func restart_run(preserve_coins: bool = true) -> void:
-	get_tree().paused = false
-	Engine.time_scale = 1.0
-	if preserve_coins:
-		start_new_run()
-	else:
-		run["coins"] = starting_coins
-		start_new_run()
-
 func _open_bet_ui(_from_victory: bool = false) -> void:
 	if LEVEL3_ENABLED:
 		_open_level3_bet_ui()
@@ -3492,10 +3483,6 @@ func spend_coins(amount: int) -> bool:
 	GameEvents.coins_changed.emit(int(run.get("coins", 0)))
 	return true
 
-func get_coins() -> int:
-	# LEGACY_COMPAT: caller still exists at scripts/ui/ui_root.gd.
-	return int(run.get("coins", 0))
-
 func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 	if LEVEL3_ENABLED:
 		return
@@ -3725,25 +3712,6 @@ func _on_player_died() -> void:
 	if LEVEL3_ENABLED:
 		return
 	_enter_end_run("death")
-
-func handle_bet_failed(bet_id: String) -> void:
-	if _is_game_over:
-		return
-	_update_last_pact_outcome(StringName(bet_id), false)
-	if _run_state.provoke_armed:
-		_run_state.provoke_armed = false
-		_register_run_end("PROVOCA_FAIL")
-		_enter_end_run("")
-		return
-	if bet_id == BET_DOUBLE_OR_DIE:
-		_run_state.failed_high_risk_bets += 1
-		_register_run_end("DOUBLE_OR_DIE")
-		_reset_bet_chain()
-		_enter_end_run("")
-		return
-	if bet_id == BET_PURE_BLOOD:
-		_run_state.failed_high_risk_bets += 1
-	_reset_bet_chain()
 
 func _get_bet_chain_reward_scale(chain_level: int) -> int:
 	return _bet_system.get_reward_scale(chain_level)

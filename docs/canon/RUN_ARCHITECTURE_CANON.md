@@ -135,6 +135,24 @@ All changes to systems described here must update this document in the same PR.
 - Helper invariants: no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access.
 - Payload stability rule: helper output schema is fixed and keys are always emitted with explicit defaults (no optional/missing output keys for declared payload contracts).
 
+### Phase Handlers (pilot RUN_INIT + BET_PRESENT payload-only)
+
+- `RunPhaseHandlerBase` (`res://scripts/systems/run/phase_handlers/run_phase_handler_base.gd`) defines a `RefCounted` phase-helper contract for local UI payload dictionary assembly only.
+- `PhaseRunInitHandler` (`res://scripts/systems/run/phase_handlers/phase_run_init_handler.gd`) builds RUN_INIT UI payload metadata.
+- `PhaseBetPresentHandler` (`res://scripts/systems/run/phase_handlers/phase_bet_present_handler.gd`) builds BET_PRESENT UI payload metadata.
+- `PhaseIntermediateChoiceHandler` (`res://scripts/systems/run/phase_handlers/phase_intermediate_choice_handler.gd`) builds INTERMEDIATE_CHOICE UI payload metadata.
+- `PhasePushYourLuckHandler` (`res://scripts/systems/run/phase_handlers/phase_push_your_luck_handler.gd`) builds PUSH_YOUR_LUCK UI payload metadata.
+- `PhaseResolutionHandler` (`res://scripts/systems/run/phase_handlers/phase_resolution_handler.gd`) builds RESOLUTION UI payload metadata.
+- `PhaseGameOverHandler` (`res://scripts/systems/run/phase_handlers/phase_game_over_handler.gd`) builds GAME_OVER/finale payload input metadata consumed by RunManager finale emission.
+- `PhaseResult` (`res://scripts/systems/run/phase_handlers/phase_result.gd`) is the standardized non-authoritative handler return contract (`handled`, `action`, optional payload/event intent metadata) interpreted by RunManager.
+- `PhasePushYourLuckHandler.handle_request(...)` currently supports delegated intent classification for `request_pyl_cashout` and `request_pyl_double`; RunManager remains responsible for executing state mutation, event emission, and phase/end-run sequencing.
+- `PhaseIntermediateChoiceHandler.handle_request(...)` currently supports delegated intent classification for `request_mid_choice_select`; RunManager remains responsible for applying gesture selection state mutation/autosave/phase progression.
+- `PhaseBetPresentHandler.handle_request(...)` currently supports delegated intent classification for `request_place_bet`; RunManager remains responsible for bet selection/commit flow, autosave, ritual sequencing, and event emission ordering.
+- `PhaseMainMenuHandler.handle_request(...)` currently supports delegated intent classification for `request_new_run`, `request_continue_run`, and `request_show_main_menu`; RunManager remains responsible for run reset/continue/menu-return authority, phase progression, and event emission ordering.
+- `RunManager` resolves request handlers via an internal phase-handler map (`RunPhase` -> handler) and `_dispatch_phase_request(...)`; routing stays non-authoritative and includes a MAIN_MENU-handler fallback for menu-intent requests (`request_new_run`, `request_continue_run`, `request_show_main_menu`) when current-phase handler does not classify them.
+- Handlers are non-authoritative helpers only: no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access, and no independent flow transitions.
+- `RunManager` remains the sole authority for phase transitions, all `GameEvents` emissions, request dispatch, and final flow outcomes.
+
 ### RunStateKernel
 
 - `RefCounted` helper at `res://scripts/systems/run/runstate_kernel.gd` encapsulates deterministic RunState mutation kernel operations (math/clamps/invariants/history appends plus pure scar state upsert/reset/recompute).

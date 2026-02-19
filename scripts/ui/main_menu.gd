@@ -54,7 +54,8 @@ const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
 const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
 const CONDANNA_UNLOCKED_ALPHA: float = 1.0
 const CONDANNA_LOCKED_ALPHA: float = 0.35
-const RUN_PHASE_MAIN_MENU: int = 10
+const RunPhaseContract = preload("res://scripts/contracts/run_phase_contract.gd")
+const RUN_PHASE_MAIN_MENU: int = RunPhaseContract.MAIN_MENU
 
 var _language_fallback_logged: bool = false
 var selected_language: String = "Italiano"

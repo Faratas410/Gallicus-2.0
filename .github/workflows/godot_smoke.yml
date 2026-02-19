@@ -7,6 +7,7 @@ on:
 
 env:
   GODOT_VERSION: "4.6-stable"
+  GODOT_BUILD: "stable"
   GODOT_BIN_NAME: "Godot_v4.6-stable_linux.x86_64"
   GODOT_ZIP_NAME: "Godot_v4.6-stable_linux.x86_64.zip"
   GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
@@ -29,8 +30,8 @@ jobs:
         id: cache-godot
         uses: actions/cache@v4
         with:
-          path: tools/godot/${{ env.GODOT_BIN_NAME }}
-          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}-${{ hashFiles('.github/workflows/godot_smoke.yml') }}
+          path: tools/godot
+          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BUILD }}-${{ env.GODOT_BIN_NAME }}
 
       - name: Git LFS pull (always)
         run: |
@@ -80,6 +81,16 @@ jobs:
         run: |
           set -e
           python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
+
+      - name: Validate GameEvents signal contract (v1)
+        run: |
+          set -e
+          python tools/ci/validate_gameevents_contract.py
+
+      - name: Check runtime invariants (static)
+        run: |
+          set -e
+          python scripts/ci/check_runtime_invariants.py
 
       - name: Fail on unresolved git conflict markers
         run: |
@@ -211,8 +222,8 @@ jobs:
         id: cache-godot-diagnostic
         uses: actions/cache@v4
         with:
-          path: tools/godot/${{ env.GODOT_BIN_NAME }}
-          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}-${{ hashFiles('.github/workflows/godot_smoke.yml') }}
+          path: tools/godot
+          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BUILD }}-${{ env.GODOT_BIN_NAME }}
 
       - name: Git LFS pull (always)
         run: |
@@ -224,6 +235,16 @@ jobs:
         run: |
           set -e
           python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
+
+      - name: Validate GameEvents signal contract (v1)
+        run: |
+          set -e
+          python tools/ci/validate_gameevents_contract.py
+
+      - name: Check runtime invariants (static)
+        run: |
+          set -e
+          python scripts/ci/check_runtime_invariants.py
 
       - name: Fail on unresolved git conflict markers
         run: |

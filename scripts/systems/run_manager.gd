@@ -111,8 +111,6 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 	BET_P3_LIE_DEBT: CONDANNA_NON_DOVEVO_PROVARCI,
 	BET_P3_LIE_APPLAUSE: CONDANNA_NON_DOVEVO_PROVARCI,
 }
-const RUN_SAVE_SCHEMA_VERSION: int = 1
-const LEVEL3_RUN_SCHEMA_VERSION: int = 2
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
@@ -1555,6 +1553,12 @@ func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase])
 	push_error(_flow_diagnostics.format_wrong_phase_request_error(request_name, str(_phase), str(allowed_phases), _flow_logger.dump_last(30), _flow_snapshot("wrong_phase")))
 	return false
 
+func _require_phase(expected_phase: RunPhase, context: String, gate_ok: bool = true) -> bool:
+	if gate_ok and _phase == expected_phase:
+		return true
+	push_error("RunManager: %s in wrong phase %s\nSNAPSHOT:\n%s" % [context, str(_phase), _flow_snapshot(context)])
+	return false
+
 func _flow_snapshot(note: String) -> String:
 	return _flow_watchdog.build_snapshot(
 		note,
@@ -1569,8 +1573,7 @@ func _flow_snapshot(note: String) -> String:
 
 func request_confirm_pact() -> void:
 	_touch_request_activity("request_confirm_pact()")
-	if not _waiting_for_bet or _phase != RunPhase.BET_PRESENT:
-		push_error("RunManager: request_confirm_pact in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_confirm_pact")])
+	if not _require_phase(RunPhase.BET_PRESENT, "request_confirm_pact", _waiting_for_bet):
 		return
 	var pending_bet_id: StringName = _run_state.last_selected_bet_id
 	if pending_bet_id == &"":
@@ -1580,8 +1583,7 @@ func request_confirm_pact() -> void:
 
 func request_choose_mid(index: int) -> void:
 	_touch_request_activity("request_choose_mid(index=%d)" % index)
-	if not _waiting_for_intermediate_choice or _phase != RunPhase.INTERMEDIATE_CHOICE:
-		push_error("RunManager: request_choose_mid in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_choose_mid")])
+	if not _require_phase(RunPhase.INTERMEDIATE_CHOICE, "request_choose_mid", _waiting_for_intermediate_choice):
 		return
 	if index == 0:
 		_apply_intermediate_choice("placa")
@@ -1593,15 +1595,13 @@ func request_choose_mid(index: int) -> void:
 
 func request_push_your_luck() -> void:
 	_touch_request_activity("request_push_your_luck()")
-	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
-		push_error("RunManager: request_push_your_luck in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_push_your_luck")])
+	if not _require_phase(RunPhase.PUSH_YOUR_LUCK, "request_push_your_luck", _waiting_for_push_luck):
 		return
 	_push_your_luck()
 
 func request_take_payout() -> void:
 	_touch_request_activity("request_take_payout()")
-	if not _waiting_for_push_luck or _phase != RunPhase.PUSH_YOUR_LUCK:
-		push_error("RunManager: request_take_payout in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_take_payout")])
+	if not _require_phase(RunPhase.PUSH_YOUR_LUCK, "request_take_payout", _waiting_for_push_luck):
 		return
 	_take_payout()
 
@@ -2386,56 +2386,42 @@ func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void
 	_save_system.save_run_payload(_build_run_save_payload())
 
 func _build_run_save_payload() -> Dictionary:
-	var upgrades: Dictionary = {}
-	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
-		upgrades = (run["upgrades"] as Dictionary).duplicate(true)
-	var run_payload: Dictionary = {
-		"level3_schema": LEVEL3_RUN_SCHEMA_VERSION,
-		"arena_index": int(run.get("arena_index", 0)),
-		"coins": int(run.get("coins", 0)),
-		"corruption": int(run.get("corruption", 0)),
-		"upgrades": upgrades,
-	}
+	var run_payload: Dictionary = _build_level3_runtime_payload()
 	var run_state_payload: Dictionary = _run_state.to_dict()
 	run_state_payload["scars"] = _serialize_run_scars(_run_state.scars)
 	var pacts_log: Array[Dictionary] = []
 	for entry: PactLogEntry in _run_state.pacts_log:
 		pacts_log.append(entry.to_dict())
 	run_state_payload["pacts_log"] = pacts_log
+	var payload_state: RunState = RunState.new()
+	payload_state.reset()
+	payload_state.from_dict(run_state_payload)
+	return _save_system.build_level3_run_payload(payload_state, run_payload, _serialize_scars_detail())
+
+func _build_level3_runtime_payload() -> Dictionary:
+	var upgrades: Dictionary = {}
+	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
+		upgrades = (run["upgrades"] as Dictionary).duplicate(true)
 	return {
-		"schema_version": RUN_SAVE_SCHEMA_VERSION,
-		"run": run_payload,
-		"run_state": run_state_payload,
-		"scars_detail": _serialize_scars_detail(),
+		"level3_schema": SaveSystemScript.LEVEL3_RUN_SCHEMA_VERSION,
+		"arena_index": int(run.get("arena_index", 0)),
+		"coins": int(run.get("coins", 0)),
+		"corruption": int(run.get("corruption", 0)),
+		"upgrades": upgrades,
 	}
 
 func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_last_save_reject_reason = ""
-	var validation: Dictionary = _validate_level3_continue_payload(payload)
-	if not bool(validation.get("ok", false)):
-		_last_save_reject_reason = str(validation.get("reason", "invalid_continue_payload"))
+	var result: Dictionary = _save_system.apply_level3_payload(_run_state, payload)
+	if not bool(result.get("ok", false)):
+		_last_save_reject_reason = str(result.get("reason", "invalid_continue_payload"))
 		return false
 
-	var run_state_data: Dictionary = payload["run_state"] as Dictionary
+	var run_state_data: Dictionary = result.get("run_state", {}) as Dictionary
+	var run_data: Dictionary = result.get("run", {}) as Dictionary
 	var parsed_scars: Array[Scar] = _parse_run_scars(run_state_data.get("scars", []) as Array)
 	var parsed_pacts: Array[PactLogEntry] = _parse_pacts_log(run_state_data.get("pacts_log", []))
-	var run_data: Dictionary = payload["run"] as Dictionary
-
-	var next_run_state: RunState = RunState.new()
-	next_run_state.reset()
-	next_run_state.from_dict(run_state_data)
-	if next_run_state.run_save_flow_step == &"":
-		next_run_state.run_save_flow_step = RUN_FLOW_BET_OFFER
-	if next_run_state.run_seed <= 0:
-		_last_save_reject_reason = "invalid_run_seed"
-		return false
-	if next_run_state.run_is_over:
-		_last_save_reject_reason = "run_already_over"
-		return false
-
-	next_run_state.scars = parsed_scars
-	next_run_state.pacts_log = parsed_pacts
-	var next_arena_index: int = int(run_data.get("arena_index", next_run_state.arena_index))
+	var next_arena_index: int = int(run_data.get("arena_index", _run_state.arena_index))
 	var next_coins: int = int(run_data.get("coins", starting_coins))
 	var next_corruption: int = clampi(int(run_data.get("corruption", 0)), 0, CORRUPTION_MAX)
 
@@ -2454,7 +2440,8 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_waiting_for_push_luck = false
 	_waiting_for_intermediate_choice = false
 
-	_run_state = next_run_state
+	_run_state.scars = parsed_scars
+	_run_state.pacts_log = parsed_pacts
 	_run_state.intermediate_pending_bet_id = &""
 	_run_state.post_bet_pending_bet_id = &""
 	_run_state.corruption = next_corruption
@@ -2475,8 +2462,8 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	if _run_state.special_arena_index <= 0 and _run_state.level3_target_arenas > 0:
 		_run_state.special_arena_index = _pick_special_arena_index(_run_state.level3_target_arenas)
 
-	if payload.has("scars_detail") and payload["scars_detail"] is Array:
-		_apply_scars_detail(payload["scars_detail"] as Array)
+	if result.has("scars_detail") and result["scars_detail"] is Array:
+		_apply_scars_detail(result["scars_detail"] as Array)
 	else:
 		_emit_scars_updated()
 
@@ -2488,22 +2475,6 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_emit_run_debug_state()
 	_update_arena_visual_only()
 	return true
-
-
-func _validate_level3_continue_payload(payload: Dictionary) -> Dictionary:
-	var save_validation: Dictionary = _save_system.validate_level3_payload(payload)
-	if not bool(save_validation.get("ok", false)):
-		return save_validation
-	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
-		return {"ok": false, "reason": "missing_run_state"}
-	var run_state_data: Dictionary = payload["run_state"] as Dictionary
-	if not run_state_data.has("scars") or not (run_state_data.get("scars") is Array):
-		return {"ok": false, "reason": "missing_or_invalid_scars_array"}
-	var scars_items: Array = run_state_data.get("scars", []) as Array
-	for item in scars_items:
-		if not (item is Dictionary):
-			return {"ok": false, "reason": "invalid_scar_item_type"}
-	return {"ok": true, "reason": ""}
 
 
 func _reject_invalid_continue_payload(reason: String) -> void:

@@ -41,6 +41,46 @@ func load_run() -> Dictionary:
 	}
 
 
+func build_level3_run_payload(run_state: RunState, run_payload: Dictionary, scars_detail: Array[Dictionary] = []) -> Dictionary:
+	if run_state == null:
+		return {}
+	return {
+		"schema_version": RUN_SCHEMA_VERSION,
+		"run": run_payload.duplicate(true),
+		"run_state": run_state.to_dict(),
+		"scars_detail": scars_detail.duplicate(true),
+	}
+
+
+func apply_level3_payload(run_state: RunState, payload: Dictionary) -> Dictionary:
+	if run_state == null:
+		return {"ok": false, "reason": "missing_run_state_instance"}
+	var validation: Dictionary = validate_level3_payload(payload)
+	if not bool(validation.get("ok", false)):
+		return validation
+	var next_state: RunState = RunState.new()
+	next_state.reset()
+	next_state.from_dict(payload.get("run_state", {}) as Dictionary)
+	if next_state.run_save_flow_step == &"":
+		next_state.run_save_flow_step = &"BET_OFFER"
+	if next_state.run_seed <= 0:
+		return {"ok": false, "reason": "invalid_run_seed"}
+	if next_state.run_is_over:
+		return {"ok": false, "reason": "run_already_over"}
+	run_state.from_dict(next_state.to_dict())
+	if payload.has("run_state") and payload["run_state"] is Dictionary:
+		var run_state_data: Dictionary = payload["run_state"] as Dictionary
+		run_state.scars = (run_state_data.get("scars", []) as Array).duplicate(true)
+		run_state.pacts_log = (run_state_data.get("pacts_log", []) as Array).duplicate(true)
+	return {
+		"ok": true,
+		"reason": "",
+		"run": (payload.get("run", {}) as Dictionary).duplicate(true),
+		"run_state": (payload.get("run_state", {}) as Dictionary).duplicate(true),
+		"scars_detail": (payload.get("scars_detail", []) as Array).duplicate(true),
+	}
+
+
 func validate_level3_payload(payload: Dictionary) -> Dictionary:
 	if not payload.has("schema_version") or typeof(payload.get("schema_version")) != TYPE_INT:
 		return {"ok": false, "reason": "missing_or_invalid_schema_version"}
@@ -56,7 +96,18 @@ func validate_level3_payload(payload: Dictionary) -> Dictionary:
 	for key: String in LEVEL3_FORBIDDEN_RUN_KEYS:
 		if run_payload.has(key):
 			return {"ok": false, "reason": "legacy_run_key:%s" % key}
+	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
+		return {"ok": false, "reason": "missing_run_state"}
+	var run_state_data: Dictionary = payload["run_state"] as Dictionary
+	if not run_state_data.has("scars") or not (run_state_data.get("scars") is Array):
+		return {"ok": false, "reason": "missing_or_invalid_scars_array"}
+	var scars_items: Array = run_state_data.get("scars", []) as Array
+	for item in scars_items:
+		if not (item is Dictionary):
+			return {"ok": false, "reason": "invalid_scar_item_type"}
 	return {"ok": true, "reason": ""}
+
+
 func save_run_payload(payload: Dictionary) -> bool:
 	var wrapped_payload: Dictionary = {
 		"schema_version": RUN_SCHEMA_VERSION,

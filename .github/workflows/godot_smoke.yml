@@ -5,6 +5,12 @@ on:
   push:
     branches: [ main, master ]
 
+env:
+  GODOT_VERSION: "4.6-stable"
+  GODOT_BIN_NAME: "Godot_v4.6-stable_linux.x86_64"
+  GODOT_ZIP_NAME: "Godot_v4.6-stable_linux.x86_64.zip"
+  GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
+
 jobs:
   smoke_gated:
     runs-on: ubuntu-latest
@@ -18,6 +24,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip xvfb git-lfs
+
+      - name: Cache Godot 4.6 headless binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: tools/godot/${{ env.GODOT_BIN_NAME }}
+          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}-${{ hashFiles('.github/workflows/godot_smoke.yml') }}
 
       - name: Git LFS pull (always)
         run: |
@@ -84,19 +97,21 @@ jobs:
           fi
 
       - name: Download Godot 4.6 headless
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
           set -e
           mkdir -p tools/godot
           cd tools/godot
-          wget -O godot.zip "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
-          unzip -o godot.zip
-          chmod +x godot* Godot* || true
+          wget -O "$GODOT_ZIP_NAME" "$GODOT_DOWNLOAD_URL"
+          unzip -o "$GODOT_ZIP_NAME" "$GODOT_BIN_NAME"
+          rm -f "$GODOT_ZIP_NAME"
+          chmod +x "$GODOT_BIN_NAME" || true
           ls -la
 
       - name: Import project assets (headless editor pass)
         run: |
           set -euo pipefail
-          GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
+          GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
 
           # Run a headless editor session to generate .godot/imported artifacts
           xvfb-run -a "$GODOT_BIN" --headless --editor --path "$GALLICUS_PROJECT_ROOT" --quit > import.log 2>&1
@@ -111,7 +126,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
+          GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           echo "Using Godot binary: $GODOT_BIN"
 
           xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 45 > smoke.log 2>&1 &
@@ -192,6 +207,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y wget unzip xvfb git-lfs
 
+      - name: Cache Godot 4.6 headless binary
+        id: cache-godot-diagnostic
+        uses: actions/cache@v4
+        with:
+          path: tools/godot/${{ env.GODOT_BIN_NAME }}
+          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}-${{ hashFiles('.github/workflows/godot_smoke.yml') }}
+
       - name: Git LFS pull (always)
         run: |
           set -e
@@ -219,13 +241,15 @@ jobs:
           fi
 
       - name: Download Godot 4.6 headless
+        if: steps.cache-godot-diagnostic.outputs.cache-hit != 'true'
         run: |
           set -e
           mkdir -p tools/godot
           cd tools/godot
-          wget -O godot.zip "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
-          unzip -o godot.zip
-          chmod +x godot* Godot* || true
+          wget -O "$GODOT_ZIP_NAME" "$GODOT_DOWNLOAD_URL"
+          unzip -o "$GODOT_ZIP_NAME" "$GODOT_BIN_NAME"
+          rm -f "$GODOT_ZIP_NAME"
+          chmod +x "$GODOT_BIN_NAME" || true
           ls -la
 
       - name: Run FULL_RUN diagnostic (non-blocking)
@@ -237,7 +261,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          GODOT_BIN=./tools/godot/Godot_v4.6-stable_linux.x86_64
+          GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 25 2>&1 | tee full_run.log
 
           echo "---- FULL_RUN LOG (tail) ----"

@@ -157,8 +157,8 @@ The phase contract is explicit and mandatory:
   - `RunManager` builds payloads.
   - UI consumes payloads reactively.
 - `SaveSystem` (`res://scripts/systems/run/save_system.gd`)
-  - serializes/deserializes `RunState` only.
-  - no phase orchestration and no UI authority.
+  - serializes/deserializes `RunState` and owns Level 3 save payload build/validate/apply helpers.
+  - no phase orchestration, no `GameEvents` emission, and no UI authority.
 
 ## Event rules (GameEvents)
 

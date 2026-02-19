@@ -85,6 +85,10 @@ const LEVEL3_BET_BEHAVIOR: Dictionary[StringName, StringName] = BetCatalog.LEVEL
 const LEVEL3_PACT_UNLOCKS: Dictionary[StringName, StringName] = BetCatalog.LEVEL3_PACT_UNLOCKS
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const SaveContinueBoundaryScript = preload("res://scripts/systems/run/save_continue_boundary.gd")
+const RunSaveBoundaryHelperScript = preload("res://scripts/systems/run/run_save_boundary_helper.gd")
+const RunArenaThemePolicyScript = preload("res://scripts/systems/run/run_arena_theme_policy.gd")
+const RunUiPayloadFactoryScript = preload("res://scripts/systems/run/run_ui_payload_factory.gd")
+const RunRegisterAnnotationPolicyScript = preload("res://scripts/systems/run/run_register_annotation_policy.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 
@@ -446,6 +450,7 @@ class RegisterState:
 	var introduced_after_irreversible_choice: bool = false
 	var felix_precedent_emitted: bool = false
 	var flow_phase: StringName = FLOW_PHASE_STABLE
+	var _annotation_policy: RunRegisterAnnotationPolicy = RunRegisterAnnotationPolicyScript.new()
 
 	func _update_flow_phase(metrics: Dictionary) -> void:
 		var irreversible_count: int = int(metrics.get("irreversible_scar_count", 0))
@@ -497,17 +502,9 @@ class RegisterState:
 			return {}
 		scar_events_recorded += 1
 		introduced_after_irreversible_choice = true
-		match flow_phase:
-			FLOW_PHASE_ATTRITO:
-				last_annotation_text = "Registrato: accettata una perdita che eccede le soglie operative previste."
-			FLOW_PHASE_DERIVA:
-				last_annotation_text = "Registrato: condizione irreversibile acquisita in profilo coerente, ma non conclusivo."
-			FLOW_PHASE_MEMORIA:
-				last_annotation_text = "Registrato: condizione irreversibile acquisita con precedenti in memoria operativa."
-			FLOW_PHASE_SOSPENSIONE:
-				last_annotation_text = "Registrato: condizione irreversibile acquisita; classificazione mantenuta in stato sospeso."
-			_:
-				last_annotation_text = "Registrato: accettata una condizione irreversibile."
+		last_annotation_text = _annotation_policy.build_register_annotation_text("SCAR_APPLIED", {
+			"flow_phase": String(flow_phase),
+		})
 		return {
 			"text": last_annotation_text,
 			"duration": 1.2,
@@ -523,21 +520,14 @@ class RegisterState:
 		var emit_reason: String = reason
 		if emit_reason.strip_edges() == "":
 			emit_reason = "unknown"
-		match flow_phase:
-			FLOW_PHASE_ATTRITO:
-				last_annotation_text = "Registrato: chiusura run (%s). Parametri estesi in attrito; tracce attive: %d." % [emit_reason, scar_count]
-			FLOW_PHASE_DERIVA:
-				last_annotation_text = "Registrato: chiusura run (%s). Profilo coerente, ma non conclusivo." % [emit_reason]
-			FLOW_PHASE_MEMORIA:
-				if not felix_precedent_emitted:
-					last_annotation_text = "Registrato: chiusura run (%s). Precedente rilevato (Felix Gallicus). Applicabilità non determinabile." % [emit_reason]
-					felix_precedent_emitted = true
-				else:
-					last_annotation_text = "Registrato: chiusura run (%s). Precedente rilevato; applicabilità non determinabile." % [emit_reason]
-			FLOW_PHASE_SOSPENSIONE:
-				last_annotation_text = "Registrato: stato run (%s). Chiusura non applicabile." % [emit_reason]
-			_:
-				last_annotation_text = "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
+		last_annotation_text = _annotation_policy.build_register_annotation_text("RUN_END", {
+			"flow_phase": String(flow_phase),
+			"emit_reason": emit_reason,
+			"scar_count": scar_count,
+			"felix_precedent_emitted": felix_precedent_emitted,
+		})
+		if flow_phase == FLOW_PHASE_MEMORIA and not felix_precedent_emitted:
+			felix_precedent_emitted = true
 		return {
 			"text": last_annotation_text,
 			"duration": 1.4,
@@ -1112,6 +1102,9 @@ var _resolve_ritual_reward_applied: bool = false
 var _run_state: RunState = RunState.new()
 var _save_system: SaveSystem = SaveSystemScript.new()
 var _save_continue_boundary: SaveContinueBoundary = SaveContinueBoundaryScript.new()
+var _save_boundary: RunSaveBoundaryHelper = RunSaveBoundaryHelperScript.new()
+var _arena_theme_policy: RunArenaThemePolicy = RunArenaThemePolicyScript.new()
+var _ui_payload_factory: RunUiPayloadFactory = RunUiPayloadFactoryScript.new()
 var _register_state: RegisterState = RegisterState.new()
 var _level3_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _boot_valid: bool = true
@@ -1942,11 +1935,11 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	_resolving_ritual = true
 	_resolve_ritual_sequence_id += 1
 	var sequence_id: int = _resolve_ritual_sequence_id
-	var payload: Dictionary = {
-		"bet_id": String(bet_id),
-		"bet_name": _get_level3_bet_name(bet_id),
-		"doom_short": _get_level3_doom_short(bet_id),
-	}
+	var payload: Dictionary = _ui_payload_factory.build_resolve_ritual_payload(
+		bet_id,
+		_get_level3_bet_name(bet_id),
+		_get_level3_doom_short(bet_id)
+	)
 	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	GameEvents.resolve_ritual_opened.emit(payload)
 	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
@@ -2334,18 +2327,13 @@ func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void
 		return
 	_run_state.run_save_flow_step = flow_step
 	_run_state.run_save_flow_bet_id = bet_id
+	var runtime_fields: Dictionary = _save_boundary.build_run_payload(_run_state, run)
 	var pacts_log: Array[Dictionary] = []
 	for entry: PactLogEntry in _run_state.pacts_log:
 		pacts_log.append(entry.to_dict())
-	var runtime_fields: Dictionary = {
-		"arena_index": int(run.get("arena_index", 0)),
-		"coins": int(run.get("coins", 0)),
-		"corruption": int(run.get("corruption", 0)),
-		"upgrades": {},
-		"scars": _serialize_run_scars(_run_state.scars),
-		"pacts_log": pacts_log,
-		"scars_detail": _serialize_scars_detail(),
-	}
+	runtime_fields["scars"] = _serialize_run_scars(_run_state.scars)
+	runtime_fields["pacts_log"] = pacts_log
+	runtime_fields["scars_detail"] = _serialize_scars_detail()
 	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
 		runtime_fields["upgrades"] = (run["upgrades"] as Dictionary).duplicate(true)
 	_save_system.save_run_payload(_save_continue_boundary.build_save_payload(_run_state, runtime_fields))
@@ -2361,9 +2349,12 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	var applied_runtime: Dictionary = result.get("applied_runtime", {}) as Dictionary
 	var parsed_scars: Array[Scar] = _parse_run_scars(run_state_data.get("scars", []) as Array)
 	var parsed_pacts: Array[PactLogEntry] = _parse_pacts_log(run_state_data.get("pacts_log", []))
-	var next_arena_index: int = int(applied_runtime.get("arena_index", _run_state.arena_index))
-	var next_coins: int = int(applied_runtime.get("coins", starting_coins))
-	var next_corruption: int = clampi(int(applied_runtime.get("corruption", 0)), 0, CORRUPTION_MAX)
+	var next_payload: Dictionary = {
+		"arena_index": int(applied_runtime.get("arena_index", _run_state.arena_index)),
+		"coins": int(applied_runtime.get("coins", starting_coins)),
+		"corruption": clampi(int(applied_runtime.get("corruption", 0)), 0, CORRUPTION_MAX),
+		"glory": int(run_state_data.get("glory", _run_state.glory)),
+	}
 
 	_pact_sealed_sequence_id += 1
 	_resolve_ritual_sequence_id += 1
@@ -2384,14 +2375,11 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_state.pacts_log = parsed_pacts
 	_run_state.intermediate_pending_bet_id = &""
 	_run_state.post_bet_pending_bet_id = &""
-	_run_state.corruption = next_corruption
+	_save_boundary.apply_run_payload(_run_state, run, next_payload)
 	_runstate_kernel.enforce_invariants(_run_state)
 	_initialize_scar_rng_state()
 	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
 
-	run["arena_index"] = next_arena_index
-	run["coins"] = next_coins
-	run["corruption"] = next_corruption
 	if LEVEL3_ENABLED:
 		run["upgrades"] = {}
 	elif applied_runtime.has("upgrades") and applied_runtime["upgrades"] is Dictionary:
@@ -2532,34 +2520,27 @@ func _get_current_arena_index() -> int:
 	return arena_index
 
 func _get_available_arena_theme_ids() -> Array[StringName]:
-	var themes: Array[StringName] = [
-		ArenaThemes.ARENA_WAX_SEAL,
-		ArenaThemes.ARENA_DEBT,
-	]
-	if _is_unlocked(CONDANNA_E_FINITA_COSI):
-		themes.append(ArenaThemes.ARENA_BLOOD)
-	if _is_unlocked(CONDANNA_SO_COME_FINISCE):
-		themes.append(ArenaThemes.ARENA_SILENCE)
-	return themes
+	var is_finita_unlocked: bool = _is_unlocked(CONDANNA_E_FINITA_COSI)
+	var is_so_come_finisce_unlocked: bool = _is_unlocked(CONDANNA_SO_COME_FINISCE)
+	return _arena_theme_policy.get_available_arena_theme_ids(is_finita_unlocked, is_so_come_finisce_unlocked)
 
 func _pick_next_arena_theme() -> StringName:
 	var arena_index: int = _get_current_arena_index()
 	var themes: Array[StringName] = _get_available_arena_theme_ids()
-	var theme_index: int = (maxi(arena_index, 1) - 1) % themes.size()
-	return themes[theme_index]
+	return _arena_theme_policy.pick_next_arena_theme(arena_index, themes)
 
 func _emit_arena_theme_changed() -> void:
 	if not GameEvents.has_signal("arena_theme_changed"):
 		return
 	_run_state.arena_theme_id = _pick_next_arena_theme()
 	var theme_data: Dictionary = _arena_themes.get_theme(_run_state.arena_theme_id)
-	var payload: Dictionary = {
-		"theme_id": _run_state.arena_theme_id,
-		"title": str(theme_data.get("title", "")),
-		"subtitle": str(theme_data.get("subtitle", "")),
-		"bg_path": str(theme_data.get("bg_texture_path", "")),
-		"overlay_path": str(theme_data.get("overlay_texture_path", "")),
-	}
+	var payload: Dictionary = _ui_payload_factory.build_arena_theme_payload(
+		_run_state.arena_theme_id,
+		str(theme_data.get("title", "")),
+		str(theme_data.get("subtitle", "")),
+		str(theme_data.get("bg_texture_path", "")),
+		str(theme_data.get("overlay_texture_path", ""))
+	)
 	GameEvents.arena_theme_changed.emit(payload)
 
 func _append_pact_log_entry(bet_id: StringName, bet_name: String) -> void:
@@ -2583,31 +2564,15 @@ func _update_last_pact_outcome(bet_id: StringName, won: bool) -> void:
 	entry.outcome = PACT_OUTCOME_WIN if won else PACT_OUTCOME_LOSS
 
 func _pick_special_arena_index(target_arenas: int) -> int:
-	if target_arenas <= 0:
-		return 0
-	var min_index: int = 2
-	var max_index: int = maxi(target_arenas, min_index)
-	_level3_rng.seed = _run_state.run_seed + 117
-	return _level3_rng.randi_range(min_index, max_index)
+	return _arena_theme_policy.pick_special_arena_index(target_arenas, _run_state.run_seed, _level3_rng)
 
 func _maybe_activate_special_arena() -> void:
 	_run_state.special_arena_active = false
 	_run_state.special_arena_effect_applied = false
-	if _run_state.special_arena_index <= 0:
+	var should_activate: bool = _arena_theme_policy.should_activate_special_arena(_run_state.arena_index, _run_state.special_arena_index, _run_state.special_arena_id)
+	if not should_activate:
 		return
-	if _run_state.special_arena_id != &"":
-		return
-	if _run_state.arena_index != _run_state.special_arena_index:
-		return
-	var options: Array[StringName] = [
-		SPECIAL_ARENA_SILENCE,
-		SPECIAL_ARENA_ASH,
-		SPECIAL_ARENA_DISPREZZO,
-		SPECIAL_ARENA_VERGOGNA,
-	]
-	_level3_rng.seed = _run_state.run_seed + _run_state.arena_index * 23
-	var pick_idx: int = _level3_rng.randi_range(0, options.size() - 1)
-	_run_state.special_arena_id = options[pick_idx]
+	_run_state.special_arena_id = _arena_theme_policy.pick_special_arena_id(_run_state.run_seed, _run_state.arena_index, _level3_rng)
 	_run_state.special_arena_active = true
 	_emit_special_arena_started()
 
@@ -2616,39 +2581,19 @@ func _emit_special_arena_started() -> void:
 		return
 	if _run_state.special_arena_id == &"":
 		return
-	var payload: Dictionary = {
-		"id": String(_run_state.special_arena_id),
-		"title": _get_special_arena_title(_run_state.special_arena_id),
-		"description": _get_special_arena_description(_run_state.special_arena_id),
-		"arena_index": _run_state.arena_index,
-	}
+	var payload: Dictionary = _ui_payload_factory.build_special_arena_payload(
+		_run_state.special_arena_id,
+		_get_special_arena_title(_run_state.special_arena_id),
+		_get_special_arena_description(_run_state.special_arena_id),
+		_run_state.arena_index
+	)
 	GameEvents.special_arena_started.emit(payload)
 
 func _get_special_arena_title(arena_id: StringName) -> String:
-	match arena_id:
-		SPECIAL_ARENA_SILENCE:
-			return "Arena of Silence"
-		SPECIAL_ARENA_ASH:
-			return "Arena of Ash"
-		SPECIAL_ARENA_DISPREZZO:
-			return "Arena del Disprezzo"
-		SPECIAL_ARENA_VERGOGNA:
-			return "Arena della Vergogna"
-		_:
-			return "Arena"
+	return _arena_theme_policy.get_special_arena_title(arena_id)
 
 func _get_special_arena_description(arena_id: StringName) -> String:
-	match arena_id:
-		SPECIAL_ARENA_SILENCE:
-			return "L'escalation sale subito. Il rischio cresce, le ricompense restano."
-		SPECIAL_ARENA_ASH:
-			return "Ricompensa extra, ma una cicatrice è garantita."
-		SPECIAL_ARENA_DISPREZZO:
-			return "Qui non si incassa. La folla pretende un altro sangue."
-		SPECIAL_ARENA_VERGOGNA:
-			return "La vergogna intacca il favore. Il pubblico cala più in fretta."
-		_:
-			return ""
+	return _arena_theme_policy.get_special_arena_description(arena_id)
 
 func _apply_special_arena_pre_resolution() -> void:
 	if not _run_state.special_arena_active:
@@ -4017,12 +3962,7 @@ func _build_sentence_payload(bet_id: StringName) -> Dictionary:
 		doom = "SE FALLISCI: %s" % doom
 	if _run_state.escalation_level >= 7 and doom.findn("ESCALATION") < 0:
 		doom = "%s\nESCALATION: NON HAI PIÙ MARGINE." % doom
-	return {
-		"sentence_title": "SENTENZA",
-		"sentence_rule": rule,
-		"sentence_doom": doom,
-		"bet_id": String(bet_id),
-	}
+	return _ui_payload_factory.build_sentence_payload("SENTENZA", rule, doom, bet_id)
 
 func _get_sentence_rule(bet_id: StringName) -> String:
 	if bet_id == BET_FLAWLESS_BLOOD:

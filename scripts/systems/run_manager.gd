@@ -1559,6 +1559,21 @@ func _require_phase(expected_phase: RunPhase, context: String, gate_ok: bool = t
 	push_error("RunManager: %s in wrong phase %s\nSNAPSHOT:\n%s" % [context, str(_phase), _flow_snapshot(context)])
 	return false
 
+func _guard_phase(expected_phase: int, context: String) -> bool:
+	_touch_request_activity(context)
+	if _phase == expected_phase:
+		return true
+	push_error(
+		_flow_diagnostics.format_wrong_phase_request_error(
+			context,
+			str(_phase),
+			str([expected_phase]),
+			_flow_logger.dump_last(30),
+			_flow_snapshot(context)
+		)
+	)
+	return false
+
 func _flow_snapshot(note: String) -> String:
 	return _flow_watchdog.build_snapshot(
 		note,
@@ -3338,8 +3353,7 @@ func _on_request_end_run_quit() -> void:
 	request_quit_to_menu()
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
-	_touch_request_activity("request_place_bet(bet_id=%s)" % bet_id)
-	if not _guard_request_phase("request_place_bet", [RunPhase.BET_PRESENT]):
+	if not _guard_phase(RunPhase.BET_PRESENT, "request_place_bet"):
 		return
 	if not LEVEL3_ENABLED:
 		return

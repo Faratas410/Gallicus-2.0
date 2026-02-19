@@ -73,6 +73,8 @@ const GameConstants = preload("res://scripts/systems/constants.gd")
 const SmokeDriverScript = preload("res://scripts/systems/run/smoke_driver.gd")
 const FlowWatchdogScript = preload("res://scripts/systems/run/flow_watchdog.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
+const BettingPolicyScript = preload("res://scripts/systems/run/betting_policy.gd")
+const BettingPayloadFactoryScript = preload("res://scripts/systems/run/betting_payload_factory.gd")
 const ScarSystemScript = preload("res://scripts/systems/run/scar_system.gd")
 const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -1147,6 +1149,8 @@ var _boot_valid: bool = true
 var _sanity_ui_root: Node = null
 var _arena_themes: RefCounted = null
 var _bet_system: RunBetSystem = BetSystemScript.new()
+var _betting_policy: BettingPolicy = BettingPolicyScript.new()
+var _betting_payload_factory: BettingPayloadFactory = BettingPayloadFactoryScript.new()
 var _scar_system: RunScarSystem = ScarSystemScript.new()
 var _scar_catalog: ScarCatalog = ScarCatalog.new()
 var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
@@ -2160,22 +2164,37 @@ func _open_level3_bet_ui() -> void:
 	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
 	_run_state.level3_current_offer = offer.duplicate(true)
+	var offer_payload: Dictionary = _betting_payload_factory.build_bet_offer_payload({"offer": offer})
+	var emitted_offer: Array[Dictionary] = offer_payload.get("offer", []) as Array[Dictionary]
 	_flow_log("bet_ui_opened", "arena=%d, bet_id=" % _run_state.arena_index)
-	GameEvents.bet_ui_opened.emit(offer)
+	GameEvents.bet_ui_opened.emit(emitted_offer)
 	GameEvents.bet_opened.emit()
 
 func _build_level3_bet_offer() -> Array[Dictionary]:
 	var available: Array[Dictionary] = _get_available_level3_bets()
-	var desired_count: int = 4
-	var filtered: Array[Dictionary] = _filter_recent_bets(available, desired_count)
-	_level3_rng.seed = _compute_level3_offer_seed()
-	var picks: Array[Dictionary] = _pick_weighted_bets(filtered, desired_count)
-	_run_state.last_bet_offers = []
-	for bet_value: Dictionary in picks:
-		var bet_id: StringName = StringName(str(bet_value.get("id", "")))
-		if bet_id != &"":
-			_run_state.last_bet_offers.append(bet_id)
-	if _run_state.forced_next_pact_archetype != &"":
+	var offer_seed: int = _compute_level3_offer_seed()
+	var result: Dictionary = _betting_policy.build_bet_offer(
+		offer_seed,
+		_run_state.arena_index,
+		_run_state.corruption,
+		_run_state.glory,
+		_run_state.doubles,
+		_run_state.bets_history,
+		{
+			"available_bets": available,
+			"desired_count": 4,
+			"last_bet_offers": _run_state.last_bet_offers,
+			"last_selected_bet_id": _run_state.last_selected_bet_id,
+			"forced_archetype": _run_state.forced_next_pact_archetype,
+			"registry_has_precedent": _registry_has_precedent,
+			"level3_bet_behavior": LEVEL3_BET_BEHAVIOR,
+			"high_risk_behaviors": [BET_DOUBLE_OR_DIE_L3, BET_DEBT_CHAIN, BET_BLOOD_TAX, BET_LAST_BREATH],
+			"cash_out_behavior": BET_CASH_OUT,
+		}
+	)
+	var picks: Array[Dictionary] = result.get("offer", []) as Array[Dictionary]
+	_run_state.last_bet_offers = result.get("last_bet_offers", []) as Array[StringName]
+	if bool(result.get("clear_forced_archetype", false)):
 		_run_state.forced_next_pact_archetype = &""
 	return picks
 
@@ -2226,67 +2245,6 @@ func _is_level3_bet_allowed(bet: Dictionary) -> bool:
 		if not _has_scar(StringName(scar_value)):
 			return false
 	return true
-
-func _filter_recent_bets(bets: Array[Dictionary], desired_count: int) -> Array[Dictionary]:
-	if bets.size() <= desired_count:
-		return bets
-	if _run_state.last_bet_offers.is_empty():
-		return bets
-	var filtered: Array[Dictionary] = []
-	for bet_value: Dictionary in bets:
-		var bet_id: StringName = StringName(str(bet_value.get("id", "")))
-		if bet_id == &"":
-			continue
-		if bet_id == _run_state.last_selected_bet_id:
-			continue
-		if _run_state.last_bet_offers.has(bet_id):
-			continue
-		filtered.append(bet_value)
-	if filtered.size() < desired_count:
-		return bets
-	return filtered
-
-func _pick_weighted_bets(bets: Array[Dictionary], desired_count: int) -> Array[Dictionary]:
-	var picks: Array[Dictionary] = []
-	if bets.is_empty():
-		return picks
-	var pool: Array[Dictionary] = bets.duplicate()
-	var count: int = mini(desired_count, pool.size())
-	for _i in range(count):
-		var idx: int = _weighted_pick_index(pool)
-		if idx < 0 or idx >= pool.size():
-			break
-		picks.append(pool[idx])
-		pool.remove_at(idx)
-	return picks
-
-func _weighted_pick_index(pool: Array[Dictionary]) -> int:
-	var total_weight: int = 0
-	for bet_value: Dictionary in pool:
-		var weight: int = _get_bet_weight_with_registry_precedent(bet_value)
-		total_weight += weight
-	if total_weight <= 0:
-		return 0
-	var roll: int = _level3_rng.randi_range(1, total_weight)
-	var running: int = 0
-	for idx in range(pool.size()):
-		var weight: int = _get_bet_weight_with_registry_precedent(pool[idx])
-		running += weight
-		if roll <= running:
-			return idx
-	return maxi(pool.size() - 1, 0)
-
-func _get_bet_weight_with_registry_precedent(bet: Dictionary) -> int:
-	var weight: int = int(bet.get("weight", 1))
-	weight = maxi(weight, 0)
-	if not _registry_has_precedent:
-		return weight
-	var behavior_id: StringName = _get_level3_bet_behavior(StringName(str(bet.get("id", ""))))
-	if behavior_id == BET_CASH_OUT:
-		weight = maxi(weight - 1, 0)
-	elif _is_high_risk_behavior(behavior_id):
-		weight += 1
-	return weight
 
 func _get_run_seed_value() -> int:
 	if _run_state.debug_seed_override_active:
@@ -3415,7 +3373,7 @@ func _on_request_push_luck_cashout() -> void:
 
 func _take_payout() -> void:
 	print_debug("[FLOW] push_luck_cashout_received :: arena=%d" % _run_state.arena_index)
-	var audience_policy: Dictionary = _get_audience_cashout_policy()
+	var audience_policy: Dictionary = _build_audience_reward_text()
 	if not bool(audience_policy.get("cashout_enabled", true)):
 		_refresh_push_luck_choice(StringName(_run_state.current_bet_id))
 		return
@@ -4032,16 +3990,9 @@ func _build_phase_ui_payload(target_phase: RunPhase, title: String = "", body: S
 
 func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))
-	var bet_name: String = String(bet_id)
-	var condition_text: String = ""
-	if not bet_data.is_empty():
-		bet_name = str(bet_data.get("name", bet_id))
-		condition_text = str(bet_data.get("condition", ""))
-	var current_level: int = _run_state.bet_chain_level
 	var next_level: int = _run_state.bet_chain_level + 1
 	if LEVEL3_ENABLED:
-		current_level = maxi(_run_state.escalation_level + 1, 1)
-		next_level = current_level + 1
+		next_level = maxi(_run_state.escalation_level + 1, 1) + 1
 	var next_reward_tier: int = _get_bet_chain_reward_scale(next_level)
 	if LEVEL3_ENABLED:
 		next_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
@@ -4050,37 +4001,27 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	if LEVEL3_ENABLED:
 		cashout_lock_reason = _get_cashout_lock_reason()
 		double_lock_reason = _get_double_lock_reason()
-	var cashout_policy: Dictionary = _get_audience_cashout_policy()
-	var cashout_enabled: bool = bool(cashout_policy.get("cashout_enabled", true))
-	var cashout_modifier: float = float(cashout_policy.get("cashout_modifier", 1.0))
-	var cashout_modifier_text: String = str(cashout_policy.get("cashout_modifier_text", ""))
-	var audience_label: String = _get_audience_label(_run_state.audience_score)
-	var audience_reason: String = _get_audience_reason(_run_state.audience_score)
-	var cashout_locked: bool = cashout_lock_reason != ""
-	if not cashout_enabled:
-		cashout_locked = true
-		cashout_lock_reason = str(cashout_policy.get("cashout_lock_reason", ""))
-	var payload: Dictionary = {
+	var reward_text: Dictionary = _build_audience_reward_text()
+	return _betting_payload_factory.build_pyl_offer_payload({
 		"bet_id": String(bet_id),
-		"bet_name": bet_name,
-		"current_level": current_level,
-		"next_level": next_level,
-		"condition": condition_text,
+		"bet_data": bet_data,
+		"level3_enabled": LEVEL3_ENABLED,
+		"bet_chain_level": _run_state.bet_chain_level,
+		"escalation_level": _run_state.escalation_level,
 		"next_pact": _build_bet_pact_text(String(bet_id), next_reward_tier),
 		"next_doom": _build_bet_doom_text(String(bet_id), next_level),
-		"cashout_locked": cashout_locked,
+		"cashout_enabled": bool(reward_text.get("cashout_enabled", true)),
 		"cashout_lock_reason": cashout_lock_reason,
-		"double_locked": double_lock_reason != "",
+		"audience_cashout_lock_reason": str(reward_text.get("cashout_lock_reason", "")),
 		"double_lock_reason": double_lock_reason,
 		"choice_note": _run_state.intermediate_choice_note,
 		"arena_index": _run_state.arena_index,
 		"arena_target": _run_state.level3_target_arenas,
-		"audience_label": audience_label,
-		"audience_reason": audience_reason,
-		"cashout_modifier": cashout_modifier,
-		"cashout_modifier_text": cashout_modifier_text,
-	}
-	return payload
+		"audience_label": str(reward_text.get("audience_label", "")),
+		"audience_reason": str(reward_text.get("audience_reason", "")),
+		"cashout_modifier": float(reward_text.get("cashout_modifier", 1.0)),
+		"cashout_modifier_text": str(reward_text.get("cashout_modifier_text", "")),
+	})
 
 func _emit_sentence_banner_for_bet(bet_id: StringName) -> void:
 	if not GameEvents.has_signal("sentence_banner_requested"):
@@ -4219,33 +4160,6 @@ func _check_audience_condanne() -> void:
 		if _run_state.seen_by_crowd_before_run:
 			_register_condanna(CONDANNA_IL_TUO_NOME)
 
-func _get_audience_label(score: int) -> String:
-	if score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
-		return "FOLLA IN FURIA"
-	if score <= -1:
-		return "FOLLA OSTILE"
-	if score == 0:
-		return "FOLLA TIEPIDA"
-	if score <= 2:
-		return "FOLLA IN ASCOLTO"
-	return "FOLLA IN DELIRIO"
-
-func _get_audience_reason(score: int) -> String:
-	if score <= -1:
-		return _pick_audience_phrase("FURY")
-	if score <= 2:
-		return _pick_audience_phrase("COLD")
-	return _pick_audience_phrase("DELIRIUM")
-
-func _pick_audience_phrase(mood: String) -> String:
-	var phrases: Array = AUDIENCE_PHRASES.get(mood, []) as Array
-	if phrases.is_empty():
-		return ""
-	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = _run_state.run_seed + _run_state.arena_index * 37 + _run_state.audience_score * 13
-	var pick_idx: int = rng.randi_range(0, phrases.size() - 1)
-	return str(phrases[pick_idx])
-
 func _get_audience_context_mood(score: int) -> StringName:
 	if score <= -1:
 		return AUDIENCE_MOOD_FURY
@@ -4288,30 +4202,21 @@ func _close_audience_context_line() -> void:
 	GameEvents.audience_context_line_emitted.emit("")
 
 func _get_audience_cashout_modifier() -> float:
-	if _run_state.audience_score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
-		return AUDIENCE_CASHOUT_PENALTY_MULTIPLIER
-	return 1.0
+	var reward_text: Dictionary = _build_audience_reward_text()
+	return float(reward_text.get("cashout_modifier", 1.0))
 
-func _get_audience_cashout_policy() -> Dictionary:
-	var score: int = _run_state.audience_score
-	var cashout_enabled: bool = score > AUDIENCE_CASHOUT_DISABLE_THRESHOLD
-	var cashout_modifier: float = 1.0
-	var cashout_modifier_text: String = ""
-	var cashout_lock_reason: String = ""
-	if not cashout_enabled:
-		cashout_lock_reason = "La folla non ti lascia incassare."
-	elif score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD:
-		cashout_modifier = AUDIENCE_CASHOUT_PENALTY_MULTIPLIER
-		cashout_modifier_text = "Incasso penalizzato: x%.1f" % cashout_modifier
-	if _registry_has_precedent and cashout_enabled:
-		cashout_modifier = cashout_modifier * 0.95
-		cashout_modifier_text = "Incasso penalizzato: x%.2f" % cashout_modifier
-	return {
-		"cashout_enabled": cashout_enabled,
-		"cashout_lock_reason": cashout_lock_reason,
-		"cashout_modifier": cashout_modifier,
-		"cashout_modifier_text": cashout_modifier_text,
-	}
+func _build_audience_reward_text() -> Dictionary:
+	var reward_text: Dictionary = _betting_policy.build_reward_text({
+		"audience_score": _run_state.audience_score,
+		"run_seed": _run_state.run_seed,
+		"arena_index": _run_state.arena_index,
+		"audience_phrases": AUDIENCE_PHRASES,
+		"cashout_disable_threshold": AUDIENCE_CASHOUT_DISABLE_THRESHOLD,
+		"cashout_penalty_threshold": AUDIENCE_CASHOUT_PENALTY_THRESHOLD,
+		"cashout_penalty_multiplier": AUDIENCE_CASHOUT_PENALTY_MULTIPLIER,
+		"registry_has_precedent": _registry_has_precedent,
+	})
+	return _betting_payload_factory.build_audience_payload_fragments(reward_text)
 
 func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 	var reward_scale: int = _bet_system.get_reward_scale(chain_level)

@@ -220,7 +220,7 @@
 | `_set_arena_suspended` | `func _set_arena_suspended(suspended: bool) -> void:` | 3473 | private | `_ensure_arena_and_player`, `_apply_modal_lock` | `UI_WIRING` |
 | `add_coins` | `func add_coins(amount: int) -> void:` | 3485 | public | `_apply_special_arena_ash_reward`, `_apply_level3_reward`, `_on_wave_cleared` | `LEGACY_SUSPECT` |
 | `spend_coins` | `func spend_coins(amount: int) -> bool:` | 3491 | public | `purchase_token`, `_apply_intermediate_loss_penalty_if_needed` | `LEGACY_SUSPECT` |
-| `get_coins` | `func get_coins() -> int:` | 3500 | public | unknown | `LEGACY_SUSPECT` |
+| `get_coins` | `REMOVED (PATCH 13): legacy accessor not consumed in L3 runtime` | — | public | — | `LEGACY_SUSPECT` |
 | `get_tokens` | `func get_tokens() -> int:` | 3503 | public | unknown | `LEGACY_SUSPECT` |
 | `get_buy_token_cost` | `func get_buy_token_cost() -> int:` | 3506 | public | unknown | `LEGACY_SUSPECT` |
 | `get_token_buy_cost` | `func get_token_buy_cost() -> int:` | 3509 | public | unknown | `LEGACY_SUSPECT` |

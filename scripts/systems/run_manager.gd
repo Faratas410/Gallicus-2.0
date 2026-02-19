@@ -1883,34 +1883,6 @@ func _confirm_pact_with_bet_id(bet_id: StringName) -> void:
 	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, bet_id)
 	resolve_arena()
 
-func _register_level3_bet_choice(bet_id: StringName) -> void:
-	_update_arena_visual_only()
-	_set_phase(RunPhase.BET_COMMITTED, "register_level3_bet_choice")
-	_run_state.active_bet_id = bet_id
-	if bet_id != &"":
-		_runstate_kernel.append_bet_history(_run_state, {"bet_id": String(bet_id)})
-		_append_pact_log_entry(bet_id, _get_level3_bet_name(bet_id))
-		_run_state.last_signed_pact_id = bet_id
-		_register_pact_corruption(bet_id)
-		var bet_data: Dictionary = _get_bet_data(String(bet_id))
-		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
-		if archetype == ARCH_EGO or archetype == ARCH_TIME:
-			_run_state.risky_choice_made_recently = true
-		_register_condanna(CONDANNA_FIRMATO)
-	_run_state.current_bet_id = String(bet_id)
-	_run_state.last_selected_bet_id = bet_id
-	_run_state.level3_bets_used.append(bet_id)
-	_run_state.level3_current_offer = []
-	if bet_id == BET_CASH_OUT:
-		_run_state.level3_cashout_streak += 1
-		_run_state.level3_cashout_streak_max = maxi(_run_state.level3_cashout_streak_max, _run_state.level3_cashout_streak)
-	else:
-		_run_state.level3_cashout_streak = 0
-	_emit_run_debug_state()
-	GameEvents.bet_placed.emit(String(bet_id), 0, 1.0)
-	GameEvents.bet_ui_closed.emit()
-	GameEvents.bet_closed.emit()
-
 func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -2455,15 +2427,6 @@ func _serialize_run_scars(items: Array[Scar]) -> Array[Dictionary]:
 		values.append(item.to_dict())
 	return values
 
-func _parse_stringname_array(items: Array) -> Array[StringName]:
-	var values: Array[StringName] = []
-	for item in items:
-		var text: String = str(item)
-		if text == "":
-			continue
-		values.append(StringName(text))
-	return values
-
 func _parse_run_scars(items: Array) -> Array[Scar]:
 	var values: Array[Scar] = []
 	for item in items:
@@ -2685,13 +2648,6 @@ func _compute_level3_enemy_seed() -> int:
 	seed_value += String(_run_state.last_enemy_profile).hash() * 3
 	return seed_value
 
-func _get_enemy_profile_def(profile_id: StringName) -> Dictionary:
-	for profile_value: Dictionary in LEVEL3_ENEMY_PROFILES:
-		var profile: Dictionary = profile_value as Dictionary
-		if StringName(str(profile.get("id", ""))) == profile_id:
-			return profile
-	return {}
-
 func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
 	var scar_names: Array[String] = []
 	for scar_name: StringName in scars_applied:
@@ -2880,14 +2836,6 @@ func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
 
 func _get_scar_def(scar_id: StringName) -> Dictionary:
 	return _scar_catalog.get_scar(scar_id)
-
-func _determine_level3_ending_id() -> StringName:
-	var scar_count: int = _run_state.scars_history.size()
-	if scar_count <= 0:
-		return &"THE_SURVIVOR"
-	if scar_count == 1:
-		return &"THE_MARKED"
-	return &"THE_BROKEN"
 
 func _ensure_arena_and_player() -> void:
 	if LEVEL3_ENABLED:
@@ -3797,20 +3745,8 @@ func handle_bet_failed(bet_id: String) -> void:
 		_run_state.failed_high_risk_bets += 1
 	_reset_bet_chain()
 
-func _get_bet_chain_doom_scale(chain_level: int) -> int:
-	return _bet_system.get_doom_scale(chain_level)
-
 func _get_bet_chain_reward_scale(chain_level: int) -> int:
 	return _bet_system.get_reward_scale(chain_level)
-
-func _apply_bet_result(result: Dictionary) -> void:
-	if result.is_empty():
-		return
-	var bet_id: String = str(result.get("id", ""))
-	var won: bool = bool(result.get("won", false))
-	if not won:
-		return
-	_apply_bet_reward_scaled(bet_id, 1)
 
 func _reset_bet_chain() -> void:
 	_run_state.bet_chain_level = 1
@@ -4571,12 +4507,6 @@ func _register_pact_corruption(bet_id: StringName) -> void:
 	_apply_corruption(CORRUPTION_PACT_HIGH)
 	_try_apply_pact_scar_pool()
 
-func _has_used_bet(bet_id: StringName) -> bool:
-	for used_bet: StringName in _run_state.level3_bets_used:
-		if used_bet == bet_id:
-			return true
-	return false
-
 func _count_scars_with_tag(tag: StringName) -> int:
 	var count: int = 0
 	for scar_value: Dictionary in _run_state.scars_payload:
@@ -4940,19 +4870,6 @@ func _register_run_scar(scar_id: StringName, origin: String, trigger: StringName
 	if not inserted:
 		return
 	_emit_register_annotation_from_scar(scar_id)
-
-func _try_register_irreversible_bet_scar(bet_id: StringName) -> void:
-	var should_try: bool = _scar_policy.should_try_scar(String(SCAR_EVENT_IRREVERSIBLE_PACT), {
-		"already_registered": _run_state.irreversible_bet_scar_registered,
-		"is_irreversible_bet": IRREVERSIBLE_BET_IDS.has(bet_id),
-		"arena_index": _run_state.arena_index,
-		"last_scar_arena_index": _run_state.last_scar_arena_index,
-		"min_arena_interval": SCAR_MIN_ARENA_INTERVAL,
-	})
-	if not should_try:
-		return
-	_register_run_scar(SCAR_EVENT_IRREVERSIBLE_PACT, "Scommessa irreversibile: %s" % String(bet_id), SCAR_TRIGGER_IRREVERSIBLE_BET)
-	_run_state.irreversible_bet_scar_registered = true
 
 func _try_register_refused_closure_scar() -> void:
 	var should_try: bool = _scar_policy.should_try_scar(String(SCAR_EVENT_REFUSED_CLOSURE), {

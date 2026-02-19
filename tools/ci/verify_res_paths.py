@@ -20,14 +20,21 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def iter_resource_files(project_root: Path) -> list[Path]:
-    files: list[Path] = []
+def build_path_indexes(project_root: Path) -> tuple[list[Path], dict[str, list[Path]]]:
+    resource_files: list[Path] = []
+    lowercase_index: dict[str, list[Path]] = {}
+
     for path in project_root.rglob("*"):
-        if not path.is_file():
-            continue
-        if path.suffix.lower() in RESOURCE_EXTENSIONS:
-            files.append(path)
-    return files
+        rel_path = path.relative_to(project_root)
+        rel_lower = str(rel_path).lower()
+        if rel_lower not in lowercase_index:
+            lowercase_index[rel_lower] = []
+        lowercase_index[rel_lower].append(rel_path)
+
+        if path.is_file() and path.suffix.lower() in RESOURCE_EXTENSIONS:
+            resource_files.append(path)
+
+    return resource_files, lowercase_index
 
 
 def has_exact_case_path(project_root: Path, rel_path: Path) -> bool:
@@ -46,14 +53,9 @@ def has_exact_case_path(project_root: Path, rel_path: Path) -> bool:
     return current.exists()
 
 
-def find_lowercase_matches(project_root: Path, rel_path: Path) -> list[Path]:
+def find_lowercase_matches(lowercase_index: dict[str, list[Path]], rel_path: Path) -> list[Path]:
     target_lower: str = str(rel_path).lower()
-    matches: list[Path] = []
-    for path in project_root.rglob("*"):
-        rel = path.relative_to(project_root)
-        if str(rel).lower() == target_lower:
-            matches.append(rel)
-    return matches
+    return lowercase_index.get(target_lower, [])
 
 
 def main() -> int:
@@ -63,10 +65,12 @@ def main() -> int:
         print(f"verify_res_paths: FAILED\n- invalid project root: {project_root}")
         return 1
 
+    resource_files, lowercase_index = build_path_indexes(project_root)
+
     failures: list[tuple[Path, str, str]] = []
     seen: set[tuple[Path, str]] = set()
 
-    for resource_file in iter_resource_files(project_root):
+    for resource_file in resource_files:
         text: str = resource_file.read_text(encoding="utf-8", errors="ignore")
         for match in RES_PATH_PATTERN.finditer(text):
             res_path: str = match.group(1)
@@ -78,7 +82,7 @@ def main() -> int:
             rel = Path(res_path.removeprefix("res://"))
             full = project_root / rel
             if not full.exists():
-                matches = find_lowercase_matches(project_root, rel)
+                matches = find_lowercase_matches(lowercase_index, rel)
                 if len(matches) == 1:
                     detail = f"missing (closest: res://{matches[0].as_posix()})"
                 elif len(matches) > 1:
@@ -90,7 +94,7 @@ def main() -> int:
                 continue
 
             if not has_exact_case_path(project_root, rel):
-                matches = find_lowercase_matches(project_root, rel)
+                matches = find_lowercase_matches(lowercase_index, rel)
                 if len(matches) == 1:
                     detail = f"case-mismatch (closest: res://{matches[0].as_posix()})"
                 elif len(matches) > 1:

@@ -15,6 +15,7 @@ const CondannaDataScript = preload("res://data/condanne.gd")
 const CondannaData = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
+const RunManagerUiPort = preload("res://scripts/ui/run_manager_ui_port.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 
@@ -64,9 +65,11 @@ var condanna_entries: Dictionary = {}
 var _active_achievements_tab: StringName = ACHIEVEMENTS_TAB_CONDANNE
 var _suppress_settings_events: bool = false
 var _arena_themes: RefCounted = null
+var _run_manager_port: RunManagerUiPort = null
 
 func _ready() -> void:
 	_arena_themes = ArenaThemes.new()
+	_run_manager_port = RunManagerUiPort.new(get_tree())
 	_show_menu()
 	_disable_placeholder_buttons()
 	_refresh_continue_button()
@@ -173,23 +176,17 @@ func _build_museo_list() -> void:
 		return
 	for child in museo_vbox.get_children():
 		child.queue_free()
-	var run_manager: Node = _get_run_manager()
 	var pact_ids: Array[StringName] = []
 	var arena_themes: Array[StringName] = []
 	var harsh_unlocked: bool = false
 	var base_count: int = 0
 	var harsh_count: int = 0
-	if run_manager != null:
-		if run_manager.has_method("get_available_level3_pacts"):
-			pact_ids = run_manager.get_available_level3_pacts() as Array[StringName]
-		if run_manager.has_method("get_available_arena_themes"):
-			arena_themes = run_manager.get_available_arena_themes() as Array[StringName]
-		if run_manager.has_method("is_harsh_crowd_unlocked"):
-			harsh_unlocked = bool(run_manager.is_harsh_crowd_unlocked())
-		if run_manager.has_method("get_crowd_line_count_base"):
-			base_count = int(run_manager.get_crowd_line_count_base())
-		if run_manager.has_method("get_crowd_line_count_harsh"):
-			harsh_count = int(run_manager.get_crowd_line_count_harsh())
+	if _run_manager_port != null:
+		pact_ids = _run_manager_port.get_available_level3_pacts()
+		arena_themes = _run_manager_port.get_available_arena_themes()
+		harsh_unlocked = _run_manager_port.is_harsh_crowd_unlocked()
+		base_count = _run_manager_port.get_crowd_line_count_base()
+		harsh_count = _run_manager_port.get_crowd_line_count_harsh()
 	var base_total: int = base_count if base_count > 0 else 60
 	var harsh_total: int = harsh_count if harsh_count > 0 else 15
 	_add_museo_header("PATTI DISPONIBILI (LIVELLO 3)")
@@ -197,7 +194,7 @@ func _build_museo_list() -> void:
 		_add_museo_item("— Nessun patto disponibile.")
 	else:
 		for pact_id in pact_ids:
-			var pact_title: String = _get_pact_display_name(run_manager, pact_id)
+			var pact_title: String = _get_pact_display_name(pact_id)
 			_add_museo_item("— %s" % pact_title)
 	_add_museo_header("ARENE TEMATICHE")
 	if arena_themes.is_empty():
@@ -231,15 +228,12 @@ func _create_museo_entry_panel(text: String) -> PanelContainer:
 	entry_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return entry_panel
 
-func _get_pact_display_name(run_manager: Node, pact_id: StringName) -> String:
-	if run_manager != null and run_manager.has_method("get_level3_pact_title"):
-		var pact_title: String = str(run_manager.get_level3_pact_title(pact_id))
+func _get_pact_display_name(pact_id: StringName) -> String:
+	if _run_manager_port != null:
+		var pact_title: String = _run_manager_port.get_level3_pact_title(pact_id)
 		if pact_title != "":
 			return pact_title
 	return str(pact_id)
-
-func _get_run_manager() -> Node:
-	return get_tree().get_first_node_in_group("run_manager")
 
 func _set_achievements_tab(tab_id: StringName) -> void:
 	_active_achievements_tab = tab_id
@@ -300,8 +294,7 @@ func _on_continue_pressed() -> void:
 	if continue_button.disabled:
 		return
 	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("request_continue_run"):
-		var run_manager: Node = _get_run_manager()
-		if run_manager == null:
+		if _run_manager_port == null or not _run_manager_port.has_manager():
 			continue_hint_label.text = "In arrivo."
 			continue_hint_panel.visible = true
 			continue_hint_label.visible = true

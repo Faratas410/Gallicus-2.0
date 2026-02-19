@@ -112,6 +112,7 @@ const LEVEL3_PACT_UNLOCKS: Dictionary = {
 	BET_P3_LIE_APPLAUSE: CONDANNA_NON_DOVEVO_PROVARCI,
 }
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
+const SaveContinueBoundaryScript = preload("res://scripts/systems/run/save_continue_boundary.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 
@@ -1139,6 +1140,7 @@ var _resolve_ritual_reward_applied: bool = false
 var _scars: Array[Dictionary] = []
 var _run_state: RunState = RunState.new()
 var _save_system: SaveSystem = SaveSystemScript.new()
+var _save_continue_boundary: SaveContinueBoundary = SaveContinueBoundaryScript.new()
 var _register_state: RegisterState = RegisterState.new()
 var _level3_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _boot_valid: bool = true
@@ -2398,47 +2400,36 @@ func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void
 		return
 	_run_state.run_save_flow_step = flow_step
 	_run_state.run_save_flow_bet_id = bet_id
-	_save_system.save_run_payload(_build_run_save_payload())
-
-func _build_run_save_payload() -> Dictionary:
-	var run_payload: Dictionary = _build_level3_runtime_payload()
-	var run_state_payload: Dictionary = _run_state.to_dict()
-	run_state_payload["scars"] = _serialize_run_scars(_run_state.scars)
 	var pacts_log: Array[Dictionary] = []
 	for entry: PactLogEntry in _run_state.pacts_log:
 		pacts_log.append(entry.to_dict())
-	run_state_payload["pacts_log"] = pacts_log
-	var payload_state: RunState = RunState.new()
-	payload_state.reset()
-	payload_state.from_dict(run_state_payload)
-	return _save_system.build_level3_run_payload(payload_state, run_payload, _serialize_scars_detail())
-
-func _build_level3_runtime_payload() -> Dictionary:
-	var upgrades: Dictionary = {}
-	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
-		upgrades = (run["upgrades"] as Dictionary).duplicate(true)
-	return {
-		"level3_schema": SaveSystemScript.LEVEL3_RUN_SCHEMA_VERSION,
+	var runtime_fields: Dictionary = {
 		"arena_index": int(run.get("arena_index", 0)),
 		"coins": int(run.get("coins", 0)),
 		"corruption": int(run.get("corruption", 0)),
-		"upgrades": upgrades,
+		"upgrades": {},
+		"scars": _serialize_run_scars(_run_state.scars),
+		"pacts_log": pacts_log,
+		"scars_detail": _serialize_scars_detail(),
 	}
+	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
+		runtime_fields["upgrades"] = (run["upgrades"] as Dictionary).duplicate(true)
+	_save_system.save_run_payload(_save_continue_boundary.build_save_payload(_run_state, runtime_fields))
 
 func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_last_save_reject_reason = ""
-	var result: Dictionary = _save_system.apply_level3_payload(_run_state, payload)
+	var result: Dictionary = _save_continue_boundary.apply_payload_to_state(_run_state, payload)
 	if not bool(result.get("ok", false)):
 		_last_save_reject_reason = str(result.get("reason", "invalid_continue_payload"))
 		return false
 
 	var run_state_data: Dictionary = result.get("run_state", {}) as Dictionary
-	var run_data: Dictionary = result.get("run", {}) as Dictionary
+	var applied_runtime: Dictionary = result.get("applied_runtime", {}) as Dictionary
 	var parsed_scars: Array[Scar] = _parse_run_scars(run_state_data.get("scars", []) as Array)
 	var parsed_pacts: Array[PactLogEntry] = _parse_pacts_log(run_state_data.get("pacts_log", []))
-	var next_arena_index: int = int(run_data.get("arena_index", _run_state.arena_index))
-	var next_coins: int = int(run_data.get("coins", starting_coins))
-	var next_corruption: int = clampi(int(run_data.get("corruption", 0)), 0, CORRUPTION_MAX)
+	var next_arena_index: int = int(applied_runtime.get("arena_index", _run_state.arena_index))
+	var next_coins: int = int(applied_runtime.get("coins", starting_coins))
+	var next_corruption: int = clampi(int(applied_runtime.get("corruption", 0)), 0, CORRUPTION_MAX)
 
 	_pact_sealed_sequence_id += 1
 	_resolve_ritual_sequence_id += 1
@@ -2468,8 +2459,8 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	run["corruption"] = next_corruption
 	if LEVEL3_ENABLED:
 		run["upgrades"] = {}
-	elif run_data.has("upgrades") and run_data["upgrades"] is Dictionary:
-		run["upgrades"] = (run_data["upgrades"] as Dictionary).duplicate(true)
+	elif applied_runtime.has("upgrades") and applied_runtime["upgrades"] is Dictionary:
+		run["upgrades"] = (applied_runtime["upgrades"] as Dictionary).duplicate(true)
 
 	if _run_state.level3_target_arenas <= 0:
 		_level3_rng.seed = _run_state.run_seed

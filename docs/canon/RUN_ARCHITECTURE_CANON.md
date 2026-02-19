@@ -150,6 +150,7 @@ All changes to systems described here must update this document in the same PR.
 - `PhaseBetPresentHandler.handle_request(...)` currently supports delegated intent classification for `request_place_bet`; RunManager remains responsible for bet selection/commit flow, autosave, ritual sequencing, and event emission ordering.
 - `PhaseMainMenuHandler.handle_request(...)` currently supports delegated intent classification for `request_new_run`, `request_continue_run`, and `request_show_main_menu`; RunManager remains responsible for run reset/continue/menu-return authority, phase progression, and event emission ordering.
 - `RunManager` resolves request handlers via an internal phase-handler map (`RunPhase` -> handler) and `_dispatch_phase_request(...)`; routing stays non-authoritative and includes a MAIN_MENU-handler fallback for menu-intent requests (`request_new_run`, `request_continue_run`, `request_show_main_menu`) when current-phase handler does not classify them.
+- For phase payload handlers requiring runtime values outside `RunState` (for example `coins`), `RunManager` passes explicit primitive inputs into `build_ui_payload(...)`; handlers remain non-authoritative and do not read scene tree or mutate flow.
 - Handlers are non-authoritative helpers only: no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access, and no independent flow transitions.
 - `RunManager` remains the sole authority for phase transitions, all `GameEvents` emissions, request dispatch, and final flow outcomes.
 

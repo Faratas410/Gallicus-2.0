@@ -1,7 +1,7 @@
 extends RunPhaseHandlerBase
 class_name PhasePushYourLuckHandler
 
-func build_ui_payload(run_state: RunState) -> Dictionary:
+func build_ui_payload(run_state: RunState, inputs: Dictionary = {}) -> Dictionary:
 	return {
 		"show_push_your_luck": true,
 		"body": "La folla vuole di più. Puoi incassare… o rilanciare.",

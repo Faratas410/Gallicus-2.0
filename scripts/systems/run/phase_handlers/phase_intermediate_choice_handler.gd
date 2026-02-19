@@ -1,7 +1,7 @@
 extends RunPhaseHandlerBase
 class_name PhaseIntermediateChoiceHandler
 
-func build_ui_payload(_run_state: RunState) -> Dictionary:
+func build_ui_payload(_run_state: RunState, _inputs: Dictionary = {}) -> Dictionary:
 	return {
 		"title": "SCEGLI IL GESTO",
 		"choices": ["placa", "provoca"],

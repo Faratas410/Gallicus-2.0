@@ -4716,13 +4716,13 @@ func _enter_main_menu() -> void:
 
 func _enter_intro() -> void:
 	var ui_payload: RunUiPayload = _build_phase_ui_payload(RunPhase.RUN_INIT, "INIZIO RUN")
-	var payload: Dictionary = _phase_run_init_handler.build_ui_payload(_run_state)
+	var payload: Dictionary = _phase_run_init_handler.build_ui_payload(_run_state, {"coins": int(run.get("coins", 0))})
 	ui_payload.meta = payload
 	_emit_ui(ui_payload)
 
 func _enter_bet_present() -> void:
 	var ui_payload: RunUiPayload = _build_phase_ui_payload(RunPhase.BET_PRESENT, "PATTO PROPOSTO")
-	var payload: Dictionary = _phase_bet_present_handler.build_ui_payload(_run_state)
+	var payload: Dictionary = _phase_bet_present_handler.build_ui_payload(_run_state, {"coins": int(run.get("coins", 0))})
 	ui_payload.meta = payload
 	_emit_ui(ui_payload)
 

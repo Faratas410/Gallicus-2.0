@@ -216,7 +216,7 @@ Forbidden direction examples:
 ## Where to add things
 
 - **New gameplay rule:** add/update a run system under `scripts/systems/run/*`, then integrate in `RunManager`.
-- **New content (bets/scars/outcomes data):** add/update catalogs under `scripts/content/*`.
+- **New content (bets/scars/outcomes data):** add/update catalogs under `scripts/content/*` (for example `scar_catalog.gd`, `bet_catalog.gd`).
 - **New UI presentation:** extend `RunUiPayload` and update UI render scripts; keep decisions in `RunManager`.
 
 ## Recipe: add a new phase

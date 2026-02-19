@@ -27,6 +27,7 @@ const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_pressed.tres"
 const BUTTON_STYLE_PRIMARY_DISABLED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_disabled.tres"
 const CondannaDataScript = preload("res://data/condanne.gd")
+const RunManagerUiPort = preload("res://scripts/ui/run_manager_ui_port.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
 const CondannaData = preload("res://data/condanne.gd")
@@ -170,7 +171,7 @@ const POST_BET_TEXTS: Dictionary = {
 
 
 var _bets_by_id: Dictionary = {}
-var _run_manager: Node
+var _run_manager_port: RunManagerUiPort
 var _arena: Node
 var _player: Node = null
 var _has_seen_controls: bool = false
@@ -244,6 +245,7 @@ const _PHASE_CONTAINER_PATHS: Array[String] = [
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_run_manager_port = RunManagerUiPort.new(get_tree())
 	if not _validate_ui_boot():
 		_disable_ui_interactions()
 		return
@@ -423,15 +425,12 @@ func _ready() -> void:
 	_wire_push_luck_buttons()
 	_wire_intro_phase_buttons()
 
-	var arena: Node = get_tree().get_first_node_in_group("arena")
+	_refresh_runtime_group_cache(true)
+	var arena: Node = _get_arena()
 	if arena != null and arena.has_signal("player_spawned"):
 		var arena_player_callable: Callable = Callable(self, "_on_player_spawned")
 		if not arena.player_spawned.is_connected(arena_player_callable):
 			arena.player_spawned.connect(arena_player_callable)
-
-	var p: Node = get_tree().get_first_node_in_group("player")
-	if p != null:
-		_bind_player(p)
 
 	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, _debug_overlay != null])
 
@@ -576,10 +575,9 @@ func _hide_scar_popup() -> void:
 func _should_show_arena_resolution_overlay() -> bool:
 	if arena_resolution_label == null:
 		return false
-	var manager: Node = get_tree().get_first_node_in_group("run_manager")
-	if manager != null and manager.has_method("is_visual_only"):
-		return bool(manager.call("is_visual_only"))
-	return false
+	if _run_manager_port == null:
+		return false
+	return _run_manager_port.is_visual_only()
 
 func _show_arena_resolution_overlay() -> void:
 	if arena_resolution_label == null:
@@ -631,6 +629,7 @@ func show_countdown(seconds: int = 3) -> void:
 # Preconditions: RunManager emitted GameEvents.run_started; UI nodes are initialized.
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
 func _on_run_started() -> void:
+	_refresh_runtime_group_cache(false)
 	if coins_label != null:
 		coins_label.text = "Coins: 0"
 	if escalation_bar != null:
@@ -683,9 +682,7 @@ func _on_run_started() -> void:
 	_hide_scars_detail()
 
 func _on_run_started_ui() -> void:
-	var player_node: Node = get_tree().get_first_node_in_group("player")
-	if player_node != null:
-		_bind_player(player_node)
+	_refresh_runtime_group_cache(false)
 
 func _on_sentence_banner_requested(payload: Dictionary) -> void:
 	if sentence_banner == null:
@@ -938,16 +935,11 @@ func _build_verdict_summary(payload: Dictionary, pacts_payload: Array, condanne_
 func _payload_has_lying_pact(pacts_payload: Array) -> bool:
 	if pacts_payload.is_empty():
 		return false
-	var manager: Node = _get_run_manager()
-	if manager == null:
+	if _run_manager_port == null:
 		return false
-	var reveals_value: Variant = manager.get("LYING_PACT_REVEALS")
-	if not (reveals_value is Dictionary):
-		return false
-	var reveals: Dictionary = reveals_value as Dictionary
 	for pact in pacts_payload:
 		var pact_key: StringName = StringName(str(pact))
-		if reveals.has(pact_key) or reveals.has(str(pact)):
+		if _run_manager_port.has_lying_pact_reveal(pact_key):
 			return true
 	return false
 
@@ -1705,6 +1697,19 @@ func _on_fast_blink_tick() -> void:
 		next_alpha = 0.2
 	fast_countdown_label.modulate.a = next_alpha
 
+func _refresh_runtime_group_cache(log_missing: bool) -> void:
+	if _run_manager_port != null:
+		_run_manager_port.has_manager()
+	if log_missing and (_run_manager_port == null or not _run_manager_port.has_manager()):
+		push_error("UI: missing run_manager group node")
+	if _run_manager_port != null:
+		_arena = _run_manager_port.get_arena()
+	if _arena == null:
+		_arena = get_tree().get_first_node_in_group("arena")
+	_player = get_tree().get_first_node_in_group("player")
+	if _player != null:
+		_bind_player(_player)
+
 func _on_player_spawned(p: Node) -> void:
 	_bind_player(p)
 
@@ -2226,22 +2231,13 @@ func _update_debug_overlay(text: String) -> void:
 func _refresh_debug_overlay() -> void:
 	if _debug_overlay == null:
 		return
-	var manager: Node = _get_run_manager()
-	if manager == null:
+	if _run_manager_port == null or not _run_manager_port.has_manager():
 		_update_debug_overlay("Phase: -\nLast request: -\nLast UI render ms: -\nFlow tail:\nRunManager not found")
 		return
-	var phase_name: String = "-"
-	if manager.has_method("get_debug_phase_name"):
-		phase_name = str(manager.call("get_debug_phase_name"))
-	var last_request: String = "-"
-	if manager.has_method("get_debug_last_request"):
-		last_request = str(manager.call("get_debug_last_request"))
-	var last_ui_render_ms: int = -1
-	if manager.has_method("get_debug_last_ui_render_ms"):
-		last_ui_render_ms = int(manager.call("get_debug_last_ui_render_ms"))
-	var flow_tail: String = "-"
-	if manager.has_method("get_debug_flow_tail"):
-		flow_tail = str(manager.call("get_debug_flow_tail", 10))
+	var phase_name: String = _run_manager_port.get_debug_phase_name()
+	var last_request: String = _run_manager_port.get_debug_last_request()
+	var last_ui_render_ms: int = _run_manager_port.get_debug_last_ui_render_ms()
+	var flow_tail: String = _run_manager_port.get_debug_flow_tail(10)
 	_update_debug_overlay("Phase: %s\nLast request: %s\nLast UI render ms: %d\nFlow tail:\n%s" % [
 		phase_name,
 		last_request,
@@ -2293,27 +2289,17 @@ func _req(path: String) -> Node:
 		push_error("UI missing node at path: %s" % path)
 	return n
 
-func _get_run_manager() -> Node:
-	if _run_manager and is_instance_valid(_run_manager):
-		return _run_manager
-	_run_manager = get_tree().get_first_node_in_group("run_manager")
-	return _run_manager
-
 func _get_arena() -> Node:
-	if _arena and is_instance_valid(_arena):
+	if _arena != null and is_instance_valid(_arena):
 		return _arena
-	var manager: Node = _get_run_manager()
-	if manager and manager.has_method("get_arena"):
-		_arena = manager.get_arena()
-	if _arena:
+	_refresh_runtime_group_cache(false)
+	if _arena != null and is_instance_valid(_arena):
 		return _arena
-	_arena = get_tree().get_first_node_in_group("arena")
-	return _arena
+	return null
 
 func _get_arena_index() -> int:
-	var manager: Node = _get_run_manager()
-	if manager and manager.has_method("get_arena_index"):
-		return manager.get_arena_index()
+	if _run_manager_port != null:
+		return _run_manager_port.get_arena_index()
 	return 0
 
 func _get_enemies_alive() -> int:

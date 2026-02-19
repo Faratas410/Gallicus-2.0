@@ -49,25 +49,26 @@ const INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS: int = 6
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_FLAWLESS_BLOOD: StringName = &"FLAWLESS_BLOOD"
 const BET_DOUBLE_OR_DIE_L3: StringName = &"DOUBLE_OR_DIE"
-const BET_DEBT_CHAIN: StringName = &"DEBT_CHAIN"
-const BET_BLOOD_TAX: StringName = &"BLOOD_TAX"
-const BET_CROW_PLEASER: StringName = &"CROW_PLEASER"
-const BET_LAST_BREATH: StringName = &"LAST_BREATH"
-const BET_P3_WAX_SEAL: StringName = &"P3_WAX_SEAL"
-const BET_P3_BLOOD_LEDGER: StringName = &"P3_BLOOD_LEDGER"
-const BET_P3_DEBT_MIRROR: StringName = &"P3_DEBT_MIRROR"
-const BET_P3_CROWD_FEAST: StringName = &"P3_CROWD_FEAST"
-const BET_P3_LAST_WAGER: StringName = &"P3_LAST_WAGER"
-const BET_P3_RED_VERDICT: StringName = &"P3_RED_VERDICT"
-const BET_P3_CHAIN_OATH: StringName = &"P3_CHAIN_OATH"
-const BET_P3_TITHE_OF_BONE: StringName = &"P3_TITHE_OF_BONE"
-const BET_P3_GLORY_TAX: StringName = &"P3_GLORY_TAX"
-const BET_P3_MERCY_BAIT: StringName = &"P3_MERCY_BAIT"
-const BET_P3_SILENCE_BRIBE: StringName = &"P3_SILENCE_BRIBE"
-const BET_P3_FINAL_APPLAUSE: StringName = &"P3_FINAL_APPLAUSE"
-const BET_P3_LIE_MERCY: StringName = &"P3_LIE_MERCY"
-const BET_P3_LIE_DEBT: StringName = &"P3_LIE_DEBT"
-const BET_P3_LIE_APPLAUSE: StringName = &"P3_LIE_APPLAUSE"
+const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
+const BET_DEBT_CHAIN: StringName = BetCatalog.BET_DEBT_CHAIN
+const BET_BLOOD_TAX: StringName = BetCatalog.BET_BLOOD_TAX
+const BET_CROW_PLEASER: StringName = BetCatalog.BET_CROW_PLEASER
+const BET_LAST_BREATH: StringName = BetCatalog.BET_LAST_BREATH
+const BET_P3_WAX_SEAL: StringName = BetCatalog.BET_P3_WAX_SEAL
+const BET_P3_BLOOD_LEDGER: StringName = BetCatalog.BET_P3_BLOOD_LEDGER
+const BET_P3_DEBT_MIRROR: StringName = BetCatalog.BET_P3_DEBT_MIRROR
+const BET_P3_CROWD_FEAST: StringName = BetCatalog.BET_P3_CROWD_FEAST
+const BET_P3_LAST_WAGER: StringName = BetCatalog.BET_P3_LAST_WAGER
+const BET_P3_RED_VERDICT: StringName = BetCatalog.BET_P3_RED_VERDICT
+const BET_P3_CHAIN_OATH: StringName = BetCatalog.BET_P3_CHAIN_OATH
+const BET_P3_TITHE_OF_BONE: StringName = BetCatalog.BET_P3_TITHE_OF_BONE
+const BET_P3_GLORY_TAX: StringName = BetCatalog.BET_P3_GLORY_TAX
+const BET_P3_MERCY_BAIT: StringName = BetCatalog.BET_P3_MERCY_BAIT
+const BET_P3_SILENCE_BRIBE: StringName = BetCatalog.BET_P3_SILENCE_BRIBE
+const BET_P3_FINAL_APPLAUSE: StringName = BetCatalog.BET_P3_FINAL_APPLAUSE
+const BET_P3_LIE_MERCY: StringName = BetCatalog.BET_P3_LIE_MERCY
+const BET_P3_LIE_DEBT: StringName = BetCatalog.BET_P3_LIE_DEBT
+const BET_P3_LIE_APPLAUSE: StringName = BetCatalog.BET_P3_LIE_APPLAUSE
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const GameConstants = preload("res://scripts/systems/constants.gd")
 const SmokeDriverScript = preload("res://scripts/systems/run/smoke_driver.gd")
@@ -80,40 +81,8 @@ const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd
 const ScarPolicyScript = preload("res://scripts/systems/run/scar_policy.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
 
-const LEVEL3_BET_BEHAVIOR: Dictionary = {
-	BET_P3_WAX_SEAL: BET_DEBT_CHAIN,
-	BET_P3_BLOOD_LEDGER: BET_BLOOD_TAX,
-	BET_P3_DEBT_MIRROR: BET_DEBT_CHAIN,
-	BET_P3_CROWD_FEAST: BET_CROW_PLEASER,
-	BET_P3_LAST_WAGER: BET_LAST_BREATH,
-	BET_P3_RED_VERDICT: BET_BLOOD_TAX,
-	BET_P3_CHAIN_OATH: BET_DEBT_CHAIN,
-	BET_P3_TITHE_OF_BONE: BET_BLOOD_TAX,
-	BET_P3_GLORY_TAX: BET_CROW_PLEASER,
-	BET_P3_MERCY_BAIT: BET_CROW_PLEASER,
-	BET_P3_SILENCE_BRIBE: BET_DEBT_CHAIN,
-	BET_P3_FINAL_APPLAUSE: BET_CROW_PLEASER,
-	BET_P3_LIE_MERCY: BET_CROW_PLEASER,
-	BET_P3_LIE_DEBT: BET_DEBT_CHAIN,
-	BET_P3_LIE_APPLAUSE: BET_LAST_BREATH,
-}
-const LEVEL3_PACT_UNLOCKS: Dictionary = {
-	BET_P3_WAX_SEAL: CONDANNA_FIRMATO,
-	BET_P3_BLOOD_LEDGER: CONDANNA_FIRMATO,
-	BET_P3_CROWD_FEAST: CONDANNA_FIRMATO,
-	BET_P3_CHAIN_OATH: CONDANNA_FIRMATO,
-	BET_P3_DEBT_MIRROR: CONDANNA_ANCORA,
-	BET_P3_RED_VERDICT: CONDANNA_ANCORA,
-	BET_P3_TITHE_OF_BONE: CONDANNA_ANCORA,
-	BET_P3_MERCY_BAIT: CONDANNA_ANCORA,
-	BET_P3_LAST_WAGER: CONDANNA_MI_SONO_FERMATO,
-	BET_P3_GLORY_TAX: CONDANNA_MI_SONO_FERMATO,
-	BET_P3_SILENCE_BRIBE: CONDANNA_MI_SONO_FERMATO,
-	BET_P3_FINAL_APPLAUSE: CONDANNA_MI_SONO_FERMATO,
-	BET_P3_LIE_MERCY: CONDANNA_NON_DOVEVO_PROVARCI,
-	BET_P3_LIE_DEBT: CONDANNA_NON_DOVEVO_PROVARCI,
-	BET_P3_LIE_APPLAUSE: CONDANNA_NON_DOVEVO_PROVARCI,
-}
+const LEVEL3_BET_BEHAVIOR: Dictionary[StringName, StringName] = BetCatalog.LEVEL3_BET_BEHAVIOR
+const LEVEL3_PACT_UNLOCKS: Dictionary[StringName, StringName] = BetCatalog.LEVEL3_PACT_UNLOCKS
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const SaveContinueBoundaryScript = preload("res://scripts/systems/run/save_continue_boundary.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
@@ -2226,10 +2195,9 @@ func _get_available_level3_bets() -> Array[Dictionary]:
 	return available
 
 func _is_level3_bet_unlocked(bet_id: StringName) -> bool:
-	if LEVEL3_PACT_UNLOCKS.has(bet_id):
-		var unlock_id: StringName = StringName(str(LEVEL3_PACT_UNLOCKS.get(bet_id, "")))
-		if unlock_id != &"" and not _is_unlocked(unlock_id):
-			return false
+	var unlock_id: StringName = BetCatalog.get_level3_pact_unlock(bet_id)
+	if unlock_id != &"" and not _is_unlocked(unlock_id):
+		return false
 	return true
 
 func _is_level3_bet_allowed(bet: Dictionary) -> bool:
@@ -2833,7 +2801,7 @@ func _resolve_level3_arena() -> ArenaResult:
 	return result
 
 func _get_level3_bet_behavior(bet_id: StringName) -> StringName:
-	var mapped: Variant = LEVEL3_BET_BEHAVIOR.get(bet_id, bet_id)
+	var mapped: StringName = BetCatalog.map_level3_behavior(bet_id)
 	return StringName(str(mapped))
 
 func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:

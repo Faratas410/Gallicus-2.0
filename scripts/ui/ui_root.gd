@@ -14,6 +14,7 @@ extends CanvasLayer
 signal arena_message_queue_completed
 
 const FAST_SELECTION_SECONDS: int = 12
+const RunPhaseContract = preload("res://scripts/contracts/run_phase_contract.gd")
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const POST_BET_MESSAGE_TIME_SEC: float = 3.5
 const SENTENCE_BANNER_SECONDS: float = 1.2
@@ -35,16 +36,16 @@ const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
 const SCARS_PANEL_MAX_HEIGHT: float = 360.0
-const RUN_PHASE_MAIN_MENU: int = 10
-const RUN_PHASE_RUN_INIT: int = 11
-const RUN_PHASE_BET_PRESENT: int = 12
-const RUN_PHASE_BET_COMMITTED: int = 13
-const RUN_PHASE_FIRST_REACTION: int = 14
-const RUN_PHASE_MID_CHOICE: int = 15
-const RUN_PHASE_PUSH_YOUR_LUCK: int = 16
-const RUN_PHASE_NEXT_BET: int = 17
-const RUN_PHASE_RESOLUTION: int = 18
-const RUN_PHASE_END_RUN: int = 2
+const RUN_PHASE_MAIN_MENU: int = RunPhaseContract.MAIN_MENU
+const RUN_PHASE_RUN_INIT: int = RunPhaseContract.RUN_INIT
+const RUN_PHASE_BET_PRESENT: int = RunPhaseContract.BET_PRESENT
+const RUN_PHASE_BET_COMMITTED: int = RunPhaseContract.BET_COMMITTED
+const RUN_PHASE_FIRST_REACTION: int = RunPhaseContract.POST_BET_MESSAGES
+const RUN_PHASE_MID_CHOICE: int = RunPhaseContract.INTERMEDIATE_CHOICE
+const RUN_PHASE_PUSH_YOUR_LUCK: int = RunPhaseContract.PUSH_YOUR_LUCK
+const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
+const RUN_PHASE_RESOLUTION: int = RunPhaseContract.RESOLUTION
+const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
 const POST_BET_TEXTS: Dictionary = {
 	"CASH_OUT": [
 		"Hai incassato. La folla mormora.",
@@ -1128,7 +1129,7 @@ func _on_resolve_ritual_closed() -> void:
 
 func _on_intermediate_choice_opened() -> void:
 	var payload: RunUiPayload = RunUiPayloadScript.new()
-	payload.phase = 15
+	payload.phase = RunPhaseContract.INTERMEDIATE_CHOICE
 	payload.title = "SCEGLI IL GESTO"
 	payload.choices = ["placa", "provoca"]
 	payload.show_mid_choice = true
@@ -1431,7 +1432,7 @@ func _build_ending_meta_section() -> String:
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
 	var ui_payload: RunUiPayload = RunUiPayloadScript.new()
-	ui_payload.phase = 16
+	ui_payload.phase = RunPhaseContract.PUSH_YOUR_LUCK
 	ui_payload.show_push_your_luck = true
 	ui_payload.meta = payload
 	ui_payload.title = "PUSH YOUR LUCK — %s" % str(payload.get("bet_name", ""))

@@ -20,12 +20,15 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_path_indexes(project_root: Path) -> tuple[list[Path], dict[str, list[Path]]]:
+def build_path_indexes(project_root: Path) -> tuple[list[Path], dict[str, list[Path]], set[str]]:
     resource_files: list[Path] = []
     lowercase_index: dict[str, list[Path]] = {}
+    exact_index: set[str] = set()
 
     for path in project_root.rglob("*"):
         rel_path = path.relative_to(project_root)
+        rel_text = rel_path.as_posix()
+        exact_index.add(rel_text)
         rel_lower = str(rel_path).lower()
         if rel_lower not in lowercase_index:
             lowercase_index[rel_lower] = []
@@ -34,23 +37,16 @@ def build_path_indexes(project_root: Path) -> tuple[list[Path], dict[str, list[P
         if path.is_file() and path.suffix.lower() in RESOURCE_EXTENSIONS:
             resource_files.append(path)
 
-    return resource_files, lowercase_index
+    return resource_files, lowercase_index, exact_index
 
 
-def has_exact_case_path(project_root: Path, rel_path: Path) -> bool:
-    current: Path = project_root
+def has_exact_case_path(exact_index: set[str], rel_path: Path) -> bool:
+    current_segments: list[str] = []
     for segment in rel_path.parts:
-        if not current.is_dir():
+        current_segments.append(segment)
+        if "/".join(current_segments) not in exact_index:
             return False
-        matched: bool = False
-        for entry in current.iterdir():
-            if entry.name == segment:
-                current = entry
-                matched = True
-                break
-        if not matched:
-            return False
-    return current.exists()
+    return True
 
 
 def find_lowercase_matches(lowercase_index: dict[str, list[Path]], rel_path: Path) -> list[Path]:
@@ -65,7 +61,7 @@ def main() -> int:
         print(f"verify_res_paths: FAILED\n- invalid project root: {project_root}")
         return 1
 
-    resource_files, lowercase_index = build_path_indexes(project_root)
+    resource_files, lowercase_index, exact_index = build_path_indexes(project_root)
 
     failures: list[tuple[Path, str, str]] = []
     seen: set[tuple[Path, str]] = set()
@@ -93,7 +89,7 @@ def main() -> int:
                 failures.append((resource_file.relative_to(project_root), res_path, detail))
                 continue
 
-            if not has_exact_case_path(project_root, rel):
+            if not has_exact_case_path(exact_index, rel):
                 matches = find_lowercase_matches(lowercase_index, rel)
                 if len(matches) == 1:
                     detail = f"case-mismatch (closest: res://{matches[0].as_posix()})"

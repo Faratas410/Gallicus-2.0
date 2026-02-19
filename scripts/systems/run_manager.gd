@@ -1119,6 +1119,14 @@ var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
 var _runstate_kernel: RunStateKernel = RunStateKernel.new()
 var _scar_policy: ScarPolicy = ScarPolicyScript.new()
 var _flow_logger: FlowLogger = FlowLogger.new()
+var _phase_run_init_handler: PhaseRunInitHandler = PhaseRunInitHandler.new()
+var _phase_bet_present_handler: PhaseBetPresentHandler = PhaseBetPresentHandler.new()
+var _phase_intermediate_choice_handler: PhaseIntermediateChoiceHandler = PhaseIntermediateChoiceHandler.new()
+var _phase_push_your_luck_handler: PhasePushYourLuckHandler = PhasePushYourLuckHandler.new()
+var _phase_resolution_handler: PhaseResolutionHandler = PhaseResolutionHandler.new()
+var _phase_game_over_handler: PhaseGameOverHandler = PhaseGameOverHandler.new()
+var _phase_main_menu_handler: PhaseMainMenuHandler = PhaseMainMenuHandler.new()
+var _phase_handler_map: Dictionary = {}
 var _session_id: String = ""
 var _run_counter: int = 0
 var _last_request: String = ""
@@ -1268,6 +1276,13 @@ func _ready() -> void:
 		return
 	_arena_layout_rng.randomize()
 	_connect_gameevents()
+	_phase_handler_map[RunPhase.MAIN_MENU] = _phase_main_menu_handler
+	_phase_handler_map[RunPhase.RUN_INIT] = _phase_run_init_handler
+	_phase_handler_map[RunPhase.BET_PRESENT] = _phase_bet_present_handler
+	_phase_handler_map[RunPhase.INTERMEDIATE_CHOICE] = _phase_intermediate_choice_handler
+	_phase_handler_map[RunPhase.PUSH_YOUR_LUCK] = _phase_push_your_luck_handler
+	_phase_handler_map[RunPhase.RESOLUTION] = _phase_resolution_handler
+	_phase_handler_map[RunPhase.GAME_OVER] = _phase_game_over_handler
 	_registry_has_precedent = SaveManager.has_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 	_start_smoke_timeout_timer()
 	call_deferred("_boot")
@@ -1974,7 +1989,12 @@ func resolve_arena() -> void:
 func _enter_resolution() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
-	_emit_ui(_build_phase_ui_payload(RunPhase.RESOLUTION, "RISOLUZIONE", "L'arena decide il prezzo del patto."))
+	var resolution_payload: Dictionary = _phase_resolution_handler.build_ui_payload(_run_state)
+	_emit_ui(_build_phase_ui_payload(
+		RunPhase.RESOLUTION,
+		str(resolution_payload.get("title", "")),
+		str(resolution_payload.get("body", ""))
+	))
 	_resolving_arena = true
 	_update_arena_visual_only()
 	_set_runtime_gate_phase(RunPhase.LIVE)
@@ -3025,12 +3045,27 @@ func _start_next_arena() -> void:
 	_emit_sentence_banner_for_bet(bet_id)
 	_arena.call("start_next_wave")
 
+func _dispatch_phase_request(request_name: String, payload: Dictionary) -> PhaseResult:
+	var handler: RunPhaseHandlerBase = _phase_handler_map.get(_phase, null)
+	if handler != null:
+		var result: PhaseResult = handler.handle_request(request_name, _run_state, payload)
+		if result.handled:
+			return result
+	if request_name == "request_new_run" or request_name == "request_continue_run" or request_name == "request_show_main_menu":
+		return _phase_main_menu_handler.handle_request(request_name, _run_state, payload)
+	return PhaseResult.new()
+
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
 	_touch_request_activity("request_new_run()")
 	if not _guard_request_phase("request_new_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
+		return
+	var res: PhaseResult = _dispatch_phase_request("request_new_run", {})
+	if not res.handled:
+		return
+	if res.action != "NEW_RUN":
 		return
 	_save_system.clear_run()
 	request_new_game()
@@ -3055,11 +3090,21 @@ func _on_request_continue_run() -> void:
 	_touch_request_activity("request_continue_run()")
 	if not _guard_request_phase("request_continue_run", [RunPhase.MAIN_MENU, RunPhase.NONE]):
 		return
+	var res: PhaseResult = _dispatch_phase_request("request_continue_run", {})
+	if not res.handled:
+		return
+	if res.action != "CONTINUE_RUN":
+		return
 	request_load_continue()
 
 func _on_request_show_main_menu() -> void:
 	_touch_request_activity("request_show_main_menu()")
 	if not _guard_request_phase("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION, RunPhase.GAME_OVER]):
+		return
+	var res: PhaseResult = _dispatch_phase_request("request_show_main_menu", {})
+	if not res.handled:
+		return
+	if res.action != "SHOW_MAIN_MENU":
 		return
 	print_debug("[FLOW] request_show_main_menu_received")
 	request_quit_to_menu()
@@ -3115,12 +3160,22 @@ func _on_request_mid_choice_select(index: int) -> void:
 	_flow_logger.log_request("request_mid_choice_select", "index=%d" % index)
 	if not _guard_request_phase("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE]):
 		return
+	var res: PhaseResult = _dispatch_phase_request("request_mid_choice_select", {"index": index})
+	if not res.handled:
+		return
+	if res.action != "MID_CHOICE_SELECT":
+		return
 	request_choose_mid(index)
 
 func _on_request_pyl_cashout() -> void:
 	_touch_request_activity("request_pyl_cashout()")
 	_flow_logger.log_request("request_pyl_cashout")
 	if not _guard_request_phase("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK]):
+		return
+	var res: PhaseResult = _dispatch_phase_request("request_pyl_cashout", {})
+	if not res.handled:
+		return
+	if res.action != "CASHOUT":
 		return
 	request_take_payout()
 
@@ -3138,6 +3193,11 @@ func _on_request_pyl_double() -> void:
 	_touch_request_activity("request_pyl_double()")
 	_flow_logger.log_request("request_pyl_double")
 	if not _guard_request_phase("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK]):
+		return
+	var res: PhaseResult = _dispatch_phase_request("request_pyl_double", {})
+	if not res.handled:
+		return
+	if res.action != "DOUBLE":
 		return
 	request_push_your_luck()
 
@@ -3164,6 +3224,11 @@ func _on_request_end_run_quit() -> void:
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	if not _guard_phase(RunPhase.BET_PRESENT, "request_place_bet"):
+		return
+	var res: PhaseResult = _dispatch_phase_request("request_place_bet", {"bet_id": bet_id})
+	if not res.handled:
+		return
+	if res.action != "PLACE_BET":
 		return
 	if not LEVEL3_ENABLED:
 		return
@@ -3779,19 +3844,27 @@ func _refresh_push_luck_choice(bet_id: StringName) -> void:
 func _build_intermediate_choice_ui_payload() -> RunUiPayload:
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = int(RunPhase.INTERMEDIATE_CHOICE)
-	payload.title = "SCEGLI IL GESTO"
-	payload.choices = ["placa", "provoca"]
-	payload.show_mid_choice = true
+	var ui_payload: Dictionary = _phase_intermediate_choice_handler.build_ui_payload(_run_state)
+	payload.title = str(ui_payload.get("title", ""))
+	var choices: Array = ui_payload.get("choices", []) as Array
+	payload.choices = []
+	for choice_value: Variant in choices:
+		payload.choices.append(str(choice_value))
+	payload.show_mid_choice = bool(ui_payload.get("show_mid_choice", false))
 	return payload
 
 func _build_push_luck_ui_payload(bet_id: StringName) -> RunUiPayload:
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = int(RunPhase.PUSH_YOUR_LUCK)
-	payload.show_push_your_luck = true
+	var ui_payload: Dictionary = _phase_push_your_luck_handler.build_ui_payload(_run_state)
+	payload.show_push_your_luck = bool(ui_payload.get("show_push_your_luck", false))
 	payload.meta = _build_push_luck_payload(bet_id)
 	payload.title = "PUSH YOUR LUCK — %s" % str(payload.meta.get("bet_name", ""))
-	payload.body = "La folla vuole di più. Puoi incassare… o rilanciare."
-	payload.choices = ["cashout", "condanna", "double"]
+	payload.body = str(ui_payload.get("body", ""))
+	var choices: Array = ui_payload.get("choices", []) as Array
+	payload.choices = []
+	for choice_value: Variant in choices:
+		payload.choices.append(str(choice_value))
 	return payload
 
 func _emit_ui(payload: RunUiPayload) -> void:
@@ -4420,27 +4493,17 @@ func _select_run_finale() -> Dictionary:
 			anomaly_flow_tag = "SOSPENSIONE"
 		_:
 			anomaly_flow_tag = ""
-	return _finale_builder.build_finale_payload({
+	var finale_payload: Dictionary = _phase_game_over_handler.build_ui_payload(_run_state, {
 		"ending_id": String(ending_id),
-		"run_end_reason": _run_state.run_end_reason,
-		"run_is_over": _run_state.run_is_over,
-		"bets_history_count": _run_state.bets_history.size(),
-		"refuse_cashout_count_this_run": _run_state.refuse_cashout_count_this_run,
-		"scars_history_count": _run_state.scars_history.size(),
-		"max_escalation": _run_state.max_escalation,
 		"is_anomalous": _register_state.flow_phase != RegisterState.FLOW_PHASE_STABLE,
 		"register_flow_phase": String(_register_state.flow_phase),
 		"anomaly_flow_tag": anomaly_flow_tag,
 		"run_completed": run_completed,
 		"scars": scars_copy,
-		"seed": _run_state.run_seed,
 		"stats": stats_payload,
 		"pacts_signed": pacts_signed,
-		"condanne_this_run": _run_state.condanne_this_run.duplicate(),
-		"last_crowd_line": _run_state.last_audience_context_line,
-		"glory": _run_state.glory,
-		"corruption": _run_state.corruption,
 	})
+	return _finale_builder.build_finale_payload(finale_payload)
 
 func _update_hidden_run_metrics() -> void:
 	var corruption_value: int = 0
@@ -4652,10 +4715,16 @@ func _enter_main_menu() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.MAIN_MENU, "MAIN MENU"))
 
 func _enter_intro() -> void:
-	_emit_ui(_build_phase_ui_payload(RunPhase.RUN_INIT, "INIZIO RUN"))
+	var ui_payload: RunUiPayload = _build_phase_ui_payload(RunPhase.RUN_INIT, "INIZIO RUN")
+	var payload: Dictionary = _phase_run_init_handler.build_ui_payload(_run_state, {"coins": int(run.get("coins", 0))})
+	ui_payload.meta = payload
+	_emit_ui(ui_payload)
 
 func _enter_bet_present() -> void:
-	_emit_ui(_build_phase_ui_payload(RunPhase.BET_PRESENT, "PATTO PROPOSTO"))
+	var ui_payload: RunUiPayload = _build_phase_ui_payload(RunPhase.BET_PRESENT, "PATTO PROPOSTO")
+	var payload: Dictionary = _phase_bet_present_handler.build_ui_payload(_run_state, {"coins": int(run.get("coins", 0))})
+	ui_payload.meta = payload
+	_emit_ui(ui_payload)
 
 func _enter_bet_committed() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.BET_COMMITTED, "PATTO SIGILLATO"))

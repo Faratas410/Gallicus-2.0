@@ -66,6 +66,8 @@
     - `scar_system.gd`
     - `save_system.gd`
     - `flow_logger.gd`
+    - `runstate_kernel.gd`
+    - `scar_policy.gd`
 - UI (reactive layer):
   - `ui/ui_root.gd`
   - `ui/main_menu.gd`

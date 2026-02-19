@@ -135,6 +135,18 @@ All changes to systems described here must update this document in the same PR.
 - Helper invariants: no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access.
 - Payload stability rule: helper output schema is fixed and keys are always emitted with explicit defaults (no optional/missing output keys for declared payload contracts).
 
+### RunStateKernel
+
+- `RefCounted` helper at `res://scripts/systems/run/runstate_kernel.gd` encapsulates deterministic RunState mutation kernel operations (math/clamps/invariants/history appends plus pure scar state upsert/reset/recompute).
+- Helper must remain pure: no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access.
+- `RunManager` remains sole authority for mutation timing, flow branching, phase transitions, and all `GameEvents` emissions.
+
+### ScarPolicy
+
+- `RefCounted` helper at `res://scripts/systems/run/scar_policy.gd` encapsulates deterministic scar eligibility/selection decision logic from read-only snapshots.
+- Helper must remain pure: no `RunState` mutation, no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access.
+- `RunManager` remains sole authority for trigger sequencing (`_try_register_*` / `_try_apply_*`), scar application via kernel, phase control, and event emission.
+
 ### Debug Overlay
 
 - Toggle path: `F3`.

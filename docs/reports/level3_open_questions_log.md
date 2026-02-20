@@ -6,10 +6,10 @@
 **Last updated:** 2026-02-11  
 **Notes:** This is historical; not canon.
 
-Overlaps with: docs/level3_integrity_audit_report.md, docs/codex_report_1_0_gap.md.
+Overlaps with: docs/reports/level3_integrity_audit_report.md, docs/reports/codex_report_1_0_gap.md.
 
 ## Overlap
-- Overlaps with: docs/level3_integrity_audit_report.md, docs/codex_report_1_0_gap.md.
+- Overlaps with: docs/reports/level3_integrity_audit_report.md, docs/reports/codex_report_1_0_gap.md.
 
 Documento tecnico di rischio/ambiguità. Non definisce il canone: raccoglie elementi da verificare o isolare.
 

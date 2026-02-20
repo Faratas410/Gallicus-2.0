@@ -18,8 +18,8 @@
 
 ### Legacy/secondary coin variables
 
-- `legacy_runtime/gameplay/player_legacy.gd` contains `var coins: int = 0` and `add_coins(amount)`.
-- `legacy_runtime/pickups/Pickup.gd` includes `PickupType.COINS` and attempts to emit `GameEvents.request_add_coins`.
+- `gameplay/player_legacy.gd` (storico/rimosso) contained `var coins: int = 0` and `add_coins(amount)`.
+- `pickups/Pickup.gd` (storico/rimosso) included `PickupType.COINS` and attempted to emit `GameEvents.request_add_coins`.
 - `request_add_coins` signal is **not declared** in active `scripts/systems/game_events.gd`, so this legacy path is not wired into active runtime authority.
 
 ## Lifecycle
@@ -104,4 +104,4 @@ Coins are currently:
 
 Notes:
 - Active runtime coins are run-scoped with run-save checkpoint serialization.
-- Legacy coin code paths exist under `legacy_runtime/` and are not part of active runtime authority.
+- Legacy coin code paths were part of a removed namespace (storico/rimosso) and are not part of active runtime authority.

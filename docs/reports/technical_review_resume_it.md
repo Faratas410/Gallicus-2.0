@@ -4,11 +4,11 @@
 **Scope:** Italian technical review snapshot of architecture, systems, and status.  
 **Source of truth:** docs/canon/RUN_ARCHITECTURE_CANON.md, docs/repo_map.md  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/technical_resume_level3_canonical_it.md, docs/repo_map.md.
+**Notes:** Overlaps with: docs/reports/technical_resume_level3_canonical_it.md, docs/repo_map.md.
 - Candidate for archive after consolidation patch if merged into one maintained summary.
 
 ## Overlap
-- Overlaps with: docs/technical_resume_level3_canonical_it.md, docs/repo_map.md.
+- Overlaps with: docs/reports/technical_resume_level3_canonical_it.md, docs/repo_map.md.
 - Candidate for archive after consolidation patch if merged into one maintained summary.
 
 ## 1) Cos’è il progetto in pratica

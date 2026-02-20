@@ -4,11 +4,11 @@
 **Scope:** Italian technical summary of canonical Level 3 architecture and flow.  
 **Source of truth:** docs/canon/RUN_ARCHITECTURE_CANON.md, docs/flow_wiring_contract.md  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/technical_review_resume_it.md, docs/FLOW_OFFICIAL_EA.md.
+**Notes:** Overlaps with: docs/reports/technical_review_resume_it.md, docs/FLOW_OFFICIAL_EA.md.
 - Candidate for archive after consolidation patch if a single technical summary is kept.
 
 ## Overlap
-- Overlaps with: docs/technical_review_resume_it.md, docs/FLOW_OFFICIAL_EA.md.
+- Overlaps with: docs/reports/technical_review_resume_it.md, docs/FLOW_OFFICIAL_EA.md.
 - Candidate for archive after consolidation patch if a single technical summary is kept.
 
 ## Scope

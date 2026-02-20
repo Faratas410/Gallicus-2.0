@@ -6,10 +6,10 @@
 **Last updated:** 2026-02-11  
 **Notes:** This is historical; not canon.
 
-Overlaps with: docs/level3_integrity_audit_report.md, docs/level3_open_questions_log.md.
+Overlaps with: docs/reports/level3_integrity_audit_report.md, docs/reports/level3_open_questions_log.md.
 
 ## Overlap
-- Overlaps with: docs/level3_integrity_audit_report.md, docs/level3_open_questions_log.md.
+- Overlaps with: docs/reports/level3_integrity_audit_report.md, docs/reports/level3_open_questions_log.md.
 
 ## Build status
 - Main.tscn avvia? **Non verificato** (richiede run in Godot 4.6).

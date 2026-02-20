@@ -4166,10 +4166,9 @@ func _get_level3_doom_short(bet_id: StringName) -> String:
 		return lines[0].strip_edges()
 	return doom_text
 
-func _apply_double_or_die_reward_scaled(scale: int) -> void:
+func _apply_double_or_die_reward_scaled(_scale: int) -> void:
 	if LEVEL3_ENABLED:
 		return
-	_ = scale
 
 func retry_current_bet() -> void:
 	if _is_game_over:

@@ -139,6 +139,7 @@ All changes to systems described here must update this document in the same PR.
 
 - `RunPhaseHandlerBase` (`res://scripts/systems/run/phase_handlers/run_phase_handler_base.gd`) defines a `RefCounted` phase-helper contract for local UI payload dictionary assembly only.
 - `PhaseRunInitHandler` (`res://scripts/systems/run/phase_handlers/phase_run_init_handler.gd`) builds RUN_INIT UI payload metadata.
+- RUN_INIT is a view-only presentation phase: there is no canonical dedicated request that advances RUN_INIT -> BET_PRESENT; interactive progression requests remain in BET_PRESENT or other existing request paths.
 - `PhaseBetPresentHandler` (`res://scripts/systems/run/phase_handlers/phase_bet_present_handler.gd`) builds BET_PRESENT UI payload metadata.
 - `PhaseIntermediateChoiceHandler` (`res://scripts/systems/run/phase_handlers/phase_intermediate_choice_handler.gd`) builds INTERMEDIATE_CHOICE UI payload metadata.
 - `PhasePushYourLuckHandler` (`res://scripts/systems/run/phase_handlers/phase_push_your_luck_handler.gd`) builds PUSH_YOUR_LUCK UI payload metadata.

@@ -1982,19 +1982,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_queue_push_luck_choice(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_INTERMEDIATE_CHOICE, bet_id)
 
-func resolve_arena() -> void:
-	_pending_resolution_bet_id = _run_state.active_bet_id
-	_set_phase(RunPhase.RESOLUTION, "resolve_arena")
-
-func _enter_resolution() -> void:
-	if _run_state.run_is_over or _is_game_over:
-		return
-	var resolution_payload: Dictionary = _phase_resolution_handler.build_ui_payload(_run_state)
-	_emit_ui(_build_phase_ui_payload(
-		RunPhase.RESOLUTION,
-		str(resolution_payload.get("title", "")),
-		str(resolution_payload.get("body", ""))
-	))
+func _apply_resolution_advance_state() -> void:
 	_resolving_arena = true
 	_update_arena_visual_only()
 	_set_runtime_gate_phase(RunPhase.LIVE)
@@ -2035,6 +2023,24 @@ func _enter_resolution() -> void:
 		return
 	_queue_push_luck_choice(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_INTERMEDIATE_CHOICE, bet_id)
+
+func resolve_arena() -> void:
+	_pending_resolution_bet_id = _run_state.active_bet_id
+	_set_phase(RunPhase.RESOLUTION, "resolve_arena")
+
+func _enter_resolution() -> void:
+	if _run_state.run_is_over or _is_game_over:
+		return
+	var view: Dictionary = _phase_resolution_handler.build_view(_run_state)
+	_emit_ui(_build_phase_ui_payload(
+		RunPhase.RESOLUTION,
+		str(view.get("title", "")),
+		str(view.get("body", ""))
+	))
+	var res: PhaseResult = _phase_resolution_handler.handle_request("request_resolution_advance", _run_state, {})
+	if not res.handled:
+		return
+	_apply_mutation_plan(res)
 
 func apply_scar(scar_id: StringName) -> void:
 	_apply_level3_scar(scar_id, "")
@@ -3045,13 +3051,99 @@ func _start_next_arena() -> void:
 	_emit_sentence_banner_for_bet(bet_id)
 	_arena.call("start_next_wave")
 
+
+func _emit_event_by_name(event_name: String, _event_payload: Dictionary) -> void:
+	match event_name:
+		_:
+			pass
+
+func _apply_phase_result(res: PhaseResult) -> void:
+	if res == null or not res.handled:
+		return
+	for event_name: String in res.emit_events:
+		_emit_event_by_name(event_name, res.ui_payload)
+	if res.next_phase >= 0:
+		_set_phase(res.next_phase, "apply_phase_result")
+
+func _apply_state_mutation(name: String) -> void:
+	_apply_state_mutation_step({"name": name})
+
+func _apply_state_mutation_step(step: Dictionary) -> void:
+	var name: String = str(step.get("name", ""))
+	match name:
+		"PYL_CASHOUT":
+			request_take_payout()
+		"PYL_DOUBLE":
+			request_push_your_luck()
+		"BETP_PLACE_BET":
+			if not LEVEL3_ENABLED:
+				return
+			if not step.has("bet_id"):
+				push_error("BETP_PLACE_BET missing bet_id")
+				return
+			var bet_id: String = str(step.get("bet_id", ""))
+			print_debug("[FLOW] bet_choice_received :: arena=%d, bet_id=%s" % [_run_state.arena_index, bet_id])
+			select_bet(StringName(bet_id))
+		"INTM_SELECT":
+			if not step.has("index"):
+				push_error("INTM_SELECT missing index")
+				return
+			request_choose_mid(int(step.get("index", -1)))
+		"RESOLUTION_ADVANCE":
+			_apply_resolution_advance_state()
+		"GAMEOVER_SHOW_MENU":
+			request_quit_to_menu()
+		"GAMEOVER_RESTART":
+			request_new_game()
+		"MAINMENU_NEW_RUN":
+			_save_system.clear_run()
+			request_new_game()
+		"MAINMENU_CONTINUE_RUN":
+			request_load_continue()
+		"MAINMENU_SHOW_MENU":
+			print_debug("[FLOW] request_show_main_menu_received")
+			request_quit_to_menu()
+		_:
+			push_error("Unknown state mutation: %s" % name)
+
+func _end_run_from_pyl(reason: String) -> void:
+	if reason != "":
+		_register_run_end(reason)
+	end_run(&"")
+
+func _apply_mutation_plan(res: PhaseResult) -> void:
+	for step: Dictionary in res.mutation_plan:
+		var step_type: String = str(step.get("type", ""))
+		match step_type:
+			"LOG":
+				_flow_log(str(step.get("tag", "")), str(step.get("msg", "")))
+			"AUTOSAVE":
+				var checkpoint: StringName = StringName(str(step.get("checkpoint", "")))
+				if checkpoint != &"":
+					_autosave_run_checkpoint(checkpoint, &"")
+			"SET_PHASE":
+				var phase_value: int = int(step.get("phase", -1))
+				if phase_value >= 0:
+					_set_phase(phase_value, "apply_mutation_plan")
+			"EMIT_EVENT":
+				_emit_event_by_name(str(step.get("name", "")), step.get("payload", {}) as Dictionary)
+			"APPLY_STATE_MUTATION":
+				_apply_state_mutation_step(step)
+			"END_RUN":
+				_end_run_from_pyl(str(step.get("reason", "")))
+			_:
+				push_error("Unknown mutation plan step: %s" % step_type)
+				return
+
 func _dispatch_phase_request(request_name: String, payload: Dictionary) -> PhaseResult:
 	var handler: RunPhaseHandlerBase = _phase_handler_map.get(_phase, null)
-	if handler != null:
+	if handler != null and handler.can_accept_request(request_name):
 		var result: PhaseResult = handler.handle_request(request_name, _run_state, payload)
 		if result.handled:
 			return result
 	if request_name == "request_new_run" or request_name == "request_continue_run" or request_name == "request_show_main_menu":
+		if not _phase_main_menu_handler.can_accept_request(request_name):
+			return PhaseResult.new()
 		return _phase_main_menu_handler.handle_request(request_name, _run_state, payload)
 	return PhaseResult.new()
 
@@ -3062,13 +3154,10 @@ func _on_request_new_run() -> void:
 	_touch_request_activity("request_new_run()")
 	if not _guard_request_phase("request_new_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
 		return
-	var res: PhaseResult = _dispatch_phase_request("request_new_run", {})
+	var res: PhaseResult = _phase_main_menu_handler.handle_request("request_new_run", _run_state, {})
 	if not res.handled:
 		return
-	if res.action != "NEW_RUN":
-		return
-	_save_system.clear_run()
-	request_new_game()
+	_apply_mutation_plan(res)
 
 func _on_request_reset_run() -> void:
 	_touch_request_activity("request_reset_run()")
@@ -3090,24 +3179,19 @@ func _on_request_continue_run() -> void:
 	_touch_request_activity("request_continue_run()")
 	if not _guard_request_phase("request_continue_run", [RunPhase.MAIN_MENU, RunPhase.NONE]):
 		return
-	var res: PhaseResult = _dispatch_phase_request("request_continue_run", {})
+	var res: PhaseResult = _phase_main_menu_handler.handle_request("request_continue_run", _run_state, {})
 	if not res.handled:
 		return
-	if res.action != "CONTINUE_RUN":
-		return
-	request_load_continue()
+	_apply_mutation_plan(res)
 
 func _on_request_show_main_menu() -> void:
 	_touch_request_activity("request_show_main_menu()")
 	if not _guard_request_phase("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION, RunPhase.GAME_OVER]):
 		return
-	var res: PhaseResult = _dispatch_phase_request("request_show_main_menu", {})
+	var res: PhaseResult = _phase_main_menu_handler.handle_request("request_show_main_menu", _run_state, {})
 	if not res.handled:
 		return
-	if res.action != "SHOW_MAIN_MENU":
-		return
-	print_debug("[FLOW] request_show_main_menu_received")
-	request_quit_to_menu()
+	_apply_mutation_plan(res)
 
 func _on_request_intro_apply_seed(seed_text: String) -> void:
 	_touch_request_activity("request_intro_apply_seed(seed_text=%s)" % seed_text)
@@ -3160,24 +3244,20 @@ func _on_request_mid_choice_select(index: int) -> void:
 	_flow_logger.log_request("request_mid_choice_select", "index=%d" % index)
 	if not _guard_request_phase("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE]):
 		return
-	var res: PhaseResult = _dispatch_phase_request("request_mid_choice_select", {"index": index})
+	var res: PhaseResult = _phase_intermediate_choice_handler.handle_request("request_mid_choice_select", _run_state, {"index": index})
 	if not res.handled:
 		return
-	if res.action != "MID_CHOICE_SELECT":
-		return
-	request_choose_mid(index)
+	_apply_mutation_plan(res)
 
 func _on_request_pyl_cashout() -> void:
 	_touch_request_activity("request_pyl_cashout()")
 	_flow_logger.log_request("request_pyl_cashout")
 	if not _guard_request_phase("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK]):
 		return
-	var res: PhaseResult = _dispatch_phase_request("request_pyl_cashout", {})
+	var res: PhaseResult = _phase_push_your_luck_handler.handle_request("request_pyl_cashout", _run_state, {})
 	if not res.handled:
 		return
-	if res.action != "CASHOUT":
-		return
-	request_take_payout()
+	_apply_mutation_plan(res)
 
 func _on_request_pyl_condanna() -> void:
 	_touch_request_activity("request_pyl_condanna()")
@@ -3194,18 +3274,19 @@ func _on_request_pyl_double() -> void:
 	_flow_logger.log_request("request_pyl_double")
 	if not _guard_request_phase("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK]):
 		return
-	var res: PhaseResult = _dispatch_phase_request("request_pyl_double", {})
+	var res: PhaseResult = _phase_push_your_luck_handler.handle_request("request_pyl_double", _run_state, {})
 	if not res.handled:
 		return
-	if res.action != "DOUBLE":
-		return
-	request_push_your_luck()
+	_apply_mutation_plan(res)
 
 func _on_request_end_run_restart() -> void:
 	_touch_request_activity("request_end_run_restart()")
 	if not _guard_request_phase("request_end_run_restart", [RunPhase.GAME_OVER]):
 		return
-	request_new_game()
+	var res: PhaseResult = _phase_game_over_handler.handle_request("request_end_run_restart", _run_state, {})
+	if not res.handled:
+		return
+	_apply_mutation_plan(res)
 
 func _on_request_end_run_next_bet() -> void:
 	_touch_request_activity("request_end_run_next_bet()")
@@ -3220,20 +3301,18 @@ func _on_request_end_run_quit() -> void:
 	_touch_request_activity("request_end_run_quit()")
 	if not _guard_request_phase("request_end_run_quit", [RunPhase.GAME_OVER]):
 		return
-	request_quit_to_menu()
+	var res: PhaseResult = _phase_game_over_handler.handle_request("request_end_run_quit", _run_state, {})
+	if not res.handled:
+		return
+	_apply_mutation_plan(res)
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	if not _guard_phase(RunPhase.BET_PRESENT, "request_place_bet"):
 		return
-	var res: PhaseResult = _dispatch_phase_request("request_place_bet", {"bet_id": bet_id})
+	var res: PhaseResult = _phase_bet_present_handler.handle_request("request_place_bet", _run_state, {"bet_id": bet_id})
 	if not res.handled:
 		return
-	if res.action != "PLACE_BET":
-		return
-	if not LEVEL3_ENABLED:
-		return
-	print_debug("[FLOW] bet_choice_received :: arena=%d, bet_id=%s" % [_run_state.arena_index, bet_id])
-	select_bet(StringName(bet_id))
+	_apply_mutation_plan(res)
 
 func _on_request_intermediate_choice(choice_id: String) -> void:
 	_touch_request_activity("request_intermediate_choice(choice_id=%s)" % choice_id)
@@ -3834,37 +3913,44 @@ func _enter_push_your_luck() -> void:
 	_update_arena_visual_only()
 	var bet_id: StringName = _pending_push_luck_bet_id
 	_pending_push_luck_bet_id = &""
-	var payload: RunUiPayload = _build_push_luck_ui_payload(bet_id)
+	var view: Dictionary = _phase_push_your_luck_handler.build_view(_run_state, {
+		"bet_name": str(_build_push_luck_payload(bet_id).get("bet_name", "")),
+	})
+	var payload: RunUiPayload = _build_push_luck_ui_payload(bet_id, view)
 	print_debug("[FLOW] push_luck_opened :: arena=%d" % _run_state.arena_index)
 	_emit_ui(payload)
 
 func _refresh_push_luck_choice(bet_id: StringName) -> void:
-	_emit_ui(_build_push_luck_ui_payload(bet_id))
+	_emit_ui(_build_push_luck_ui_payload(bet_id, {}))
 
 func _build_intermediate_choice_ui_payload() -> RunUiPayload:
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = int(RunPhase.INTERMEDIATE_CHOICE)
-	var ui_payload: Dictionary = _phase_intermediate_choice_handler.build_ui_payload(_run_state)
-	payload.title = str(ui_payload.get("title", ""))
-	var choices: Array = ui_payload.get("choices", []) as Array
+	var view: Dictionary = _phase_intermediate_choice_handler.build_view(_run_state)
+	payload.title = str(view.get("title", ""))
+	var choices: Array = view.get("choices", []) as Array
 	payload.choices = []
 	for choice_value: Variant in choices:
 		payload.choices.append(str(choice_value))
-	payload.show_mid_choice = bool(ui_payload.get("show_mid_choice", false))
+	payload.show_mid_choice = bool(view.get("show_mid_choice", false))
 	return payload
 
-func _build_push_luck_ui_payload(bet_id: StringName) -> RunUiPayload:
+func _build_push_luck_ui_payload(bet_id: StringName, view: Dictionary = {}) -> RunUiPayload:
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = int(RunPhase.PUSH_YOUR_LUCK)
-	var ui_payload: Dictionary = _phase_push_your_luck_handler.build_ui_payload(_run_state)
-	payload.show_push_your_luck = bool(ui_payload.get("show_push_your_luck", false))
 	payload.meta = _build_push_luck_payload(bet_id)
-	payload.title = "PUSH YOUR LUCK — %s" % str(payload.meta.get("bet_name", ""))
-	payload.body = str(ui_payload.get("body", ""))
-	var choices: Array = ui_payload.get("choices", []) as Array
+	var local_view: Dictionary = view
+	if local_view.is_empty():
+		local_view = _phase_push_your_luck_handler.build_view(_run_state, {
+			"bet_name": str(payload.meta.get("bet_name", "")),
+		})
+	payload.title = str(local_view.get("title", ""))
+	payload.body = str(local_view.get("body", ""))
+	var choices: Array = local_view.get("choices", []) as Array
 	payload.choices = []
 	for choice_value: Variant in choices:
 		payload.choices.append(str(choice_value))
+	payload.show_push_your_luck = bool(local_view.get("show_push_your_luck", false))
 	return payload
 
 func _emit_ui(payload: RunUiPayload) -> void:
@@ -4503,7 +4589,29 @@ func _select_run_finale() -> Dictionary:
 		"stats": stats_payload,
 		"pacts_signed": pacts_signed,
 	})
-	return _finale_builder.build_finale_payload(finale_payload)
+	var finale: Dictionary = _finale_builder.build_finale_payload(finale_payload)
+	var pacts_text: String = str(finale.get("pacts_text", ""))
+	var condanne_text: String = str(finale.get("condanne_text", ""))
+	var crowd_text: String = str(finale.get("crowd_text", ""))
+	var copy: Dictionary = _phase_game_over_handler.build_view(
+		_run_state,
+		pacts_text,
+		condanne_text,
+		crowd_text,
+		{
+			"title": str(finale.get("title", "")),
+			"body": str(finale.get("text", "")),
+		}
+	)
+	finale["title"] = str(copy.get("title", ""))
+	finale["subtitle"] = str(copy.get("subtitle", ""))
+	finale["body"] = str(copy.get("body", ""))
+	finale["hint"] = str(copy.get("hint", ""))
+	finale["footer"] = str(copy.get("footer", ""))
+	finale["pacts_text"] = str(copy.get("pacts_text", ""))
+	finale["condanne_text"] = str(copy.get("condanne_text", ""))
+	finale["crowd_text"] = str(copy.get("crowd_text", ""))
+	return finale
 
 func _update_hidden_run_metrics() -> void:
 	var corruption_value: int = 0
@@ -4722,8 +4830,8 @@ func _enter_intro() -> void:
 
 func _enter_bet_present() -> void:
 	var ui_payload: RunUiPayload = _build_phase_ui_payload(RunPhase.BET_PRESENT, "PATTO PROPOSTO")
-	var payload: Dictionary = _phase_bet_present_handler.build_ui_payload(_run_state, {"coins": int(run.get("coins", 0))})
-	ui_payload.meta = payload
+	var view: Dictionary = _phase_bet_present_handler.build_view(_run_state, {"coins": int(run.get("coins", 0))})
+	ui_payload.meta = view
 	_emit_ui(ui_payload)
 
 func _enter_bet_committed() -> void:

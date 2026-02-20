@@ -19,3 +19,6 @@ var emit_events: Array[String] = []
 
 # Next phase richiesta (int RunPhase). RunManager decide se applicarla.
 var next_phase: int = -1
+
+# Azioni atomiche da applicare nel RunManager.
+var mutation_plan: Array[Dictionary] = []

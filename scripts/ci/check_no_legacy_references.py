@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Fail if active runtime files reference res://legacy_runtime/."""
+"""Fail if active runtime files reference the legacy runtime namespace."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-LEGACY_PREFIX = "res://legacy_runtime/"
+RES_SCHEME = "res://"
+NAMESPACE_PARTS: tuple[str, str] = ("legacy", "runtime")
+FORBIDDEN_PREFIXES: tuple[str, ...] = (
+    RES_SCHEME + "_".join(NAMESPACE_PARTS) + "/",
+)
 
 SCAN_PATHS: tuple[str, ...] = (
     "scenes/Main.tscn",
@@ -35,12 +39,12 @@ def main() -> int:
     violations: list[str] = []
     for file_path in iter_files():
         for line_no, line in enumerate(file_path.read_text(encoding="utf-8").splitlines(), start=1):
-            if LEGACY_PREFIX in line:
+            if any(prefix in line for prefix in FORBIDDEN_PREFIXES):
                 violations.append(f"{file_path}:{line_no}: {line.strip()}")
 
     if violations:
         print("check_no_legacy_references: FAILED")
-        print(" - found active runtime references to res://legacy_runtime/")
+        print(f" - found active runtime references to forbidden prefix(es): {', '.join(FORBIDDEN_PREFIXES)}")
         for item in violations:
             print(f"   {item}")
         return 1

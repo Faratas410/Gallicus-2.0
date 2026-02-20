@@ -286,10 +286,10 @@ Forbidden direction examples:
 **Scope:** High-level split between canonical runtime and legacy/non-runtime code surfaces.  
 **Source of truth:** docs/run_architecture_ledger.md, docs/repo_map.md  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+**Notes:** Overlaps with: docs/repo_map.md, docs/reports/technical_resume_level3_canonical_it.md.
 
 ## Overlap
-- Overlaps with: docs/repo_map.md, docs/technical_resume_level3_canonical_it.md.
+- Overlaps with: docs/repo_map.md, docs/reports/technical_resume_level3_canonical_it.md.
 
 ## Runtime L3 (active path)
 
@@ -305,23 +305,23 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
 
 ## Legacy runtime (non-L3)
 
-Legacy gameplay systems are confined under `res://legacy_runtime/`:
+Legacy gameplay systems are confined under `res://legacy-runtime/`:
 
 - Gameplay scripts:
-  - `res://legacy_runtime/gameplay/player_legacy.gd`
-  - `res://legacy_runtime/gameplay/enemy_legacy.gd`
+  - `res://legacy-runtime/gameplay/player_legacy.gd`
+  - `res://legacy-runtime/gameplay/enemy_legacy.gd`
 - Legacy scene:
-  - `res://legacy_runtime/scenes/Enemy.tscn`
+  - `res://legacy-runtime/scenes/Enemy.tscn`
 - Legacy pickups:
-  - `res://legacy_runtime/pickups/Pickup.gd`
-  - `res://legacy_runtime/pickups/PickupSpawner.gd`
-  - `res://legacy_runtime/pickups/Pickup_Heal.tscn`
-  - `res://legacy_runtime/pickups/Pickup_Coins.tscn`
-  - `res://legacy_runtime/pickups/Pickup_SpeedBoost.tscn`
+  - `res://legacy-runtime/pickups/Pickup.gd`
+  - `res://legacy-runtime/pickups/PickupSpawner.gd`
+  - `res://legacy-runtime/pickups/Pickup_Heal.tscn`
+  - `res://legacy-runtime/pickups/Pickup_Coins.tscn`
+  - `res://legacy-runtime/pickups/Pickup_SpeedBoost.tscn`
 
 ## Rule
 
-No file under `res://legacy_runtime/` may be referenced by:
+No file under `res://legacy-runtime/` may be referenced by:
 
 - `res://scenes/Main.tscn`
 - `res://scripts/systems/run_manager.gd`

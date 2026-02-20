@@ -135,6 +135,36 @@ All changes to systems described here must update this document in the same PR.
 - Helper invariants: no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access.
 - Payload stability rule: helper output schema is fixed and keys are always emitted with explicit defaults (no optional/missing output keys for declared payload contracts).
 
+### RunEndPayloadBuilder
+
+- `RefCounted` helper at `res://scripts/systems/run/run_end_payload_builder.gd` encapsulates end-run summary payload assembly (run summary dictionary projection from `RunState` + finale snapshot).
+- `RunManager` remains sole authority for finale selection, terminal phase gating, and `GameEvents` terminal emissions (`run_finale_selected`, `run_ended`, `run_failed`).
+- Helper invariants: no scene-tree access, no `GameEvents` emission, no phase transitions.
+
+### RequestRouter
+
+- `RefCounted` helper at `res://scripts/systems/run/request_router.gd` executes shared guarded request-routing boilerplate (`guard current phase -> handler request classification -> mutation-plan apply`).
+- `RunManager` injects guard/handler/apply callables and remains sole authority for phase transitions, `RunState` mutation authority, and all `GameEvents` emissions.
+- Helper invariants: no scene-tree access, no direct `GameEvents` emission, no independent flow decisions.
+
+### RunFlowMutationRegistry
+
+- `RefCounted` helper at `res://scripts/systems/run/run_flow_mutation_registry.gd` owns mutation-name -> mutation-handler callable dispatch for `APPLY_STATE_MUTATION` plan steps.
+- `RunManager` registers authorized mutation handler callables and remains sole authority for concrete `RunState` mutation side effects and flow orchestration.
+- Helper invariants: no scene-tree access, no `GameEvents` emission, no independent flow decisions.
+
+### RunFlowEventRouter
+
+- `RefCounted` helper at `res://scripts/systems/run/run_flow_event_router.gd` owns mutation/event-name -> emitter callable dispatch for flow-plan event intents.
+- `RunManager` registers authorized emitter callables and remains sole authority over `GameEvents` emission ownership.
+- Helper invariants: no scene-tree access, no direct `GameEvents` authority, fail-fast (`push_error`) on unknown event names.
+
+### RunFlowExecutor
+
+- `RefCounted` helper at `res://scripts/systems/run/run_flow_executor.gd` executes mutation-plan step dispatch (`LOG`, `AUTOSAVE`, `SET_PHASE`, `EMIT_EVENT`, `APPLY_STATE_MUTATION`, `END_RUN`) from `PhaseResult` contracts.
+- `RunManager` injects a typed hook bundle (`res://scripts/systems/run/run_flow_executor_hooks.gd`) plus `RunFlowEventRouter` and `RunFlowMutationRegistry` into `RunFlowExecutor` and remains sole authority for phase transitions (`_set_phase(...)`), `RunState` mutation application decisions, and `GameEvents` emission side effects.
+- Helper invariants: no scene-tree access, no direct `GameEvents` ownership, no independent phase progression decisions.
+
 ### Phase Handlers (pilot RUN_INIT + BET_PRESENT payload-only)
 
 - `RunPhaseHandlerBase` (`res://scripts/systems/run/phase_handlers/run_phase_handler_base.gd`) defines a `RefCounted` phase-helper contract for local UI payload dictionary assembly only.

@@ -21,8 +21,11 @@ func _register_events(_router: RunFlowEventRouter, _run_manager: Node) -> void:
 
 func _register_mutations(registry: RunFlowMutationRegistry, run_manager: Node) -> void:
 	registry.register_handler("PYL_CASHOUT", Callable(run_manager, "_mut_pyl_cashout"))
+	registry.register_handler("PYL_CONDANNA", Callable(run_manager, "_mut_pyl_condanna"))
 	registry.register_handler("PYL_DOUBLE", Callable(run_manager, "_mut_pyl_double"))
 	registry.register_handler("BETP_PLACE_BET", Callable(run_manager, "_mut_betp_place_bet"))
+	registry.register_handler("INTRO_SELECT_BET", Callable(run_manager, "_mut_intro_select_bet"))
+	registry.register_handler("INTRO_CONFIRM", Callable(run_manager, "_mut_intro_confirm"))
 	registry.register_handler("INTM_SELECT", Callable(run_manager, "_mut_intm_select"))
 	registry.register_handler("RESOLUTION_ADVANCE", Callable(run_manager, "_mut_resolution_advance"))
 	registry.register_handler("GAMEOVER_SHOW_MENU", Callable(run_manager, "_mut_gameover_show_menu"))

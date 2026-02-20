@@ -3078,6 +3078,9 @@ func _mut_pyl_cashout(_step: Dictionary) -> void:
 func _mut_pyl_double(_step: Dictionary) -> void:
 	request_push_your_luck()
 
+func _mut_pyl_condanna(_step: Dictionary) -> void:
+	_handle_push_luck_condanna()
+
 func _mut_betp_place_bet(step: Dictionary) -> void:
 	if not LEVEL3_ENABLED:
 		return
@@ -3087,6 +3090,15 @@ func _mut_betp_place_bet(step: Dictionary) -> void:
 	var bet_id: String = str(step.get("bet_id", ""))
 	_debug_bet_choice_received(bet_id)
 	select_bet(StringName(bet_id))
+
+func _mut_intro_select_bet(step: Dictionary) -> void:
+	if not step.has("bet_id"):
+		_report_mutation_executor_error("INTRO_SELECT_BET missing bet_id")
+		return
+	_apply_intro_select_bet_request(str(step.get("bet_id", "")))
+
+func _mut_intro_confirm(_step: Dictionary) -> void:
+	request_confirm_pact()
 
 func _mut_intm_select(step: Dictionary) -> void:
 	if not step.has("index"):
@@ -3152,14 +3164,29 @@ func _end_run_from_pyl(reason: String) -> void:
 func _apply_mutation_plan(res: PhaseResult) -> void:
 	_flow_executor.apply_mutation_plan(res)
 
-func _route_guarded_phase_request(request_name: String, allowed_phases: Array, handler: RunPhaseHandlerBase, payload: Dictionary) -> bool:
+func _route_guarded_phase_request(
+	request_name: String,
+	allowed_phases: Array[RunPhase],
+	handler: Variant,
+	payload: Dictionary,
+	legacy_callback: Callable = Callable()
+) -> bool:
+	if not _guard_request_phase(request_name, allowed_phases):
+		return false
+	if handler == null:
+		if legacy_callback.is_valid():
+			legacy_callback.call()
+		return true
+	var typed_handler: RunPhaseHandlerBase = handler as RunPhaseHandlerBase
+	if typed_handler == null:
+		return false
 	return _request_router.route_guarded_phase_request(
 		request_name,
 		allowed_phases,
 		payload,
 		_run_state,
 		Callable(self, "_guard_request_phase"),
-		Callable(handler, "handle_request"),
+		Callable(typed_handler, "handle_request"),
 		Callable(self, "_apply_mutation_plan")
 	)
 
@@ -3179,40 +3206,25 @@ func _dispatch_phase_request(request_name: String, payload: Dictionary) -> Phase
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
-	var res := _phase_main_menu_handler.handle_request("request_new_run", _run_state, {})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
+	_route_guarded_phase_request("request_new_run", [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION], _phase_main_menu_handler, {})
 	return
 
 func _on_request_reset_run() -> void:
 	_touch_request_activity("request_reset_run()")
-	if not _guard_request_phase("request_reset_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
-		return
-	_save_system.clear_run()
-	request_new_game()
+	_route_guarded_phase_request("request_reset_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER], _phase_main_menu_handler, {})
+	return
 
 func _on_request_retry_run() -> void:
 	_touch_request_activity("request_retry_run()")
-	if not _guard_request_phase("request_retry_run", [RunPhase.GAME_OVER]):
-		return
-	if LEVEL3_ENABLED:
-		_start_level3_run()
-		return
-	retry_current_bet()
+	_route_guarded_phase_request("request_retry_run", [RunPhase.GAME_OVER], _phase_game_over_handler, {})
+	return
 
 func _on_request_continue_run() -> void:
-	var res := _phase_main_menu_handler.handle_request("request_continue_run", _run_state, {})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
+	_route_guarded_phase_request("request_continue_run", [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION], _phase_main_menu_handler, {})
 	return
 
 func _on_request_show_main_menu() -> void:
-	var res := _phase_main_menu_handler.handle_request("request_show_main_menu", _run_state, {})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
+	_route_guarded_phase_request("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET], _phase_main_menu_handler, {})
 	return
 
 func _on_request_intro_apply_seed(seed_text: String) -> void:
@@ -3234,8 +3246,10 @@ func _on_request_intro_apply_seed(seed_text: String) -> void:
 
 func _on_request_intro_select_bet(bet_id: String) -> void:
 	_touch_request_activity("request_intro_select_bet(bet_id=%s)" % bet_id)
-	if not _guard_request_phase("request_intro_select_bet", [RunPhase.BET_PRESENT]):
-		return
+	_route_guarded_phase_request("request_place_bet", [RunPhase.BET_PRESENT], _phase_bet_present_handler, {"bet_id": bet_id})
+	return
+
+func _apply_intro_select_bet_request(bet_id: String) -> void:
 	if not _waiting_for_bet:
 		push_error("RunManager: request_intro_select_bet in wrong phase %s" % [str(_phase)])
 		return
@@ -3257,59 +3271,50 @@ func _on_request_intro_select_bet(bet_id: String) -> void:
 
 func _on_request_intro_confirm() -> void:
 	_touch_request_activity("request_intro_confirm()")
-	if not _guard_request_phase("request_intro_confirm", [RunPhase.BET_PRESENT]):
-		return
-	request_confirm_pact()
+	_route_guarded_phase_request("request_intro_confirm", [RunPhase.BET_PRESENT], _phase_bet_present_handler, {})
+	return
 
 func _on_request_mid_choice_select(index: int) -> void:
 	_touch_request_activity("request_mid_choice_select(index=%d)" % index)
 	_flow_logger.log_request("request_mid_choice_select", "index=%d" % index)
 	_route_guarded_phase_request("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE], _phase_intermediate_choice_handler, {"index": index})
+	return
 
 func _on_request_pyl_cashout() -> void:
 	_touch_request_activity("request_pyl_cashout()")
 	_flow_logger.log_request("request_pyl_cashout")
 	_route_guarded_phase_request("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK], _phase_push_your_luck_handler, {})
+	return
 
 func _on_request_pyl_condanna() -> void:
 	_touch_request_activity("request_pyl_condanna()")
 	_flow_logger.log_request("request_pyl_condanna")
-	if not _guard_request_phase("request_pyl_condanna", [RunPhase.PUSH_YOUR_LUCK]):
-		return
-	if not _waiting_for_push_luck:
-		push_error("RunManager: request_pyl_condanna in wrong phase %s" % [str(_phase)])
-		return
-	_handle_push_luck_condanna()
+	_route_guarded_phase_request("request_pyl_condanna", [RunPhase.PUSH_YOUR_LUCK], _phase_push_your_luck_handler, {})
+	return
 
 func _on_request_pyl_double() -> void:
 	_touch_request_activity("request_pyl_double()")
 	_flow_logger.log_request("request_pyl_double")
 	_route_guarded_phase_request("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK], _phase_push_your_luck_handler, {})
+	return
 
 func _on_request_end_run_restart() -> void:
 	_touch_request_activity("request_end_run_restart()")
 	_route_guarded_phase_request("request_end_run_restart", [RunPhase.GAME_OVER], _phase_game_over_handler, {})
+	return
 
 func _on_request_end_run_next_bet() -> void:
 	_touch_request_activity("request_end_run_next_bet()")
-	if not _guard_request_phase("request_end_run_next_bet", [RunPhase.GAME_OVER]):
-		return
-	if LEVEL3_ENABLED:
-		_start_level3_run()
-		return
-	retry_current_bet()
+	_route_guarded_phase_request("request_end_run_next_bet", [RunPhase.GAME_OVER], _phase_game_over_handler, {})
+	return
 
 func _on_request_end_run_quit() -> void:
 	_touch_request_activity("request_end_run_quit()")
 	_route_guarded_phase_request("request_end_run_quit", [RunPhase.GAME_OVER], _phase_game_over_handler, {})
+	return
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
-	if not _guard_phase(RunPhase.BET_PRESENT, "request_place_bet"):
-		return
-	var res: PhaseResult = _phase_bet_present_handler.handle_request("request_place_bet", _run_state, {"bet_id": bet_id})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
+	_route_guarded_phase_request("request_place_bet", [RunPhase.BET_PRESENT], _phase_bet_present_handler, {"bet_id": bet_id})
 	return
 
 func _on_request_intermediate_choice(choice_id: String) -> void:
@@ -3370,9 +3375,8 @@ func _on_post_arena_choice_selected(choice_id: StringName) -> void:
 
 func _on_request_push_luck_cashout() -> void:
 	_touch_request_activity("request_push_luck_cashout()")
-	if not _guard_request_phase("request_push_luck_cashout", [RunPhase.PUSH_YOUR_LUCK]):
-		return
-	request_take_payout()
+	_route_guarded_phase_request("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK], _phase_push_your_luck_handler, {})
+	return
 
 func _take_payout() -> void:
 	print_debug("[FLOW] push_luck_cashout_received :: arena=%d" % _run_state.arena_index)
@@ -3453,9 +3457,8 @@ func _handle_push_luck_condanna() -> void:
 
 func _on_request_push_luck_double() -> void:
 	_touch_request_activity("request_push_luck_double()")
-	if not _guard_request_phase("request_push_luck_double", [RunPhase.PUSH_YOUR_LUCK]):
-		return
-	request_push_your_luck()
+	_route_guarded_phase_request("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK], _phase_push_your_luck_handler, {})
+	return
 
 func _push_your_luck() -> void:
 	print_debug("[FLOW] push_luck_double_received :: arena=%d" % _run_state.arena_index)

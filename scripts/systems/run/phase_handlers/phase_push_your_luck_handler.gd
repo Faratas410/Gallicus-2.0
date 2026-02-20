@@ -24,6 +24,8 @@ func can_accept_request(request_name: String) -> bool:
 	match request_name:
 		"request_pyl_cashout":
 			return true
+		"request_pyl_condanna":
+			return true
 		"request_pyl_double":
 			return true
 		_:
@@ -38,6 +40,9 @@ func handle_request(request_name: String, _run_state: RunState, _request_payload
 		"request_pyl_cashout":
 			res.action = "PYL_CASHOUT"
 			res.mutation_plan.append({"type": "APPLY_STATE_MUTATION", "name": "PYL_CASHOUT"})
+		"request_pyl_condanna":
+			res.action = "PYL_CONDANNA"
+			res.mutation_plan.append({"type": "APPLY_STATE_MUTATION", "name": "PYL_CONDANNA"})
 		"request_pyl_double":
 			res.action = "PYL_DOUBLE"
 			res.mutation_plan.append({"type": "APPLY_STATE_MUTATION", "name": "PYL_DOUBLE"})

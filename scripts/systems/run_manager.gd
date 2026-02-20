@@ -88,8 +88,7 @@ const SaveContinueBoundaryScript = preload("res://scripts/systems/run/save_conti
 const RunSaveBoundaryHelperScript = preload("res://scripts/systems/run/run_save_boundary_helper.gd")
 const RunFlowExecutorScript = preload("res://scripts/systems/run/run_flow_executor.gd")
 const RunFlowExecutorHooksScript = preload("res://scripts/systems/run/run_flow_executor_hooks.gd")
-const RunFlowEventRouterScript = preload("res://scripts/systems/run/run_flow_event_router.gd")
-const RunFlowMutationRegistryScript = preload("res://scripts/systems/run/run_flow_mutation_registry.gd")
+const RunFlowCatalogScript = preload("res://scripts/systems/run/run_flow_catalog.gd")
 const RequestRouterScript = preload("res://scripts/systems/run/request_router.gd")
 const RunEndPayloadBuilderScript = preload("res://scripts/systems/run/run_end_payload_builder.gd")
 const RunArenaThemePolicyScript = preload("res://scripts/systems/run/run_arena_theme_policy.gd")
@@ -1124,6 +1123,7 @@ var _outcome_system: RunOutcomeSystem = OutcomeSystemScript.new()
 var _runstate_kernel: RunStateKernel = RunStateKernel.new()
 var _flow_executor: RunFlowExecutor = null
 var _flow_event_router: RunFlowEventRouter = null
+var _flow_mutation_registry: RunFlowMutationRegistry = null
 var _request_router: RequestRouter = RequestRouterScript.new()
 var _run_end_payload_builder: RunEndPayloadBuilder = RunEndPayloadBuilderScript.new()
 var _scar_policy: ScarPolicy = ScarPolicyScript.new()
@@ -1273,12 +1273,10 @@ func _ready() -> void:
 		_flow_logger.set_session(_session_id)
 	if _flow_diagnostics == null:
 		_flow_diagnostics = FlowDiagnostics.new()
-	if _flow_event_router == null:
-		_flow_event_router = RunFlowEventRouterScript.new()
-		_configure_flow_event_router()
-	if _flow_mutation_registry == null:
-		_flow_mutation_registry = RunFlowMutationRegistryScript.new()
-		_configure_flow_mutation_registry()
+	if _flow_event_router == null or _flow_mutation_registry == null:
+		var flow_catalog_bundle: RunFlowCatalog.Bundle = RunFlowCatalogScript.new().build_bundle(self)
+		_flow_event_router = flow_catalog_bundle.event_router
+		_flow_mutation_registry = flow_catalog_bundle.mutation_registry
 	if _flow_executor == null:
 		_flow_executor = RunFlowExecutorScript.new(_build_flow_executor_hooks(), _flow_event_router, _flow_mutation_registry)
 	if _finale_builder == null:
@@ -3074,23 +3072,6 @@ func _apply_phase_result(res: PhaseResult) -> void:
 	if res.next_phase >= 0:
 		_set_phase(res.next_phase, "apply_phase_result")
 
-func _configure_flow_event_router() -> void:
-	# No mutation-plan EMIT_EVENT names are currently active in phase handler plans.
-	# Keep router surface minimal and fail-fast on unknown names.
-	pass
-
-func _configure_flow_mutation_registry() -> void:
-	_flow_mutation_registry.register_handler("PYL_CASHOUT", Callable(self, "_mut_pyl_cashout"))
-	_flow_mutation_registry.register_handler("PYL_DOUBLE", Callable(self, "_mut_pyl_double"))
-	_flow_mutation_registry.register_handler("BETP_PLACE_BET", Callable(self, "_mut_betp_place_bet"))
-	_flow_mutation_registry.register_handler("INTM_SELECT", Callable(self, "_mut_intm_select"))
-	_flow_mutation_registry.register_handler("RESOLUTION_ADVANCE", Callable(self, "_mut_resolution_advance"))
-	_flow_mutation_registry.register_handler("GAMEOVER_SHOW_MENU", Callable(self, "_mut_gameover_show_menu"))
-	_flow_mutation_registry.register_handler("GAMEOVER_RESTART", Callable(self, "_mut_gameover_restart"))
-	_flow_mutation_registry.register_handler("MAINMENU_NEW_RUN", Callable(self, "_mut_mainmenu_new_run"))
-	_flow_mutation_registry.register_handler("MAINMENU_CONTINUE_RUN", Callable(self, "_mut_mainmenu_continue_run"))
-	_flow_mutation_registry.register_handler("MAINMENU_SHOW_MENU", Callable(self, "_mut_mainmenu_show_menu"))
-
 func _mut_pyl_cashout(_step: Dictionary) -> void:
 	request_take_payout()
 
@@ -3283,24 +3264,12 @@ func _on_request_intro_confirm() -> void:
 func _on_request_mid_choice_select(index: int) -> void:
 	_touch_request_activity("request_mid_choice_select(index=%d)" % index)
 	_flow_logger.log_request("request_mid_choice_select", "index=%d" % index)
-	if not _guard_request_phase("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE]):
-		return
-	var res: PhaseResult = _phase_intermediate_choice_handler.handle_request("request_mid_choice_select", _run_state, {"index": index})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
-	return
+	_route_guarded_phase_request("request_mid_choice_select", [RunPhase.INTERMEDIATE_CHOICE], _phase_intermediate_choice_handler, {"index": index})
 
 func _on_request_pyl_cashout() -> void:
 	_touch_request_activity("request_pyl_cashout()")
 	_flow_logger.log_request("request_pyl_cashout")
-	if not _guard_request_phase("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK]):
-		return
-	var res: PhaseResult = _phase_push_your_luck_handler.handle_request("request_pyl_cashout", _run_state, {})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
-	return
+	_route_guarded_phase_request("request_pyl_cashout", [RunPhase.PUSH_YOUR_LUCK], _phase_push_your_luck_handler, {})
 
 func _on_request_pyl_condanna() -> void:
 	_touch_request_activity("request_pyl_condanna()")
@@ -3315,23 +3284,11 @@ func _on_request_pyl_condanna() -> void:
 func _on_request_pyl_double() -> void:
 	_touch_request_activity("request_pyl_double()")
 	_flow_logger.log_request("request_pyl_double")
-	if not _guard_request_phase("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK]):
-		return
-	var res: PhaseResult = _phase_push_your_luck_handler.handle_request("request_pyl_double", _run_state, {})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
-	return
+	_route_guarded_phase_request("request_pyl_double", [RunPhase.PUSH_YOUR_LUCK], _phase_push_your_luck_handler, {})
 
 func _on_request_end_run_restart() -> void:
 	_touch_request_activity("request_end_run_restart()")
-	if not _guard_request_phase("request_end_run_restart", [RunPhase.GAME_OVER]):
-		return
-	var res: PhaseResult = _phase_game_over_handler.handle_request("request_end_run_restart", _run_state, {})
-	if not res.handled:
-		return
-	_apply_mutation_plan(res)
-	return
+	_route_guarded_phase_request("request_end_run_restart", [RunPhase.GAME_OVER], _phase_game_over_handler, {})
 
 func _on_request_end_run_next_bet() -> void:
 	_touch_request_activity("request_end_run_next_bet()")

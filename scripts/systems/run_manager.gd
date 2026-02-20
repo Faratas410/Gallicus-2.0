@@ -3166,7 +3166,7 @@ func _apply_mutation_plan(res: PhaseResult) -> void:
 
 func _route_guarded_phase_request(
 	request_name: String,
-	allowed_phases: Array,
+	allowed_phases: Array[RunPhase],
 	handler: Variant,
 	payload: Dictionary,
 	legacy_callback: Callable = Callable()

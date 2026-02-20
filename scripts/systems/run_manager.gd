@@ -1445,7 +1445,6 @@ func _validate_game_events_signals() -> bool:
 			"bet_placed",
 			"betting_opened",
 			"run_failed",
-			"enemy_killed",
 			"run_started",
 			"coins_changed",
 			"resolve_ritual_opened",

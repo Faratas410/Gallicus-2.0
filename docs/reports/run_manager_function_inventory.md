@@ -17,6 +17,81 @@
 - `save_continue`: **10**
 - `scar_register_corruption`: **33**
 
+## Purge catalog (dead_end / level3 / unknown)
+
+Catalogazione aggiuntiva per facilitare il purge in modo organizzato. Regole applicate in ordine: `level3` -> `dead_end` -> `unknown`.
+
+| Purge bucket | Regola operativa | Funzioni |
+|---|---|---:|
+| `dead_end` | Flow terminale (`run_end`) o nome funzione con marker terminali (`end_run`, `game_over`, `run_failed`, `run_ended`, `run_finale`) | **30** |
+| `level3` | Nome funzione con token `level3` (path runtime L3) | **23** |
+| `unknown` | Categoria originale `other` non classificata nelle bucket precedenti | **77** |
+
+### dead_end index
+
+| Line | Function | Base category |
+|---:|---|---|
+| 1639 | `start_new_run` | `run_end` |
+| 1642 | `_start_new_run` | `run_end` |
+| 1741 | `start_run` | `run_end` |
+| 2079 | `end_run` | `run_end` |
+| 2102 | `reset_run` | `run_end` |
+| 2214 | `_get_run_seed_value` | `run_end` |
+| 3117 | `_mut_mainmenu_new_run` | `run_end` |
+| 3121 | `_mut_mainmenu_continue_run` | `run_end` |
+| 3146 | `_clear_run_from_executor` | `run_end` |
+| 3158 | `_end_run_from_pyl` | `run_end` |
+| 3300 | `_on_request_end_run_restart` | `request_api` |
+| 3305 | `_on_request_end_run_next_bet` | `request_api` |
+| 3310 | `_on_request_end_run_quit` | `request_api` |
+| 4296 | `_enter_end_run` | `phase_flow` |
+| 4308 | `_enter_game_over` | `phase_flow` |
+| 4353 | `_emit_run_failed` | `run_end` |
+| 4361 | `_emit_run_ended` | `run_end` |
+| 4386 | `_emit_run_finale` | `run_end` |
+| 4432 | `_emit_run_log` | `run_end` |
+| 4438 | `_build_run_log` | `run_end` |
+| 4461 | `_export_run_summary` | `run_end` |
+| 4472 | `_build_run_summary` | `run_end` |
+| 4475 | `_build_game_over_stats_payload` | `run_end` |
+| 4485 | `_build_game_over_anomaly_flow_tag` | `diagnostics` |
+| 4498 | `_build_game_over_finale_inputs` | `run_end` |
+| 4517 | `_build_game_over_copy_inputs` | `run_end` |
+| 4523 | `_select_run_finale` | `run_end` |
+| 4588 | `_update_hidden_run_metrics` | `run_end` |
+| 4819 | `_enter_end_run_phase` | `phase_flow` |
+| 5110 | `_log_runtime_state` | `run_end` |
+
+### level3 index
+
+| Line | Function | Base category |
+|---:|---|---|
+| 1744 | `_start_level3_run` | `run_end` |
+| 2121 | `_open_level3_bet_ui` | `betting_pacts` |
+| 2139 | `_build_level3_bet_offer` | `betting_pacts` |
+| 2167 | `_get_available_level3_bets` | `betting_pacts` |
+| 2190 | `_is_level3_bet_unlocked` | `betting_pacts` |
+| 2196 | `_is_level3_bet_allowed` | `betting_pacts` |
+| 2219 | `_compute_level3_seed` | `other` |
+| 2231 | `_compute_level3_offer_seed` | `other` |
+| 2672 | `_compute_level3_enemy_seed` | `arena_enemy_runtime` |
+| 2679 | `_log_level3_arena_result` | `arena_enemy_runtime` |
+| 2708 | `_resolve_level3_arena` | `arena_enemy_runtime` |
+| 2732 | `_get_level3_bet_behavior` | `betting_pacts` |
+| 2736 | `_handle_level3_win` | `other` |
+| 2743 | `_handle_level3_loss` | `other` |
+| 2789 | `_handle_level3_loss_ritual` | `other` |
+| 2835 | `_apply_level3_reward` | `other` |
+| 2845 | `_apply_level3_scar` | `scar_register_corruption` |
+| 3561 | `_debug_skip_level3_step` | `diagnostics` |
+| 4241 | `_get_level3_bet_name` | `betting_pacts` |
+| 4248 | `_get_level3_doom_short` | `other` |
+| 4631 | `get_available_level3_pacts` | `betting_pacts` |
+| 4642 | `get_level3_pact_title` | `betting_pacts` |
+| 4685 | `is_level3_mode` | `other` |
+
+> Nota: `unknown` è mantenuta come bucket numerica per revisione/purge progressivo, evitando riclassificazioni arbitrarie nel report auto-generato.
+
 ## Action gameplay references (light/heavy attack etc.)
 
 - L1066: `@export var bet_pure_light_bonus: int = 2`

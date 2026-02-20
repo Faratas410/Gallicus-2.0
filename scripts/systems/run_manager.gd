@@ -3689,8 +3689,7 @@ func _on_player_spawned(player: Node) -> void:
 	_position_player_after_respawn()
 	_apply_phase()
 
-func _on_enemy_killed(exp_value: int) -> void:
-	_ = exp_value
+func _on_enemy_killed(_exp_value: int) -> void:
 	if LEVEL3_ENABLED:
 		return
 	if _is_game_over:

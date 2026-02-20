@@ -305,23 +305,23 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
 
 ## Legacy runtime (non-L3, storico/rimosso)
 
-Legacy gameplay systems were historically confined under a legacy namespace (now removed):
+Legacy gameplay systems are confined under `res://legacy-runtime/`:
 
 - Gameplay scripts:
-  - `gameplay/player_legacy.gd` (storico/rimosso)
-  - `gameplay/enemy_legacy.gd` (storico/rimosso)
+  - `res://legacy-runtime/gameplay/player_legacy.gd`
+  - `res://legacy-runtime/gameplay/enemy_legacy.gd`
 - Legacy scene:
-  - `scenes/Enemy.tscn` (storico/rimosso)
+  - `res://legacy-runtime/scenes/Enemy.tscn`
 - Legacy pickups:
-  - `pickups/Pickup.gd` (storico/rimosso)
-  - `pickups/PickupSpawner.gd` (storico/rimosso)
-  - `pickups/Pickup_Heal.tscn` (storico/rimosso)
-  - `pickups/Pickup_Coins.tscn` (storico/rimosso)
-  - `pickups/Pickup_SpeedBoost.tscn` (storico/rimosso)
+  - `res://legacy-runtime/pickups/Pickup.gd`
+  - `res://legacy-runtime/pickups/PickupSpawner.gd`
+  - `res://legacy-runtime/pickups/Pickup_Heal.tscn`
+  - `res://legacy-runtime/pickups/Pickup_Coins.tscn`
+  - `res://legacy-runtime/pickups/Pickup_SpeedBoost.tscn`
 
 ## Rule
 
-No file from the removed legacy runtime namespace may be referenced by:
+No file under `res://legacy-runtime/` may be referenced by:
 
 - `res://scenes/Main.tscn`
 - `res://scripts/systems/run_manager.gd`

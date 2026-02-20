@@ -12,3 +12,6 @@ func build_ui_payload(_run_state: RunState, _inputs: Dictionary = {}) -> Diction
 
 func handle_request(_request_name: String, _run_state: RunState, _request_payload: Dictionary) -> PhaseResult:
 	return PhaseResult.new()
+
+func can_accept_request(_request_name: String) -> bool:
+	return false

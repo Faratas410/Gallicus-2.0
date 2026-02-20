@@ -1050,21 +1050,8 @@ var _arena_layout_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 const DEBUG_RUNTIME_LOGS: bool = false
 
-const LEGACY_STARTING_LEVEL: int = 1
-const LEGACY_STARTING_TOKENS: int = 0
-const LEGACY_EXP_PER_ENEMY: int = 1
-const LEGACY_EXP_CURVE: Array[int] = [6, 8, 11, 15, 20, 26]
-const LEGACY_EXP_CURVE_TAIL_STEP: int = 8
-const LEGACY_TOKENS_PER_LEVEL: int = 1
-const LEGACY_LEVELS_PER_TIER: int = 3
-const LEGACY_TIER_MULTIPLIERS: Array[float] = [1.00, 1.13, 1.32, 1.56, 1.84]
-const LEGACY_UPGRADE_HP_TOKEN_COST_START: int = 1
-const LEGACY_UPGRADE_LIGHT_TOKEN_COST_START: int = 1
-const LEGACY_UPGRADE_HEAVY_TOKEN_COST_START: int = 1
 @export var bet_coward_coin_reward: int = 20
 @export var bet_pure_hp_bonus: int = 30
-@export var bet_pure_light_bonus: int = 2
-@export var bet_pure_heavy_bonus: int = 2
 
 const BET_COWARD: String = "COWARD"
 const BET_PURE_BLOOD: String = "PURE_BLOOD"
@@ -1316,7 +1303,6 @@ func _connect_gameevents() -> void:
 		[&"bet_confirmed", &"_on_bet_confirmed", true],
 		[&"request_place_bet", &"_on_request_place_bet", true],
 		[&"betting_opened", &"_on_betting_opened", false],
-		[&"enemy_killed", &"_on_enemy_killed", false],
 		[&"request_new_run", &"_on_request_new_run", true],
 		[&"request_push_luck_cashout", &"_on_request_push_luck_cashout", true],
 		[&"request_push_luck_double", &"_on_request_push_luck_double", true],
@@ -1344,6 +1330,8 @@ func _connect_gameevents() -> void:
 		[&"modal_closed", &"_on_modal_closed", true],
 		[&"settings_changed", &"_on_settings_changed", true],
 	]
+	if not LEVEL3_ENABLED:
+		bindings.append([&"enemy_killed", &"_on_enemy_killed", false])
 	for binding: Array in bindings:
 		var signal_name: StringName = binding[0]
 		var handler_name: StringName = binding[1]
@@ -1405,12 +1393,13 @@ func _boot() -> void:
 		_arena = null
 		_player = null
 	if _arena:
-		var wave_started_callable: Callable = Callable(self, "_on_wave_started")
-		if _arena.has_signal("wave_started") and not _arena.wave_started.is_connected(wave_started_callable):
-			_arena.wave_started.connect(wave_started_callable)
-		var wave_cleared_callable: Callable = Callable(self, "_on_wave_cleared")
-		if _arena.has_signal("wave_cleared") and not _arena.wave_cleared.is_connected(wave_cleared_callable):
-			_arena.wave_cleared.connect(wave_cleared_callable)
+		if not LEVEL3_ENABLED:
+			var wave_started_callable: Callable = Callable(self, "_on_wave_started")
+			if _arena.has_signal("wave_started") and not _arena.wave_started.is_connected(wave_started_callable):
+				_arena.wave_started.connect(wave_started_callable)
+			var wave_cleared_callable: Callable = Callable(self, "_on_wave_cleared")
+			if _arena.has_signal("wave_cleared") and not _arena.wave_cleared.is_connected(wave_cleared_callable):
+				_arena.wave_cleared.connect(wave_cleared_callable)
 		var player_spawned_callable: Callable = Callable(self, "_on_player_spawned")
 		if _arena.has_signal("player_spawned") and not _arena.player_spawned.is_connected(player_spawned_callable):
 			_arena.player_spawned.connect(player_spawned_callable)
@@ -1705,12 +1694,9 @@ func _start_new_run() -> void:
 	run["corruption"] = 0
 	if not LEVEL3_ENABLED:
 		_reset_upgrades()
-		_reset_upgrade_costs()
 	_has_started_run = true
 	run["arena_index"] = 0
 
-	if not LEVEL3_ENABLED:
-		_reset_progression()
 
 	GameEvents.run_started.emit()
 	GameEvents.set_gameplay_enabled(true)
@@ -1838,7 +1824,6 @@ func _start_level3_run() -> void:
 	_run_state.corruption = 0
 	_runstate_kernel.enforce_invariants(_run_state)
 	_reset_upgrades()
-	_reset_upgrade_costs()
 
 	GameEvents.run_started.emit()
 	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
@@ -1852,8 +1837,8 @@ func _start_level3_run() -> void:
 func start_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
-	_clear_enemies()
 	if not LEVEL3_ENABLED:
+		_clear_enemies()
 		_ensure_arena_and_player()
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
@@ -3024,12 +3009,6 @@ func _ensure_input_map() -> void:
 		"move_up": [KEY_W, KEY_UP],
 		"move_down": [KEY_S, KEY_DOWN],
 
-		# Combattimento
-		"attack_light": [KEY_J],
-		"attack_heavy": [KEY_K],
-		"block": [KEY_L],
-		"dodge": [KEY_SPACE],
-
 		# Sistema
 		"pause": [KEY_ESCAPE],
 	}
@@ -3050,7 +3029,7 @@ func _ensure_input_map() -> void:
 				iev.keycode = keycode
 				InputMap.action_add_event(action_name, iev)
 
-	print("InputMap ensured: movement + combat bindings ready")
+	print("InputMap ensured: movement + system bindings ready")
 
 func _start_next_arena() -> void:
 	if _arena == null or _is_game_over:
@@ -3683,8 +3662,6 @@ func _on_wave_started(_wave: int) -> void:
 	if LEVEL3_ENABLED:
 		return
 	GameEvents.arena_started.emit(int(run.get("arena_index", 0)))
-	# la difficoltà dei nemici può dipendere dal livello
-	_apply_enemy_difficulty_to_arena()
 	_apply_phase()
 
 func _on_wave_cleared(_wave: int) -> void:
@@ -3712,86 +3689,13 @@ func _on_player_spawned(player: Node) -> void:
 	_position_player_after_respawn()
 	_apply_phase()
 
-func _on_enemy_killed(exp_value: int) -> void:
+func _on_enemy_killed(_exp_value: int) -> void:
 	if LEVEL3_ENABLED:
 		return
 	if _is_game_over:
 		return
 	if _gameplay_phase != RunPhase.LIVE:
 		return
-	var gained: int = LEGACY_EXP_PER_ENEMY
-	if exp_value > 0:
-		gained = exp_value
-	if gained <= 0:
-		return
-	run["xp"] = int(run.get("xp", 0)) + gained
-	var leveled: bool = _check_level_up()
-	if leveled:
-		_recompute_difficulty_tier(false)
-
-
-func _xp_needed_for_next(level: int) -> int:
-	# level parte da 1. Per passare a level+1 usiamo LEGACY_EXP_CURVE[level-1] se esiste.
-	var idx: int = maxi(level - 1, 0)
-	if idx < LEGACY_EXP_CURVE.size():
-		return int(LEGACY_EXP_CURVE[idx])
-	# tail lineare
-	var last: int = 5
-	if LEGACY_EXP_CURVE.size() > 0:
-		last = int(LEGACY_EXP_CURVE[LEGACY_EXP_CURVE.size() - 1])
-	var extra: int = (idx - maxi(LEGACY_EXP_CURVE.size() - 1, 0)) * maxi(LEGACY_EXP_CURVE_TAIL_STEP, 1)
-	return last + extra
-
-func _check_level_up() -> bool:
-	var lvl: int = int(run.get("level", 1))
-	var xp: int = int(run.get("xp", 0))
-	var needed: int = _xp_needed_for_next(lvl)
-	var leveled: bool = false
-	while xp >= needed and needed > 0:
-		xp -= needed
-		lvl += 1
-		run["upgrade_tokens"] = int(run.get("upgrade_tokens", 0)) + maxi(LEGACY_TOKENS_PER_LEVEL, 0)
-		needed = _xp_needed_for_next(lvl)
-		leveled = true
-	run["level"] = lvl
-	run["xp"] = xp
-	return leveled
-
-func get_level() -> int:
-	return int(run.get("level", 1))
-
-func get_difficulty_tier() -> int:
-	return int(run.get("difficulty_tier", 0))
-
-func get_difficulty_multiplier() -> float:
-	var tier: int = get_difficulty_tier()
-	if LEGACY_TIER_MULTIPLIERS.size() == 0:
-		return 1.0
-	if tier < LEGACY_TIER_MULTIPLIERS.size():
-		return float(LEGACY_TIER_MULTIPLIERS[tier])
-	return float(LEGACY_TIER_MULTIPLIERS[LEGACY_TIER_MULTIPLIERS.size() - 1])
-
-func _recompute_difficulty_tier(force_emit: bool) -> void:
-	var lvl: int = int(run.get("level", 1))
-	var new_tier: int = 0
-	if LEGACY_LEVELS_PER_TIER > 0:
-		new_tier = int(floor(float(maxi(lvl - 1, 0)) / float(LEGACY_LEVELS_PER_TIER)))
-	var old_tier: int = int(run.get("difficulty_tier", 0))
-	run["difficulty_tier"] = new_tier
-	var mult: float = get_difficulty_multiplier()
-	if force_emit or new_tier != old_tier:
-		GameEvents.difficulty_tier_changed.emit(new_tier, mult)
-		if _arena != null and _arena.has_method("set_difficulty_tier"):
-			_arena.call("set_difficulty_tier", new_tier, mult)
-
-func _apply_enemy_difficulty_to_arena() -> void:
-	# Hook opzionale: se Arena ha un metodo, passiamo livello per scalare stats nemici
-	if _arena == null:
-		_arena = get_node_or_null(arena_path)
-	if _arena != null and _arena.has_method("set_difficulty_tier"):
-		_arena.call("set_difficulty_tier", get_difficulty_tier(), get_difficulty_multiplier())
-	elif _arena != null and _arena.has_method("set_difficulty_level"):
-		_arena.call("set_difficulty_level", int(run.get("level", 1)))
 
 func _resolve_player() -> Node:
 	if _player and is_instance_valid(_player) and _player.is_inside_tree():
@@ -4195,29 +4099,30 @@ func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 func _apply_pure_bet_reward_scaled(scale: int) -> void:
 	if LEVEL3_ENABLED:
 		return
-	run = _bet_system.apply_pure_blood_reward(
-		run,
-		LEVEL3_ENABLED,
-		scale,
-		bet_pure_hp_bonus,
-		bet_pure_light_bonus,
-		bet_pure_heavy_bonus
-	)
+	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
+	var reward_scale: int = _bet_system.get_reward_scale(scale)
+	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + bet_pure_hp_bonus * reward_scale
+	run["upgrades"] = upgrades
 
 func _build_bet_pact_text(bet_id: String, chain_level: int) -> String:
-	return _bet_system.build_pact_text(
-		LEVEL3_ENABLED,
-		bet_id,
-		chain_level,
-		_get_bet_data(bet_id),
-		BET_COWARD,
-		BET_PURE_BLOOD,
-		BET_DOUBLE_OR_DIE,
-		bet_coward_coin_reward,
-		bet_pure_hp_bonus,
-		bet_pure_light_bonus,
-		bet_pure_heavy_bonus
-	)
+	if LEVEL3_ENABLED:
+		var tier: int = _bet_system.get_reward_scale(chain_level)
+		var bet_data: Dictionary = _get_bet_data(bet_id)
+		if not bet_data.is_empty():
+			var pact_base: String = str(bet_data.get("pact", ""))
+			if pact_base != "":
+				return "%s x%d" % [pact_base, tier]
+		return bet_id
+	var reward_scale: int = _bet_system.get_reward_scale(chain_level)
+	match bet_id:
+		BET_COWARD:
+			return "Ricompensa minore: +%d monete" % (bet_coward_coin_reward * reward_scale)
+		BET_PURE_BLOOD:
+			return "Upgrade forte: +%d HP max" % (bet_pure_hp_bonus * reward_scale)
+		BET_DOUBLE_OR_DIE:
+			return "Raddoppio danni per la run x%d" % reward_scale
+		_:
+			return bet_id
 
 func _build_bet_doom_text(bet_id: String, chain_level: int) -> String:
 	return _bet_system.build_doom_text(
@@ -4261,22 +4166,9 @@ func _get_level3_doom_short(bet_id: StringName) -> String:
 		return lines[0].strip_edges()
 	return doom_text
 
-func _apply_double_or_die_reward_scaled(scale: int) -> void:
+func _apply_double_or_die_reward_scaled(_scale: int) -> void:
 	if LEVEL3_ENABLED:
 		return
-	var p: Node = _resolve_player()
-	if p == null:
-		return
-	if not p.has_method("get_damage_values"):
-		return
-	var damage_values: Array = p.call("get_damage_values") as Array
-	if damage_values.size() < 2:
-		return
-	var light_bonus: int = int(damage_values[0])
-	var heavy_bonus: int = int(damage_values[1])
-	if light_bonus <= 0 and heavy_bonus <= 0:
-		return
-	run = _bet_system.apply_double_or_die_reward(run, LEVEL3_ENABLED, scale, light_bonus, heavy_bonus)
 
 func retry_current_bet() -> void:
 	if _is_game_over:
@@ -4872,20 +4764,6 @@ func _reset_upgrades() -> void:
 		"light_bonus": 0,
 		"heavy_bonus": 0,
 	}
-
-func _reset_upgrade_costs() -> void:
-	run["upgrade_costs"] = {
-		"hp": LEGACY_UPGRADE_HP_TOKEN_COST_START,
-		"light": LEGACY_UPGRADE_LIGHT_TOKEN_COST_START,
-		"heavy": LEGACY_UPGRADE_HEAVY_TOKEN_COST_START,
-	}
-
-func _reset_progression() -> void:
-	# reset XP/level per run (puoi cambiare in "persistente" più avanti)
-	run["level"] = LEGACY_STARTING_LEVEL
-	run["xp"] = 0
-	run["upgrade_tokens"] = LEGACY_STARTING_TOKENS
-	_recompute_difficulty_tier(true)
 
 func _register_condanna(id: StringName) -> void:
 	if id == &"":

@@ -303,7 +303,7 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
   - `res://scripts/Arena.gd`
   - `res://scripts/Player.gd`
 
-## Legacy runtime (non-L3)
+## Legacy runtime (non-L3, storico/rimosso)
 
 Legacy gameplay systems are confined under `res://legacy-runtime/`:
 
@@ -326,7 +326,7 @@ No file under `res://legacy-runtime/` may be referenced by:
 - `res://scenes/Main.tscn`
 - `res://scripts/systems/run_manager.gd`
 
-This keeps Level 3 runtime active and boot-safe while preserving legacy gameplay assets in an isolated namespace.
+This keeps Level 3 runtime active and boot-safe while preserving historical traceability of removed legacy gameplay assets.
 
 ## SOURCE: docs/flow_wiring_contract.md
 

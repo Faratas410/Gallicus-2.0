@@ -29,25 +29,42 @@ Queste categorie risultano coerenti con il canone Level 3 e con wiring runtime:
 
 ---
 
-## B) Candidate “inutilizzate” (nessun riferimento rilevato nel repo)
+## B) Tabella purge RunManager (organizzata)
 
-> Nota: catalogazione statica; non rimosse.
+> Nota: catalogazione statica; nessuna rimozione in questa patch.
 
-### 1) Private helper senza call-site
-1. `_register_level3_bet_choice(bet_id)`
-2. `_parse_stringname_array(items)` *(duplicata funzionalmente rispetto a parser già presente in `run_state.gd`)*
-3. `_get_enemy_profile_def(profile_id)` *(duplicata concettualmente con helper in `outcome_system.gd`)*
-4. `_determine_level3_ending_id()`
-5. `_has_used_bet(bet_id)`
-6. `_try_register_irreversible_bet_scar(bet_id)`
-7. `_get_bet_chain_doom_scale(chain_level)`
-8. `_apply_bet_result(result)`
+### Dead End
+Funzioni senza riferimenti nel repo e senza ruolo attivo nel flow Level 3 osservato.
 
-### 2) Public API apparentemente non consumate
-9. `restart_run(preserve_coins = true)`
-10. `get_coins()` — REMOVED (PATCH 13)
-11. `handle_bet_failed(bet_id)`
-12. `get_pact_reveal_line(pact_id)`
+| Funzione | Tipo | Nota |
+| --- | --- | --- |
+| `_register_level3_bet_choice(bet_id)` | Private helper | Nessun call-site rilevato. |
+| `_determine_level3_ending_id()` | Private helper | Nessun call-site rilevato. |
+| `_has_used_bet(bet_id)` | Private helper | Nessun call-site rilevato. |
+| `_try_register_irreversible_bet_scar(bet_id)` | Private helper | Nessun call-site rilevato. |
+| `_get_bet_chain_doom_scale(chain_level)` | Private helper | Nessun call-site rilevato. |
+| `_apply_bet_result(result)` | Private helper | Nessun call-site rilevato. |
+| `restart_run(preserve_coins = true)` | Public API | Apparentemente non consumata nel repo. |
+| `handle_bet_failed(bet_id)` | Public API | Apparentemente non consumata nel repo. |
+| `get_pact_reveal_line(pact_id)` | Public API | Apparentemente non consumata nel repo. |
+
+### Level 3
+Funzioni collegate esplicitamente a semantica Level 3 e quindi da validare con cautela prima di qualsiasi purge.
+
+| Funzione | Tipo | Nota |
+| --- | --- | --- |
+| `_register_level3_bet_choice(bet_id)` | Private helper | Nome e dominio L3: verificare eventuali call dinamiche prima di rimozione. |
+| `_determine_level3_ending_id()` | Private helper | Potenziale legame con finale L3 anche se non referenziata staticamente. |
+| `_try_register_irreversible_bet_scar(bet_id)` | Private helper | Dominio scar/rituale L3: richiede smoke dedicato se candidata purge. |
+
+### Unknown
+Elementi che richiedono verifica manuale ulteriore (duplicazioni o stato già variato).
+
+| Funzione | Tipo | Nota |
+| --- | --- | --- |
+| `_parse_stringname_array(items)` | Private helper | Duplicata funzionalmente rispetto a parser in `run_state.gd`; verificare assenza uso riflessivo. |
+| `_get_enemy_profile_def(profile_id)` | Private helper | Duplicata concettualmente con helper in `outcome_system.gd`; verificare dipendenze legacy tool/runtime. |
+| `get_coins()` | Public API | Già rimossa in patch precedente (`REMOVED (PATCH 13)`), mantenuta come traccia storica catalogo. |
 
 ---
 

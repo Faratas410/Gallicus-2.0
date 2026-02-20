@@ -29,7 +29,7 @@ Regola applicata nell’audit: se un contenuto confligge col canon, è da consid
 - `UI Official`: ~0.59 MB (634 file)
 - `scripts`: ~53 file
 - `docs`: ~57 file
-- `legacy_runtime`: 8 file
+- `legacy-runtime`: 8 file
 
 ### Invarianti runtime L3 (check automatici)
 - `check_runtime_invariants`: **OK**
@@ -119,7 +119,7 @@ Coppie con stesso topic in due posizioni:
 
 ## 5) QUARTA SEZIONE — LEGACY QUARANTENA (Priorità strategica)
 
-### 5.1 `legacy_runtime/*`
+### 5.1 `legacy-runtime/*`
 - Stato attuale: isolato correttamente (nessun reference dal runtime attivo; check automatico OK).
 - Nel contesto decisionale fornito (“nessun reverse sul gameplay action”), questi file non hanno più traiettoria di rientro.
 
@@ -134,7 +134,7 @@ Coppie con stesso topic in due posizioni:
 
 1. **Pulizia immediata (safe):** eliminare `readme` e `gui_review.txt`.
 2. **Consolidamento docs:** deduplicare report root `docs/` vs `docs/reports/`.
-3. **Legacy final cut:** rimozione `legacy_runtime/*` dopo snapshot archival.
+3. **Legacy final cut:** rimozione `legacy-runtime/*` dopo snapshot archival.
 4. **Asset diet controllata:** pruning `Music/`, `UI Official/`, `assets/` con tabella di referenze runtime.
 
 ---
@@ -143,10 +143,10 @@ Coppie con stesso topic in due posizioni:
 
 - `find . -type f | sed 's#^./##' > /tmp/all_files.txt`
 - `find docs -type f | sort`
-- `find legacy_runtime -type f | sort`
+- `find legacy-runtime -type f | sort`
 - `du -sh * .* 2>/dev/null | sort -h`
 - `python3 scripts/ci/check_runtime_invariants.py`
 - `python3 scripts/ci/check_no_legacy_references.py`
-- `rg -n "UI Official|OK GUI|legacy_runtime|res://ui/official|res://legacy_runtime" ...`
+- `rg -n "UI Official|OK GUI|legacy-runtime|res://ui/official|res://legacy-runtime" ...`
 - script Python locale per conteggi file/dimensioni e rilevazione duplicati documentali.
 

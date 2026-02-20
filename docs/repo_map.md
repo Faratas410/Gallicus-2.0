@@ -26,7 +26,7 @@
 - `assets/` — Runtime art/audio-support assets used by scenes/scripts.
 - `data/` — Gameplay data registries (bets, arena themes, verdict lines, condanne).
 - `docs/` — Canon + supporting technical/design documentation.
-- `legacy_runtime/` — Legacy runtime artifacts kept outside active scene entry flow.
+- `legacy-runtime/` — Legacy runtime artifacts kept outside active scene entry flow.
 - `ui/` — External UI resource pack (separate from active `assets/ui/` runtime path).
 - `Music/` — Audio files repository.
 - `OK GUI/`, `UI Official/` — Raw reference asset collections.
@@ -96,7 +96,7 @@
   - `ui/icons/`, `ui/dividers/`, `ui/overlays/`, `ui/panels/`
 
 ## Legacy / non-active runtime areas
-- `legacy_runtime/` contains old gameplay/pickup scenes/scripts not mapped as active entry flow.
+- `legacy-runtime/` contains old gameplay/pickup scenes/scripts not mapped as active entry flow.
 - `OK GUI/` and `UI Official/` are external asset libraries and not part of canonical runtime authority.
 - `ui/` (root-level) is a resource bundle separate from `assets/ui/` and should not be treated as implicit runtime authority without explicit scene/script wiring.
 

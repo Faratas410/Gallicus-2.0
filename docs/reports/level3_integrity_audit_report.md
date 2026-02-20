@@ -6,10 +6,10 @@
 **Last updated:** 2026-02-11  
 **Notes:** This is historical; not canon.
 
-Overlaps with: docs/level3_open_questions_log.md, docs/codex_report_1_0_gap.md.
+Overlaps with: docs/reports/level3_open_questions_log.md, docs/reports/codex_report_1_0_gap.md.
 
 ## Overlap
-- Overlaps with: docs/level3_open_questions_log.md, docs/codex_report_1_0_gap.md.
+- Overlaps with: docs/reports/level3_open_questions_log.md, docs/reports/codex_report_1_0_gap.md.
 
 ## Scope
 - Audit statico (repo-wide) su runtime Level 3.
@@ -48,7 +48,7 @@ Pattern richiesti:
 
 ### `request_fail_run`
 - **Emitters**:
-  - `legacy_runtime/gameplay/player_legacy.gd`
+  - `legacy-runtime/gameplay/player_legacy.gd`
   - `scripts/systems/bet_manager.gd`
 - **Receivers (connect)**:
   - `scripts/systems/run_manager.gd` (`_on_request_fail_run`)
@@ -83,17 +83,17 @@ Pattern cercati:
 - `Timer.new(`
 - `await get_tree().create_timer`
 
-### Trovati in `legacy_runtime/`
-- `legacy_runtime/pickups/PickupSpawner.gd`
+### Trovati in `legacy-runtime/`
+- `legacy-runtime/pickups/PickupSpawner.gd`
   - `instantiate()` + `await get_tree().create_timer(...)`
-- `legacy_runtime/pickups/Pickup.gd`
+- `legacy-runtime/pickups/Pickup.gd`
   - `await get_tree().create_timer(...)`
-- `legacy_runtime/gameplay/player_legacy.gd`
+- `legacy-runtime/gameplay/player_legacy.gd`
   - multipli `await get_tree().create_timer(...)`
 
 **Valutazione L3**:
 - Fuori albero runtime ufficiale.
-- Nessun riferimento da `scenes/` o `scripts/` runtime L3 a `res://legacy_runtime/*`.
+- Nessun riferimento da `scenes/` o `scripts/` runtime L3 a `res://legacy-runtime/*`.
 - **Risk**: **MEDIUM** (inattivo per wiring attuale, ma codice eseguibile se referenziato in futuro).
 
 ### Trovati in runtime L3 (`scripts/`)
@@ -128,14 +128,14 @@ Pattern cercati:
 
 ## SECTION D — Legacy Runtime Isolation
 
-Verifica `res://legacy_runtime/`:
+Verifica `res://legacy-runtime/`:
 
 ### Preload / instantiate
-- Trovati **solo internamente** a file in `legacy_runtime/` (es. `PickupSpawner.gd`).
+- Trovati **solo internamente** a file in `legacy-runtime/` (es. `PickupSpawner.gd`).
 - **Nessun preload/instantiate da `scripts/` o `scenes/` runtime L3**.
 
 ### Riferimenti in scene runtime
-- Nessuna scena runtime (`scenes/Main.tscn`, `scenes/UI.tscn`, `scenes/Arena.tscn`, `scenes/Player.tscn`, `scenes/enemies/*`) referenzia `res://legacy_runtime/*`.
+- Nessuna scena runtime (`scenes/Main.tscn`, `scenes/UI.tscn`, `scenes/Arena.tscn`, `scenes/Player.tscn`, `scenes/enemies/*`) referenzia `res://legacy-runtime/*`.
 
 ### Esito
 - Legacy runtime risulta confinato per wiring statico.
@@ -154,7 +154,7 @@ Pattern:
 - `scripts/systems/run_manager.gd`: discovery intenso di `arena`, `player`, UI paths, spawn points.
 - `scripts/ui/ui_root.gd`: discovery nodi UI + lookup gruppi (`arena`, `player`, `run_manager`, `bet_manager`).
 - `scripts/Arena.gd`, `scripts/Player.gd`, `scripts/entities/enemy_basic.gd`: lookup di gruppo `run_manager` e nodi visual.
-- `legacy_runtime/*`: lookup run manager e nodi runtime legacy.
+- `legacy-runtime/*`: lookup run manager e nodi runtime legacy.
 
 ### Valutazione per flow
 - Discovery in RunManager: **critico** e coerente con ruolo authority.
@@ -194,7 +194,7 @@ Verifica target:
 
 ### LOW
 - Emissione `run_*` autoritativa solo da RunManager.
-- Nessun riferimento runtime L3 a `res://legacy_runtime/*`.
+- Nessun riferimento runtime L3 a `res://legacy-runtime/*`.
 - Instanziazioni/timer UI e RunManager coerenti col ruolo.
 - `Arena.gd`/`Player.gd` con passive-mode attivo nei punti gameplay principali.
 
@@ -219,7 +219,7 @@ Verifica target:
    - **Ma non pienamente** lato intent betting, per receiver parallelo su `request_place_bet` (HIGH).
 
 2. **Il legacy è completamente confinato?**
-   - **Staticamente sì nel wiring runtime**: nessun riferimento `res://legacy_runtime/*` da scene/script runtime L3.
+   - **Staticamente sì nel wiring runtime**: nessun riferimento `res://legacy-runtime/*` da scene/script runtime L3.
    - Codice legacy resta presente ed eseguibile se referenziato (MEDIUM).
 
 3. **Esistono ancora path paralleli?**

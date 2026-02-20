@@ -1087,7 +1087,6 @@ var _is_game_over: bool = false
 var _phase: RunPhase = RunPhase.NONE
 var _gameplay_phase: RunPhase = RunPhase.PREP
 var _pending_resolution_bet_id: StringName = &""
-var _pending_push_luck_bet_id: StringName = &""
 var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
 var _boot_countdown_skipped: bool = false
@@ -2032,15 +2031,12 @@ func _enter_resolution() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
 	var view: Dictionary = _phase_resolution_handler.build_view(_run_state)
-	_emit_ui(_build_phase_ui_payload(
-		RunPhase.RESOLUTION,
-		str(view.get("title", "")),
-		str(view.get("body", ""))
-	))
+	_emit_ui(_build_phase_ui_payload(RunPhase.RESOLUTION, str(view.get("title", "")), str(view.get("body", ""))))
 	var res: PhaseResult = _phase_resolution_handler.handle_request("request_resolution_advance", _run_state, {})
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func apply_scar(scar_id: StringName) -> void:
 	_apply_level3_scar(scar_id, "")
@@ -3151,13 +3147,11 @@ func _dispatch_phase_request(request_name: String, payload: Dictionary) -> Phase
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
-	_touch_request_activity("request_new_run()")
-	if not _guard_request_phase("request_new_run", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
-		return
-	var res: PhaseResult = _phase_main_menu_handler.handle_request("request_new_run", _run_state, {})
+	var res := _phase_main_menu_handler.handle_request("request_new_run", _run_state, {})
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_reset_run() -> void:
 	_touch_request_activity("request_reset_run()")
@@ -3176,22 +3170,18 @@ func _on_request_retry_run() -> void:
 	retry_current_bet()
 
 func _on_request_continue_run() -> void:
-	_touch_request_activity("request_continue_run()")
-	if not _guard_request_phase("request_continue_run", [RunPhase.MAIN_MENU, RunPhase.NONE]):
-		return
-	var res: PhaseResult = _phase_main_menu_handler.handle_request("request_continue_run", _run_state, {})
+	var res := _phase_main_menu_handler.handle_request("request_continue_run", _run_state, {})
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_show_main_menu() -> void:
-	_touch_request_activity("request_show_main_menu()")
-	if not _guard_request_phase("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION, RunPhase.GAME_OVER]):
-		return
-	var res: PhaseResult = _phase_main_menu_handler.handle_request("request_show_main_menu", _run_state, {})
+	var res := _phase_main_menu_handler.handle_request("request_show_main_menu", _run_state, {})
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_intro_apply_seed(seed_text: String) -> void:
 	_touch_request_activity("request_intro_apply_seed(seed_text=%s)" % seed_text)
@@ -3248,6 +3238,7 @@ func _on_request_mid_choice_select(index: int) -> void:
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_pyl_cashout() -> void:
 	_touch_request_activity("request_pyl_cashout()")
@@ -3258,6 +3249,7 @@ func _on_request_pyl_cashout() -> void:
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_pyl_condanna() -> void:
 	_touch_request_activity("request_pyl_condanna()")
@@ -3278,6 +3270,7 @@ func _on_request_pyl_double() -> void:
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_end_run_restart() -> void:
 	_touch_request_activity("request_end_run_restart()")
@@ -3287,6 +3280,7 @@ func _on_request_end_run_restart() -> void:
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_end_run_next_bet() -> void:
 	_touch_request_activity("request_end_run_next_bet()")
@@ -3313,6 +3307,7 @@ func _on_request_place_bet(bet_id: String, _stake: int) -> void:
 	if not res.handled:
 		return
 	_apply_mutation_plan(res)
+	return
 
 func _on_request_intermediate_choice(choice_id: String) -> void:
 	_touch_request_activity("request_intermediate_choice(choice_id=%s)" % choice_id)
@@ -3890,35 +3885,16 @@ func _open_intermediate_choice(bet_id: StringName) -> void:
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
 
 func _enter_mid_choice() -> void:
-	if not _ensure_flow_panel("UI_RunRoot/Phase_MID_CHOICE", "intermediate choice"):
-		return
-	_waiting_for_intermediate_choice = true
-	_waiting_for_push_luck = false
-	_close_audience_context_line()
-	_set_runtime_gate_phase(RunPhase.PREP)
-	_update_arena_visual_only()
-	_emit_ui(_build_intermediate_choice_ui_payload())
+	var _view: Dictionary = _phase_intermediate_choice_handler.build_view(_run_state)
+	GameEvents.intermediate_choice_opened.emit()
 
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
-func _open_push_luck_choice(bet_id: StringName) -> void:
-	_pending_push_luck_bet_id = bet_id
+func _open_push_luck_choice(_bet_id: StringName) -> void:
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 
 func _enter_push_your_luck() -> void:
-	if not _ensure_flow_panel("UI_RunRoot/Phase_PUSH_YOUR_LUCK", "push luck choice"):
-		return
-	_waiting_for_push_luck = true
-	_close_audience_context_line()
-	_set_runtime_gate_phase(RunPhase.PREP)
-	_update_arena_visual_only()
-	var bet_id: StringName = _pending_push_luck_bet_id
-	_pending_push_luck_bet_id = &""
-	var view: Dictionary = _phase_push_your_luck_handler.build_view(_run_state, {
-		"bet_name": str(_build_push_luck_payload(bet_id).get("bet_name", "")),
-	})
-	var payload: RunUiPayload = _build_push_luck_ui_payload(bet_id, view)
-	print_debug("[FLOW] push_luck_opened :: arena=%d" % _run_state.arena_index)
-	_emit_ui(payload)
+	var view: Dictionary = _phase_push_your_luck_handler.build_view(_run_state)
+	GameEvents.push_luck_opened.emit(view)
 
 func _refresh_push_luck_choice(bet_id: StringName) -> void:
 	_emit_ui(_build_push_luck_ui_payload(bet_id, {}))
@@ -4521,6 +4497,54 @@ func _build_run_summary(finale: Dictionary) -> Dictionary:
 		"enemy_profiles": enemy_profiles,
 	}
 
+func _build_game_over_stats_payload(bet_names: Array[String]) -> Dictionary:
+	return {
+		"cashouts": _run_state.level3_cashouts,
+		"doubles": _run_state.level3_doubles,
+		"bets": bet_names,
+		"max_escalation": _run_state.level3_max_escalation,
+		"arena_target": _run_state.level3_target_arenas,
+		"arena_count": _run_state.arena_index,
+	}
+
+func _build_game_over_anomaly_flow_tag() -> String:
+	match _register_state.flow_phase:
+		RegisterState.FLOW_PHASE_ATTRITO:
+			return "ATTRITO"
+		RegisterState.FLOW_PHASE_DERIVA:
+			return "DERIVA"
+		RegisterState.FLOW_PHASE_MEMORIA:
+			return "MEMORIA"
+		RegisterState.FLOW_PHASE_SOSPENSIONE:
+			return "SOSPENSIONE"
+		_:
+			return ""
+
+func _build_game_over_finale_inputs(
+	ending_id: StringName,
+	run_completed: bool,
+	scars_copy: Array,
+	stats_payload: Dictionary,
+	pacts_signed: Array[StringName],
+	anomaly_flow_tag: String
+) -> Dictionary:
+	return {
+		"ending_id": String(ending_id),
+		"is_anomalous": _register_state.flow_phase != RegisterState.FLOW_PHASE_STABLE,
+		"register_flow_phase": String(_register_state.flow_phase),
+		"anomaly_flow_tag": anomaly_flow_tag,
+		"run_completed": run_completed,
+		"scars": scars_copy,
+		"stats": stats_payload,
+		"pacts_signed": pacts_signed,
+	}
+
+func _build_game_over_copy_inputs(finale: Dictionary) -> Dictionary:
+	return {
+		"title": str(finale.get("title", "")),
+		"body": str(finale.get("text", "")),
+	}
+
 func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _run_state.scars_payload.duplicate(true)
 	var scar_count: int = _run_state.scars_history.size()
@@ -4559,50 +4583,23 @@ func _select_run_finale() -> Dictionary:
 	for bet_id: StringName in _run_state.level3_bets_used:
 		bet_names.append(_get_bet_display_name(String(bet_id)))
 	var pacts_signed: Array[StringName] = _run_state.bets_history.duplicate()
-	var stats_payload: Dictionary = {
-		"cashouts": _run_state.level3_cashouts,
-		"doubles": _run_state.level3_doubles,
-		"bets": bet_names,
-		"max_escalation": _run_state.level3_max_escalation,
-		"arena_target": _run_state.level3_target_arenas,
-		"arena_count": _run_state.arena_index,
-	}
-	var anomaly_flow_tag: String = ""
-	match _register_state.flow_phase:
-		RegisterState.FLOW_PHASE_ATTRITO:
-			anomaly_flow_tag = "ATTRITO"
-		RegisterState.FLOW_PHASE_DERIVA:
-			anomaly_flow_tag = "DERIVA"
-		RegisterState.FLOW_PHASE_MEMORIA:
-			anomaly_flow_tag = "MEMORIA"
-		RegisterState.FLOW_PHASE_SOSPENSIONE:
-			anomaly_flow_tag = "SOSPENSIONE"
-		_:
-			anomaly_flow_tag = ""
-	var finale_payload: Dictionary = _phase_game_over_handler.build_ui_payload(_run_state, {
-		"ending_id": String(ending_id),
-		"is_anomalous": _register_state.flow_phase != RegisterState.FLOW_PHASE_STABLE,
-		"register_flow_phase": String(_register_state.flow_phase),
-		"anomaly_flow_tag": anomaly_flow_tag,
-		"run_completed": run_completed,
-		"scars": scars_copy,
-		"stats": stats_payload,
-		"pacts_signed": pacts_signed,
-	})
+	var stats_payload: Dictionary = _build_game_over_stats_payload(bet_names)
+	var anomaly_flow_tag: String = _build_game_over_anomaly_flow_tag()
+	var finale_inputs: Dictionary = _build_game_over_finale_inputs(
+		ending_id,
+		run_completed,
+		scars_copy,
+		stats_payload,
+		pacts_signed,
+		anomaly_flow_tag
+	)
+	var finale_payload: Dictionary = _phase_game_over_handler.build_ui_payload(_run_state, finale_inputs)
 	var finale: Dictionary = _finale_builder.build_finale_payload(finale_payload)
 	var pacts_text: String = str(finale.get("pacts_text", ""))
 	var condanne_text: String = str(finale.get("condanne_text", ""))
 	var crowd_text: String = str(finale.get("crowd_text", ""))
-	var copy: Dictionary = _phase_game_over_handler.build_view(
-		_run_state,
-		pacts_text,
-		condanne_text,
-		crowd_text,
-		{
-			"title": str(finale.get("title", "")),
-			"body": str(finale.get("text", "")),
-		}
-	)
+	var copy_inputs: Dictionary = _build_game_over_copy_inputs(finale)
+	var copy: Dictionary = _phase_game_over_handler.build_view(_run_state, pacts_text, condanne_text, crowd_text, copy_inputs)
 	finale["title"] = str(copy.get("title", ""))
 	finale["subtitle"] = str(copy.get("subtitle", ""))
 	finale["body"] = str(copy.get("body", ""))
@@ -4829,10 +4826,9 @@ func _enter_intro() -> void:
 	_emit_ui(ui_payload)
 
 func _enter_bet_present() -> void:
-	var ui_payload: RunUiPayload = _build_phase_ui_payload(RunPhase.BET_PRESENT, "PATTO PROPOSTO")
 	var view: Dictionary = _phase_bet_present_handler.build_view(_run_state, {"coins": int(run.get("coins", 0))})
-	ui_payload.meta = view
-	_emit_ui(ui_payload)
+	var offer: Array[Dictionary] = view.get("offer", []) as Array[Dictionary]
+	GameEvents.bet_ui_opened.emit(offer)
 
 func _enter_bet_committed() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.BET_COMMITTED, "PATTO SIGILLATO"))

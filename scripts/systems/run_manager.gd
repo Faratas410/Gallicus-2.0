@@ -4827,7 +4827,12 @@ func _enter_intro() -> void:
 
 func _enter_bet_present() -> void:
 	var view: Dictionary = _phase_bet_present_handler.build_view(_run_state, {"coins": int(run.get("coins", 0))})
-	var offer: Array[Dictionary] = view.get("offer", []) as Array[Dictionary]
+	var offer: Array[Dictionary] = []
+	var raw_offer: Variant = view.get("offer", null)
+	if raw_offer is Array:
+		for offer_value in raw_offer:
+			if offer_value is Dictionary:
+				offer.append(offer_value as Dictionary)
 	GameEvents.bet_ui_opened.emit(offer)
 
 func _enter_bet_committed() -> void:

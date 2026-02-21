@@ -14,13 +14,13 @@ var _time: float = 0.0
 var _clouds: Control = null
 var _fog: Control = null
 var _light_overlay: Control = null
-var _torch_flames: AnimatedSprite2D = null
+var _torch_nodes: Array[AnimatedSprite2D] = []
 
 func _ready() -> void:
 	_clouds = get_node_or_null(clouds_path) as Control
 	_fog = get_node_or_null(fog_path) as Control
 	_light_overlay = get_node_or_null(light_overlay_path) as Control
-	_torch_flames = get_node_or_null(torch_flames_path) as AnimatedSprite2D
+	_cache_torch_nodes()
 	_setup_torch_animation()
 
 func _process(delta: float) -> void:
@@ -29,16 +29,31 @@ func _process(delta: float) -> void:
 	_update_fog()
 	_update_light_flicker()
 
+func _cache_torch_nodes() -> void:
+	_torch_nodes.clear()
+	var torch_root: Node = get_node_or_null(torch_flames_path)
+	if torch_root == null:
+		return
+	if torch_root is AnimatedSprite2D:
+		_torch_nodes.append(torch_root as AnimatedSprite2D)
+		return
+	for child: Node in torch_root.get_children():
+		var torch: AnimatedSprite2D = child as AnimatedSprite2D
+		if torch != null:
+			_torch_nodes.append(torch)
 
 func _setup_torch_animation() -> void:
-	if _torch_flames == null:
-		return
-	if _torch_flames.sprite_frames != null and _torch_flames.sprite_frames.has_animation(&"default"):
-		_torch_flames.play(&"default")
+	if _torch_nodes.is_empty():
 		return
 	var strip_texture: Texture2D = load(torch_strip_path) as Texture2D
 	if strip_texture == null:
 		return
+	for torch: AnimatedSprite2D in _torch_nodes:
+		if torch.sprite_frames == null or not torch.sprite_frames.has_animation(&"default"):
+			torch.sprite_frames = _build_torch_frames(strip_texture)
+		torch.play(&"default")
+
+func _build_torch_frames(strip_texture: Texture2D) -> SpriteFrames:
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
 	if not sprite_frames.has_animation(&"default"):
 		sprite_frames.add_animation(&"default")
@@ -49,8 +64,7 @@ func _setup_torch_animation() -> void:
 		atlas.atlas = strip_texture
 		atlas.region = Rect2(float(frame_index * TORCH_FRAME_SIZE.x), 0.0, float(TORCH_FRAME_SIZE.x), float(TORCH_FRAME_SIZE.y))
 		sprite_frames.add_frame(&"default", atlas)
-	_torch_flames.sprite_frames = sprite_frames
-	_torch_flames.play(&"default")
+	return sprite_frames
 
 func _update_clouds() -> void:
 	if _clouds == null:

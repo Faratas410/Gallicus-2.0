@@ -33,14 +33,15 @@ func _process(delta: float) -> void:
 func _setup_torch_animation() -> void:
 	if _torch_flames == null:
 		return
-	if _torch_flames.sprite_frames != null:
+	if _torch_flames.sprite_frames != null and _torch_flames.sprite_frames.has_animation(&"default"):
 		_torch_flames.play(&"default")
 		return
 	var strip_texture: Texture2D = load(torch_strip_path) as Texture2D
 	if strip_texture == null:
 		return
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
-	sprite_frames.add_animation(&"default")
+	if not sprite_frames.has_animation(&"default"):
+		sprite_frames.add_animation(&"default")
 	sprite_frames.set_animation_loop(&"default", true)
 	sprite_frames.set_animation_speed(&"default", TORCH_FPS)
 	for frame_index: int in range(TORCH_FRAME_COUNT):

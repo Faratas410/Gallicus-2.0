@@ -4121,6 +4121,19 @@ func get_debug_flow_tail(lines: int = 10) -> String:
 func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
+	if next == RunPhase.BET_PRESENT:
+		var previous_phase: RunPhase = _phase
+		_flow_logger.log_phase(str(next), "from=%s reason=%s" % [str(previous_phase), reason])
+		var now_ms: int = Time.get_ticks_msec()
+		_last_phase_change_ms = now_ms
+		_last_activity_ms = now_ms
+		_phase = next
+		_enter_bet_present()
+		if _is_smoke_mode():
+			print("SMOKE:PHASE=%s" % _phase_to_name(next))
+		if OS.is_debug_build() and reason != "":
+			print_debug(_flow_diagnostics.format_phase_debug_line(int(next), reason))
+		return
 	if not _has_enter_phase_handler(next):
 		push_error(_flow_diagnostics.format_missing_enter_phase_error(str(next), _flow_logger.dump_last(30)))
 		return

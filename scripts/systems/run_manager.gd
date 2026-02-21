@@ -4167,7 +4167,7 @@ func _watchdog_tick() -> void:
 
 func _has_enter_phase_handler(next: RunPhase) -> bool:
 	match next:
-		RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET, RunPhase.GAME_OVER:
+		RunPhase.MAIN_MENU, RunPhase.RUN_INIT, 12, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET, RunPhase.GAME_OVER:
 			return true
 		_:
 			return false
@@ -4180,7 +4180,7 @@ func _run_enter_phase(next: RunPhase) -> bool:
 		RunPhase.RUN_INIT:
 			_enter_intro()
 			return true
-		RunPhase.BET_PRESENT:
+		12:
 			_enter_bet_present()
 			return true
 		RunPhase.BET_COMMITTED:

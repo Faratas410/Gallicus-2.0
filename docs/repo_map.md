@@ -91,6 +91,7 @@
   - `fx/`
   - `i18n/`
 - Runtime UI assets:
+  - `MainMenu/` (main menu texture atlas source pack)
   - `ui/gallicus_ui_theme.tres`
   - `ui/fonts/` (includes `grabstein_gotik.otf` and `.tres` font resources)
   - `ui/icons/`, `ui/dividers/`, `ui/overlays/`, `ui/panels/`

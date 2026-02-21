@@ -7,7 +7,8 @@
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="13"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="14"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="15"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player_chicken.png" id="16"]
+[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_panel_main.tres" id="16"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="17"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -673,6 +674,7 @@ color = Color(0, 0, 0, 0)
 visible = false
 z_index = 1
 focus_mode = 0
+theme_override_styles/panel = ExtResource("16")
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -683,6 +685,18 @@ offset_right = 280.0
 offset_bottom = 280.0
 clip_contents = true
 custom_minimum_size = Vector2(560, 560)
+
+[node name="BackgroundRitual" type="TextureRect" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("17")
+texture_filter = 0
+stretch_mode = 6
 
 [node name="BetMargin" type="MarginContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO"]
 anchor_right = 1.0

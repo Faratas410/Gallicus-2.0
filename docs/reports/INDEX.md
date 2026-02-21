@@ -8,3 +8,4 @@ Elenco report storici e di audit (non canonici di sistema, non unificati).
 - [technical_review_resume_it.md](technical_review_resume_it.md) — Sintesi review tecnica in italiano.
 - [technical_resume_level3_canonical_it.md](technical_resume_level3_canonical_it.md) — Resume tecnico canonico Level 3 (snapshot storico).
 - [repo_super_inventory_level3_2026-02-20.md](repo_super_inventory_level3_2026-02-20.md) — Super inventario repo con classificazione Core/Opzionale/Inutile/Legacy Quarantena.
+- [run_manager_function_inventory.md](run_manager_function_inventory.md) — Inventory funzioni aggiornato via scansione di `scripts/systems/run_manager.gd`.

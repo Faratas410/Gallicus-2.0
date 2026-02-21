@@ -39,7 +39,7 @@
 - Core:
   - `Main.tscn` (entry)
   - `Arena.tscn`
-  - `Player.tscn`
+  - Player avatar removed in Level 3 (ritual board)
   - `UI.tscn` (HUD includes sprite-backed `GloryPanel/GloryValueLabel` bound by `scripts/ui/ui_root.gd`)
 - Arena variants:
   - `arenas/Arena_01_TrainingYard.tscn`
@@ -52,7 +52,7 @@
 ### Scripts (`scripts/`)
 - Root gameplay nodes:
   - `Arena.gd`
-  - `Player.gd`
+  - Legacy avatar script removed in Level 3 (ritual board)
   - `arena_tilemap.gd`
 - Systems:
   - `systems/run_manager.gd` (single run flow authority)

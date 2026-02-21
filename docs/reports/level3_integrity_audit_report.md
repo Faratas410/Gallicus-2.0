@@ -104,7 +104,7 @@ Pattern cercati:
 - **Guardia**: funzioni gameplay protette con `LEVEL3_PASSIVE_MODE` (ritorni anticipati).
 - **Risk**: **LOW** (presenti ma disattivati in passive mode).
 
-#### `scripts/Player.gd`
+#### Legacy avatar script (removed)
 - `await get_tree().create_timer(...)`
 - **Guardia**: script in `LEVEL3_PASSIVE_MODE := true` con blocchi passivi.
 - **Risk**: **LOW**.
@@ -135,7 +135,7 @@ Verifica `res://legacy-runtime/`:
 - **Nessun preload/instantiate da `scripts/` o `scenes/` runtime L3**.
 
 ### Riferimenti in scene runtime
-- Nessuna scena runtime (`scenes/Main.tscn`, `scenes/UI.tscn`, `scenes/Arena.tscn`, `scenes/Player.tscn`, `scenes/enemies/*`) referenzia `res://legacy-runtime/*`.
+- Nessuna scena runtime attiva (`scenes/Main.tscn`, `scenes/UI.tscn`, `scenes/Arena.tscn`, `scenes/enemies/*`) referenzia `res://legacy-runtime/*`.
 
 ### Esito
 - Legacy runtime risulta confinato per wiring statico.
@@ -153,7 +153,7 @@ Pattern:
 ### Aree principali
 - `scripts/systems/run_manager.gd`: discovery intenso di `arena`, `player`, UI paths, spawn points.
 - `scripts/ui/ui_root.gd`: discovery nodi UI + lookup gruppi (`arena`, `player`, `run_manager`, `bet_manager`).
-- `scripts/Arena.gd`, `scripts/Player.gd`, `scripts/entities/enemy_basic.gd`: lookup di gruppo `run_manager` e nodi visual.
+- `scripts/Arena.gd`, `scripts/entities/enemy_basic.gd`: lookup di gruppo `run_manager` e nodi visual.
 - `legacy-runtime/*`: lookup run manager e nodi runtime legacy.
 
 ### Valutazione per flow
@@ -196,7 +196,7 @@ Verifica target:
 - Emissione `run_*` autoritativa solo da RunManager.
 - Nessun riferimento runtime L3 a `res://legacy-runtime/*`.
 - Instanziazioni/timer UI e RunManager coerenti col ruolo.
-- `Arena.gd`/`Player.gd` con passive-mode attivo nei punti gameplay principali.
+- `Arena.gd` con passive-mode attivo nei punti gameplay principali; avatar runtime rimosso in Level 3.
 
 ### MEDIUM
 - Emitters `request_fail_run` fuori RunManager (legacy + BetManager).

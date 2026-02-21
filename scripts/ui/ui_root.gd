@@ -88,6 +88,11 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var intermediate_choice_provoca_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1") as Button
 @onready var bet_panel: Panel = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO") as Panel
 @onready var modal_dimmer: ColorRect = get_node_or_null("UI_RunRoot/ModalDimmer") as ColorRect
+@onready var _lbl_intro_title: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLEPanel/Lbl_INTRO_TITLE") as Label
+@onready var _lbl_intro_subtitle: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel/Lbl_INTRO_SUBTITLE") as Label
+@onready var _lbl_intro_body: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODYPanel/Lbl_INTRO_BODY") as Label
+@onready var _lbl_intro_body_stake: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKEPanel/Lbl_INTRO_BODY_STAKE") as Label
+@onready var _lbl_intro_footer: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
 @onready var stake_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
 @onready var stake_input: SpinBox = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
 @onready var bet_buttons_container: VBoxContainer = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as VBoxContainer
@@ -1045,6 +1050,24 @@ func set_active_bet_text(text: String) -> void:
 func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 	if bet_panel == null:
 		return
+	if not bets.is_empty():
+		var intro_payload: Dictionary = {
+			"title": str(bets[0].get("title", bets[0].get("name", ""))),
+			"subtitle": str(bets[0].get("subtitle", bets[0].get("archetype_label", ""))),
+			"body": str(bets[0].get("body", bets[0].get("condition", ""))),
+			"stake_text": str(bets[0].get("stake_text", bets[0].get("pact", ""))),
+			"footer": str(bets[0].get("footer", bets[0].get("doom", ""))),
+		}
+		if _lbl_intro_title != null:
+			_lbl_intro_title.text = str(intro_payload.get("title", ""))
+		if _lbl_intro_subtitle != null:
+			_lbl_intro_subtitle.text = str(intro_payload.get("subtitle", ""))
+		if _lbl_intro_body != null:
+			_lbl_intro_body.text = str(intro_payload.get("body", ""))
+		if _lbl_intro_body_stake != null:
+			_lbl_intro_body_stake.text = str(intro_payload.get("stake_text", ""))
+		if _lbl_intro_footer != null:
+			_lbl_intro_footer.text = str(intro_payload.get("footer", ""))
 	if betting_circle != null or ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
 		open_bet_circle(bets)
 		return

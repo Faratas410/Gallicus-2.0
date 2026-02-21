@@ -2,13 +2,15 @@ extends Control
 
 const TORCH_FRAME_SIZE: Vector2i = Vector2i(64, 64)
 const TORCH_FRAME_COUNT: int = 4
-const TORCH_FPS: float = 1.4
+const TORCH_FPS: float = 8.0
 
 @export var clouds_path: NodePath
 @export var fog_path: NodePath
 @export var light_overlay_path: NodePath
 @export var torch_flames_path: NodePath
 @export_file("*.png") var torch_strip_path: String = "res://assets/MainMenu/menu_torch_flame_strip_4x64.png"
+@export var cloud_speed: float = 8.0
+@export var fog_speed: float = 3.0
 
 var _time: float = 0.0
 var _clouds: Control = null
@@ -22,11 +24,13 @@ func _ready() -> void:
 	_light_overlay = get_node_or_null(light_overlay_path) as Control
 	_cache_torch_nodes()
 	_setup_torch_animation()
+	if _fog != null:
+		_fog.modulate = Color(1, 1, 1, 0.15)
 
 func _process(delta: float) -> void:
 	_time += delta
-	_update_clouds()
-	_update_fog()
+	_update_clouds(delta)
+	_update_fog(delta)
 	_update_light_flicker()
 
 func _cache_torch_nodes() -> void:
@@ -51,6 +55,7 @@ func _setup_torch_animation() -> void:
 	for torch: AnimatedSprite2D in _torch_nodes:
 		if torch.sprite_frames == null or not torch.sprite_frames.has_animation(&"default"):
 			torch.sprite_frames = _build_torch_frames(strip_texture)
+		torch.speed_scale = 2.0
 		torch.play(&"default")
 
 func _build_torch_frames(strip_texture: Texture2D) -> SpriteFrames:
@@ -66,15 +71,23 @@ func _build_torch_frames(strip_texture: Texture2D) -> SpriteFrames:
 		sprite_frames.add_frame(&"default", atlas)
 	return sprite_frames
 
-func _update_clouds() -> void:
+func _update_clouds(delta: float) -> void:
 	if _clouds == null:
 		return
-	_clouds.position.x = sin(_time * 0.08) * 22.0
+	_clouds.position.x -= cloud_speed * delta
+	if _clouds.position.x < -1280.0:
+		_clouds.position.x = 0.0
 
-func _update_fog() -> void:
+func _update_fog(delta: float) -> void:
 	if _fog == null:
 		return
-	_fog.position.x = sin((_time * 0.05) + 0.8) * 18.0
+	_fog.position.x -= fog_speed * delta
+	if _fog.position.x < -1280.0:
+		_fog.position.x = 0.0
+	var t: float = Time.get_ticks_msec() / 1000.0
+	var fog_modulate: Color = _fog.modulate
+	fog_modulate.a = 0.12 + sin(t * 1.5) * 0.03
+	_fog.modulate = fog_modulate
 
 func _update_light_flicker() -> void:
 	if _light_overlay == null:

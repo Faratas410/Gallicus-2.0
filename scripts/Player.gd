@@ -19,9 +19,6 @@ func apply_scar_modifiers(heal_multiplier: float, dodge_cooldown_multiplier: flo
 	_dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 0.1)
 	_dodge_speed_multiplier = maxf(dodge_speed_multiplier, 0.1)
 
-func get_damage_values() -> Array[int]:
-	return [0, 0]
-
 func apply_speed_boost(_mult: float, _seconds: float) -> void:
 	pass
 

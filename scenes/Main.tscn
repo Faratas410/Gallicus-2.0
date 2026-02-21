@@ -3,12 +3,20 @@
 [ext_resource type="Script" path="res://scripts/systems/run_manager.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/ui/menu_ambience.gd" id="4_menu_ambience"]
+[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_base_1280x720.png" id="5_menu_base"]
 [ext_resource type="Theme" path="res://ui/theme/official_theme.tres" id="6"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_panel_main.tres" id="7"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="8"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="9"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="10"]
 [ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="11"]
+[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_clouds_overlay.png" id="12_menu_clouds"]
+[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_light_overlay.png" id="13_menu_light"]
+[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_felix_rooster_statue_layer.png" id="14_menu_felix"]
+[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_fog_overlay.png" id="15_menu_fog"]
+[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_banner_owl_layer.png" id="17_menu_banner"]
+[ext_resource type="Shader" path="res://ui/shaders/menu/banner_wind.gdshader" id="16_banner_wind"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
 texture = null
@@ -16,6 +24,12 @@ texture_margin_left = 48.0
 texture_margin_top = 48.0
 texture_margin_right = 48.0
 texture_margin_bottom = 48.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_menu_banner_wind"]
+shader = ExtResource("16_banner_wind")
+shader_parameter/amplitude = 0.004
+shader_parameter/speed = 0.65
+shader_parameter/frequency = 14.0
 [node name="Main" type="Node2D"]
 
 [node name="RitualBackground" type="CanvasLayer" parent="."]
@@ -53,6 +67,100 @@ mouse_filter = 0
 theme = ExtResource("6")
 texture_filter = 0
 script = ExtResource("3")
+
+[node name="MenuAmbience" type="Control" parent="MenuLayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_menu_ambience")
+clouds_path = NodePath("CloudsLayer")
+fog_path = NodePath("FogLayer")
+light_overlay_path = NodePath("LightOverlay")
+torch_flames_path = NodePath("TorchFlames")
+
+[node name="Base" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_menu_base")
+texture_filter = 0
+stretch_mode = 5
+
+[node name="CloudsLayer" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.45)
+texture = ExtResource("12_menu_clouds")
+texture_filter = 0
+stretch_mode = 5
+
+[node name="LightOverlay" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.24)
+texture = ExtResource("13_menu_light")
+texture_filter = 0
+stretch_mode = 5
+
+[node name="FelixStatue" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("14_menu_felix")
+texture_filter = 0
+stretch_mode = 5
+
+[node name="OwlBanner" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("17_menu_banner")
+material = SubResource("ShaderMaterial_menu_banner_wind")
+texture_filter = 0
+stretch_mode = 5
+
+[node name="FogLayer" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.26)
+texture = ExtResource("15_menu_fog")
+texture_filter = 0
+stretch_mode = 5
+
+[node name="TorchFlames" type="AnimatedSprite2D" parent="MenuLayer/MainMenu/MenuAmbience"]
+position = Vector2(1125, 534)
+texture_filter = 0
 
 [node name="CenterContainer" type="CenterContainer" parent="MenuLayer/MainMenu"]
 anchor_left = 0.0

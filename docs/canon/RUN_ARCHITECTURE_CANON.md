@@ -301,7 +301,7 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
 - Active UI scenes/scripts under `res://scenes/ui/` and `res://scripts/ui/`
 - L3 visual core kept in active path:
   - `res://scripts/Arena.gd`
-  - `res://scripts/Player.gd`
+  - Legacy avatar script removed in Level 3 ritual-board runtime
 
 ## Legacy runtime (non-L3, storico/rimosso)
 

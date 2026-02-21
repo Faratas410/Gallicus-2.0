@@ -18,7 +18,7 @@ Documento tecnico di rischio/ambiguità. Non definisce il canone: raccoglie elem
 | File path | Why suspicious | Referenced in active scenes | Risk | Suggested action |
 |---|---|---|---|---|
 | `res://scripts/Arena.gd` | Contiene logica gameplay-like (wave loop, enemy spawn, aggro delay, player spawn, gestione nemici) e istanzia scene runtime. | **SÌ** (`RunManager` pre-carica `Arena.tscn`; `Main` istanzia `RunManager`). | HIGH | Refactor passive (visual-only hard guarantee) + verify manually. |
-| `res://scripts/Player.gd` | Contiene input/combat state machine, timer di attacco/dodge, danno/morte locale e `request_fail_run` su morte. | **SÌ** (`RunManager` pre-carica `Player.tscn`). | HIGH | Keep visual only in Level 3 oppure separare runtime non-L3; verify manually. |
+| Legacy avatar script (rimosso) | Conteneva input/combat state machine, timer di attacco/dodge, danno/morte locale e `request_fail_run` su morte. | **NO** (avatar runtime rimosso nel Level 3 ritual board). | RESOLVED | Removed in purge tranches; keep monitoraggio su path legacy non-L3. |
 | `res://scripts/entities/enemy_basic.gd` | AI chase/touch damage/death + emissione `enemy_killed`; comportamento gameplay se attivo. | **SÌ** (`Arena.gd` lo istanzia da `EnemyBasic.tscn`). | HIGH | Refactor passive for Level 3 o confinare fuori path L3. |
 | `res://scripts/systems/bet_manager.gd` | Sistema parallelo a RunManager: apre/chiude bet UI, valuta bet, può emettere `request_fail_run`; inoltre discovery dinamica di arena/player. | **NO in Main scene** (`Main.tscn` non istanzia `BetManager`), ma `RunManager` cerca `BetManager` con `get_node_or_null`. | HIGH | Remove oppure mantenere inattivo e verificare manualmente che non venga mai istanziato. |
 | `res://scripts/pickups/PickupSpawner.gd` | Spawn loop con timer (`create_timer`) + instantiate dinamico di pickup. | **UNCERTAIN** (nessuna istanza trovata staticamente nelle scene principali). | MEDIUM | Verify manually; se non usato in L3 rimuovere dal runtime L3. |
@@ -28,7 +28,7 @@ Documento tecnico di rischio/ambiguità. Non definisce il canone: raccoglie elem
 | `res://scenes/legacy/Enemy.tscn` | Scena legacy deprecata che può riaprire path non-L3 se riutilizzata. | **NO** (nessuna istanza statica rilevata). | LOW | Remove o mantenere in archivio fuori runtime. |
 
 ### Additional event-integrity notes (outside RunManager)
-- `request_fail_run` è emesso anche da `Player.gd`, `legacy/player_legacy.gd` e `bet_manager.gd` (non solo da intent UI).
+- `request_fail_run` è emesso da path legacy (`legacy/player_legacy.gd`) e `bet_manager.gd` (non solo da intent UI).
 - `bet_*` (opened/closed/placed) può essere emesso anche da `bet_manager.gd` (path parallelo).
 - Emissioni `run_started/run_failed/run_ended/run_finale_selected` fuori `RunManager`: **non rilevate staticamente**.
 - Caricamenti dinamici esterni al repository/scenes non ispezionabili staticamente: **UNCERTAIN**.

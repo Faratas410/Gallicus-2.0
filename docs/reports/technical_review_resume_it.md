@@ -71,7 +71,7 @@ Il sistema seleziona finale coerente con pattern della run, emette verdict/log, 
 
 ## 6) Personaggi / entità narrative e gameplay
 ### Gameplay entities
-- **Player**: avatar giocabile in arena (`Player.tscn`).
+- **Player**: avatar legacy rimosso in Level 3 (ritual board).
 - **EnemyBasic**: nemico base attuale (`EnemyBasic.tscn`).
 - **Folla**: non personaggio fisico, ma sistema di pressione narrativa (linee/mood).
 

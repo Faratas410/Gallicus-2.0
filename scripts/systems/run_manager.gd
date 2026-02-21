@@ -3740,9 +3740,6 @@ func _connect_player_signals() -> void:
 		return
 	if LEVEL3_ENABLED:
 		return
-	var died_callable: Callable = Callable(self, "_on_player_died")
-	if _player.has_signal("died") and not _player.died.is_connected(died_callable):
-		_player.died.connect(died_callable)
 
 func _on_request_fail_run(reason: String = "") -> void:
 	_touch_request_activity("request_fail_run(reason=%s)" % reason)
@@ -3755,11 +3752,6 @@ func _on_request_fail_run(reason: String = "") -> void:
 	if resolved_reason == "":
 		resolved_reason = "RUN_FAILED"
 	_enter_end_run(resolved_reason)
-
-func _on_player_died() -> void:
-	if LEVEL3_ENABLED:
-		return
-	_enter_end_run("death")
 
 func _get_bet_chain_reward_scale(chain_level: int) -> int:
 	return _bet_system.get_reward_scale(chain_level)
@@ -4953,21 +4945,6 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 		"Movimento rallentato e blocco meno efficace."
 	)
 	_add_scar(scar)
-
-func _apply_scar_modifiers_to_player() -> void:
-	if LEVEL3_ENABLED:
-		return
-	if _player == null:
-		_player = _resolve_player()
-	if _player == null:
-		return
-	if _player.has_method("apply_scar_modifiers"):
-		_player.call(
-			"apply_scar_modifiers",
-			_run_state.scar_heal_multiplier,
-			_run_state.scar_dodge_cooldown_multiplier,
-			_run_state.scar_dodge_speed_multiplier
-		)
 
 func _get_spawn_position() -> Vector2:
 	if _arena and _arena is Node:

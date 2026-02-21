@@ -47,10 +47,10 @@
   - **Authority OK** (single emitter, reactive UI handler).
   - Recommendation: none.
 
-### Player died signal (`Player.died`) -> terminal flow
+### Legacy avatar death signal (removed) -> terminal flow (historical)
 
 - Emits:
-  - [scripts/Player.gd:262](scripts/Player.gd:262) `take_damage` — local `died` signal emitted when HP reaches 0.
+  - Legacy avatar script (removed) emitted local `died` when HP reached 0 (historical path).
 - Handlers:
   - [scripts/systems/run_manager.gd:3762](scripts/systems/run_manager.gd:3762) `_connect_player_signals` wires player `died` to RunManager.
   - [scripts/systems/run_manager.gd:3781](scripts/systems/run_manager.gd:3781) `_on_player_died` — enters end-run (`death`).
@@ -107,7 +107,7 @@
 
 ### Player Death -> End Run
 
-1. Player HP reaches 0 in `Player.take_damage`, which emits local `died` signal and frees player node.【file:scripts/Player.gd:246】【file:scripts/Player.gd:262】【file:scripts/Player.gd:263】
+1. Historical path: legacy avatar HP reached 0, emitted local `died`, then freed the node (removed from active runtime).
 2. RunManager connects to player `died` and handles it in `_on_player_died()` by calling `_enter_end_run("death")`.【file:scripts/systems/run_manager.gd:3762】【file:scripts/systems/run_manager.gd:3781】【file:scripts/systems/run_manager.gd:3782】
 3. `_enter_end_run` records end reason then enters `_enter_game_over`.【file:scripts/systems/run_manager.gd:4352】【file:scripts/systems/run_manager.gd:4359】【file:scripts/systems/run_manager.gd:4362】
 4. `_enter_game_over` sets `GAME_OVER` phase and emits terminal events in order: `run_finale_selected`, `run_ended`, `run_failed`.【file:scripts/systems/run_manager.gd:4372】【file:scripts/systems/run_manager.gd:4404】【file:scripts/systems/run_manager.gd:4405】【file:scripts/systems/run_manager.gd:4406】

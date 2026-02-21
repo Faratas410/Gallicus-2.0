@@ -55,7 +55,8 @@ func _setup_torch_animation() -> void:
 
 func _build_torch_frames(strip_texture: Texture2D) -> SpriteFrames:
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
-	sprite_frames.add_animation(&"default")
+	if not sprite_frames.has_animation(&"default"):
+		sprite_frames.add_animation(&"default")
 	sprite_frames.set_animation_loop(&"default", true)
 	sprite_frames.set_animation_speed(&"default", TORCH_FPS)
 	for frame_index: int in range(TORCH_FRAME_COUNT):

@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/arena_tilemap.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/arenas/owl_sanctum.png" id="2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(1280.00, 32.00)
@@ -24,6 +25,11 @@ size = Vector2(128.00, 64.00)
 size = Vector2(128.00, 64.00)
 
 [node name="ArenaRoot" type="Node2D"]
+
+[node name="ArenaBackground" type="Sprite2D" parent="."]
+z_index = -10
+texture = ExtResource("2")
+position = Vector2(640, 360)
 
 [node name="ArenaTiles" type="TileMap" parent="."]
 script = ExtResource("1")

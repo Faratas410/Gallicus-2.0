@@ -36,7 +36,8 @@ All changes to systems described here must update this document in the same PR.
 
 ## Scope
 - Patch type: Foundation only (no scene-wide texture replacement in this patch).
-- Source-of-truth UI asset folder: `res://UI Official/`.
+- Source-of-truth UI asset folder for adopted runtime main-menu atlas source: `res://assets/MainMenu/`.
+- `res://UI Official/` remains the raw external reference pack.
 - Authoritative theme resource: `res://ui/theme/official_theme.tres`.
 - Authoritative UI font wrapper: `res://ui/fonts/italiana_regular_font.tres`.
 

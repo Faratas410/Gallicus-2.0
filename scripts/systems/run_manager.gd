@@ -17,7 +17,6 @@ extends Node
 @export var arena_clear_reward: int = GameConstants.ARENA_CLEAR_REWARD
 @export var arena_scene: PackedScene
 @export var player_scene: PackedScene
-@export var arena_layout_offset: Vector2 = Vector2(-640.0, -360.0)
 
 # RUN FLOW (contract)
 # MAIN_MENU -> RUN_INIT -> BET_PRESENT -> BET_COMMITTED
@@ -39,7 +38,6 @@ enum RunPhase {
 	RESOLUTION = 18,
 }
 
-const LEVEL3_ENABLED: bool = true
 const PACT_SEALED_SECONDS: float = 0.7
 const RESOLVE_RITUAL_SECONDS: float = 0.9
 const POST_BET_QUEUE_FALLBACK_SECONDS: float = 0.5
@@ -1045,8 +1043,6 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	},
 ]
 
-var _arena_scenes: Array[PackedScene] = []
-var _arena_layout_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 const DEBUG_RUNTIME_LOGS: bool = false
 
@@ -1066,9 +1062,6 @@ var run: Dictionary = {
 }
 
 var _arena: Node
-var _arena_layout_container: Node2D = null
-var _current_arena_layout: Node = null
-var _current_arena_path: String = ""
 var _waiting_for_bet: bool = false
 var _waiting_for_push_luck: bool = false
 var _waiting_for_intermediate_choice: bool = false
@@ -1136,7 +1129,9 @@ var _watchdog_enabled: bool = true
 var _registry_has_precedent: bool = false
 var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke: SmokeDriver = null
-var _smoke_driver_timer: Timer = null
+var _smoke_timeout_deadline_msec: int = -1
+var _smoke_driver_active: bool = false
+var _smoke_driver_next_tick_msec: int = -1
 var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
 var _flow_diagnostics: FlowDiagnostics = FlowDiagnostics.new()
 var _finale_builder: FinaleBuilder = FinaleBuilder.new()
@@ -1191,41 +1186,25 @@ func _start_smoke_timeout_timer() -> void:
 		return
 	_smoke_init_if_needed()
 	var timeout_sec: float = _smoke.get_timeout_seconds()
-	var smoke_timer: Timer = Timer.new()
-	smoke_timer.one_shot = true
-	smoke_timer.wait_time = timeout_sec
-	add_child(smoke_timer)
-	smoke_timer.timeout.connect(func() -> void:
-		if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "BET_PRESENT":
-			print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
-		get_tree().quit(0)
-	)
-	smoke_timer.start()
+	_smoke_timeout_deadline_msec = Time.get_ticks_msec() + int(timeout_sec * 1000.0)
 
 
 func _smoke_start_scenario() -> void:
 	_smoke_init_if_needed()
 	if not _smoke.should_start_bet_present_scenario():
 		return
-	if _smoke_driver_timer != null and is_instance_valid(_smoke_driver_timer):
+	if _smoke_driver_active:
 		return
 	var start_logs: PackedStringArray = _smoke.begin_bet_present_scenario()
-	_smoke_driver_timer = Timer.new()
-	_smoke_driver_timer.one_shot = false
-	_smoke_driver_timer.wait_time = 0.1
-	add_child(_smoke_driver_timer)
-	_smoke_driver_timer.timeout.connect(_on_smoke_driver_tick)
+	_smoke_driver_active = true
+	_smoke_driver_next_tick_msec = Time.get_ticks_msec()
 	for line: String in start_logs:
 		print(line)
-	_smoke_driver_timer.start()
 
 
 func _stop_smoke_driver() -> void:
-	if _smoke_driver_timer == null or not is_instance_valid(_smoke_driver_timer):
-		return
-	_smoke_driver_timer.stop()
-	_smoke_driver_timer.queue_free()
-	_smoke_driver_timer = null
+	_smoke_driver_active = false
+	_smoke_driver_next_tick_msec = -1
 
 
 func _on_smoke_driver_tick() -> void:
@@ -1252,6 +1231,21 @@ func _smoke_quit_gate() -> void:
 	get_tree().quit(0)
 
 
+func _smoke_tick(now_msec: int) -> void:
+	if _smoke_timeout_deadline_msec > 0 and now_msec >= _smoke_timeout_deadline_msec:
+		if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "BET_PRESENT":
+			print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
+		_smoke_timeout_deadline_msec = -1
+		get_tree().quit(0)
+		return
+	if not _smoke_driver_active:
+		return
+	if _smoke_driver_next_tick_msec > now_msec:
+		return
+	_smoke_driver_next_tick_msec = now_msec + 100
+	_on_smoke_driver_tick()
+
+
 func _ready() -> void:
 	print("RunManager ready")
 	_arena_themes = ArenaThemes.new()
@@ -1276,7 +1270,6 @@ func _ready() -> void:
 	_apply_saved_language()
 	if not _validate_game_events_signals():
 		return
-	_arena_layout_rng.randomize()
 	_connect_gameevents()
 	_phase_handler_map[RunPhase.MAIN_MENU] = _phase_main_menu_handler
 	_phase_handler_map[RunPhase.RUN_INIT] = _phase_run_init_handler
@@ -1291,6 +1284,8 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_watchdog_tick()
+	if _is_smoke_mode():
+		_smoke_tick(Time.get_ticks_msec())
 
 
 func _connect_gameevents() -> void:
@@ -1330,8 +1325,6 @@ func _connect_gameevents() -> void:
 		[&"modal_closed", &"_on_modal_closed", true],
 		[&"settings_changed", &"_on_settings_changed", true],
 	]
-	if not LEVEL3_ENABLED:
-		bindings.append([&"enemy_killed", &"_on_enemy_killed", false])
 	for binding: Array in bindings:
 		var signal_name: StringName = binding[0]
 		var handler_name: StringName = binding[1]
@@ -1384,25 +1377,8 @@ func _boot() -> void:
 	if not _validate_boot():
 		return
 	_connect_ui_queue_signals()
-	if not LEVEL3_ENABLED:
-		_ensure_arena_and_player()
-		_arena = get_node_or_null(arena_path)
-		_player = get_tree().get_first_node_in_group("player")
-		_connect_player_signals()
-	else:
-		_arena = null
-		_player = null
-	if _arena:
-		if not LEVEL3_ENABLED:
-			var wave_started_callable: Callable = Callable(self, "_on_wave_started")
-			if _arena.has_signal("wave_started") and not _arena.wave_started.is_connected(wave_started_callable):
-				_arena.wave_started.connect(wave_started_callable)
-			var wave_cleared_callable: Callable = Callable(self, "_on_wave_cleared")
-			if _arena.has_signal("wave_cleared") and not _arena.wave_cleared.is_connected(wave_cleared_callable):
-				_arena.wave_cleared.connect(wave_cleared_callable)
-		var player_spawned_callable: Callable = Callable(self, "_on_player_spawned")
-		if _arena.has_signal("player_spawned") and not _arena.player_spawned.is_connected(player_spawned_callable):
-			_arena.player_spawned.connect(player_spawned_callable)
+	_arena = null
+	_player = null
 	print("Boot: arena=", _arena, " player=", _player)
 	print("Player in tree:", _player != null and _player.is_inside_tree())
 	_set_phase(RunPhase.MAIN_MENU, "boot")
@@ -1634,96 +1610,8 @@ func _start_new_run() -> void:
 	_flow_logger.set_run_id(_run_counter)
 	_run_state.run_start_time_msec = Time.get_ticks_msec()
 	_set_phase(RunPhase.RUN_INIT, "start_new_run")
-	if LEVEL3_ENABLED:
-		_start_level3_run()
-		return
-	_run_state.seen_by_crowd_before_run = SaveManager.has_unlocked(CONDANNA_VISTO_DAL_PUBBLICO)
-	if SaveManager.has_unlocked(CONDANNA_E_FINITA_COSI):
-		_register_condanna(CONDANNA_NON_SARA_L_ULTIMA)
-	get_tree().paused = false
-	Engine.time_scale = 1.0
-	if GameEvents != null and GameEvents.has_method("set_gameplay_enabled"):
-		GameEvents.set_gameplay_enabled(true)
-	_prep_sequence_id += 1
-	var current_id: int = _prep_sequence_id
-	_run_failed_emitted = false
-	_run_ended_emitted = false
-	_run_state.registry_silence_evaluated = false
-	_run_state.registry_silence_active = false
-	_is_game_over = false
-	_waiting_for_bet = false
-	_waiting_for_push_luck = false
-	_waiting_for_intermediate_choice = false
-	_run_state.push_luck_cashouts = 0
-	_run_state.push_luck_doubles = 0
-	_run_state.max_push_luck_chain = 1
-	_run_state.glory = 0
-	_glory_multiplier = GLORY_MULT_BASE
-	_run_state.post_bet_pending_bet_id = &""
-	_run_state.post_bet_sequence_id = 0
-	_run_state.intermediate_pending_bet_id = &""
-	_run_state.intermediate_double_disabled_once = false
-	_run_state.intermediate_bonus_tier = 0
-	_run_state.intermediate_choice_note = ""
-	_run_state.intermediate_loss_penalty_pending = false
-	_run_state.provoke_armed = false
-	_run_state.failed_high_risk_bets = 0
-	_run_state.run_end_reason = ""
-	_run_state.run_end_public_reason = ""
-	_run_state.run_finale_emitted = false
-	_run_state.condanne_this_run = []
-	_run_state.last_audience_context_line = ""
-	_register_state = RegisterState.new()
-	_resolving_arena = false
-	_resolving_ritual = false
-	_pact_sealed_sequence_id = 0
-	_resolve_ritual_sequence_id = 0
-	_resolve_ritual_reward_applied = false
-	_reset_bet_chain()
-	_reset_scars()
-	_set_runtime_gate_phase(RunPhase.PREP)
-	_update_arena_visual_only()
-
-	_ensure_arena_and_player()
-	if _arena != null and _arena.has_method("soft_reset"):
-		_arena.call("soft_reset")
-	_reset_or_respawn_player_full()
-	_clear_enemies()
-
-	run["coins"] = starting_coins
-	run["corruption"] = 0
-	if not LEVEL3_ENABLED:
-		_reset_upgrades()
-	_has_started_run = true
-	run["arena_index"] = 0
-
-
-	GameEvents.run_started.emit()
-	GameEvents.set_gameplay_enabled(true)
-	GameEvents.coins_changed.emit(int(run.get("coins", starting_coins)))
-
-	if not _boot_countdown_skipped:
-		_boot_countdown_skipped = true
-	else:
-		GameEvents.countdown_requested.emit(3)
-		_log_runtime_state("new_run_ready")
-		for _i in range(3, 0, -1):
-			await get_tree().create_timer(1.0).timeout
-			if current_id != _prep_sequence_id or _phase == RunPhase.GAME_OVER:
-				return
-		if current_id != _prep_sequence_id or _phase == RunPhase.GAME_OVER:
-			return
-	if not LEVEL3_ENABLED:
-		var live_player: Node = _resolve_player()
-		if live_player == null or not live_player.is_inside_tree():
-			_ensure_arena_and_player()
-			_reset_or_respawn_player_full()
-			live_player = _resolve_player()
-			if live_player == null or not live_player.is_inside_tree():
-				return
-	_set_runtime_gate_phase(RunPhase.PREP)
-	_open_bet_ui(false)
-	_log_runtime_state("waiting_for_bet")
+	_start_level3_run()
+	return
 
 func start_run() -> void:
 	request_new_game()
@@ -1812,7 +1700,6 @@ func _start_level3_run() -> void:
 	_run_state.last_scar_arena_index = -1000
 	_runstate_kernel.enforce_invariants(_run_state)
 	_emit_escalation_changed()
-	_arena_layout_rng.seed = _run_state.run_seed
 	_level3_rng.seed = _run_state.run_seed
 	_run_state.level3_target_arenas = _level3_rng.randi_range(5, 8)
 	_run_state.level3_min_cashout_arenas = 5
@@ -1838,9 +1725,6 @@ func _start_level3_run() -> void:
 func start_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
-	if not LEVEL3_ENABLED:
-		_clear_enemies()
-		_ensure_arena_and_player()
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
 	_emit_arena_theme_changed()
@@ -1848,8 +1732,6 @@ func start_arena() -> void:
 	_select_enemy_profile()
 	if _run_state.enemy_profile != &"":
 		_run_state.enemy_profiles.append(_run_state.enemy_profile)
-	if not LEVEL3_ENABLED:
-		load_next_arena()
 	_emit_run_debug_state()
 	_open_level3_bet_ui()
 
@@ -2072,18 +1954,7 @@ func end_run(ending_id: StringName) -> void:
 	_enter_end_run("")
 
 func start_next_bet_round() -> void:
-	if LEVEL3_ENABLED:
-		start_arena()
-		return
-	if _is_game_over:
-		return
-	if _waiting_for_push_luck:
-		return
-	_set_phase(RunPhase.NEXT_BET, "start_next_bet_round")
-	_waiting_for_bet = false
-	_set_runtime_gate_phase(RunPhase.LIVE)
-	_clear_enemies()
-	_spawn_wave_or_enemies()
+	start_arena()
 
 func reset_run() -> void:
 	get_tree().paused = false
@@ -2092,17 +1963,7 @@ func reset_run() -> void:
 	start_new_run()
 
 func _open_bet_ui(_from_victory: bool = false) -> void:
-	if LEVEL3_ENABLED:
-		_open_level3_bet_ui()
-		return
-	if _is_game_over:
-		return
-	_set_phase(RunPhase.BET_PRESENT, "open_bet_ui")
-	_waiting_for_bet = true
-	_waiting_for_push_luck = false
-	_set_runtime_gate_phase(RunPhase.PREP)
-	_update_arena_visual_only()
-	GameEvents.betting_opened.emit()
+	_open_level3_bet_ui()
 
 func _open_level3_bet_ui() -> void:
 	if _run_state.run_is_over or _is_game_over:
@@ -2320,8 +2181,6 @@ func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void
 	runtime_fields["scars"] = _serialize_run_scars(_run_state.scars)
 	runtime_fields["pacts_log"] = pacts_log
 	runtime_fields["scars_detail"] = _serialize_scars_detail()
-	if not LEVEL3_ENABLED and run.has("upgrades") and run["upgrades"] is Dictionary:
-		runtime_fields["upgrades"] = (run["upgrades"] as Dictionary).duplicate(true)
 	_save_system.save_run_payload(_save_continue_boundary.build_save_payload(_run_state, runtime_fields))
 
 func _apply_run_save_payload(payload: Dictionary) -> bool:
@@ -2366,10 +2225,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_initialize_scar_rng_state()
 	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
 
-	if LEVEL3_ENABLED:
-		run["upgrades"] = {}
-	elif applied_runtime.has("upgrades") and applied_runtime["upgrades"] is Dictionary:
-		run["upgrades"] = (applied_runtime["upgrades"] as Dictionary).duplicate(true)
+	run["upgrades"] = {}
 
 	if _run_state.level3_target_arenas <= 0:
 		_level3_rng.seed = _run_state.run_seed
@@ -2421,10 +2277,7 @@ func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
 	if flow_step == RUN_FLOW_PUSH_LUCK and resolved_bet != &"":
 		_open_push_luck_choice(resolved_bet)
 		return
-	if LEVEL3_ENABLED:
-		_open_level3_bet_ui()
-	else:
-		_open_bet_ui(false)
+	_open_level3_bet_ui()
 
 func _serialize_stringname_array(items: Array) -> Array[String]:
 	var values: Array[String] = []
@@ -2852,158 +2705,7 @@ func _get_scar_def(scar_id: StringName) -> Dictionary:
 	return _scar_catalog.get_scar(scar_id)
 
 func _ensure_arena_and_player() -> void:
-	if LEVEL3_ENABLED:
-		return
-	var main: Node = get_parent()
-	if main == null:
-		return
-	var arena_node: Node = null
-	if arena_path != NodePath():
-		arena_node = get_node_or_null(arena_path)
-	if arena_node == null and arena_scene:
-		arena_node = arena_scene.instantiate()
-		arena_node.name = "Arena"
-		main.add_child(arena_node)
-		if arena_node is Node2D:
-			arena_node.global_position = Vector2.ZERO
-		arena_path = NodePath("../Arena")
-	_arena = arena_node
-
-	var existing_player: Node = null
-	if player_path != NodePath():
-		existing_player = get_node_or_null(player_path)
-	if existing_player == null:
-		existing_player = get_tree().get_first_node_in_group("player")
-	if existing_player == null and player_scene:
-		existing_player = player_scene.instantiate()
-		existing_player.name = "Player"
-		if _arena:
-			_arena.add_child(existing_player)
-		else:
-			main.add_child(existing_player)
-		if existing_player is Node2D:
-			existing_player.global_position = Vector2.ZERO
-		if _arena:
-			player_path = NodePath("../Arena/Player")
-		else:
-			player_path = NodePath("../Player")
-	elif existing_player != null:
-		var player_parent: Node = existing_player.get_parent()
-		if player_parent == _arena:
-			player_path = NodePath("../Arena/Player")
-		elif player_parent == main:
-			player_path = NodePath("../Player")
-	_player = existing_player
-	if _player and _player is Node2D:
-		(_player as Node2D).global_position = Vector2.ZERO
-	_set_arena_suspended(_modal_lock_count > 0)
-	_update_arena_visual_only()
-
-func pick_next_arena_scene() -> PackedScene:
-	if _arena_scenes.size() == 0:
-		return arena_scene
-	var idx: int = _arena_layout_rng.randi_range(0, _arena_scenes.size() - 1)
-	return _arena_scenes[idx]
-
-func _ensure_arena_layout_container() -> void:
-	if _arena == null:
-		_arena = get_node_or_null(arena_path)
-	if _arena == null:
-		push_error("RunManager: Arena container missing; cannot prepare arena layout container.")
-		return
-	if _arena_layout_container != null and is_instance_valid(_arena_layout_container):
-		return
-	var existing: Node = _arena.get_node_or_null("ArenaLayoutRoot")
-	if existing != null and existing is Node2D:
-		_arena_layout_container = existing as Node2D
-		_arena_layout_container.position = arena_layout_offset
-		return
-	var new_container: Node2D = Node2D.new()
-	new_container.name = "ArenaLayoutRoot"
-	new_container.position = arena_layout_offset
-	_arena.add_child(new_container)
-	_arena_layout_container = new_container
-
-func _remove_default_arena_layout() -> void:
-	if _arena == null:
-		return
-	var ground: Node = _arena.get_node_or_null("Ground")
-	if ground != null:
-		ground.queue_free()
-	var walls: Node = _arena.get_node_or_null("Walls")
-	if walls != null:
-		walls.queue_free()
-
-func load_next_arena() -> void:
-	if _arena == null:
-		_arena = get_node_or_null(arena_path)
-	if _arena == null:
-		push_error("RunManager: Arena container missing; cannot load next arena layout.")
-		return
-	_ensure_arena_layout_container()
-	if _arena_layout_container == null:
-		push_error("RunManager: Arena layout container missing; cannot load next arena layout.")
-		return
-	_remove_default_arena_layout()
-	if _current_arena_layout != null and is_instance_valid(_current_arena_layout):
-		_current_arena_layout.queue_free()
-	var next_scene: PackedScene = pick_next_arena_scene()
-	if next_scene == null:
-		push_error("RunManager: Missing arena scene; cannot instantiate arena layout.")
-		return
-	var layout_instance: Node = next_scene.instantiate()
-	_current_arena_layout = layout_instance
-	_current_arena_path = next_scene.resource_path
-	_arena_layout_container.add_child(layout_instance)
-	if layout_instance is Node2D:
-		(layout_instance as Node2D).position = Vector2.ZERO
-
-func _reset_or_respawn_player_full() -> void:
-	if LEVEL3_ENABLED:
-		_player = null
-		return
-	if _arena == null:
-		_arena = get_node_or_null(arena_path)
-	_player = _resolve_player()
-	if _player == null or not _player.is_inside_tree():
-		var main: Node = get_parent()
-		if main != null and player_scene:
-			_player = player_scene.instantiate()
-			_player.name = "Player"
-			if _arena:
-				_arena.add_child(_player)
-			else:
-				main.add_child(_player)
-			if _player is Node2D:
-				(_player as Node2D).global_position = Vector2.ZERO
-			if _arena:
-				player_path = NodePath("../Arena/Player")
-			else:
-				player_path = NodePath("../Player")
-	elif _arena and _player.get_parent() != _arena:
-		var player_node: Node = _player
-		if player_node is Node:
-			var pos: Vector2 = Vector2.ZERO
-			if player_node is Node2D:
-				pos = (player_node as Node2D).global_position
-			player_node.reparent(_arena)
-			if player_node is Node2D:
-				(player_node as Node2D).global_position = pos
-			player_path = NodePath("../Arena/Player")
-	_connect_player_signals()
-	_position_player_after_respawn()
-
-func _clear_enemies() -> void:
-	for enemy in get_tree().get_nodes_in_group("enemies"):
-		if enemy is Node and is_instance_valid(enemy):
-			enemy.queue_free()
-
-func _spawn_wave_or_enemies() -> void:
-	if _arena == null:
-		_arena = get_node_or_null(arena_path)
-	if _arena == null:
-		_arena = get_tree().get_first_node_in_group("arena")
-	_start_next_arena()
+	return
 
 func _ensure_input_map() -> void:
 	var actions: Dictionary = {
@@ -3029,17 +2731,6 @@ func _ensure_input_map() -> void:
 
 	print("InputMap ensured: system bindings ready")
 
-func _start_next_arena() -> void:
-	if _arena == null or _is_game_over:
-		return
-	run["arena_index"] = int(run.get("arena_index", 0)) + 1
-	var bet_id: StringName = StringName(_run_state.current_bet_id)
-	if bet_id == &"":
-		bet_id = _run_state.last_selected_bet_id
-	_emit_sentence_banner_for_bet(bet_id)
-	_arena.call("start_next_wave")
-
-
 func _apply_phase_result(res: PhaseResult) -> void:
 	if res == null or not res.handled:
 		return
@@ -3058,8 +2749,6 @@ func _mut_pyl_condanna(_step: Dictionary) -> void:
 	_handle_push_luck_condanna()
 
 func _mut_betp_place_bet(step: Dictionary) -> void:
-	if not LEVEL3_ENABLED:
-		return
 	if not step.has("bet_id"):
 		_report_mutation_executor_error("BETP_PLACE_BET missing bet_id")
 		return
@@ -3360,52 +3049,38 @@ func _take_payout() -> void:
 	if not bool(audience_policy.get("cashout_enabled", true)):
 		_refresh_push_luck_choice(StringName(_run_state.current_bet_id))
 		return
-	if LEVEL3_ENABLED:
-		var lock_reason: String = _get_cashout_lock_reason()
-		if lock_reason != "":
-			return
-		var bet_id_name: StringName = StringName(_run_state.current_bet_id)
-		var bonus_tier: int = _consume_intermediate_choice_bonus()
-		_waiting_for_push_luck = false
-		_run_state.last_action_was_rilancio = false
-		_run_state.risky_choice_made_recently = false
-		_update_arena_visual_only()
-		GameEvents.push_luck_closed.emit()
-		_emit_audience_context_line(AUDIENCE_CONTEXT_CASH_OUT)
-		if bet_id_name != &"" and not _resolve_ritual_reward_applied:
-			_apply_level3_reward(bet_id_name, _run_state.level3_reward_tier + bonus_tier)
-		_resolve_ritual_reward_applied = false
-		_run_state.level3_cashouts += 1
-		_run_state.cashouts += 1
-		if _run_state.refuse_cashout_count_this_run >= 1:
-			_register_condanna(CONDANNA_HO_VISTO_ABBASTANZA)
-		if _run_state.escalation_level >= 4:
-			_register_condanna(CONDANNA_HO_VISTO_ABBASTANZA)
-		if _run_state.escalation_level >= 7:
-			_register_condanna(CONDANNA_MI_SONO_FERMATO)
-		if _run_state.escalation_level >= 2:
-			_run_state.level3_cashed_after_high_escalation = true
-			_run_state.level3_reward_tier = 1
-			_run_state.level3_next_loss_hp_penalty = 0
-			_run_state.escalation_level = 0
-			_emit_escalation_changed()
-			_run_state.current_bet_id = ""
-			_emit_run_debug_state()
-			_register_run_end("CASH_OUT")
-		end_run(&"")
+	var lock_reason: String = _get_cashout_lock_reason()
+	if lock_reason != "":
 		return
-	var bet_id: String = _run_state.current_bet_id
-	var bonus_tier_local: int = _consume_intermediate_choice_bonus()
+	var bet_id_name: StringName = StringName(_run_state.current_bet_id)
+	var bonus_tier: int = _consume_intermediate_choice_bonus()
 	_waiting_for_push_luck = false
+	_run_state.last_action_was_rilancio = false
+	_run_state.risky_choice_made_recently = false
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_CASH_OUT)
-	_run_state.push_luck_cashouts += 1
-	if bet_id != "":
-		_apply_bet_reward_scaled(bet_id, _run_state.bet_chain_level + bonus_tier_local)
-	_reset_bet_chain()
-	_open_bet_ui(true)
-	_autosave_run_checkpoint(RUN_FLOW_BET_OFFER, &"")
+	if bet_id_name != &"" and not _resolve_ritual_reward_applied:
+		_apply_level3_reward(bet_id_name, _run_state.level3_reward_tier + bonus_tier)
+	_resolve_ritual_reward_applied = false
+	_run_state.level3_cashouts += 1
+	_run_state.cashouts += 1
+	if _run_state.refuse_cashout_count_this_run >= 1:
+		_register_condanna(CONDANNA_HO_VISTO_ABBASTANZA)
+	if _run_state.escalation_level >= 4:
+		_register_condanna(CONDANNA_HO_VISTO_ABBASTANZA)
+	if _run_state.escalation_level >= 7:
+		_register_condanna(CONDANNA_MI_SONO_FERMATO)
+	if _run_state.escalation_level >= 2:
+		_run_state.level3_cashed_after_high_escalation = true
+		_run_state.level3_reward_tier = 1
+		_run_state.level3_next_loss_hp_penalty = 0
+		_run_state.escalation_level = 0
+		_emit_escalation_changed()
+		_run_state.current_bet_id = ""
+		_emit_run_debug_state()
+		_register_run_end("CASH_OUT")
+	end_run(&"")
 
 func _handle_push_luck_condanna() -> void:
 	if not _waiting_for_push_luck:
@@ -3415,21 +3090,17 @@ func _handle_push_luck_condanna() -> void:
 	_run_state.last_action_was_rilancio = false
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
-	if LEVEL3_ENABLED:
-		_resolve_ritual_reward_applied = false
-		if _run_state.escalation_level >= 2:
-			_run_state.level3_cashed_after_high_escalation = true
-			_run_state.level3_reward_tier = 1
-			_run_state.level3_next_loss_hp_penalty = 0
-			_run_state.escalation_level = 0
-			_emit_escalation_changed()
-			_run_state.current_bet_id = ""
-			_emit_run_debug_state()
-			_register_run_end("CASH_OUT")
-		end_run(&"")
-		return
-	_reset_bet_chain()
-	_open_bet_ui(true)
+	_resolve_ritual_reward_applied = false
+	if _run_state.escalation_level >= 2:
+		_run_state.level3_cashed_after_high_escalation = true
+		_run_state.level3_reward_tier = 1
+		_run_state.level3_next_loss_hp_penalty = 0
+		_run_state.escalation_level = 0
+		_emit_escalation_changed()
+		_run_state.current_bet_id = ""
+		_emit_run_debug_state()
+		_register_run_end("CASH_OUT")
+	end_run(&"")
 
 func _on_request_push_luck_double() -> void:
 	_touch_request_activity("request_push_luck_double()")
@@ -3438,65 +3109,47 @@ func _on_request_push_luck_double() -> void:
 
 func _push_your_luck() -> void:
 	print_debug("[FLOW] push_luck_double_received :: arena=%d" % _run_state.arena_index)
-	if LEVEL3_ENABLED:
-		var lock_reason: String = _get_double_lock_reason()
-		if lock_reason != "":
-			return
-		_run_state.refuse_cashout_count_this_run += 1
-		_try_register_refused_closure_scar()
-		if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD or _run_state.refuse_cashout_count_this_run >= 3:
-			_run_state.risky_choice_made_recently = true
-		var critical_scars: bool = _run_state.scars_history.size() >= 3
-		if critical_scars:
-			_register_condanna(CONDANNA_SO_COME_FINISCE)
-		if _run_state.refuse_cashout_count_this_run == 1:
-			_register_condanna(CONDANNA_NON_MI_FERMERO)
-		elif _run_state.refuse_cashout_count_this_run == 2:
-			_register_condanna(CONDANNA_ANCORA)
-		if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD:
-			_register_condanna(CONDANNA_FINCHE_REGGE)
-		_run_state.last_action_was_rilancio = true
-		_waiting_for_push_luck = false
-		_reset_intermediate_choice_modifiers()
-		_run_state.special_arena_cashout_lock_reason = ""
-		_update_arena_visual_only()
-		GameEvents.push_luck_closed.emit()
-		_emit_audience_context_line(AUDIENCE_CONTEXT_CONTINUE)
-		_resolve_ritual_reward_applied = false
-		_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
-		_try_register_risk_threshold_scar()
-		_run_state.level3_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
-		var next_doubles_count: int = _run_state.level3_doubles + 1
-		_try_apply_double_scar_pool(next_doubles_count)
-		_run_state.level3_doubles = next_doubles_count
-		_run_state.doubles += 1
-		_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
-		_run_state.level3_max_escalation = maxi(_run_state.level3_max_escalation, _run_state.escalation_level)
-		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
-		_emit_escalation_changed()
-		if _run_state.cashout_lock_remaining > 0:
-			_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining - 1, 0)
-		_run_state.level3_next_loss_hp_penalty = 30
-		_emit_run_debug_state()
-		start_arena()
-		_autosave_run_checkpoint(RUN_FLOW_BET_OFFER, &"")
+	var lock_reason: String = _get_double_lock_reason()
+	if lock_reason != "":
 		return
-	var bet_id: String = _run_state.current_bet_id
-	_reset_intermediate_choice_modifiers()
+	_run_state.refuse_cashout_count_this_run += 1
+	_try_register_refused_closure_scar()
+	if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD or _run_state.refuse_cashout_count_this_run >= 3:
+		_run_state.risky_choice_made_recently = true
+	var critical_scars: bool = _run_state.scars_history.size() >= 3
+	if critical_scars:
+		_register_condanna(CONDANNA_SO_COME_FINISCE)
+	if _run_state.refuse_cashout_count_this_run == 1:
+		_register_condanna(CONDANNA_NON_MI_FERMERO)
+	elif _run_state.refuse_cashout_count_this_run == 2:
+		_register_condanna(CONDANNA_ANCORA)
+	if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD:
+		_register_condanna(CONDANNA_FINCHE_REGGE)
+	_run_state.last_action_was_rilancio = true
 	_waiting_for_push_luck = false
+	_reset_intermediate_choice_modifiers()
+	_run_state.special_arena_cashout_lock_reason = ""
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_CONTINUE)
-	if bet_id == "":
-		_open_bet_ui(true)
-		return
-	_run_state.bet_chain_level = maxi(_run_state.bet_chain_level + 1, 1)
-	_run_state.push_luck_doubles += 1
-	_run_state.max_push_luck_chain = maxi(_run_state.max_push_luck_chain, _run_state.bet_chain_level)
-	_try_apply_cracked_bones_scar(bet_id, _run_state.bet_chain_level)
-	_set_runtime_gate_phase(RunPhase.LIVE)
-	_clear_enemies()
-	_spawn_wave_or_enemies()
+	_resolve_ritual_reward_applied = false
+	_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+	_try_register_risk_threshold_scar()
+	_run_state.level3_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
+	var next_doubles_count: int = _run_state.level3_doubles + 1
+	_try_apply_double_scar_pool(next_doubles_count)
+	_run_state.level3_doubles = next_doubles_count
+	_run_state.doubles += 1
+	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
+	_run_state.level3_max_escalation = maxi(_run_state.level3_max_escalation, _run_state.escalation_level)
+	_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
+	_emit_escalation_changed()
+	if _run_state.cashout_lock_remaining > 0:
+		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining - 1, 0)
+	_run_state.level3_next_loss_hp_penalty = 30
+	_emit_run_debug_state()
+	start_arena()
+	_autosave_run_checkpoint(RUN_FLOW_BET_OFFER, &"")
 
 func _on_request_set_run_seed(run_seed: int) -> void:
 	_touch_request_activity("request_set_run_seed(run_seed=%d)" % run_seed)
@@ -3526,14 +3179,7 @@ func _on_request_skip_arena_resolution() -> void:
 		return
 	if not OS.is_debug_build():
 		return
-	if LEVEL3_ENABLED:
-		_debug_skip_level3_step()
-		return
-	_clear_enemies()
-	var wave: int = 0
-	if _arena != null and _arena.has_method("get_current_wave"):
-		wave = int(_arena.call("get_current_wave"))
-	_on_wave_cleared(wave)
+	_debug_skip_level3_step()
 
 func _debug_skip_level3_step() -> void:
 	if _waiting_for_bet:
@@ -3605,21 +3251,7 @@ func spend_coins(amount: int) -> bool:
 	return true
 
 func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
-	if LEVEL3_ENABLED:
-		return
-	if not _waiting_for_bet:
-		return
-	if _is_game_over:
-		return
-	_waiting_for_bet = false
-	_waiting_for_push_luck = false
-	_run_state.current_bet_id = _bet_id
-	_run_state.bet_chain_level = 1
-	_append_pact_log_entry(StringName(_bet_id), "")
-	GameEvents.betting_closed.emit()
-	_set_runtime_gate_phase(RunPhase.LIVE)
-	load_next_arena()
-	_start_next_arena()
+	return
 
 func _on_bet_confirmed(pact_id: StringName, condition_id: StringName, sentence_id: StringName) -> void:
 	_handle_bet_sealed(pact_id, condition_id, sentence_id)
@@ -3650,83 +3282,18 @@ func _handle_bet_sealed(pact_id: StringName, condition_id: StringName, sentence_
 	_set_runtime_gate_phase(RunPhase.LIVE)
 	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, &"")
 	_emit_audience_context_line(AUDIENCE_CONTEXT_PACT_SIGNED)
-	load_next_arena()
-	_start_next_arena()
 
 func _on_betting_opened() -> void:
 	pass
 
-func _on_wave_started(_wave: int) -> void:
-	if LEVEL3_ENABLED:
-		return
-	GameEvents.arena_started.emit(int(run.get("arena_index", 0)))
-	_apply_phase()
-
-func _on_wave_cleared(_wave: int) -> void:
-	if LEVEL3_ENABLED:
-		return
-	GameEvents.arena_completed.emit(int(run.get("arena_index", 0)))
-	var bet_result: Dictionary = {}
-	if arena_clear_reward > 0:
-		add_coins(arena_clear_reward)
-	if not bet_result.is_empty():
-		var bet_id: String = str(bet_result.get("id", ""))
-		var won: bool = bool(bet_result.get("won", false))
-		_update_last_pact_outcome(StringName(bet_id), won)
-		if won and bet_id != "":
-			_run_state.current_bet_id = bet_id
-			_open_push_luck_choice(StringName(bet_id))
-			return
-	_reset_bet_chain()
-	_open_bet_ui(true)
-	_autosave_run_checkpoint(RUN_FLOW_BET_OFFER, &"")
-
-func _on_player_spawned(player: Node) -> void:
-	if LEVEL3_ENABLED:
-		return
-	_player = player
-	_connect_player_signals()
-	_position_player_after_respawn()
-	_apply_phase()
-
-func _on_enemy_killed(_exp_value: int) -> void:
-	if LEVEL3_ENABLED:
-		return
-	if _is_game_over:
-		return
-	if _gameplay_phase != RunPhase.LIVE:
-		return
-
 func _resolve_player() -> Node:
 	if _player and is_instance_valid(_player) and _player.is_inside_tree():
 		return _player
-	if LEVEL3_ENABLED:
-		var existing_player: Node = get_tree().get_first_node_in_group("player")
-		if existing_player != null and existing_player.is_inside_tree():
-			_player = existing_player
-			return _player
-		return null
-	if player_path != NodePath():
-		var path_player: Node = get_node_or_null(player_path)
-		if path_player:
-			_player = path_player
-			return _player
-	_player = get_tree().get_first_node_in_group("player")
-	if _player != null:
+	var existing_player: Node = get_tree().get_first_node_in_group("player")
+	if existing_player != null and existing_player.is_inside_tree():
+		_player = existing_player
 		return _player
-	if player_scene:
-		var main: Node = get_parent()
-		_player = player_scene.instantiate()
-		_player.name = "Player"
-		if _arena:
-			_arena.add_child(_player)
-			player_path = NodePath("../Arena/Player")
-		elif main:
-			main.add_child(_player)
-			player_path = NodePath("../Player")
-		if _player is Node2D:
-			(_player as Node2D).global_position = Vector2.ZERO
-	return _player
+	return null
 
 func _connect_player_signals() -> void:
 	_player = _resolve_player()
@@ -3737,8 +3304,6 @@ func _connect_player_signals() -> void:
 			player_script_path = player_script.resource_path
 		print("Runtime Player script:", player_script_path)
 	if _player == null:
-		return
-	if LEVEL3_ENABLED:
 		return
 
 func _on_request_fail_run(reason: String = "") -> void:
@@ -3852,22 +3417,15 @@ func _build_phase_ui_payload(target_phase: RunPhase, title: String = "", body: S
 
 func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))
-	var next_level: int = _run_state.bet_chain_level + 1
-	if LEVEL3_ENABLED:
-		next_level = maxi(_run_state.escalation_level + 1, 1) + 1
-	var next_reward_tier: int = _get_bet_chain_reward_scale(next_level)
-	if LEVEL3_ENABLED:
-		next_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
-	var cashout_lock_reason: String = ""
-	var double_lock_reason: String = ""
-	if LEVEL3_ENABLED:
-		cashout_lock_reason = _get_cashout_lock_reason()
-		double_lock_reason = _get_double_lock_reason()
+	var next_level: int = maxi(_run_state.escalation_level + 1, 1) + 1
+	var next_reward_tier: int = maxi(_run_state.level3_reward_tier + 1, 1)
+	var cashout_lock_reason: String = _get_cashout_lock_reason()
+	var double_lock_reason: String = _get_double_lock_reason()
 	var reward_text: Dictionary = _build_audience_reward_text()
 	return _betting_payload_factory.build_pyl_offer_payload({
 		"bet_id": String(bet_id),
 		"bet_data": bet_data,
-		"level3_enabled": LEVEL3_ENABLED,
+		"level3_enabled": true,
 		"bet_chain_level": _run_state.bet_chain_level,
 		"escalation_level": _run_state.escalation_level,
 		"next_pact": _build_bet_pact_text(String(bet_id), next_reward_tier),
@@ -3919,8 +3477,7 @@ func _get_sentence_rule(bet_id: StringName) -> String:
 func _get_sentence_doom(bet_id: StringName) -> String:
 	var doom: String = ""
 	if bet_id != &"":
-		if LEVEL3_ENABLED:
-			doom = _get_level3_doom_short(bet_id)
+		doom = _get_level3_doom_short(bet_id)
 		if doom == "":
 			var bet_data: Dictionary = _get_bet_data(String(bet_id))
 			if not bet_data.is_empty():
@@ -3933,12 +3490,6 @@ func _get_sentence_doom(bet_id: StringName) -> String:
 		doom = "LA CICATRICE TI RESTA."
 	return doom
 
-# -----------------------------------------------------------------------------
-# POST-BET SEQUENCE
-# - Triggered when bet is sealed/committed
-# - Waits arena_message_queue_completed OR fallback timer
-# - Then opens intermediate choice
-# -----------------------------------------------------------------------------
 func _queue_push_luck_choice(bet_id: StringName) -> void:
 	_run_state.post_bet_pending_bet_id = bet_id
 	_set_phase(RunPhase.POST_BET_MESSAGES, "queue_post_bet_messages")
@@ -4088,37 +3639,21 @@ func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 		_:
 			pass
 
-func _apply_pure_bet_reward_scaled(scale: int) -> void:
-	if LEVEL3_ENABLED:
-		return
-	var upgrades: Dictionary = run.get("upgrades", {}) as Dictionary
-	var reward_scale: int = _bet_system.get_reward_scale(scale)
-	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + bet_pure_hp_bonus * reward_scale
-	run["upgrades"] = upgrades
+func _apply_pure_bet_reward_scaled(_scale: int) -> void:
+	return
 
 func _build_bet_pact_text(bet_id: String, chain_level: int) -> String:
-	if LEVEL3_ENABLED:
-		var tier: int = _bet_system.get_reward_scale(chain_level)
-		var bet_data: Dictionary = _get_bet_data(bet_id)
-		if not bet_data.is_empty():
-			var pact_base: String = str(bet_data.get("pact", ""))
-			if pact_base != "":
-				return "%s x%d" % [pact_base, tier]
-		return bet_id
-	var reward_scale: int = _bet_system.get_reward_scale(chain_level)
-	match bet_id:
-		BET_COWARD:
-			return "Ricompensa minore: +%d monete" % (bet_coward_coin_reward * reward_scale)
-		BET_PURE_BLOOD:
-			return "Upgrade forte: +%d HP max" % (bet_pure_hp_bonus * reward_scale)
-		BET_DOUBLE_OR_DIE:
-			return "Raddoppio danni per la run x%d" % reward_scale
-		_:
-			return bet_id
+	var tier: int = _bet_system.get_reward_scale(chain_level)
+	var bet_data: Dictionary = _get_bet_data(bet_id)
+	if not bet_data.is_empty():
+		var pact_base: String = str(bet_data.get("pact", ""))
+		if pact_base != "":
+			return "%s x%d" % [pact_base, tier]
+	return bet_id
 
 func _build_bet_doom_text(bet_id: String, chain_level: int) -> String:
 	return _bet_system.build_doom_text(
-		LEVEL3_ENABLED,
+		true,
 		bet_id,
 		chain_level,
 		_get_bet_data(bet_id),
@@ -4128,11 +3663,10 @@ func _build_bet_doom_text(bet_id: String, chain_level: int) -> String:
 	)
 
 func _get_bet_data(bet_id: String) -> Dictionary:
-	if LEVEL3_ENABLED:
-		for bet_value: Dictionary in LEVEL3_BETS:
-			var bet: Dictionary = bet_value as Dictionary
-			if str(bet.get("id", "")) == bet_id:
-				return bet
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		if str(bet.get("id", "")) == bet_id:
+			return bet
 	return {}
 
 func _get_level3_bet_name(bet_id: StringName) -> String:
@@ -4159,8 +3693,7 @@ func _get_level3_doom_short(bet_id: StringName) -> String:
 	return doom_text
 
 func _apply_double_or_die_reward_scaled(_scale: int) -> void:
-	if LEVEL3_ENABLED:
-		return
+	return
 
 func retry_current_bet() -> void:
 	if _is_game_over:
@@ -4173,8 +3706,6 @@ func retry_current_bet() -> void:
 	run["arena_index"] = maxi(int(run.get("arena_index", 0)) - 1, 0)
 	if _arena and _arena.has_method("soft_reset"):
 		_arena.call("soft_reset")
-	_clear_enemies()
-	_reset_or_respawn_player_full()
 	_open_bet_ui(false)
 
 func _enter_end_run(reason: String) -> void:
@@ -4570,12 +4101,10 @@ func is_live() -> bool:
 	return _gameplay_phase == RunPhase.LIVE
 
 func is_level3_mode() -> bool:
-	return LEVEL3_ENABLED
+	return true
 
 func is_visual_only() -> bool:
-	if LEVEL3_ENABLED:
-		return true
-	return _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice or _run_state.run_is_over or _is_game_over
+	return true
 
 func get_debug_phase_name() -> String:
 	return _phase_to_name(_phase)
@@ -4734,31 +4263,8 @@ func _update_arena_visual_only() -> void:
 		_arena.call("set_visual_only", _arena_visual_only)
 	_apply_phase()
 
-func _position_player_after_respawn() -> void:
-	if _player == null or not (_player is Node2D):
-		return
-	var spawn_pos: Vector2 = _get_spawn_position()
-	(_player as Node2D).global_position = spawn_pos
-	var cam: Camera2D = get_viewport().get_camera_2d()
-	if cam == null:
-		var player_cam: Node = _player.find_child("Camera2D", true, false)
-		if player_cam and player_cam is Camera2D:
-			cam = player_cam
-			cam.make_current()
-	if cam and cam.has_method("make_current"):
-		cam.make_current()
-	if cam:
-		cam.global_position = (_player as Node2D).global_position
-
 func _reset_upgrades() -> void:
-	if LEVEL3_ENABLED:
-		run["upgrades"] = {}
-		return
-	run["upgrades"] = {
-		"hp_bonus": 0,
-		"light_bonus": 0,
-		"heavy_bonus": 0,
-	}
+	run["upgrades"] = {}
 
 func _register_condanna(id: StringName) -> void:
 	if id == &"":
@@ -4945,27 +4451,6 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 		"Movimento rallentato e blocco meno efficace."
 	)
 	_add_scar(scar)
-
-func _get_spawn_position() -> Vector2:
-	if _arena and _arena is Node:
-		var spawn_node: Node = _find_spawn_node(_arena)
-		if spawn_node and spawn_node is Node2D:
-			return (spawn_node as Node2D).global_position
-		if _arena is Node2D:
-			return (_arena as Node2D).global_position
-	return Vector2.ZERO
-
-func _find_spawn_node(root: Node) -> Node:
-	var direct: Node = root.get_node_or_null("Spawn")
-	if direct:
-		return direct
-	var named: Node = root.find_child("Spawn", true, false)
-	if named:
-		return named
-	var player_spawn: Node = root.find_child("PlayerSpawn", true, false)
-	if player_spawn:
-		return player_spawn
-	return root.find_child("PlayerSpawnPoint", true, false)
 
 func _log_runtime_state(tag: String) -> void:
 	if not DEBUG_RUNTIME_LOGS:

@@ -11,7 +11,6 @@ var _arena_bg_variants: Array[Texture2D] = []
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _background_sprite: Sprite2D = null
 var _visual_only: bool = true
-var _current_wave: int = 0
 var _difficulty_tier: int = 0
 var _difficulty_multiplier: float = 1.0
 
@@ -54,14 +53,7 @@ func set_difficulty_tier(tier: int, mult: float = 1.0) -> void:
 	_difficulty_multiplier = mult
 
 func soft_reset() -> void:
-	_current_wave = 0
 	_apply_background_variant()
-
-func start_next_wave() -> void:
-	_current_wave += 1
-
-func get_current_wave() -> int:
-	return _current_wave
 
 func _on_run_started() -> void:
 	soft_reset()

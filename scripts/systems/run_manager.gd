@@ -1713,13 +1713,14 @@ func _start_new_run() -> void:
 				return
 		if current_id != _prep_sequence_id or _phase == RunPhase.GAME_OVER:
 			return
-	var live_player: Node = _resolve_player()
-	if live_player == null or not live_player.is_inside_tree():
-		_ensure_arena_and_player()
-		_reset_or_respawn_player_full()
-		live_player = _resolve_player()
+	if not LEVEL3_ENABLED:
+		var live_player: Node = _resolve_player()
 		if live_player == null or not live_player.is_inside_tree():
-			return
+			_ensure_arena_and_player()
+			_reset_or_respawn_player_full()
+			live_player = _resolve_player()
+			if live_player == null or not live_player.is_inside_tree():
+				return
 	_set_runtime_gate_phase(RunPhase.PREP)
 	_open_bet_ui(false)
 	_log_runtime_state("waiting_for_bet")
@@ -2958,6 +2959,9 @@ func load_next_arena() -> void:
 		(layout_instance as Node2D).position = Vector2.ZERO
 
 func _reset_or_respawn_player_full() -> void:
+	if LEVEL3_ENABLED:
+		_player = null
+		return
 	if _arena == null:
 		_arena = get_node_or_null(arena_path)
 	_player = _resolve_player()
@@ -3003,12 +3007,6 @@ func _spawn_wave_or_enemies() -> void:
 
 func _ensure_input_map() -> void:
 	var actions: Dictionary = {
-		# Movimento
-		"move_left": [KEY_A, KEY_LEFT],
-		"move_right": [KEY_D, KEY_RIGHT],
-		"move_up": [KEY_W, KEY_UP],
-		"move_down": [KEY_S, KEY_DOWN],
-
 		# Sistema
 		"pause": [KEY_ESCAPE],
 	}
@@ -3029,7 +3027,7 @@ func _ensure_input_map() -> void:
 				iev.keycode = keycode
 				InputMap.action_add_event(action_name, iev)
 
-	print("InputMap ensured: movement + system bindings ready")
+	print("InputMap ensured: system bindings ready")
 
 func _start_next_arena() -> void:
 	if _arena == null or _is_game_over:
@@ -3684,6 +3682,8 @@ func _on_wave_cleared(_wave: int) -> void:
 	_autosave_run_checkpoint(RUN_FLOW_BET_OFFER, &"")
 
 func _on_player_spawned(player: Node) -> void:
+	if LEVEL3_ENABLED:
+		return
 	_player = player
 	_connect_player_signals()
 	_position_player_after_respawn()
@@ -4539,6 +4539,9 @@ func get_level3_pact_title(pact_id: StringName) -> String:
 			return str(bet.get("name", ""))
 	return str(pact_id)
 
+func get_level3_pact_reveal_text(pact_id: StringName) -> String:
+	return get_pact_reveal_line(pact_id)
+
 func get_pact_reveal_line(pact_id: StringName) -> String:
 	if LYING_PACT_REVEALS.has(pact_id):
 		return str(LYING_PACT_REVEALS.get(pact_id, ""))
@@ -4952,6 +4955,8 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 	_add_scar(scar)
 
 func _apply_scar_modifiers_to_player() -> void:
+	if LEVEL3_ENABLED:
+		return
 	if _player == null:
 		_player = _resolve_player()
 	if _player == null:

@@ -11,9 +11,7 @@ func apply_pure_blood_reward(
 	run_data: Dictionary,
 	level3_enabled: bool,
 	scale: int,
-	hp_bonus: int,
-	light_bonus: int,
-	heavy_bonus: int
+	hp_bonus: int
 ) -> Dictionary:
 	var result: Dictionary = run_data.duplicate(true)
 	if level3_enabled:
@@ -22,8 +20,6 @@ func apply_pure_blood_reward(
 	var upgrades: Dictionary = result.get("upgrades", {}) as Dictionary
 	var reward_scale: int = get_reward_scale(scale)
 	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + hp_bonus * reward_scale
-	upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + light_bonus * reward_scale
-	upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + heavy_bonus * reward_scale
 	result["upgrades"] = upgrades
 	return result
 
@@ -51,9 +47,7 @@ func build_pact_text(
 	bet_pure_blood_id: String,
 	bet_double_or_die_id: String,
 	bet_coward_coin_reward: int,
-	bet_pure_hp_bonus: int,
-	bet_pure_light_bonus: int,
-	bet_pure_heavy_bonus: int
+	bet_pure_hp_bonus: int
 ) -> String:
 	if level3_enabled:
 		var tier: int = get_reward_scale(chain_level)
@@ -67,11 +61,7 @@ func build_pact_text(
 		bet_coward_id:
 			return "Ricompensa minore: +%d monete" % (bet_coward_coin_reward * reward_scale)
 		bet_pure_blood_id:
-			return "Upgrade forte: +%d HP max, +%d danni leggeri, +%d danni pesanti" % [
-				bet_pure_hp_bonus * reward_scale,
-				bet_pure_light_bonus * reward_scale,
-				bet_pure_heavy_bonus * reward_scale,
-			]
+			return "Upgrade forte: +%d HP max" % (bet_pure_hp_bonus * reward_scale)
 		bet_double_or_die_id:
 			return "Raddoppio danni per la run x%d" % reward_scale
 		_:

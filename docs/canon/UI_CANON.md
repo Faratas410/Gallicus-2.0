@@ -227,3 +227,4 @@ Current MP3 files under `res://Music/`:
 
 Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are removed from active runtime path (no enemy combat HUD authority).
 - Runtime enforcement note (Level 3): player HP UI reactive wiring is removed from active runtime path (no `health_changed`/`get_health` bindings in UIRoot).
+- Main menu visual ambience contract: `res://scenes/Main.tscn` includes `MenuLayer/MainMenu/MenuAmbience` with visual-only layered textures (`Base`, `CloudsLayer`, `LightOverlay`, `FelixStatue`, `OwlBanner`, `FogLayer`, `TorchFlames`) driven by `res://scripts/ui/menu_ambience.gd`; no GameEvents wiring and no flow authority changes are allowed in this node.

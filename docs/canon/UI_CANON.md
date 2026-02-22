@@ -16,6 +16,7 @@ All changes to systems described here must update this document in the same PR.
 ## Index
 
 - [Scope](#scope)
+- [Run flow payload contract (INTERMEDIATE_CHOICE)](#run-flow-payload-contract-intermediate_choice)
 - [Non-negotiable visual rules](#non-negotiable-visual-rules)
 - [Theme assignment point](#theme-assignment-point-single-authority)
 - [Main menu / idle ambience](#main-menu-idle-ambience)
@@ -40,6 +41,12 @@ All changes to systems described here must update this document in the same PR.
 - `res://UI Official/` remains the raw external reference pack.
 - Authoritative theme resource: `res://ui/theme/official_theme.tres`.
 - Authoritative UI font wrapper: `res://ui/fonts/italiana_regular_font.tres`.
+
+## Run flow payload contract (INTERMEDIATE_CHOICE)
+- `RunManager` remains sole authority for phase progression and emits `RunUiPayload` for `INTERMEDIATE_CHOICE`.
+- Active Level 3 contract: `INTERMEDIATE_CHOICE` payload carries both gesture options and a public reaction message via `meta.audience_message`.
+- UI remains reactive: it must render the provided payload and must not gate this phase through queue/callback side flows.
+- Active runtime UI contract does not expose or emit a post-bet queue completion signal for phase progression authority.
 
 ## Non-negotiable visual rules
 1. **Base UI scale**: UI assets are **1x** and must render pixel-crisp at game resolution (baseline: `UI assets (1x)` reference sheet).

@@ -221,6 +221,14 @@ The phase contract is explicit and mandatory:
   2. mutate `RunState`,
   3. call `_set_phase(next)`.
 
+Canonical Level 3 post-bet sequence (active flow authority):
+1. `BET_COMMITTED` emits `pact_sealed_opened/closed` ritual.
+2. On `pact_sealed_closed`, `RunManager` opens `INTERMEDIATE_CHOICE` directly.
+3. `INTERMEDIATE_CHOICE` accepts gesture request and then starts `RESOLUTION` ritual.
+4. `RESOLUTION` emits `resolve_ritual_opened/closed`, resolves arena, then opens `PUSH_YOUR_LUCK`.
+5. `POST_BET_MESSAGES` is legacy/unreachable in active Level 3 flow and must not gate `INTERMEDIATE_CHOICE`.
+6. Active Level 3 flow must not depend on `arena_message_queue_completed` callback or fallback timer paths for post-bet progression.
+
 ## Module boundaries
 
 - `res://scripts/systems/run/*` = pure-ish run systems.

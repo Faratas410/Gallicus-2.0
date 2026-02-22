@@ -14,7 +14,7 @@ Runtime enum phases (`RunPhase`):
 * `RUN_INIT` (UI alias: `INTRO`)
 * `BET_PRESENT`
 * `BET_COMMITTED`
-* `POST_BET_MESSAGES` (UI alias: `FIRST_REACTION`)
+* `[removed_post_bet_phase]` (UI alias: `FIRST_REACTION`)
 * `INTERMEDIATE_CHOICE` (UI alias: `MID_CHOICE`)
 * `PUSH_YOUR_LUCK`
 * `NEXT_BET`
@@ -34,8 +34,8 @@ Below are all `_phase` transitions found via `_set_phase(...)`, with conditions 
 * `RUN_INIT -> BET_PRESENT` (`_open_level3_bet_ui` / `_open_bet_ui`; run initialized and not game-over)
 * `BET_PRESENT -> BET_COMMITTED` (`_confirm_pact_with_bet_id` or `_register_level3_bet_choice`; requires `_waiting_for_bet` and non-terminal run)
 * `BET_COMMITTED -> RESOLUTION` (`resolve_arena` after pact confirmation)
-* `RESOLUTION -> POST_BET_MESSAGES` (`_queue_push_luck_choice`; only if run not already terminal after arena resolution)
-* `POST_BET_MESSAGES -> INTERMEDIATE_CHOICE` (`_open_intermediate_choice`; either immediate, on `arena_message_queue_completed`, or fallback timer)
+* `RESOLUTION -> [removed_post_bet_phase]` (`[removed_post_bet_queue_step]`; only if run not already terminal after arena resolution)
+* `[removed_post_bet_phase] -> INTERMEDIATE_CHOICE` (`_open_intermediate_choice`; either immediate, on `[removed_post_bet_queue_signal]`, or fallback timer)
 * `INTERMEDIATE_CHOICE -> PUSH_YOUR_LUCK` (`_apply_intermediate_choice`; valid mid-choice input required)
 * `PUSH_YOUR_LUCK -> RESOLUTION` (`_push_your_luck` with "double" path; guarded by `request_*` phase checks and lock-reason guards)
 * `PUSH_YOUR_LUCK -> GAME_OVER` (`_take_payout` / `_handle_push_luck_condanna` -> `end_run` -> `_enter_end_run`)
@@ -59,7 +59,7 @@ No external authority was found for `_phase` mutation:
 
 Primary gameplay cycle (Level3):
 
-* `BET_PRESENT -> BET_COMMITTED -> RESOLUTION -> POST_BET_MESSAGES -> INTERMEDIATE_CHOICE -> PUSH_YOUR_LUCK -> RESOLUTION`
+* `BET_PRESENT -> BET_COMMITTED -> RESOLUTION -> [removed_post_bet_phase] -> INTERMEDIATE_CHOICE -> PUSH_YOUR_LUCK -> RESOLUTION`
   * Intentional: **yes** (core risk/escalation loop).
 
 Secondary loop via replay from terminal panel:
@@ -79,10 +79,10 @@ No unconditional infinite phase cycle was found.
 Observed safeguards:
 
 * Every user-triggered transition is phase-guarded (`_guard_request_phase`) and in many cases also gated by waiting flags.
-* `POST_BET_MESSAGES` has deterministic exit via one of:
+* `[removed_post_bet_phase]` has deterministic exit via one of:
   * immediate open of `INTERMEDIATE_CHOICE`,
-  * `arena_message_queue_completed` signal,
-  * forced fallback timer (`POST_BET_QUEUE_FALLBACK_SECONDS`).
+  * `[removed_post_bet_queue_signal]` signal,
+  * forced fallback timer (`[removed_post_bet_fallback_timer]`).
 * `PUSH_YOUR_LUCK` requires explicit user action and has lock guards for illegal options; with no input, watchdog reports stall (diagnostic fail-fast), rather than hidden uncontrolled transition.
 
 Residual operational risk (not a logic loop bug):

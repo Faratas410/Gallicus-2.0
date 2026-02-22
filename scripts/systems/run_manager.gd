@@ -20,8 +20,7 @@ extends Node
 
 # RUN FLOW (contract)
 # MAIN_MENU -> RUN_INIT -> BET_PRESENT -> BET_COMMITTED
-# -> POST_BET_MESSAGES (await queue completed OR fallback)
-# -> INTERMEDIATE_CHOICE -> PUSH_YOUR_LUCK (or NEXT_BET)
+# -> INTERMEDIATE_CHOICE -> RESOLUTION -> PUSH_YOUR_LUCK (or NEXT_BET)
 enum RunPhase {
 	NONE = -1,
 	PREP = 0,
@@ -31,16 +30,14 @@ enum RunPhase {
 	RUN_INIT = 11,
 	BET_PRESENT = 12,
 	BET_COMMITTED = 13,
-	POST_BET_MESSAGES = 14,
-	INTERMEDIATE_CHOICE = 15,
-	PUSH_YOUR_LUCK = 16,
-	NEXT_BET = 17,
-	RESOLUTION = 18,
+	INTERMEDIATE_CHOICE = 14,
+	PUSH_YOUR_LUCK = 15,
+	NEXT_BET = 16,
+	RESOLUTION = 17,
 }
 
 const PACT_SEALED_SECONDS: float = 0.7
 const RESOLVE_RITUAL_SECONDS: float = 0.9
-const POST_BET_QUEUE_FALLBACK_SECONDS: float = 0.5
 const INTERMEDIATE_PLACA_BONUS_COINS: int = 6
 const INTERMEDIATE_PROVOCA_BONUS_TIER: int = 1
 const INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS: int = 6
@@ -1167,8 +1164,6 @@ func _phase_to_name(phase: RunPhase) -> String:
 			return "BET_PRESENT"
 		RunPhase.BET_COMMITTED:
 			return "BET_COMMITTED"
-		RunPhase.POST_BET_MESSAGES:
-			return "POST_BET_MESSAGES"
 		RunPhase.INTERMEDIATE_CHOICE:
 			return "INTERMEDIATE_CHOICE"
 		RunPhase.PUSH_YOUR_LUCK:
@@ -1376,7 +1371,6 @@ func _boot() -> void:
 		return
 	if not _validate_boot():
 		return
-	_connect_ui_queue_signals()
 	_arena = null
 	_player = null
 	print("Boot: arena=", _arena, " player=", _player)
@@ -1460,15 +1454,6 @@ func _validate_boot() -> bool:
 		_abort_sanity("SANITY FAIL: %s" % "; ".join(errors))
 		return false
 	return true
-
-func _connect_ui_queue_signals() -> void:
-	if _sanity_ui_root == null:
-		return
-	if not _sanity_ui_root.has_signal("arena_message_queue_completed"):
-		return
-	var queue_callable: Callable = Callable(self, "_on_arena_message_queue_completed")
-	if not _sanity_ui_root.is_connected("arena_message_queue_completed", queue_callable):
-		_sanity_ui_root.connect("arena_message_queue_completed", queue_callable)
 
 func _abort_sanity(message: String) -> void:
 	push_error(message)
@@ -1794,7 +1779,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	GameEvents.pact_sealed_closed.emit()
 	if _run_state.run_is_over or _is_game_over:
 		return
-	_start_resolve_ritual(bet_id)
+	_open_intermediate_choice(bet_id)
 
 func _start_resolve_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
@@ -1860,8 +1845,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_emit_run_debug_state()
 	if _run_state.run_is_over or _is_game_over:
 		return
-	# FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
-	_queue_push_luck_choice(bet_id)
+	_open_push_luck_choice(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_INTERMEDIATE_CHOICE, bet_id)
 
 func _apply_resolution_advance_state() -> void:
@@ -1903,7 +1887,7 @@ func _apply_resolution_advance_state() -> void:
 	_emit_run_debug_state()
 	if _run_state.run_is_over or _is_game_over:
 		return
-	_queue_push_luck_choice(bet_id)
+	_open_push_luck_choice(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_INTERMEDIATE_CHOICE, bet_id)
 
 func resolve_arena() -> void:
@@ -2871,7 +2855,7 @@ func _dispatch_phase_request(request_name: String, payload: Dictionary) -> Phase
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
-	_route_guarded_phase_request("request_new_run", [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION], _phase_main_menu_handler, {})
+	_route_guarded_phase_request("request_new_run", [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION], _phase_main_menu_handler, {})
 	return
 
 func _on_request_reset_run() -> void:
@@ -2885,11 +2869,11 @@ func _on_request_retry_run() -> void:
 	return
 
 func _on_request_continue_run() -> void:
-	_route_guarded_phase_request("request_continue_run", [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION], _phase_main_menu_handler, {})
+	_route_guarded_phase_request("request_continue_run", [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET, RunPhase.RESOLUTION], _phase_main_menu_handler, {})
 	return
 
 func _on_request_show_main_menu() -> void:
-	_route_guarded_phase_request("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET], _phase_main_menu_handler, {})
+	_route_guarded_phase_request("request_show_main_menu", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET], _phase_main_menu_handler, {})
 	return
 
 func _on_request_intro_apply_seed(seed_text: String) -> void:
@@ -3030,7 +3014,7 @@ func _apply_intermediate_choice(choice_id: String) -> void:
 	if bet_id == &"":
 		bet_id = _run_state.last_selected_bet_id
 	_run_state.intermediate_pending_bet_id = &""
-	_open_push_luck_choice(bet_id)
+	_start_resolve_ritual(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_PUSH_LUCK, bet_id)
 
 func _on_post_arena_choice_selected(choice_id: StringName) -> void:
@@ -3173,7 +3157,7 @@ func _on_request_clear_run_seed() -> void:
 
 func _on_request_skip_arena_resolution() -> void:
 	_touch_request_activity("request_skip_arena_resolution()")
-	if not _guard_request_phase("request_skip_arena_resolution", [RunPhase.RESOLUTION, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK]):
+	if not _guard_request_phase("request_skip_arena_resolution", [RunPhase.RESOLUTION, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK]):
 		return
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -3308,7 +3292,7 @@ func _connect_player_signals() -> void:
 
 func _on_request_fail_run(reason: String = "") -> void:
 	_touch_request_activity("request_fail_run(reason=%s)" % reason)
-	if not _guard_request_phase("request_fail_run", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET]):
+	if not _guard_request_phase("request_fail_run", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET]):
 		return
 	if _is_game_over or _run_failed_emitted:
 		return
@@ -3351,8 +3335,7 @@ func _open_intermediate_choice(bet_id: StringName) -> void:
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
 
 func _enter_mid_choice() -> void:
-	var _view: Dictionary = _phase_intermediate_choice_handler.build_view(_run_state)
-	GameEvents.intermediate_choice_opened.emit()
+	_emit_ui(_build_intermediate_choice_ui_payload())
 
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_push_luck_choice(_bet_id: StringName) -> void:
@@ -3369,7 +3352,12 @@ func _build_intermediate_choice_ui_payload() -> RunUiPayload:
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = int(RunPhase.INTERMEDIATE_CHOICE)
 	var view: Dictionary = _phase_intermediate_choice_handler.build_view(_run_state)
-	payload.title = str(view.get("title", ""))
+	var title: String = str(view.get("title", ""))
+	var audience_message: String = "La folla osserva la tua scelta."
+	payload.title = "%s\n%s" % [audience_message, title]
+	payload.meta = {
+		"audience_message": audience_message,
+	}
 	var choices: Array = view.get("choices", []) as Array
 	payload.choices = []
 	for choice_value: Variant in choices:
@@ -3489,44 +3477,6 @@ func _get_sentence_doom(bet_id: StringName) -> String:
 	if doom == "":
 		doom = "LA CICATRICE TI RESTA."
 	return doom
-
-func _queue_push_luck_choice(bet_id: StringName) -> void:
-	_run_state.post_bet_pending_bet_id = bet_id
-	_set_phase(RunPhase.POST_BET_MESSAGES, "queue_post_bet_messages")
-
-func _enter_first_reaction() -> void:
-	_emit_ui(_build_phase_ui_payload(RunPhase.POST_BET_MESSAGES, "PRIMA REAZIONE", "La folla osserva la tua scelta."))
-	if _sanity_ui_root == null:
-		_open_intermediate_choice(_run_state.post_bet_pending_bet_id)
-		return
-	if not _sanity_ui_root.has_signal("arena_message_queue_completed"):
-		_open_intermediate_choice(_run_state.post_bet_pending_bet_id)
-		return
-	if _sanity_ui_root.has_method("is_post_bet_queue_running"):
-		var queue_running: bool = bool(_sanity_ui_root.call("is_post_bet_queue_running"))
-		if not queue_running:
-			_open_intermediate_choice(_run_state.post_bet_pending_bet_id)
-			return
-	_run_state.post_bet_sequence_id += 1
-	var sequence_id: int = _run_state.post_bet_sequence_id
-	call_deferred("_force_post_bet_choice_fallback", sequence_id)
-
-func _on_arena_message_queue_completed() -> void:
-	if _run_state.post_bet_pending_bet_id == &"":
-		return
-	var bet_id: StringName = _run_state.post_bet_pending_bet_id
-	_run_state.post_bet_pending_bet_id = &""
-	_open_intermediate_choice(bet_id)
-
-func _force_post_bet_choice_fallback(sequence_id: int) -> void:
-	await get_tree().create_timer(POST_BET_QUEUE_FALLBACK_SECONDS).timeout
-	if sequence_id != _run_state.post_bet_sequence_id:
-		return
-	if _run_state.post_bet_pending_bet_id == &"":
-		return
-	var bet_id: StringName = _run_state.post_bet_pending_bet_id
-	_run_state.post_bet_pending_bet_id = &""
-	_open_intermediate_choice(bet_id)
 
 func _get_cashout_lock_reason() -> String:
 	if _run_state.arena_index >= _run_state.level3_target_arenas and _run_state.level3_target_arenas > 0:
@@ -4186,7 +4136,7 @@ func _watchdog_tick() -> void:
 
 func _has_enter_phase_handler(next: RunPhase) -> bool:
 	match next:
-		RunPhase.MAIN_MENU, RunPhase.RUN_INIT, 12, RunPhase.BET_COMMITTED, RunPhase.POST_BET_MESSAGES, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET, RunPhase.GAME_OVER:
+		RunPhase.MAIN_MENU, RunPhase.RUN_INIT, 12, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.RESOLUTION, RunPhase.NEXT_BET, RunPhase.GAME_OVER:
 			return true
 		_:
 			return false
@@ -4204,9 +4154,6 @@ func _run_enter_phase(next: RunPhase) -> bool:
 			return true
 		RunPhase.BET_COMMITTED:
 			_enter_bet_committed()
-			return true
-		RunPhase.POST_BET_MESSAGES:
-			_enter_first_reaction()
 			return true
 		RunPhase.INTERMEDIATE_CHOICE:
 			_enter_mid_choice()

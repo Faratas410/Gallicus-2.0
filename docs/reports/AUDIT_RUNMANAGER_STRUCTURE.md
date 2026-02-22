@@ -55,7 +55,7 @@
 
 ### C4 Ritual sequencing
 - Estimated lines: **~154** (`1942–2030`, `4153–4189`)
-- Core functions: `_start_pact_sealed_ritual`, `_start_resolve_ritual`, `_resolve_ritual_outcome`, `_queue_push_luck_choice`, `_on_arena_message_queue_completed`, `_force_post_bet_choice_fallback`.
+- Core functions: `_start_pact_sealed_ritual`, `_start_resolve_ritual`, `_resolve_ritual_outcome`, `[removed_post_bet_queue_step]`, `[removed_post_bet_queue_callback]`, `_force_post_bet_choice_fallback`.
 - Extraction feasibility: **Medium**, timer/sequence-id handling is local but still phase-authority-adjacent.
 
 ### C5 Post-arena / Push-your-luck

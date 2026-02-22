@@ -74,7 +74,7 @@ A successful resolution (for push-your-luck flow) is determined in `run_manager.
 On non-failed resolution branch:
 - `_apply_glory_on_success()` (glory increment)
 - push-your-luck continuation path is queued/opened:
-  - via `_handle_level3_win(...)` or `_queue_push_luck_choice(...)` depending on resolution entry path.
+  - via `_handle_level3_win(...)` or `[removed_post_bet_queue_step](...)` depending on resolution entry path.
 
 ### Is success purely RNG-based?
 **Not purely.**

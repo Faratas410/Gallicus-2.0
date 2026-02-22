@@ -650,26 +650,22 @@ RunPhase: BET_COMMITTED (rituale in flow interno)
 RunManager → UI: pact_sealed_opened  
 Chiusura: pact_sealed_closed emesso dal RunManager (timer/flow interno)
 
-### 6) RITUAL 2 — RESOLVE RITUAL
-RunPhase: RESOLUTION  
-RunManager → UI: resolve_ritual_opened  
-Chiusura: resolve_ritual_closed emesso dal RunManager
+### 6) REAZIONE PUBBLICO + GESTURE
+RunPhase: INTERMEDIATE_CHOICE  
+Dopo `pact_sealed_closed` il RunManager apre direttamente la fase gesto (senza `POST_BET_MESSAGES` nel flow attivo).  
+RunManager → UI: payload INTERMEDIATE_CHOICE con messaggio pubblico + opzioni gesto  
+UI → RunManager: request_mid_choice_select(0|1)  
+AUTOSAVE: RUN_FLOW_PUSH_LUCK
 
-### 7) ARENA RESOLVE
+### 7) RITUAL 2 — RESOLVE RITUAL + ARENA RESOLVE
 RunPhase: RESOLUTION  
-RunManager:
+Dopo la scelta gesto, il RunManager avvia `resolve_ritual_opened/closed` e poi risolve arena:
 - arena_started
 - arena_completed(arena_index)
 - applica outcome, aggiorna audience
 AUTOSAVE: RUN_FLOW_INTERMEDIATE_CHOICE (subito dopo la risoluzione)
 
-### 8) POST-ARENA — GESTURE
-RunPhase: INTERMEDIATE_CHOICE  
-RunManager → UI: apertura scelta gesto  
-UI → RunManager: request_mid_choice_select(0|1)  
-AUTOSAVE: RUN_FLOW_PUSH_LUCK
-
-### 9) PUSH YOUR LUCK
+### 8) PUSH YOUR LUCK
 RunPhase: PUSH_YOUR_LUCK  
 RunManager → UI: push_luck_opened(payload)  
 UI → RunManager:
@@ -696,8 +692,8 @@ UI:
 
 ## Checkpoints autosave (canonici)
 1) Dopo firma patto → RUN_FLOW_BET_SIGNED
-2) Dopo risoluzione arena → RUN_FLOW_INTERMEDIATE_CHOICE
-3) Dopo scelta gesto → RUN_FLOW_PUSH_LUCK
+2) Dopo scelta gesto → RUN_FLOW_PUSH_LUCK
+3) Dopo risoluzione arena → RUN_FLOW_INTERMEDIATE_CHOICE
 4) Dopo scelta Double → RUN_FLOW_BET_OFFER
 5) End-run → clear_run()
 

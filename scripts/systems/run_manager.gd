@@ -4170,6 +4170,12 @@ func _watchdog_tick() -> void:
 		return
 	if _phase == RunPhase.NONE or _phase == RunPhase.MAIN_MENU:
 		return
+	if _phase == RunPhase.BET_PRESENT and _waiting_for_bet:
+		return
+	if _phase == RunPhase.INTERMEDIATE_CHOICE and _waiting_for_intermediate_choice:
+		return
+	if _phase == RunPhase.PUSH_YOUR_LUCK and _waiting_for_push_luck:
+		return
 	var now_ms: int = Time.get_ticks_msec()
 	if not _flow_watchdog.should_report_stall(now_ms, _last_activity_ms, WATCHDOG_STALL_MS):
 		return

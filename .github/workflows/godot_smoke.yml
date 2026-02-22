@@ -196,6 +196,15 @@ jobs:
           grep -q "SMOKE:NEW_RUN_REQUESTED" smoke.log
           grep -q "SMOKE:PHASE=RUN_INIT" smoke.log
           grep -q "SMOKE:PHASE=BET_PRESENT" smoke.log
+          grep -q "SMOKE:MILESTONE=BET_PRESENT" smoke.log
+          grep -q "SMOKE:MILESTONE=PACT_SEALED_OPENED" smoke.log
+          grep -q "SMOKE:MILESTONE=PACT_SEALED_CLOSED" smoke.log
+          grep -q "SMOKE:MILESTONE=INTERMEDIATE_CHOICE" smoke.log
+          grep -q "SMOKE:MILESTONE=RESOLVE_OPENED" smoke.log
+          grep -q "SMOKE:MILESTONE=RESOLVE_CLOSED" smoke.log
+          grep -q "SMOKE:MILESTONE=PUSH_YOUR_LUCK" smoke.log
+          grep -q "SMOKE:MILESTONE=END_RUN" smoke.log
+          grep -q "SMOKE:MILESTONE=END_RUN_FINAL ending_key=" smoke.log
           grep -q "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" smoke.log
 
           run_manager_ready_count=$(grep -c "RunManager ready" smoke.log || true)

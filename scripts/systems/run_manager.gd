@@ -209,6 +209,14 @@ const AUDIENCE_PHRASES: Dictionary = {
 
 func _flow_log(tag: String, details: String = "") -> void:
 	_flow_logger.log(tag, details)
+
+func _smoke_mark(tag: String) -> void:
+	if OS.has_environment("GALLICUS_SMOKE_SCENARIO"):
+		print("SMOKE:MILESTONE=" + tag)
+
+func _smoke_mark_kv(tag: String, key: String, value: String) -> void:
+	if OS.has_environment("GALLICUS_SMOKE_SCENARIO"):
+		print("SMOKE:MILESTONE=" + tag + " " + key + "=" + value)
 const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 	AUDIENCE_CONTEXT_PACT_SIGNED: {
 		AUDIENCE_MOOD_FURY: [
@@ -1875,11 +1883,13 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	var sequence_id: int = _pact_sealed_sequence_id
 	_close_audience_context_line()
 	_flow_log("pact_sealed_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_smoke_mark("PACT_SEALED_OPENED")
 	GameEvents.pact_sealed_opened.emit()
 	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
 	if sequence_id != _pact_sealed_sequence_id:
 		return
 	GameEvents.pact_sealed_closed.emit()
+	_smoke_mark("PACT_SEALED_CLOSED")
 	if _run_state.run_is_over or _is_game_over:
 		return
 	_open_intermediate_choice(bet_id)
@@ -1898,12 +1908,14 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 		_get_level3_doom_short(bet_id)
 	)
 	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_smoke_mark("RESOLVE_OPENED")
 	GameEvents.resolve_ritual_opened.emit(payload)
 	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
 	if sequence_id != _resolve_ritual_sequence_id:
 		return
 	GameEvents.resolve_ritual_closed.emit()
 	_flow_log("resolve_ritual_closed", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_smoke_mark("RESOLVE_CLOSED")
 	_resolving_ritual = false
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -3436,6 +3448,7 @@ func _apply_intermediate_loss_penalty_if_needed() -> void:
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_intermediate_choice(bet_id: StringName) -> void:
 	_run_state.intermediate_pending_bet_id = bet_id
+	_smoke_mark("INTERMEDIATE_CHOICE")
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
 
 func _enter_mid_choice() -> void:
@@ -3443,6 +3456,7 @@ func _enter_mid_choice() -> void:
 
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_push_luck_choice(_bet_id: StringName) -> void:
+	_smoke_mark("PUSH_YOUR_LUCK")
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 
 func _enter_push_your_luck() -> void:
@@ -3868,9 +3882,12 @@ func _emit_run_finale() -> void:
 	if _should_emit_registry_silence():
 		return
 	var finale: Dictionary = _select_run_finale()
+	_smoke_mark("END_RUN")
 	var finale_meta: Dictionary = finale.get("meta", {}) as Dictionary
 	var register_final: bool = bool(finale_meta.get("register_final", false))
 	var register_ending_key: String = str(finale_meta.get("register_ending_key", ""))
+	if register_final and register_ending_key != "":
+		_smoke_mark_kv("END_RUN_FINAL", "ending_key", register_ending_key)
 	if register_final and register_ending_key != "" and not _end_run_meta_emitted:
 		_end_run_meta_emitted = true
 		if not _meta_unlock_emitted_this_run and GameEvents.has_signal("meta_progress_unlocked"):
@@ -4370,6 +4387,7 @@ func _enter_intro() -> void:
 	_emit_ui(ui_payload)
 
 func _enter_bet_present() -> void:
+	_smoke_mark("BET_PRESENT")
 	var view: Dictionary = _phase_bet_present_handler.build_view(_run_state, {"coins": int(run.get("coins", 0))})
 	var offer: Array[Dictionary] = []
 	var raw_offer: Variant = view.get("offer", null)

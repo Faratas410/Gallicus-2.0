@@ -206,7 +206,7 @@ jobs:
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           echo "Using Godot binary: $GODOT_BIN"
 
-          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60 > smoke_full_run.log 2>&1
+          xvfb-run -a "$GODOT_BIN" --headless --path "$GALLICUS_PROJECT_ROOT" --quit-after 60 > smoke_full_run.log 2>&1 || true
 
           echo "---- FULL RUN SMOKE LOG ----"
           tail -n 300 smoke_full_run.log

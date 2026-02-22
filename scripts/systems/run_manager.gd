@@ -143,6 +143,27 @@ const AUDIENCE_CONTEXT_RUN_LOSS: StringName = &"RUN_LOSS"
 const AUDIENCE_MOOD_FURY: StringName = &"FURY"
 const AUDIENCE_MOOD_COLD: StringName = &"COLD"
 const AUDIENCE_MOOD_DELIRIUM: StringName = &"DELIRIUM"
+const AUDIENCE_POOL_SAFE: Array[String] = [
+	"Guarda come trema. Vuole vivere un altro giorno.",
+	"Non è un leone. È un topo con un casco.",
+	"Scommessa piccola per un cuore piccolo.",
+	"Non cerca gloria. Cerca scuse.",
+	"Così si sopravvive… ma non si diventa leggenda.",
+]
+const AUDIENCE_POOL_MID: Array[String] = [
+	"Non troppo audace… non troppo vile.",
+	"Gioca con misura. Forse troppo.",
+	"Un passo avanti, ma non abbastanza.",
+	"Vuole vincere. Non vuole rischiare tutto.",
+	"È ambizione… o è paura mascherata?",
+]
+const AUDIENCE_POOL_HIGH: Array[String] = [
+	"Ah! Finalmente qualcuno che osa.",
+	"Sfida la sorte… o la provoca?",
+	"Vuole tutto. Potrebbe perdere tutto.",
+	"Se cade, farà rumore.",
+	"O sarà leggenda… o sarà cenere.",
+]
 const AUDIENCE_PHRASES: Dictionary = {
 	"FURY": [
 		"Ti vogliono a terra, non al sicuro.",
@@ -3353,7 +3374,16 @@ func _build_intermediate_choice_ui_payload() -> RunUiPayload:
 	payload.phase = int(RunPhase.INTERMEDIATE_CHOICE)
 	var view: Dictionary = _phase_intermediate_choice_handler.build_view(_run_state)
 	var title: String = str(view.get("title", ""))
-	var audience_message: String = "La folla osserva la tua scelta."
+	var pending_bet_id: StringName = _run_state.intermediate_pending_bet_id
+	var behavior_id: StringName = _get_level3_bet_behavior(pending_bet_id)
+	var risk_level: String = "mid"
+	if _is_high_risk_behavior(behavior_id):
+		risk_level = "high"
+	elif behavior_id == BET_CROW_PLEASER or behavior_id == BET_CASH_OUT:
+		risk_level = "safe"
+	var audience_message: String = _pick_audience_message_for_risk(risk_level)
+	if audience_message == "":
+		audience_message = "La folla osserva la tua scelta."
 	payload.title = "%s\n%s" % [audience_message, title]
 	payload.meta = {
 		"audience_message": audience_message,
@@ -3969,6 +3999,21 @@ func _update_hidden_run_metrics() -> void:
 
 func _is_high_risk_behavior(behavior_id: StringName) -> bool:
 	return behavior_id == BET_DOUBLE_OR_DIE_L3 or behavior_id == BET_DEBT_CHAIN or behavior_id == BET_BLOOD_TAX or behavior_id == BET_LAST_BREATH
+
+func _pick_audience_message_for_risk(risk_level: String) -> String:
+	var pool: Array[String]
+	match risk_level:
+		"safe":
+			pool = AUDIENCE_POOL_SAFE
+		"mid":
+			pool = AUDIENCE_POOL_MID
+		"high":
+			pool = AUDIENCE_POOL_HIGH
+		_:
+			pool = AUDIENCE_POOL_MID
+	if pool.is_empty():
+		return ""
+	return pool[randi() % pool.size()]
 
 func _register_pact_corruption(bet_id: StringName) -> void:
 	if bet_id == &"":

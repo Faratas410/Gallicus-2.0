@@ -2295,7 +2295,6 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_failed_emitted = false
 	_run_ended_emitted = false
 	_meta_unlock_emitted_this_run = false
-	_end_run_meta_emitted = false
 	_run_state.run_finale_emitted = false
 	_run_state.run_end_reason = ""
 	_run_state.run_end_public_reason = ""

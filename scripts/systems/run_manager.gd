@@ -392,8 +392,37 @@ const UNLOCK_REGISTRY_PRECEDENT: StringName = &"registry_precedent"
 const LIBERTY_THRESHOLD: int = 8
 const MORAL_THRESHOLD: int = 8
 const FALL_THRESHOLD: int = 5
+const CORRUPTION_FINAL_THRESHOLD: int = 70
+const GLORY_FINAL_THRESHOLD: int = 100
+const SCARS_FINAL_THRESHOLD: int = 3
+const MIN_BETS_FOR_SENTENCE: int = 3
 const SCAR_RISK_ESCALATION_THRESHOLD: int = 7
 const SCAR_MIN_ARENA_INTERVAL: int = 1
+const REGISTER_PROVISIONAL_POOL: Array[String] = [
+	"Registro provvisorio: pattern in osservazione.",
+	"Registro provvisorio: classificazione rinviata.",
+	"Registro provvisorio: tracciato incompleto.",
+]
+const REGISTER_FINAL_CORRUPTION_POOL: Array[String] = [
+	"Registro definitivo: corruzione oltre soglia, profilo chiuso.",
+	"Registro definitivo: la corruzione definisce l'esito.",
+	"Registro definitivo: condotta corrosiva registrata in forma finale.",
+]
+const REGISTER_FINAL_GLORY_POOL: Array[String] = [
+	"Registro definitivo: gloria oltre soglia, classificazione consolidata.",
+	"Registro definitivo: eccesso di gloria, stato finale confermato.",
+	"Registro definitivo: la gloria ha fissato il profilo.",
+]
+const REGISTER_FINAL_SCARS_POOL: Array[String] = [
+	"Registro definitivo: numero cicatrici oltre limite.",
+	"Registro definitivo: accumulo cicatrici, classificazione conclusa.",
+	"Registro definitivo: la soglia cicatrici impone chiusura.",
+]
+const REGISTER_FINAL_PATTERN_POOL: Array[String] = [
+	"Registro definitivo: reiterazione sufficiente, esito registrato.",
+	"Registro definitivo: pattern completato, classificazione finale.",
+	"Registro definitivo: ciclo consolidato, stato concluso.",
+]
 const IRREVERSIBLE_BET_IDS: Array[StringName] = [
 	BET_DOUBLE_OR_DIE_L3,
 	BET_LAST_BREATH,
@@ -3915,6 +3944,31 @@ func _build_game_over_copy_inputs(finale: Dictionary) -> Dictionary:
 		"body": str(finale.get("text", "")),
 	}
 
+func _get_completed_bets_count() -> int:
+	return _run_state.bets_history.size()
+
+func _is_register_final() -> bool:
+	if _run_state.corruption >= CORRUPTION_FINAL_THRESHOLD:
+		return true
+	if _run_state.glory >= GLORY_FINAL_THRESHOLD:
+		return true
+	if _run_state.scars.size() >= SCARS_FINAL_THRESHOLD:
+		return true
+	if _get_completed_bets_count() >= MIN_BETS_FOR_SENTENCE:
+		return true
+	return false
+
+func _pick_register_line() -> String:
+	if not _is_register_final():
+		return REGISTER_PROVISIONAL_POOL[randi() % REGISTER_PROVISIONAL_POOL.size()]
+	if _run_state.corruption >= CORRUPTION_FINAL_THRESHOLD:
+		return REGISTER_FINAL_CORRUPTION_POOL[randi() % REGISTER_FINAL_CORRUPTION_POOL.size()]
+	if _run_state.glory >= GLORY_FINAL_THRESHOLD:
+		return REGISTER_FINAL_GLORY_POOL[randi() % REGISTER_FINAL_GLORY_POOL.size()]
+	if _run_state.scars.size() >= SCARS_FINAL_THRESHOLD:
+		return REGISTER_FINAL_SCARS_POOL[randi() % REGISTER_FINAL_SCARS_POOL.size()]
+	return REGISTER_FINAL_PATTERN_POOL[randi() % REGISTER_FINAL_PATTERN_POOL.size()]
+
 func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _run_state.scars_payload.duplicate(true)
 	var scar_count: int = _run_state.scars_history.size()
@@ -3978,6 +4032,10 @@ func _select_run_finale() -> Dictionary:
 	finale["pacts_text"] = str(copy.get("pacts_text", ""))
 	finale["condanne_text"] = str(copy.get("condanne_text", ""))
 	finale["crowd_text"] = str(copy.get("crowd_text", ""))
+	var meta_payload: Dictionary = finale.get("meta", {}) as Dictionary
+	meta_payload["register_message"] = _pick_register_line()
+	meta_payload["register_final"] = _is_register_final()
+	finale["meta"] = meta_payload
 	return finale
 
 func _update_hidden_run_metrics() -> void:

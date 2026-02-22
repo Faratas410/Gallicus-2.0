@@ -112,3 +112,116 @@ L’architettura risulta coerente con i vincoli Level 3 (single RunManager autho
 
 ## 5) Nota decisionale
 Lo snapshot mostra una base tecnica robusta lato invarianti/contratti, ma ancora incompleta lato “prove runtime tracciate” e pulizia di alcuni segnali di incompleto (placeholder + report storici non allineati). La roadmap sopra privilegia prima la verificabilità in engine, poi la rifinitura contenutistica, poi l’hardening di processo.
+
+---
+
+## 6) Task operative per macro-aree (step-by-step verso 100%)
+
+Di seguito una backlog esecutiva in ordine di priorità, con task atomiche e criterio di chiusura.
+
+### Macro-area A — Runtime baseline certificata (target: eliminare incertezza engine)
+
+**A1. Preparare sessione smoke standard**
+- Definire singola procedura: boot `res://scenes/Main.tscn` → New Run → almeno 1 ciclo bet/outcome → finale run → ritorno menu/continue.
+- Allegare timestamp, commit hash e operatore nel report.
+- **Done quando:** la procedura è descritta in modo ripetibile in un unico punto.
+
+**A2. Eseguire smoke run completa in Godot 4.6**
+- Eseguire la procedura A1 senza deviazioni.
+- Registrare esito per ogni segmento di flow (menu, init run, presentazione bet, esito, chiusura).
+- **Done quando:** tutti i segmenti risultano “pass” con evidenza testuale.
+
+**A3. Certificare requisito “warnings = errors”**
+- Acquisire evidenza warning count = 0 durante esecuzione/editor/headless.
+- Salvare output nel report tecnico della baseline.
+- **Done quando:** warning zero è esplicitamente documentato con comando e output.
+
+**A4. Consolidare baseline tecnica unica**
+- Unire in uno stesso report: check CI statici già verdi + smoke runtime + warnings zero.
+- Pubblicare il report come riferimento “baseline corrente”.
+- **Done quando:** esiste un solo documento di baseline richiamabile pre-merge.
+
+### Macro-area B — Chiusura gap contenutistico betting (target: zero placeholder user-facing)
+
+**B1. Inventario placeholder attivi**
+- Elencare tutte le entry in `data/bets.gd` con campo `pact` non definitivo.
+- Verificare quali entry sono effettivamente esposte nel flow L3 attivo.
+- **Done quando:** lista placeholder completa e validata.
+
+**B2. Sostituzione copy pact conforme al canon**
+- Aggiornare i testi placeholder con copy coerente a tono/lessico canonico.
+- Mantenere invariata la struttura dati (nessun cambio schema).
+- **Done quando:** nessuna entry L3 attiva contiene placeholder.
+
+**B3. Verifica rendering UI betting**
+- Eseguire controllo end-to-end che i nuovi testi siano visibili e non troncati nei punti critici.
+- Annotare eventuali mismatch testuali.
+- **Done quando:** tutti i pact aggiornati sono leggibili nel percorso UI attivo.
+
+### Macro-area C — Hardening QA flow canonico (target: regressione rapida intercettabile)
+
+**C1. Definire checklist smoke corta pre-merge**
+- Formalizzare una checklist minima (5–10 passaggi) obbligatoria su ogni patch runtime.
+- Mappare ogni passaggio a una fase canonica del flow.
+- **Done quando:** checklist breve esiste e viene richiamata nei report patch.
+
+**C2. Aggiungere assert/coerenza sui passaggi di fase principali**
+- Validare transizioni chiave (es. `MAIN_MENU -> RUN_INIT -> BET_PRESENT -> OUTCOME/APPLY -> NEXT`).
+- Bloccare passaggi illegali o fuori ordine con log diagnostico.
+- **Done quando:** le transizioni canoniche hanno verifica esplicita.
+
+**C3. Report diagnostico flow unificato**
+- Convogliare esiti checklist + assert + smoke in un unico report operativo.
+- Ridurre frammentazione di evidenze in documenti sparsi.
+- **Done quando:** per ogni milestone esiste una sola evidenza flow aggiornata.
+
+### Macro-area D — Igiene documentale operativa (target: ridurre drift documenti/repo)
+
+**D1. Audit report correnti vs storici**
+- Classificare i report in: correnti, storici, deprecati.
+- Evidenziare conflitti con stato reale repository.
+- **Done quando:** ogni report ha stato esplicito.
+
+**D2. Aggiornare `docs/reports/INDEX.md`**
+- Inserire etichette “autorevole operativo” vs “storico/non corrente”.
+- Definire percorso di lettura consigliato per contributor nuovi.
+- **Done quando:** INDEX guida a una singola traccia di consultazione.
+
+**D3. Manutenzione inventory allineata ai cambi struttura**
+- Ogni modifica strutturale repo deve riflettersi nei report inventory pertinenti nello stesso ciclo.
+- **Done quando:** nessun riferimento strutturale obsoleto rimane aperto.
+
+### Macro-area E — Riduzione rischio manutentivo (target: patch più piccole e sicure)
+
+**E1. Mappare zone ad alta densità in `RunManager`/`UIRoot`**
+- Identificare blocchi funzionali candidati a micro-split non architetturali.
+- Prioritizzare per rischio regressione e frequenza modifica.
+- **Done quando:** backlog micro-split ordinata per impatto/rischio.
+
+**E2. Eseguire micro-split incrementali (uno per patch)**
+- Estrarre solo porzioni locali con interfaccia invariata.
+- Vietato alterare authority/flow ownership.
+- **Done quando:** ogni split è reversibile, testato e senza drift di invarianti.
+
+**E3. Misurare effetto su superficie patch**
+- Tracciare metriche semplici: file toccati, righe modificate, tempo review.
+- Confermare riduzione progressiva della complessità patch.
+- **Done quando:** trend migliorativo documentato su più cicli.
+
+---
+
+## 7) Sequenza esecutiva consigliata (task-by-task)
+
+1. **A1 → A2 → A3 → A4** (baseline runtime certificata).
+2. **B1 → B2 → B3** (chiusura immediata segnali di incompleto player-facing).
+3. **C1 → C2 → C3** (hardening regressione flow).
+4. **D1 → D2 → D3** (riduzione rumore documentale).
+5. **E1 → E2 → E3** (riduzione rischio manutentivo continuativa).
+
+### Gate di completamento “100% operativo”
+Per considerare Gallicus al 100% su questa roadmap, devono risultare chiusi contemporaneamente:
+- baseline runtime certificata e aggiornata (Macro A);
+- zero placeholder betting attivi nel percorso L3 (Macro B);
+- checklist e diagnostica flow adottate come rito pre-merge (Macro C);
+- documentazione operativa senza conflitti correnti/storici (Macro D);
+- trend di riduzione superficie patch su manager ad alta densità (Macro E).

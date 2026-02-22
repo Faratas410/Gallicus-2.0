@@ -1295,11 +1295,11 @@ func _start_smoke_timeout_timer() -> void:
 
 func _smoke_start_scenario() -> void:
 	_smoke_init_if_needed()
-	if not _smoke.should_start_bet_present_scenario():
+	if not _smoke.should_start_driver_scenario():
 		return
 	if _smoke_driver_active:
 		return
-	var start_logs: PackedStringArray = _smoke.begin_bet_present_scenario()
+	var start_logs: PackedStringArray = _smoke.begin_scenario()
 	_smoke_driver_active = true
 	_smoke_driver_next_tick_msec = Time.get_ticks_msec()
 	for line: String in start_logs:
@@ -1313,10 +1313,11 @@ func _stop_smoke_driver() -> void:
 
 func _on_smoke_driver_tick() -> void:
 	_smoke_init_if_needed()
-	var smoke_step: Dictionary = _smoke.on_bet_present_tick(
-		_phase == RunPhase.RUN_INIT,
-		_phase == RunPhase.MAIN_MENU,
-		_phase == RunPhase.BET_PRESENT
+	var smoke_step: Dictionary = _smoke.on_tick(
+		_phase_to_name(_phase),
+		_get_smoke_selected_bet_id(),
+		_run_state.bets_history.size(),
+		_is_register_final()
 	)
 	var smoke_logs: PackedStringArray = smoke_step.get("logs", PackedStringArray()) as PackedStringArray
 	if bool(smoke_step.get("stop_driver", false)):
@@ -1329,7 +1330,27 @@ func _on_smoke_driver_tick() -> void:
 		return
 	if bool(smoke_step.get("request_new_run", false)):
 		GameEvents.request_new_run.emit()
+	if bool(smoke_step.get("request_place_bet", false)):
+		var bet_id: String = str(smoke_step.get("place_bet_id", ""))
+		if bet_id != "":
+			GameEvents.request_place_bet.emit(bet_id, 0)
+	if bool(smoke_step.get("request_mid_choice_select", false)):
+		var choice_index: int = int(smoke_step.get("mid_choice_index", 0))
+		GameEvents.request_mid_choice_select.emit(choice_index)
+	if bool(smoke_step.get("request_pyl_double", false)):
+		GameEvents.request_pyl_double.emit()
+	if bool(smoke_step.get("request_pyl_cashout", false)):
+		GameEvents.request_pyl_cashout.emit()
 
+
+
+func _get_smoke_selected_bet_id() -> String:
+	if _run_state.level3_current_offer.is_empty():
+		return ""
+	var first_offer: Variant = _run_state.level3_current_offer[0]
+	if first_offer is Dictionary:
+		return str((first_offer as Dictionary).get("id", ""))
+	return ""
 
 func _smoke_quit_gate() -> void:
 	get_tree().quit(0)
@@ -1488,7 +1509,7 @@ func _boot() -> void:
 	if _is_smoke_mode():
 		print("SMOKE:BOOT_OK")
 		print("SMOKE:PHASE=MAIN_MENU")
-		if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "BET_PRESENT":
+		if OS.has_environment("GALLICUS_SMOKE_SCENARIO"):
 			_smoke_start_scenario()
 		elif OS.get_environment("GALLICUS_SMOKE_TRIGGER_NEW_RUN") == "1":
 			print("SMOKE:NEW_RUN_REQUESTED")

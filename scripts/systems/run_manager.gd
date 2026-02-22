@@ -1778,7 +1778,7 @@ func _confirm_pact_with_bet_id(bet_id: StringName) -> void:
 	GameEvents.bet_closed.emit()
 	GameEvents.betting_closed.emit()
 	_autosave_run_checkpoint(RUN_FLOW_BET_SIGNED, bet_id)
-	resolve_arena()
+	_start_pact_sealed_ritual(bet_id)
 
 func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:

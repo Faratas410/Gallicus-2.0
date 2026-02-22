@@ -189,3 +189,28 @@ Related: Bet, Run, Condemnation
 One-liner: Hidden persistent boolean flag that marks the transition from Registro Integro to Registro con Precedente.
 
 Details: Default `false`; set to `true` after first classified terminal run; never shown directly in UI; once active, liberty is no longer eligible and generation pressure shifts toward reiteration without direct combat-stat changes.
+
+
+## Archivi/Museo
+
+Type: Meta surface
+
+One-liner: Superficie meta che colleziona fascicoli/entry sbloccate dagli esiti finali del Registro.
+
+Details: Riceve unlock runtime tramite evento `archive_entry_unlocked(entry_id)` emesso a finale registrale (`register_final=true`), con ID stabili derivati da `ending_key`.
+
+Appears in: Meta / UI
+
+Related: The Register, End state, Meta progression
+
+## Achievements
+
+Type: Meta recognition
+
+One-liner: Riconoscimenti non-diegetici collegati all'esito finale registrale.
+
+Details: A finale registrale il runtime emette `achievement_unlocked(achievement_id)` con ID stabili (`ach_end_corruption`, `ach_end_glory`, `ach_end_scars`, `ach_end_pattern`) derivati da `ending_key`.
+
+Appears in: Meta
+
+Related: End state, Archivi/Museo, Meta progression

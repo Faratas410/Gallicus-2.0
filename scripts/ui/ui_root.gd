@@ -63,6 +63,25 @@ const POST_BET_TEXTS: Dictionary = {
 		"Hai scelto il sangue invece dell'oro.",
 	],
 }
+const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_condition.png"
+const ENDING_UI_MAP: Dictionary = {
+	"ending_corruption": {
+		"title": "FASCICOLO CHIUSO — COMPROMISSIONE",
+		"icon": "res://assets/ui/icons/icon_ending_corruption.png",
+	},
+	"ending_glory": {
+		"title": "FASCICOLO CHIUSO — ASCESA",
+		"icon": "res://assets/ui/icons/icon_ending_glory.png",
+	},
+	"ending_scars": {
+		"title": "FASCICOLO CHIUSO — CONSUMO",
+		"icon": "res://assets/ui/icons/icon_ending_scars.png",
+	},
+	"ending_pattern": {
+		"title": "FASCICOLO CHIUSO — PATTERN",
+		"icon": "res://assets/ui/icons/icon_ending_pattern.png",
+	},
+}
 
 @onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
 @onready var bet_badge_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
@@ -148,6 +167,7 @@ const POST_BET_TEXTS: Dictionary = {
 @onready var push_luck_double_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE") as Button
 @onready var push_luck_double_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
 @onready var verdict_header: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLEPanel/Lbl_END_RUN_TITLE") as Label
+@onready var verdict_icon: TextureRect = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndingIcon") as TextureRect
 @onready var verdict_outcome: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel/Lbl_END_RUN_SUBTITLE") as Label
 @onready var verdict_sentence_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODYPanel/Lbl_END_RUN_BODY") as Label
 @onready var verdict_charge_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel/Lbl_END_RUN_HINT") as Label
@@ -209,6 +229,7 @@ var _last_finale_stats: Dictionary = {}
 var _last_register_message: String = ""
 var _last_register_final: bool = false
 var _last_register_ending_key: String = ""
+var _last_ending_icon_path: String = ""
 var _last_next_bet_enabled: bool = false
 var _last_finale_hint: String = ""
 var _last_verdict_pacts: Array[String] = []
@@ -665,6 +686,7 @@ func _on_run_started() -> void:
 	_last_register_message = ""
 	_last_register_final = false
 	_last_register_ending_key = ""
+	_last_ending_icon_path = ""
 	_last_next_bet_enabled = false
 	if next_bet_button != null:
 		next_bet_button.visible = false
@@ -783,6 +805,13 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	_last_register_message = str(finale_meta.get("register_message", ""))
 	_last_register_final = bool(finale_meta.get("register_final", false))
 	_last_register_ending_key = str(finale_meta.get("register_ending_key", ""))
+	if _last_register_final:
+		var ending_ui_data: Dictionary = ENDING_UI_MAP.get(_last_register_ending_key, {}) as Dictionary
+		_last_finale_title = str(ending_ui_data.get("title", "FASCICOLO CHIUSO"))
+		_last_ending_icon_path = str(ending_ui_data.get("icon", ENDING_ICON_PLACEHOLDER_PATH))
+	else:
+		_last_finale_title = "AGGIORNAMENTO DEL REGISTRO"
+		_last_ending_icon_path = ""
 	_last_next_bet_enabled = bool(finale_meta.get("next_bet_enabled", false))
 	if next_bet_button != null:
 		next_bet_button.visible = _last_next_bet_enabled
@@ -890,9 +919,26 @@ func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 
 func _refresh_verdict_panel() -> void:
 	if verdict_header != null:
-		verdict_header.text = "VERDETTO"
+		var title_text: String = _last_finale_title.strip_edges()
+		if title_text == "":
+			title_text = "VERDETTO"
+		verdict_header.text = title_text
 	if verdict_outcome != null:
-		verdict_outcome.text = _get_verdict_outcome_text(_last_verdict_outcome)
+		if _last_register_message != "":
+			verdict_outcome.text = _last_register_message
+		else:
+			verdict_outcome.text = _get_verdict_outcome_text(_last_verdict_outcome)
+	if verdict_icon != null:
+		if _last_register_final:
+			var icon_path: String = _last_ending_icon_path
+			if icon_path == "" or not ResourceLoader.exists(icon_path):
+				icon_path = ENDING_ICON_PLACEHOLDER_PATH
+			var icon_texture: Texture2D = load(icon_path) as Texture2D
+			verdict_icon.texture = icon_texture
+			verdict_icon.visible = icon_texture != null
+		else:
+			verdict_icon.texture = null
+			verdict_icon.visible = false
 	if verdict_sentence_label != null:
 		var sentence_text: String = _last_verdict_sentence
 		if sentence_text == "":
@@ -919,6 +965,8 @@ func _set_verdict_mode(active: bool) -> void:
 		verdict_header.visible = active
 	if verdict_outcome != null:
 		verdict_outcome.visible = active
+	if verdict_icon != null:
+		verdict_icon.visible = active and verdict_icon.texture != null
 	if verdict_sentence_label != null:
 		verdict_sentence_label.visible = active
 	if verdict_charge_label != null:

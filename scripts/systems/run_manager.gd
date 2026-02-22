@@ -127,6 +127,10 @@ const CONDANNA_RICORDATO: StringName = &"CONDANNA_RICORDATO"
 const CONDANNA_VISTO_DAL_PUBBLICO: StringName = &"CONDANNA_VISTO_DAL_PUBBLICO"
 const CONDANNA_IL_TUO_NOME: StringName = &"CONDANNA_IL_TUO_NOME"
 const CONDANNA_NON_SARA_L_ULTIMA: StringName = &"CONDANNA_NON_SARA_L_ULTIMA"
+const CONDANNA_REGISTRO_COMPROMISSIONE: StringName = &"CONDANNA_REGISTRO_COMPROMISSIONE"
+const CONDANNA_REGISTRO_ASCESA: StringName = &"CONDANNA_REGISTRO_ASCESA"
+const CONDANNA_REGISTRO_CONSUMO: StringName = &"CONDANNA_REGISTRO_CONSUMO"
+const CONDANNA_REGISTRO_PATTERN: StringName = &"CONDANNA_REGISTRO_PATTERN"
 
 
 const AUDIENCE_SCORE_MIN: int = -5
@@ -400,32 +404,73 @@ const REGISTER_ENDING_CORRUPTION: String = "ending_corruption"
 const REGISTER_ENDING_GLORY: String = "ending_glory"
 const REGISTER_ENDING_SCARS: String = "ending_scars"
 const REGISTER_ENDING_PATTERN: String = "ending_pattern"
+const ENDING_TO_ACHIEVEMENT_CONDANNA: Dictionary = {
+	REGISTER_ENDING_CORRUPTION: CONDANNA_REGISTRO_COMPROMISSIONE,
+	REGISTER_ENDING_GLORY: CONDANNA_REGISTRO_ASCESA,
+	REGISTER_ENDING_SCARS: CONDANNA_REGISTRO_CONSUMO,
+	REGISTER_ENDING_PATTERN: CONDANNA_REGISTRO_PATTERN,
+}
+const ENDING_TO_ARCHIVE_ENTRY: Dictionary = {
+	REGISTER_ENDING_CORRUPTION: "archive_corruption_case",
+	REGISTER_ENDING_GLORY: "archive_glory_case",
+	REGISTER_ENDING_SCARS: "archive_scars_case",
+	REGISTER_ENDING_PATTERN: "archive_pattern_case",
+}
 const SCAR_RISK_ESCALATION_THRESHOLD: int = 7
 const SCAR_MIN_ARENA_INTERVAL: int = 1
-const REGISTER_PROVISIONAL_POOL: Array[String] = [
-	"Registro provvisorio: pattern in osservazione.",
-	"Registro provvisorio: classificazione rinviata.",
-	"Registro provvisorio: tracciato incompleto.",
+const REGISTER_POOL_PROVISIONAL: Array[String] = [
+	"Fascicolo aggiornato. Valutazione sospesa.",
+	"Atto registrato. Campione insufficiente.",
+	"Dati acquisiti. Analisi in corso.",
+	"Aggiornamento completato. Nessuna conclusione emessa.",
+	"Il soggetto resta in osservazione.",
+	"Archiviazione parziale. Raccolta incompleta.",
+	"Evento conforme. Interpretazione rinviata.",
+	"Nuova evidenza inserita. Profilo non definito.",
+	"Registrazione valida. Sentenza non autorizzata.",
+	"Traiettoria non stabilizzata. Attendere ulteriori eventi.",
+	"Documento acquisito. Il Registro non conclude.",
+	"Pattern non consolidato. Prosecuzione richiesta.",
 ]
-const REGISTER_FINAL_CORRUPTION_POOL: Array[String] = [
-	"Registro definitivo: corruzione oltre soglia, profilo chiuso.",
-	"Registro definitivo: la corruzione definisce l'esito.",
-	"Registro definitivo: condotta corrosiva registrata in forma finale.",
+const REGISTER_POOL_FINAL_CORRUPTION: Array[String] = [
+	"Soglia di deviazione superata. Fascicolo chiuso.",
+	"Corruzione confermata. Archiviazione definitiva.",
+	"Indice di compromissione: critico. Sentenza emessa.",
+	"Integrità del soggetto: insufficiente. Caso concluso.",
+	"Deriva irreversibile rilevata. Il Registro conclude.",
+	"Evidenza prevalente: debito. Fascicolo definito.",
+	"Profilo compromesso. Non sono richiesti ulteriori dati.",
+	"Scostamento oltre limite. Atto finale registrato.",
 ]
-const REGISTER_FINAL_GLORY_POOL: Array[String] = [
-	"Registro definitivo: gloria oltre soglia, classificazione consolidata.",
-	"Registro definitivo: eccesso di gloria, stato finale confermato.",
-	"Registro definitivo: la gloria ha fissato il profilo.",
+const REGISTER_POOL_FINAL_GLORY: Array[String] = [
+	"Indice di gloria: eccedente. Fascicolo chiuso.",
+	"Rilevanza confermata. Archiviazione definitiva.",
+	"Profilo di eccezione registrato. Sentenza emessa.",
+	"Valore del soggetto: determinato. Caso concluso.",
+	"Evidenza prevalente: ascesa. Il Registro conclude.",
+	"Traccia storica sufficiente. Fascicolo definito.",
+	"Comportamento coerente con grandezza. Atto finale registrato.",
+	"Risultato consolidato. Non sono richiesti ulteriori dati.",
 ]
-const REGISTER_FINAL_SCARS_POOL: Array[String] = [
-	"Registro definitivo: numero cicatrici oltre limite.",
-	"Registro definitivo: accumulo cicatrici, classificazione conclusa.",
-	"Registro definitivo: la soglia cicatrici impone chiusura.",
+const REGISTER_POOL_FINAL_SCARS: Array[String] = [
+	"Danno permanente rilevato. Fascicolo chiuso.",
+	"Cicatrici critiche registrate. Archiviazione definitiva.",
+	"Stato del soggetto: degradato. Sentenza emessa.",
+	"Accumulo irreversibile. Caso concluso.",
+	"Integrità fisica compromessa. Il Registro conclude.",
+	"Evidenza prevalente: consumo. Fascicolo definito.",
+	"Segni sufficienti. Non sono richiesti ulteriori dati.",
+	"Profilo stabilizzato su danno. Atto finale registrato.",
 ]
-const REGISTER_FINAL_PATTERN_POOL: Array[String] = [
-	"Registro definitivo: reiterazione sufficiente, esito registrato.",
-	"Registro definitivo: pattern completato, classificazione finale.",
-	"Registro definitivo: ciclo consolidato, stato concluso.",
+const REGISTER_POOL_FINAL_PATTERN: Array[String] = [
+	"Campione minimo raggiunto. Fascicolo chiuso.",
+	"Pattern confermato. Archiviazione definitiva.",
+	"Coerenza comportamentale stabilita. Sentenza emessa.",
+	"Traiettoria consolidata. Caso concluso.",
+	"Dati sufficienti per definizione. Il Registro conclude.",
+	"Ripetizione significativa rilevata. Fascicolo definito.",
+	"Profilo determinato per frequenza. Atto finale registrato.",
+	"Analisi completata. Non sono richiesti ulteriori dati.",
 ]
 const IRREVERSIBLE_BET_IDS: Array[StringName] = [
 	BET_DOUBLE_OR_DIE_L3,
@@ -1120,6 +1165,7 @@ var _player: Node
 var _run_failed_emitted: bool = false
 var _run_ended_emitted: bool = false
 var _meta_unlock_emitted_this_run: bool = false
+var _end_run_meta_emitted: bool = false
 var _is_game_over: bool = false
 var _phase: RunPhase = RunPhase.NONE
 var _gameplay_phase: RunPhase = RunPhase.PREP
@@ -1667,6 +1713,7 @@ func _start_level3_run() -> void:
 	_run_failed_emitted = false
 	_run_ended_emitted = false
 	_meta_unlock_emitted_this_run = false
+	_end_run_meta_emitted = false
 	_run_state.registry_silence_evaluated = false
 	_run_state.registry_silence_active = false
 	_is_game_over = false
@@ -2248,6 +2295,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_run_failed_emitted = false
 	_run_ended_emitted = false
 	_meta_unlock_emitted_this_run = false
+	_end_run_meta_emitted = false
 	_run_state.run_finale_emitted = false
 	_run_state.run_end_reason = ""
 	_run_state.run_end_public_reason = ""
@@ -3824,10 +3872,18 @@ func _emit_run_finale() -> void:
 	var finale_meta: Dictionary = finale.get("meta", {}) as Dictionary
 	var register_final: bool = bool(finale_meta.get("register_final", false))
 	var register_ending_key: String = str(finale_meta.get("register_ending_key", ""))
-	if register_final and register_ending_key != "" and not _meta_unlock_emitted_this_run:
-		_meta_unlock_emitted_this_run = true
-		if GameEvents.has_signal("meta_progress_unlocked"):
+	if register_final and register_ending_key != "" and not _end_run_meta_emitted:
+		_end_run_meta_emitted = true
+		if not _meta_unlock_emitted_this_run and GameEvents.has_signal("meta_progress_unlocked"):
+			_meta_unlock_emitted_this_run = true
 			GameEvents.meta_progress_unlocked.emit(register_ending_key)
+		var achievement_condanna_id: StringName = ENDING_TO_ACHIEVEMENT_CONDANNA.get(register_ending_key, &"") as StringName
+		if achievement_condanna_id != &"":
+			_register_condanna(achievement_condanna_id)
+		if GameEvents.has_signal("archive_entry_unlocked"):
+			var archive_entry_id: String = str(ENDING_TO_ARCHIVE_ENTRY.get(register_ending_key, ""))
+			if archive_entry_id != "":
+				GameEvents.archive_entry_unlocked.emit(archive_entry_id)
 	if bool(finale.get("classified_terminal", false)) and not _registry_has_precedent:
 		SaveManager.set_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 		_registry_has_precedent = true
@@ -3975,17 +4031,25 @@ func _get_register_final_ending_key() -> String:
 		return REGISTER_ENDING_SCARS
 	return REGISTER_ENDING_PATTERN
 
-func _pick_register_line() -> String:
-	var ending_key: String = _get_register_final_ending_key()
+func _pick_from_pool(pool: Array[String]) -> String:
+	if pool.is_empty():
+		return ""
+	return pool[randi() % pool.size()]
+
+func _pick_register_message(ending_key: String) -> String:
 	if ending_key == "":
-		return REGISTER_PROVISIONAL_POOL[randi() % REGISTER_PROVISIONAL_POOL.size()]
-	if ending_key == REGISTER_ENDING_CORRUPTION:
-		return REGISTER_FINAL_CORRUPTION_POOL[randi() % REGISTER_FINAL_CORRUPTION_POOL.size()]
-	if ending_key == REGISTER_ENDING_GLORY:
-		return REGISTER_FINAL_GLORY_POOL[randi() % REGISTER_FINAL_GLORY_POOL.size()]
-	if ending_key == REGISTER_ENDING_SCARS:
-		return REGISTER_FINAL_SCARS_POOL[randi() % REGISTER_FINAL_SCARS_POOL.size()]
-	return REGISTER_FINAL_PATTERN_POOL[randi() % REGISTER_FINAL_PATTERN_POOL.size()]
+		return _pick_from_pool(REGISTER_POOL_PROVISIONAL)
+	match ending_key:
+		REGISTER_ENDING_CORRUPTION:
+			return _pick_from_pool(REGISTER_POOL_FINAL_CORRUPTION)
+		REGISTER_ENDING_GLORY:
+			return _pick_from_pool(REGISTER_POOL_FINAL_GLORY)
+		REGISTER_ENDING_SCARS:
+			return _pick_from_pool(REGISTER_POOL_FINAL_SCARS)
+		REGISTER_ENDING_PATTERN:
+			return _pick_from_pool(REGISTER_POOL_FINAL_PATTERN)
+		_:
+			return _pick_from_pool(REGISTER_POOL_FINAL_PATTERN)
 
 func _select_run_finale() -> Dictionary:
 	var scars_copy: Array = _run_state.scars_payload.duplicate(true)
@@ -4052,7 +4116,7 @@ func _select_run_finale() -> Dictionary:
 	finale["crowd_text"] = str(copy.get("crowd_text", ""))
 	var meta_payload: Dictionary = finale.get("meta", {}) as Dictionary
 	var register_ending_key: String = _get_register_final_ending_key()
-	meta_payload["register_message"] = _pick_register_line()
+	meta_payload["register_message"] = _pick_register_message(register_ending_key)
 	meta_payload["register_final"] = register_ending_key != ""
 	meta_payload["register_ending_key"] = register_ending_key
 	meta_payload["next_bet_enabled"] = register_ending_key == ""

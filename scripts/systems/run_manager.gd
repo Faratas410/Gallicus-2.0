@@ -396,6 +396,10 @@ const CORRUPTION_FINAL_THRESHOLD: int = 70
 const GLORY_FINAL_THRESHOLD: int = 100
 const SCARS_FINAL_THRESHOLD: int = 3
 const MIN_BETS_FOR_SENTENCE: int = 3
+const REGISTER_ENDING_CORRUPTION: String = "ending_corruption"
+const REGISTER_ENDING_GLORY: String = "ending_glory"
+const REGISTER_ENDING_SCARS: String = "ending_scars"
+const REGISTER_ENDING_PATTERN: String = "ending_pattern"
 const SCAR_RISK_ESCALATION_THRESHOLD: int = 7
 const SCAR_MIN_ARENA_INTERVAL: int = 1
 const REGISTER_PROVISIONAL_POOL: Array[String] = [
@@ -1115,6 +1119,7 @@ var _waiting_for_intermediate_choice: bool = false
 var _player: Node
 var _run_failed_emitted: bool = false
 var _run_ended_emitted: bool = false
+var _meta_unlock_emitted_this_run: bool = false
 var _is_game_over: bool = false
 var _phase: RunPhase = RunPhase.NONE
 var _gameplay_phase: RunPhase = RunPhase.PREP
@@ -1661,6 +1666,7 @@ func _start_level3_run() -> void:
 	Engine.time_scale = 1.0
 	_run_failed_emitted = false
 	_run_ended_emitted = false
+	_meta_unlock_emitted_this_run = false
 	_run_state.registry_silence_evaluated = false
 	_run_state.registry_silence_active = false
 	_is_game_over = false
@@ -2241,6 +2247,7 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	_resolving_arena = false
 	_run_failed_emitted = false
 	_run_ended_emitted = false
+	_meta_unlock_emitted_this_run = false
 	_run_state.run_finale_emitted = false
 	_run_state.run_end_reason = ""
 	_run_state.run_end_public_reason = ""
@@ -3814,6 +3821,13 @@ func _emit_run_finale() -> void:
 	if _should_emit_registry_silence():
 		return
 	var finale: Dictionary = _select_run_finale()
+	var finale_meta: Dictionary = finale.get("meta", {}) as Dictionary
+	var register_final: bool = bool(finale_meta.get("register_final", false))
+	var register_ending_key: String = str(finale_meta.get("register_ending_key", ""))
+	if register_final and register_ending_key != "" and not _meta_unlock_emitted_this_run:
+		_meta_unlock_emitted_this_run = true
+		if GameEvents.has_signal("meta_progress_unlocked"):
+			GameEvents.meta_progress_unlocked.emit(register_ending_key)
 	if bool(finale.get("classified_terminal", false)) and not _registry_has_precedent:
 		SaveManager.set_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 		_registry_has_precedent = true
@@ -3948,24 +3962,28 @@ func _get_completed_bets_count() -> int:
 	return _run_state.bets_history.size()
 
 func _is_register_final() -> bool:
+	return _get_register_final_ending_key() != ""
+
+func _get_register_final_ending_key() -> String:
+	if _get_completed_bets_count() < MIN_BETS_FOR_SENTENCE:
+		return ""
 	if _run_state.corruption >= CORRUPTION_FINAL_THRESHOLD:
-		return true
+		return REGISTER_ENDING_CORRUPTION
 	if _run_state.glory >= GLORY_FINAL_THRESHOLD:
-		return true
+		return REGISTER_ENDING_GLORY
 	if _run_state.scars.size() >= SCARS_FINAL_THRESHOLD:
-		return true
-	if _get_completed_bets_count() >= MIN_BETS_FOR_SENTENCE:
-		return true
-	return false
+		return REGISTER_ENDING_SCARS
+	return REGISTER_ENDING_PATTERN
 
 func _pick_register_line() -> String:
-	if not _is_register_final():
+	var ending_key: String = _get_register_final_ending_key()
+	if ending_key == "":
 		return REGISTER_PROVISIONAL_POOL[randi() % REGISTER_PROVISIONAL_POOL.size()]
-	if _run_state.corruption >= CORRUPTION_FINAL_THRESHOLD:
+	if ending_key == REGISTER_ENDING_CORRUPTION:
 		return REGISTER_FINAL_CORRUPTION_POOL[randi() % REGISTER_FINAL_CORRUPTION_POOL.size()]
-	if _run_state.glory >= GLORY_FINAL_THRESHOLD:
+	if ending_key == REGISTER_ENDING_GLORY:
 		return REGISTER_FINAL_GLORY_POOL[randi() % REGISTER_FINAL_GLORY_POOL.size()]
-	if _run_state.scars.size() >= SCARS_FINAL_THRESHOLD:
+	if ending_key == REGISTER_ENDING_SCARS:
 		return REGISTER_FINAL_SCARS_POOL[randi() % REGISTER_FINAL_SCARS_POOL.size()]
 	return REGISTER_FINAL_PATTERN_POOL[randi() % REGISTER_FINAL_PATTERN_POOL.size()]
 
@@ -4033,8 +4051,11 @@ func _select_run_finale() -> Dictionary:
 	finale["condanne_text"] = str(copy.get("condanne_text", ""))
 	finale["crowd_text"] = str(copy.get("crowd_text", ""))
 	var meta_payload: Dictionary = finale.get("meta", {}) as Dictionary
+	var register_ending_key: String = _get_register_final_ending_key()
 	meta_payload["register_message"] = _pick_register_line()
-	meta_payload["register_final"] = _is_register_final()
+	meta_payload["register_final"] = register_ending_key != ""
+	meta_payload["register_ending_key"] = register_ending_key
+	meta_payload["next_bet_enabled"] = register_ending_key == ""
 	finale["meta"] = meta_payload
 	return finale
 

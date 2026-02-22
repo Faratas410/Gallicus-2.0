@@ -206,6 +206,10 @@ var _last_finale_scars: Array = []
 var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
 var _last_finale_stats: Dictionary = {}
+var _last_register_message: String = ""
+var _last_register_final: bool = false
+var _last_register_ending_key: String = ""
+var _last_next_bet_enabled: bool = false
 var _last_finale_hint: String = ""
 var _last_verdict_pacts: Array[String] = []
 var _last_verdict_condanne: Array[String] = []
@@ -658,8 +662,13 @@ func _on_run_started() -> void:
 	_set_push_luck_modal(false)
 	_pending_bets = []
 	_set_game_over_modal(false)
+	_last_register_message = ""
+	_last_register_final = false
+	_last_register_ending_key = ""
+	_last_next_bet_enabled = false
 	if next_bet_button != null:
 		next_bet_button.visible = false
+		next_bet_button.disabled = true
 	_last_finale_title = "RUN FAILED"
 	_last_finale_text = ""
 	_last_finale_scars = []
@@ -770,6 +779,15 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 		_last_finale_stats = payload["stats"] as Dictionary
 	else:
 		_last_finale_stats = {}
+	var finale_meta: Dictionary = payload.get("meta", {}) as Dictionary
+	_last_register_message = str(finale_meta.get("register_message", ""))
+	_last_register_final = bool(finale_meta.get("register_final", false))
+	_last_register_ending_key = str(finale_meta.get("register_ending_key", ""))
+	_last_next_bet_enabled = bool(finale_meta.get("next_bet_enabled", false))
+	if next_bet_button != null:
+		next_bet_button.visible = _last_next_bet_enabled
+		next_bet_button.disabled = not _last_next_bet_enabled
+		next_bet_button.text = "NEXT BET"
 	var pacts_payload: Array = []
 	if payload.has("pacts_signed"):
 		pacts_payload = payload.get("pacts_signed", []) as Array
@@ -801,12 +819,15 @@ func _on_run_failed() -> void:
 	_set_game_over_modal(true)
 	_set_verdict_mode(true)
 	if next_bet_button != null:
-		next_bet_button.visible = false
+		next_bet_button.visible = _last_next_bet_enabled
+		next_bet_button.disabled = not _last_next_bet_enabled
 	if restart_button != null:
 		restart_button.text = "NUOVA RUN"
 	if quit_button != null:
 		quit_button.text = "MENU"
 	_last_finale_hint = ""
+	if _last_register_final and _last_register_message == "":
+		_last_register_message = "Fascicolo chiuso."
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	_refresh_verdict_panel()
@@ -1436,12 +1457,29 @@ func _build_ending_scars_section() -> String:
 
 func _build_ending_meta_section() -> String:
 	var lines: Array[String] = []
+	if _last_register_final:
+		lines.append("FINAL: %s" % _get_register_ending_title(_last_register_ending_key))
+	if _last_register_message != "":
+		lines.append(_last_register_message)
 	if _last_finale_seed != 0:
 		lines.append("Traccia: %d" % _last_finale_seed)
 	if lines.is_empty():
 		return ""
 	lines.insert(0, "[b]Registro:[/b]")
 	return "\n".join(lines)
+
+func _get_register_ending_title(ending_key: String) -> String:
+	match ending_key:
+		"ending_corruption":
+			return "Corruzione"
+		"ending_glory":
+			return "Gloria"
+		"ending_scars":
+			return "Cicatrici"
+		"ending_pattern":
+			return "Pattern"
+		_:
+			return "Fascicolo chiuso"
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
 	var ui_payload: RunUiPayload = RunUiPayloadScript.new()

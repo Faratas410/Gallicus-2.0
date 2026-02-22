@@ -688,6 +688,12 @@ UI:
 - VERDETTO
 - bottoni: Nuova Run / Torna al Menu (request_show_main_menu)
 
+Registro (provvisorio/finale):
+- END_RUN espone sempre `meta.register_message`.
+- `register_final` è `false` finché `completed_bets < 3` (mai finale al primo giro).
+- Quando `completed_bets >= 3`, la chiusura fascicolo è deterministica in priorità: `corruption >= 70` → `ending_corruption`; altrimenti `glory >= 100` → `ending_glory`; altrimenti `scars_count >= 3` → `ending_scars`; altrimenti `ending_pattern`.
+- In Registro Finale: `meta.next_bet_enabled = false`, il run è terminale e viene emesso `GameEvents.meta_progress_unlocked(ending_key)` una sola volta per run.
+
 ---
 
 ## Checkpoints autosave (canonici)

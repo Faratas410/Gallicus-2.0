@@ -209,6 +209,14 @@ const AUDIENCE_PHRASES: Dictionary = {
 
 func _flow_log(tag: String, details: String = "") -> void:
 	_flow_logger.log(tag, details)
+
+func _smoke_mark(tag: String) -> void:
+	if OS.has_environment("GALLICUS_SMOKE_SCENARIO"):
+		print("SMOKE:MILESTONE=" + tag)
+
+func _smoke_mark_kv(tag: String, key: String, value: String) -> void:
+	if OS.has_environment("GALLICUS_SMOKE_SCENARIO"):
+		print("SMOKE:MILESTONE=" + tag + " " + key + "=" + value)
 const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 	AUDIENCE_CONTEXT_PACT_SIGNED: {
 		AUDIENCE_MOOD_FURY: [
@@ -1230,6 +1238,7 @@ var _smoke: SmokeDriver = null
 var _smoke_timeout_deadline_msec: int = -1
 var _smoke_driver_active: bool = false
 var _smoke_driver_next_tick_msec: int = -1
+var _smoke_full_run_step: String = ""
 var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
 var _flow_diagnostics: FlowDiagnostics = FlowDiagnostics.new()
 var _finale_builder: FinaleBuilder = FinaleBuilder.new()
@@ -1287,15 +1296,20 @@ func _start_smoke_timeout_timer() -> void:
 
 func _smoke_start_scenario() -> void:
 	_smoke_init_if_needed()
-	if not _smoke.should_start_bet_present_scenario():
+	if not _smoke.should_start_driver_scenario():
 		return
 	if _smoke_driver_active:
 		return
-	var start_logs: PackedStringArray = _smoke.begin_bet_present_scenario()
+	_smoke_full_run_step = ""
+	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
+	if scenario == "FULL_RUN":
+		print("SMOKE:STEP=SCENARIO_FULL_RUN_START")
+	else:
+		var start_logs: PackedStringArray = _smoke.begin_scenario()
+		for line: String in start_logs:
+			print(line)
 	_smoke_driver_active = true
 	_smoke_driver_next_tick_msec = Time.get_ticks_msec()
-	for line: String in start_logs:
-		print(line)
 
 
 func _stop_smoke_driver() -> void:
@@ -1304,11 +1318,15 @@ func _stop_smoke_driver() -> void:
 
 
 func _on_smoke_driver_tick() -> void:
+	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "FULL_RUN":
+		_run_smoke_full_run_driver()
+		return
 	_smoke_init_if_needed()
-	var smoke_step: Dictionary = _smoke.on_bet_present_tick(
-		_phase == RunPhase.RUN_INIT,
-		_phase == RunPhase.MAIN_MENU,
-		_phase == RunPhase.BET_PRESENT
+	var smoke_step: Dictionary = _smoke.on_tick(
+		_phase_to_name(_phase),
+		_get_smoke_selected_bet_id(),
+		_run_state.bets_history.size(),
+		_is_register_final()
 	)
 	var smoke_logs: PackedStringArray = smoke_step.get("logs", PackedStringArray()) as PackedStringArray
 	if bool(smoke_step.get("stop_driver", false)):
@@ -1316,12 +1334,71 @@ func _on_smoke_driver_tick() -> void:
 	for line: String in smoke_logs:
 		print(line)
 	if bool(smoke_step.get("request_quit_gate", false)):
-		call_deferred("_smoke_quit_gate")
+		_smoke_quit_gate()
 	if bool(smoke_step.get("stop_driver", false)):
 		return
 	if bool(smoke_step.get("request_new_run", false)):
 		GameEvents.request_new_run.emit()
+	if bool(smoke_step.get("request_place_bet", false)):
+		var bet_id: String = str(smoke_step.get("place_bet_id", ""))
+		if bet_id != "":
+			GameEvents.request_place_bet.emit(bet_id, 0)
+	if bool(smoke_step.get("request_mid_choice_select", false)):
+		var choice_index: int = int(smoke_step.get("mid_choice_index", 0))
+		GameEvents.request_mid_choice_select.emit(choice_index)
+	if bool(smoke_step.get("request_pyl_double", false)):
+		GameEvents.request_pyl_double.emit()
+	if bool(smoke_step.get("request_pyl_cashout", false)):
+		GameEvents.request_pyl_cashout.emit()
 
+
+func _run_smoke_full_run_driver() -> void:
+	if _phase == RunPhase.MAIN_MENU and _smoke_full_run_step == "":
+		_smoke_full_run_step = "NEW_RUN"
+		print("SMOKE:STEP=REQUEST_NEW_RUN")
+		print("SMOKE:NEW_RUN_REQUESTED")
+		print("SMOKE:REQ=request_new_run")
+		GameEvents.request_new_run.emit()
+		return
+	if _phase == RunPhase.RUN_INIT and _smoke_full_run_step == "NEW_RUN":
+		print("SMOKE:STEP=RUN_INIT_SEEN")
+		_smoke_full_run_step = "RUN_INIT"
+		return
+	if _phase == RunPhase.BET_PRESENT and _smoke_full_run_step != "BET_PRESENT":
+		var bet_id: String = _get_smoke_selected_bet_id()
+		if bet_id == "":
+			return
+		_smoke_full_run_step = "BET_PRESENT"
+		print("SMOKE:REQ=request_place_bet bet_id=%s" % bet_id)
+		GameEvents.request_place_bet.emit(bet_id, 0)
+		return
+	if _phase == RunPhase.INTERMEDIATE_CHOICE and _smoke_full_run_step != "INTERMEDIATE_CHOICE":
+		_smoke_full_run_step = "INTERMEDIATE_CHOICE"
+		print("SMOKE:REQ=request_mid_choice_select index=0")
+		GameEvents.request_mid_choice_select.emit(0)
+		return
+	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step != "PUSH_YOUR_LUCK":
+		_smoke_full_run_step = "PUSH_YOUR_LUCK"
+		if _run_state.bets_history.size() < 3:
+			print("SMOKE:REQ=request_pyl_double")
+			GameEvents.request_pyl_double.emit()
+		else:
+			print("SMOKE:REQ=request_pyl_cashout")
+			GameEvents.request_pyl_cashout.emit()
+		return
+	if _phase == RunPhase.GAME_OVER and _is_register_final():
+		print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
+		_stop_smoke_driver()
+		_smoke_quit_gate()
+
+
+func _get_smoke_selected_bet_id() -> String:
+	if _run_state.level3_current_offer.is_empty():
+		return ""
+	var first_offer: Variant = _run_state.level3_current_offer[0]
+	if first_offer is Dictionary:
+		return str((first_offer as Dictionary).get("id", ""))
+	return ""
 
 func _smoke_quit_gate() -> void:
 	get_tree().quit(0)
@@ -1480,7 +1557,7 @@ func _boot() -> void:
 	if _is_smoke_mode():
 		print("SMOKE:BOOT_OK")
 		print("SMOKE:PHASE=MAIN_MENU")
-		if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "BET_PRESENT":
+		if OS.has_environment("GALLICUS_SMOKE_SCENARIO"):
 			_smoke_start_scenario()
 		elif OS.get_environment("GALLICUS_SMOKE_TRIGGER_NEW_RUN") == "1":
 			print("SMOKE:NEW_RUN_REQUESTED")
@@ -1875,11 +1952,13 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	var sequence_id: int = _pact_sealed_sequence_id
 	_close_audience_context_line()
 	_flow_log("pact_sealed_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_smoke_mark("PACT_SEALED_OPENED")
 	GameEvents.pact_sealed_opened.emit()
 	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
 	if sequence_id != _pact_sealed_sequence_id:
 		return
 	GameEvents.pact_sealed_closed.emit()
+	_smoke_mark("PACT_SEALED_CLOSED")
 	if _run_state.run_is_over or _is_game_over:
 		return
 	_open_intermediate_choice(bet_id)
@@ -1898,12 +1977,14 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 		_get_level3_doom_short(bet_id)
 	)
 	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_smoke_mark("RESOLVE_OPENED")
 	GameEvents.resolve_ritual_opened.emit(payload)
 	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
 	if sequence_id != _resolve_ritual_sequence_id:
 		return
 	GameEvents.resolve_ritual_closed.emit()
 	_flow_log("resolve_ritual_closed", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+	_smoke_mark("RESOLVE_CLOSED")
 	_resolving_ritual = false
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -2376,7 +2457,7 @@ func _serialize_stringname_array(items: Array) -> Array[String]:
 		values.append(text)
 	return values
 
-func _serialize_run_scars(items: Array[Scar]) -> Array[Dictionary]:
+func _serialize_run_scars(items: Array) -> Array[Dictionary]:
 	var values: Array[Dictionary] = []
 	for item: Scar in items:
 		values.append(item.to_dict())
@@ -3436,6 +3517,7 @@ func _apply_intermediate_loss_penalty_if_needed() -> void:
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_intermediate_choice(bet_id: StringName) -> void:
 	_run_state.intermediate_pending_bet_id = bet_id
+	_smoke_mark("INTERMEDIATE_CHOICE")
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
 
 func _enter_mid_choice() -> void:
@@ -3443,6 +3525,7 @@ func _enter_mid_choice() -> void:
 
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_push_luck_choice(_bet_id: StringName) -> void:
+	_smoke_mark("PUSH_YOUR_LUCK")
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 
 func _enter_push_your_luck() -> void:
@@ -3868,9 +3951,12 @@ func _emit_run_finale() -> void:
 	if _should_emit_registry_silence():
 		return
 	var finale: Dictionary = _select_run_finale()
+	_smoke_mark("END_RUN")
 	var finale_meta: Dictionary = finale.get("meta", {}) as Dictionary
 	var register_final: bool = bool(finale_meta.get("register_final", false))
 	var register_ending_key: String = str(finale_meta.get("register_ending_key", ""))
+	if register_final and register_ending_key != "":
+		_smoke_mark_kv("END_RUN_FINAL", "ending_key", register_ending_key)
 	if register_final and register_ending_key != "" and not _end_run_meta_emitted:
 		_end_run_meta_emitted = true
 		if not _meta_unlock_emitted_this_run and GameEvents.has_signal("meta_progress_unlocked"):
@@ -4370,6 +4456,7 @@ func _enter_intro() -> void:
 	_emit_ui(ui_payload)
 
 func _enter_bet_present() -> void:
+	_smoke_mark("BET_PRESENT")
 	var view: Dictionary = _phase_bet_present_handler.build_view(_run_state, {"coins": int(run.get("coins", 0))})
 	var offer: Array[Dictionary] = []
 	var raw_offer: Variant = view.get("offer", null)

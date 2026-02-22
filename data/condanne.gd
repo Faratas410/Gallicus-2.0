@@ -143,4 +143,29 @@ static func defaults() -> Array[CondannaData]:
 		"Sei tornato all’arena dopo una sconfitta.",
 		"L’arena è ancora lì."
 	))
+
+	entries.append(make(
+		&"CONDANNA_REGISTRO_COMPROMISSIONE",
+		"Registro: Compromissione.",
+		"Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).",
+		"La deviazione ha superato la soglia.\nIl Registro ha emesso chiusura definitiva."
+	))
+	entries.append(make(
+		&"CONDANNA_REGISTRO_ASCESA",
+		"Registro: Ascesa.",
+		"Il Registro ha chiuso il fascicolo per ascesa (ending_glory).",
+		"L'evidenza di ascesa è risultata prevalente.\nIl fascicolo è stato definito."
+	))
+	entries.append(make(
+		&"CONDANNA_REGISTRO_CONSUMO",
+		"Registro: Consumo.",
+		"Il Registro ha chiuso il fascicolo per consumo (ending_scars).",
+		"L'accumulo di danno è stato ritenuto definitivo.\nIl Registro ha concluso l'atto."
+	))
+	entries.append(make(
+		&"CONDANNA_REGISTRO_PATTERN",
+		"Registro: Pattern.",
+		"Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).",
+		"La ripetizione è risultata sufficiente.\nLa classificazione è stata archiviata."
+	))
 	return entries

@@ -7,6 +7,8 @@ signal run_failed
 signal run_ended(reason: String, summary: Dictionary)
 signal run_finale_selected(payload: Dictionary)
 signal meta_progress_unlocked(ending_key: String)
+signal achievement_unlocked(achievement_id: String)
+signal archive_entry_unlocked(entry_id: String)
 signal run_debug_state_updated(payload: Dictionary)
 signal run_log_ready(log_text: String)
 signal special_arena_started(payload: Dictionary)

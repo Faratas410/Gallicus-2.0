@@ -50,12 +50,21 @@ All changes to systems described here must update this document in the same PR.
 
 ## END_RUN payload contract
 - END_RUN payload meta keys are canonical and always emitted by RunManager:
-  - `meta.register_message: String`
+  - `meta.register_message: String` (sempre mostrato)
   - `meta.register_final: bool`
-  - `meta.register_ending_key: String`
+  - `meta.register_ending_key: String` (`""` quando l'aggiornamento non è finale)
   - `meta.next_bet_enabled: bool`
+- END_RUN UI map rule (UI-only, reactive):
+  - se `meta.register_final=false` → titolo `AGGIORNAMENTO DEL REGISTRO`, icona nascosta/placeholder, Next Bet governato da `meta.next_bet_enabled`
+  - se `meta.register_final=true` → titolo+icona derivati da `meta.register_ending_key` (mappa UI-only):
+    - `ending_corruption` → `FASCICOLO CHIUSO — COMPROMISSIONE` + `res://assets/ui/icons/icon_ending_corruption.png`
+    - `ending_glory` → `FASCICOLO CHIUSO — ASCESA` + `res://assets/ui/icons/icon_ending_glory.png`
+    - `ending_scars` → `FASCICOLO CHIUSO — CONSUMO` + `res://assets/ui/icons/icon_ending_scars.png`
+    - `ending_pattern` → `FASCICOLO CHIUSO — PATTERN` + `res://assets/ui/icons/icon_ending_pattern.png`
+    - fallback titolo `FASCICOLO CHIUSO`; fallback icona `res://assets/ui/icons/icon_condition.png`
 - UI must derive END_RUN `Next Bet` visibility/enabled state **only** from `meta.next_bet_enabled` (reactive rule, no local gameplay decision).
-- If `meta.register_final=true`, UI shows an explicit final marker (`FINAL: <titolo>` or equivalent) and keeps Restart/Quit handlers unchanged.
+- UI must not infer ending category locally: `meta.register_ending_key` is RunManager authority.
+- UI must not unlock achievements or perform meta-save side effects: achievements wiring is a RunManager→meta-system side effect only.
 
 ## Non-negotiable visual rules
 1. **Base UI scale**: UI assets are **1x** and must render pixel-crisp at game resolution (baseline: `UI assets (1x)` reference sheet).

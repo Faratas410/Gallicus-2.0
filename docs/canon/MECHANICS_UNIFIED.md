@@ -692,7 +692,13 @@ Registro (provvisorio/finale):
 - END_RUN espone sempre `meta.register_message`.
 - `register_final` è `false` finché `completed_bets < 3` (mai finale al primo giro).
 - Quando `completed_bets >= 3`, la chiusura fascicolo è deterministica in priorità: `corruption >= 70` → `ending_corruption`; altrimenti `glory >= 100` → `ending_glory`; altrimenti `scars_count >= 3` → `ending_scars`; altrimenti `ending_pattern`.
-- In Registro Finale: `meta.next_bet_enabled = false`, il run è terminale e viene emesso `GameEvents.meta_progress_unlocked(ending_key)` una sola volta per run.
+- In Registro Finale: `meta.next_bet_enabled = false`, il run è terminale, `register_ending_key` è obbligatorio e l'esito meta è emesso una sola volta per run.
+- Wiring achievements canonico (sistema unlock esistente via Condanne/SaveManager):
+  - `ending_corruption` → `CONDANNA_REGISTRO_COMPROMISSIONE`
+  - `ending_glory` → `CONDANNA_REGISTRO_ASCESA`
+  - `ending_scars` → `CONDANNA_REGISTRO_CONSUMO`
+  - `ending_pattern` → `CONDANNA_REGISTRO_PATTERN`
+- On finale resta emesso anche `GameEvents.meta_progress_unlocked(ending_key)` una sola volta per run; `archive_entry_unlocked` resta side-effect meta separato.
 
 ---
 

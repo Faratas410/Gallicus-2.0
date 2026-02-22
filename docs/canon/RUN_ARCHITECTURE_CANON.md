@@ -140,7 +140,7 @@ All changes to systems described here must update this document in the same PR.
 - `RefCounted` helper at `res://scripts/systems/run/run_end_payload_builder.gd` encapsulates end-run summary payload assembly (run summary dictionary projection from `RunState` + finale snapshot).
 - `RunManager` remains sole authority for finale selection, terminal phase gating, and `GameEvents` terminal emissions (`run_finale_selected`, `run_ended`, `run_failed`).
 - END_RUN is not always terminal: it becomes terminal only when finale payload meta sets `register_final=true`.
-- In END_RUN terminal mode, RunManager emits meta contract keys `register_message`, `register_final`, `register_ending_key`, `next_bet_enabled=false`, and emits `GameEvents.meta_progress_unlocked(register_ending_key)` exactly once per run.
+- In END_RUN terminal mode, RunManager emits meta contract keys `register_message`, `register_final`, `register_ending_key`, `next_bet_enabled=false`, emits `GameEvents.meta_progress_unlocked(register_ending_key)` exactly once per run, and triggers achievements unlock via existing Condanne/SaveManager mapping keyed by `register_ending_key` (single emission, idempotent per run).
 - Helper invariants: no scene-tree access, no `GameEvents` emission, no phase transitions.
 
 ### RequestRouter

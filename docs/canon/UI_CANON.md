@@ -228,3 +228,11 @@ Current MP3 files under `res://Music/`:
 Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are removed from active runtime path (no enemy combat HUD authority).
 - Runtime enforcement note (Level 3): player HP UI reactive wiring is removed from active runtime path (no `health_changed`/`get_health` bindings in UIRoot).
 - Main menu visual ambience contract: `res://scenes/Main.tscn` includes `MenuLayer/MainMenu/MenuAmbience` with visual-only layered textures (`Base`, `CloudsLayer`, `LightOverlay`, `FelixStatue`, `OwlBanner`, `FogLayer`, `TorchFlames`) driven by `res://scripts/ui/menu_ambience.gd`; no GameEvents wiring and no flow authority changes are allowed in this node.
+
+## BettingCircle pact card readability baseline (Patch: minimal UI visibility)
+- Runtime scene: `res://scenes/ui/BettingCircle.tscn`.
+- Pact option buttons `BetOption1`, `BetOption2`, `BetOption3` use `custom_minimum_size = Vector2(0, 240)` to preserve vertical room for descriptive lines.
+- Each bet card root `CardVBox` uses vertical expand/fill (`size_flags_vertical = 3`) so label content consumes available height instead of compressing.
+- Descriptive labels `CondannaLabel`, `CondizioneLabel`, `PattoLabel` use smart wrapping (`autowrap_mode = 3`) with `clip_text = false` to avoid silent truncation of pact text.
+- `CondannaIcon` remains present but non-dominant (`custom_minimum_size = Vector2(0, 32)`, non-expanding stretch mode), so iconography does not displace label readability.
+- Scope guard: this baseline is visual-only and does not change `RunManager`, `GameEvents`, bet payload content, or flow authority.

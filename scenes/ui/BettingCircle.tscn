@@ -132,7 +132,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="BetOption1" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(0, 240)
 size_flags_horizontal = 3
 toggle_mode = true
 text = ""
@@ -146,6 +146,7 @@ offset_left = 12.0
 offset_top = 10.0
 offset_right = -12.0
 offset_bottom = -10.0
+size_flags_vertical = 3
 
 [node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
@@ -155,37 +156,37 @@ theme_type_variation = &"TitleLabel"
 text = "INCASSA E VAI"
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(0, 32)
 texture = ExtResource("13")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/CondannaLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "❌ CONDANNA: ..."
 
 [node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/CondizioneLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "⚠️ CONDIZIONE: ..."
 
 [node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/PattoLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "✅ PATTO: ..."
 
 [node name="BetOption2" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(0, 240)
 size_flags_horizontal = 3
 toggle_mode = true
 text = ""
@@ -199,6 +200,7 @@ offset_left = 12.0
 offset_top = 10.0
 offset_right = -12.0
 offset_bottom = -10.0
+size_flags_vertical = 3
 
 [node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
@@ -208,37 +210,37 @@ theme_type_variation = &"TitleLabel"
 text = "SANGUE INTEGRO"
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(0, 32)
 texture = ExtResource("13")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondannaLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "❌ CONDANNA: ..."
 
 [node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondizioneLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "⚠️ CONDIZIONE: ..."
 
 [node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/PattoLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "✅ PATTO: ..."
 
 [node name="BetOption3" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(0, 240)
 size_flags_horizontal = 3
 toggle_mode = true
 text = ""
@@ -252,6 +254,7 @@ offset_left = 12.0
 offset_top = 10.0
 offset_right = -12.0
 offset_bottom = -10.0
+size_flags_vertical = 3
 
 [node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
@@ -261,33 +264,33 @@ theme_type_variation = &"TitleLabel"
 text = "RADDOPPI O MUORI"
 
 [node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(0, 32)
 texture = ExtResource("13")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondannaLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "❌ CONDANNA: ..."
 
 [node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondizioneLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "⚠️ CONDIZIONE: ..."
 
 [node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
 size_flags_horizontal = 3
 
 [node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/PattoLabelPanel"]
-autowrap_mode = 2
-clip_text = true
+autowrap_mode = 3
+clip_text = false
 text = "✅ PATTO: ..."
 
 [node name="SigillaButton" type="Button" parent="ContractPanel/ContractVBox"]

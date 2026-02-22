@@ -48,6 +48,15 @@ All changes to systems described here must update this document in the same PR.
 - UI remains reactive: it must render the provided payload and must not gate this phase through queue/callback side flows.
 - Active runtime UI contract does not expose or emit a post-bet queue completion signal for phase progression authority.
 
+## END_RUN payload contract
+- END_RUN payload meta keys are canonical and always emitted by RunManager:
+  - `meta.register_message: String`
+  - `meta.register_final: bool`
+  - `meta.register_ending_key: String`
+  - `meta.next_bet_enabled: bool`
+- UI must derive END_RUN `Next Bet` visibility/enabled state **only** from `meta.next_bet_enabled` (reactive rule, no local gameplay decision).
+- If `meta.register_final=true`, UI shows an explicit final marker (`FINAL: <titolo>` or equivalent) and keeps Restart/Quit handlers unchanged.
+
 ## Non-negotiable visual rules
 1. **Base UI scale**: UI assets are **1x** and must render pixel-crisp at game resolution (baseline: `UI assets (1x)` reference sheet).
 2. **Font rule**: `Italiana-Regular.ttf` is the only official UI font source.

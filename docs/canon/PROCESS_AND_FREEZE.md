@@ -218,3 +218,56 @@ Any future runtime modification requires updating:
 - repo_map.md
 - MECHANICS_UNIFIED (if flow impacted)
 
+
+---
+
+## 🔒 L3 — Legacy & Enum Stability Policy
+
+### 1️⃣ Legacy nel Flow L3 Attivo
+
+Quando una fase, funzione o traiettoria viene dichiarata **legacy** nel flow L3 attivo, deve rispettare una delle due condizioni:
+
+**Opzione A (preferita):**
+
+* Nessun callsite runtime
+* Nessun signal collegato
+* Nessun timer/fallback associato
+* Nessun ingresso di fase (_set_phase / _run_enter_phase)
+* Nessuna dipendenza in guardie request
+
+**Opzione B (solo se richiesto da compatibilità):**
+
+* Slot enum mantenuto ma marcato come:
+  `# RESERVED (removed in L3)`
+* Nessun percorso eseguibile verso quella fase
+
+Non è ammesso lasciare codice “legacy ma ancora eseguibile”.
+
+---
+
+### 2️⃣ Enum di Fase — Regola di Stabilità
+
+Le enum di RunPhase seguono questa regola:
+
+* Se la fase NON è persistita in save/checkpoint:
+  → È consentita la compattazione numerica.
+
+* Se la fase È persistita (direttamente o indirettamente):
+  → I valori numerici diventano **frozen**.
+  → Le fasi rimosse devono restare come `RESERVED`.
+  → Qualsiasi modifica richiede:
+
+  * level3_schema bump
+  * migrazione esplicita
+
+---
+
+### 3️⃣ Single Trajectory Principle
+
+Nel flow L3 attivo deve esistere **una sola traiettoria autoritativa** per ogni segmento critico (es. post-firma patto).
+
+Non sono ammessi:
+
+* callback alternativi
+* timer fallback paralleli
+* rami di fase raggiungibili ma non documentati

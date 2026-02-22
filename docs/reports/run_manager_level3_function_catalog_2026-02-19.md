@@ -72,7 +72,7 @@ Elementi che richiedono verifica manuale ulteriore (duplicazioni o stato già va
 Non catalogate come inutili perché attivate indirettamente:
 - `_on_smoke_driver_tick`, `_smoke_quit_gate` (timer/deferred call).
 - `_on_request_*`, `_on_bet_*`, `_on_modal_*`, `_on_wave_started`, `_on_player_spawned`, `_on_enemy_killed` (connect su `GameEvents`/runtime signals).
-- `_on_arena_message_queue_completed`, `_force_post_bet_choice_fallback` (wiring su coda messaggi arena).
+- `[removed_post_bet_queue_callback]`, `_force_post_bet_choice_fallback` (wiring su coda messaggi arena).
 
 ---
 

@@ -11,7 +11,6 @@ extends CanvasLayer
 # - Critical invariants: UI is reactive; RunManager and systems own state changes.
 # -----------------------------------------------------------------------------
 
-signal arena_message_queue_completed
 
 const FAST_SELECTION_SECONDS: int = 12
 const RunPhaseContract = preload("res://scripts/contracts/run_phase_contract.gd")
@@ -1207,7 +1206,6 @@ func _run_post_bet_queue() -> void:
 		_hide_post_bet_payload(payload)
 		await get_tree().create_timer(FADE_OUT_SEC).timeout
 	_post_bet_running = false
-	arena_message_queue_completed.emit()
 
 func is_post_bet_queue_running() -> bool:
 	return _post_bet_running

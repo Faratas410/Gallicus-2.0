@@ -302,9 +302,9 @@ Catalogazione aggiuntiva per facilitare il purge in modo organizzato. Regole app
 | 3454 | `_build_sentence_payload` | `save_continue` |
 | 3465 | `_get_sentence_rule` | `other` |
 | 3477 | `_get_sentence_doom` | `other` |
-| 3493 | `_queue_push_luck_choice` | `other` |
+| 3493 | `[removed_post_bet_queue_step]` | `other` |
 | 3497 | `_enter_first_reaction` | `phase_flow` |
-| 3514 | `_on_arena_message_queue_completed` | `arena_enemy_runtime` |
+| 3514 | `[removed_post_bet_queue_callback]` | `arena_enemy_runtime` |
 | 3521 | `_force_post_bet_choice_fallback` | `betting_pacts` |
 | 3531 | `_get_cashout_lock_reason` | `other` |
 | 3542 | `_get_double_lock_reason` | `other` |

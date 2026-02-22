@@ -51,13 +51,6 @@ shader = SubResource("Shader_menu_fog_layer")
 shader_parameter/speed = 0.03
 shader_parameter/strength = 0.07
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_flag_pole"]
-atlas = ExtResource("17_menu_banner")
-region = Rect2(1155, 40, 125, 680)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_flag_cloth"]
-atlas = ExtResource("17_menu_banner")
-region = Rect2(1000, 80, 200, 380)
 [node name="Main" type="Node2D"]
 
 [node name="RitualBackground" type="CanvasLayer" parent="."]
@@ -168,14 +161,18 @@ position = Vector2(0, 0)
 [node name="Pole" type="Sprite2D" parent="MenuLayer/MainMenu/MenuAmbience/FlagRoot"]
 position = Vector2(1155, 40)
 centered = false
-texture = SubResource("AtlasTexture_flag_pole")
+texture = ExtResource("17_menu_banner")
+region_enabled = true
+region_rect = Rect2(1155, 40, 125, 680)
 texture_filter = 0
 
 [node name="FlagCloth" type="Sprite2D" parent="MenuLayer/MainMenu/MenuAmbience/FlagRoot"]
 material = SubResource("ShaderMaterial_flag_cloth_wave")
 position = Vector2(1000, 80)
 centered = false
-texture = SubResource("AtlasTexture_flag_cloth")
+texture = ExtResource("17_menu_banner")
+region_enabled = true
+region_rect = Rect2(1000, 80, 200, 380)
 texture_filter = 0
 
 [node name="FogLayer_Back" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]

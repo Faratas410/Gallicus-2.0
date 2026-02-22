@@ -5,32 +5,35 @@ const TORCH_FRAME_COUNT: int = 4
 const TORCH_FPS: float = 8.0
 
 @export var clouds_path: NodePath
-@export var fog_path: NodePath
+@export var fog_back_path: NodePath
+@export var fog_mid_path: NodePath
+@export var fog_front_path: NodePath
 @export var light_overlay_path: NodePath
 @export var torch_flames_path: NodePath
 @export_file("*.png") var torch_strip_path: String = "res://assets/MainMenu/menu_torch_flame_strip_4x64.png"
 @export var cloud_speed: float = 8.0
-@export var fog_speed: float = 3.0
 
 var _time: float = 0.0
 var _clouds: Control = null
-var _fog: Control = null
+var _fog_back: Control = null
+var _fog_mid: Control = null
+var _fog_front: Control = null
 var _light_overlay: Control = null
 var _torch_nodes: Array[AnimatedSprite2D] = []
 
 func _ready() -> void:
 	_clouds = get_node_or_null(clouds_path) as Control
-	_fog = get_node_or_null(fog_path) as Control
+	_fog_back = get_node_or_null(fog_back_path) as Control
+	_fog_mid = get_node_or_null(fog_mid_path) as Control
+	_fog_front = get_node_or_null(fog_front_path) as Control
 	_light_overlay = get_node_or_null(light_overlay_path) as Control
 	_cache_torch_nodes()
 	_setup_torch_animation()
-	if _fog != null:
-		_fog.modulate = Color(1, 1, 1, 0.15)
 
 func _process(delta: float) -> void:
 	_time += delta
 	_update_clouds(delta)
-	_update_fog(delta)
+	_update_fog_layers()
 	_update_light_flicker()
 
 func _cache_torch_nodes() -> void:
@@ -78,16 +81,18 @@ func _update_clouds(delta: float) -> void:
 	if _clouds.position.x < -1280.0:
 		_clouds.position.x = 0.0
 
-func _update_fog(delta: float) -> void:
-	if _fog == null:
-		return
-	_fog.position.x -= fog_speed * delta
-	if _fog.position.x < -1280.0:
-		_fog.position.x = 0.0
+func _update_fog_layers() -> void:
 	var t: float = Time.get_ticks_msec() / 1000.0
-	var fog_modulate: Color = _fog.modulate
-	fog_modulate.a = 0.12 + sin(t * 1.5) * 0.03
-	_fog.modulate = fog_modulate
+	_apply_fog_alpha(_fog_back, 0.17 + (sin(t * 1.2) * 0.02))
+	_apply_fog_alpha(_fog_mid, 0.25 + (sin(t * 1.5 + 0.6) * 0.025))
+	_apply_fog_alpha(_fog_front, 0.33 + (sin(t * 1.8 + 1.1) * 0.03))
+
+func _apply_fog_alpha(fog_layer: Control, alpha: float) -> void:
+	if fog_layer == null:
+		return
+	var fog_modulate: Color = fog_layer.modulate
+	fog_modulate.a = clamp(alpha, 0.0, 1.0)
+	fog_layer.modulate = fog_modulate
 
 func _update_light_flicker() -> void:
 	if _light_overlay == null:

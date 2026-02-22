@@ -2409,7 +2409,7 @@ func _serialize_stringname_array(items: Array) -> Array[String]:
 		values.append(text)
 	return values
 
-func _serialize_run_scars(items: Array[Scar]) -> Array[Dictionary]:
+func _serialize_run_scars(items: Array) -> Array[Dictionary]:
 	var values: Array[Dictionary] = []
 	for item: Scar in items:
 		values.append(item.to_dict())

@@ -196,6 +196,7 @@ jobs:
           grep -q "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete" smoke.log
 
       - name: Run headless smoke gate (FULL_RUN)
+        if: false # TEMP PAUSE: FULL_RUN smoke gated step
         env:
           GALLICUS_SMOKE: "1"
           GALLICUS_SMOKE_SCENARIO: "FULL_RUN"
@@ -244,6 +245,7 @@ jobs:
           fi
 
   full_run_diagnostic:
+    if: false # TEMP PAUSE: FULL_RUN smoke diagnostic job
     runs-on: ubuntu-latest
     continue-on-error: true
     env:

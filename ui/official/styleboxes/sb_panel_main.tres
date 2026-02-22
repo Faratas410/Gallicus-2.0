@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://ui/official/atlas/at_panel_main.tres" id="1_panel"]
+[ext_resource type="Texture2D" path="res://ui/official/atlas/at_button_primary_normal.tres" id="1_panel"]
 
 [resource]
 texture = ExtResource("1_panel")

@@ -181,8 +181,9 @@ jobs:
             echo "Found ERROR in log."
             exit 1
           fi
-          if grep -E "WARNING|Warning" -n smoke.log; then
-            echo "Found WARNING in log (warnings = errors)."
+          # Fail on warnings, except known Godot headless shutdown leak warning.
+          if grep -E "WARNING|Warning" -n smoke.log | grep -v "ObjectDB instances leaked at exit" | grep -v "core/object/object.cpp"; then
+            echo "Found WARNING in log (warnings = errors, excluding known shutdown leak warning)."
             exit 1
           fi
 

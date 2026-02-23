@@ -77,9 +77,15 @@ func _build_torch_frames(strip_texture: Texture2D) -> SpriteFrames:
 func _update_clouds(delta: float) -> void:
 	if _clouds == null:
 		return
-	_clouds.position.x -= cloud_speed * delta
-	if _clouds.position.x < -1280.0:
-		_clouds.position.x = 0.0
+	_clouds.position.x = 0.0
+	var ugly_flash: float = (sin((_time + delta) * 13.0) * 0.5) + 0.5
+	var ugly_tint: float = (sin(_time * 31.0) * 0.5) + 0.5
+	var clouds_modulate: Color = _clouds.modulate
+	clouds_modulate.r = clamp(0.35 + (ugly_tint * 0.55), 0.0, 1.0)
+	clouds_modulate.g = clamp(0.05 + (ugly_flash * 0.25), 0.0, 1.0)
+	clouds_modulate.b = clamp(0.5 - (ugly_tint * 0.45), 0.0, 1.0)
+	clouds_modulate.a = clamp(0.4 + (ugly_flash * 0.45), 0.0, 1.0)
+	_clouds.modulate = clouds_modulate
 
 func _update_fog_layers() -> void:
 	var t: float = Time.get_ticks_msec() / 1000.0

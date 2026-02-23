@@ -30,10 +30,11 @@ enum RunPhase {
 	RUN_INIT = 11,
 	BET_PRESENT = 12,
 	BET_COMMITTED = 13,
-	INTERMEDIATE_CHOICE = 14,
-	PUSH_YOUR_LUCK = 15,
-	NEXT_BET = 16,
-	RESOLUTION = 17,
+	POST_BET_MESSAGES = 14, # RESERVED (removed in L3)
+	INTERMEDIATE_CHOICE = 15,
+	PUSH_YOUR_LUCK = 16,
+	NEXT_BET = 17,
+	RESOLUTION = 18,
 }
 
 const PACT_SEALED_SECONDS: float = 0.7
@@ -828,6 +829,8 @@ func _phase_to_name(phase: RunPhase) -> String:
 			return "BET_PRESENT"
 		RunPhase.BET_COMMITTED:
 			return "BET_COMMITTED"
+		RunPhase.POST_BET_MESSAGES:
+			return "POST_BET_MESSAGES"
 		RunPhase.INTERMEDIATE_CHOICE:
 			return "INTERMEDIATE_CHOICE"
 		RunPhase.PUSH_YOUR_LUCK:
@@ -3067,6 +3070,7 @@ func _apply_intermediate_loss_penalty_if_needed() -> void:
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_intermediate_choice(bet_id: StringName) -> void:
 	_run_state.intermediate_pending_bet_id = bet_id
+	_waiting_for_intermediate_choice = true
 	_smoke_mark("INTERMEDIATE_CHOICE")
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
 

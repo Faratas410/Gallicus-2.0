@@ -88,8 +88,8 @@ Contenuti utili ma candidati a razionalizzazione/compattazione.
 - **Valutazione:** conservare solo i frame/sheet effettivamente mappati in `ui/official/atlas/*.tres`.
 
 ### 3.4 `docs/Foundations/*`
-- Materiale sorgente storico importante, ma sovrapposto al canon unificato.
-- **Valutazione:** spostamento in `docs/archive/foundations/` con index di tracciabilità, lasciando chiaro che non è autorevole.
+- Stato aggiornato: la cartella legacy è stata rimossa dopo consolidamento in `docs/canon/FOUNDATIONS.md`.
+- **Valutazione:** azione completata; mantenere monitoraggio di eventuali riferimenti residui nei report storici.
 
 ---
 
@@ -106,14 +106,9 @@ Contenuti ad alto rapporto rumore/valore, coerenti con eliminazione senza impatt
 - **Perché eliminabile:** inventario obsoleto e non allineato allo stato reale del repo.
 
 ### 4.3 Doppioni report tra root `docs/` e `docs/reports/`
-Coppie con stesso topic in due posizioni:
-- `codex_report_1_0_gap.md`
-- `level3_integrity_audit_report.md`
-- `level3_open_questions_log.md`
-- `technical_resume_level3_canonical_it.md`
-- `technical_review_resume_it.md`
+- Stato aggiornato: i file elencati risultano già centralizzati in `docs/reports/` (nessun doppione root attivo).
 
-**Perché eliminabile/riducibile:** doppia fonte su contenuti non canonici aumenta drift e costi di manutenzione. Target consigliato: tenere solo una posizione (`docs/reports/`).
+**Perché monitorare:** evitare reintroduzione di copie parallele su documenti non canonici.
 
 ---
 

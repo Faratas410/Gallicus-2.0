@@ -776,29 +776,24 @@ step = 5.0
 value = 10.0
 shortcut_keys_enabled = false
 
-[node name="BetButtons" type="VBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-size_flags_horizontal = 3
+[node name="BetButtons" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 16
 
 [node name="Btn_INTRO_SELECT_WIN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
 custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 autowrap_mode = 2
 icon = null
-text = "CONDANNA — RADDOPPI O MUORI"
-
-[node name="Btn_INTRO_SELECT_NO_HIT" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
-custom_minimum_size = Vector2(0, 44)
-size_flags_horizontal = 3
-autowrap_mode = 2
-icon = null
-text = "CONDIZIONE — SANGUE INTEGRO"
+text = "RADDOPPI O MUORI"
 
 [node name="Btn_INTRO_SELECT_FAST" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
 custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 autowrap_mode = 2
 icon = null
-text = "PATTO — INCASSA E VAI"
+text = "INCASSA E VAI"
 
 [node name="BetConfirmRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 visible = true

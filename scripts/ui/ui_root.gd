@@ -98,14 +98,13 @@ const ENDING_UI_MAP: Dictionary = {
 @onready var _lbl_intro_footer: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
 @onready var stake_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
 @onready var stake_input: SpinBox = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
-@onready var bet_buttons_container: VBoxContainer = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as VBoxContainer
+@onready var bet_buttons_container: BoxContainer = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as BoxContainer
 @onready var special_arena_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel/Lbl_INTRO_SUBTITLE") as Label
 @onready var condanna_focus_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINTPanel/Lbl_INTRO_HINT") as Label
 @onready var bet_confirm_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow") as Control
 @onready var bet_confirm_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
 @onready var bet_confirm_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM") as Button
 @onready var intro_select_win_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN") as Button
-@onready var intro_select_no_hit_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT") as Button
 @onready var intro_select_fast_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST") as Button
 @onready var seed_input: LineEdit = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
 @onready var seed_apply_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED") as Button
@@ -539,10 +538,6 @@ func _wire_intro_phase_buttons() -> void:
 		var win_callable: Callable = Callable(self, "_on_bet_win_pressed")
 		if not intro_select_win_button.pressed.is_connected(win_callable):
 			intro_select_win_button.pressed.connect(win_callable)
-	if intro_select_no_hit_button != null:
-		var no_hit_callable: Callable = Callable(self, "_on_bet_no_hit_pressed")
-		if not intro_select_no_hit_button.pressed.is_connected(no_hit_callable):
-			intro_select_no_hit_button.pressed.connect(no_hit_callable)
 	if intro_select_fast_button != null:
 		var fast_callable: Callable = Callable(self, "_on_bet_fast_pressed")
 		if not intro_select_fast_button.pressed.is_connected(fast_callable):
@@ -1704,16 +1699,23 @@ func _on_push_luck_double_pressed() -> void:
 		GameEvents.request_pyl_double.emit()
 
 func _on_bet_win_pressed() -> void:
-	if GameEvents.has_signal("request_intro_select_bet"):
-		GameEvents.request_intro_select_bet.emit("DOUBLE_OR_DIE")
-
-func _on_bet_no_hit_pressed() -> void:
-	if GameEvents.has_signal("request_intro_select_bet"):
-		GameEvents.request_intro_select_bet.emit(String(BetCatalog.BET_FLAWLESS_BLOOD))
+	_emit_intro_bet_request(0)
 
 func _on_bet_fast_pressed() -> void:
-	if GameEvents.has_signal("request_intro_select_bet"):
-		GameEvents.request_intro_select_bet.emit("CASH_OUT")
+	_emit_intro_bet_request(1)
+
+func _emit_intro_bet_request(slot_index: int) -> void:
+	if not GameEvents.has_signal("request_place_bet"):
+		return
+	var bet_ids: PackedStringArray = BetCatalog.level3_bet_ids()
+	if slot_index < 0 or slot_index >= bet_ids.size():
+		push_error("UIRoot: intro bet slot out of range (%d/%d)" % [slot_index, bet_ids.size()])
+		return
+	var bet_id: String = bet_ids[slot_index]
+	if bet_id == "":
+		push_error("UIRoot: intro bet id empty at slot %d" % slot_index)
+		return
+	GameEvents.request_place_bet.emit(bet_id, 0)
 
 func _on_restart_pressed() -> void:
 	if GameEvents.has_signal("request_end_run_restart"):
@@ -1913,13 +1915,6 @@ func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 		button.add_theme_color_override("font_hover_color", Color(0.8, 0.2, 0.2, 1.0))
 		button.add_theme_color_override("font_focus_color", Color(0.8, 0.2, 0.2, 1.0))
 		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.25, 0.25, 1.0))
-		return
-	if bet_id == String(BetCatalog.BET_FLAWLESS_BLOOD):
-		button.modulate = Color(1.0, 0.95, 0.8, 1.0)
-		button.add_theme_color_override("font_color", Color(0.6, 0.45, 0.0, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.75, 0.55, 0.1, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.75, 0.55, 0.1, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.65, 0.15, 1.0))
 		return
 	if bet_id == "BLOOD_TAX":
 		button.modulate = Color(1.0, 0.9, 0.82, 1.0)

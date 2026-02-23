@@ -10,13 +10,6 @@ const BETTING_CIRCLE_OPTIONS: Array[Dictionary] = [
 		"pact": "✅ PATTO: Ricompensa minore, ma sicura.",
 	},
 	{
-		"id": &"FLAWLESS_BLOOD",
-		"name": "SANGUE INTEGRO",
-		"doom": "❌ CONDANNA: Se fallisci, perdi parte della tua forza per tutta la run.",
-		"condition": "⚠️ CONDIZIONE: Vinci senza subire danni.",
-		"pact": "✅ PATTO: Ricompensa alta.",
-	},
-	{
 		"id": &"DOUBLE_OR_DIE",
 		"name": "RADDOPPI O MUORI",
 		"doom": "❌ CONDANNA: Se fallisci, la run termina.",
@@ -37,22 +30,19 @@ const BETTING_CIRCLE_OPTIONS: Array[Dictionary] = [
 @onready var bet_option_2_doom: Label = $ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondannaLabelPanel/CondannaLabel as Label
 @onready var bet_option_2_condition: Label = $ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondizioneLabelPanel/CondizioneLabel as Label
 @onready var bet_option_2_pact: Label = $ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/PattoLabelPanel/PattoLabel as Label
-@onready var bet_option_3_name: Label = $ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/BetNameLabelPanel/BetNameLabel as Label
-@onready var bet_option_3_doom: Label = $ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondannaLabelPanel/CondannaLabel as Label
-@onready var bet_option_3_condition: Label = $ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondizioneLabelPanel/CondizioneLabel as Label
-@onready var bet_option_3_pact: Label = $ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/PattoLabelPanel/PattoLabel as Label
 
 var selected_bet_id: StringName = &""
 
 func _ready() -> void:
 	visible = false
 	var bet_group: ButtonGroup = ButtonGroup.new()
-	var bet_buttons: Array[Button] = [bet_option_1, bet_option_2, bet_option_3]
+	var bet_buttons: Array[Button] = [bet_option_1, bet_option_2]
 	_setup_group(bet_buttons, bet_group)
+	bet_option_3.visible = false
+	bet_option_3.disabled = true
 	_apply_option_copy()
 	bet_option_1.pressed.connect(_on_bet_selected.bind(BETTING_CIRCLE_OPTIONS[0].get("id", &"")))
 	bet_option_2.pressed.connect(_on_bet_selected.bind(BETTING_CIRCLE_OPTIONS[1].get("id", &"")))
-	bet_option_3.pressed.connect(_on_bet_selected.bind(BETTING_CIRCLE_OPTIONS[2].get("id", &"")))
 	sigilla_button.pressed.connect(_on_sigilla_pressed)
 	_reset_button_state()
 
@@ -79,7 +69,6 @@ func _setup_group(buttons: Array[Button], group: ButtonGroup) -> void:
 func _reset_button_state() -> void:
 	bet_option_1.button_pressed = false
 	bet_option_2.button_pressed = false
-	bet_option_3.button_pressed = false
 	_update_sigilla_state()
 
 func _on_bet_selected(bet_id: Variant) -> void:
@@ -98,11 +87,10 @@ func _update_sigilla_state() -> void:
 	sigilla_button.disabled = not is_ready
 
 func _apply_option_copy() -> void:
-	if BETTING_CIRCLE_OPTIONS.size() < 3:
+	if BETTING_CIRCLE_OPTIONS.size() < 2:
 		return
 	_apply_card_copy(BETTING_CIRCLE_OPTIONS[0], bet_option_1_name, bet_option_1_doom, bet_option_1_condition, bet_option_1_pact)
 	_apply_card_copy(BETTING_CIRCLE_OPTIONS[1], bet_option_2_name, bet_option_2_doom, bet_option_2_condition, bet_option_2_pact)
-	_apply_card_copy(BETTING_CIRCLE_OPTIONS[2], bet_option_3_name, bet_option_3_doom, bet_option_3_condition, bet_option_3_pact)
 
 func _apply_card_copy(bet_data: Dictionary, name_label: Label, doom_label: Label, condition_label: Label, pact_label: Label) -> void:
 	name_label.text = str(bet_data.get("name", ""))

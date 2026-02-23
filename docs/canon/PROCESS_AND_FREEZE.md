@@ -71,6 +71,137 @@ Non è un elenco di divieti assoluti, ma di invarianti da rispettare.
 
 Se una patch li viola, la patch va fermata e segnalata.
 
+---
+
+# EVOLUZIONE L3 — FLEXIBLE DOMAIN POLICY
+
+Gallicus Level 3 introduce una distinzione strutturale tra:
+
+• Core Authority Zone (Hard Freeze)
+• Flexible Domain Zone (Controlled Freedom)
+• Tooling & Infrastructure Zone (High Freedom)
+
+L’obiettivo è aumentare la velocità operativa di Codex cloud
+senza compromettere autorità, determinismo e coerenza canonica.
+
+---
+
+## 1️⃣ CORE AUTHORITY ZONE — HARD FREEZE
+
+Questa zona NON è negoziabile.
+
+Comprende:
+
+- RunManager flow authority
+- Phase routing
+- GameEvents contract
+- Seed determinism logic
+- Scar RNG state contract
+- Single-run authority guarantees
+- Entry scene contract
+
+Regole:
+
+❌ Nessun refactor strutturale
+❌ Nessuna modifica architetturale implicita
+❌ Nessuna "ottimizzazione migliorativa"
+
+Consentito solo:
+
+✅ Bugfix derivante da sintomo concreto
+✅ Fix di violazione invarianti
+✅ Correzione determinismo / idempotenza
+
+Se una patch tocca questa zona:
+→ deve dichiararlo esplicitamente nel report.
+
+---
+
+## 2️⃣ FLEXIBLE DOMAIN ZONE — CONTROLLED FREEDOM
+
+Zona accelerata per sviluppo.
+
+Comprende:
+
+- Scar kernel interno (non authority)
+- Data catalogs statici
+- UI layout e presentazione
+- Asset wiring
+- Static resource binding
+- Serialization helpers
+- Pure utility modules
+
+Qui Codex può:
+
+✅ Rifattorizzare codice puramente meccanico
+✅ Estrarre costanti / data file
+✅ Eliminare duplicazioni
+✅ Applicare pulizie locali
+✅ Eseguire batch micro-fix coerenti nello stesso dominio
+
+Vincolo:
+
+La semantica runtime non deve cambiare.
+
+Se cambia comportamento → non è più zona flexible.
+
+---
+
+## 3️⃣ TOOLING & INFRASTRUCTURE ZONE — HIGH FREEDOM
+
+Comprende:
+
+- CI workflows
+- Smoke test matrix
+- Headless validation
+- Setup / maintenance scripts
+- Lint / type enforcement
+- Container configuration
+- Cloud environment configuration
+
+In questa zona Codex può operare con ampia autonomia,
+inclusi:
+
+✅ Miglioramenti performance CI
+✅ Hardening test
+✅ Parallel validation
+✅ Container caching tuning
+
+Unico limite:
+
+Il runtime del gioco non deve dipendere da internet o tool esterni.
+
+---
+
+## Nuova Regola Operativa
+
+La regola evolve da:
+
+"Una task = una patch"
+
+a:
+
+"Una task = un dominio coerente"
+
+Dominio coerente significa:
+
+✔ stesso sistema
+✔ stessa responsabilità
+✔ stessa zona operativa
+
+Se una modifica attraversa due zone diverse:
+→ STOP e separare in task distinte.
+
+---
+
+Principio guida L3 evoluto:
+
+Velocità sì.
+Autorità non si tocca.
+
+Il core resta sigillato.
+Le periferie possono accelerare.
+
 1. INVARIANTI TECNICI (NON NEGOZIABILI)
 
 Engine: Godot 4.6

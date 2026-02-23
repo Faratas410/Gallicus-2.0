@@ -1535,17 +1535,17 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	var cashout_modifier_text: String = str(meta.get("cashout_modifier_text", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
-		lines.append("❌ Condanna futura: %s" % doom_text)
+		lines.append("CONDANNA: %s" % doom_text)
 	if condition_text != "":
-		lines.append("⚠️ Condizione: %s" % condition_text)
+		lines.append("CONDIZIONE: %s" % condition_text)
 	if pact_text != "":
-		lines.append("✅ Patto potenziato: %s" % pact_text)
+		lines.append("PATTO: %s" % pact_text)
 	if choice_note != "":
-		lines.append("⚡ %s" % choice_note)
+		lines.append("NOTA: %s" % choice_note)
 	if cashout_locked and cashout_reason != "":
-		lines.append("⛔ Incasso bloccato: %s" % cashout_reason)
+		lines.append("INCASSO BLOCCATO: %s" % cashout_reason)
 	if double_locked and double_reason != "":
-		lines.append("⛔ Raddoppio bloccato: %s" % double_reason)
+		lines.append("RADDOPPIO BLOCCATO: %s" % double_reason)
 	if push_luck_details != null:
 		push_luck_details.text = "\n".join(lines)
 	if push_luck_audience_label != null:
@@ -1856,18 +1856,18 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String
 	var archetype_label: String = str(bet.get("archetype_label", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
-		lines.append("❌ Condanna — %s" % name_text)
+		lines.append("CONDANNA: %s" % name_text)
 		lines.append("%s" % doom_text)
 	else:
-		lines.append("❌ Condanna — %s" % name_text)
+		lines.append("CONDANNA: %s" % name_text)
 	if archetype_label != "":
 		lines.append(archetype_label)
 	if condition_text != "":
-		lines.append("⚠️ Condizione: %s" % condition_text)
+		lines.append("CONDIZIONE: %s" % condition_text)
 	if pact_text != "":
-		lines.append("✅ Patto: %s" % pact_text)
+		lines.append("PATTO: %s" % pact_text)
 	if extra_note != "":
-		lines.append("ℹ️ %s" % extra_note)
+		lines.append("NOTA: %s" % extra_note)
 	return "\n".join(lines)
 
 func _format_lock_note(reason: String, fallback: String) -> String:

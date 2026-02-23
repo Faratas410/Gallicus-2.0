@@ -5,16 +5,16 @@ const BETTING_CIRCLE_OPTIONS: Array[Dictionary] = [
 	{
 		"id": &"CASH_OUT",
 		"name": "INCASSA E VAI",
-		"doom": "❌ CONDANNA: Nessuna. La folla ti ricorderà come prudente.",
-		"condition": "⚠️ CONDIZIONE: Vinci l’arena.",
-		"pact": "✅ PATTO: Ricompensa minore, ma sicura.",
+		"doom": "CONDANNA: Nessuna. Prudenza registrata.",
+		"condition": "CONDIZIONE: Vinci l'arena.",
+		"pact": "PATTO: Ricompensa minore, ma certa.",
 	},
 	{
 		"id": &"DOUBLE_OR_DIE",
 		"name": "RADDOPPI O MUORI",
-		"doom": "❌ CONDANNA: Se fallisci, la run termina.",
-		"condition": "⚠️ CONDIZIONE: Vinci l’arena.",
-		"pact": "✅ PATTO: Ricompensa devastante.",
+		"doom": "CONDANNA: Fallimento: chiusura della run.",
+		"condition": "CONDIZIONE: Vinci l'arena.",
+		"pact": "PATTO: Ricompensa massima.",
 	},
 ]
 

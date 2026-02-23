@@ -228,7 +228,7 @@ Canonical Level 3 post-bet sequence (active flow authority):
 2. On `pact_sealed_closed`, `RunManager` opens `INTERMEDIATE_CHOICE` directly.
 3. `INTERMEDIATE_CHOICE` accepts gesture request and then starts `RESOLUTION` ritual.
 4. `RESOLUTION` emits `resolve_ritual_opened/closed`, resolves arena, then opens `PUSH_YOUR_LUCK`.
-5. `POST_BET_MESSAGES` is legacy/unreachable in active Level 3 flow and must not gate `INTERMEDIATE_CHOICE`.
+5. `POST_BET_MESSAGES` is legacy/unreachable in active Level 3 flow and must not gate `INTERMEDIATE_CHOICE`; enum slot value `14` remains reserved (`POST_BET_MESSAGES`) while active gesture phase is `INTERMEDIATE_CHOICE=15` for UI contract alignment.
 6. Active Level 3 flow must not depend on `arena_message_queue_completed` callback or fallback timer paths for post-bet progression.
 
 ## Module boundaries

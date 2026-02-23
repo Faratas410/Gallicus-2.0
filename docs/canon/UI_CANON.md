@@ -264,3 +264,9 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Descriptive labels `CondannaLabel`, `CondizioneLabel`, `PattoLabel` use smart wrapping (`autowrap_mode = 3`) with `clip_text = false` to avoid silent truncation of pact text.
 - `CondannaIcon` remains present but non-dominant (`custom_minimum_size = Vector2(0, 32)`, non-expanding stretch mode), so iconography does not displace label readability.
 - Scope guard: this baseline is visual-only and does not change `RunManager`, `GameEvents`, bet payload content, or flow authority.
+
+## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)
+- `Phase_FIRST_REACTION` (`IL PATTO È SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
+- `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.
+- Scope guard: this contract removes only legacy post-bet copy selection (`POST_BET_TEXTS`) and does not alter phase/event sequencing authority.
+

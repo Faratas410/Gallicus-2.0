@@ -67,19 +67,6 @@ const LEVEL3_PACT_UNLOCKS: Dictionary[StringName, StringName] = {
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_DOUBLE_OR_DIE: StringName = &"DOUBLE_OR_DIE"
 
-const POST_BET_TEXTS: Dictionary = {
-	BET_CASH_OUT: [
-		"Hai incassato. La folla mormora.",
-		"Te ne vai con il bottino. Sguardi bassi.",
-		"Meglio vivi che leggendari.",
-	],
-	BET_DOUBLE_OR_DIE: [
-		"Hai rilanciato. La folla trattiene il fiato.",
-		"Nessun ritorno. I volti restano fermi.",
-		"Hai scelto il sangue invece dell'oro.",
-	],
-}
-
 const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CASH_OUT",
@@ -520,9 +507,6 @@ static func level3_bets() -> Array[Dictionary]:
 
 static func level3_bet_ids() -> PackedStringArray:
 	return PackedStringArray([String(BET_CASH_OUT), String(BET_DOUBLE_OR_DIE)])
-
-static func post_bet_texts() -> Dictionary:
-	return POST_BET_TEXTS.duplicate(true)
 
 
 static func map_level3_behavior(bet_id: StringName) -> StringName:

@@ -475,6 +475,12 @@ func show_phase(phase: int) -> void:
 	if _phase_node_map.is_empty():
 		push_error("UI: missing phase mapping for %s" % str(phase))
 		return
+	print_debug("[FLOW][UI] show_phase input=%d mid_choice_contract=%d mid_choice_alias=%d map_keys=%s" % [
+		phase,
+		RunPhaseContract.INTERMEDIATE_CHOICE,
+		RUN_PHASE_MID_CHOICE,
+		str(_phase_node_map.keys()),
+	])
 	for mapped_phase_key: Variant in _phase_node_map.keys():
 		var mapped_phase: int = int(mapped_phase_key)
 		var phase_node: Control = _phase_node_map.get(mapped_phase, null) as Control
@@ -1199,7 +1205,16 @@ func _on_intermediate_choice_opened() -> void:
 func apply_run_ui_payload(payload: RunUiPayload) -> void:
 	if payload == null:
 		return
-	show_phase(payload.phase)
+	var target_phase: int = payload.phase
+	if payload.show_mid_choice and target_phase != RUN_PHASE_MID_CHOICE:
+		print_debug("[FLOW][UI] normalize phase for mid_choice payload=%d -> %d" % [target_phase, RUN_PHASE_MID_CHOICE])
+		target_phase = RUN_PHASE_MID_CHOICE
+	print_debug("[FLOW][UI] apply_run_ui_payload phase=%d show_mid_choice=%s show_push_your_luck=%s" % [
+		payload.phase,
+		str(payload.show_mid_choice),
+		str(payload.show_push_your_luck),
+	])
+	show_phase(target_phase)
 	if payload.show_mid_choice:
 		_apply_intermediate_choice_payload(payload)
 	if payload.show_push_your_luck:

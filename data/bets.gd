@@ -1,33 +1,15 @@
-const ARCH_DEBT: StringName = &"DEBT"
-const ARCH_EGO: StringName = &"EGO"
-const ARCH_TIME: StringName = &"TIME"
+extends RefCounted
+class_name BetsData
 
-const BETS: Array[Dictionary] = [
-	{
-		"id": "CASH_OUT",
-		"name": "INCASSA E VAI",
-		"archetype": ARCH_DEBT,
-		"archetype_label": "ARCHETIPO: DEBITO",
-		"pact": "Ricompensa bassa (placeholder)",
-		"condition": "Vinci l'arena",
-		"doom": "Nessuna condanna extra",
-	},
-	{
-		"id": "FLAWLESS_BLOOD",
-		"name": "SANGUE INTEGRO",
-		"archetype": ARCH_EGO,
-		"archetype_label": "ARCHETIPO: EGO",
-		"pact": "Ricompensa alta (placeholder)",
-		"condition": "Vinci l'arena senza subire danni",
-		"doom": "HP massimo -20 (min 1) + cicatrice FERITA APERTA",
-	},
-	{
-		"id": "DOUBLE_OR_DIE",
-		"name": "RADDOPPI O MUORI",
-		"archetype": ARCH_EGO,
-		"archetype_label": "ARCHETIPO: EGO",
-		"pact": "Ricompensa devastante (placeholder)",
-		"condition": "Vinci l'arena",
-		"doom": "MORTE IMMEDIATA: run terminata",
-	},
-]
+const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
+
+const BETS: Array[Dictionary] = BetCatalog.LEVEL3_BETS
+
+static func level3_bets() -> Array[Dictionary]:
+	return BetCatalog.level3_bets()
+
+static func level3_bet_ids() -> PackedStringArray:
+	return BetCatalog.level3_bet_ids()
+
+static func post_bet_texts() -> Dictionary:
+	return BetCatalog.post_bet_texts()

@@ -25,30 +25,30 @@ texture_margin_right = 48.0
 texture_margin_bottom = 48.0
 
 [sub_resource type="Shader" id="Shader_flag_cloth_wave"]
-code = "shader_type canvas_item;\nuniform float amplitude = 2.0;\nuniform float speed = 1.2;\nuniform float frequency = 6.0;\n\nvoid vertex() {\n\tfloat wave = sin(UV.y * frequency + TIME * speed) * amplitude;\n\tVERTEX.x += wave;\n}"
+code = "shader_type canvas_item;\nuniform float amplitude = 6.0;\nuniform float speed = 1.6;\nuniform float frequency = 7.0;\nuniform float edge_pin_power = 1.8;\n\nvoid vertex() {\n\tfloat wave = sin(UV.y * frequency + TIME * speed) * amplitude;\n\tfloat cloth_weight = pow(clamp(UV.x, 0.0, 1.0), edge_pin_power);\n\tVERTEX.x += wave * cloth_weight;\n}"
 
 [sub_resource type="Shader" id="Shader_menu_fog_layer"]
 code = "shader_type canvas_item;\nuniform float speed = 0.02;\nuniform float strength = 0.05;\n\nvoid fragment() {\n\tvec2 uv = UV;\n\tuv.x += TIME * speed;\n\tuv.y += sin((UV.x + TIME) * 4.0) * strength;\n\tCOLOR = texture(TEXTURE, uv);\n}"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_flag_cloth_wave"]
 shader = SubResource("Shader_flag_cloth_wave")
-shader_parameter/amplitude = 2.0
-shader_parameter/speed = 1.2
-shader_parameter/frequency = 6.0
+shader_parameter/amplitude = 6.0
+shader_parameter/speed = 1.6
+shader_parameter/frequency = 7.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fog_back"]
 shader = SubResource("Shader_menu_fog_layer")
-shader_parameter/speed = 0.01
+shader_parameter/speed = 0.004
 shader_parameter/strength = 0.03
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fog_mid"]
 shader = SubResource("Shader_menu_fog_layer")
-shader_parameter/speed = 0.02
+shader_parameter/speed = 0.006
 shader_parameter/strength = 0.05
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fog_front"]
 shader = SubResource("Shader_menu_fog_layer")
-shader_parameter/speed = 0.03
+shader_parameter/speed = 0.008
 shader_parameter/strength = 0.07
 
 [node name="Main" type="Node2D"]
@@ -177,7 +177,7 @@ texture_filter = 0
 
 [node name="FogLayer_Back" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
 layout_mode = 1
-anchors_preset = 15
+anchor_top = 0.62
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -191,7 +191,7 @@ stretch_mode = 5
 
 [node name="FogLayer_Mid" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
 layout_mode = 1
-anchors_preset = 15
+anchor_top = 0.62
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -205,7 +205,7 @@ stretch_mode = 5
 
 [node name="FogLayer_Front" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
 layout_mode = 1
-anchors_preset = 15
+anchor_top = 0.62
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2

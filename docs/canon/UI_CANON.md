@@ -252,7 +252,9 @@ Current MP3 files under `res://Music/`:
 
 Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are removed from active runtime path (no enemy combat HUD authority).
 - Runtime enforcement note (Level 3): player HP UI reactive wiring is removed from active runtime path (no `health_changed`/`get_health` bindings in UIRoot).
-- Main menu visual ambience contract: `res://scenes/Main.tscn` includes `MenuLayer/MainMenu/MenuAmbience` with visual-only layered textures (`Base`, `CloudsLayer`, `LightOverlay`, `FelixStatue`, `OwlBanner`, `FogLayer`, `TorchFlames`) driven by `res://scripts/ui/menu_ambience.gd`; no GameEvents wiring and no flow authority changes are allowed in this node.
+- Main menu visual ambience contract: `res://scenes/Main.tscn` includes `MenuLayer/MainMenu/MenuAmbience` with visual-only layered textures (`Base`, `CloudsLayer`, `LightOverlay`, `FelixStatue`, `FlagRoot/Pole`, `FlagRoot/FlagCloth`, `FogLayer_Back`, `FogLayer_Mid`, `FogLayer_Front`, `TorchFlames`) driven by `res://scripts/ui/menu_ambience.gd`; no GameEvents wiring and no flow authority changes are allowed in this node.
+- Flag motion contract: only `FlagRoot/FlagCloth` receives wind deformation material; `FlagRoot/Pole` remains static.
+- Fog placement and speed contract: menu fog layers are constrained to the lower ambience band (no sky coverage) and use slow drift motion for idle readability.
 
 ## BettingCircle pact card readability baseline (Patch: minimal UI visibility)
 - Runtime scene: `res://scenes/ui/BettingCircle.tscn`.

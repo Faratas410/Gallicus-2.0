@@ -635,6 +635,7 @@ RunManager: start_arena():
 RunPhase: BET_PRESENT  
 RunManager → UI: bet_ui_opened  
 UI → RunManager: request_place_bet(bet_id)
+- Offerte canoniche BET_PRESENT (L3 attivo): `CASH_OUT`, `DOUBLE_OR_DIE` (shape a 2 opzioni).
 
 ### 4) BET SELECTED + CHECKPOINT
 RunPhase: BET_COMMITTED  

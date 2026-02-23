@@ -65,7 +65,6 @@ const LEVEL3_PACT_UNLOCKS: Dictionary[StringName, StringName] = {
 
 
 const BET_CASH_OUT: StringName = &"CASH_OUT"
-const BET_FLAWLESS_BLOOD: StringName = &"FLAWLESS_BLOOD"
 const BET_DOUBLE_OR_DIE: StringName = &"DOUBLE_OR_DIE"
 
 const POST_BET_TEXTS: Dictionary = {
@@ -73,11 +72,6 @@ const POST_BET_TEXTS: Dictionary = {
 		"Hai incassato. La folla mormora.",
 		"Te ne vai con il bottino. Sguardi bassi.",
 		"Meglio vivi che leggendari.",
-	],
-	BET_FLAWLESS_BLOOD: [
-		"Sangue integro. Nessuno osa fiatare.",
-		"Hai promesso pulizia. La folla osserva.",
-		"Un passo pulito. Il silenzio si stringe.",
 	],
 	BET_DOUBLE_OR_DIE: [
 		"Hai rilanciato. La folla trattiene il fiato.",
@@ -96,18 +90,6 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"condition": "Devi vincere l'arena senza inseguire l'escalation.",
 		"doom": "Hai scelto la via breve.\nLa folla ricorda chi non spinge.\nL'arena lascia comunque il segno.\nEffetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",
 		"weight": 5,
-		"blocked_scars": [],
-		"requires_scars": [],
-	},
-	{
-		"id": "FLAWLESS_BLOOD",
-		"name": "SANGUE INTEGRO",
-		"archetype": &"EGO",
-		"archetype_label": "ARCHETIPO: EGO",
-		"pact": "Se riesci, ottieni una ricompensa alta e alzi l'intensità della run.",
-		"condition": "Devi vincere l'arena senza subire danni.",
-		"doom": "Il sangue deve restare puro.\nOgni errore pesa doppio.\nLa sabbia non perdona.\nEffetto: HP massimo -20 (min 1) + cicatrice FERITA APERTA.",
-		"weight": 4,
 		"blocked_scars": [],
 		"requires_scars": [],
 	},
@@ -537,13 +519,11 @@ static func level3_bets() -> Array[Dictionary]:
 	return LEVEL3_BETS.duplicate(true)
 
 static func level3_bet_ids() -> PackedStringArray:
-	return PackedStringArray([String(BET_CASH_OUT), String(BET_FLAWLESS_BLOOD), String(BET_DOUBLE_OR_DIE)])
+	return PackedStringArray([String(BET_CASH_OUT), String(BET_DOUBLE_OR_DIE)])
 
 static func post_bet_texts() -> Dictionary:
 	return POST_BET_TEXTS.duplicate(true)
 
-static func is_flawless_blood(bet_id: StringName) -> bool:
-	return bet_id == BET_FLAWLESS_BLOOD
 
 static func map_level3_behavior(bet_id: StringName) -> StringName:
 	return LEVEL3_BET_BEHAVIOR.get(bet_id, bet_id)

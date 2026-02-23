@@ -4,7 +4,6 @@ class_name RunOutcomeSystem
 const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
 
 const BET_CASH_OUT: StringName = &"CASH_OUT"
-const BET_FLAWLESS_BLOOD: StringName = BetCatalog.BET_FLAWLESS_BLOOD
 const BET_DOUBLE_OR_DIE: StringName = &"DOUBLE_OR_DIE"
 const BET_DEBT_CHAIN: StringName = &"DEBT_CHAIN"
 const BET_BLOOD_TAX: StringName = &"BLOOD_TAX"
@@ -145,11 +144,7 @@ func build_level3_loss_consequence(
 	var scar_id: StringName = SCAR_CRACKED_BONES
 	var scar_origin: String = "Sconfitta in arena"
 	var cashout_lock_min: int = -1
-	if BetCatalog.is_flawless_blood(bet_id):
-		hp_loss += scar_open_wound_hp_penalty + executioner_bonus
-		scar_id = SCAR_OPEN_WOUND
-		scar_origin = "Condanna: Sangue Integro"
-	elif behavior_id == BET_DEBT_CHAIN:
+	if behavior_id == BET_DEBT_CHAIN:
 		scar_id = SCAR_DEBT_BRAND
 		scar_origin = "Condanna: Catena di Debito"
 	elif behavior_id == BET_BLOOD_TAX:
@@ -198,8 +193,6 @@ func compute_level3_reward_coins(
 				reward = int(floor(float(reward) * cashout_modifier))
 				reward = maxi(reward, 0)
 			return reward
-		BET_FLAWLESS_BLOOD:
-			return 20 * tier
 		BET_DOUBLE_OR_DIE:
 			return 30 * tier
 		BET_DEBT_CHAIN:

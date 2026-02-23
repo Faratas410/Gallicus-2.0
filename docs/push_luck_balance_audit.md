@@ -67,8 +67,7 @@ A successful resolution (for push-your-luck flow) is determined in `run_manager.
 
 - Start with RNG result:
   - `failed = not result.won`
-- Then apply pact condition override:
-  - if bet is `FLAWLESS_BLOOD` and `result.took_damage`, set `failed = true`
+- Then apply pact condition override (none active in current two-bet runtime).
 
 ### What success triggers
 On non-failed resolution branch:
@@ -80,7 +79,7 @@ On non-failed resolution branch:
 **Not purely.**
 
 - Core win is RNG (`rng.randf() <= win_chance`)
-- But final success can be invalidated by pact-specific condition (`FLAWLESS_BLOOD` requires no damage).
+- Final success is resolved by RNG outcome plus active generic penalties; no legacy no-hit pact override in current runtime.
 
 ### Conditional modifiers already present
 Yes, all already implemented:
@@ -88,7 +87,7 @@ Yes, all already implemented:
 - **Enemy profile** modifies win and damage probabilities.
 - **Escalation level** modifies both (double-driven).
 - **Registry precedent** adds +1 effective escalation.
-- **Pact-specific post-check:** `FLAWLESS_BLOOD` can convert RNG win into failure if damage taken.
+- **Pact-specific post-check:** none active in current two-bet runtime.
 
 No direct probability modifier by coins.
 

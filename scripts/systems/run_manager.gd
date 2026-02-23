@@ -43,7 +43,6 @@ const INTERMEDIATE_PROVOCA_BONUS_TIER: int = 1
 const INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS: int = 6
 const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
 const BET_CASH_OUT: StringName = BetCatalog.BET_CASH_OUT
-const BET_FLAWLESS_BLOOD: StringName = BetCatalog.BET_FLAWLESS_BLOOD
 const BET_DOUBLE_OR_DIE_L3: StringName = BetCatalog.BET_DOUBLE_OR_DIE
 const BET_DEBT_CHAIN: StringName = BetCatalog.BET_DEBT_CHAIN
 const BET_BLOOD_TAX: StringName = BetCatalog.BET_BLOOD_TAX
@@ -1560,8 +1559,6 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var failed: bool = not result.won
 	var scars_applied: Array[StringName] = []
-	if bet_id == BET_FLAWLESS_BLOOD and result.condemnation_flag:
-		failed = true
 	if failed:
 		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss_ritual(bet_id, result)
@@ -1605,8 +1602,6 @@ func _apply_resolution_advance_state() -> void:
 	GameEvents.arena_completed.emit(_run_state.arena_index)
 	var failed: bool = not result.won
 	var scars_applied: Array[StringName] = []
-	if bet_id == BET_FLAWLESS_BLOOD and result.condemnation_flag:
-		failed = true
 	if failed:
 		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss(bet_id, result)
@@ -3202,8 +3197,6 @@ func _build_sentence_payload(bet_id: StringName) -> Dictionary:
 	return _ui_payload_factory.build_sentence_payload("SENTENZA", rule, doom, bet_id)
 
 func _get_sentence_rule(bet_id: StringName) -> String:
-	if bet_id == BET_FLAWLESS_BLOOD:
-		return "NO HIT"
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))
 	var condition: String = ""
 	if not bet_data.is_empty():

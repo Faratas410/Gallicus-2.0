@@ -241,6 +241,7 @@ Canonical Level 3 post-bet sequence (active flow authority):
   - Data lookup only.
   - No flow decisions.
   - Bet definitions (IDs + UI copy metadata) are centralized in `res://scripts/content/bet_catalog.gd` and must not be duplicated in RunManager, UI, or outcome systems.
+- Active Level 3 runtime BET_PRESENT offer set is fixed to 2 bet IDs from BetCatalog authority: `CASH_OUT`, `DOUBLE_OR_DIE`.
 - `res://scripts/ui/run_ui_payload.gd` = UI projection contract.
   - `RunManager` builds payloads.
   - UI consumes payloads reactively.

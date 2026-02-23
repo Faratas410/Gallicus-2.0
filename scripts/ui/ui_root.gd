@@ -32,6 +32,7 @@ const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
 const CondannaData = preload("res://data/condanne.gd")
 const RunUiPayload = preload("res://scripts/ui/run_ui_payload.gd")
 const BettingCircleUI = preload("res://scripts/ui/betting_circle_ui.gd")
+const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
 const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
@@ -46,23 +47,7 @@ const RUN_PHASE_PUSH_YOUR_LUCK: int = RunPhaseContract.PUSH_YOUR_LUCK
 const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
 const RUN_PHASE_RESOLUTION: int = RunPhaseContract.RESOLUTION
 const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
-const POST_BET_TEXTS: Dictionary = {
-	"CASH_OUT": [
-		"Hai incassato. La folla mormora.",
-		"Te ne vai con il bottino. Sguardi bassi.",
-		"Meglio vivi che leggendari.",
-	],
-	"FLAWLESS_BLOOD": [
-		"Sangue integro. Nessuno osa fiatare.",
-		"Hai promesso pulizia. La folla osserva.",
-		"Un passo pulito. Il silenzio si stringe.",
-	],
-	"DOUBLE_OR_DIE": [
-		"Hai rilanciato. La folla trattiene il fiato.",
-		"Nessun ritorno. I volti restano fermi.",
-		"Hai scelto il sangue invece dell'oro.",
-	],
-}
+const POST_BET_TEXTS: Dictionary = BetCatalog.POST_BET_TEXTS
 const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_condition.png"
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
@@ -1724,7 +1709,7 @@ func _on_bet_win_pressed() -> void:
 
 func _on_bet_no_hit_pressed() -> void:
 	if GameEvents.has_signal("request_intro_select_bet"):
-		GameEvents.request_intro_select_bet.emit("FLAWLESS_BLOOD")
+		GameEvents.request_intro_select_bet.emit(String(BetCatalog.BET_FLAWLESS_BLOOD))
 
 func _on_bet_fast_pressed() -> void:
 	if GameEvents.has_signal("request_intro_select_bet"):
@@ -1929,7 +1914,7 @@ func _apply_bet_button_style(button: Button, bet_id: String) -> void:
 		button.add_theme_color_override("font_focus_color", Color(0.8, 0.2, 0.2, 1.0))
 		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.25, 0.25, 1.0))
 		return
-	if bet_id == "FLAWLESS_BLOOD":
+	if bet_id == String(BetCatalog.BET_FLAWLESS_BLOOD):
 		button.modulate = Color(1.0, 0.95, 0.8, 1.0)
 		button.add_theme_color_override("font_color", Color(0.6, 0.45, 0.0, 1.0))
 		button.add_theme_color_override("font_hover_color", Color(0.75, 0.55, 0.1, 1.0))

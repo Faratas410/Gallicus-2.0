@@ -780,28 +780,28 @@ shortcut_keys_enabled = false
 size_flags_horizontal = 3
 
 [node name="Btn_INTRO_SELECT_WIN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 autowrap_mode = 2
 icon = null
 text = "CONDANNA — RADDOPPI O MUORI"
 
 [node name="Btn_INTRO_SELECT_NO_HIT" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 autowrap_mode = 2
 icon = null
 text = "CONDIZIONE — SANGUE INTEGRO"
 
 [node name="Btn_INTRO_SELECT_FAST" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 autowrap_mode = 2
 icon = null
 text = "PATTO — INCASSA E VAI"
 
 [node name="BetConfirmRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-visible = false
+visible = true
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
@@ -813,6 +813,9 @@ autowrap_mode = 2
 text = "Selezione: -"
 
 [node name="Btn_INTRO_CONFIRM" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
+visible = true
+disabled = false
+mouse_filter = 0
 custom_minimum_size = Vector2(120, 40)
 text = "SIGILLA"
 

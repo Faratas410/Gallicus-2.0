@@ -240,6 +240,7 @@ Canonical Level 3 post-bet sequence (active flow authority):
 - `res://scripts/content/*` = catalogs / lookup content.
   - Data lookup only.
   - No flow decisions.
+  - Bet definitions (IDs + UI copy metadata) are centralized in `res://scripts/content/bet_catalog.gd` and must not be duplicated in RunManager, UI, or outcome systems.
 - `res://scripts/ui/run_ui_payload.gd` = UI projection contract.
   - `RunManager` builds payloads.
   - UI consumes payloads reactively.

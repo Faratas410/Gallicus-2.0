@@ -11,5 +11,3 @@ static func level3_bets() -> Array[Dictionary]:
 static func level3_bet_ids() -> PackedStringArray:
 	return BetCatalog.level3_bet_ids()
 
-static func post_bet_texts() -> Dictionary:
-	return BetCatalog.post_bet_texts()

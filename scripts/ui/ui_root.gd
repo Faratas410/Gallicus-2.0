@@ -47,7 +47,6 @@ const RUN_PHASE_PUSH_YOUR_LUCK: int = RunPhaseContract.PUSH_YOUR_LUCK
 const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
 const RUN_PHASE_RESOLUTION: int = RunPhaseContract.RESOLUTION
 const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
-const POST_BET_TEXTS: Dictionary = BetCatalog.POST_BET_TEXTS
 const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_condition.png"
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
@@ -235,7 +234,6 @@ var _debug_enemy_profile: String = ""
 var _debug_scars: Array[String] = []
 var _debug_special_arena: String = ""
 var _ending_mode_active: bool = false
-var _post_bet_text_last_index: Dictionary = {}
 var _post_bet_queue: Array[Dictionary] = []
 var _post_bet_running: bool = false
 var _post_bet_log_index: int = 0
@@ -1162,7 +1160,7 @@ func _on_pact_sealed_opened() -> void:
 	var payload: Dictionary = {
 		"kind": "pact_sealed",
 		"title": "IL PATTO È SIGILLATO.",
-		"subtitle": _select_post_bet_text(_selected_bet_id),
+		"subtitle": "",
 	}
 	enqueue_post_bet_message(payload)
 
@@ -1225,17 +1223,6 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		intermediate_choice_provoca_button.visible = payload.choices.is_empty() or payload.choices.has("provoca")
 		choice_buttons.append(intermediate_choice_provoca_button)
 	_apply_modal_read_delay(choice_buttons)
-
-func _select_post_bet_text(bet_id: String) -> String:
-	var options: Array = POST_BET_TEXTS.get(bet_id, []) as Array
-	if options.is_empty():
-		return "La folla trattiene il fiato."
-	var last_index: int = int(_post_bet_text_last_index.get(bet_id, -1))
-	var pick_index: int = randi() % options.size()
-	if options.size() > 1 and pick_index == last_index:
-		pick_index = (pick_index + 1) % options.size()
-	_post_bet_text_last_index[bet_id] = pick_index
-	return str(options[pick_index])
 
 func enqueue_post_bet_message(payload: Dictionary) -> void:
 	_post_bet_queue.append(payload)

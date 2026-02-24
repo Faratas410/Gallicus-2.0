@@ -42,6 +42,15 @@ def main():
 
     content = UI_ROOT_PATH.read_text(encoding="utf-8")
 
+    # Guardrail: prevent VERSION skew (V2 label with V1-only brittle message still present).
+    # If VERSION 2 is declared, the legacy brittle error string must not exist anywhere.
+    if "VERSION: 2" in content and "expected show_mid_choice == true" in content:
+        fail(
+            "VERSION skew detected: script declares VERSION: 2 but still contains "
+            "legacy V1 brittle error text ('expected show_mid_choice == true'). "
+            "Remove the V1 regex-based check and use the function-scoped heuristic."
+        )
+
     # 1. Phase_MID_CHOICE must exist in file
     if "Phase_MID_CHOICE" not in content:
         fail("Phase_MID_CHOICE node not referenced in ui_root.gd.")

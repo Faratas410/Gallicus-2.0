@@ -498,3 +498,38 @@ Scene: `res://scenes/UI.tscn`
   - phase map (`_phase_node_map`) and `show_phase(phase: int)`
 - `scripts/systems/run_manager.gd`
   - sanity checks and `_ensure_flow_panel(...)` paths updated to `UI_RunRoot/Phase_*`
+# Level 3 — Resolution Phase Contract Clarification
+
+## Mainline vs Alternate Path
+
+In Level 3, the canonical “mainline” run progression is:
+
+INTRO -> FIRST_REACTION -> INTERMEDIATE_CHOICE (MID_CHOICE UI) -> PUSH_YOUR_LUCK -> END_RUN
+
+The user-facing “resolution moment” between MID_CHOICE and PUSH_YOUR_LUCK is implemented as a
+**resolve-ritual overlay** (event-driven), not as a dedicated mainline RunPhase step.
+
+
+## Resolve Ritual Overlay (Mainline)
+
+After MID_CHOICE selection, RunManager starts the resolve ritual sequence and emits:
+
+- resolve_ritual_opened (with payload for the overlay)
+- resolve_ritual_closed (after the timed sequence)
+
+This overlay is presented via UI event/queue payload (kind/title/subtitle or ritual payload),
+and it does not require entering RunPhase.RESOLUTION as a mainline phase.
+
+
+## RunPhase.RESOLUTION (Alternate / Non-Mainline)
+
+RunPhase.RESOLUTION may exist in the enum and may be reachable via alternate/legacy paths
+(e.g. resolve_arena style entrypoints), but it is **not part of the current Level 3 mainline**
+progression.
+
+Guardrail:
+
+- Do not assume RunPhase.RESOLUTION is entered in the mainline.
+- Do not gate PUSH_YOUR_LUCK on “having been in RunPhase.RESOLUTION”.
+- Any future change that makes RESOLUTION a mainline phase must update this canon section
+  and the corresponding UI boundary rules.

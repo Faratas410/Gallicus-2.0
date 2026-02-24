@@ -1169,18 +1169,36 @@ func _on_pact_sealed_closed() -> void:
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	var doom_short: String = str(payload.get("doom_short", ""))
-	if resolve_ritual_title != null:
-		resolve_ritual_title.text = "RITO DI GIUDIZIO"
-	if resolve_ritual_subtitle != null:
-		if doom_short == "":
-			resolve_ritual_subtitle.text = "CONDANNA: giudizio imminente."
-		else:
-			resolve_ritual_subtitle.text = "CONDANNA: %s" % doom_short
-	_set_resolve_ritual_modal(true)
-	_refresh_modal_dimmer()
+	var subtitle: String = "CONDANNA: giudizio imminente."
+	if doom_short != "":
+		subtitle = "CONDANNA: %s" % doom_short
+	enqueue_post_bet_message({
+		"kind": "resolve_ritual",
+		"title": "RITO DI GIUDIZIO",
+		"subtitle": subtitle,
+	})
 
 func _on_resolve_ritual_closed() -> void:
 	_set_resolve_ritual_modal(false)
+	_refresh_modal_dimmer()
+
+func enqueue_post_bet_message(payload: Dictionary) -> void:
+	_show_post_bet_payload(payload)
+
+func _show_post_bet_payload(payload: Dictionary) -> void:
+	var kind: String = str(payload.get("kind", ""))
+	if kind == "pact_sealed":
+		if pact_sealed_title != null:
+			pact_sealed_title.text = str(payload.get("title", "IL PATTO È SIGILLATO."))
+		if pact_sealed_subtitle != null:
+			pact_sealed_subtitle.text = str(payload.get("subtitle", ""))
+		_set_pact_sealed_modal(true)
+	elif kind == "resolve_ritual":
+		if resolve_ritual_title != null:
+			resolve_ritual_title.text = str(payload.get("title", "RITO DI GIUDIZIO"))
+		if resolve_ritual_subtitle != null:
+			resolve_ritual_subtitle.text = str(payload.get("subtitle", "CONDANNA: giudizio imminente."))
+		_set_resolve_ritual_modal(true)
 	_refresh_modal_dimmer()
 
 func _on_intermediate_choice_opened() -> void:

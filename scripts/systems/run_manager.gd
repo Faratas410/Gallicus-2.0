@@ -3079,6 +3079,7 @@ func _enter_mid_choice() -> void:
 
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_push_luck_choice(_bet_id: StringName) -> void:
+	_waiting_for_push_luck = true
 	_smoke_mark("PUSH_YOUR_LUCK")
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 

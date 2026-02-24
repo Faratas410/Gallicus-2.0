@@ -345,9 +345,6 @@ func _ready() -> void:
 	var resolve_ritual_closed_callable: Callable = Callable(self, "_on_resolve_ritual_closed")
 	if GameEvents.has_signal("resolve_ritual_closed") and not GameEvents.resolve_ritual_closed.is_connected(resolve_ritual_closed_callable):
 		GameEvents.resolve_ritual_closed.connect(resolve_ritual_closed_callable)
-	var intermediate_choice_opened_callable: Callable = Callable(self, "_on_intermediate_choice_opened")
-	if GameEvents.has_signal("intermediate_choice_opened") and not GameEvents.intermediate_choice_opened.is_connected(intermediate_choice_opened_callable):
-		GameEvents.intermediate_choice_opened.connect(intermediate_choice_opened_callable)
 	var arena_started_callable: Callable = Callable(self, "_on_arena_started")
 	if not GameEvents.arena_started.is_connected(arena_started_callable):
 		GameEvents.arena_started.connect(arena_started_callable)

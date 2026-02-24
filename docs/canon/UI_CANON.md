@@ -1,3 +1,80 @@
+# UI Boundary Model — Level 3
+
+## Phase Containers vs Event Queue Overlays
+
+Level 3 UI distingue esplicitamente tra:
+
+### 1. Phase-driven Containers (Phase_*)
+
+Questi pannelli sono controllati esclusivamente da:
+
+- RunManager._set_phase(...)
+- RunManager._emit_ui(payload)
+- payload.phase + show_phase(...)
+
+Esempi:
+
+- Phase_INTRO
+- Phase_FIRST_REACTION (solo quando phase-driven)
+- Phase_MID_CHOICE
+- Phase_PUSH_YOUR_LUCK
+- Phase_END_RUN
+
+Regola:
+
+La UI non decide la fase.
+La UI reagisce al payload.phase autoritativo.
+
+
+### 2. Event-Queue Overlays (Modal / Ritual UI)
+
+Alcune superfici UI non sono phase containers,
+ma overlay attivati tramite eventi e payload "kind".
+
+In Level 3 attuale:
+
+- FIRST_REACTION post-bet messaging utilizza queue/event payload (kind/title/subtitle)
+- RESOLUTION ritual utilizza resolve_ritual_opened / resolve_ritual_closed
+
+Questi NON sono guidati da payload.phase,
+ma da eventi GameEvents e queue payload.
+
+
+## Contract Rule
+
+Lo split tra:
+
+- phase containers
+- event-driven overlays
+
+è intenzionale e fa parte del contract Level 3.
+
+Non deve essere unificato o refactorizzato
+senza task esplicita di redesign.
+
+
+## Anti-Regression Guardrail
+
+È vietato:
+
+- sostituire overlay event-driven con show_phase(...)
+- aprire phase container tramite signal paralleli
+- creare doppie vie di apertura per la stessa superficie UI
+
+
+## Authority Reminder
+
+Solo RunManager può:
+
+- cambiare fase
+- emettere payload UI autoritativi
+
+La UI:
+
+- non muta fase
+- non prende decisioni di flow
+- non apre pannelli phase-driven senza payload
+
 # CANON — UI CANON
 
 Status: Single source of truth

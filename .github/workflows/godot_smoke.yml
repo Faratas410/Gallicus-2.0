@@ -21,6 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: UI phase contract static test (no Godot)
+        run: |
+          python3 scripts/ci/test_ui_phase_contract.py
+
       - name: Install dependencies
         run: |
           sudo apt-get update

@@ -74,17 +74,17 @@ func _build_torch_frames(strip_texture: Texture2D) -> SpriteFrames:
 		sprite_frames.add_frame(&"default", atlas)
 	return sprite_frames
 
-func _update_clouds(delta: float) -> void:
+func _update_clouds(_delta: float) -> void:
 	if _clouds == null:
 		return
 	_clouds.position.x = 0.0
-	var ugly_flash: float = (sin((_time + delta) * 13.0) * 0.5) + 0.5
-	var ugly_tint: float = (sin(_time * 31.0) * 0.5) + 0.5
+	var cloud_alpha_pulse: float = (sin(_time * 0.22) * 0.5) + 0.5
 	var clouds_modulate: Color = _clouds.modulate
-	clouds_modulate.r = clamp(0.35 + (ugly_tint * 0.55), 0.0, 1.0)
-	clouds_modulate.g = clamp(0.05 + (ugly_flash * 0.25), 0.0, 1.0)
-	clouds_modulate.b = clamp(0.5 - (ugly_tint * 0.45), 0.0, 1.0)
-	clouds_modulate.a = clamp(0.4 + (ugly_flash * 0.45), 0.0, 1.0)
+	# Keep RGB neutral to avoid color conflict with foreground banner layers.
+	clouds_modulate.r = 1.0
+	clouds_modulate.g = 1.0
+	clouds_modulate.b = 1.0
+	clouds_modulate.a = clamp(0.40 + (cloud_alpha_pulse * 0.05), 0.0, 1.0)
 	_clouds.modulate = clouds_modulate
 
 func _update_fog_layers() -> void:

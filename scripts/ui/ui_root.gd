@@ -1160,16 +1160,14 @@ func _on_bet_selected(bet_id: String) -> void:
 	_selected_bet_id = bet_id
 
 func _on_pact_sealed_opened() -> void:
-	var payload: Dictionary = {
-		"kind": "pact_sealed",
-		"title": "IL PATTO È SIGILLATO.",
-		"subtitle": "",
-	}
-	enqueue_post_bet_message(payload)
+	if pact_sealed_title != null:
+		pact_sealed_title.text = "IL PATTO È SIGILLATO."
+	if pact_sealed_subtitle != null:
+		pact_sealed_subtitle.text = ""
+	_set_pact_sealed_modal(true)
+	_refresh_modal_dimmer()
 
 func _on_pact_sealed_closed() -> void:
-	if _post_bet_running:
-		return
 	_set_pact_sealed_modal(false)
 	_refresh_modal_dimmer()
 

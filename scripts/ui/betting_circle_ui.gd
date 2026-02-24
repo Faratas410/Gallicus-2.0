@@ -78,8 +78,8 @@ func _on_bet_selected(bet_id: Variant) -> void:
 func _on_sigilla_pressed() -> void:
 	if selected_bet_id == &"":
 		return
-	if GameEvents.has_signal("bet_selected"):
-		GameEvents.bet_selected.emit(String(selected_bet_id))
+	if GameEvents.has_signal("request_place_bet"):
+		GameEvents.request_place_bet.emit(String(selected_bet_id), 0)
 	close()
 
 func _update_sigilla_state() -> void:

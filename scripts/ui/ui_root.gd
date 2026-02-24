@@ -15,7 +15,6 @@ extends CanvasLayer
 const FAST_SELECTION_SECONDS: int = 12
 const RunPhaseContract = preload("res://scripts/contracts/run_phase_contract.gd")
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
-const POST_BET_MESSAGE_TIME_SEC: float = 3.5
 const SENTENCE_BANNER_SECONDS: float = 1.2
 const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.25
@@ -234,9 +233,6 @@ var _debug_enemy_profile: String = ""
 var _debug_scars: Array[String] = []
 var _debug_special_arena: String = ""
 var _ending_mode_active: bool = false
-var _post_bet_queue: Array[Dictionary] = []
-var _post_bet_running: bool = false
-var _post_bet_log_index: int = 0
 var _sentence_banner_sequence_id: int = 0
 var _is_signing: bool = false
 var _bet_confirm_default_text: String = ""
@@ -1173,19 +1169,17 @@ func _on_pact_sealed_closed() -> void:
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	var doom_short: String = str(payload.get("doom_short", ""))
-	var subtitle: String = "CONDANNA: giudizio imminente."
-	if doom_short != "":
-		subtitle = "CONDANNA: %s" % doom_short
-	var queue_payload: Dictionary = {
-		"kind": "resolve_ritual",
-		"title": "RITO DI GIUDIZIO",
-		"subtitle": subtitle,
-	}
-	enqueue_post_bet_message(queue_payload)
+	if resolve_ritual_title != null:
+		resolve_ritual_title.text = "RITO DI GIUDIZIO"
+	if resolve_ritual_subtitle != null:
+		if doom_short == "":
+			resolve_ritual_subtitle.text = "CONDANNA: giudizio imminente."
+		else:
+			resolve_ritual_subtitle.text = "CONDANNA: %s" % doom_short
+	_set_resolve_ritual_modal(true)
+	_refresh_modal_dimmer()
 
 func _on_resolve_ritual_closed() -> void:
-	if _post_bet_running:
-		return
 	_set_resolve_ritual_modal(false)
 	_refresh_modal_dimmer()
 
@@ -1233,58 +1227,6 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		intermediate_choice_provoca_button.visible = payload.choices.is_empty() or payload.choices.has("provoca")
 		choice_buttons.append(intermediate_choice_provoca_button)
 	_apply_modal_read_delay(choice_buttons)
-
-func enqueue_post_bet_message(payload: Dictionary) -> void:
-	_post_bet_queue.append(payload)
-	if not _post_bet_running:
-		call_deferred("_run_post_bet_queue")
-
-func _run_post_bet_queue() -> void:
-	if _post_bet_running:
-		return
-	_post_bet_running = true
-	while not _post_bet_queue.is_empty():
-		var payload: Dictionary = _post_bet_queue.pop_front()
-		_post_bet_log_index += 1
-		payload["log_index"] = _post_bet_log_index
-		_show_post_bet_payload(payload)
-		await get_tree().create_timer(POST_BET_MESSAGE_TIME_SEC).timeout
-		_hide_post_bet_payload(payload)
-		await get_tree().create_timer(FADE_OUT_SEC).timeout
-	_post_bet_running = false
-
-func is_post_bet_queue_running() -> bool:
-	return _post_bet_running
-
-func _show_post_bet_payload(payload: Dictionary) -> void:
-	var kind: String = str(payload.get("kind", ""))
-	var log_index: int = int(payload.get("log_index", -1))
-	if log_index >= 0:
-		print_debug("[FLOW] audience_message_opened :: index=%d, text_id=%s" % [log_index, kind])
-	if kind == "pact_sealed":
-		if pact_sealed_title != null:
-			pact_sealed_title.text = str(payload.get("title", "IL PATTO È SIGILLATO."))
-		if pact_sealed_subtitle != null:
-			pact_sealed_subtitle.text = str(payload.get("subtitle", ""))
-		_set_pact_sealed_modal(true)
-	elif kind == "resolve_ritual":
-		if resolve_ritual_title != null:
-			resolve_ritual_title.text = str(payload.get("title", "RITO DI GIUDIZIO"))
-		if resolve_ritual_subtitle != null:
-			resolve_ritual_subtitle.text = str(payload.get("subtitle", "CONDANNA: giudizio imminente."))
-		_set_resolve_ritual_modal(true)
-	_refresh_modal_dimmer()
-
-func _hide_post_bet_payload(payload: Dictionary) -> void:
-	var kind: String = str(payload.get("kind", ""))
-	var log_index: int = int(payload.get("log_index", -1))
-	if log_index >= 0:
-		print_debug("[FLOW] audience_message_closed :: index=%d" % log_index)
-	if kind == "pact_sealed":
-		_set_pact_sealed_modal(false)
-	elif kind == "resolve_ritual":
-		_set_resolve_ritual_modal(false)
-	_refresh_modal_dimmer()
 
 func _update_special_arena_ui() -> void:
 	if special_arena_label == null:

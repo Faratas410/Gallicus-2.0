@@ -3,6 +3,8 @@
 """
 UI Phase Contract Static Test
 
+VERSION: 2 (function-scoped heuristic)
+
 This test verifies that:
 
 1. ui_root.gd contains a mapping entry for Phase_MID_CHOICE.
@@ -23,7 +25,7 @@ UI_ROOT_PATH = Path("scripts/ui/ui_root.gd")
 
 
 def fail(message: str):
-    print(f"[FAIL] {message}")
+    print(f"[FAIL][UI_PHASE_CONTRACT_TEST_V2] {message}")
     sys.exit(1)
 
 

@@ -7,10 +7,13 @@ VERSION: 2 (function-scoped heuristic)
 
 This test verifies that:
 
-1. ui_root.gd contains a mapping entry for Phase_MID_CHOICE.
-2. RUN_PHASE_MID_CHOICE is referenced in the phase map.
-3. A normalization exists for mid-choice payloads
-   (show_mid_choice == true forces RUN_PHASE_MID_CHOICE).
+1. ui_root.gd references Phase_MID_CHOICE.
+2. RUN_PHASE_MID_CHOICE is referenced in ui_root.gd.
+3. A mid-choice normalization exists inside apply_run_ui_payload(...):
+
+* show_mid_choice is referenced (payload.show_mid_choice or local show_mid_choice)
+* RUN_PHASE_MID_CHOICE is referenced
+* there is an assignment forcing target_phase/phase to RUN_PHASE_MID_CHOICE
 
 This test does NOT require Godot.
 It validates structural contract consistency only.
@@ -51,20 +54,62 @@ def main():
     else:
         success("RUN_PHASE_MID_CHOICE reference found.")
 
-    # 3. Look for mid-choice normalization logic
-    # We check that show_mid_choice is used together with RUN_PHASE_MID_CHOICE
-    mid_choice_pattern = re.compile(
-        r"show_mid_choice\s*==\s*true.*RUN_PHASE_MID_CHOICE",
-        re.DOTALL,
+    # 3. Look for mid-choice normalization logic (robust heuristic)
+    #
+    # We do NOT enforce a specific syntax (== true, variable names, single-line).
+    # We verify that within apply_run_ui_payload(...) there is:
+    # - a reference to show_mid_choice (either payload.show_mid_choice or local show_mid_choice)
+    # - a reference to RUN_PHASE_MID_CHOICE
+    # - an assignment that can force/route to RUN_PHASE_MID_CHOICE (target_phase or phase)
+    #
+    # This keeps the test stable across minor refactors while still enforcing the contract.
+    #
+    # Support signatures with optional return annotation, e.g.:
+    # func apply_run_ui_payload(payload: Dictionary) -> void:
+    func_block = re.search(
+        r"(?ms)^\s*func\s+apply_run_ui_payload\s*\([^)]*\)\s*(?:->\s*[\w\.]+\s*)?:\s*\n(.*?)(?=^\s*func\s+|\Z)",
+        content,
     )
+    if not func_block:
+        fail("apply_run_ui_payload(...) function block not found in ui_root.gd.")
 
-    if not mid_choice_pattern.search(content):
+    block = func_block.group(1)
+
+    # show_mid_choice may appear as:
+    # - show_mid_choice
+    # - payload.show_mid_choice
+    # - ui_payload.show_mid_choice
+    show_mid_choice_ref = re.search(r"\bshow_mid_choice\b", block) or re.search(
+        r"\b\w+\.show_mid_choice\b", block
+    )
+    if not show_mid_choice_ref:
+        fail("No reference to show_mid_choice found inside apply_run_ui_payload(...).")
+
+    if "RUN_PHASE_MID_CHOICE" not in block:
+        fail("RUN_PHASE_MID_CHOICE not referenced inside apply_run_ui_payload(...).")
+
+    # Force-to-mid-choice assignment heuristics:
+    # Accept either:
+    # - target_phase = RUN_PHASE_MID_CHOICE
+    # - phase = RUN_PHASE_MID_CHOICE
+    assign_pattern = re.compile(
+        r"(?m)^\s*(target_phase|phase)\s*=\s*RUN_PHASE_MID_CHOICE\b"
+    )
+    if not assign_pattern.search(block):
         fail(
-            "Mid-choice normalization not detected "
-            "(expected show_mid_choice == true forcing RUN_PHASE_MID_CHOICE)."
+            "Mid-choice normalization assignment not detected in apply_run_ui_payload(...). "
+            "Expected an assignment like 'target_phase = RUN_PHASE_MID_CHOICE' or 'phase = RUN_PHASE_MID_CHOICE'."
+        )
+
+    # Optional: ensure assignment is gated by a mid-choice condition (best-effort)
+    gated_ok = re.search(r"(?is)\bif\b[^\n]*show_mid_choice", block) is not None
+    if not gated_ok:
+        print(
+            "[WARN] RUN_PHASE_MID_CHOICE assignment found, but no nearby 'if ... show_mid_choice' gate detected. "
+            "Contract likely OK, but consider making the condition explicit."
         )
     else:
-        success("Mid-choice normalization logic detected.")
+        success("Mid-choice normalization logic detected (gated by show_mid_choice).")
 
     # 4. Optional safety: warn if numeric match cases exist
     numeric_case_pattern = re.compile(r"^\s*\d+\s*:", re.MULTILINE)

@@ -59,12 +59,17 @@ func select_level3_ending_key(run_state: RunState, trace: Dictionary) -> Diction
 
 func _pick_best_rule(rules: Array[Dictionary], trace: Dictionary) -> Dictionary:
 	var best_priority: int = -999999
+	var best_index: int = 2147483647
 	var best_rule: Dictionary = {}
-	for rule in rules:
+	for idx: int in range(rules.size()):
+		var rule: Dictionary = rules[idx] as Dictionary
 		if _rule_matches(rule, trace):
 			var priority: int = int(rule.get("priority", 0))
-			if priority > best_priority:
+			var better_priority: bool = priority > best_priority
+			var same_priority_earlier: bool = priority == best_priority and idx < best_index
+			if better_priority or same_priority_earlier:
 				best_priority = priority
+				best_index = idx
 				best_rule = rule
 	return best_rule
 
@@ -79,9 +84,10 @@ func _rule_matches(rule: Dictionary, trace: Dictionary) -> bool:
 		return false
 	if requires.has("max_cashout") and int(trace.get("cashout_count", 0)) > int(requires.get("max_cashout", 999999)):
 		return false
-	if requires.has("min_condanna") and int(trace.get("condanna_count", 0)) < int(requires.get("min_condanna", 0)):
+	var condanna_count: int = int(trace.get("condanna_registry_count", trace.get("condanna_count", 0)))
+	if requires.has("min_condanna") and condanna_count < int(requires.get("min_condanna", 0)):
 		return false
-	if requires.has("max_condanna") and int(trace.get("condanna_count", 0)) > int(requires.get("max_condanna", 999999)):
+	if requires.has("max_condanna") and condanna_count > int(requires.get("max_condanna", 999999)):
 		return false
 	if requires.has("min_glory") and int(trace.get("glory", 0)) < int(requires.get("min_glory", 0)):
 		return false

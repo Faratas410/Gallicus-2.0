@@ -55,6 +55,10 @@ def main() -> int:
         return fail("finale_builder.gd must expose select_level3_ending_key()")
     if "_finale_builder.select_level3_ending_key(_run_state, ending_trace)" not in run_manager:
         return fail("run_manager.gd must call finale_builder.select_level3_ending_key()")
+    if 'condanna_registry_count' not in run_manager:
+        return fail("run_manager.gd trace must define condanna_registry_count as unique condanna source")
+    if "for idx: int in range(rules.size())" not in finale_builder:
+        return fail("finale_builder.gd must keep deterministic tie-break on equal priority (rule order)")
 
     required_catalog_tokens = [
         '"id": "CASH_OUT"',

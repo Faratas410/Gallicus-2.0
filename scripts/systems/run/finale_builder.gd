@@ -2,6 +2,7 @@ extends RefCounted
 class_name FinaleBuilder
 
 const EndingRulesScript = preload("res://data/ending_rules.gd")
+const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
 
 
 func build_finale_payload(inputs: Dictionary) -> Dictionary:
@@ -57,6 +58,24 @@ func select_level3_ending_key(run_state: RunState, trace: Dictionary) -> Diction
 	return {}
 
 
+
+func build_path_trace_from_bet_history(bet_history: Array[StringName]) -> Dictionary:
+	var trace: Dictionary = {
+		"path_prudence_count": 0,
+		"path_hubris_count": 0,
+		"path_unknown_count": 0,
+	}
+	for bet_id: StringName in bet_history:
+		var path_tag: StringName = BetCatalog.get_path_tag_for_bet_id(bet_id)
+		match path_tag:
+			BetCatalog.PATH_PRUDENCE:
+				trace["path_prudence_count"] = int(trace.get("path_prudence_count", 0)) + 1
+			BetCatalog.PATH_HUBRIS:
+				trace["path_hubris_count"] = int(trace.get("path_hubris_count", 0)) + 1
+			_:
+				trace["path_unknown_count"] = int(trace.get("path_unknown_count", 0)) + 1
+	return trace
+
 func _pick_best_rule(rules: Array[Dictionary], trace: Dictionary) -> Dictionary:
 	var best_priority: int = -999999
 	var best_index: int = 2147483647
@@ -95,9 +114,13 @@ func _rule_matches(rule: Dictionary, trace: Dictionary) -> bool:
 		return false
 	if requires.has("max_corruption") and int(trace.get("corruption", 0)) > int(requires.get("max_corruption", 999999)):
 		return false
-	if requires.has("min_path_debt") and int(trace.get("path_debt_count", 0)) < int(requires.get("min_path_debt", 0)):
+	var path_prudence_count: int = int(trace.get("path_prudence_count", trace.get("path_debt_count", 0)))
+	if requires.has("min_path_prudence") and path_prudence_count < int(requires.get("min_path_prudence", 0)):
 		return false
-	if requires.has("min_path_hubris") and int(trace.get("path_hubris_count", 0)) < int(requires.get("min_path_hubris", 0)):
+	if requires.has("min_path_debt") and path_prudence_count < int(requires.get("min_path_debt", 0)):
+		return false
+	var path_hubris_count: int = int(trace.get("path_hubris_count", 0))
+	if requires.has("min_path_hubris") and path_hubris_count < int(requires.get("min_path_hubris", 0)):
 		return false
 	if bool(requires.get("requires_provoke_armed", false)) and not bool(trace.get("provoke_armed", false)):
 		return false

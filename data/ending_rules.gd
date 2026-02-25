@@ -18,7 +18,7 @@ static func dominant_rules() -> Array[Dictionary]:
 		{"id": "PATH_MARTYR_01", "ending_key": &"THE_MARTYR", "priority": 120, "requires": {"min_double": 4, "min_condanna": 2}},
 		{"id": "PATH_HUBRIS_01", "ending_key": &"THE_FOOL", "priority": 110, "requires": {"min_double": 3, "min_corruption": 7}},
 		{"id": "PATH_FALL_01", "ending_key": &"THE_FALL", "priority": 108, "requires": {"min_corruption": 9, "min_double": 2}},
-		{"id": "PATH_DEBT_01", "ending_key": &"THE_DEBTOR", "priority": 100, "requires": {"min_path_debt": 3}},
+		{"id": "PATH_DEBT_01", "ending_key": &"THE_DEBTOR", "priority": 100, "requires": {"min_path_prudence": 3}},
 		{"id": "PATH_GLORY_01", "ending_key": &"THE_LIBERTY", "priority": 95, "requires": {"min_glory": 8, "max_corruption": 3, "min_path_hubris": 2}},
 		{"id": "PATH_PET_01", "ending_key": &"THE_CROWD_PET", "priority": 90, "requires": {"min_cashout": 3, "max_double": 1}},
 		{"id": "PATH_MARKED_01", "ending_key": &"THE_MARKED", "priority": 85, "requires": {"min_condanna": 1, "max_condanna": 1}},
@@ -35,3 +35,5 @@ static func morale_fallback_rules() -> Array[Dictionary]:
 		{"id": "MORALE_TAINTED_MID", "ending_key": &"THE_MARKED", "priority": 20, "requires": {"corruption_tier": "TAINTED", "glory_tier": "MID"}},
 	]
 
+
+# Deprecated key support for one sprint: finale_builder still reads "min_path_debt" as alias of "min_path_prudence".

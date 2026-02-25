@@ -3776,26 +3776,16 @@ func _select_run_finale() -> Dictionary:
 	return finale
 
 func _build_level3_ending_trace() -> Dictionary:
-	var path_debt_count: int = 0
-	var path_hubris_count: int = 0
 	# Condanna source is intentionally unique for ending rules:
 	# registry-issued condanne_this_run only (not inferred PYL actions).
 	var condanna_registry_count: int = _run_state.condanne_this_run.size()
-	for bet_id: StringName in _run_state.bets_history:
-		var path_tag: StringName = BetCatalog.get_level3_path_tag(bet_id)
-		if path_tag == &"PATH_PRUDENCE":
-			path_debt_count += 1
-		elif path_tag == &"PATH_HUBRIS":
-			path_hubris_count += 1
-	return {
-		"cashout_count": _run_state.push_luck_cashouts,
-		"double_count": _run_state.push_luck_doubles,
-		"condanna_count": condanna_registry_count,
-		"condanna_registry_count": condanna_registry_count,
-		"provoke_armed": _run_state.provoke_armed,
-		"path_debt_count": path_debt_count,
-		"path_hubris_count": path_hubris_count,
-	}
+	var trace: Dictionary = _finale_builder.build_path_trace_from_bet_history(_run_state.bets_history)
+	trace["cashout_count"] = _run_state.push_luck_cashouts
+	trace["double_count"] = _run_state.push_luck_doubles
+	trace["condanna_count"] = condanna_registry_count
+	trace["condanna_registry_count"] = condanna_registry_count
+	trace["provoke_armed"] = _run_state.provoke_armed
+	return trace
 
 func _update_hidden_run_metrics() -> void:
 	var corruption_value: int = 0

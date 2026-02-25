@@ -64,6 +64,13 @@ const LEVEL3_PACT_UNLOCKS: Dictionary[StringName, StringName] = {
 }
 
 
+
+const PATH_UNKNOWN: StringName = &"PATH_UNKNOWN"
+const PATH_PRUDENCE: StringName = &"PATH_PRUDENCE"
+const PATH_HUBRIS: StringName = &"PATH_HUBRIS"
+const PATH_PENITENCE: StringName = &"PATH_PENITENCE"
+const PATH_VIOLENCE: StringName = &"PATH_VIOLENCE"
+
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_DOUBLE_OR_DIE: StringName = &"DOUBLE_OR_DIE"
 
@@ -73,7 +80,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "INCASSA E VAI",
 		"display_title": "VIA DELLA PRUDENZA",
 		"display_subtitle": "Chiudi ora. Salva margine, cedi gloria.",
-		"path_tag": &"PATH_PRUDENCE",
+		"path_tag": PATH_PRUDENCE,
 		"archetype": &"DEBT",
 		"archetype_label": "ARCHETIPO: DEBITO",
 		"pact": "Ricompensa minima ma sicura: incassi subito e riduci l'esposizione.",
@@ -88,7 +95,7 @@ const LEVEL3_BETS: Array[Dictionary] = [
 		"name": "RADDOPPI O MUORI",
 		"display_title": "VIA DELL'HYBRIS",
 		"display_subtitle": "Spingi oltre. Rischio massimo, ritorno totale.",
-		"path_tag": &"PATH_HUBRIS",
+		"path_tag": PATH_HUBRIS,
 		"archetype": &"EGO",
 		"archetype_label": "ARCHETIPO: EGO",
 		"pact": "Ricompensa devastante: moltiplica la posta e accelera la corsa.",
@@ -551,9 +558,16 @@ static func get_level3_display_subtitle(bet_id: StringName) -> String:
 			return str(bet.get("display_subtitle", ""))
 	return ""
 
-static func get_level3_path_tag(bet_id: StringName) -> StringName:
+static func get_path_tag_for_bet_id(bet_id: StringName) -> StringName:
 	for bet_value: Dictionary in LEVEL3_BETS:
 		var bet: Dictionary = bet_value as Dictionary
 		if StringName(str(bet.get("id", ""))) == bet_id:
-			return StringName(str(bet.get("path_tag", "")))
-	return &""
+			var tag: StringName = StringName(str(bet.get("path_tag", "")))
+			if tag == &"":
+				return PATH_UNKNOWN
+			return tag
+	return PATH_UNKNOWN
+
+static func get_level3_path_tag(bet_id: StringName) -> StringName:
+	# Deprecated alias for one sprint: use get_path_tag_for_bet_id().
+	return get_path_tag_for_bet_id(bet_id)

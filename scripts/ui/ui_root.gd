@@ -513,6 +513,16 @@ func show_phase(phase: int) -> void:
 	print_debug("[FLOW][UI] show_phase=%d node=%s" % [phase, String(target.name)])
 	_reset_sign_feedback()
 	_reset_pyl_lock_state()
+	if phase == RUN_PHASE_BET_PRESENT or phase == RUN_PHASE_NEXT_BET:
+		_reset_decision_surface(bet_panel, _bet_buttons, condanna_focus_label)
+	elif phase == RUN_PHASE_MID_CHOICE:
+		_reset_decision_surface(
+			intermediate_choice_panel,
+			[intermediate_choice_placa_button, intermediate_choice_provoca_button],
+			intermediate_choice_label
+		)
+	elif phase == RUN_PHASE_PUSH_YOUR_LUCK:
+		_reset_decision_surface(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	_refresh_modal_dimmer()
 
 func _validate_ui_boot() -> bool:
@@ -1245,6 +1255,7 @@ func _on_pact_sealed_closed() -> void:
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_reset_sign_feedback()
+	_pre_resolve_tension_boost()
 	_last_ritual_outcome_snapshot = _extract_ritual_outcome_snapshot(payload)
 	var doom_short: String = str(payload.get("doom_short", ""))
 	var subtitle: String = fmt_system_state("condanna registrata")
@@ -1670,12 +1681,20 @@ func _wire_intermediate_choice_buttons() -> void:
 		_wire_sign_preview(intermediate_choice_provoca_button)
 
 func _on_intermediate_choice_placa_pressed() -> void:
-	begin_sign_feedback([intermediate_choice_placa_button, intermediate_choice_provoca_button], intermediate_choice_panel)
+	_apply_decision_lock(
+		intermediate_choice_panel,
+		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
+		intermediate_choice_label
+	)
 	if GameEvents.has_signal("request_mid_choice_select"):
 		GameEvents.request_mid_choice_select.emit(0)
 
 func _on_intermediate_choice_provoca_pressed() -> void:
-	begin_sign_feedback([intermediate_choice_placa_button, intermediate_choice_provoca_button], intermediate_choice_panel)
+	_apply_decision_lock(
+		intermediate_choice_panel,
+		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
+		intermediate_choice_label
+	)
 	if GameEvents.has_signal("request_mid_choice_select"):
 		GameEvents.request_mid_choice_select.emit(1)
 
@@ -1726,11 +1745,7 @@ func _on_push_luck_cashout_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
-	_set_pyl_buttons_enabled(false)
-	if push_luck_audience_reason != null:
-		push_luck_audience_reason.text = "Stato: scelta acquisita."
-		push_luck_audience_reason.visible = true
-	_pulse_pyl_panel()
+	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if GameEvents.has_signal("request_pyl_cashout"):
 		GameEvents.request_pyl_cashout.emit()
 
@@ -1738,11 +1753,7 @@ func _on_push_luck_condanna_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
-	_set_pyl_buttons_enabled(false)
-	if push_luck_audience_reason != null:
-		push_luck_audience_reason.text = "Stato: scelta acquisita."
-		push_luck_audience_reason.visible = true
-	_pulse_pyl_panel()
+	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if GameEvents.has_signal("request_pyl_condanna"):
 		GameEvents.request_pyl_condanna.emit()
 
@@ -1750,11 +1761,7 @@ func _on_push_luck_double_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
-	_set_pyl_buttons_enabled(false)
-	if push_luck_audience_reason != null:
-		push_luck_audience_reason.text = "Stato: scelta acquisita."
-		push_luck_audience_reason.visible = true
-	_pulse_pyl_panel()
+	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if GameEvents.has_signal("request_pyl_double"):
 		GameEvents.request_pyl_double.emit()
 
@@ -2143,9 +2150,52 @@ func _place_bet(bet_id: String) -> void:
 	sign_buttons.append_array(_bet_buttons)
 	if bet_confirm_button != null:
 		sign_buttons.append(bet_confirm_button)
-	begin_sign_feedback(sign_buttons, _resolve_bet_sign_panel())
+	_apply_decision_lock(_resolve_bet_sign_panel() as Control, sign_buttons, condanna_focus_label)
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(bet_id, 0)
+
+func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label) -> void:
+	for button: Button in buttons:
+		if button == null or not button.visible or button.disabled:
+			continue
+		button.disabled = true
+		button.scale = Vector2.ONE
+	if hint_label != null:
+		hint_label.text = "Stato: scelta acquisita."
+		hint_label.visible = true
+	if panel == null:
+		return
+	if _sign_feedback_tween != null and _sign_feedback_tween.is_valid():
+		_sign_feedback_tween.kill()
+	var panel_color: Color = panel.modulate
+	panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
+	_sign_feedback_tween = create_tween()
+	_sign_feedback_tween.set_trans(Tween.TRANS_LINEAR)
+	_sign_feedback_tween.set_ease(Tween.EASE_OUT)
+	_sign_feedback_tween.tween_property(panel, "modulate:r", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+	_sign_feedback_tween.parallel().tween_property(panel, "modulate:g", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+	_sign_feedback_tween.parallel().tween_property(panel, "modulate:b", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+	_play_sign_feedback_sfx_if_available()
+
+func _reset_decision_surface(panel: Control, buttons: Array[Button], hint_label: Label) -> void:
+	for button: Button in buttons:
+		if button == null:
+			continue
+		button.disabled = false
+		button.scale = Vector2.ONE
+	if hint_label != null:
+		hint_label.text = "Stato: in attesa di scelta."
+		hint_label.visible = true
+	if panel != null:
+		var panel_color: Color = panel.modulate
+		panel.modulate = Color(1.0, 1.0, 1.0, panel_color.a)
+
+func _pre_resolve_tension_boost() -> void:
+	if modals_root == null:
+		return
+	var tween: Tween = create_tween()
+	tween.tween_property(modals_root, "modulate:a", 0.85, 0.08)
+	tween.tween_property(modals_root, "modulate:a", 1.0, 0.12)
 
 func _resolve_bet_sign_panel() -> CanvasItem:
 	if betting_circle != null and betting_circle.visible:

@@ -55,6 +55,11 @@ func log_request(name: String, note: String = "") -> void:
 func log_ui(action: String, note: String = "") -> void:
 	print("[FLOW] %s :: %s" % ["UI", "%s :: %s" % [action, note]])
 
+func log_resolve_debug(entry: Dictionary) -> void:
+	if level < Level.VERBOSE:
+		return
+	log("resolve_breakdown", JSON.stringify(entry))
+
 func dump_last(n: int = 50) -> String:
 	var safe_n: int = maxi(0, n)
 	if safe_n == 0 or _buffer.is_empty():

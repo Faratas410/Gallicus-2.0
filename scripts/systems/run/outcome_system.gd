@@ -29,56 +29,57 @@ func resolve_level3_arena(
 	enemy_profiles: Array[Dictionary]
 ) -> Dictionary:
 	var base_win: float = 0.66
-	var base_damage: float = 0.4
+	var base_failure: float = 0.4
 	var pressure_mod: float = 0.0
 	var escalation_penalty: float = get_escalation_win_penalty(escalation_level)
-	var escalation_damage: float = get_escalation_damage_penalty(escalation_level)
+	var escalation_adverse_mod: float = get_escalation_adverse_penalty(escalation_level)
 	if _contains_scar(active_scar_ids, SCAR_CRACKED_BONES):
 		base_win -= 0.12
-		base_damage += 0.18
+		base_failure += 0.18
 	if _contains_scar(active_scar_ids, SCAR_OPEN_WOUND):
 		base_win -= 0.05
-		base_damage += 0.1
+		base_failure += 0.1
 	if _contains_scar(active_scar_ids, SCAR_SHAME_MARK):
 		base_win -= 0.06
-		base_damage += 0.12
+		base_failure += 0.12
 	if _contains_scar(active_scar_ids, SCAR_RUSTED_ARMOR):
-		base_damage += 0.15
+		base_failure += 0.15
 	if _contains_scar(active_scar_ids, SCAR_DEBT_BRAND):
 		escalation_penalty += 0.05
-		escalation_damage += 0.04
+		escalation_adverse_mod += 0.04
 	if _contains_scar(active_scar_ids, SCAR_ONE_EYE):
-		base_damage += 0.1
+		base_failure += 0.1
 		base_win -= 0.03
 
 	var profile: Dictionary = _get_enemy_profile_def(enemy_profile, enemy_profiles)
 	if not profile.is_empty():
 		var win_mod: float = float(profile.get("win_mod", 0.0))
-		var damage_mod: float = float(profile.get("damage_mod", 0.0))
-		pressure_mod = damage_mod
+		# LEGACY NAME: "damage_mod" == adverse/pressure shift in L3 ritual semantics.
+		var adverse_shift: float = float(profile.get("damage_mod", 0.0))
+		pressure_mod = adverse_shift
 		base_win += win_mod
-		base_damage += damage_mod
+		base_failure += adverse_shift
 		if enemy_profile == ENEMY_TRICKSTER:
 			base_win = 0.5 + (base_win - 0.5) * 1.35
-			base_damage = 0.5 + (base_damage - 0.5) * 1.25
+			base_failure = 0.5 + (base_failure - 0.5) * 1.25
 	var win_chance: float = clampf(base_win - escalation_penalty, 0.2, 0.85)
-	var damage_chance: float = clampf(base_damage + escalation_damage, 0.2, 0.85)
+	var failure_chance: float = clampf(base_failure + escalation_adverse_mod, 0.2, 0.85)
 
 	rng.seed = rng_seed
 	var won: bool = rng.randf() <= win_chance
-	var took_damage: bool = rng.randf() <= damage_chance
+	var condemnation_flag: bool = rng.randf() <= failure_chance
 	var notes: Array[StringName] = []
-	if took_damage:
-		notes.append(&"TOOK_DAMAGE")
+	if condemnation_flag:
+		notes.append(&"CONDEMNATION")
 	if enemy_profile != &"":
 		notes.append(StringName("ENEMY_" + String(enemy_profile)))
 	var outcome_tier: StringName = &"ADVERSE"
 	if won:
 		outcome_tier = &"FAVORABLE"
-	if not won and took_damage:
+	if not won and condemnation_flag:
 		outcome_tier = &"TERMINAL"
 	var outcome_reason: String = "Condanna registrata"
-	if won and not took_damage:
+	if won and not condemnation_flag:
 		outcome_reason = "Esito favorevole registrato"
 	elif won:
 		outcome_reason = "Esito favorevole con condanna registrata"
@@ -87,10 +88,19 @@ func resolve_level3_arena(
 	return {
 		"risk_profile": String(enemy_profile),
 		"pressure_mod": pressure_mod,
-		"failure_chance": damage_chance,
-		"condemnation_flag": took_damage,
+		"failure_chance": failure_chance,
+		"condemnation_flag": condemnation_flag,
 		"outcome_tier": String(outcome_tier),
 		"outcome_reason": outcome_reason,
+		"resolve_debug": {
+			"base_failure_chance": base_failure,
+			"escalation_mod": escalation_adverse_mod,
+			"scar_mod": base_failure - 0.4 - pressure_mod,
+			"enemy_mod": pressure_mod,
+			"final_failure_chance": failure_chance,
+			"condemnation_flag": condemnation_flag,
+			"outcome_tier": String(outcome_tier),
+		},
 		"won": won,
 		"notes": notes,
 	}
@@ -214,13 +224,17 @@ func get_escalation_win_penalty(escalation_level: int) -> float:
 		penalty += float(escalation_level - 1) * 0.09
 	return penalty
 
-func get_escalation_damage_penalty(escalation_level: int) -> float:
+func get_escalation_adverse_penalty(escalation_level: int) -> float:
 	var penalty: float = 0.0
 	if escalation_level >= 1:
 		penalty += 0.03
 	if escalation_level >= 2:
 		penalty += float(escalation_level - 1) * 0.07
 	return penalty
+
+# LEGACY NAME: "damage" == "adverse consequence" in L3 ritual semantics.
+func get_escalation_damage_penalty(escalation_level: int) -> float:
+	return get_escalation_adverse_penalty(escalation_level)
 
 func _contains_scar(active_scar_ids: Array[StringName], scar_id: StringName) -> bool:
 	for value: StringName in active_scar_ids:

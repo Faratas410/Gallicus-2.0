@@ -47,3 +47,10 @@ func build_scar_payload(
 		"visual_tag": str(scar_def.get("visual_tag", "")),
 		"tags": scar_def.get("tags", []) as Array,
 	}
+
+func project_modifiers_debug(mods: Dictionary) -> Dictionary:
+	return {
+		"mitigation_mod": float(mods.get("heal_multiplier", 1.0)),
+		"avoidance_cooldown_mod": float(mods.get("dodge_cooldown_multiplier", 1.0)),
+		"avoidance_speed_mod": float(mods.get("dodge_speed_multiplier", 1.0)),
+	}

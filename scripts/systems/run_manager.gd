@@ -659,6 +659,7 @@ const LYING_PACT_REVEALS: Dictionary = {
 	BET_P3_LIE_APPLAUSE: "VERITÀ: L'applauso è una trappola: più ti esaltano, più ti consumano.",
 }
 
+# LEGACY NAME: "damage_mod" profiles ritual adverse pressure in L3 (non-combat).
 const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_BRUISER,
@@ -769,6 +770,7 @@ var _request_router: RequestRouter = RequestRouterScript.new()
 var _run_end_payload_builder: RunEndPayloadBuilder = RunEndPayloadBuilderScript.new()
 var _scar_policy: ScarPolicy = ScarPolicyScript.new()
 var _flow_logger: FlowLogger = FlowLogger.new()
+var _last_resolve_debug: Dictionary = {}
 var _phase_run_init_handler: PhaseRunInitHandler = PhaseRunInitHandler.new()
 var _phase_bet_present_handler: PhaseBetPresentHandler = PhaseBetPresentHandler.new()
 var _phase_intermediate_choice_handler: PhaseIntermediateChoiceHandler = PhaseIntermediateChoiceHandler.new()
@@ -1705,7 +1707,8 @@ func _open_level3_bet_ui() -> void:
 	GameEvents.bet_opened.emit()
 
 func _build_level3_bet_offer() -> Array[Dictionary]:
-	var available: Array[Dictionary] = _get_available_level3_bets()
+	var available: Array[Dictionary] = BetCatalog.level3_active_bets()
+	var desired_count: int = BetCatalog.level3_active_bet_ids().size()
 	var offer_seed: int = _compute_level3_offer_seed()
 	var result: Dictionary = _betting_policy.build_bet_offer(
 		offer_seed,
@@ -1716,7 +1719,7 @@ func _build_level3_bet_offer() -> Array[Dictionary]:
 		_run_state.bets_history,
 		{
 			"available_bets": available,
-			"desired_count": 4,
+			"desired_count": desired_count,
 			"last_bet_offers": _run_state.last_bet_offers,
 			"last_selected_bet_id": _run_state.last_selected_bet_id,
 			"forced_archetype": _run_state.forced_next_pact_archetype,
@@ -1876,7 +1879,10 @@ func _emit_run_debug_state() -> void:
 	if not GameEvents.has_signal("run_debug_state_updated"):
 		return
 	var scars_copy: Array[String] = _serialize_stringname_array(_run_state.scars_history)
-	var payload: Dictionary = _flow_diagnostics.build_run_debug_payload(_run_state.run_seed, _run_state.arena_index, _run_state.escalation_level, String(_run_state.active_bet_id), String(_run_state.enemy_profile), scars_copy, String(_run_state.special_arena_id), _run_state.special_arena_active, _run_state.is_hunted_by_crowd, _run_state.glory, int(run.get("corruption", 0)), _run_state.scar_double_count, _run_state.scar_pact_count, _run_state.volatility)
+	var resolve_debug_payload: Dictionary = {}
+	if OS.is_debug_build():
+		resolve_debug_payload = _last_resolve_debug.duplicate(true)
+	var payload: Dictionary = _flow_diagnostics.build_run_debug_payload(_run_state.run_seed, _run_state.arena_index, _run_state.escalation_level, String(_run_state.active_bet_id), String(_run_state.enemy_profile), scars_copy, String(_run_state.special_arena_id), _run_state.special_arena_active, _run_state.is_hunted_by_crowd, _run_state.glory, int(run.get("corruption", 0)), _run_state.scar_double_count, _run_state.scar_pact_count, _run_state.volatility, resolve_debug_payload)
 	GameEvents.run_debug_state_updated.emit(payload)
 
 func _apply_glory_on_success() -> void:
@@ -2286,6 +2292,8 @@ func _resolve_level3_arena() -> ArenaResult:
 	)
 	result.won = bool(payload.get("won", false))
 	result.condemnation_flag = bool(payload.get("condemnation_flag", false))
+	_last_resolve_debug = payload.get("resolve_debug", {}) as Dictionary
+	_flow_logger.log_resolve_debug(_last_resolve_debug)
 	var notes_payload: Array = payload.get("notes", []) as Array
 	result.notes.clear()
 	for note_value: Variant in notes_payload:

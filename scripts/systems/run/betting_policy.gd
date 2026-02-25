@@ -12,6 +12,7 @@ func build_bet_offer(
 ) -> Dictionary:
 	var available_bets: Array[Dictionary] = config.get("available_bets", []) as Array[Dictionary]
 	var desired_count: int = int(config.get("desired_count", 4))
+	desired_count = mini(desired_count, available_bets.size())
 	var last_bet_offers: Array = config.get("last_bet_offers", []) as Array
 	var last_selected_bet_id: StringName = StringName(str(config.get("last_selected_bet_id", "")))
 	var forced_archetype: StringName = StringName(str(config.get("forced_archetype", "")))

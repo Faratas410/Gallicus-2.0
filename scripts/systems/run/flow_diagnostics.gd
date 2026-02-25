@@ -16,7 +16,8 @@ func build_run_debug_payload(
 	corruption: int,
 	scar_double_count: int,
 	scar_pact_count: int,
-	volatility: int
+	volatility: int,
+	last_resolve_debug: Dictionary = {}
 ) -> Dictionary:
 	return {
 		"seed": run_seed,
@@ -33,6 +34,7 @@ func build_run_debug_payload(
 		"scar_double_count": scar_double_count,
 		"scar_pact_count": scar_pact_count,
 		"volatility": volatility,
+		"last_resolve_debug": last_resolve_debug.duplicate(true),
 	}
 
 

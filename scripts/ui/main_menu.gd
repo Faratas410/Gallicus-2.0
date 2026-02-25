@@ -66,6 +66,7 @@ var _active_achievements_tab: StringName = ACHIEVEMENTS_TAB_CONDANNE
 var _suppress_settings_events: bool = false
 var _arena_themes: RefCounted = null
 var _run_manager_port: RunManagerUiPort = null
+var _menu_next_step_hint: String = ""
 
 func _ready() -> void:
 	_arena_themes = ArenaThemes.new()
@@ -106,6 +107,10 @@ func _ready() -> void:
 		var settings_closed_callable: Callable = Callable(self, "_on_settings_closed")
 		if not GameEvents.settings_closed.is_connected(settings_closed_callable):
 			GameEvents.settings_closed.connect(settings_closed_callable)
+	if GameEvents.has_signal("continue_rejected"):
+		var continue_rejected_callable: Callable = Callable(self, "_on_continue_rejected")
+		if not GameEvents.continue_rejected.is_connected(continue_rejected_callable):
+			GameEvents.continue_rejected.connect(continue_rejected_callable)
 
 func _show_menu() -> void:
 	menu_vbox.visible = true
@@ -121,6 +126,7 @@ func _hide_menu() -> void:
 func _on_run_phase_changed(next_phase: int) -> void:
 	if next_phase == RUN_PHASE_MAIN_MENU:
 		visible = true
+		_menu_next_step_hint = "Nuova run disponibile / Consulta Condanne."
 		_show_menu()
 
 func _show_achievements() -> void:
@@ -148,7 +154,7 @@ func _show_settings() -> void:
 
 func _disable_placeholder_buttons() -> void:
 	load_game_button.disabled = true
-	load_game_button.tooltip_text = "NON DISPONIBILE"
+	load_game_button.tooltip_text = "Funzione disattiva in L3."
 
 func _build_condanne_list() -> void:
 	if condanne_populated:
@@ -285,10 +291,44 @@ func _on_condanna_mouse_exited() -> void:
 func _refresh_continue_button() -> void:
 	var has_run_save: bool = SaveManager.has_run_save()
 	continue_button.disabled = not has_run_save
-	continue_hint_panel.visible = not has_run_save
-	continue_hint_label.visible = not has_run_save
+	var has_menu_hint: bool = _menu_next_step_hint != ""
+	continue_hint_panel.visible = not has_run_save or has_menu_hint
+	continue_hint_label.visible = not has_run_save or has_menu_hint
+	if has_menu_hint:
+		continue_hint_label.text = _menu_next_step_hint
+		_menu_next_step_hint = ""
+		return
 	if not has_run_save:
-		continue_hint_label.text = "Nessuna partita salvata."
+		continue_hint_label.text = "Accetta una scommessa per procedere."
+
+func _format_continue_reject_reason(reason: String) -> String:
+	if reason == "missing_or_invalid_schema_version":
+		return "Salvataggio non valido: schema del file mancante o corrotto."
+	if reason == "unsupported_save_wrapper_schema":
+		return "Salvataggio non compatibile con questa versione."
+	if reason == "missing_run_payload":
+		return "Salvataggio incompleto: dati run mancanti."
+	if reason == "missing_level3_schema":
+		return "Salvataggio non valido: schema Level 3 mancante."
+	if reason == "unsupported_level3_schema":
+		return "Salvataggio non compatibile: schema Level 3 differente."
+	if reason.begins_with("legacy_run_key:"):
+		return "Salvataggio legacy non supportato in L3."
+	if reason == "missing_run_state":
+		return "Salvataggio incompleto: stato run mancante."
+	if reason == "missing_or_invalid_scars_array":
+		return "Salvataggio non valido: dati Condanne non leggibili."
+	if reason == "invalid_scar_item_type":
+		return "Salvataggio non valido: formato Condanne non supportato."
+	if reason == "":
+		return "Salvataggio non valido."
+	return "Salvataggio non valido: %s." % reason
+
+func _on_continue_rejected(reason: String) -> void:
+	_refresh_continue_button()
+	continue_hint_label.text = _format_continue_reject_reason(reason)
+	continue_hint_panel.visible = true
+	continue_hint_label.visible = true
 
 func _on_continue_pressed() -> void:
 	if continue_button.disabled:

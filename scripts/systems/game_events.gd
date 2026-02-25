@@ -54,6 +54,7 @@ signal request_new_run
 signal request_reset_run
 signal request_retry_run
 signal request_continue_run
+signal continue_rejected(reason: String)
 signal request_push_luck_cashout
 signal request_push_luck_double
 signal request_intermediate_choice(choice_id: String)

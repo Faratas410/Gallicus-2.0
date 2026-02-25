@@ -6,7 +6,8 @@ class_name BettingPayloadFactory
 # - build_pyl_offer_payload() MUST output keys:
 #   ["bet_id", "bet_name", "current_level", "next_level", "condition", "next_pact", "next_doom",
 #    "cashout_locked", "cashout_lock_reason", "double_locked", "double_lock_reason", "choice_note",
-#    "arena_index", "arena_target", "audience_label", "audience_reason", "cashout_modifier", "cashout_modifier_text"]
+#    "arena_index", "arena_target", "audience_label", "audience_reason", "cashout_modifier", "cashout_modifier_text",
+#    "bet_subtitle", "path_tag"]
 # - No optional keys in factory output: every key above is always emitted with explicit defaults.
 
 func build_bet_offer_payload(inputs: Dictionary) -> Dictionary:
@@ -21,8 +22,10 @@ func build_pyl_offer_payload(inputs: Dictionary) -> Dictionary:
 	var bet_name: String = bet_id
 	var condition_text: String = ""
 	if not bet_data.is_empty():
-		bet_name = str(bet_data.get("name", bet_id))
+		bet_name = str(bet_data.get("display_title", bet_data.get("name", bet_id)))
 		condition_text = str(bet_data.get("condition", ""))
+	var bet_subtitle: String = str(bet_data.get("display_subtitle", ""))
+	var path_tag: String = str(bet_data.get("path_tag", ""))
 	var current_level: int = int(inputs.get("bet_chain_level", 1))
 	var next_level: int = current_level + 1
 	if bool(inputs.get("level3_enabled", false)):
@@ -54,6 +57,8 @@ func build_pyl_offer_payload(inputs: Dictionary) -> Dictionary:
 		"audience_reason": str(inputs.get("audience_reason", "")),
 		"cashout_modifier": float(inputs.get("cashout_modifier", 1.0)),
 		"cashout_modifier_text": str(inputs.get("cashout_modifier_text", "")),
+		"bet_subtitle": bet_subtitle,
+		"path_tag": path_tag,
 	}
 
 func build_audience_payload_fragments(inputs: Dictionary) -> Dictionary:

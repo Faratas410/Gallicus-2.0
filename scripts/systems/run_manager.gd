@@ -2247,6 +2247,7 @@ func _compute_level3_enemy_seed() -> int:
 
 func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
 	var scar_names: Array[String] = []
+	var bet_token: String = BetCatalog.get_bet_debug_token(bet_id)
 	for scar_name: StringName in scars_applied:
 		scar_names.append(String(scar_name))
 	print(
@@ -2255,7 +2256,7 @@ func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_app
 		" arena=",
 		_run_state.arena_index,
 		" bet=",
-		String(bet_id),
+		bet_token,
 		" enemy=",
 		String(_run_state.enemy_profile),
 		" won=",
@@ -3708,10 +3709,14 @@ func _select_run_finale() -> Dictionary:
 	if _registry_has_precedent and ending_id == &"THE_LIBERTY":
 		ending_id = &""
 	if ending_id == &"":
-		if _run_state.run_end_reason != "INFRA_FAILURE" and _run_state.corruption >= FALL_THRESHOLD:
-			ending_id = &"THE_FALL"
-		elif (not _registry_has_precedent) and _run_state.glory >= LIBERTY_THRESHOLD and _run_state.corruption < MORAL_THRESHOLD:
-			ending_id = &"THE_LIBERTY"
+		var ending_trace: Dictionary = _build_level3_ending_trace()
+		var rule_match: Dictionary = _finale_builder.select_level3_ending_key(_run_state, ending_trace)
+		var matched_rule_id: String = str(rule_match.get("id", ""))
+		if matched_rule_id != "":
+			_flow_log("ending_rule_matched", matched_rule_id)
+		var matched_ending: StringName = StringName(str(rule_match.get("ending_key", "")))
+		if matched_ending != &"":
+			ending_id = matched_ending
 	if ending_id == &"":
 		if _run_state.run_end_reason == "DOUBLE_OR_DIE":
 			ending_id = &"THE_FOOL"
@@ -3770,6 +3775,18 @@ func _select_run_finale() -> Dictionary:
 	meta_payload["next_bet_enabled"] = register_ending_key == ""
 	finale["meta"] = meta_payload
 	return finale
+
+func _build_level3_ending_trace() -> Dictionary:
+	# Condanna source is intentionally unique for ending rules:
+	# registry-issued condanne_this_run only (not inferred PYL actions).
+	var condanna_registry_count: int = _run_state.condanne_this_run.size()
+	var trace: Dictionary = _finale_builder.build_path_trace_from_bet_history(_run_state.bets_history)
+	trace["cashout_count"] = _run_state.push_luck_cashouts
+	trace["double_count"] = _run_state.push_luck_doubles
+	trace["condanna_count"] = condanna_registry_count
+	trace["condanna_registry_count"] = condanna_registry_count
+	trace["provoke_armed"] = _run_state.provoke_armed
+	return trace
 
 func _update_hidden_run_metrics() -> void:
 	var corruption_value: int = 0
@@ -4214,7 +4231,7 @@ func _get_bet_display_name(bet_id: String) -> String:
 	var bet_data: Dictionary = _get_bet_data(bet_id)
 	if bet_data.is_empty():
 		return bet_id
-	return str(bet_data.get("name", bet_id))
+	return str(bet_data.get("display_title", bet_data.get("name", bet_id)))
 
 func _try_apply_open_wound_scar(chain_level: int) -> void:
 	var should_try: bool = _scar_policy.should_try_scar(String(SCAR_OPEN_WOUND), {

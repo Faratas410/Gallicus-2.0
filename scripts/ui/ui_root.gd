@@ -235,6 +235,7 @@ var _last_verdict_sentence: String = ""
 var _last_verdict_charge: String = ""
 var _special_arena_payload: Dictionary = {}
 var _arena_theme_payload: Dictionary = {}
+var _last_ritual_outcome_snapshot: Dictionary = {}
 var _require_bet_confirm: bool = false
 var _scars_detail_text: String = ""
 var _debug_run_log: String = ""
@@ -242,7 +243,6 @@ var _debug_seed: int = 0
 var _debug_arena_index: int = 0
 var _debug_escalation: int = 0
 var _debug_active_bet: String = ""
-var _debug_enemy_profile: String = ""
 var _debug_scars: Array[String] = []
 var _debug_special_arena: String = ""
 var _ending_mode_active: bool = false
@@ -714,6 +714,7 @@ func _on_run_started() -> void:
 			fast_countdown_label.modulate.a = 1.0
 	_set_push_luck_modal(false)
 	_pending_bets = []
+	_last_ritual_outcome_snapshot = {}
 	_set_game_over_modal(false)
 	_last_register_message = ""
 	_last_register_final = false
@@ -1053,7 +1054,6 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 	_debug_arena_index = int(payload.get("arena_index", 0))
 	_debug_escalation = int(payload.get("escalation_level", 0))
 	_debug_active_bet = str(payload.get("active_bet_id", ""))
-	_debug_enemy_profile = str(payload.get("enemy_profile", ""))
 	_debug_special_arena = str(payload.get("special_arena_id", ""))
 	_set_glory_value(int(payload.get("glory", 0)))
 	var scars_value: Array = payload.get("scars", []) as Array
@@ -1227,6 +1227,7 @@ func _on_pact_sealed_closed() -> void:
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_reset_sign_feedback()
+	_last_ritual_outcome_snapshot = _extract_ritual_outcome_snapshot(payload)
 	var doom_short: String = str(payload.get("doom_short", ""))
 	var subtitle: String = fmt_system_state("condanna registrata")
 	if doom_short != "":
@@ -1918,6 +1919,15 @@ func _format_lock_note(reason: String, fallback: String) -> String:
 	if text == "":
 		text = fallback
 	return fmt_system_state(text)
+
+func _extract_ritual_outcome_snapshot(payload: Dictionary) -> Dictionary:
+	return {
+		"risk_profile": str(payload.get("risk_profile", "")),
+		"pressure_mod": float(payload.get("pressure_mod", 0.0)),
+		"failure_chance": float(payload.get("failure_chance", 0.0)),
+		"outcome_tier": str(payload.get("outcome_tier", "")),
+		"condemnation_flag": bool(payload.get("condemnation_flag", false)),
+	}
 
 func fmt_register_line(action: String, consequence: String) -> String:
 	var action_text: String = action.strip_edges().to_lower()

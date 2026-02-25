@@ -4,6 +4,12 @@
 **Data:** 2026-02-25
 **Obiettivo:** mappare in modo operativo le feature gameplay L3 con schema ripetibile: **cos'è / cosa fa / stato attuale / come migliorare**.
 
+> Nota (importante):
+> Questo documento non ridefinisce il canon. Quando descrive sequenze/eventi/ownership,
+> deve restare coerente con i canon file (RUN_ARCHITECTURE_CANON / MECHANICS_UNIFIED / FOUNDATIONS).
+> Le proposte sono classificate per impatto (FLEXIBLE / TOOLING / CORE) e non vanno considerate “freeze-safe”
+> se toccano schema save, continue boundary o authority.
+
 ---
 
 ## 1) Metodo di analisi (vincolato al Canon)
@@ -36,10 +42,15 @@ Questa analisi **non ridefinisce** canon né architettura. Le proposte sono espr
 2. **Run Init** → seed, payload base, arena context.
 3. **Bet Present** → apertura offerte e selezione patto.
 4. **Bet Signed / Checkpoint** → stato consolidato.
-5. **Ritual Resolve** → risoluzione esito (favorevole / adverse / terminal).
-6. **Intermediate Choice** (placa/provoca) se previsto.
-7. **Push Your Luck** (cashout / condanna / double).
-8. **Loop arena successiva** o **Run End** con verdict/registro.
+5. **Rituale 1 (Pact Sealed)** → overlay rituale breve post-firma.
+6. **Intermediate Choice** (placa/provoca) → scelta binaria prima della risoluzione.
+7. **Rituale 2 (Resolve Ritual)** → overlay rituale + risoluzione esito (favorevole / adverse / terminal).
+8. **Push Your Luck** (cashout / condanna / double).
+9. **Loop arena successiva** o **Run End** con verdict/registro.
+
+Nota flow:
+- Nel mainline L3 attivo la resolve è un overlay event-driven tra MID_CHOICE e PUSH_YOUR_LUCK
+  (non necessariamente una RunPhase “RESOLUTION” mainline).
 
 ---
 
@@ -68,6 +79,10 @@ Sistema di cicatrici permanenti nella run che registra irreversibilità e modifi
 3. **Copertura edge-case:** verificare esplicitamente comportamento con scars duplicate in input sporco (guardia difensiva).
 4. **Telemetry pack:** aggregare metriche scar per run report (densità scar / distanza media tra scar).
 
+Chiarimento (authority):
+- “Log tecnico” qui significa FlowLogger/diagnostica interna (no GameEvents nuovi emessi da ScarPolicy o sistemi run/*).
+- Qualsiasi emissione globale resta di competenza RunManager.
+
 ---
 
 ## 3.2 Bet Offer & Selection System
@@ -90,6 +105,10 @@ Motore che costruisce le offerte patto disponibili e riceve la scelta del giocat
 2. **Consistenza anti-loop:** metrica di diversità offerta (evitare cluster ripetitivi troppo frequenti).
 3. **Validazione catalogo:** check statico su bet catalog (campi obbligatori + coerenza archetype/behavior).
 
+Nota design:
+- “Lock reason” deve restare minimale e non trasformarsi in guida/ottimizzazione per player.
+- Preferire reason_code per debug/telemetria (e, se esposto, copy neutra).
+
 ---
 
 ## 3.3 Resolve Ritual / Outcome System
@@ -109,7 +128,7 @@ Kernel che decide esiti arena e conseguenze meccaniche (favorable/adverse/termin
 - Contratto lessicale canonico presente nei commenti di migrazione (`Patch 9A`, rimozione alias legacy).
 
 ### Come miglioriamo
-1. **Trasparenza probabilistica interna:** includere nel payload tecnico breakdown `base_win`, `scar_mod`, `escalation_mod`, `enemy_mod`.
+1. **Trasparenza probabilistica interna (DEBUG-ONLY):** includere breakdown `base_win`, `scar_mod`, `escalation_mod`, `enemy_mod` solo in diagnostica (overlay F3 / FlowLogger), non in payload UI player-facing.
 2. **Tabella bilanciamento esterna:** valori numerici di reward/penalty in dataset, non hardcoded.
 3. **Test determinismo:** smoke ripetibile seed-based per confermare stabilità output outcome.
 
@@ -131,7 +150,11 @@ Micro-fase post rituale che aggiunge rischio/controllo prima di push-your-luck.
 
 ### Come miglioriamo
 1. **Semantica esplicita:** codificare outcome tecnico della scelta in enum stabile (evita dipendenza da index magic).
-2. **Feedback chiuso:** aggiungere evento diagnostico `intermediate_choice_applied` con delta meccanico.
+2. **Feedback chiuso (diagnostica):** aggiungere traccia diagnostica del delta meccanico applicato.
+
+Chiarimento (authority):
+- Evitare nuovi GameEvents “diagnostici” emessi da handler/sistemi.
+- Preferire FlowLogger o un campo debug-only esposto da RunManager verso overlay.
 
 ---
 
@@ -174,6 +197,9 @@ Indicatore di deterioramento sistemico della run (capped).
 1. **Ledger del delta:** storico motivazionale per ogni incremento (`source`, `amount`, `arena`, `bet`).
 2. **Saturazione leggibile:** trigger tecnico quando vicino al cap per facilitare bilanciamento.
 
+Impatto (schema):
+- Un “ledger persistente” in RunState impatta lo schema save/continue boundary (CORE). Non è freeze-safe senza bump di schema e update validazioni.
+
 ---
 
 ## 3.7 Glory System
@@ -193,6 +219,9 @@ Indicatore di performance/consenso/valore positivo nella run.
 ### Come miglioriamo
 1. **Curve esplicite:** documentare tabella moltiplicatori e breakpoint runtime effettivi.
 2. **Parità con corruption:** avere ledger simmetrico anche per guadagni glory.
+
+Impatto (schema):
+- Ledger persistente per glory = schema save/continue boundary (CORE). Preferire debug-only fino a decisione di schema.
 
 ---
 
@@ -232,7 +261,7 @@ Layer narrativo-meccanico di chiusura run con classificazione finale.
 
 ### Come miglioriamo
 1. **Normalizzazione taxonomy:** codice univoco per condanna + copy separata per localizzazione.
-2. **Finale explainability:** aggiungere breakdown tecnico non diegetico (debug-only) per capire perché ending X.
+2. **Finale explainability (DEBUG-ONLY):** breakdown tecnico non diegetico solo in overlay/log per capire perché ending X, non nel testo finale player-facing.
 
 ---
 
@@ -251,7 +280,11 @@ Persistenza progressiva della run su checkpoint canonici.
 
 ### Come miglioriamo
 1. **Recovery deterministico:** testare ripresa su ogni checkpoint con seed invariato.
-2. **Checksum payload:** hash leggero per verificare integrità save runtime.
+2. **Checksum payload (CORE / schema):** hash leggero per verificare integrità save runtime.
+
+Impatto (schema):
+- Aggiungere checksum nel payload richiede update strict-sealed validation e potenzialmente bump `level3_schema` (CORE).
+- Non classificare come “freeze-safe” senza task esplicita di schema migration boundary.
 
 ---
 
@@ -317,6 +350,11 @@ Strato UI che reagisce allo stato gameplay senza decision authority.
 - Test determinismo su smoke run replicate.
 - Test resume checkpoint.
 
+Nota “freeze-safe”:
+- Lotto A/C sono tipicamente freeze-safe (Tooling/diagnostica).
+- Lotto B è freeze-safe solo se non cambia semantiche runtime (spostamento valori senza alterare policy).
+- Qualsiasi punto che introduce nuovi campi persistenti o cambia validazioni continue/save è CORE, quindi NON freeze-safe per default.
+
 ---
 
 ## 6) Template riutilizzabile per prossime feature
@@ -327,4 +365,3 @@ Per ogni nuova feature gameplay usare sempre:
 3. **Stato attuale** (file owner + invarianti)
 4. **Rischi** (authority, determinismo, flow)
 5. **Miglioria minima** (solo se freeze-safe)
-

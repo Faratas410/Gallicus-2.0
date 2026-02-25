@@ -1308,6 +1308,7 @@ func request_take_payout() -> void:
 
 func request_quit_to_menu() -> void:
 	_touch_request_activity("request_show_main_menu()")
+	_set_runtime_gate_phase(RunPhase.MAIN_MENU)
 	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
 
 func request_load_continue() -> void:
@@ -3971,7 +3972,7 @@ func _watchdog_stall_hint(now_ms: int) -> String:
 func _watchdog_tick() -> void:
 	if not _watchdog_enabled:
 		return
-	if _phase == RunPhase.NONE or _phase == RunPhase.MAIN_MENU:
+	if _phase == RunPhase.NONE or _phase == RunPhase.MAIN_MENU or _phase == RunPhase.GAME_OVER:
 		return
 	if _phase == RunPhase.BET_PRESENT and _waiting_for_bet:
 		return

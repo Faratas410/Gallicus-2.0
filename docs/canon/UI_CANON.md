@@ -334,6 +334,12 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Flag motion contract: only `FlagRoot/FlagCloth` receives wind deformation material; `FlagRoot/Pole` remains static.
 - Fog placement and top-band contract: menu fog layers remain constrained to the lower ambience band (no sky coverage), while the upper CloudsLayer remains static on X and applies an intentionally harsh strobing tint effect for degraded visual style.
 
+## UI boot-failure fallback surface (Patch: UX robustness)
+- Runtime scene `res://scenes/UI.tscn` includes `UI_RunRoot/Overlays/BootFailOverlay` as a user-facing fallback surface, hidden by default in healthy runs.
+- Runtime script `res://scripts/ui/ui_root.gd` performs a UI-side wiring contract check with `has_node()` for critical modal paths (`Modals/BetModal`, `Modals/PactSealedModal`, `Modals/ResolveRitualModal`, `Modals/GameOverModal`) and activates the overlay only if the contract is broken.
+- Boot-fail mode is presentation-only: the overlay does not attempt runtime repair, does not call RunManager, and does not mutate phase authority.
+- Allowed escape intent is only `GameEvents.request_show_main_menu`; no new `request_*` signals are introduced.
+
 ## BettingCircle pact card readability baseline (Patch: minimal UI visibility)
 - Runtime scene: `res://scenes/ui/BettingCircle.tscn`.
 - Pact option buttons `BetOption1`, `BetOption2`, `BetOption3` use `custom_minimum_size = Vector2(0, 240)` to preserve vertical room for descriptive lines.

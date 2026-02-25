@@ -57,6 +57,7 @@ const CONDANNA_UNLOCKED_ALPHA: float = 1.0
 const CONDANNA_LOCKED_ALPHA: float = 0.35
 const RunPhaseContract = preload("res://scripts/contracts/run_phase_contract.gd")
 const RUN_PHASE_MAIN_MENU: int = RunPhaseContract.MAIN_MENU
+const L3_EXPECTATION_MICRO_COPY: String = "Loop rituale basato su scommesse. Nessun combat action."
 
 var _language_fallback_logged: bool = false
 var selected_language: String = "Italiano"
@@ -295,11 +296,11 @@ func _refresh_continue_button() -> void:
 	continue_hint_panel.visible = not has_run_save or has_menu_hint
 	continue_hint_label.visible = not has_run_save or has_menu_hint
 	if has_menu_hint:
-		continue_hint_label.text = _menu_next_step_hint
+		continue_hint_label.text = "%s\n%s" % [_menu_next_step_hint, L3_EXPECTATION_MICRO_COPY]
 		_menu_next_step_hint = ""
 		return
 	if not has_run_save:
-		continue_hint_label.text = "Accetta una scommessa per procedere."
+		continue_hint_label.text = "%s\n%s" % ["Accetta una scommessa per procedere.", L3_EXPECTATION_MICRO_COPY]
 
 func _format_continue_reject_reason(reason: String) -> String:
 	if reason == "missing_or_invalid_schema_version":

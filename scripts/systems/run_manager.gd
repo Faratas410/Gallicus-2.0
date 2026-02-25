@@ -1976,6 +1976,8 @@ func _reject_invalid_continue_payload(reason: String) -> void:
 		final_reason = "invalid_continue_payload"
 	_flow_log("continue_rejected", final_reason)
 	push_warning("RUN_SAVE_REJECTED: %s" % final_reason)
+	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("continue_rejected"):
+		GameEvents.continue_rejected.emit(final_reason)
 	_save_system.clear_run()
 	_set_phase(RunPhase.MAIN_MENU, "continue_rejected_invalid_save")
 

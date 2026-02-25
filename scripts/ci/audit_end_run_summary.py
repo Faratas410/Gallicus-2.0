@@ -14,8 +14,32 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-SCENE_PATH = Path("scenes/UI.tscn")
-UI_ROOT_PATH = Path("scripts/ui/ui_root.gd")
+def _repo_root_from_script() -> Path:
+    # Expected layout: <repo>/scripts/ci/audit_end_run_summary.py
+    # parents[0]=ci, parents[1]=scripts, parents[2]=<repo>
+    script_path = Path(__file__).resolve()
+    if script_path.parent.name != "ci" or script_path.parent.parent.name != "scripts":
+        raise RuntimeError(
+            f"Unsupported script layout: expected .../scripts/ci/, got {script_path.parent}"
+        )
+    return script_path.parents[2]
+
+
+try:
+    REPO_ROOT = _repo_root_from_script()
+except RuntimeError as error:
+    REPO_ROOT = None
+    REPO_ROOT_ERROR = str(error)
+else:
+    REPO_ROOT_ERROR = None
+
+SCENE_PATH = REPO_ROOT / "scenes" / "UI.tscn" if REPO_ROOT else Path("/__missing__/scenes/UI.tscn")
+UI_ROOT_PATH = REPO_ROOT / "scripts" / "ui" / "ui_root.gd" if REPO_ROOT else Path("/__missing__/scripts/ui/ui_root.gd")
+
+# Back-compat: allow running from repo root with relative paths if someone forks layout.
+# (We still prefer absolute paths computed above.)
+SCENE_PATH_FALLBACK = Path("scenes/UI.tscn")
+UI_ROOT_PATH_FALLBACK = Path("scripts/ui/ui_root.gd")
 
 END_RUN_ROOT = "UI_RunRoot/Phase_END_RUN"
 CANON_HARD_PATHS = [
@@ -110,15 +134,26 @@ def parse_wiring(ui_text: str) -> tuple[list[tuple[str, str]], dict[str, set[str
 
 
 def main() -> int:
-    if not SCENE_PATH.exists():
-        print(f"ERROR: missing {SCENE_PATH}")
-        return 1
-    if not UI_ROOT_PATH.exists():
-        print(f"ERROR: missing {UI_ROOT_PATH}")
+    if REPO_ROOT_ERROR:
+        print(f"ERROR: {REPO_ROOT_ERROR}")
         return 1
 
-    scene_text = SCENE_PATH.read_text(encoding="utf-8")
-    ui_text = UI_ROOT_PATH.read_text(encoding="utf-8")
+    scene_path = SCENE_PATH if SCENE_PATH.exists() else SCENE_PATH_FALLBACK
+    ui_root_path = UI_ROOT_PATH if UI_ROOT_PATH.exists() else UI_ROOT_PATH_FALLBACK
+
+    if not scene_path.exists():
+        print("ERROR: missing scenes/UI.tscn")
+        print(f"- Tried: {SCENE_PATH}")
+        print(f"- Fallback: {SCENE_PATH_FALLBACK.resolve()}")
+        return 1
+    if not ui_root_path.exists():
+        print("ERROR: missing scripts/ui/ui_root.gd")
+        print(f"- Tried: {UI_ROOT_PATH}")
+        print(f"- Fallback: {UI_ROOT_PATH_FALLBACK.resolve()}")
+        return 1
+
+    scene_text = scene_path.read_text(encoding="utf-8")
+    ui_text = ui_root_path.read_text(encoding="utf-8")
 
     nodes = parse_scene_nodes(scene_text)
     path_set = {node["path"] for node in nodes}

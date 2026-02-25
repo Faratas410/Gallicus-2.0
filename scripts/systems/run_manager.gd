@@ -2247,6 +2247,7 @@ func _compute_level3_enemy_seed() -> int:
 
 func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
 	var scar_names: Array[String] = []
+	var bet_token: String = BetCatalog.get_bet_debug_token(bet_id)
 	for scar_name: StringName in scars_applied:
 		scar_names.append(String(scar_name))
 	print(
@@ -2255,7 +2256,7 @@ func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_app
 		" arena=",
 		_run_state.arena_index,
 		" bet=",
-		String(bet_id),
+		bet_token,
 		" enemy=",
 		String(_run_state.enemy_profile),
 		" won=",

@@ -1,22 +1,7 @@
 extends Control
 class_name BettingCircleUI
 
-const BETTING_CIRCLE_OPTIONS: Array[Dictionary] = [
-	{
-		"id": &"CASH_OUT",
-		"name": "INCASSA E VAI",
-		"doom": "CONDANNA: Nessuna. Prudenza registrata.",
-		"condition": "CONDIZIONE: Vinci l'arena.",
-		"pact": "PATTO: Ricompensa minore, ma certa.",
-	},
-	{
-		"id": &"DOUBLE_OR_DIE",
-		"name": "RADDOPPI O MUORI",
-		"doom": "CONDANNA: Fallimento: chiusura della run.",
-		"condition": "CONDIZIONE: Vinci l'arena.",
-		"pact": "PATTO: Ricompensa massima.",
-	},
-]
+const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
 
 @onready var sigilla_button: Button = $ContractPanel/ContractVBox/SigillaButton as Button
 @onready var bet_option_1: Button = $ContractPanel/ContractVBox/BetOptions/BetOption1 as Button
@@ -32,6 +17,7 @@ const BETTING_CIRCLE_OPTIONS: Array[Dictionary] = [
 @onready var bet_option_2_pact: Label = $ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/PattoLabelPanel/PattoLabel as Label
 
 var selected_bet_id: StringName = &""
+var _betting_circle_options: Array[Dictionary] = []
 
 func _ready() -> void:
 	visible = false
@@ -40,9 +26,12 @@ func _ready() -> void:
 	_setup_group(bet_buttons, bet_group)
 	bet_option_3.visible = false
 	bet_option_3.disabled = true
+	_rebuild_options_from_catalog()
 	_apply_option_copy()
-	bet_option_1.pressed.connect(_on_bet_selected.bind(BETTING_CIRCLE_OPTIONS[0].get("id", &"")))
-	bet_option_2.pressed.connect(_on_bet_selected.bind(BETTING_CIRCLE_OPTIONS[1].get("id", &"")))
+	if _betting_circle_options.size() >= 1:
+		bet_option_1.pressed.connect(_on_bet_selected.bind(_betting_circle_options[0].get("id", &"")))
+	if _betting_circle_options.size() >= 2:
+		bet_option_2.pressed.connect(_on_bet_selected.bind(_betting_circle_options[1].get("id", &"")))
 	sigilla_button.pressed.connect(_on_sigilla_pressed)
 	_reset_button_state()
 
@@ -87,13 +76,36 @@ func _update_sigilla_state() -> void:
 	sigilla_button.disabled = not is_ready
 
 func _apply_option_copy() -> void:
-	if BETTING_CIRCLE_OPTIONS.size() < 2:
+	if _betting_circle_options.size() < 2:
 		return
-	_apply_card_copy(BETTING_CIRCLE_OPTIONS[0], bet_option_1_name, bet_option_1_doom, bet_option_1_condition, bet_option_1_pact)
-	_apply_card_copy(BETTING_CIRCLE_OPTIONS[1], bet_option_2_name, bet_option_2_doom, bet_option_2_condition, bet_option_2_pact)
+	_apply_card_copy(_betting_circle_options[0], bet_option_1_name, bet_option_1_doom, bet_option_1_condition, bet_option_1_pact)
+	_apply_card_copy(_betting_circle_options[1], bet_option_2_name, bet_option_2_doom, bet_option_2_condition, bet_option_2_pact)
 
 func _apply_card_copy(bet_data: Dictionary, name_label: Label, doom_label: Label, condition_label: Label, pact_label: Label) -> void:
 	name_label.text = str(bet_data.get("name", ""))
 	doom_label.text = str(bet_data.get("doom", ""))
 	condition_label.text = str(bet_data.get("condition", ""))
 	pact_label.text = str(bet_data.get("pact", ""))
+
+func _rebuild_options_from_catalog() -> void:
+	_betting_circle_options = []
+	var active_ids: Array[StringName] = BetCatalog.level3_active_bet_ids()
+	for bet_id: StringName in active_ids:
+		var bet_data: Dictionary = _find_bet_data(bet_id)
+		if bet_data.is_empty():
+			continue
+		var identity: Dictionary = BetCatalog.resolve_bet_identity(bet_id)
+		_betting_circle_options.append({
+			"id": bet_id,
+			"name": str(identity.get("display_title", str(bet_data.get("name", String(bet_id))))),
+			"doom": str(bet_data.get("doom", "")),
+			"condition": "CONDIZIONE: %s" % str(bet_data.get("condition", "")),
+			"pact": "PATTO: %s" % str(bet_data.get("pact", "")),
+		})
+
+func _find_bet_data(bet_id: StringName) -> Dictionary:
+	for bet_value: Dictionary in BetCatalog.level3_active_bets():
+		var bet_data: Dictionary = bet_value as Dictionary
+		if StringName(str(bet_data.get("id", ""))) == bet_id:
+			return bet_data
+	return {}

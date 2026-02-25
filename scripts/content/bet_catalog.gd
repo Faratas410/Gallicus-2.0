@@ -74,6 +74,23 @@ const PATH_VIOLENCE: StringName = &"PATH_VIOLENCE"
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_DOUBLE_OR_DIE: StringName = &"DOUBLE_OR_DIE"
 
+const L3_ACTIVE_BET_IDENTITIES: Dictionary[StringName, Dictionary] = {
+	BET_CASH_OUT: {
+		"token": "BET_CASH_OUT",
+		"display_title": "VIA DELLA PRUDENZA",
+		"display_subtitle": "Chiudi ora. Salva margine, cedi gloria.",
+		"path_tag": PATH_PRUDENCE,
+		"behavior": BET_CASH_OUT,
+	},
+	BET_DOUBLE_OR_DIE: {
+		"token": "BET_DOUBLE_OR_DIE",
+		"display_title": "VIA DELL'HYBRIS",
+		"display_subtitle": "Spingi oltre. Rischio massimo, ritorno totale.",
+		"path_tag": PATH_HUBRIS,
+		"behavior": BET_DOUBLE_OR_DIE,
+	},
+}
+
 const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CASH_OUT",
@@ -516,7 +533,13 @@ const LEVEL3_BETS: Array[Dictionary] = [
 ]
 
 static func level3_active_bet_ids() -> Array[StringName]:
-	return [BET_CASH_OUT, BET_DOUBLE_OR_DIE]
+	var ids: Array[StringName] = []
+	for bet_id: StringName in L3_ACTIVE_BET_IDENTITIES.keys():
+		ids.append(bet_id)
+	ids.sort_custom(func(a: StringName, b: StringName) -> bool:
+		return String(a) < String(b)
+	)
+	return ids
 
 static func level3_active_bets() -> Array[Dictionary]:
 	var active_ids: Array[StringName] = level3_active_bet_ids()
@@ -525,7 +548,12 @@ static func level3_active_bets() -> Array[Dictionary]:
 		var bet: Dictionary = bet_value as Dictionary
 		var bet_id: StringName = StringName(str(bet.get("id", "")))
 		if active_ids.has(bet_id):
-			active.append(bet.duplicate(true))
+			var merged: Dictionary = bet.duplicate(true)
+			var identity: Dictionary = resolve_bet_identity(bet_id)
+			merged["display_title"] = str(identity.get("display_title", merged.get("display_title", merged.get("name", String(bet_id)))))
+			merged["display_subtitle"] = str(identity.get("display_subtitle", merged.get("display_subtitle", "")))
+			merged["path_tag"] = identity.get("path_tag", merged.get("path_tag", PATH_UNKNOWN))
+			active.append(merged)
 	return active
 
 static func level3_bets() -> Array[Dictionary]:
@@ -539,12 +567,38 @@ static func level3_bet_ids() -> PackedStringArray:
 
 
 static func map_level3_behavior(bet_id: StringName) -> StringName:
+	var identity: Dictionary = resolve_bet_identity(bet_id)
+	var behavior: StringName = identity.get("behavior", &"") as StringName
+	if behavior != &"UNKNOWN" and behavior != &"":
+		return behavior
 	return LEVEL3_BET_BEHAVIOR.get(bet_id, bet_id)
+
+static func resolve_bet_identity(bet_id: StringName) -> Dictionary:
+	if L3_ACTIVE_BET_IDENTITIES.has(bet_id):
+		var identity: Dictionary = L3_ACTIVE_BET_IDENTITIES.get(bet_id, {}) as Dictionary
+		var merged: Dictionary = identity.duplicate(true)
+		merged["id"] = bet_id
+		return merged
+	return {
+		"id": bet_id,
+		"token": "BET_UNKNOWN",
+		"display_title": "—",
+		"display_subtitle": "",
+		"path_tag": PATH_UNKNOWN,
+		"behavior": &"UNKNOWN",
+	}
+
+static func get_bet_debug_token(bet_id: StringName) -> String:
+	var identity: Dictionary = resolve_bet_identity(bet_id)
+	return str(identity.get("token", "BET_UNKNOWN"))
 
 static func get_level3_pact_unlock(bet_id: StringName) -> StringName:
 	return LEVEL3_PACT_UNLOCKS.get(bet_id, &"")
 
 static func get_level3_display_title(bet_id: StringName) -> String:
+	var identity: Dictionary = resolve_bet_identity(bet_id)
+	if str(identity.get("token", "BET_UNKNOWN")) != "BET_UNKNOWN":
+		return str(identity.get("display_title", String(bet_id)))
 	for bet_value: Dictionary in LEVEL3_BETS:
 		var bet: Dictionary = bet_value as Dictionary
 		if StringName(str(bet.get("id", ""))) == bet_id:
@@ -552,6 +606,9 @@ static func get_level3_display_title(bet_id: StringName) -> String:
 	return String(bet_id)
 
 static func get_level3_display_subtitle(bet_id: StringName) -> String:
+	var identity: Dictionary = resolve_bet_identity(bet_id)
+	if str(identity.get("token", "BET_UNKNOWN")) != "BET_UNKNOWN":
+		return str(identity.get("display_subtitle", ""))
 	for bet_value: Dictionary in LEVEL3_BETS:
 		var bet: Dictionary = bet_value as Dictionary
 		if StringName(str(bet.get("id", ""))) == bet_id:
@@ -559,6 +616,9 @@ static func get_level3_display_subtitle(bet_id: StringName) -> String:
 	return ""
 
 static func get_path_tag_for_bet_id(bet_id: StringName) -> StringName:
+	var identity: Dictionary = resolve_bet_identity(bet_id)
+	if str(identity.get("token", "BET_UNKNOWN")) != "BET_UNKNOWN":
+		return identity.get("path_tag", PATH_UNKNOWN) as StringName
 	for bet_value: Dictionary in LEVEL3_BETS:
 		var bet: Dictionary = bet_value as Dictionary
 		if StringName(str(bet.get("id", ""))) == bet_id:

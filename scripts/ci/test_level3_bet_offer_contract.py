@@ -39,9 +39,8 @@ def main() -> int:
     if active_helper_body is None:
         return fail("cannot parse level3_active_bet_ids() body")
     body = active_helper_body.group(1)
-    for token in ['BET_CASH_OUT', 'BET_DOUBLE_OR_DIE']:
-        if token not in body:
-            return fail(f"level3_active_bet_ids() missing {token}")
+    if "L3_ACTIVE_BET_IDENTITIES" not in body:
+        return fail("level3_active_bet_ids() must be derived from L3_ACTIVE_BET_IDENTITIES")
 
     if "BetCatalog.level3_active_bet_ids()" not in bets_data:
         return fail("data/bets.gd level3_bet_ids() must delegate to BetCatalog.level3_active_bet_ids()")
@@ -51,10 +50,12 @@ def main() -> int:
     if "BetCatalog.level3_active_bets()" not in run_manager:
         return fail("run_manager.gd must build offers from BetCatalog.level3_active_bets()")
 
-    ui_required_tokens = ['&"CASH_OUT"', '&"DOUBLE_OR_DIE"', "bet_option_3.visible = false"]
+    ui_required_tokens = ["BetCatalog.level3_active_bet_ids()", "BetCatalog.resolve_bet_identity", "bet_option_3.visible = false"]
     missing_ui_tokens = [token for token in ui_required_tokens if token not in betting_ui]
     if missing_ui_tokens:
-        return fail("betting_circle_ui.gd missing expected 2-option contract token(s): " + ", ".join(missing_ui_tokens))
+        return fail("betting_circle_ui.gd missing resolver-driven 2-option contract token(s): " + ", ".join(missing_ui_tokens))
+    if '&"CASH_OUT"' in betting_ui or '&"DOUBLE_OR_DIE"' in betting_ui:
+        return fail("betting_circle_ui.gd must not hardcode active bet ids")
 
     print("[OK][L3_BET_OFFER_CONTRACT] static two-offer contract guard passed")
     return 0

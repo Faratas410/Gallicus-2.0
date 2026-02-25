@@ -1867,7 +1867,8 @@ func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> 
 	return button
 
 func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String) -> String:
-	var name_text: String = str(bet.get("name", bet_id))
+	var name_text: String = str(bet.get("display_title", bet.get("name", bet_id)))
+	var subtitle_text: String = str(bet.get("display_subtitle", ""))
 	var condition_text: String = str(bet.get("condition", ""))
 	var pact_text: String = str(bet.get("pact", ""))
 	var doom_text: String = str(bet.get("doom", ""))
@@ -1880,6 +1881,8 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String
 		lines.append("CONDANNA: %s" % name_text)
 	if archetype_label != "":
 		lines.append(archetype_label)
+	if subtitle_text != "":
+		lines.append(subtitle_text)
 	if condition_text != "":
 		lines.append("CONDIZIONE: %s" % condition_text)
 	if pact_text != "":
@@ -2010,7 +2013,7 @@ func _get_bet_name(bet_id: String) -> String:
 	var bet: Dictionary = _bets_by_id.get(bet_id, {}) as Dictionary
 	if bet.is_empty():
 		return bet_id
-	return str(bet.get("name", bet_id))
+	return str(bet.get("display_title", bet.get("name", bet_id)))
 
 func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 	if buttons.is_empty():

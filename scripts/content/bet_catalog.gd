@@ -71,6 +71,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "CASH_OUT",
 		"name": "INCASSA E VAI",
+		"display_title": "VIA DELLA PRUDENZA",
+		"display_subtitle": "Chiudi ora. Salva margine, cedi gloria.",
+		"path_tag": &"PATH_PRUDENCE",
 		"archetype": &"DEBT",
 		"archetype_label": "ARCHETIPO: DEBITO",
 		"pact": "Ricompensa minima ma sicura: incassi subito e riduci l'esposizione.",
@@ -83,6 +86,9 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	{
 		"id": "DOUBLE_OR_DIE",
 		"name": "RADDOPPI O MUORI",
+		"display_title": "VIA DELL'HYBRIS",
+		"display_subtitle": "Spingi oltre. Rischio massimo, ritorno totale.",
+		"path_tag": &"PATH_HUBRIS",
 		"archetype": &"EGO",
 		"archetype_label": "ARCHETIPO: EGO",
 		"pact": "Ricompensa devastante: moltiplica la posta e accelera la corsa.",
@@ -530,3 +536,24 @@ static func map_level3_behavior(bet_id: StringName) -> StringName:
 
 static func get_level3_pact_unlock(bet_id: StringName) -> StringName:
 	return LEVEL3_PACT_UNLOCKS.get(bet_id, &"")
+
+static func get_level3_display_title(bet_id: StringName) -> String:
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		if StringName(str(bet.get("id", ""))) == bet_id:
+			return str(bet.get("display_title", bet.get("name", String(bet_id))))
+	return String(bet_id)
+
+static func get_level3_display_subtitle(bet_id: StringName) -> String:
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		if StringName(str(bet.get("id", ""))) == bet_id:
+			return str(bet.get("display_subtitle", ""))
+	return ""
+
+static func get_level3_path_tag(bet_id: StringName) -> StringName:
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		if StringName(str(bet.get("id", ""))) == bet_id:
+			return StringName(str(bet.get("path_tag", "")))
+	return &""

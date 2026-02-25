@@ -3708,10 +3708,14 @@ func _select_run_finale() -> Dictionary:
 	if _registry_has_precedent and ending_id == &"THE_LIBERTY":
 		ending_id = &""
 	if ending_id == &"":
-		if _run_state.run_end_reason != "INFRA_FAILURE" and _run_state.corruption >= FALL_THRESHOLD:
-			ending_id = &"THE_FALL"
-		elif (not _registry_has_precedent) and _run_state.glory >= LIBERTY_THRESHOLD and _run_state.corruption < MORAL_THRESHOLD:
-			ending_id = &"THE_LIBERTY"
+		var ending_trace: Dictionary = _build_level3_ending_trace()
+		var rule_match: Dictionary = _finale_builder.select_level3_ending_key(_run_state, ending_trace)
+		var matched_rule_id: String = str(rule_match.get("id", ""))
+		if matched_rule_id != "":
+			_flow_log("ending_rule_matched", matched_rule_id)
+		var matched_ending: StringName = StringName(str(rule_match.get("ending_key", "")))
+		if matched_ending != &"":
+			ending_id = matched_ending
 	if ending_id == &"":
 		if _run_state.run_end_reason == "DOUBLE_OR_DIE":
 			ending_id = &"THE_FOOL"
@@ -3770,6 +3774,24 @@ func _select_run_finale() -> Dictionary:
 	meta_payload["next_bet_enabled"] = register_ending_key == ""
 	finale["meta"] = meta_payload
 	return finale
+
+func _build_level3_ending_trace() -> Dictionary:
+	var path_debt_count: int = 0
+	var path_hubris_count: int = 0
+	for bet_id: StringName in _run_state.bets_history:
+		var path_tag: StringName = BetCatalog.get_level3_path_tag(bet_id)
+		if path_tag == &"PATH_PRUDENCE":
+			path_debt_count += 1
+		elif path_tag == &"PATH_HUBRIS":
+			path_hubris_count += 1
+	return {
+		"cashout_count": _run_state.push_luck_cashouts,
+		"double_count": _run_state.push_luck_doubles,
+		"condanna_count": _run_state.condanne_this_run.size(),
+		"provoke_armed": _run_state.provoke_armed,
+		"path_debt_count": path_debt_count,
+		"path_hubris_count": path_hubris_count,
+	}
 
 func _update_hidden_run_metrics() -> void:
 	var corruption_value: int = 0
@@ -4214,7 +4236,7 @@ func _get_bet_display_name(bet_id: String) -> String:
 	var bet_data: Dictionary = _get_bet_data(bet_id)
 	if bet_data.is_empty():
 		return bet_id
-	return str(bet_data.get("name", bet_id))
+	return str(bet_data.get("display_title", bet_data.get("name", bet_id)))
 
 func _try_apply_open_wound_scar(chain_level: int) -> void:
 	var should_try: bool = _scar_policy.should_try_scar(String(SCAR_OPEN_WOUND), {

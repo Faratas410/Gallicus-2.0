@@ -1,6 +1,8 @@
 extends RefCounted
 class_name FinaleBuilder
 
+const EndingRulesScript = preload("res://data/ending_rules.gd")
+
 
 func build_finale_payload(inputs: Dictionary) -> Dictionary:
 	var ending_id: StringName = StringName(str(inputs.get("ending_id", "")))
@@ -38,6 +40,86 @@ func build_finale_payload(inputs: Dictionary) -> Dictionary:
 		"glory": int(inputs.get("glory", 0)),
 		"corruption": int(inputs.get("corruption", 0)),
 	}
+
+
+func select_level3_ending_key(run_state: RunState, trace: Dictionary) -> Dictionary:
+	var enriched_trace: Dictionary = trace.duplicate(true)
+	enriched_trace["corruption"] = run_state.corruption
+	enriched_trace["glory"] = run_state.glory
+	enriched_trace["corruption_tier"] = _compute_corruption_tier(run_state.corruption)
+	enriched_trace["glory_tier"] = _compute_glory_tier(run_state.glory)
+	var dominant_match: Dictionary = _pick_best_rule(EndingRulesScript.dominant_rules(), enriched_trace)
+	if not dominant_match.is_empty():
+		return dominant_match
+	var morale_match: Dictionary = _pick_best_rule(EndingRulesScript.morale_fallback_rules(), enriched_trace)
+	if not morale_match.is_empty():
+		return morale_match
+	return {}
+
+
+func _pick_best_rule(rules: Array[Dictionary], trace: Dictionary) -> Dictionary:
+	var best_priority: int = -999999
+	var best_rule: Dictionary = {}
+	for rule in rules:
+		if _rule_matches(rule, trace):
+			var priority: int = int(rule.get("priority", 0))
+			if priority > best_priority:
+				best_priority = priority
+				best_rule = rule
+	return best_rule
+
+
+func _rule_matches(rule: Dictionary, trace: Dictionary) -> bool:
+	var requires: Dictionary = rule.get("requires", {}) as Dictionary
+	if requires.has("min_double") and int(trace.get("double_count", 0)) < int(requires.get("min_double", 0)):
+		return false
+	if requires.has("max_double") and int(trace.get("double_count", 0)) > int(requires.get("max_double", 999999)):
+		return false
+	if requires.has("min_cashout") and int(trace.get("cashout_count", 0)) < int(requires.get("min_cashout", 0)):
+		return false
+	if requires.has("max_cashout") and int(trace.get("cashout_count", 0)) > int(requires.get("max_cashout", 999999)):
+		return false
+	if requires.has("min_condanna") and int(trace.get("condanna_count", 0)) < int(requires.get("min_condanna", 0)):
+		return false
+	if requires.has("max_condanna") and int(trace.get("condanna_count", 0)) > int(requires.get("max_condanna", 999999)):
+		return false
+	if requires.has("min_glory") and int(trace.get("glory", 0)) < int(requires.get("min_glory", 0)):
+		return false
+	if requires.has("min_corruption") and int(trace.get("corruption", 0)) < int(requires.get("min_corruption", 0)):
+		return false
+	if requires.has("max_corruption") and int(trace.get("corruption", 0)) > int(requires.get("max_corruption", 999999)):
+		return false
+	if requires.has("min_path_debt") and int(trace.get("path_debt_count", 0)) < int(requires.get("min_path_debt", 0)):
+		return false
+	if requires.has("min_path_hubris") and int(trace.get("path_hubris_count", 0)) < int(requires.get("min_path_hubris", 0)):
+		return false
+	if bool(requires.get("requires_provoke_armed", false)) and not bool(trace.get("provoke_armed", false)):
+		return false
+	if requires.has("corruption_tier") and str(trace.get("corruption_tier", "")) != str(requires.get("corruption_tier", "")):
+		return false
+	if requires.has("glory_tier") and str(trace.get("glory_tier", "")) != str(requires.get("glory_tier", "")):
+		return false
+	return true
+
+
+func _compute_corruption_tier(corruption_value: int) -> String:
+	if corruption_value >= int(EndingRulesScript.CORRUPTION_THRESHOLDS.get("CORRUPT", 8)):
+		if corruption_value >= int(EndingRulesScript.CORRUPTION_THRESHOLDS.get("CORRUPT", 8)) + 2:
+			return "DAMNED"
+		return "CORRUPT"
+	if corruption_value >= int(EndingRulesScript.CORRUPTION_THRESHOLDS.get("TAINTED", 5)):
+		return "TAINTED"
+	return "PURE"
+
+
+func _compute_glory_tier(glory_value: int) -> String:
+	if glory_value >= int(EndingRulesScript.GLORY_THRESHOLDS.get("HIGH", 8)):
+		if glory_value >= int(EndingRulesScript.GLORY_THRESHOLDS.get("HIGH", 8)) + 2:
+			return "EXCESS"
+		return "HIGH"
+	if glory_value >= int(EndingRulesScript.GLORY_THRESHOLDS.get("MID", 5)):
+		return "MID"
+	return "LOW"
 
 
 func _get_title(ending_id: StringName) -> String:

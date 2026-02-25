@@ -360,6 +360,65 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
+[node name="Overlays" type="Control" parent="UI_RunRoot"]
+mouse_filter = 2
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BootFailOverlay" type="Control" parent="UI_RunRoot/Overlays"]
+visible = false
+z_index = 350
+mouse_filter = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Dimmer" type="ColorRect" parent="UI_RunRoot/Overlays/BootFailOverlay"]
+mouse_filter = 2
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.6)
+
+[node name="Center" type="CenterContainer" parent="UI_RunRoot/Overlays/BootFailOverlay"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Panel" type="PanelContainer" parent="UI_RunRoot/Overlays/BootFailOverlay/Center"]
+custom_minimum_size = Vector2(720, 0)
+
+[node name="VBox" type="VBoxContainer" parent="UI_RunRoot/Overlays/BootFailOverlay/Center/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+theme_override_constants/separation = 10
+
+[node name="Lbl_BootFail_Title" type="Label" parent="UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox"]
+horizontal_alignment = 1
+text = "ERRORE INTERFACCIA"
+
+[node name="Lbl_BootFail_Body" type="Label" parent="UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox"]
+size_flags_horizontal = 3
+autowrap_mode = 2
+text = ""
+
+[node name="Btn_BootFail_BackToMenu" type="Button" parent="UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox"]
+size_flags_horizontal = 4
+text = "TORNA AL MENU"
+
 [node name="SafeMargin" type="MarginContainer" parent="UI_RunRoot"]
 anchor_right = 1.0
 anchor_bottom = 1.0

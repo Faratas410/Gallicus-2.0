@@ -47,6 +47,12 @@ const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
 const RUN_PHASE_RESOLUTION: int = RunPhaseContract.RESOLUTION
 const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
 const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_condition.png"
+const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
+	{"label": "Modals/BetModal", "fallback": "UI_RunRoot/Phase_INTRO"},
+	{"label": "Modals/PactSealedModal", "fallback": "UI_RunRoot/Phase_FIRST_REACTION"},
+	{"label": "Modals/ResolveRitualModal", "fallback": "UI_RunRoot/Phase_RESOLUTION"},
+	{"label": "Modals/GameOverModal", "fallback": "UI_RunRoot/Phase_END_RUN"},
+]
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
 		"title": "FASCICOLO CHIUSO — COMPROMISSIONE",
@@ -89,6 +95,10 @@ const ENDING_UI_MAP: Dictionary = {
 @onready var intermediate_choice_provoca_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1") as Button
 @onready var bet_panel: Panel = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO") as Panel
 @onready var modal_dimmer: ColorRect = get_node_or_null("UI_RunRoot/ModalDimmer") as ColorRect
+@onready var boot_fail_overlay: Control = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay") as Control
+@onready var boot_fail_body: Label = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Lbl_BootFail_Body") as Label
+@onready var boot_fail_button: Button = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Btn_BootFail_BackToMenu") as Button
+@onready var run_safe_margin: MarginContainer = get_node_or_null("UI_RunRoot/SafeMargin") as MarginContainer
 @onready var _lbl_intro_title: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLEPanel/Lbl_INTRO_TITLE") as Label
 @onready var _lbl_intro_subtitle: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel/Lbl_INTRO_SUBTITLE") as Label
 @onready var _lbl_intro_body: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODYPanel/Lbl_INTRO_BODY") as Label
@@ -253,8 +263,13 @@ const _PHASE_CONTAINER_PATHS: Array[String] = [
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_run_manager_port = RunManagerUiPort.new(get_tree())
+	if boot_fail_button != null:
+		var boot_fail_callable: Callable = Callable(self, "_on_boot_fail_back_to_menu")
+		if not boot_fail_button.pressed.is_connected(boot_fail_callable):
+			boot_fail_button.pressed.connect(boot_fail_callable)
 	if not _validate_ui_boot():
-		_disable_ui_interactions()
+		return
+	if not _validate_ui_contract_or_show_boot_fail():
 		return
 	_button_style_primary_normal = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_NORMAL_PATH)
 	_button_style_primary_hover = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_HOVER_PATH)
@@ -492,12 +507,10 @@ func show_phase(phase: int) -> void:
 func _validate_ui_boot() -> bool:
 	var errors: Array[String] = []
 	if get_node_or_null("UI_RunRoot/BettingCircle") == null and not ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
-		push_error("SANITY FAIL UI: BetCircle missing")
-		return false
+		errors.append("UI_RunRoot/BettingCircle")
 	var ending_text_path: String = "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER"
 	if get_node_or_null(ending_text_path) == null:
-		push_error("SANITY FAIL UI: Ending nodes missing %s" % ending_text_path)
-		return false
+		errors.append(ending_text_path)
 	var required_nodes: Array[String] = [
 		"UI_RunRoot/Phase_INTRO",
 		"UI_RunRoot/Phase_RESOLUTION",
@@ -511,9 +524,9 @@ func _validate_ui_boot() -> bool:
 	]
 	for node_path: String in required_nodes:
 		if get_node_or_null(node_path) == null:
-			errors.append("missing node path %s" % node_path)
+			errors.append(node_path)
 	if errors.size() > 0:
-		push_error("SANITY FAIL UI: %s" % "; ".join(errors))
+		_show_boot_fail(errors)
 		return false
 	return true
 
@@ -522,6 +535,41 @@ func _disable_ui_interactions() -> void:
 	set_process(false)
 	set_process_input(false)
 	set_process_unhandled_input(false)
+
+func _validate_ui_contract_or_show_boot_fail() -> bool:
+	var missing: Array[String] = []
+	for contract_path in _BOOT_FAIL_CONTRACT_PATHS:
+		var label_path: String = str(contract_path.get("label", ""))
+		var fallback_path: String = str(contract_path.get("fallback", ""))
+		if label_path == "":
+			continue
+		var has_primary: bool = has_node(label_path)
+		var has_fallback: bool = fallback_path != "" and has_node(fallback_path)
+		if not has_primary and not has_fallback:
+			missing.append(label_path)
+	if missing.is_empty():
+		return true
+	_show_boot_fail(missing)
+	return false
+
+func _show_boot_fail(missing: Array[String]) -> void:
+	if run_safe_margin != null:
+		run_safe_margin.visible = false
+	if modal_dimmer != null:
+		modal_dimmer.visible = false
+	for path: String in _PHASE_CONTAINER_PATHS:
+		var phase_node: Control = get_node_or_null(path) as Control
+		if phase_node != null:
+			phase_node.visible = false
+	if boot_fail_body != null:
+		boot_fail_body.text = "Interfaccia non inizializzata.\nElementi mancanti:\n- %s\n\nTorna al menu e riavvia." % "\n- ".join(missing)
+	if boot_fail_overlay != null:
+		boot_fail_overlay.visible = true
+	push_error("UI BOOT FAIL: missing=%s" % ", ".join(missing))
+
+func _on_boot_fail_back_to_menu() -> void:
+	if GameEvents != null and GameEvents.has_signal("request_show_main_menu"):
+		GameEvents.request_show_main_menu.emit()
 
 func _wire_seed_input() -> void:
 	if seed_apply_button == null:

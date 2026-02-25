@@ -502,11 +502,27 @@ const LEVEL3_BETS: Array[Dictionary] = [
 	},
 ]
 
+static func level3_active_bet_ids() -> Array[StringName]:
+	return [BET_CASH_OUT, BET_DOUBLE_OR_DIE]
+
+static func level3_active_bets() -> Array[Dictionary]:
+	var active_ids: Array[StringName] = level3_active_bet_ids()
+	var active: Array[Dictionary] = []
+	for bet_value: Dictionary in LEVEL3_BETS:
+		var bet: Dictionary = bet_value as Dictionary
+		var bet_id: StringName = StringName(str(bet.get("id", "")))
+		if active_ids.has(bet_id):
+			active.append(bet.duplicate(true))
+	return active
+
 static func level3_bets() -> Array[Dictionary]:
 	return LEVEL3_BETS.duplicate(true)
 
 static func level3_bet_ids() -> PackedStringArray:
-	return PackedStringArray([String(BET_CASH_OUT), String(BET_DOUBLE_OR_DIE)])
+	var ids: PackedStringArray = PackedStringArray()
+	for bet_id: StringName in level3_active_bet_ids():
+		ids.append(String(bet_id))
+	return ids
 
 
 static func map_level3_behavior(bet_id: StringName) -> StringName:

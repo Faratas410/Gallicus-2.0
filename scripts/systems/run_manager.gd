@@ -1707,7 +1707,8 @@ func _open_level3_bet_ui() -> void:
 	GameEvents.bet_opened.emit()
 
 func _build_level3_bet_offer() -> Array[Dictionary]:
-	var available: Array[Dictionary] = _get_available_level3_bets()
+	var available: Array[Dictionary] = BetCatalog.level3_active_bets()
+	var desired_count: int = BetCatalog.level3_active_bet_ids().size()
 	var offer_seed: int = _compute_level3_offer_seed()
 	var result: Dictionary = _betting_policy.build_bet_offer(
 		offer_seed,
@@ -1718,7 +1719,7 @@ func _build_level3_bet_offer() -> Array[Dictionary]:
 		_run_state.bets_history,
 		{
 			"available_bets": available,
-			"desired_count": 4,
+			"desired_count": desired_count,
 			"last_bet_offers": _run_state.last_bet_offers,
 			"last_selected_bet_id": _run_state.last_selected_bet_id,
 			"forced_archetype": _run_state.forced_next_pact_archetype,

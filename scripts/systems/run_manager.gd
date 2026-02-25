@@ -897,18 +897,18 @@ func _on_smoke_driver_tick() -> void:
 	if bool(smoke_step.get("stop_driver", false)):
 		return
 	if bool(smoke_step.get("request_new_run", false)):
-		GameEvents.request_new_run.emit()
+		_on_request_new_run()
 	if bool(smoke_step.get("request_place_bet", false)):
 		var bet_id: String = str(smoke_step.get("place_bet_id", ""))
 		if bet_id != "":
-			GameEvents.request_place_bet.emit(bet_id, 0)
+			_on_request_place_bet(bet_id, 0)
 	if bool(smoke_step.get("request_mid_choice_select", false)):
 		var choice_index: int = int(smoke_step.get("mid_choice_index", 0))
-		GameEvents.request_mid_choice_select.emit(choice_index)
+		_on_request_mid_choice_select(choice_index)
 	if bool(smoke_step.get("request_pyl_double", false)):
-		GameEvents.request_pyl_double.emit()
+		_on_request_pyl_double()
 	if bool(smoke_step.get("request_pyl_cashout", false)):
-		GameEvents.request_pyl_cashout.emit()
+		_on_request_pyl_cashout()
 
 
 func _run_smoke_full_run_driver() -> void:
@@ -917,7 +917,7 @@ func _run_smoke_full_run_driver() -> void:
 		print("SMOKE:STEP=REQUEST_NEW_RUN")
 		print("SMOKE:NEW_RUN_REQUESTED")
 		print("SMOKE:REQ=request_new_run")
-		GameEvents.request_new_run.emit()
+		_on_request_new_run()
 		return
 	if _phase == RunPhase.RUN_INIT and _smoke_full_run_step == "NEW_RUN":
 		print("SMOKE:STEP=RUN_INIT_SEEN")
@@ -929,21 +929,21 @@ func _run_smoke_full_run_driver() -> void:
 			return
 		_smoke_full_run_step = "BET_PRESENT"
 		print("SMOKE:REQ=request_place_bet bet_id=%s" % bet_id)
-		GameEvents.request_place_bet.emit(bet_id, 0)
+		_on_request_place_bet(bet_id, 0)
 		return
 	if _phase == RunPhase.INTERMEDIATE_CHOICE and _smoke_full_run_step != "INTERMEDIATE_CHOICE":
 		_smoke_full_run_step = "INTERMEDIATE_CHOICE"
 		print("SMOKE:REQ=request_mid_choice_select index=0")
-		GameEvents.request_mid_choice_select.emit(0)
+		_on_request_mid_choice_select(0)
 		return
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step != "PUSH_YOUR_LUCK":
 		_smoke_full_run_step = "PUSH_YOUR_LUCK"
 		if _run_state.bets_history.size() < 3:
 			print("SMOKE:REQ=request_pyl_double")
-			GameEvents.request_pyl_double.emit()
+			_on_request_pyl_double()
 		else:
 			print("SMOKE:REQ=request_pyl_cashout")
-			GameEvents.request_pyl_cashout.emit()
+			_on_request_pyl_cashout()
 		return
 	if _phase == RunPhase.GAME_OVER and _is_register_final():
 		print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
@@ -1121,7 +1121,7 @@ func _boot() -> void:
 		elif OS.get_environment("GALLICUS_SMOKE_TRIGGER_NEW_RUN") == "1":
 			print("SMOKE:NEW_RUN_REQUESTED")
 			print("SMOKE:REQ=request_new_run")
-			GameEvents.request_new_run.emit()
+			_on_request_new_run()
 	_log_runtime_state("boot_complete")
 
 func _validate_game_events_signals() -> bool:

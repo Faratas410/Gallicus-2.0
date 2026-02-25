@@ -101,6 +101,11 @@ jobs:
           set -e
           python3 scripts/ci/test_ui_overlay_contract.py
 
+      - name: Check UI ritual payload contract (static)
+        run: |
+          set -e
+          python3 scripts/ci/test_ui_ritual_payload_contract.py
+
       - name: Check active runtime has no legacy_runtime references
         run: |
           set -e
@@ -300,6 +305,11 @@ jobs:
         run: |
           set -e
           python3 scripts/ci/test_ui_overlay_contract.py
+
+      - name: Check UI ritual payload contract (static)
+        run: |
+          set -e
+          python3 scripts/ci/test_ui_ritual_payload_contract.py
 
       - name: Check active runtime has no legacy_runtime references
         run: |

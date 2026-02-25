@@ -19,6 +19,9 @@ const SENTENCE_BANNER_SECONDS: float = 1.2
 const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.25
 const FADE_OUT_SEC: float = 0.25
+const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
+const SIGN_LOCK_DARKEN_RGB: float = 0.82
+const SIGN_PREVIEW_SCALE: float = 1.015
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb_button_primary_hover.tres"
@@ -247,6 +250,9 @@ var _sentence_banner_sequence_id: int = 0
 var _is_signing: bool = false
 var _bet_confirm_default_text: String = ""
 var _phase_node_map: Dictionary = {}
+var _sign_feedback_tween: Tween = null
+var _sign_feedback_buttons: Array[Button] = []
+var _sign_feedback_panel: CanvasItem = null
 var _button_style_primary_normal: StyleBox = null
 var _button_style_primary_hover: StyleBox = null
 var _button_style_primary_pressed: StyleBox = null
@@ -502,6 +508,7 @@ func show_phase(phase: int) -> void:
 	target.visible = true
 	_current_modal = target
 	print_debug("[FLOW][UI] show_phase=%d node=%s" % [phase, String(target.name)])
+	_reset_sign_feedback()
 	_refresh_modal_dimmer()
 
 func _validate_ui_boot() -> bool:
@@ -881,7 +888,7 @@ func _on_run_failed() -> void:
 		quit_button.text = "MENU"
 	_last_finale_hint = ""
 	if _last_register_final and _last_register_message == "":
-		_last_register_message = "Fascicolo chiuso."
+		_last_register_message = fmt_system_state("fascicolo registrato")
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	_refresh_verdict_panel()
@@ -923,8 +930,8 @@ func _format_verdict_list(values: Array[String]) -> String:
 
 func _format_verdict_pacts_list(values: Array[String]) -> String:
 	if values.is_empty():
-		return "Pattern registrato: nessuna firma persistente."
-	return "Pattern registrato: %d condizioni accettate." % values.size()
+		return fmt_register_line("rinunciato", "continuato")
+	return fmt_register_line("accettato", "%d condizioni registrate" % values.size())
 
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
@@ -967,12 +974,12 @@ func _refresh_verdict_panel() -> void:
 	if verdict_sentence_label != null:
 		var sentence_text: String = _last_verdict_sentence
 		if sentence_text == "":
-			sentence_text = "SENTENZA NON REGISTRATA."
+			sentence_text = fmt_system_state("sentenza non registrata")
 		verdict_sentence_label.text = "SENTENZA: %s" % sentence_text
 	if verdict_charge_label != null:
 		var charge_text: String = _last_verdict_charge
 		if charge_text == "":
-			charge_text = "CAPO D'ACCUSA NON REGISTRATO."
+			charge_text = fmt_system_state("capo d'accusa non registrato")
 		verdict_charge_label.text = "CAPO D’ACCUSA: %s" % charge_text
 	if verdict_pacts_text != null:
 		verdict_pacts_text.text = _format_verdict_pacts_list(_last_verdict_pacts)
@@ -1008,11 +1015,11 @@ func _set_verdict_mode(active: bool) -> void:
 func _get_verdict_outcome_text(outcome: StringName) -> String:
 	match outcome:
 		&"CASHOUT":
-			return "HAI INCASSATO."
+			return fmt_system_state("incasso accettato")
 		&"WIN":
-			return "HAI SUPERATO L'ARENA."
+			return fmt_system_state("arena continuata")
 		_:
-			return "SEI CADUTO."
+			return fmt_system_state("run registrata")
 
 func _build_verdict_summary(payload: Dictionary, pacts_payload: Array, condanne_payload: Array) -> Dictionary:
 	var stats_payload: Dictionary = payload.get("stats", {}) as Dictionary
@@ -1166,6 +1173,7 @@ func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 		return
 	if game_over_panel != null and game_over_panel.visible:
 		return
+	_reset_sign_feedback()
 	if push_luck_panel != null and push_luck_panel.visible:
 		_pending_bets = bets
 		return
@@ -1191,6 +1199,7 @@ func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 	_apply_modal_read_delay(bet_read_buttons)
 
 func _on_bet_ui_closed() -> void:
+	_reset_sign_feedback()
 	_set_bet_modal(false)
 	if betting_circle != null:
 		betting_circle.close()
@@ -1204,8 +1213,9 @@ func _on_bet_selected(bet_id: String) -> void:
 	_selected_bet_id = bet_id
 
 func _on_pact_sealed_opened() -> void:
+	_reset_sign_feedback()
 	if pact_sealed_title != null:
-		pact_sealed_title.text = "IL PATTO È SIGILLATO."
+		pact_sealed_title.text = fmt_system_state("patto registrato")
 	if pact_sealed_subtitle != null:
 		pact_sealed_subtitle.text = ""
 	_set_pact_sealed_modal(true)
@@ -1216,8 +1226,9 @@ func _on_pact_sealed_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
+	_reset_sign_feedback()
 	var doom_short: String = str(payload.get("doom_short", ""))
-	var subtitle: String = "CONDANNA: giudizio imminente."
+	var subtitle: String = fmt_system_state("condanna registrata")
 	if doom_short != "":
 		subtitle = "CONDANNA: %s" % doom_short
 	enqueue_post_bet_message({
@@ -1237,7 +1248,7 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 	var kind: String = str(payload.get("kind", ""))
 	if kind == "pact_sealed":
 		if pact_sealed_title != null:
-			pact_sealed_title.text = str(payload.get("title", "IL PATTO È SIGILLATO."))
+			pact_sealed_title.text = str(payload.get("title", fmt_system_state("patto registrato")))
 		if pact_sealed_subtitle != null:
 			pact_sealed_subtitle.text = str(payload.get("subtitle", ""))
 		_set_pact_sealed_modal(true)
@@ -1245,11 +1256,12 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 		if resolve_ritual_title != null:
 			resolve_ritual_title.text = str(payload.get("title", "RITO DI GIUDIZIO"))
 		if resolve_ritual_subtitle != null:
-			resolve_ritual_subtitle.text = str(payload.get("subtitle", "CONDANNA: giudizio imminente."))
+			resolve_ritual_subtitle.text = str(payload.get("subtitle", fmt_system_state("condanna registrata")))
 		_set_resolve_ritual_modal(true)
 	_refresh_modal_dimmer()
 
 func _on_intermediate_choice_opened() -> void:
+	_reset_sign_feedback()
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = RunPhaseContract.INTERMEDIATE_CHOICE
 	payload.title = "SCEGLI IL GESTO"
@@ -1498,7 +1510,7 @@ func _build_ending_meta_section() -> String:
 		lines.append("Traccia: %d" % _last_finale_seed)
 	if lines.is_empty():
 		return ""
-	lines.insert(0, "[b]Registro:[/b]")
+	lines.insert(0, "[b]Registro — estratto:[/b]")
 	return "\n".join(lines)
 
 func _get_register_ending_title(ending_key: String) -> String:
@@ -1515,12 +1527,13 @@ func _get_register_ending_title(ending_key: String) -> String:
 			return "Fascicolo chiuso"
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
+	_reset_sign_feedback()
 	var ui_payload: RunUiPayload = RunUiPayloadScript.new()
 	ui_payload.phase = RunPhaseContract.PUSH_YOUR_LUCK
 	ui_payload.show_push_your_luck = true
 	ui_payload.meta = payload
 	ui_payload.title = "PUSH YOUR LUCK — %s" % str(payload.get("bet_name", ""))
-	ui_payload.body = "La folla vuole di più. Puoi incassare… o rilanciare."
+	ui_payload.body = fmt_system_state("stato attivo: accettato o rinunciato")
 	ui_payload.choices = ["cashout", "condanna", "double"]
 	apply_run_ui_payload(ui_payload)
 
@@ -1539,7 +1552,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 		if payload.body != "":
 			push_luck_info.text = payload.body
 		else:
-			push_luck_info.text = "La folla vuole di più. Puoi incassare… o rilanciare."
+			push_luck_info.text = fmt_system_state("stato attivo: accettato o rinunciato")
 	var doom_text: String = str(meta.get("next_doom", ""))
 	var condition_text: String = str(meta.get("condition", ""))
 	var pact_text: String = str(meta.get("next_pact", ""))
@@ -1619,32 +1632,37 @@ func _wire_push_luck_buttons() -> void:
 		var cashout_callable: Callable = Callable(self, "_on_push_luck_cashout_pressed")
 		if not push_luck_cashout_button.pressed.is_connected(cashout_callable):
 			push_luck_cashout_button.pressed.connect(cashout_callable)
+		_wire_sign_preview(push_luck_cashout_button)
 	if push_luck_condanna_button != null:
 		var condanna_callable: Callable = Callable(self, "_on_push_luck_condanna_pressed")
 		if not push_luck_condanna_button.pressed.is_connected(condanna_callable):
 			push_luck_condanna_button.pressed.connect(condanna_callable)
+		_wire_sign_preview(push_luck_condanna_button)
 	if push_luck_double_button != null:
 		var double_callable: Callable = Callable(self, "_on_push_luck_double_pressed")
 		if not push_luck_double_button.pressed.is_connected(double_callable):
 			push_luck_double_button.pressed.connect(double_callable)
+		_wire_sign_preview(push_luck_double_button)
 
 func _wire_intermediate_choice_buttons() -> void:
 	if intermediate_choice_placa_button != null:
 		var placa_callable: Callable = Callable(self, "_on_intermediate_choice_placa_pressed")
 		if not intermediate_choice_placa_button.pressed.is_connected(placa_callable):
 			intermediate_choice_placa_button.pressed.connect(placa_callable)
+		_wire_sign_preview(intermediate_choice_placa_button)
 	if intermediate_choice_provoca_button != null:
 		var provoca_callable: Callable = Callable(self, "_on_intermediate_choice_provoca_pressed")
 		if not intermediate_choice_provoca_button.pressed.is_connected(provoca_callable):
 			intermediate_choice_provoca_button.pressed.connect(provoca_callable)
+		_wire_sign_preview(intermediate_choice_provoca_button)
 
 func _on_intermediate_choice_placa_pressed() -> void:
-	_set_intermediate_choice_modal(false)
+	begin_sign_feedback([intermediate_choice_placa_button, intermediate_choice_provoca_button], intermediate_choice_panel)
 	if GameEvents.has_signal("request_mid_choice_select"):
 		GameEvents.request_mid_choice_select.emit(0)
 
 func _on_intermediate_choice_provoca_pressed() -> void:
-	_set_intermediate_choice_modal(false)
+	begin_sign_feedback([intermediate_choice_placa_button, intermediate_choice_provoca_button], intermediate_choice_panel)
 	if GameEvents.has_signal("request_mid_choice_select"):
 		GameEvents.request_mid_choice_select.emit(1)
 
@@ -1692,14 +1710,17 @@ func _on_debug_copy_log_pressed() -> void:
 	DisplayServer.clipboard_set(_debug_run_log)
 
 func _on_push_luck_cashout_pressed() -> void:
+	begin_sign_feedback([push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button], push_luck_panel)
 	if GameEvents.has_signal("request_pyl_cashout"):
 		GameEvents.request_pyl_cashout.emit()
 
 func _on_push_luck_condanna_pressed() -> void:
+	begin_sign_feedback([push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button], push_luck_panel)
 	if GameEvents.has_signal("request_pyl_condanna"):
 		GameEvents.request_pyl_condanna.emit()
 
 func _on_push_luck_double_pressed() -> void:
+	begin_sign_feedback([push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button], push_luck_panel)
 	if GameEvents.has_signal("request_pyl_double"):
 		GameEvents.request_pyl_double.emit()
 
@@ -1820,7 +1841,7 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 		return
 	_clear_bet_buttons()
 	var add_intro_note: bool = _get_arena_index() <= 1
-	var intro_note: String = "Le cicatrici restano. Raddoppiare aumenta il rischio."
+	var intro_note: String = fmt_system_state("cicatrici registrate; raddoppio continuato")
 	var note_used: bool = false
 	for bet_value: Dictionary in bets:
 		var bet: Dictionary = bet_value as Dictionary
@@ -1863,6 +1884,7 @@ func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> 
 	var pressed_callable: Callable = Callable(self, "_on_bet_choice_pressed").bind(bet_id)
 	if not button.pressed.is_connected(pressed_callable):
 		button.pressed.connect(pressed_callable)
+	_wire_sign_preview(button)
 	_apply_bet_button_style(button, bet_id)
 	return button
 
@@ -1895,6 +1917,21 @@ func _format_lock_note(reason: String, fallback: String) -> String:
 	var text: String = reason.strip_edges()
 	if text == "":
 		text = fallback
+	return fmt_system_state(text)
+
+func fmt_register_line(action: String, consequence: String) -> String:
+	var action_text: String = action.strip_edges().to_lower()
+	if action_text == "":
+		action_text = "registrato"
+	var consequence_text: String = consequence.strip_edges().to_lower()
+	if consequence_text == "":
+		consequence_text = "continuato"
+	return "Atto registrato: %s. Stato: %s." % [action_text, consequence_text]
+
+func fmt_system_state(label: String) -> String:
+	var text: String = label.strip_edges()
+	if text == "":
+		return ""
 	if not text.ends_with("."):
 		text += "."
 	return text
@@ -1965,9 +2002,9 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_last_finale_ending_id = ""
 	_last_finale_seed = 0
 	_last_finale_stats = {}
-	_last_finale_hint = "Vuoi riprovare?"
+	_last_finale_hint = fmt_system_state("seleziona un'azione")
 	if can_retry:
-		_last_finale_hint = "Riprova la scommessa?"
+		_last_finale_hint = fmt_system_state("scommessa rinunciata")
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	if next_bet_button != null:
@@ -2004,8 +2041,91 @@ func _place_bet(bet_id: String) -> void:
 	_selected_bet_id = bet_id
 	_reset_fast_countdown()
 	_reset_bet_confirmation()
+	var sign_buttons: Array[Button] = []
+	sign_buttons.append_array(_bet_buttons)
+	if bet_confirm_button != null:
+		sign_buttons.append(bet_confirm_button)
+	begin_sign_feedback(sign_buttons, _resolve_bet_sign_panel())
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(bet_id, 0)
+
+func _resolve_bet_sign_panel() -> CanvasItem:
+	if betting_circle != null and betting_circle.visible:
+		return betting_circle
+	return bet_panel
+
+func _wire_sign_preview(button: Button) -> void:
+	if button == null:
+		return
+	var hover_entered_callable: Callable = Callable(self, "_on_sign_preview_entered").bind(button)
+	if not button.mouse_entered.is_connected(hover_entered_callable):
+		button.mouse_entered.connect(hover_entered_callable)
+	var focus_entered_callable: Callable = Callable(self, "_on_sign_preview_entered").bind(button)
+	if not button.focus_entered.is_connected(focus_entered_callable):
+		button.focus_entered.connect(focus_entered_callable)
+	var hover_exited_callable: Callable = Callable(self, "_on_sign_preview_exited").bind(button)
+	if not button.mouse_exited.is_connected(hover_exited_callable):
+		button.mouse_exited.connect(hover_exited_callable)
+	var focus_exited_callable: Callable = Callable(self, "_on_sign_preview_exited").bind(button)
+	if not button.focus_exited.is_connected(focus_exited_callable):
+		button.focus_exited.connect(focus_exited_callable)
+
+func _on_sign_preview_entered(button: Button) -> void:
+	if button == null or button.disabled or _is_signing:
+		return
+	button.pivot_offset = button.size * 0.5
+	button.scale = Vector2(SIGN_PREVIEW_SCALE, SIGN_PREVIEW_SCALE)
+
+func _on_sign_preview_exited(button: Button) -> void:
+	if button == null:
+		return
+	button.scale = Vector2.ONE
+
+func begin_sign_feedback(buttons: Array[Button], panel: CanvasItem) -> void:
+	if _is_signing:
+		return
+	_is_signing = true
+	_sign_feedback_buttons.clear()
+	for button: Button in buttons:
+		if button == null:
+			continue
+		button.disabled = true
+		button.scale = Vector2.ONE
+		_sign_feedback_buttons.append(button)
+	_sign_feedback_panel = panel
+	if _sign_feedback_panel != null:
+		if _sign_feedback_tween != null and _sign_feedback_tween.is_valid():
+			_sign_feedback_tween.kill()
+		var panel_color: Color = _sign_feedback_panel.modulate
+		_sign_feedback_panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
+		_sign_feedback_tween = create_tween()
+		_sign_feedback_tween.set_trans(Tween.TRANS_LINEAR)
+		_sign_feedback_tween.set_ease(Tween.EASE_OUT)
+		_sign_feedback_tween.tween_property(_sign_feedback_panel, "modulate:r", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+		_sign_feedback_tween.parallel().tween_property(_sign_feedback_panel, "modulate:g", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+		_sign_feedback_tween.parallel().tween_property(_sign_feedback_panel, "modulate:b", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+	_play_sign_feedback_sfx_if_available()
+
+func _play_sign_feedback_sfx_if_available() -> void:
+	var lockin_sfx: AudioStreamPlayer = get_node_or_null("UI_RunRoot/SFX_LockIn") as AudioStreamPlayer
+	if lockin_sfx == null:
+		return
+	lockin_sfx.play()
+
+func _reset_sign_feedback() -> void:
+	if _sign_feedback_tween != null and _sign_feedback_tween.is_valid():
+		_sign_feedback_tween.kill()
+	if _sign_feedback_panel != null:
+		var panel_color: Color = _sign_feedback_panel.modulate
+		_sign_feedback_panel.modulate = Color(1.0, 1.0, 1.0, panel_color.a)
+	for button: Button in _sign_feedback_buttons:
+		if button == null:
+			continue
+		button.disabled = false
+		button.scale = Vector2.ONE
+	_sign_feedback_buttons.clear()
+	_sign_feedback_panel = null
+	_is_signing = false
 
 func _get_bet_name(bet_id: String) -> String:
 	if not _bets_by_id.has(bet_id):
@@ -2237,7 +2357,7 @@ func exit_ending_mode() -> void:
 
 func _reset_bet_confirmation() -> void:
 	_pending_confirm_bet_id = ""
-	_is_signing = false
+	_reset_sign_feedback()
 	if bet_confirm_label != null:
 		bet_confirm_label.text = "Selezione: -"
 	if bet_confirm_row != null:

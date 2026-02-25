@@ -257,6 +257,9 @@ var _button_style_primary_normal: StyleBox = null
 var _button_style_primary_hover: StyleBox = null
 var _button_style_primary_pressed: StyleBox = null
 var _button_style_primary_disabled: StyleBox = null
+var _pyl_locked: bool = false
+var _pyl_lock_feedback_tween: Tween = null
+var _pyl_locked_buttons: Array[Button] = []
 const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_INTRO",
 	"UI_RunRoot/Phase_FIRST_REACTION",
@@ -509,6 +512,7 @@ func show_phase(phase: int) -> void:
 	_current_modal = target
 	print_debug("[FLOW][UI] show_phase=%d node=%s" % [phase, String(target.name)])
 	_reset_sign_feedback()
+	_reset_pyl_lock_state()
 	_refresh_modal_dimmer()
 
 func _validate_ui_boot() -> bool:
@@ -1555,19 +1559,13 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:
 		return
+	_reset_pyl_lock_state()
 	_set_bet_modal(false)
 	var meta: Dictionary = payload.meta
-	var bet_name: String = str(meta.get("bet_name", ""))
 	if push_luck_title != null:
-		if payload.title != "":
-			push_luck_title.text = payload.title
-		else:
-			push_luck_title.text = "PUSH YOUR LUCK — %s" % bet_name
+		push_luck_title.text = "Decisione"
 	if push_luck_info != null:
-		if payload.body != "":
-			push_luck_info.text = payload.body
-		else:
-			push_luck_info.text = fmt_system_state("stato attivo: accettato o rinunciato")
+		push_luck_info.text = "Chiusura / Continuità"
 	var doom_text: String = str(meta.get("next_doom", ""))
 	var condition_text: String = str(meta.get("condition", ""))
 	var pact_text: String = str(meta.get("next_pact", ""))
@@ -1592,19 +1590,18 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 		lines.append("INCASSO BLOCCATO: %s" % cashout_reason)
 	if double_locked and double_reason != "":
 		lines.append("RADDOPPIO BLOCCATO: %s" % double_reason)
+	if audience_reason != "":
+		lines.append("CONTESTO: %s" % audience_reason)
+	if cashout_modifier_text != "":
+		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
 	if push_luck_details != null:
-		push_luck_details.text = "\n".join(lines)
+		push_luck_details.text = " · ".join(lines)
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""
 	if push_luck_audience_reason != null:
-		var reason_lines: Array[String] = []
-		if audience_reason != "":
-			reason_lines.append(audience_reason)
-		if cashout_modifier_text != "":
-			reason_lines.append(cashout_modifier_text)
-		push_luck_audience_reason.text = "\n".join(reason_lines)
-		push_luck_audience_reason.visible = reason_lines.size() > 0
+		push_luck_audience_reason.text = "Stato: in attesa di scelta."
+		push_luck_audience_reason.visible = true
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
 		if cashout_locked and cashout_reason != "":
@@ -1640,6 +1637,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	_apply_modal_read_delay(push_luck_read_buttons)
 
 func _on_push_luck_closed() -> void:
+	_reset_pyl_lock_state()
 	_set_push_luck_modal(false)
 
 func _wire_push_luck_buttons() -> void:
@@ -1725,19 +1723,95 @@ func _on_debug_copy_log_pressed() -> void:
 	DisplayServer.clipboard_set(_debug_run_log)
 
 func _on_push_luck_cashout_pressed() -> void:
-	begin_sign_feedback([push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button], push_luck_panel)
+	if _pyl_locked:
+		return
+	_pyl_locked = true
+	_set_pyl_buttons_enabled(false)
+	if push_luck_audience_reason != null:
+		push_luck_audience_reason.text = "Stato: scelta acquisita."
+		push_luck_audience_reason.visible = true
+	_pulse_pyl_panel()
 	if GameEvents.has_signal("request_pyl_cashout"):
 		GameEvents.request_pyl_cashout.emit()
 
 func _on_push_luck_condanna_pressed() -> void:
-	begin_sign_feedback([push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button], push_luck_panel)
+	if _pyl_locked:
+		return
+	_pyl_locked = true
+	_set_pyl_buttons_enabled(false)
+	if push_luck_audience_reason != null:
+		push_luck_audience_reason.text = "Stato: scelta acquisita."
+		push_luck_audience_reason.visible = true
+	_pulse_pyl_panel()
 	if GameEvents.has_signal("request_pyl_condanna"):
 		GameEvents.request_pyl_condanna.emit()
 
 func _on_push_luck_double_pressed() -> void:
-	begin_sign_feedback([push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button], push_luck_panel)
+	if _pyl_locked:
+		return
+	_pyl_locked = true
+	_set_pyl_buttons_enabled(false)
+	if push_luck_audience_reason != null:
+		push_luck_audience_reason.text = "Stato: scelta acquisita."
+		push_luck_audience_reason.visible = true
+	_pulse_pyl_panel()
 	if GameEvents.has_signal("request_pyl_double"):
 		GameEvents.request_pyl_double.emit()
+
+func _is_pyl_button(button: Button) -> bool:
+	if button == null or push_luck_panel == null:
+		return false
+	return push_luck_panel == button or push_luck_panel.is_ancestor_of(button)
+
+func _collect_pyl_buttons() -> Array[Button]:
+	var buttons: Array[Button] = []
+	if push_luck_panel == null:
+		return buttons
+	var descendants: Array[Node] = push_luck_panel.find_children("*", "Button", true, false)
+	for node: Node in descendants:
+		var button: Button = node as Button
+		if button == null:
+			continue
+		buttons.append(button)
+	return buttons
+
+func _set_pyl_buttons_enabled(enabled: bool) -> void:
+	if enabled:
+		for button: Button in _pyl_locked_buttons:
+			if button == null:
+				continue
+			button.disabled = false
+		_pyl_locked_buttons.clear()
+		return
+	_pyl_locked_buttons.clear()
+	for button: Button in _collect_pyl_buttons():
+		if button == null or not button.visible or button.disabled:
+			continue
+		button.disabled = true
+		_pyl_locked_buttons.append(button)
+
+func _pulse_pyl_panel() -> void:
+	if push_luck_panel == null:
+		return
+	if _pyl_lock_feedback_tween != null and _pyl_lock_feedback_tween.is_valid():
+		_pyl_lock_feedback_tween.kill()
+	var panel_color: Color = push_luck_panel.modulate
+	push_luck_panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
+	_pyl_lock_feedback_tween = create_tween()
+	_pyl_lock_feedback_tween.set_trans(Tween.TRANS_LINEAR)
+	_pyl_lock_feedback_tween.set_ease(Tween.EASE_OUT)
+	_pyl_lock_feedback_tween.tween_property(push_luck_panel, "modulate:r", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+	_pyl_lock_feedback_tween.parallel().tween_property(push_luck_panel, "modulate:g", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+	_pyl_lock_feedback_tween.parallel().tween_property(push_luck_panel, "modulate:b", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
+
+func _reset_pyl_lock_state() -> void:
+	if _pyl_lock_feedback_tween != null and _pyl_lock_feedback_tween.is_valid():
+		_pyl_lock_feedback_tween.kill()
+	if push_luck_panel != null:
+		var panel_color: Color = push_luck_panel.modulate
+		push_luck_panel.modulate = Color(1.0, 1.0, 1.0, panel_color.a)
+	_pyl_locked = false
+	_set_pyl_buttons_enabled(true)
 
 func _on_bet_win_pressed() -> void:
 	_emit_intro_bet_request(0)
@@ -2171,7 +2245,10 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 	await get_tree().create_timer(MIN_MODAL_READ_TIME_SEC).timeout
 	for index: int in range(buttons.size()):
 		var button: Button = buttons[index]
-		button.disabled = initial_states[index]
+		var should_disable: bool = initial_states[index]
+		if _pyl_locked and _is_pyl_button(button):
+			should_disable = true
+		button.disabled = should_disable
 
 func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) -> Tween:
 	if panel == null or modal == null:

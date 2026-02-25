@@ -161,10 +161,10 @@ const ENDING_UI_MAP: Dictionary = {
 @onready var push_luck_condanna_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_1") as Label
 @onready var push_luck_double_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE") as Button
 @onready var push_luck_double_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
-@onready var verdict_header: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLEPanel/Lbl_END_RUN_TITLE") as Label
+@onready var verdict_header: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE") as Label
 @onready var verdict_icon: TextureRect = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndingIcon") as TextureRect
 @onready var verdict_outcome: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel/Lbl_END_RUN_SUBTITLE") as Label
-@onready var verdict_sentence_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODYPanel/Lbl_END_RUN_BODY") as Label
+@onready var verdict_sentence_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODY") as Label
 @onready var verdict_charge_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel/Lbl_END_RUN_HINT") as Label
 @onready var verdict_sections: VBoxContainer = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS") as VBoxContainer
 @onready var verdict_pacts_text: RichTextLabel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
@@ -973,20 +973,34 @@ func _refresh_verdict_panel() -> void:
 			verdict_icon.texture = null
 			verdict_icon.visible = false
 	if verdict_sentence_label != null:
-		var sentence_text: String = _last_verdict_sentence
+		var sentence_text: String = _last_verdict_sentence.strip_edges()
 		if sentence_text == "":
-			sentence_text = fmt_system_state("sentenza non registrata")
-		verdict_sentence_label.text = "SENTENZA: %s" % sentence_text
+			sentence_text = fmt_system_state("registrato")
+		verdict_sentence_label.text = "Esito: %s" % sentence_text
 	if verdict_charge_label != null:
-		var charge_text: String = _last_verdict_charge
-		if charge_text == "":
-			charge_text = fmt_system_state("capo d'accusa non registrato")
-		verdict_charge_label.text = "CAPO D’ACCUSA: %s" % charge_text
+		var status_text: String = "Stato: non conclusivo."
+		if _last_register_final:
+			status_text = "Stato: conclusivo."
+		verdict_charge_label.text = status_text
 	if verdict_pacts_text != null:
-		verdict_pacts_text.text = _format_verdict_pacts_list(_last_verdict_pacts)
+		var pacts_text: String = _format_verdict_pacts_list(_last_verdict_pacts).strip_edges()
+		verdict_pacts_text.text = pacts_text
+		var pacts_panel := verdict_pacts_text.get_parent() as CanvasItem
+		if pacts_panel != null:
+			pacts_panel.visible = pacts_text != ""
+			var pacts_title_panel := pacts_panel.get_parent().get_node_or_null("Lbl_END_RUN_PACTS_TITLEPanel") as CanvasItem
+			if pacts_title_panel != null:
+				pacts_title_panel.visible = pacts_text != ""
 	if verdict_condanne_text != null:
 		var condanne_titles: Array[String] = _resolve_condanna_titles(_last_verdict_condanne)
-		verdict_condanne_text.text = _format_verdict_list(condanne_titles)
+		var condanne_text: String = _format_verdict_list(condanne_titles).strip_edges()
+		verdict_condanne_text.text = condanne_text
+		var condanne_panel := verdict_condanne_text.get_parent() as CanvasItem
+		if condanne_panel != null:
+			condanne_panel.visible = condanne_text != ""
+			var condanne_title_panel := condanne_panel.get_parent().get_node_or_null("Lbl_END_RUN_CONDANNE_TITLEPanel") as CanvasItem
+			if condanne_title_panel != null:
+				condanne_title_panel.visible = condanne_text != ""
 	var crowd_line: String = _last_verdict_crowd_line.strip_edges()
 	if verdict_crowd_section != null:
 		verdict_crowd_section.visible = crowd_line != ""

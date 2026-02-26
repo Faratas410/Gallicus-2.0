@@ -22,6 +22,7 @@ const FADE_OUT_SEC: float = 0.25
 const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
 const SIGN_LOCK_DARKEN_RGB: float = 0.82
 const SIGN_PREVIEW_SCALE: float = 1.015
+const QUICK_CUT_MAX_SECONDS: float = 1.5
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb_button_primary_hover.tres"
@@ -135,6 +136,10 @@ const ENDING_UI_MAP: Dictionary = {
 @onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabelPanel/AudienceContextLabel") as Label
 @onready var register_blocker: Control = get_node_or_null("HUD/RegisterAnnotationBlocker") as Control
 @onready var register_annotation_label: Label = get_node_or_null("HUD/RegisterAnnotationBlocker/RegisterAnnotationLabelPanel/RegisterAnnotationLabel") as Label
+@onready var quick_cut_blocker: Control = get_node_or_null("HUD/QuickCutBlocker") as Control
+@onready var quick_cut_shade: ColorRect = get_node_or_null("HUD/QuickCutBlocker/QuickCutShade") as ColorRect
+@onready var quick_cut_label_panel: PanelContainer = get_node_or_null("HUD/QuickCutBlocker/QuickCutLabelPanel") as PanelContainer
+@onready var quick_cut_label: Label = get_node_or_null("HUD/QuickCutBlocker/QuickCutLabelPanel/QuickCutLabel") as Label
 @onready var arena_theme_title_panel: PanelContainer = get_node_or_null("HUD/ArenaThemeTitleLabelPanel") as PanelContainer
 @onready var arena_theme_title_label: Label = get_node_or_null("HUD/ArenaThemeTitleLabelPanel/ArenaThemeTitleLabel") as Label
 @onready var arena_theme_subtitle_panel: PanelContainer = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel") as PanelContainer
@@ -208,6 +213,7 @@ var _escalation_max: int = 0
 var _scar_popup_tween: Tween = null
 var _arena_resolution_tween: Tween = null
 var _register_annotation_tween: Tween = null
+var _quick_cut_tween: Tween = null
 var _bet_modal_fade_tween: Tween = null
 var _pact_sealed_modal_fade_tween: Tween = null
 var _resolve_ritual_modal_fade_tween: Tween = null
@@ -323,6 +329,9 @@ func _ready() -> void:
 	var register_annotation_callable: Callable = Callable(self, "_on_register_annotation")
 	if GameEvents.has_signal("register_annotation") and not GameEvents.register_annotation.is_connected(register_annotation_callable):
 		GameEvents.register_annotation.connect(register_annotation_callable)
+	var quick_cut_callable: Callable = Callable(self, "_on_micro_interpretive_quick_cut_requested")
+	if GameEvents.has_signal("micro_interpretive_quick_cut_requested") and not GameEvents.micro_interpretive_quick_cut_requested.is_connected(quick_cut_callable):
+		GameEvents.micro_interpretive_quick_cut_requested.connect(quick_cut_callable)
 	var escalation_changed_callable: Callable = Callable(self, "_on_escalation_changed")
 	if GameEvents.has_signal("escalation_changed") and not GameEvents.escalation_changed.is_connected(escalation_changed_callable):
 		GameEvents.escalation_changed.connect(escalation_changed_callable)
@@ -822,6 +831,64 @@ func _on_register_annotation(payload: Dictionary) -> void:
 func _hide_register_annotation() -> void:
 	if register_blocker != null:
 		register_blocker.visible = false
+
+func _on_micro_interpretive_quick_cut_requested(payload: Dictionary) -> void:
+	if quick_cut_blocker == null or quick_cut_shade == null or quick_cut_label == null or quick_cut_label_panel == null:
+		return
+	if _quick_cut_tween != null and _quick_cut_tween.is_valid():
+		_quick_cut_tween.kill()
+	var duration: float = clampf(float(payload.get("duration", 1.0)), 0.8, QUICK_CUT_MAX_SECONDS)
+	var show_text: bool = bool(payload.get("show_text", true))
+	quick_cut_blocker.visible = true
+	quick_cut_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	var desaturation: float = clampf(float(payload.get("desaturation", 0.75)), 0.70, 0.85)
+	var luminance_dim: float = clampf(float(payload.get("luminance_dim", 0.10)), 0.0, 0.15)
+	var base: float = clampf(1.0 - luminance_dim, 0.0, 1.0)
+	var neutral: float = clampf(base * (1.0 - desaturation) + 0.5 * desaturation, 0.0, 1.0)
+	quick_cut_shade.color = Color(neutral, neutral, neutral, desaturation)
+	quick_cut_label.visible = show_text
+	quick_cut_label_panel.visible = show_text
+	if show_text:
+		var text: String = str(payload.get("text", "")).strip_edges()
+		if text.length() > 60:
+			text = text.substr(0, 60)
+		quick_cut_label.text = text
+		quick_cut_label.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		quick_cut_label.position = Vector2.ZERO
+		quick_cut_label_panel.add_theme_constant_override("separation", 0)
+		_apply_quick_cut_glitch(str(payload.get("glitch", "")))
+	await get_tree().create_timer(duration).timeout
+	if quick_cut_blocker != null:
+		quick_cut_blocker.visible = false
+		quick_cut_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _apply_quick_cut_glitch(glitch: String) -> void:
+	if quick_cut_label == null:
+		return
+	match glitch:
+		"text_shift":
+			quick_cut_label.position = Vector2(1.0, 0.0)
+			await get_tree().process_frame
+			if quick_cut_label != null:
+				quick_cut_label.position = Vector2.ZERO
+		"char_offset":
+			quick_cut_label.position = Vector2(0.0, -1.0)
+			await get_tree().process_frame
+			if quick_cut_label != null:
+				quick_cut_label.position = Vector2.ZERO
+		"opacity_jitter":
+			quick_cut_label.modulate.a = 0.95
+			await get_tree().create_timer(0.08).timeout
+			if quick_cut_label != null:
+				quick_cut_label.modulate.a = 1.0
+		"kerning_compress":
+			if quick_cut_label_panel != null:
+				quick_cut_label_panel.add_theme_constant_override("separation", -1)
+			await get_tree().process_frame
+			if quick_cut_label_panel != null:
+				quick_cut_label_panel.add_theme_constant_override("separation", 0)
+		_:
+			return
 
 func _on_run_finale_selected(payload: Dictionary) -> void:
 	if payload.has("title"):

@@ -263,6 +263,37 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "Registro: atto annotato."
 
+[node name="QuickCutBlocker" type="Control" parent="HUD"]
+visible = false
+z_index = 114
+mouse_filter = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="QuickCutShade" type="ColorRect" parent="HUD/QuickCutBlocker"]
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.09, 0.09, 0.09, 0.7)
+
+[node name="QuickCutLabelPanel" type="PanelContainer" parent="HUD/QuickCutBlocker"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -22.0
+offset_right = 360.0
+offset_bottom = 22.0
+
+[node name="QuickCutLabel" type="Label" parent="HUD/QuickCutBlocker/QuickCutLabelPanel"]
+mouse_filter = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 1
+autowrap_mode = 0
+text = "Configurazione stabile."
+
 [node name="ArenaThemeTitleLabelPanel" type="PanelContainer" parent="HUD"]
 visible = false
 z_index = 111

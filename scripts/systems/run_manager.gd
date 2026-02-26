@@ -39,6 +39,15 @@ enum RunPhase {
 
 const PACT_SEALED_SECONDS: float = 0.7
 const RESOLVE_RITUAL_SECONDS: float = 0.9
+const QUICK_CUT_RESOLVE_BUFFER_SECONDS: float = 0.08
+const QUICK_CUT_DURATION_MIN_SECONDS: float = 0.8
+const QUICK_CUT_DURATION_MAX_SECONDS: float = 1.2
+const QUICK_CUT_DURATION_HOLD_SECONDS: float = 1.0
+const QUICK_CUT_CHANCE_ERA2: float = 0.25
+const QUICK_CUT_CHANCE_ERA3: float = 0.45
+const QUICK_CUT_CHANCE_ERA3_FIXED: float = 0.60
+const QUICK_CUT_NO_TEXT_MAX_ERA3_FIXED: float = 0.15
+const QUICK_CUT_GLITCH_CHANCE: float = 0.35
 const INTERMEDIATE_PLACA_BONUS_COINS: int = 6
 const INTERMEDIATE_PROVOCA_BONUS_TIER: int = 1
 const INTERMEDIATE_PROVOCA_LOSS_PENALTY_COINS: int = 6
@@ -781,6 +790,7 @@ var _phase_main_menu_handler: PhaseMainMenuHandler = PhaseMainMenuHandler.new()
 var _phase_handler_map: Dictionary = {}
 var _session_id: String = ""
 var _run_counter: int = 0
+var _quick_cut_era_first_seen_run: Dictionary = {}
 var _last_request: String = ""
 var _events_wired: bool = false
 var _last_phase_change_ms: int = 0
@@ -1585,6 +1595,7 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_resolving_arena = false
 	_update_arena_visual_only()
 	_emit_run_debug_state()
+	await _maybe_play_micro_interpretive_quick_cut()
 	if _run_state.run_is_over or _is_game_over:
 		return
 	_open_push_luck_choice(bet_id)
@@ -1625,10 +1636,111 @@ func _apply_resolution_advance_state() -> void:
 	_resolving_arena = false
 	_update_arena_visual_only()
 	_emit_run_debug_state()
+	await _maybe_play_micro_interpretive_quick_cut()
 	if _run_state.run_is_over or _is_game_over:
 		return
 	_open_push_luck_choice(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_INTERMEDIATE_CHOICE, bet_id)
+
+func _compute_registry_era_for_quick_cut() -> int:
+	match _register_state.flow_phase:
+		RegisterState.FLOW_PHASE_DERIVA:
+			return 2
+		RegisterState.FLOW_PHASE_MEMORIA, RegisterState.FLOW_PHASE_SOSPENSIONE:
+			return 3
+		_:
+			return 1
+
+func _is_signature_fixed_for_quick_cut() -> bool:
+	return _register_state.flow_phase == RegisterState.FLOW_PHASE_SOSPENSIONE
+
+func _is_quick_cut_ramp_blocked(era: int) -> bool:
+	if era < 2:
+		return true
+	if not _quick_cut_era_first_seen_run.has(era):
+		_quick_cut_era_first_seen_run[era] = _run_counter
+	var first_seen_run: int = int(_quick_cut_era_first_seen_run.get(era, _run_counter))
+	var elapsed_runs: int = _run_counter - first_seen_run
+	return elapsed_runs < 2
+
+func _roll_quick_cut_probability(era: int, signature_fixed: bool) -> bool:
+	var threshold: float = 0.0
+	if era == 2:
+		threshold = QUICK_CUT_CHANCE_ERA2
+	elif era == 3 and signature_fixed:
+		threshold = QUICK_CUT_CHANCE_ERA3_FIXED
+	elif era == 3:
+		threshold = QUICK_CUT_CHANCE_ERA3
+	if threshold <= 0.0:
+		return false
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	var seed_value: int = _run_state.run_seed
+	seed_value += _run_counter * 173
+	seed_value += _run_state.arena_index * 97
+	seed_value += _run_state.arenas_cleared * 59
+	seed_value += era * 11
+	rng.seed = seed_value
+	return rng.randf() < threshold
+
+func _build_quick_cut_text(era: int, rng: RandomNumberGenerator) -> String:
+	var era2_lines: Array[String] = [
+		"Oscillazione registrata.",
+		"Campionamento incompleto.",
+		"Deviazione contenuta.",
+	]
+	var era3_lines: Array[String] = [
+		"Configurazione stabile.",
+		"Esito previsto.",
+		"Deviazione improbabile.",
+	]
+	if era >= 3:
+		return era3_lines[rng.randi_range(0, era3_lines.size() - 1)]
+	return era2_lines[rng.randi_range(0, era2_lines.size() - 1)]
+
+func _pick_quick_cut_glitch(rng: RandomNumberGenerator) -> StringName:
+	if rng.randf() >= QUICK_CUT_GLITCH_CHANCE:
+		return &""
+	var glitches: Array[StringName] = [&"text_shift", &"char_offset", &"opacity_jitter", &"kerning_compress"]
+	return glitches[rng.randi_range(0, glitches.size() - 1)]
+
+func _maybe_play_micro_interpretive_quick_cut() -> void:
+	if _run_state.run_is_over or _is_game_over:
+		return
+	if _run_state.registry_silence_active:
+		return
+	var era: int = _compute_registry_era_for_quick_cut()
+	if era < 2 or era >= 4:
+		return
+	if _is_quick_cut_ramp_blocked(era):
+		return
+	var signature_fixed: bool = _is_signature_fixed_for_quick_cut()
+	if not _roll_quick_cut_probability(era, signature_fixed):
+		return
+	await get_tree().create_timer(QUICK_CUT_RESOLVE_BUFFER_SECONDS).timeout
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	var seed_value: int = _run_state.run_seed
+	seed_value += _run_counter * 313
+	seed_value += _run_state.arenas_cleared * 41
+	seed_value += era * 17
+	rng.seed = seed_value
+	var no_text_hold: bool = false
+	if era == 3 and signature_fixed:
+		no_text_hold = rng.randf() < QUICK_CUT_NO_TEXT_MAX_ERA3_FIXED
+	var duration: float = QUICK_CUT_DURATION_HOLD_SECONDS if no_text_hold else rng.randf_range(QUICK_CUT_DURATION_MIN_SECONDS, QUICK_CUT_DURATION_MAX_SECONDS)
+	if duration > 1.5:
+		duration = 1.5
+	var payload: Dictionary = {
+		"duration": duration,
+		"show_text": not no_text_hold,
+		"text": "" if no_text_hold else _build_quick_cut_text(era, rng),
+		"glitch": String(_pick_quick_cut_glitch(rng)) if not no_text_hold else "",
+		"desaturation": rng.randf_range(0.70, 0.85),
+		"luminance_dim": rng.randf_range(0.08, 0.15),
+		"era": era,
+	}
+	if GameEvents.has_signal("micro_interpretive_quick_cut_requested"):
+		GameEvents.micro_interpretive_quick_cut_requested.emit(payload)
+	await get_tree().create_timer(duration).timeout
 
 func resolve_arena() -> void:
 	_pending_resolution_bet_id = _run_state.active_bet_id

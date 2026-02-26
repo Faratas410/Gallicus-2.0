@@ -34,6 +34,7 @@ signal pact_sealed_opened
 signal pact_sealed_closed
 signal resolve_ritual_opened(payload: Dictionary)
 signal resolve_ritual_closed
+signal micro_interpretive_quick_cut_requested(payload: Dictionary)
 signal intermediate_choice_opened
 signal push_luck_opened(payload: Dictionary)
 signal push_luck_closed

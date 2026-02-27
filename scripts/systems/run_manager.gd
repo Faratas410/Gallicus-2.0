@@ -3680,9 +3680,8 @@ func _should_emit_registry_silence() -> bool:
 	_run_state.registry_silence_active = false
 	if _register_state.flow_phase != RegisterState.FLOW_PHASE_SOSPENSIONE:
 		return false
-	var silence_rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	silence_rng.randomize()
-	_run_state.registry_silence_active = silence_rng.randi_range(1, REGISTRY_SILENCE_ROLL_MAX) == 1
+	# L3 determinism: use run-scoped RNG state (seeded from run seed), never time-seeded randomize().
+	_run_state.registry_silence_active = _level3_rng.randi_range(1, REGISTRY_SILENCE_ROLL_MAX) == 1
 	return _run_state.registry_silence_active
 
 func _emit_run_log(finale: Dictionary) -> void:

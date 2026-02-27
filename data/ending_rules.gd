@@ -17,7 +17,7 @@ static func dominant_rules() -> Array[Dictionary]:
 	return [
 		{"id": "PATH_MARTYR_01", "ending_key": &"THE_MARTYR", "priority": 120, "requires": {"min_double": 4, "min_condanna": 2}},
 		{"id": "PATH_HUBRIS_01", "ending_key": &"THE_FOOL", "priority": 110, "requires": {"min_double": 3, "min_corruption": 7}},
-		{"id": "PATH_FALL_01", "ending_key": &"THE_FALL", "priority": 108, "requires": {"min_corruption": 9, "min_double": 2}},
+		{"id": "PATH_FALL_01", "ending_key": &"THE_FALL", "priority": 108, "requires": {"min_corruption": 5}},
 		{"id": "PATH_DEBT_01", "ending_key": &"THE_DEBTOR", "priority": 100, "requires": {"min_path_prudence": 3}},
 		{"id": "PATH_GLORY_01", "ending_key": &"THE_LIBERTY", "priority": 95, "requires": {"min_glory": 8, "max_corruption": 3, "min_path_hubris": 2}},
 		{"id": "PATH_PET_01", "ending_key": &"THE_CROWD_PET", "priority": 90, "requires": {"min_cashout": 3, "max_double": 1}},

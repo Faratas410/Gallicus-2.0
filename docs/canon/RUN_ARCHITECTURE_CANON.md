@@ -317,28 +317,13 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
 
 ## Legacy runtime (non-L3, storico/rimosso)
 
-Legacy gameplay systems are confined under `res://legacy-runtime/`:
-
-- Gameplay scripts:
-  - `res://legacy-runtime/gameplay/player_legacy.gd`
-  - `res://legacy-runtime/gameplay/enemy_legacy.gd`
-- Legacy scene:
-  - `res://legacy-runtime/scenes/Enemy.tscn`
-- Legacy pickups:
-  - `res://legacy-runtime/pickups/Pickup.gd`
-  - `res://legacy-runtime/pickups/PickupSpawner.gd`
-  - `res://legacy-runtime/pickups/Pickup_Heal.tscn`
-  - `res://legacy-runtime/pickups/Pickup_Coins.tscn`
-  - `res://legacy-runtime/pickups/Pickup_SpeedBoost.tscn`
+`res://legacy-runtime/` is no longer present in the repository. Legacy gameplay assets were removed from active storage.
 
 ## Rule
 
-No file under `res://legacy-runtime/` may be referenced by:
+References to `res://legacy-runtime/*` are prohibited in active runtime surfaces (including `res://scenes/Main.tscn` and `res://scripts/systems/run_manager.gd`).
 
-- `res://scenes/Main.tscn`
-- `res://scripts/systems/run_manager.gd`
-
-This keeps Level 3 runtime active and boot-safe while preserving historical traceability of removed legacy gameplay assets.
+Any reintroduction of legacy artifacts must be documented in canon before wiring and must not create parallel flow authority.
 
 ## SOURCE: docs/flow_wiring_contract.md
 

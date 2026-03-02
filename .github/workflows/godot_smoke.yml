@@ -107,6 +107,11 @@ jobs:
           set -e
           python3 scripts/ci/test_ui_ritual_payload_contract.py
 
+      - name: Check era visual template anchors (static audit)
+        run: |
+          set -e
+          python3 scripts/ci/test_era_visual_template_audit.py
+
       - name: Check active runtime has no legacy_runtime references
         run: |
           set -e
@@ -311,6 +316,11 @@ jobs:
         run: |
           set -e
           python3 scripts/ci/test_ui_ritual_payload_contract.py
+
+      - name: Check era visual template anchors (static audit)
+        run: |
+          set -e
+          python3 scripts/ci/test_era_visual_template_audit.py
 
       - name: Check active runtime has no legacy_runtime references
         run: |

@@ -89,9 +89,9 @@ func _update_clouds(_delta: float) -> void:
 
 func _update_fog_layers() -> void:
 	var t: float = Time.get_ticks_msec() / 1000.0
-	_apply_fog_alpha(_fog_back, 0.17 + (sin(t * 0.45) * 0.015))
-	_apply_fog_alpha(_fog_mid, 0.25 + (sin(t * 0.6 + 0.6) * 0.02))
-	_apply_fog_alpha(_fog_front, 0.33 + (sin(t * 0.75 + 1.1) * 0.025))
+	_apply_fog_alpha(_fog_back, 0.09 + (sin(t * 0.45) * 0.01))
+	_apply_fog_alpha(_fog_mid, 0.12 + (sin(t * 0.6 + 0.6) * 0.015))
+	_apply_fog_alpha(_fog_front, 0.14 + (sin(t * 0.75 + 1.1) * 0.01))
 
 func _apply_fog_alpha(fog_layer: Control, alpha: float) -> void:
 	if fog_layer == null:

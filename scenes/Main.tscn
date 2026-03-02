@@ -177,42 +177,42 @@ texture_filter = 0
 
 [node name="FogLayer_Back" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
 layout_mode = 1
-anchor_top = 0.62
+anchor_top = 0.81
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 material = SubResource("ShaderMaterial_fog_back")
-modulate = Color(1, 1, 1, 0.17)
+modulate = Color(0.93, 0.9, 0.94, 0.09)
 texture = ExtResource("15_menu_fog")
 texture_filter = 0
 stretch_mode = 5
 
 [node name="FogLayer_Mid" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
 layout_mode = 1
-anchor_top = 0.62
+anchor_top = 0.81
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 material = SubResource("ShaderMaterial_fog_mid")
-modulate = Color(1, 1, 1, 0.25)
+modulate = Color(0.92, 0.89, 0.93, 0.12)
 texture = ExtResource("15_menu_fog")
 texture_filter = 0
 stretch_mode = 5
 
 [node name="FogLayer_Front" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
 layout_mode = 1
-anchor_top = 0.62
+anchor_top = 0.81
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 material = SubResource("ShaderMaterial_fog_front")
-modulate = Color(1, 1, 1, 0.33)
+modulate = Color(0.91, 0.88, 0.92, 0.14)
 texture = ExtResource("15_menu_fog")
 texture_filter = 0
 stretch_mode = 5

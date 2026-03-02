@@ -72,7 +72,12 @@ def main() -> int:
 
     onready_paths = _extract_onready_paths(ui_root_text)
 
-    arena_theme_vars = ["arena_theme_title_label", "arena_theme_subtitle_label"]
+    arena_theme_vars = [
+        "arena_theme_title_panel",
+        "arena_theme_title_label",
+        "arena_theme_subtitle_panel",
+        "arena_theme_subtitle_label",
+    ]
     end_run_vars = ["verdict_header", "verdict_sentence_label", "verdict_outcome"]
 
     missing_vars = [v for v in arena_theme_vars + end_run_vars if v not in onready_paths]
@@ -119,6 +124,15 @@ def main() -> int:
     )
     silence_candidates = [p for p in overlay_candidates if re.search(r"silence", p, re.IGNORECASE)]
 
+    silence_overlay_anchor = "UI_RunRoot/Overlays/SilenceOverlay"
+    silence_overlay_in_scene = bool(
+        re.search(
+            r'^\[node\s+name="SilenceOverlay"\s+type="[^"]+"\s+parent="UI_RunRoot/Overlays"\]$',
+            ui_scene_text,
+            re.M,
+        )
+    )
+
     print("[OK][ERA_VISUAL_TEMPLATE_AUDIT] static era visual template audit passed")
     print("ANCHOR_MAP_BEGIN")
     print(f"ANCHOR_UI_ROOT_ARENA_THEME_TITLE={onready_paths['arena_theme_title_label']}")
@@ -126,14 +140,18 @@ def main() -> int:
     print(f"ANCHOR_UI_ROOT_END_RUN_HEADER={onready_paths['verdict_header']}")
     print(f"ANCHOR_UI_ROOT_END_RUN_BODY={onready_paths['verdict_sentence_label']}")
     print(f"ANCHOR_UI_ROOT_END_RUN_REGISTER_MESSAGE={onready_paths['verdict_outcome']}")
+    print(f"ANCHOR_UI_ROOT_ARENA_THEME_TITLE_PANEL={onready_paths['arena_theme_title_panel']}")
+    print(f"ANCHOR_UI_ROOT_ARENA_THEME_SUBTITLE_PANEL={onready_paths['arena_theme_subtitle_panel']}")
     if overlay_candidates:
-        for candidate in overlay_candidates:
-            print(f"ANCHOR_UI_OVERLAY_CANDIDATE={candidate}")
-    if silence_candidates:
-        for candidate in silence_candidates:
-            print(f"ANCHOR_UI_SILENCE_OVERLAY_CANDIDATE={candidate}")
+        for index, candidate in enumerate(overlay_candidates, start=1):
+            print(f"OVERLAY_CANDIDATE_{index:02d}={candidate}")
+    if silence_overlay_in_scene:
+        print(f"ANCHOR_UI_ROOT_SILENCE_OVERLAY={silence_overlay_anchor}")
+        print("SILENCE_OVERLAY_STATUS=FOUND")
+        for index, candidate in enumerate(silence_candidates, start=1):
+            print(f"SILENCE_OVERLAY_CANDIDATE_{index:02d}={candidate}")
     else:
-        print("ANCHOR_UI_SILENCE_OVERLAY_CANDIDATE=MISSING")
+        print("SILENCE_OVERLAY_STATUS=MISSING")
     print("ANCHOR_MAP_END")
     return 0
 

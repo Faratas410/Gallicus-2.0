@@ -26,11 +26,10 @@
 - `assets/` — Runtime art/audio-support assets used by scenes/scripts.
 - `data/` — Gameplay data registries (bets, arena themes, verdict lines, condanne).
 - `docs/` — Canon + supporting technical/design documentation.
-- `legacy-runtime/` — Legacy runtime artifacts kept outside active scene entry flow.
+- `tools/` — Developer tooling and CI helper scripts.
 - `ui/` — External UI resource pack (separate from active `assets/ui/` runtime path).
 - `Music/` — Audio files repository.
-- `OK GUI/`, `UI Official/` — Raw reference asset collections.
-- `readme/` — Project readme resources.
+- `UI Official/` — Raw reference asset collection.
 - `.godot/` — Godot editor/import cache metadata.
 
 ## Active runtime structure (`res://`)
@@ -97,8 +96,8 @@
   - `ui/icons/`, `ui/dividers/`, `ui/overlays/`, `ui/panels/`
 
 ## Legacy / non-active runtime areas
-- `legacy-runtime/` contains old gameplay/pickup scenes/scripts not mapped as active entry flow.
-- `OK GUI/` and `UI Official/` are external asset libraries and not part of canonical runtime authority.
+- `legacy-runtime/` directory is no longer present in the repository; legacy gameplay artifacts were removed from active storage.
+- `UI Official/` is an external asset library and not part of canonical runtime authority.
 - `ui/` (root-level) is a resource bundle separate from `assets/ui/` and should not be treated as implicit runtime authority without explicit scene/script wiring.
 
 ## Documentation governance alignment

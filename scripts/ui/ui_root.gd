@@ -145,6 +145,7 @@ const ENDING_UI_MAP: Dictionary = {
 @onready var arena_theme_subtitle_panel: PanelContainer = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel") as PanelContainer
 @onready var arena_theme_subtitle_label: Label = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel/ArenaThemeSubtitleLabel") as Label
 @onready var sentence_banner: Control = get_node_or_null("HUD/SentenceBanner") as Control
+@onready var silence_overlay: CanvasItem = get_node_or_null("UI_RunRoot/Overlays/SilenceOverlay") as CanvasItem
 @onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitlePanel/SentenceTitle") as Label
 @onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRulePanel/SentenceRule") as Label
 @onready var sentence_doom_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoomPanel/SentenceDoom") as Label
@@ -274,6 +275,18 @@ const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_RESOLUTION",
 	"UI_RunRoot/Phase_END_RUN",
 ]
+const _VISUAL_TIER1_THEME_IDS: Array[StringName] = [
+	&"ARENA_BLOOD",
+]
+const _VISUAL_TIER2_THEME_IDS: Array[StringName] = []
+const _SILENCE_THEME_ID: StringName = &"ARENA_SILENCE"
+const _SILENCE_OVERLAY_ALPHA: float = 0.24
+const _VISUAL_TIER_DEFAULT: int = 0
+const _VISUAL_TIER_ALT: int = 1
+const _VISUAL_TIER_GLOBAL: int = 2
+
+var _visual_tier: int = _VISUAL_TIER_DEFAULT
+var _silence_overlay_active: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -532,6 +545,8 @@ func show_phase(phase: int) -> void:
 		)
 	elif phase == RUN_PHASE_PUSH_YOUR_LUCK:
 		_reset_decision_surface(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
+	_apply_era_visual_tier(_visual_tier)
+	_set_silence_overlay_active(_silence_overlay_active)
 	_refresh_modal_dimmer()
 
 func _validate_ui_boot() -> bool:
@@ -1180,7 +1195,75 @@ func _on_special_arena_started(payload: Dictionary) -> void:
 
 func _on_arena_theme_changed(payload: Dictionary) -> void:
 	_arena_theme_payload = payload.duplicate(true)
+	var theme_id: StringName = _extract_theme_id(payload)
+	_visual_tier = _derive_visual_tier(theme_id)
+	_silence_overlay_active = theme_id == _SILENCE_THEME_ID
+	_apply_era_visual_tier(_visual_tier)
+	_set_silence_overlay_active(_silence_overlay_active)
 	_update_arena_theme_ui()
+
+func _extract_theme_id(payload: Dictionary) -> StringName:
+	if payload.has("theme_id"):
+		return StringName(payload.get("theme_id", &""))
+	if debug_tools_panel != null:
+		print_debug("[UI] visual tier discriminator missing in arena theme payload")
+	return &""
+
+func _derive_visual_tier(theme_id: StringName) -> int:
+	if _VISUAL_TIER2_THEME_IDS.has(theme_id):
+		return _VISUAL_TIER_GLOBAL
+	if _VISUAL_TIER1_THEME_IDS.has(theme_id):
+		return _VISUAL_TIER_ALT
+	return _VISUAL_TIER_DEFAULT
+
+func _set_silence_overlay_active(active: bool) -> void:
+	if silence_overlay == null:
+		return
+	silence_overlay.visible = active
+	if active:
+		silence_overlay.modulate = Color(1.0, 1.0, 1.0, _SILENCE_OVERLAY_ALPHA)
+	else:
+		silence_overlay.modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+func _apply_era_visual_tier(tier: int) -> void:
+	var use_alt: bool = tier == _VISUAL_TIER_ALT
+	var use_global: bool = tier == _VISUAL_TIER_GLOBAL
+	var arena_panel_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
+	var end_run_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
+	var hud_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
+	var ui_root_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
+	var torch_overlay_modulate: Color = Color(1.0, 1.0, 1.0, 0.0)
+	var resolution_overlay_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
+	if use_alt:
+		arena_panel_modulate = Color(0.78, 0.78, 0.78, 1.0)
+		end_run_modulate = Color(1.0, 1.0, 1.0, 0.92)
+	elif use_global:
+		arena_panel_modulate = Color(0.74, 0.74, 0.74, 1.0)
+		end_run_modulate = Color(1.0, 1.0, 1.0, 0.94)
+		hud_modulate = Color(0.9, 0.9, 0.9, 1.0)
+		ui_root_modulate = Color(0.9, 0.9, 0.9, 1.0)
+		torch_overlay_modulate = Color(1.0, 1.0, 1.0, 0.22)
+		resolution_overlay_modulate = Color(1.0, 1.0, 1.0, 0.85)
+	if arena_theme_title_panel != null:
+		arena_theme_title_panel.modulate = arena_panel_modulate
+	if arena_theme_subtitle_panel != null:
+		arena_theme_subtitle_panel.modulate = arena_panel_modulate
+	if game_over_panel != null:
+		game_over_panel.modulate = end_run_modulate
+	if hud_root != null:
+		hud_root.modulate = hud_modulate
+	if modals_root != null:
+		modals_root.modulate = ui_root_modulate
+	if torch_flicker_overlay != null:
+		torch_flicker_overlay.modulate = torch_overlay_modulate
+	if arena_resolution_panel != null:
+		arena_resolution_panel.modulate = resolution_overlay_modulate
+	if verdict_header != null:
+		verdict_header.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	if verdict_sentence_label != null:
+		verdict_sentence_label.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	if verdict_outcome != null:
+		verdict_outcome.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:

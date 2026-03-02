@@ -450,6 +450,25 @@ text = ""
 size_flags_horizontal = 4
 text = "TORNA AL MENU"
 
+[node name="SilenceOverlay" type="Control" parent="UI_RunRoot/Overlays"]
+visible = false
+z_index = 340
+mouse_filter = 2
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SilenceRect" type="ColorRect" parent="UI_RunRoot/Overlays/SilenceOverlay"]
+mouse_filter = 2
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.35)
+
 [node name="SafeMargin" type="MarginContainer" parent="UI_RunRoot"]
 anchor_right = 1.0
 anchor_bottom = 1.0

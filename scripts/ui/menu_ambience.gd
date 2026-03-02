@@ -11,7 +11,11 @@ const TORCH_FPS: float = 8.0
 @export var light_overlay_path: NodePath
 @export var torch_flames_path: NodePath
 @export_file("*.png") var torch_strip_path: String = "res://assets/MainMenu/menu_torch_flame_strip_4x64.png"
-@export var cloud_speed: float = 8.0
+@export var cloud_speed: float = 4.0
+@export var cloud_alpha_base: float = 0.08
+@export var cloud_alpha_amplitude: float = 0.01
+@export var cloud_alpha_max: float = 0.1
+@export var cloud_tint: float = 0.9
 
 var _time: float = 0.0
 var _clouds: Control = null
@@ -78,13 +82,12 @@ func _update_clouds(_delta: float) -> void:
 	if _clouds == null:
 		return
 	_clouds.position.x = 0.0
-	var cloud_alpha_pulse: float = (sin(_time * 0.22) * 0.5) + 0.5
+	var cloud_alpha_pulse: float = sin(_time * (cloud_speed * 0.02))
 	var clouds_modulate: Color = _clouds.modulate
-	# Keep RGB neutral to avoid color conflict with foreground banner layers.
-	clouds_modulate.r = 1.0
-	clouds_modulate.g = 1.0
-	clouds_modulate.b = 1.0
-	clouds_modulate.a = clamp(0.40 + (cloud_alpha_pulse * 0.05), 0.0, 1.0)
+	clouds_modulate.r = cloud_tint
+	clouds_modulate.g = cloud_tint
+	clouds_modulate.b = cloud_tint
+	clouds_modulate.a = clamp(cloud_alpha_base + (cloud_alpha_pulse * cloud_alpha_amplitude), 0.0, cloud_alpha_max)
 	_clouds.modulate = clouds_modulate
 
 func _update_fog_layers() -> void:

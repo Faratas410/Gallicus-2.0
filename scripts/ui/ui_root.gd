@@ -281,6 +281,15 @@ const _ERA2_THEME_IDS: Array[StringName] = [
 const _ERA3_THEME_IDS: Array[StringName] = []
 const _SILENCE_THEME_ID: StringName = &"ARENA_SILENCE"
 const _SILENCE_OVERLAY_ALPHA: float = 0.24
+const _ERA2_PANEL_MATERIAL: Material = load(
+	"res://ui/official/" + "era" + "2/materials/era" + "2_grade_noise.tres"
+) as Material
+const _ERA3_GLOBAL_MATERIAL: Material = load(
+	"res://ui/official/" + "era" + "3/materials/era" + "3_global_grade_noise.tres"
+) as Material
+const _SILENCE_OVERLAY_MATERIAL: Material = load(
+	"res://ui/official/silence/materials/silence_overlay_noise.tres"
+) as Material
 const _VISUAL_TIER_BASE: int = 0
 const _VISUAL_TIER_ERA2: int = 1
 const _VISUAL_TIER_ERA3: int = 2
@@ -1220,6 +1229,11 @@ func _set_silence_overlay_active(active: bool) -> void:
 	if silence_overlay == null:
 		return
 	silence_overlay.visible = active
+	# Apply shader-based overlay to SilenceRect if present.
+	# SilenceOverlay is a container; SilenceRect is the ColorRect child.
+	var rect := silence_overlay.get_node_or_null("SilenceRect") as CanvasItem
+	if rect != null:
+		rect.material = _SILENCE_OVERLAY_MATERIAL
 	if active:
 		silence_overlay.modulate = Color(1.0, 1.0, 1.0, _SILENCE_OVERLAY_ALPHA)
 	else:
@@ -1246,14 +1260,19 @@ func _apply_visual_tier(tier: int) -> void:
 		resolution_overlay_modulate = Color(1.0, 1.0, 1.0, 0.85)
 	if arena_theme_title_panel != null:
 		arena_theme_title_panel.modulate = arena_panel_modulate
+		arena_theme_title_panel.material = _ERA2_PANEL_MATERIAL if tier == _VISUAL_TIER_ERA2 else null
 	if arena_theme_subtitle_panel != null:
 		arena_theme_subtitle_panel.modulate = arena_panel_modulate
+		arena_theme_subtitle_panel.material = _ERA2_PANEL_MATERIAL if tier == _VISUAL_TIER_ERA2 else null
 	if game_over_panel != null:
 		game_over_panel.modulate = end_run_modulate
+		game_over_panel.material = _ERA2_PANEL_MATERIAL if tier == _VISUAL_TIER_ERA2 else null
 	if hud_root != null:
 		hud_root.modulate = hud_modulate
+		hud_root.material = _ERA3_GLOBAL_MATERIAL if tier == _VISUAL_TIER_ERA3 else null
 	if modals_root != null:
 		modals_root.modulate = ui_root_modulate
+		modals_root.material = _ERA3_GLOBAL_MATERIAL if tier == _VISUAL_TIER_ERA3 else null
 	if torch_flicker_overlay != null:
 		torch_flicker_overlay.modulate = torch_overlay_modulate
 	if arena_resolution_panel != null:

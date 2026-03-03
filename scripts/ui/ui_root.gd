@@ -275,17 +275,17 @@ const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_RESOLUTION",
 	"UI_RunRoot/Phase_END_RUN",
 ]
-const _VISUAL_TIER1_THEME_IDS: Array[StringName] = [
+const _ERA2_THEME_IDS: Array[StringName] = [
 	&"ARENA_BLOOD",
 ]
-const _VISUAL_TIER2_THEME_IDS: Array[StringName] = []
+const _ERA3_THEME_IDS: Array[StringName] = []
 const _SILENCE_THEME_ID: StringName = &"ARENA_SILENCE"
 const _SILENCE_OVERLAY_ALPHA: float = 0.24
-const _VISUAL_TIER_DEFAULT: int = 0
-const _VISUAL_TIER_ALT: int = 1
-const _VISUAL_TIER_GLOBAL: int = 2
+const _VISUAL_TIER_BASE: int = 0
+const _VISUAL_TIER_ERA2: int = 1
+const _VISUAL_TIER_ERA3: int = 2
 
-var _visual_tier: int = _VISUAL_TIER_DEFAULT
+var _active_visual_tier: int = _VISUAL_TIER_BASE
 var _silence_overlay_active: bool = false
 
 func _ready() -> void:
@@ -545,7 +545,7 @@ func show_phase(phase: int) -> void:
 		)
 	elif phase == RUN_PHASE_PUSH_YOUR_LUCK:
 		_reset_decision_surface(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
-	_apply_era_visual_tier(_visual_tier)
+	_apply_visual_tier(_active_visual_tier)
 	_set_silence_overlay_active(_silence_overlay_active)
 	_refresh_modal_dimmer()
 
@@ -1196,9 +1196,9 @@ func _on_special_arena_started(payload: Dictionary) -> void:
 func _on_arena_theme_changed(payload: Dictionary) -> void:
 	_arena_theme_payload = payload.duplicate(true)
 	var theme_id: StringName = _extract_theme_id(payload)
-	_visual_tier = _derive_visual_tier(theme_id)
+	_active_visual_tier = _resolve_visual_tier_from_theme(theme_id)
 	_silence_overlay_active = theme_id == _SILENCE_THEME_ID
-	_apply_era_visual_tier(_visual_tier)
+	_apply_visual_tier(_active_visual_tier)
 	_set_silence_overlay_active(_silence_overlay_active)
 	_update_arena_theme_ui()
 
@@ -1209,12 +1209,12 @@ func _extract_theme_id(payload: Dictionary) -> StringName:
 		print_debug("[UI] visual tier discriminator missing in arena theme payload")
 	return &""
 
-func _derive_visual_tier(theme_id: StringName) -> int:
-	if _VISUAL_TIER2_THEME_IDS.has(theme_id):
-		return _VISUAL_TIER_GLOBAL
-	if _VISUAL_TIER1_THEME_IDS.has(theme_id):
-		return _VISUAL_TIER_ALT
-	return _VISUAL_TIER_DEFAULT
+func _resolve_visual_tier_from_theme(theme_id: StringName) -> int:
+	if _ERA3_THEME_IDS.has(theme_id):
+		return _VISUAL_TIER_ERA3
+	if _ERA2_THEME_IDS.has(theme_id):
+		return _VISUAL_TIER_ERA2
+	return _VISUAL_TIER_BASE
 
 func _set_silence_overlay_active(active: bool) -> void:
 	if silence_overlay == null:
@@ -1225,9 +1225,9 @@ func _set_silence_overlay_active(active: bool) -> void:
 	else:
 		silence_overlay.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
-func _apply_era_visual_tier(tier: int) -> void:
-	var use_alt: bool = tier == _VISUAL_TIER_ALT
-	var use_global: bool = tier == _VISUAL_TIER_GLOBAL
+func _apply_visual_tier(tier: int) -> void:
+	var use_alt: bool = tier == _VISUAL_TIER_ERA2
+	var use_global: bool = tier == _VISUAL_TIER_ERA3
 	var arena_panel_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
 	var end_run_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
 	var hud_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)

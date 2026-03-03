@@ -281,15 +281,9 @@ const _ERA2_THEME_IDS: Array[StringName] = [
 const _ERA3_THEME_IDS: Array[StringName] = []
 const _SILENCE_THEME_ID: StringName = &"ARENA_SILENCE"
 const _SILENCE_OVERLAY_ALPHA: float = 0.24
-const _ERA2_PANEL_MATERIAL: Material = load(
-	"res://ui/official/" + "era" + "2/materials/era" + "2_grade_noise.tres"
-) as Material
-const _ERA3_GLOBAL_MATERIAL: Material = load(
-	"res://ui/official/" + "era" + "3/materials/era" + "3_global_grade_noise.tres"
-) as Material
-const _SILENCE_OVERLAY_MATERIAL: Material = load(
-	"res://ui/official/silence/materials/silence_overlay_noise.tres"
-) as Material
+const _ERA2_PANEL_MATERIAL: Material = preload("res://ui/official/era2/materials/era2_grade_noise.tres")
+const _ERA3_GLOBAL_MATERIAL: Material = preload("res://ui/official/era3/materials/era3_global_grade_noise.tres")
+const _SILENCE_OVERLAY_MATERIAL: Material = preload("res://ui/official/silence/materials/silence_overlay_noise.tres")
 const _VISUAL_TIER_BASE: int = 0
 const _VISUAL_TIER_ERA2: int = 1
 const _VISUAL_TIER_ERA3: int = 2

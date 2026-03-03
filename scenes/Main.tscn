@@ -262,6 +262,10 @@ theme_override_font_sizes/font_size = 48
 
 [node name="ContinueButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "CONTINUA"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")
 
 [node name="ContinueHintPanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 theme_override_styles/panel = ExtResource("7")
@@ -273,9 +277,17 @@ text = "Nessuna partita salvata."
 
 [node name="NewGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "NUOVA PARTITA"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")
 
 [node name="LoadGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "CARICA PARTITA"
+theme_override_styles/normal = ExtResource("8")
+theme_override_styles/hover = ExtResource("9")
+theme_override_styles/pressed = ExtResource("10")
+theme_override_styles/disabled = ExtResource("11")
 
 [node name="AchievementsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "ARCHIVIO"

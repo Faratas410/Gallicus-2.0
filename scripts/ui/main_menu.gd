@@ -23,6 +23,11 @@ const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
 @onready var credits_panel: Control = get_node("CreditsPanel") as Control
 @onready var settings_panel: Control = get_node("SettingsPanel") as Control
+@onready var title_label: Label = get_node("CenterContainer/MenuVBox/TitleLabel") as Label
+@onready var settings_title: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsTitlePanel/SettingsTitle") as Label
+@onready var brightness_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessLabelPanel/BrightnessLabel") as Label
+@onready var language_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageLabelPanel/LanguageLabel") as Label
+@onready var volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/VolumeLabelPanel/VolumeLabel") as Label
 @onready var continue_button: Button = get_node("CenterContainer/MenuVBox/ContinueButton") as Button
 @onready var continue_hint_panel: PanelContainer = get_node("CenterContainer/MenuVBox/ContinueHintPanel") as PanelContainer
 @onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintPanel/ContinueHintLabel") as Label
@@ -41,15 +46,16 @@ const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 @onready var condanna_tooltip: PanelContainer = get_node("AchievementsPanel/CondannaTooltip") as PanelContainer
 @onready var tooltip_label: RichTextLabel = get_node("AchievementsPanel/CondannaTooltip/TooltipLabel") as RichTextLabel
 @onready var credits_back_button: Button = get_node("CreditsPanel/CreditsCenter/CreditsVBox/CreditsBackButton") as Button
-@onready var settings_back_button: Button = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsBackButton") as Button
+@onready var settings_back_button: Button = get_node("SettingsPanel/SettingsBackButton") as Button
 @onready var brightness_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessSlider") as HSlider
 @onready var brightness_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessValuePanel/BrightnessValue") as Label
 @onready var language_option: OptionButton = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageOption") as OptionButton
 @onready var language_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageValuePanel/LanguageValue") as Label
 @onready var master_volume_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeSlider") as HSlider
 @onready var master_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeValuePanel/MasterVolumeValue") as Label
-@onready var fullscreen_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/FullscreenToggle") as CheckBox
-@onready var brightness_modulate: CanvasModulate = get_node("../../BrightnessModulate") as CanvasModulate
+@onready var fullscreen_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SchermoInteroToggle") as CheckBox
+@onready var brightness_modulate: CanvasModulate = get_node_or_null("../../BrightnessModulate") as CanvasModulate
+@onready var brightness_overlay: ColorRect = get_node_or_null("../../BrightnessOverlayLayer/BrightnessOverlay") as ColorRect
 
 const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
 const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
@@ -77,6 +83,7 @@ func _ready() -> void:
 	_refresh_continue_button()
 	_setup_language_options()
 	_setup_initial_values()
+	_refresh_localized_ui()
 	_build_condanne_list()
 	continue_button.pressed.connect(_on_continue_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
@@ -92,6 +99,9 @@ func _ready() -> void:
 	language_option.item_selected.connect(_on_language_selected)
 	master_volume_slider.value_changed.connect(_on_master_volume_changed)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
+	var translation_changed_callable: Callable = Callable(self, "_refresh_localized_ui")
+	if not TranslationServer.translation_changed.is_connected(translation_changed_callable):
+		TranslationServer.translation_changed.connect(translation_changed_callable)
 	if GameEvents.has_signal("condanna_registered"):
 		var condanna_callable: Callable = Callable(self, "_on_condanna_registered")
 		if not GameEvents.condanna_registered.is_connected(condanna_callable):
@@ -399,6 +409,7 @@ func _setup_language_options() -> void:
 	language_option.set_item_metadata(1, "en")
 	language_option.select(0)
 	_update_language_label()
+	_refresh_localized_ui()
 
 func _setup_initial_values() -> void:
 	_apply_saved_settings()
@@ -431,7 +442,7 @@ func _select_language(locale: String) -> void:
 	_update_language_label()
 
 func _language_label_from_locale(locale: String) -> String:
-	return "English" if locale == "en" else "Italiano"
+	return tr("English") if locale == "en" else tr("Italiano")
 
 func _on_brightness_changed(value: float) -> void:
 	if _suppress_settings_events:
@@ -444,8 +455,15 @@ func _on_brightness_changed(value: float) -> void:
 	_emit_settings_changed()
 
 func _apply_brightness(value: float) -> void:
-	brightness_modulate.color = Color(value, value, value, 1.0)
-	brightness_value.text = "Luminosità: %.2f" % value
+	if brightness_modulate != null:
+		brightness_modulate.color = Color(1.0, 1.0, 1.0, 1.0)
+	if brightness_overlay != null:
+		var overlay_alpha: float = absf(value - 1.0)
+		var overlay_color: Color = Color(0.0, 0.0, 0.0, overlay_alpha)
+		if value > 1.0:
+			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
+		brightness_overlay.color = overlay_color
+	brightness_value.text = tr("Luminosità: %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -460,7 +478,7 @@ func _on_language_selected(index: int) -> void:
 	_emit_settings_changed()
 
 func _update_language_label() -> void:
-	language_value.text = "Lingua selezionata: %s" % selected_language
+	language_value.text = tr("Lingua selezionata: %s") % selected_language
 
 func _on_master_volume_changed(value: float) -> void:
 	if _suppress_settings_events:
@@ -474,7 +492,7 @@ func _on_master_volume_changed(value: float) -> void:
 	_emit_settings_changed()
 
 func _update_volume_label(value: float) -> void:
-	master_volume_value.text = "Volume: %d%%" % int(round(value * 100.0))
+	master_volume_value.text = tr("Volume: %d%%") % int(round(value * 100.0))
 
 func _apply_master_volume(value: float) -> void:
 	var bus_index: int = AudioServer.get_bus_index("Master")
@@ -489,7 +507,27 @@ func _apply_language(locale: String) -> void:
 	var resolved_locale: String = _resolve_available_locale(target_locale)
 	TranslationServer.set_locale(resolved_locale)
 	selected_language = _language_label_from_locale(resolved_locale)
+	_refresh_localized_ui()
+
+func _refresh_localized_ui() -> void:
+	title_label.text = tr("GALLICUS")
+	continue_button.text = tr("CONTINUA")
+	new_game_button.text = tr("NUOVA PARTITA")
+	load_game_button.text = tr("CARICA PARTITA")
+	achievements_button.text = tr("ARCHIVIO")
+	settings_button.text = tr("OPZIONI")
+	credits_button.text = tr("CREDITI")
+	settings_title.text = tr("OPZIONI")
+	brightness_label.text = tr("LUMINOSITÀ")
+	language_label.text = tr("LINGUA")
+	volume_label.text = tr("VOLUME MASTER")
+	fullscreen_toggle.text = tr("SCHERMO INTERO")
+	back_button.text = tr("TORNA AL MENU")
+	credits_back_button.text = tr("TORNA AL MENU")
+	settings_back_button.text = tr("TORNA AL MENU")
 	_update_language_label()
+	_update_volume_label(master_volume_slider.value)
+	_apply_brightness(brightness_slider.value)
 
 func _resolve_available_locale(target_locale: String) -> String:
 	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH

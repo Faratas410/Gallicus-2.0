@@ -77,6 +77,15 @@ bus = "Master"
 [node name="BrightnessModulate" type="CanvasModulate" parent="."]
 color = Color(1, 1, 1, 1)
 
+[node name="BrightnessOverlayLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="BrightnessOverlay" type="ColorRect" parent="BrightnessOverlayLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
 [node name="MainMenu" type="Control" parent="MenuLayer"]
 anchor_left = 0.0
 anchor_top = 0.0
@@ -297,7 +306,7 @@ theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
 [node name="SettingsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-text = "IMPOSTAZIONI"
+text = "OPZIONI"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
@@ -388,7 +397,7 @@ size_flags_vertical = 0
 theme_override_constants/separation = 6
 
 [node name="BackButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox"]
-text = "INDIETRO"
+text = "TORNA AL MENU"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
@@ -439,7 +448,7 @@ autowrap_mode = 2
 text = "Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)"
 
 [node name="CreditsBackButton" type="Button" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
-text = "INDIETRO"
+text = "TORNA AL MENU"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
@@ -464,7 +473,7 @@ theme_override_styles/panel = ExtResource("7")
 
 [node name="SettingsTitle" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsTitlePanel"]
 horizontal_alignment = 1
-text = "IMPOSTAZIONI"
+text = "OPZIONI"
 
 [node name="BrightnessLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 theme_override_styles/panel = ExtResource("7")
@@ -493,13 +502,6 @@ text = "LINGUA"
 
 [node name="LanguageOption" type="OptionButton" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 
-[node name="LanguagePlaceholderPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
-
-[node name="LanguagePlaceholder" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/LanguagePlaceholderPanel"]
-horizontal_alignment = 1
-text = "(Placeholder)"
-
 [node name="LanguageValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 theme_override_styles/panel = ExtResource("7")
 
@@ -526,11 +528,19 @@ theme_override_styles/panel = ExtResource("7")
 horizontal_alignment = 1
 text = "Volume: 100%"
 
-[node name="FullscreenToggle" type="CheckBox" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-text = "Fullscreen"
+[node name="SchermoInteroToggle" type="CheckBox" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+text = "SCHERMO INTERO"
 
-[node name="SettingsBackButton" type="Button" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-text = "INDIETRO"
+[node name="SettingsBackButton" type="Button" parent="MenuLayer/MainMenu/SettingsPanel"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -84.0
+offset_right = -24.0
+offset_bottom = -24.0
+text = "TORNA AL MENU"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")

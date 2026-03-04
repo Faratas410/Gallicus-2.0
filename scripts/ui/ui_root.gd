@@ -93,6 +93,228 @@ const _VISUAL_TIER_ERA3: int = 2
 var _active_visual_tier: int = _VISUAL_TIER_BASE
 var _silence_overlay_active: bool = false
 
+# Restored UI/state declarations (were dropped, causing wide "identifier not declared" parse failures).
+var _run_manager_port: RunManagerUiPort = null
+var _arena: Node = null
+var _player: Node = null
+var _phase_node_map: Dictionary = {}
+
+var _button_style_primary_normal: StyleBox = null
+var _button_style_primary_hover: StyleBox = null
+var _button_style_primary_pressed: StyleBox = null
+var _button_style_primary_disabled: StyleBox = null
+
+var _coins: int = 0
+var _glory: int = 0
+var _escalation_level: int = 0
+var _escalation_max: int = 0
+var _selected_bet_id: StringName = &""
+var _pending_confirm_bet_id: StringName = &""
+var _current_bet_offer: Dictionary = {}
+var _require_bet_confirm: bool = false
+var _ending_mode_active: bool = false
+var _current_modal: Control = null
+var _is_signing: bool = false
+
+var _pending_bets: Array = []
+var _bets_by_id: Dictionary = {}
+var _bet_buttons: Array = []
+var _bet_select_buttons_by_id: Dictionary = {}
+var _bet_signature_buttons_by_id: Dictionary = {}
+var _pyl_locked_buttons: Array = []
+var _sign_feedback_buttons: Array = []
+var _sign_feedback_panel: Control = null
+
+var _pyl_locked: bool = false
+var _fast_countdown_active: bool = false
+var _has_seen_controls: bool = false
+var _controls_first_run_active: bool = true
+var _sentence_banner_sequence_id: int = 0
+
+var _debug_seed: int = 0
+var _debug_arena_index: int = 0
+var _debug_escalation: int = 0
+var _debug_active_bet: String = ""
+var _debug_special_arena: String = ""
+var _debug_scars: Array = []
+var _debug_run_log: Array = []
+
+var _special_arena_payload: Dictionary = {}
+var _arena_theme_payload: Dictionary = {}
+var _last_ritual_outcome_snapshot: Dictionary = {}
+
+var _last_finale_title: String = ""
+var _last_finale_text: String = ""
+var _last_finale_scars: Array = []
+var _last_finale_ending_id: String = ""
+var _last_finale_seed: int = 0
+var _last_finale_stats: Dictionary = {}
+var _last_finale_hint: String = ""
+var _last_ending_icon_path: String = ENDING_ICON_PLACEHOLDER_PATH
+var _last_next_bet_enabled: bool = false
+var _last_register_message: String = ""
+var _last_register_final: bool = false
+var _last_register_ending_key: String = ""
+var _last_verdict_outcome: StringName = &"LOSS"
+var _last_verdict_sentence: String = ""
+var _last_verdict_charge: String = ""
+var _last_verdict_crowd_line: String = ""
+var _last_verdict_pacts: Array[String] = []
+var _last_verdict_condanne: Array[String] = []
+var _scars_detail_text: String = ""
+var _bet_confirm_default_text: String = ""
+
+var _arena_resolution_tween: Tween = null
+var _scar_popup_tween: Tween = null
+var _register_annotation_tween: Tween = null
+var _quick_cut_tween: Tween = null
+var _sign_feedback_tween: Tween = null
+var _pyl_lock_feedback_tween: Tween = null
+var _bet_modal_fade_tween: Tween = null
+var _pact_sealed_modal_fade_tween: Tween = null
+var _resolve_ritual_modal_fade_tween: Tween = null
+var _intermediate_choice_modal_fade_tween: Tween = null
+var _push_luck_modal_fade_tween: Tween = null
+var _game_over_modal_fade_tween: Tween = null
+
+var _betting_overlay_hud_visibility_cached: bool = false
+var _betting_overlay_hud_visible_before: bool = true
+var _betting_overlay_theme_visibility_cached: bool = false
+var _betting_overlay_theme_title_visible_before: bool = true
+var _betting_overlay_theme_subtitle_visible_before: bool = true
+
+var boot_fail_overlay: Control = null
+var boot_fail_body: Label = null
+var boot_fail_button: Button = null
+var controls_hint_panel: Control = null
+var hud_root: Control = null
+var modals_root: Control = null
+var modal_dimmer: ColorRect = null
+var hud_top_left_stats_box: Control = null
+var run_safe_margin: Control = null
+
+var coins_label: Label = null
+var glory_value_label: Label = null
+var bet_badge_value_label: Label = null
+var escalation_bar: Range = null
+var special_arena_label: Label = null
+var condanna_focus_label: Label = null
+var audience_context_panel: Control = null
+var audience_context_label: Label = null
+var countdown_label: Label = null
+var countdown_panel: Control = null
+
+var scars_panel: Control = null
+var scars_label: Label = null
+var scars_detail_panel: Control = null
+var scars_detail_text: RichTextLabel = null
+var scars_detail_close: Button = null
+
+var sentence_banner: Control = null
+var sentence_title_label: Label = null
+var sentence_rule_label: Label = null
+var sentence_doom_label: Label = null
+var register_blocker: Control = null
+var register_annotation_label: Label = null
+var quick_cut_blocker: Control = null
+var quick_cut_shade: ColorRect = null
+var quick_cut_label_panel: Control = null
+var quick_cut_label: Label = null
+var silence_overlay: ColorRect = null
+var torch_flicker_overlay: ColorRect = null
+var torch_flicker_player: AnimationPlayer = null
+var ending_background: Control = null
+
+var arena_theme_title_panel: Control = null
+var arena_theme_title_label: Label = null
+var arena_theme_subtitle_panel: Control = null
+var arena_theme_subtitle_label: Label = null
+var arena_resolution_panel: Control = null
+var arena_resolution_label: Label = null
+
+var bet_panel: Control = null
+var bet_modal: Control = null
+var stake_row: Control = null
+var stake_input: SpinBox = null
+var seed_input: LineEdit = null
+var seed_apply_button: Button = null
+var bet_buttons_container: Control = null
+var bet_confirm_row: Control = null
+var bet_confirm_label: Label = null
+var bet_confirm_button: Button = null
+var betting_circle: BettingCircleUI = null
+
+var pact_sealed_modal: Control = null
+var pact_sealed_panel: Control = null
+var pact_sealed_title: Label = null
+var pact_sealed_subtitle: Label = null
+var resolve_ritual_modal: Control = null
+var resolve_ritual_panel: Control = null
+var resolve_ritual_title: Label = null
+var resolve_ritual_subtitle: Label = null
+
+var intermediate_choice_modal: Control = null
+var intermediate_choice_panel: Control = null
+var intermediate_choice_label: Label = null
+var intermediate_choice_audience_label: Label = null
+var intermediate_choice_placa_button: Button = null
+var intermediate_choice_provoca_button: Button = null
+
+var push_luck_modal: Control = null
+var push_luck_panel: Control = null
+var push_luck_title: Label = null
+var push_luck_info: Label = null
+var push_luck_details: Label = null
+var push_luck_audience_label: Label = null
+var push_luck_audience_reason: Label = null
+var push_luck_cashout_button: Button = null
+var push_luck_cashout_note: Label = null
+var push_luck_condanna_button: Button = null
+var push_luck_double_button: Button = null
+var push_luck_double_note: Label = null
+
+var game_over_modal: Control = null
+var game_over_panel: Control = null
+var game_over_scroll: ScrollContainer = null
+var ending_text: RichTextLabel = null
+var verdict_header: Label = null
+var verdict_outcome: Label = null
+var verdict_icon: TextureRect = null
+var verdict_sentence_label: Label = null
+var verdict_charge_label: Label = null
+var verdict_sections: Control = null
+var verdict_pacts_text: RichTextLabel = null
+var verdict_condanne_text: RichTextLabel = null
+var verdict_crowd_section: Control = null
+var verdict_crowd_text: Label = null
+var next_bet_button: Button = null
+var restart_button: Button = null
+var quit_button: Button = null
+
+var fast_countdown_panel: Control = null
+var fast_countdown_label: Label = null
+var fast_blink_timer: Timer = null
+
+var intro_select_win_button: Button = null
+var intro_select_fast_button: Button = null
+var _lbl_intro_title: Label = null
+var _lbl_intro_subtitle: Label = null
+var _lbl_intro_body: Label = null
+var _lbl_intro_body_stake: Label = null
+var _lbl_intro_footer: Label = null
+
+var debug_tools_panel: Control = null
+var debug_seed_input: LineEdit = null
+var debug_seed_button: Button = null
+var debug_restart_button: Button = null
+var debug_skip_button: Button = null
+var debug_copy_log_button: Button = null
+var _debug_overlay: Control = null
+var _debug_label: Label = null
+
+var scar_popup_panel: Control = null
+var scar_popup: Label = null
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_run_manager_port = RunManagerUiPort.new(get_tree())
@@ -1263,6 +1485,9 @@ func _on_intermediate_choice_opened() -> void:
 	}
 	payload.choices = ["placa", "provoca"]
 	payload.show_mid_choice = true
+	apply_run_ui_payload(payload)
+
+func _apply_run_ui_payload(payload: RunUiPayload) -> void:
 	apply_run_ui_payload(payload)
 
 func apply_run_ui_payload(payload: RunUiPayload) -> void:

@@ -1,5 +1,6 @@
 extends Node
 
+@warning_ignore_start("unused_signal")
 signal run_started
 signal arena_started(arena_index: int)
 signal arena_completed(arena_index: int)
@@ -74,6 +75,7 @@ signal request_clear_run_seed
 signal request_skip_arena_resolution
 signal request_show_main_menu
 signal request_fail_run(reason: String)
+@warning_ignore_restore("unused_signal")
 
 var gameplay_enabled: bool = true
 

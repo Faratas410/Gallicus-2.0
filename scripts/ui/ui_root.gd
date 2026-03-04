@@ -110,7 +110,7 @@ var _escalation_level: int = 0
 var _escalation_max: int = 0
 var _selected_bet_id: StringName = &""
 var _pending_confirm_bet_id: StringName = &""
-var _current_bet_offer: Dictionary = {}
+var _current_bet_offer: Array[Dictionary] = []
 var _require_bet_confirm: bool = false
 var _ending_mode_active: bool = false
 var _current_modal: Control = null
@@ -137,7 +137,7 @@ var _debug_escalation: int = 0
 var _debug_active_bet: String = ""
 var _debug_special_arena: String = ""
 var _debug_scars: Array = []
-var _debug_run_log: Array = []
+var _debug_run_log: String = ""
 
 var _special_arena_payload: Dictionary = {}
 var _arena_theme_payload: Dictionary = {}
@@ -2874,7 +2874,8 @@ func _restore_betting_overlay_visual_suppression() -> void:
 	_betting_overlay_theme_visibility_cached = false
 
 func open_bet_circle(bets: Array[Dictionary]) -> void:
-	_current_bet_offer = bets.duplicate()
+	_current_bet_offer = []
+	_current_bet_offer.append_array(bets)
 	var circle: BettingCircleUI = betting_circle
 	if circle == null:
 		if modals_root == null:

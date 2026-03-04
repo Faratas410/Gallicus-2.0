@@ -6,28 +6,28 @@ const SILENT_DB: float = -60.0
 const FADE_SECONDS: float = 1.25
 const MUSIC_BUS_NAME: String = "Music"
 
-const MENU_TRACK_PATHS: PackedStringArray = PackedStringArray([
+const MENU_TRACK_PATHS: Array[String] = [
 	"res://Music/Ambient1.mp3",
 	"res://Music/CreditsOrCutscene1.mp3",
-])
-const RUN_SAFE_TRACK_PATHS: PackedStringArray = PackedStringArray([
+]
+const RUN_SAFE_TRACK_PATHS: Array[String] = [
 	"res://Music/Ambient2.mp3",
 	"res://Music/Ambient3.mp3",
-])
-const RUN_TENSE_TRACK_PATHS: PackedStringArray = PackedStringArray([
+]
+const RUN_TENSE_TRACK_PATHS: Array[String] = [
 	"res://Music/Ambient4.mp3",
 	"res://Music/Darkness.mp3",
 	"res://Music/EternalDescent.mp3",
-])
-const RUN_CLIMAX_TRACK_PATHS: PackedStringArray = PackedStringArray([
+]
+const RUN_CLIMAX_TRACK_PATHS: Array[String] = [
 	"res://Music/Infernal.mp3",
 	"res://Music/Doomfire.mp3",
 	"res://Music/Havoc.mp3",
-])
-const ENDING_TRACK_PATHS: PackedStringArray = PackedStringArray([
+]
+const ENDING_TRACK_PATHS: Array[String] = [
 	"res://Music/LamentOfTheFallen.mp3",
 	"res://Music/CreditsOrCutscene1.mp3",
-])
+]
 
 const MENU_TARGET_DB: float = -14.0
 const SAFE_TARGET_DB: float = -18.0
@@ -89,7 +89,7 @@ func _initialize_track_sets() -> void:
 	for key in _track_map.keys():
 		_track_index[key] = -1
 
-func _load_tracks(paths: PackedStringArray) -> Array[AudioStream]:
+func _load_tracks(paths: Array[String]) -> Array[AudioStream]:
 	var tracks: Array[AudioStream] = []
 	for path: String in paths:
 		if not ResourceLoader.exists(path, "AudioStream"):

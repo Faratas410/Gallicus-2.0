@@ -99,9 +99,8 @@ func _ready() -> void:
 	language_option.item_selected.connect(_on_language_selected)
 	master_volume_slider.value_changed.connect(_on_master_volume_changed)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
-	var translation_changed_callable: Callable = Callable(self, "_refresh_localized_ui")
-	if not TranslationServer.translation_changed.is_connected(translation_changed_callable):
-		TranslationServer.translation_changed.connect(translation_changed_callable)
+	# Godot 4.6: TranslationServer no longer exposes a `translation_changed` signal.
+	# UI refresh on locale updates is handled in _notification(NOTIFICATION_TRANSLATION_CHANGED).
 	if GameEvents.has_signal("condanna_registered"):
 		var condanna_callable: Callable = Callable(self, "_on_condanna_registered")
 		if not GameEvents.condanna_registered.is_connected(condanna_callable):
@@ -508,6 +507,10 @@ func _apply_language(locale: String) -> void:
 	TranslationServer.set_locale(resolved_locale)
 	selected_language = _language_label_from_locale(resolved_locale)
 	_refresh_localized_ui()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_refresh_localized_ui()
 
 func _refresh_localized_ui() -> void:
 	title_label.text = tr("GALLICUS")

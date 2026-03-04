@@ -12,10 +12,8 @@ extends Control
 # -----------------------------------------------------------------------------
 
 const CondannaDataScript = preload("res://data/condanne.gd")
-const CondannaData = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
-const RunManagerUiPort = preload("res://scripts/ui/run_manager_ui_port.gd")
 const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 

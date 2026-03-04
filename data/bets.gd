@@ -1,8 +1,6 @@
 extends RefCounted
 class_name BetsData
 
-const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
-
 const BETS: Array[Dictionary] = BetCatalog.LEVEL3_BETS
 
 static func level3_bets() -> Array[Dictionary]:

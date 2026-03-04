@@ -1,8 +1,6 @@
 extends Control
 class_name BettingCircleUI
 
-const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
-
 @onready var sigilla_button: Button = $ContractPanel/ContractVBox/SigillaButton as Button
 @onready var bet_option_1: Button = $ContractPanel/ContractVBox/BetOptions/BetOption1 as Button
 @onready var bet_option_2: Button = $ContractPanel/ContractVBox/BetOptions/BetOption2 as Button

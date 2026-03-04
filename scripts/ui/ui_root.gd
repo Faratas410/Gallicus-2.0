@@ -13,7 +13,6 @@ extends CanvasLayer
 
 
 const FAST_SELECTION_SECONDS: int = 12
-const RunPhaseContract = preload("res://scripts/contracts/run_phase_contract.gd")
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const SENTENCE_BANNER_SECONDS: float = 1.2
 const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
@@ -29,13 +28,8 @@ const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_pressed.tres"
 const BUTTON_STYLE_PRIMARY_DISABLED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_disabled.tres"
 const CondannaDataScript = preload("res://data/condanne.gd")
-const RunManagerUiPort = preload("res://scripts/ui/run_manager_ui_port.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
-const CondannaData = preload("res://data/condanne.gd")
-const RunUiPayload = preload("res://scripts/ui/run_ui_payload.gd")
-const BettingCircleUI = preload("res://scripts/ui/betting_circle_ui.gd")
-const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
 const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0

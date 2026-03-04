@@ -202,6 +202,8 @@ var _pending_confirm_bet_id: String = ""
 var _pending_bets: Array = []
 var _current_bet_offer: Array[Dictionary] = []
 var _bet_buttons: Array[Button] = []
+var _bet_select_buttons_by_id: Dictionary = {}
+var _bet_signature_buttons_by_id: Dictionary = {}
 var _coins: int = 0
 var _glory: int = 0
 var _escalation_level: int = 0
@@ -1384,8 +1386,6 @@ func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 	_refresh_modal_dimmer()
 	var bet_read_buttons: Array[Button] = []
 	bet_read_buttons.append_array(_bet_buttons)
-	if bet_confirm_button != null:
-		bet_read_buttons.append(bet_confirm_button)
 	_apply_modal_read_delay(bet_read_buttons)
 
 func _on_bet_ui_closed() -> void:
@@ -2102,50 +2102,104 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 	var add_intro_note: bool = _get_arena_index() <= 1
 	var intro_note: String = fmt_system_state("cicatrici registrate; raddoppio continuato")
 	var note_used: bool = false
+	var first_bet_id: String = ""
 	for bet_value: Dictionary in bets:
 		var bet: Dictionary = bet_value as Dictionary
 		var bet_id: String = str(bet.get("id", ""))
 		if bet_id == "":
 			continue
+		if first_bet_id == "":
+			first_bet_id = bet_id
 		var extra_note: String = ""
 		if add_intro_note and not note_used:
 			extra_note = intro_note
 			note_used = true
-		var button: Button = _create_bet_button(bet_id, bet, extra_note)
-		bet_buttons_container.add_child(button)
-		_bet_buttons.append(button)
+		var option_node: VBoxContainer = _create_bet_option(bet_id, bet, extra_note)
+		bet_buttons_container.add_child(option_node)
+	if first_bet_id != "":
+		_selected_bet_id = first_bet_id
+	_refresh_bet_selection_visuals()
 
 func _safe_load_stylebox(path: String) -> StyleBox:
 	if not ResourceLoader.exists(path, "StyleBox"):
 		return null
 	return load(path) as StyleBox
 
+func _create_bet_option(bet_id: String, bet: Dictionary, extra_note: String) -> VBoxContainer:
+	var option_box: VBoxContainer = VBoxContainer.new()
+	option_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	option_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	option_box.custom_minimum_size = Vector2(0, 280)
+	option_box.add_theme_constant_override("separation", 10)
+
+	var select_button: Button = _create_bet_button(bet_id, bet, extra_note)
+	option_box.add_child(select_button)
+	_bet_select_buttons_by_id[bet_id] = select_button
+	_bet_buttons.append(select_button)
+
+	var signature_button: Button = _create_signature_button(bet_id)
+	option_box.add_child(signature_button)
+	_bet_signature_buttons_by_id[bet_id] = signature_button
+	_bet_buttons.append(signature_button)
+
+	return option_box
+
 func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> Button:
 	var button: Button = Button.new()
-	if _button_style_primary_normal != null:
-		button.add_theme_stylebox_override("normal", _button_style_primary_normal)
-	if _button_style_primary_hover != null:
-		button.add_theme_stylebox_override("hover", _button_style_primary_hover)
-		button.add_theme_stylebox_override("focus", _button_style_primary_hover)
-	if _button_style_primary_pressed != null:
-		button.add_theme_stylebox_override("pressed", _button_style_primary_pressed)
-	if _button_style_primary_disabled != null:
-		button.add_theme_stylebox_override("disabled", _button_style_primary_disabled)
-	button.custom_minimum_size = Vector2(0, 190)
+	button.flat = true
+	button.custom_minimum_size = Vector2(0, 230)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_size_override("font_size", 20)
 	button.text = _format_bet_button_text(bet_id, bet, extra_note)
 	button.alignment = HorizontalAlignment.HORIZONTAL_ALIGNMENT_LEFT
+	button.vertical_icon_alignment = VerticalAlignment.VERTICAL_ALIGNMENT_TOP
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
 	var pressed_callable: Callable = Callable(self, "_on_bet_choice_pressed").bind(bet_id)
 	if not button.pressed.is_connected(pressed_callable):
 		button.pressed.connect(pressed_callable)
 	_wire_sign_preview(button)
-	_apply_bet_button_style(button, bet_id)
 	return button
+
+func _create_signature_button(bet_id: String) -> Button:
+	var button: Button = Button.new()
+	button.text = "FIRMA"
+	button.custom_minimum_size = Vector2(0, 44)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.focus_mode = Control.FOCUS_ALL
+	button.add_theme_font_size_override("font_size", 18)
+	button.add_theme_constant_override("h_separation", 10)
+	button.add_theme_stylebox_override("normal", _build_signature_style(Color(0.46, 0.1, 0.08, 0.88), Color(0.64, 0.2, 0.14, 1.0)))
+	button.add_theme_stylebox_override("hover", _build_signature_style(Color(0.58, 0.15, 0.1, 0.94), Color(0.82, 0.35, 0.2, 1.0)))
+	button.add_theme_stylebox_override("focus", _build_signature_style(Color(0.58, 0.15, 0.1, 0.94), Color(0.82, 0.35, 0.2, 1.0)))
+	button.add_theme_stylebox_override("pressed", _build_signature_style(Color(0.35, 0.08, 0.06, 0.95), Color(0.74, 0.26, 0.16, 1.0)))
+	button.add_theme_stylebox_override("disabled", _build_signature_style(Color(0.28, 0.18, 0.16, 0.45), Color(0.45, 0.33, 0.3, 0.8)))
+	button.add_theme_color_override("font_color", Color(0.98, 0.93, 0.88, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(1.0, 0.97, 0.93, 1.0))
+	button.add_theme_color_override("font_focus_color", Color(1.0, 0.97, 0.93, 1.0))
+	button.add_theme_color_override("font_pressed_color", Color(0.97, 0.9, 0.82, 1.0))
+	button.disabled = true
+	var pressed_callable: Callable = Callable(self, "_on_bet_signature_pressed").bind(bet_id)
+	if not button.pressed.is_connected(pressed_callable):
+		button.pressed.connect(pressed_callable)
+	_wire_sign_preview(button)
+	return button
+
+func _build_signature_style(bg: Color, border: Color) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = bg
+	style.border_color = border
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.corner_radius_top_left = 6
+	style.corner_radius_top_right = 6
+	style.corner_radius_bottom_left = 6
+	style.corner_radius_bottom_right = 6
+	return style
 
 func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String) -> String:
 	var name_text: String = str(bet.get("display_title", bet.get("name", bet_id)))
@@ -2157,7 +2211,7 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append("CONDANNA: %s" % name_text)
-		lines.append("%s" % doom_text)
+		lines.append(doom_text)
 	else:
 		lines.append("CONDANNA: %s" % name_text)
 	if archetype_label != "":
@@ -2171,6 +2225,24 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String
 	if extra_note != "":
 		lines.append("NOTA: %s" % extra_note)
 	return "\n".join(lines)
+
+func _refresh_bet_selection_visuals() -> void:
+	for bet_id_variant: Variant in _bet_select_buttons_by_id.keys():
+		var bet_id: String = str(bet_id_variant)
+		_set_bet_option_selected(bet_id, bet_id == _selected_bet_id)
+
+func _set_bet_option_selected(bet_id: String, selected: bool) -> void:
+	var select_button: Button = _bet_select_buttons_by_id.get(bet_id, null) as Button
+	if select_button != null:
+		select_button.add_theme_color_override("font_color", Color(0.98, 0.95, 0.9, 1.0) if selected else Color(0.93, 0.91, 0.87, 1.0))
+		select_button.add_theme_color_override("font_hover_color", Color(1.0, 0.97, 0.92, 1.0))
+		select_button.add_theme_color_override("font_focus_color", Color(1.0, 0.97, 0.92, 1.0))
+		select_button.add_theme_color_override("font_pressed_color", Color(0.98, 0.95, 0.9, 1.0))
+		select_button.add_theme_constant_override("line_spacing", 6)
+	var signature_button: Button = _bet_signature_buttons_by_id.get(bet_id, null) as Button
+	if signature_button != null:
+		signature_button.disabled = not selected
+		signature_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected else Color(1.0, 1.0, 1.0, 0.55)
 
 func _format_lock_note(reason: String, fallback: String) -> String:
 	var text: String = reason.strip_edges()
@@ -2206,55 +2278,14 @@ func fmt_system_state(label: String) -> String:
 
 func _clear_bet_buttons() -> void:
 	_bet_buttons.clear()
+	_bet_select_buttons_by_id.clear()
+	_bet_signature_buttons_by_id.clear()
+	_selected_bet_id = ""
 	if bet_buttons_container == null:
 		return
 	for child in bet_buttons_container.get_children():
 		if child is Node:
 			child.queue_free()
-
-func _apply_bet_button_style(button: Button, bet_id: String) -> void:
-	if button == null:
-		return
-	if bet_id == "DOUBLE_OR_DIE":
-		button.modulate = Color(1.0, 0.75, 0.75, 1.0)
-		button.add_theme_color_override("font_color", Color(0.75, 0.05, 0.05, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.9, 0.2, 0.2, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.9, 0.2, 0.2, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.35, 0.35, 1.0))
-		return
-	if bet_id == "LAST_BREATH":
-		button.modulate = Color(1.0, 0.78, 0.7, 1.0)
-		button.add_theme_color_override("font_color", Color(0.6, 0.12, 0.12, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.8, 0.2, 0.2, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.8, 0.2, 0.2, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(0.9, 0.25, 0.25, 1.0))
-		return
-	if bet_id == "BLOOD_TAX":
-		button.modulate = Color(1.0, 0.9, 0.82, 1.0)
-		button.add_theme_color_override("font_color", Color(0.55, 0.2, 0.1, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.7, 0.3, 0.15, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.7, 0.3, 0.15, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(0.85, 0.4, 0.2, 1.0))
-		return
-	if bet_id == "DEBT_CHAIN":
-		button.modulate = Color(0.95, 0.9, 1.0, 1.0)
-		button.add_theme_color_override("font_color", Color(0.3, 0.2, 0.55, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.45, 0.3, 0.7, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.45, 0.3, 0.7, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(0.55, 0.35, 0.8, 1.0))
-		return
-	if bet_id == "CROW_PLEASER":
-		button.modulate = Color(1.0, 0.98, 0.86, 1.0)
-		button.add_theme_color_override("font_color", Color(0.45, 0.35, 0.0, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.6, 0.45, 0.1, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.6, 0.45, 0.1, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(0.75, 0.55, 0.2, 1.0))
-		return
-	button.modulate = Color(1.0, 1.0, 1.0, 1.0)
-	button.remove_theme_color_override("font_color")
-	button.remove_theme_color_override("font_hover_color")
-	button.remove_theme_color_override("font_focus_color")
-	button.remove_theme_color_override("font_pressed_color")
 
 func _on_bet_failed(can_retry: bool) -> void:
 	_set_bet_modal(false)
@@ -2291,14 +2322,17 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_apply_modal_read_delay(bet_failed_read_buttons)
 
 func _on_bet_choice_pressed(bet_id: String) -> void:
-	if _require_bet_confirm:
-		_pending_confirm_bet_id = bet_id
-		if bet_confirm_label != null:
-			bet_confirm_label.text = "Selezione: %s" % _get_bet_name(bet_id)
-		if bet_confirm_row != null:
-			bet_confirm_row.visible = true
-		get_viewport().gui_release_focus()
+	if bet_id == "":
 		return
+	_selected_bet_id = bet_id
+	_refresh_bet_selection_visuals()
+	get_viewport().gui_release_focus()
+
+func _on_bet_signature_pressed(bet_id: String) -> void:
+	if bet_id == "":
+		return
+	_selected_bet_id = bet_id
+	_refresh_bet_selection_visuals()
 	_place_bet(bet_id)
 
 func _on_bet_confirm_pressed() -> void:
@@ -2311,8 +2345,6 @@ func _place_bet(bet_id: String) -> void:
 	_reset_bet_confirmation()
 	var sign_buttons: Array[Button] = []
 	sign_buttons.append_array(_bet_buttons)
-	if bet_confirm_button != null:
-		sign_buttons.append(bet_confirm_button)
 	_apply_decision_lock(_resolve_bet_sign_panel() as Control, sign_buttons, condanna_focus_label)
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(bet_id, 0)
@@ -2352,6 +2384,8 @@ func _reset_decision_surface(panel: Control, buttons: Array[Button], hint_label:
 	if panel != null:
 		var panel_color: Color = panel.modulate
 		panel.modulate = Color(1.0, 1.0, 1.0, panel_color.a)
+	if not _bet_signature_buttons_by_id.is_empty():
+		_refresh_bet_selection_visuals()
 
 func _pre_resolve_tension_boost() -> void:
 	if modals_root == null:
@@ -2364,7 +2398,6 @@ func _resolve_bet_sign_panel() -> CanvasItem:
 	if betting_circle != null and betting_circle.visible:
 		return betting_circle
 	return bet_panel
-
 func _wire_sign_preview(button: Button) -> void:
 	if button == null:
 		return
@@ -2681,9 +2714,14 @@ func _reset_bet_confirmation() -> void:
 		if _bet_confirm_default_text == "":
 			_bet_confirm_default_text = bet_confirm_button.text
 		bet_confirm_button.text = _bet_confirm_default_text
-		bet_confirm_button.disabled = false
+		bet_confirm_button.disabled = true
 	for button: Button in _bet_buttons:
 		button.disabled = false
+	if _selected_bet_id == "":
+		for bet_id_variant: Variant in _bet_select_buttons_by_id.keys():
+			_selected_bet_id = str(bet_id_variant)
+			break
+	_refresh_bet_selection_visuals()
 
 func _refresh_modal_dimmer() -> void:
 	if modal_dimmer == null:
@@ -2867,4 +2905,42 @@ func _get_enemies_alive() -> int:
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

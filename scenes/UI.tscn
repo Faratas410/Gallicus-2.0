@@ -1,4 +1,4 @@
-[gd_scene format=3]
+﻿[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
@@ -120,7 +120,7 @@ size_flags_horizontal = 3
 
 [node name="BetBadgeValue" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel"]
 autowrap_mode = 2
-text = "—"
+text = "â€”"
 
 [node name="GloryPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
 mouse_filter = 2
@@ -657,7 +657,7 @@ theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "IL PATTO È SIGILLATO."
+text = "IL PATTO Ãˆ SIGILLATO."
 
 [node name="Lbl_FIRST_REACTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 visible = false
@@ -842,6 +842,7 @@ offset_bottom = 0.0
 
 [node name="Lbl_INTRO_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Lbl_INTRO_TITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLEPanel"]
 theme_type_variation = &"TitleLabel"
@@ -849,6 +850,7 @@ text = "Scommessa Arena"
 
 [node name="Lbl_INTRO_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Lbl_INTRO_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel"]
 visible = false
@@ -857,6 +859,7 @@ text = "ARENA SPECIALE"
 
 [node name="Lbl_INTRO_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Lbl_INTRO_HINT" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINTPanel"]
 visible = false
@@ -870,6 +873,7 @@ text = "FOCUS: Leggi prima la CONDANNA."
 
 [node name="Lbl_INTRO_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Lbl_INTRO_BODY" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODYPanel"]
 text = "Seed (opzionale)"
@@ -885,6 +889,7 @@ text = "APPLICA"
 
 [node name="Lbl_INTRO_BODY_STAKEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow"]
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Lbl_INTRO_BODY_STAKE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKEPanel"]
 text = "Stake"
@@ -899,7 +904,7 @@ shortcut_keys_enabled = false
 [node name="BetButtons" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 4
 alignment = 1
-theme_override_constants/separation = 16
+theme_override_constants/separation = 24
 
 [node name="Btn_INTRO_SELECT_WIN" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
 custom_minimum_size = Vector2(0, 44)
@@ -916,11 +921,12 @@ icon = null
 text = "INCASSA E VAI"
 
 [node name="BetConfirmRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-visible = true
+visible = false
 size_flags_horizontal = 3
 
 [node name="Lbl_INTRO_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_2")
 
 [node name="Lbl_INTRO_FOOTER" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel"]
 size_flags_horizontal = 3
@@ -928,7 +934,7 @@ autowrap_mode = 2
 text = "Selezione: -"
 
 [node name="Btn_INTRO_CONFIRM" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow"]
-visible = true
+visible = false
 disabled = false
 mouse_filter = 0
 custom_minimum_size = Vector2(120, 40)
@@ -1366,3 +1372,6 @@ size_flags_horizontal = 3
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Nessuna cicatrice."
+
+
+

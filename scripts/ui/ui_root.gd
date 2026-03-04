@@ -2729,6 +2729,8 @@ func open_bet_circle(bets: Array[Dictionary]) -> void:
 			push_error("SANITY FAIL UI: BetCircle missing")
 			return
 		betting_circle = circle
+	if circle != null:
+		circle.set_offers(bets)
 	show_modal(circle)
 	circle.modulate.a = 1.0
 	circle.process_mode = Node.PROCESS_MODE_INHERIT

@@ -1,12 +1,16 @@
 extends Control
 class_name BettingCircleUI
 
-const EMPTY_PAGE_TITLE: String = "—"
+const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
+@onready var left_sign_button: TextureButton = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left as TextureButton
+@onready var right_sign_button: TextureButton = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right as TextureButton
 @onready var sigilla_button: TextureButton = $CenterContainer/BookFrame/Btn_Sigilla_Stamp as TextureButton
+@onready var left_page: Control = $CenterContainer/BookFrame/LeftPage as Control
+@onready var right_page: Control = $CenterContainer/BookFrame/RightPage as Control
 @onready var left_title_label: Label = $CenterContainer/BookFrame/LeftPage/Content/VBox/Lbl_Left_Title as Label
 @onready var left_bet_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/VBox/Rtl_Left_Bet as RichTextLabel
 @onready var left_explain_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/VBox/Rtl_Left_Explain as RichTextLabel
@@ -27,7 +31,12 @@ func _ready() -> void:
 		header_label.visible = false
 	left_select_button.pressed.connect(_on_select_left_pressed)
 	right_select_button.pressed.connect(_on_select_right_pressed)
-	sigilla_button.pressed.connect(_on_sigilla_pressed)
+	left_sign_button.pressed.connect(_on_sign_left_pressed)
+	right_sign_button.pressed.connect(_on_sign_right_pressed)
+	if sigilla_button != null:
+		sigilla_button.visible = false
+		sigilla_button.disabled = true
+		sigilla_button.pressed.connect(_on_sigilla_pressed)
 	# Legacy CI contract token: bet_option_3.visible = false
 	_refresh_from_catalog_if_empty()
 	_render_pages()
@@ -72,7 +81,10 @@ func reset() -> void:
 func _reset_interaction_lock() -> void:
 	selected_bet_id = &""
 	_submit_locked = false
-	sigilla_button.scale = Vector2.ONE
+	if left_sign_button != null:
+		left_sign_button.scale = Vector2.ONE
+	if right_sign_button != null:
+		right_sign_button.scale = Vector2.ONE
 
 func _apply_default_selection() -> void:
 	if _betting_circle_options.is_empty():
@@ -105,8 +117,13 @@ func _apply_selection_visual() -> void:
 	var right_id: StringName = _offer_id_at(1)
 	var left_selected: bool = left_id != &"" and selected_bet_id == left_id
 	var right_selected: bool = right_id != &"" and selected_bet_id == right_id
-	left_selection_outline.visible = left_selected
-	right_selection_outline.visible = right_selected
+	# Legacy yellow outlines disabled.
+	left_selection_outline.visible = false
+	right_selection_outline.visible = false
+	if left_page != null:
+		left_page.modulate = Color(1, 1, 1, 1.0 if left_selected else 0.92)
+	if right_page != null:
+		right_page.modulate = Color(1, 1, 1, 1.0 if right_selected else 0.92)
 
 func _offer_id_at(index: int) -> StringName:
 	if index < 0 or index >= _betting_circle_options.size():
@@ -114,23 +131,54 @@ func _offer_id_at(index: int) -> StringName:
 	return StringName(str(_betting_circle_options[index].get("id", "")))
 
 func _on_sigilla_pressed() -> void:
+	# Hidden legacy button fallback.
+	if _submit_locked or selected_bet_id == &"":
+		return
+	_submit_selected_offer(sigilla_button)
+
+func _on_sign_left_pressed() -> void:
+	_submit_offer_index(0, left_sign_button)
+
+func _on_sign_right_pressed() -> void:
+	_submit_offer_index(1, right_sign_button)
+
+func _submit_offer_index(index: int, button: TextureButton) -> void:
+	var offer_id: StringName = _offer_id_at(index)
+	if offer_id == &"":
+		return
+	selected_bet_id = offer_id
+	_apply_selection_visual()
+	_update_sigilla_state()
+	_submit_selected_offer(button)
+
+func _submit_selected_offer(button: TextureButton) -> void:
 	if _submit_locked or selected_bet_id == &"":
 		return
 	_submit_locked = true
-	sigilla_button.disabled = true
-	_play_stamp_feedback()
+	_update_sigilla_state()
+	_play_stamp_feedback(button)
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(String(selected_bet_id), 0)
 	close()
 
-func _play_stamp_feedback() -> void:
+func _play_stamp_feedback(button: TextureButton) -> void:
+	if button == null:
+		return
 	var tween: Tween = create_tween()
-	tween.tween_property(sigilla_button, "scale", Vector2(1.06, 1.06), 0.06)
-	tween.tween_property(sigilla_button, "scale", Vector2.ONE, 0.08)
+	tween.tween_property(button, "scale", Vector2(1.06, 1.06), 0.06)
+	tween.tween_property(button, "scale", Vector2.ONE, 0.08)
 
 func _update_sigilla_state() -> void:
-	var is_ready: bool = selected_bet_id != &"" and not _submit_locked
-	sigilla_button.disabled = not is_ready
+	var left_id: StringName = _offer_id_at(0)
+	var right_id: StringName = _offer_id_at(1)
+	var left_ready: bool = left_id != &"" and not _submit_locked and selected_bet_id == left_id
+	var right_ready: bool = right_id != &"" and not _submit_locked and selected_bet_id == right_id
+	if left_sign_button != null:
+		left_sign_button.disabled = not left_ready
+	if right_sign_button != null:
+		right_sign_button.disabled = not right_ready
+	if sigilla_button != null:
+		sigilla_button.disabled = true
 
 func _render_pages() -> void:
 	var left_offer: Dictionary = _offer_or_empty(0)

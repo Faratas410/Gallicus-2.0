@@ -65,6 +65,7 @@ const RunPhaseContract = preload("res://scripts/contracts/run_phase_contract.gd"
 const RUN_PHASE_MAIN_MENU: int = RunPhaseContract.MAIN_MENU
 const L3_EXPECTATION_MICRO_COPY: String = "Loop rituale basato su scommesse. Nessun combat action."
 
+static var _i18n_bootstrap_done: bool = false
 var _language_fallback_logged: bool = false
 var selected_language: String = "Italiano"
 var condanne_populated: bool = false
@@ -76,6 +77,7 @@ var _run_manager_port: RunManagerUiPort = null
 var _menu_next_step_hint: String = ""
 
 func _ready() -> void:
+	_ensure_i18n_loaded()
 	_arena_themes = ArenaThemes.new()
 	_run_manager_port = RunManagerUiPort.new(get_tree())
 	_show_menu()
@@ -121,6 +123,39 @@ func _ready() -> void:
 		var continue_rejected_callable: Callable = Callable(self, "_on_continue_rejected")
 		if not GameEvents.continue_rejected.is_connected(continue_rejected_callable):
 			GameEvents.continue_rejected.connect(continue_rejected_callable)
+
+func _ensure_i18n_loaded() -> void:
+	if _i18n_bootstrap_done:
+		return
+	_load_csv_translation(I18N_IT_PATH, "it")
+	_load_csv_translation(I18N_EN_PATH, "en")
+	_i18n_bootstrap_done = true
+
+func _load_csv_translation(path: String, locale: String) -> void:
+	if not FileAccess.file_exists(path):
+		push_warning("[I18N] Missing CSV translation file: %s" % path)
+		return
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_warning("[I18N] Unable to open CSV translation file: %s" % path)
+		return
+	var translation: Translation = Translation.new()
+	translation.locale = locale
+	var is_header: bool = true
+	while not file.eof_reached():
+		var row: PackedStringArray = file.get_csv_line()
+		if row.is_empty():
+			continue
+		if is_header:
+			is_header = false
+			continue
+		if row.size() < 2:
+			continue
+		var key: String = row[0].strip_edges()
+		if key.is_empty():
+			continue
+		translation.add_message(key, row[1])
+	TranslationServer.add_translation(translation)
 
 func _show_menu() -> void:
 	menu_vbox.visible = true
@@ -462,7 +497,8 @@ func _apply_brightness(value: float) -> void:
 		if value > 1.0:
 			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
 		brightness_overlay.color = overlay_color
-	brightness_value.text = tr("Luminosità: %.2f") % value
+	if brightness_value != null:
+		brightness_value.text = tr("Luminosità: %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -477,7 +513,8 @@ func _on_language_selected(index: int) -> void:
 	_emit_settings_changed()
 
 func _update_language_label() -> void:
-	language_value.text = tr("Lingua selezionata: %s") % selected_language
+	if language_value != null:
+		language_value.text = tr("Lingua selezionata: %s") % selected_language
 
 func _on_master_volume_changed(value: float) -> void:
 	if _suppress_settings_events:
@@ -491,7 +528,8 @@ func _on_master_volume_changed(value: float) -> void:
 	_emit_settings_changed()
 
 func _update_volume_label(value: float) -> void:
-	master_volume_value.text = tr("Volume: %d%%") % int(round(value * 100.0))
+	if master_volume_value != null:
+		master_volume_value.text = tr("Volume: %d%%") % int(round(value * 100.0))
 
 func _apply_master_volume(value: float) -> void:
 	var bus_index: int = AudioServer.get_bus_index("Master")
@@ -513,24 +551,41 @@ func _notification(what: int) -> void:
 		_refresh_localized_ui()
 
 func _refresh_localized_ui() -> void:
-	title_label.text = tr("GALLICUS")
-	continue_button.text = tr("CONTINUA")
-	new_game_button.text = tr("NUOVA PARTITA")
-	load_game_button.text = tr("CARICA PARTITA")
-	achievements_button.text = tr("ARCHIVIO")
-	settings_button.text = tr("OPZIONI")
-	credits_button.text = tr("CREDITI")
-	settings_title.text = tr("OPZIONI")
-	brightness_label.text = tr("LUMINOSITÀ")
-	language_label.text = tr("LINGUA")
-	volume_label.text = tr("VOLUME MASTER")
-	fullscreen_toggle.text = tr("SCHERMO INTERO")
-	back_button.text = tr("TORNA AL MENU")
-	credits_back_button.text = tr("TORNA AL MENU")
-	settings_back_button.text = tr("TORNA AL MENU")
+	if title_label != null:
+		title_label.text = tr("GALLICUS")
+	if continue_button != null:
+		continue_button.text = tr("CONTINUA")
+	if new_game_button != null:
+		new_game_button.text = tr("NUOVA PARTITA")
+	if load_game_button != null:
+		load_game_button.text = tr("CARICA PARTITA")
+	if achievements_button != null:
+		achievements_button.text = tr("ARCHIVIO")
+	if settings_button != null:
+		settings_button.text = tr("OPZIONI")
+	if credits_button != null:
+		credits_button.text = tr("CREDITI")
+	if settings_title != null:
+		settings_title.text = tr("OPZIONI")
+	if brightness_label != null:
+		brightness_label.text = tr("LUMINOSITÀ")
+	if language_label != null:
+		language_label.text = tr("LINGUA")
+	if volume_label != null:
+		volume_label.text = tr("VOLUME MASTER")
+	if fullscreen_toggle != null:
+		fullscreen_toggle.text = tr("SCHERMO INTERO")
+	if back_button != null:
+		back_button.text = tr("TORNA AL MENU")
+	if credits_back_button != null:
+		credits_back_button.text = tr("TORNA AL MENU")
+	if settings_back_button != null:
+		settings_back_button.text = tr("TORNA AL MENU")
 	_update_language_label()
-	_update_volume_label(master_volume_slider.value)
-	_apply_brightness(brightness_slider.value)
+	if master_volume_slider != null:
+		_update_volume_label(master_volume_slider.value)
+	if brightness_slider != null:
+		_apply_brightness(brightness_slider.value)
 
 func _resolve_available_locale(target_locale: String) -> String:
 	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH

@@ -25,4 +25,4 @@ interact={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":69}]}
 pause={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":16777217}]}
 
 [internationalization]
-locale/translations=PackedStringArray("res://assets/i18n/it.csv", "res://assets/i18n/en.csv")
+locale/translations=PackedStringArray()

@@ -4,8 +4,8 @@ class_name BettingCircleUI
 const EMPTY_PAGE_TITLE: String = "—"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 
-@onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Left_Select as Button
-@onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Right_Select as Button
+@onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
+@onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
 @onready var sigilla_button: TextureButton = $CenterContainer/BookFrame/Btn_Sigilla_Stamp as TextureButton
 @onready var left_title_label: Label = $CenterContainer/BookFrame/LeftPage/Content/VBox/Lbl_Left_Title as Label
 @onready var left_bet_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/VBox/Rtl_Left_Bet as RichTextLabel
@@ -13,6 +13,9 @@ const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 @onready var right_title_label: Label = $CenterContainer/BookFrame/RightPage/Content/VBox/Lbl_Right_Title as Label
 @onready var right_bet_label: RichTextLabel = $CenterContainer/BookFrame/RightPage/Content/VBox/Rtl_Right_Bet as RichTextLabel
 @onready var right_explain_label: RichTextLabel = $CenterContainer/BookFrame/RightPage/Content/VBox/Rtl_Right_Explain as RichTextLabel
+@onready var left_selection_outline: Control = $CenterContainer/BookFrame/LeftPage/LeftSelectionOutline as Control
+@onready var right_selection_outline: Control = $CenterContainer/BookFrame/RightPage/RightSelectionOutline as Control
+@onready var header_label: Label = get_node_or_null("CenterContainer/BookFrame/Title") as Label
 
 var selected_bet_id: StringName = &""
 var _betting_circle_options: Array[Dictionary] = []
@@ -20,8 +23,10 @@ var _submit_locked: bool = false
 
 func _ready() -> void:
 	visible = false
-	left_select_button.pressed.connect(_on_left_selected)
-	right_select_button.pressed.connect(_on_right_selected)
+	if header_label != null:
+		header_label.visible = false
+	left_select_button.pressed.connect(_on_select_left_pressed)
+	right_select_button.pressed.connect(_on_select_right_pressed)
 	sigilla_button.pressed.connect(_on_sigilla_pressed)
 	# Legacy CI contract token: bet_option_3.visible = false
 	_refresh_from_catalog_if_empty()
@@ -75,10 +80,10 @@ func _apply_default_selection() -> void:
 		return
 	selected_bet_id = _offer_id_at(0)
 
-func _on_left_selected() -> void:
+func _on_select_left_pressed() -> void:
 	_select_offer_index(0)
 
-func _on_right_selected() -> void:
+func _on_select_right_pressed() -> void:
 	_select_offer_index(1)
 
 func _select_offer_index(index: int) -> void:
@@ -86,18 +91,22 @@ func _select_offer_index(index: int) -> void:
 		selected_bet_id = &""
 	else:
 		selected_bet_id = StringName(str(_betting_circle_options[index].get("id", "")))
-	_update_select_visual_state()
+	_apply_selection_visual()
 	_update_sigilla_state()
 
 func _reset_button_state() -> void:
-	_update_select_visual_state()
+	left_select_button.disabled = _betting_circle_options.size() < 1
+	right_select_button.disabled = _betting_circle_options.size() < 2
+	_apply_selection_visual()
 	_update_sigilla_state()
 
-func _update_select_visual_state() -> void:
+func _apply_selection_visual() -> void:
 	var left_id: StringName = _offer_id_at(0)
 	var right_id: StringName = _offer_id_at(1)
-	left_select_button.button_pressed = left_id != &"" and selected_bet_id == left_id
-	right_select_button.button_pressed = right_id != &"" and selected_bet_id == right_id
+	var left_selected: bool = left_id != &"" and selected_bet_id == left_id
+	var right_selected: bool = right_id != &"" and selected_bet_id == right_id
+	left_selection_outline.visible = left_selected
+	right_selection_outline.visible = right_selected
 
 func _offer_id_at(index: int) -> StringName:
 	if index < 0 or index >= _betting_circle_options.size():

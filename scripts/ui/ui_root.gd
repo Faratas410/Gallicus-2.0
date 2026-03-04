@@ -75,6 +75,7 @@ const ENDING_UI_MAP: Dictionary = {
 @onready var glory_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
 @onready var escalation_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as ProgressBar
 @onready var hud_root: Control = get_node_or_null("HUD") as Control
+@onready var hud_top_left_stats_box: Control = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn") as Control
 @onready var bet_modal: Control = _req("UI_RunRoot/Phase_INTRO") as Control
 @onready var betting_circle: BettingCircleUI = get_node_or_null("UI_RunRoot/BettingCircle") as BettingCircleUI
 @onready var modals_root: Control = get_node_or_null("UI_RunRoot") as Control
@@ -261,6 +262,11 @@ var _button_style_primary_disabled: StyleBox = null
 var _pyl_locked: bool = false
 var _pyl_lock_feedback_tween: Tween = null
 var _pyl_locked_buttons: Array[Button] = []
+var _betting_overlay_hud_visible_before: bool = true
+var _betting_overlay_hud_visibility_cached: bool = false
+var _betting_overlay_theme_title_visible_before: bool = false
+var _betting_overlay_theme_subtitle_visible_before: bool = false
+var _betting_overlay_theme_visibility_cached: bool = false
 const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_INTRO",
 	"UI_RunRoot/Phase_FIRST_REACTION",
@@ -1388,6 +1394,7 @@ func _on_bet_ui_closed() -> void:
 	_set_bet_modal(false)
 	if betting_circle != null:
 		betting_circle.close()
+	_restore_betting_overlay_visual_suppression()
 	_reset_bet_confirmation()
 	if special_arena_label != null:
 		special_arena_label.visible = false
@@ -2526,6 +2533,7 @@ func hide_all_modals() -> void:
 		scars_detail_panel.visible = false
 	if betting_circle != null:
 		betting_circle.visible = false
+	_restore_betting_overlay_visual_suppression()
 	exit_ending_mode()
 	_current_modal = null
 	_refresh_modal_dimmer()
@@ -2707,6 +2715,33 @@ func _refresh_modal_dimmer() -> void:
 	modal_dimmer.visible = active
 	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
 
+func _apply_betting_overlay_visual_suppression() -> void:
+	if hud_top_left_stats_box != null:
+		_betting_overlay_hud_visible_before = hud_top_left_stats_box.visible
+		_betting_overlay_hud_visibility_cached = true
+		hud_top_left_stats_box.visible = false
+	if arena_theme_title_panel != null:
+		_betting_overlay_theme_title_visible_before = arena_theme_title_panel.visible
+	if arena_theme_subtitle_panel != null:
+		_betting_overlay_theme_subtitle_visible_before = arena_theme_subtitle_panel.visible
+	if arena_theme_title_panel != null or arena_theme_subtitle_panel != null:
+		_betting_overlay_theme_visibility_cached = true
+	if arena_theme_title_panel != null:
+		arena_theme_title_panel.visible = false
+	if arena_theme_subtitle_panel != null:
+		arena_theme_subtitle_panel.visible = false
+
+func _restore_betting_overlay_visual_suppression() -> void:
+	if hud_top_left_stats_box != null and _betting_overlay_hud_visibility_cached:
+		hud_top_left_stats_box.visible = _betting_overlay_hud_visible_before
+	_betting_overlay_hud_visibility_cached = false
+	if _betting_overlay_theme_visibility_cached:
+		if arena_theme_title_panel != null:
+			arena_theme_title_panel.visible = _betting_overlay_theme_title_visible_before
+		if arena_theme_subtitle_panel != null:
+			arena_theme_subtitle_panel.visible = _betting_overlay_theme_subtitle_visible_before
+	_betting_overlay_theme_visibility_cached = false
+
 func open_bet_circle(bets: Array[Dictionary]) -> void:
 	_current_bet_offer = bets.duplicate()
 	var circle: BettingCircleUI = betting_circle
@@ -2735,6 +2770,7 @@ func open_bet_circle(bets: Array[Dictionary]) -> void:
 	circle.modulate.a = 1.0
 	circle.process_mode = Node.PROCESS_MODE_INHERIT
 	circle.mouse_filter = Control.MOUSE_FILTER_STOP
+	_apply_betting_overlay_visual_suppression()
 	circle.open()
 	_set_bet_modal(false)
 	_refresh_modal_dimmer()

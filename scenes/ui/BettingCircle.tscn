@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://UI Official/Spellbook & Tabs/Spellbook_WithTabs.png" id="2"]
+[ext_resource type="Texture2D" path="res://UI Official/Spellbook & Tabs/Spellbook.png" id="2"]
 [ext_resource type="Texture2D" path="res://UI Official/Spellbook & Tabs/Tab01_Bottom_Normal.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="4"]
 [ext_resource type="Texture2D" path="res://UI Official/Spellbook & Tabs/PageFold_Left.png" id="5"]
@@ -57,9 +57,9 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="LeftPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.07
+anchor_left = 0.09
 anchor_top = 0.16
-anchor_right = 0.47
+anchor_right = 0.45
 anchor_bottom = 0.88
 mouse_filter = 1
 
@@ -70,19 +70,52 @@ texture = ExtResource("5")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Btn_Left_Select" type="Button" parent="CenterContainer/BookFrame/LeftPage"]
+[node name="LeftSelectionOutline" type="Control" parent="CenterContainer/BookFrame/LeftPage"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+mouse_filter = 2
+
+[node name="Top" type="ColorRect" parent="CenterContainer/BookFrame/LeftPage/LeftSelectionOutline"]
+anchor_right = 1.0
+offset_bottom = 3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Bottom" type="ColorRect" parent="CenterContainer/BookFrame/LeftPage/LeftSelectionOutline"]
+anchor_top = 1.0
+anchor_right = 1.0
+offset_top = -3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Left" type="ColorRect" parent="CenterContainer/BookFrame/LeftPage/LeftSelectionOutline"]
+anchor_bottom = 1.0
+offset_right = 3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Right" type="ColorRect" parent="CenterContainer/BookFrame/LeftPage/LeftSelectionOutline"]
+anchor_left = 1.0
+anchor_bottom = 1.0
+offset_left = -3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Btn_Select_Left" type="Button" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 flat = true
 text = ""
+modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = -24.0
+offset_left = 30.0
+offset_top = 26.0
+offset_right = -30.0
+offset_bottom = -26.0
 mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/LeftPage/Content"]
@@ -111,9 +144,9 @@ scroll_active = false
 autowrap_mode = 3
 
 [node name="RightPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.53
+anchor_left = 0.55
 anchor_top = 0.16
-anchor_right = 0.93
+anchor_right = 0.91
 anchor_bottom = 0.88
 mouse_filter = 1
 
@@ -124,19 +157,52 @@ texture = ExtResource("6")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Btn_Right_Select" type="Button" parent="CenterContainer/BookFrame/RightPage"]
+[node name="RightSelectionOutline" type="Control" parent="CenterContainer/BookFrame/RightPage"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+mouse_filter = 2
+
+[node name="Top" type="ColorRect" parent="CenterContainer/BookFrame/RightPage/RightSelectionOutline"]
+anchor_right = 1.0
+offset_bottom = 3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Bottom" type="ColorRect" parent="CenterContainer/BookFrame/RightPage/RightSelectionOutline"]
+anchor_top = 1.0
+anchor_right = 1.0
+offset_top = -3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Left" type="ColorRect" parent="CenterContainer/BookFrame/RightPage/RightSelectionOutline"]
+anchor_bottom = 1.0
+offset_right = 3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Right" type="ColorRect" parent="CenterContainer/BookFrame/RightPage/RightSelectionOutline"]
+anchor_left = 1.0
+anchor_bottom = 1.0
+offset_left = -3.0
+color = Color(0.95, 0.84, 0.45, 0.5)
+
+[node name="Btn_Select_Right" type="Button" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 flat = true
 text = ""
+modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = -24.0
+offset_left = 30.0
+offset_top = 26.0
+offset_right = -30.0
+offset_bottom = -26.0
 mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/RightPage/Content"]

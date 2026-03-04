@@ -3,6 +3,9 @@ class_name BettingCircleUI
 
 const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
+const BOOK_IDLE_BOB_SPEED: float = 1.6
+const BOOK_IDLE_BOB_AMPLITUDE: float = 3.5
+const BOOK_TITLE_PULSE_SPEED: float = 1.9
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
@@ -20,10 +23,15 @@ const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 @onready var left_selection_outline: Control = $CenterContainer/BookFrame/LeftPage/LeftSelectionOutline as Control
 @onready var right_selection_outline: Control = $CenterContainer/BookFrame/RightPage/RightSelectionOutline as Control
 @onready var header_label: Label = get_node_or_null("CenterContainer/BookFrame/Title") as Label
+@onready var book_frame: Control = $CenterContainer/BookFrame as Control
 
 var selected_bet_id: StringName = &""
 var _betting_circle_options: Array[Dictionary] = []
 var _submit_locked: bool = false
+var _idle_time: float = 0.0
+var _left_page_base_position: Vector2 = Vector2.ZERO
+var _right_page_base_position: Vector2 = Vector2.ZERO
+var _book_base_scale: Vector2 = Vector2.ONE
 
 func _ready() -> void:
 	visible = false
@@ -41,6 +49,27 @@ func _ready() -> void:
 	_refresh_from_catalog_if_empty()
 	_render_pages()
 	_reset_button_state()
+	if left_page != null:
+		_left_page_base_position = left_page.position
+	if right_page != null:
+		_right_page_base_position = right_page.position
+	if book_frame != null:
+		_book_base_scale = book_frame.scale
+
+func _process(delta: float) -> void:
+	if not visible:
+		return
+	_idle_time += delta
+	var bob: float = sin(_idle_time * BOOK_IDLE_BOB_SPEED) * BOOK_IDLE_BOB_AMPLITUDE
+	var left_selected: bool = selected_bet_id == _offer_id_at(0)
+	var right_selected: bool = selected_bet_id == _offer_id_at(1)
+	if left_page != null:
+		left_page.position = _left_page_base_position + Vector2(0.0, bob if left_selected else bob * 0.35)
+	if right_page != null:
+		right_page.position = _right_page_base_position + Vector2(0.0, bob if right_selected else bob * 0.35)
+	if header_label != null:
+		var pulse: float = 0.9 + (sin(_idle_time * BOOK_TITLE_PULSE_SPEED) * 0.1)
+		header_label.modulate = Color(pulse, pulse, pulse, 1.0)
 
 func set_offers(bets: Array[Dictionary]) -> void:
 	_betting_circle_options = []
@@ -62,11 +91,18 @@ func set_offers(bets: Array[Dictionary]) -> void:
 func open() -> void:
 	reset()
 	visible = true
+	_play_open_animation()
 	if GameEvents.has_signal("modal_opened"):
 		GameEvents.modal_opened.emit("betting_circle")
 
 func close() -> void:
 	visible = false
+	if left_page != null:
+		left_page.position = _left_page_base_position
+	if right_page != null:
+		right_page.position = _right_page_base_position
+	if book_frame != null:
+		book_frame.scale = _book_base_scale
 	_reset_interaction_lock()
 	if GameEvents.has_signal("modal_closed"):
 		GameEvents.modal_closed.emit("betting_circle")
@@ -77,6 +113,17 @@ func reset() -> void:
 	_apply_default_selection()
 	_render_pages()
 	_reset_button_state()
+
+func _play_open_animation() -> void:
+	if book_frame == null:
+		return
+	book_frame.scale = _book_base_scale * 0.975
+	modulate = Color(1.0, 1.0, 1.0, 0.0)
+	var tween: Tween = create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(book_frame, "scale", _book_base_scale, 0.2)
+	tween.parallel().tween_property(self, "modulate:a", 1.0, 0.2)
 
 func _reset_interaction_lock() -> void:
 	selected_bet_id = &""
@@ -256,4 +303,3 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 		if StringName(str(bet_data.get("id", ""))) == bet_id:
 			return bet_data
 	return {}
-

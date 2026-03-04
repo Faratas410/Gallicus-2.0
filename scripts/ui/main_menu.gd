@@ -1,4 +1,4 @@
-extends Control
+﻿extends Control
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -26,6 +26,7 @@ const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 @onready var brightness_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/BrightnessLabelPanel/BrightnessLabel") as Label
 @onready var language_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageLabelPanel/LanguageLabel") as Label
 @onready var volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/VolumeLabelPanel/VolumeLabel") as Label
+@onready var music_volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeLabelPanel/MusicVolumeLabel") as Label
 @onready var continue_button: Button = get_node("CenterContainer/MenuVBox/ContinueButton") as Button
 @onready var continue_hint_panel: PanelContainer = get_node("CenterContainer/MenuVBox/ContinueHintPanel") as PanelContainer
 @onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintPanel/ContinueHintLabel") as Label
@@ -51,6 +52,8 @@ const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 @onready var language_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageValuePanel/LanguageValue") as Label
 @onready var master_volume_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeSlider") as HSlider
 @onready var master_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeValuePanel/MasterVolumeValue") as Label
+@onready var music_volume_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeSlider") as HSlider
+@onready var music_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeValuePanel/MusicVolumeValue") as Label
 @onready var fullscreen_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SchermoInteroToggle") as CheckBox
 @onready var brightness_modulate: CanvasModulate = get_node_or_null("../../BrightnessModulate") as CanvasModulate
 @onready var brightness_overlay: ColorRect = get_node_or_null("../../BrightnessOverlayLayer/BrightnessOverlay") as ColorRect
@@ -59,6 +62,10 @@ const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
 const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
 const CONDANNA_UNLOCKED_ALPHA: float = 1.0
 const CONDANNA_LOCKED_ALPHA: float = 0.35
+const MENU_IDLE_BOB_AMPLITUDE: float = 2.0
+const MENU_IDLE_BOB_SPEED: float = 1.25
+const MENU_TITLE_PULSE_SPEED: float = 1.8
+const MENU_BUTTON_HOVER_SCALE: float = 1.02
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
 const RUN_PHASE_MAIN_MENU: int = RunPhaseContractScript.MAIN_MENU
 const L3_EXPECTATION_MICRO_COPY: String = "Loop rituale basato su scommesse. Nessun combat action."
@@ -73,6 +80,9 @@ var _suppress_settings_events: bool = false
 var _arena_themes: RefCounted = null
 var _run_manager_port: RunManagerUiPort = null
 var _menu_next_step_hint: String = ""
+var _menu_idle_time: float = 0.0
+var _menu_buttons: Array[Button] = []
+var _menu_vbox_base_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	_ensure_i18n_loaded()
@@ -85,6 +95,10 @@ func _ready() -> void:
 	_setup_initial_values()
 	_refresh_localized_ui()
 	_build_condanne_list()
+	_cache_menu_buttons()
+	_wire_menu_button_animations()
+	if menu_vbox != null:
+		_menu_vbox_base_position = menu_vbox.position
 	continue_button.pressed.connect(_on_continue_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	achievements_button.pressed.connect(_on_achievements_pressed)
@@ -98,8 +112,9 @@ func _ready() -> void:
 	brightness_slider.value_changed.connect(_on_brightness_changed)
 	language_option.item_selected.connect(_on_language_selected)
 	master_volume_slider.value_changed.connect(_on_master_volume_changed)
+	music_volume_slider.value_changed.connect(_on_music_volume_changed)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
-	# Godot 4.6: TranslationServer no longer exposes a `translation_changed` signal.
+		# Godot 4.6: TranslationServer no longer exposes a translation-changed signal.
 	# UI refresh on locale updates is handled in _notification(NOTIFICATION_TRANSLATION_CHANGED).
 	if GameEvents.has_signal("condanna_registered"):
 		var condanna_callable: Callable = Callable(self, "_on_condanna_registered")
@@ -179,6 +194,10 @@ func _show_achievements() -> void:
 	settings_panel.visible = false
 	if not condanne_populated:
 		_build_condanne_list()
+	_cache_menu_buttons()
+	_wire_menu_button_animations()
+	if menu_vbox != null:
+		_menu_vbox_base_position = menu_vbox.position
 	_build_museo_list()
 	_set_achievements_tab(ACHIEVEMENTS_TAB_CONDANNE)
 	_refresh_condanne_visuals()
@@ -204,7 +223,7 @@ func _build_condanne_list() -> void:
 		return
 	var condanne: Array[CondannaData] = CondannaDataScript.defaults()
 	for condanna in condanne:
-		var entry_panel: PanelContainer = _create_condanna_entry_panel("— %s" % condanna.title)
+		var entry_panel: PanelContainer = _create_condanna_entry_panel("Ã¢â‚¬â€ %s" % condanna.title)
 		var entry_label: Label = entry_panel.get_child(0) as Label
 		condanna_entries[condanna.id] = entry_label
 		_apply_condanna_style(condanna.id, entry_label)
@@ -240,21 +259,21 @@ func _build_museo_list() -> void:
 	var harsh_total: int = harsh_count if harsh_count > 0 else 15
 	_add_museo_header("PATTI DISPONIBILI (LIVELLO 3)")
 	if pact_ids.is_empty():
-		_add_museo_item("— Nessun patto disponibile.")
+		_add_museo_item("Ã¢â‚¬â€ Nessun patto disponibile.")
 	else:
 		for pact_id in pact_ids:
 			var pact_title: String = _get_pact_display_name(pact_id)
-			_add_museo_item("— %s" % pact_title)
+			_add_museo_item("Ã¢â‚¬â€ %s" % pact_title)
 	_add_museo_header("ARENE TEMATICHE")
 	if arena_themes.is_empty():
-		_add_museo_item("— Nessuna arena disponibile.")
+		_add_museo_item("Ã¢â‚¬â€ Nessuna arena disponibile.")
 	else:
 		for theme_id in arena_themes:
 			var theme_data: Dictionary = _arena_themes.get_theme(theme_id)
 			var theme_title: String = str(theme_data.get("title", ""))
 			if theme_title == "":
 				theme_title = str(theme_id)
-			_add_museo_item("— %s" % theme_title)
+			_add_museo_item("Ã¢â‚¬â€ %s" % theme_title)
 	_add_museo_header("VOCI DEL PUBBLICO")
 	_add_museo_item("Voci base: %d" % base_total)
 	var harsh_status: String = "SBLOCCATE" if harsh_unlocked else "BLOCCATE"
@@ -318,7 +337,7 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 		_apply_condanna_style(condanna_id, entry_label)
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
-	var tooltip_label_text: String = "%s\n\nCome è stata ottenuta:\n%s\n\n%s" % [
+	var tooltip_label_text: String = "%s\n\nCome ÃƒÂ¨ stata ottenuta:\n%s\n\n%s" % [
 		condanna.title,
 		condanna.condition_text,
 		condanna.lore_text
@@ -456,6 +475,9 @@ func _apply_saved_settings() -> void:
 	master_volume_slider.set_value_no_signal(saved_volume)
 	_update_volume_label(saved_volume)
 	_apply_master_volume(saved_volume)
+	var saved_music_volume: float = SaveManager.get_music_volume()
+	music_volume_slider.set_value_no_signal(saved_music_volume)
+	_update_music_volume_label(saved_music_volume)
 	var saved_language: String = SaveManager.get_language()
 	_select_language(saved_language)
 	_apply_language(saved_language)
@@ -496,7 +518,7 @@ func _apply_brightness(value: float) -> void:
 			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
 		brightness_overlay.color = overlay_color
 	if brightness_value != null:
-		brightness_value.text = tr("Luminosità: %.2f") % value
+		brightness_value.text = tr("LuminositÃƒÂ : %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -528,6 +550,21 @@ func _on_master_volume_changed(value: float) -> void:
 func _update_volume_label(value: float) -> void:
 	if master_volume_value != null:
 		master_volume_value.text = tr("Volume: %d%%") % int(round(value * 100.0))
+
+
+func _on_music_volume_changed(value: float) -> void:
+	if _suppress_settings_events:
+		return
+	SaveManager.set_music_volume(value)
+	var applied_value: float = SaveManager.get_music_volume()
+	if not is_equal_approx(applied_value, value):
+		music_volume_slider.set_value_no_signal(applied_value)
+	_update_music_volume_label(applied_value)
+	_emit_settings_changed()
+
+func _update_music_volume_label(value: float) -> void:
+	if music_volume_value != null:
+		music_volume_value.text = tr("Musica: %d%%") % int(round(value * 100.0))
 
 func _apply_master_volume(value: float) -> void:
 	var bus_index: int = AudioServer.get_bus_index("Master")
@@ -566,11 +603,13 @@ func _refresh_localized_ui() -> void:
 	if settings_title != null:
 		settings_title.text = tr("OPZIONI")
 	if brightness_label != null:
-		brightness_label.text = tr("LUMINOSITÀ")
+		brightness_label.text = tr("LUMINOSITÃƒâ‚¬")
 	if language_label != null:
 		language_label.text = tr("LINGUA")
 	if volume_label != null:
 		volume_label.text = tr("VOLUME MASTER")
+	if music_volume_label != null:
+		music_volume_label.text = tr("VOLUME MUSICA")
 	if fullscreen_toggle != null:
 		fullscreen_toggle.text = tr("SCHERMO INTERO")
 	if back_button != null:
@@ -582,6 +621,8 @@ func _refresh_localized_ui() -> void:
 	_update_language_label()
 	if master_volume_slider != null:
 		_update_volume_label(master_volume_slider.value)
+	if music_volume_slider != null:
+		_update_music_volume_label(music_volume_slider.value)
 	if brightness_slider != null:
 		_apply_brightness(brightness_slider.value)
 
@@ -607,6 +648,7 @@ func _emit_settings_changed() -> void:
 			"language": SaveManager.get_language(),
 			"brightness": SaveManager.get_brightness(),
 			"master_volume": SaveManager.get_master_volume(),
+			"music_volume": SaveManager.get_music_volume(),
 		}
 		GameEvents.settings_changed.emit(payload)
 
@@ -625,3 +667,54 @@ func _on_settings_opened() -> void:
 
 func _on_settings_closed() -> void:
 	_show_menu()
+
+func _process(delta: float) -> void:
+	_menu_idle_time += delta
+	if title_label != null:
+		var pulse: float = 0.92 + (sin(_menu_idle_time * MENU_TITLE_PULSE_SPEED) * 0.08)
+		title_label.modulate = Color(pulse, pulse, pulse, 1.0)
+	if menu_vbox != null and menu_vbox.visible:
+		var bob_y: float = sin(_menu_idle_time * MENU_IDLE_BOB_SPEED) * MENU_IDLE_BOB_AMPLITUDE
+		menu_vbox.position = _menu_vbox_base_position + Vector2(0.0, bob_y)
+
+func _cache_menu_buttons() -> void:
+	_menu_buttons = [
+		continue_button,
+		new_game_button,
+		load_game_button,
+		achievements_button,
+		settings_button,
+		credits_button,
+		condanne_tab_button,
+		museo_tab_button,
+		back_button,
+		credits_back_button,
+		settings_back_button,
+	]
+
+func _wire_menu_button_animations() -> void:
+	for button: Button in _menu_buttons:
+		if button == null:
+			continue
+		var entered_callable: Callable = Callable(self, "_on_menu_button_hover").bind(button, true)
+		if not button.mouse_entered.is_connected(entered_callable):
+			button.mouse_entered.connect(entered_callable)
+		var exited_callable: Callable = Callable(self, "_on_menu_button_hover").bind(button, false)
+		if not button.mouse_exited.is_connected(exited_callable):
+			button.mouse_exited.connect(exited_callable)
+		var focus_entered_callable: Callable = Callable(self, "_on_menu_button_hover").bind(button, true)
+		if not button.focus_entered.is_connected(focus_entered_callable):
+			button.focus_entered.connect(focus_entered_callable)
+		var focus_exited_callable: Callable = Callable(self, "_on_menu_button_hover").bind(button, false)
+		if not button.focus_exited.is_connected(focus_exited_callable):
+			button.focus_exited.connect(focus_exited_callable)
+
+func _on_menu_button_hover(button: Button, active: bool) -> void:
+	if button == null:
+		return
+	button.pivot_offset = button.size * 0.5
+	var target_scale: Vector2 = Vector2(MENU_BUTTON_HOVER_SCALE, MENU_BUTTON_HOVER_SCALE) if active else Vector2.ONE
+	var tween: Tween = create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(button, "scale", target_scale, 0.12)

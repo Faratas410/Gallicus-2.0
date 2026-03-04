@@ -19,6 +19,7 @@ var _settings: Dictionary = {}
 const DEFAULT_LANGUAGE: String = "it"
 const DEFAULT_BRIGHTNESS: float = 1.0
 const DEFAULT_MASTER_VOLUME: float = 0.8
+const DEFAULT_MUSIC_VOLUME: float = 0.75
 const BRIGHTNESS_MIN: float = 0.6
 const BRIGHTNESS_MAX: float = 1.4
 const VOLUME_MIN: float = 0.0
@@ -137,6 +138,11 @@ func get_master_volume() -> float:
 		load_profile()
 	return float(_settings.get("master_volume", DEFAULT_MASTER_VOLUME))
 
+func get_music_volume() -> float:
+	if not _profile_loaded:
+		load_profile()
+	return float(_settings.get("music_volume", DEFAULT_MUSIC_VOLUME))
+
 func set_language(value: String) -> void:
 	if not _profile_loaded:
 		load_profile()
@@ -164,6 +170,16 @@ func set_master_volume(value: float) -> void:
 	if is_equal_approx(float(_settings.get("master_volume", DEFAULT_MASTER_VOLUME)), sanitized):
 		return
 	_settings["master_volume"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func set_music_volume(value: float) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: float = _sanitize_music_volume(value)
+	if is_equal_approx(float(_settings.get("music_volume", DEFAULT_MUSIC_VOLUME)), sanitized):
+		return
+	_settings["music_volume"] = sanitized
 	_profile_dirty = true
 	save_profile()
 
@@ -241,6 +257,7 @@ func _get_default_settings() -> Dictionary:
 		"language": DEFAULT_LANGUAGE,
 		"brightness": DEFAULT_BRIGHTNESS,
 		"master_volume": DEFAULT_MASTER_VOLUME,
+		"music_volume": DEFAULT_MUSIC_VOLUME,
 	}
 
 func _sanitize_language(value: String) -> String:
@@ -253,6 +270,9 @@ func _sanitize_brightness(value: float) -> float:
 	return clamp(value, BRIGHTNESS_MIN, BRIGHTNESS_MAX)
 
 func _sanitize_master_volume(value: float) -> float:
+	return clamp(value, VOLUME_MIN, VOLUME_MAX)
+
+func _sanitize_music_volume(value: float) -> float:
 	return clamp(value, VOLUME_MIN, VOLUME_MAX)
 
 func _load_settings_from_profile(data: Dictionary) -> void:
@@ -276,6 +296,10 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 		sanitized["master_volume"] = _sanitize_master_volume(float(settings_value.get("master_volume", DEFAULT_MASTER_VOLUME)))
 	else:
 		needs_save = true
+	if settings_value.has("music_volume"):
+		sanitized["music_volume"] = _sanitize_music_volume(float(settings_value.get("music_volume", DEFAULT_MUSIC_VOLUME)))
+	else:
+		needs_save = true
 	sanitized["language"] = locale_value
 	if not needs_save:
 		if str(settings_value.get("language", "")) != str(sanitized["language"]):
@@ -283,6 +307,8 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 		if not is_equal_approx(float(settings_value.get("brightness", DEFAULT_BRIGHTNESS)), float(sanitized["brightness"])):
 			needs_save = true
 		if not is_equal_approx(float(settings_value.get("master_volume", DEFAULT_MASTER_VOLUME)), float(sanitized["master_volume"])):
+			needs_save = true
+		if not is_equal_approx(float(settings_value.get("music_volume", DEFAULT_MUSIC_VOLUME)), float(sanitized["music_volume"])):
 			needs_save = true
 	_settings = sanitized
 	if needs_save:

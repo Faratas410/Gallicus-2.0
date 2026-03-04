@@ -2440,11 +2440,24 @@ func _on_modal_fade_out_complete(panel: CanvasItem, modal: Control) -> void:
 			_current_modal = null
 	_refresh_modal_dimmer()
 
+func _play_modal_pop(panel: CanvasItem) -> void:
+	if panel == null:
+		return
+	var control: Control = panel as Control
+	if control == null:
+		return
+	control.scale = Vector2(0.985, 0.985)
+	var tween: Tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUART)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(control, "scale", Vector2.ONE, 0.16)
+
 func _set_bet_modal(active: bool) -> void:
 	if active:
 		show_modal(bet_modal)
 	_bet_modal_fade_tween = _fade_modal(bet_panel, bet_modal, active, _bet_modal_fade_tween)
 	if active:
+		_play_modal_pop(bet_panel)
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("bet")
 	else:
@@ -2458,6 +2471,7 @@ func _set_pact_sealed_modal(active: bool) -> void:
 		show_modal(pact_sealed_modal)
 	_pact_sealed_modal_fade_tween = _fade_modal(pact_sealed_panel, pact_sealed_modal, active, _pact_sealed_modal_fade_tween)
 	if active:
+		_play_modal_pop(pact_sealed_panel)
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("pact_sealed")
 	else:
@@ -2471,6 +2485,7 @@ func _set_resolve_ritual_modal(active: bool) -> void:
 		show_modal(resolve_ritual_modal)
 	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween)
 	if active:
+		_play_modal_pop(resolve_ritual_panel)
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("resolve_ritual")
 	else:
@@ -2489,6 +2504,7 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 		_intermediate_choice_modal_fade_tween
 	)
 	if active:
+		_play_modal_pop(intermediate_choice_panel)
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("intermediate_choice")
 	else:
@@ -2502,6 +2518,7 @@ func _set_push_luck_modal(active: bool) -> void:
 		show_modal(push_luck_modal)
 	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween)
 	if active:
+		_play_modal_pop(push_luck_panel)
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("push_luck")
 	else:
@@ -2515,6 +2532,7 @@ func _set_game_over_modal(active: bool) -> void:
 		show_modal(game_over_modal)
 	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween)
 	if active:
+		_play_modal_pop(game_over_panel)
 		enter_ending_mode()
 		if GameEvents.has_signal("modal_opened"):
 			GameEvents.modal_opened.emit("ending")

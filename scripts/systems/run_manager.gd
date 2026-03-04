@@ -158,45 +158,45 @@ const AUDIENCE_MOOD_COLD: StringName = &"COLD"
 const AUDIENCE_MOOD_DELIRIUM: StringName = &"DELIRIUM"
 const AUDIENCE_POOL_SAFE: Array[String] = [
 	"Guarda come trema. Vuole vivere un altro giorno.",
-	"Non Ã¨ un leone. Ãˆ un topo con un casco.",
+	"Non è un leone. È un topo con un casco.",
 	"Scommessa piccola per un cuore piccolo.",
 	"Non cerca gloria. Cerca scuse.",
-	"CosÃ¬ si sopravviveâ€¦ ma non si diventa leggenda.",
+	"Così si sopravvive… ma non si diventa leggenda.",
 ]
 const AUDIENCE_POOL_MID: Array[String] = [
-	"Non troppo audaceâ€¦ non troppo vile.",
+	"Non troppo audace… non troppo vile.",
 	"Gioca con misura. Forse troppo.",
 	"Un passo avanti, ma non abbastanza.",
 	"Vuole vincere. Non vuole rischiare tutto.",
-	"Ãˆ ambizioneâ€¦ o Ã¨ paura mascherata?",
+	"È ambizione… o è paura mascherata?",
 ]
 const AUDIENCE_POOL_HIGH: Array[String] = [
 	"Ah! Finalmente qualcuno che osa.",
-	"Sfida la sorteâ€¦ o la provoca?",
+	"Sfida la sorte… o la provoca?",
 	"Vuole tutto. Potrebbe perdere tutto.",
-	"Se cade, farÃ  rumore.",
-	"O sarÃ  leggendaâ€¦ o sarÃ  cenere.",
+	"Se cade, farà rumore.",
+	"O sarà leggenda… o sarà cenere.",
 ]
 const AUDIENCE_PHRASES: Dictionary = {
 	"FURY": [
 		"Ti vogliono a terra, non al sicuro.",
-		"Ogni tuo respiro Ã¨ un insulto.",
-		"Fischi e sputi, nessuna pietÃ .",
+		"Ogni tuo respiro è un insulto.",
+		"Fischi e sputi, nessuna pietà.",
 		"Non ti credono degno di incassare.",
 		"Vogliono vederti spezzato.",
-		"Qui non c'Ã¨ perdono per i timidi.",
-		"Il tuo sangue Ã¨ l'unico applauso.",
+		"Qui non c'è perdono per i timidi.",
+		"Il tuo sangue è l'unico applauso.",
 		"Se esiti, ti divorano.",
 		"Sei debito, non eroe.",
 		"La folla in furia pretende il tuo crollo.",
 	],
 	"COLD": [
 		"Ti osservano e aspettano l'errore.",
-		"Il silenzio pesa piÃ¹ dell'acciaio.",
+		"Il silenzio pesa più dell'acciaio.",
 		"Non applaudono, registrano.",
 		"Nessun calore, solo misura.",
-		"Ti seguono senza pietÃ  nÃ© favore.",
-		"Ogni mossa Ã¨ un conto aperto.",
+		"Ti seguono senza pietà né favore.",
+		"Ogni mossa è un conto aperto.",
 		"Nessun grido, solo occhi fissi.",
 		"Ti concedono spazio, non rispetto.",
 		"Il pubblico calcola, non parteggia.",
@@ -204,7 +204,7 @@ const AUDIENCE_PHRASES: Dictionary = {
 	],
 	"DELIRIUM": [
 		"Ti vogliono oltre il limite, senza ritorno.",
-		"Ogni colpo chiede di piÃ¹.",
+		"Ogni colpo chiede di più.",
 		"Non cercano vittoria: cercano rovina.",
 		"Ti spingono al gesto che ti spezza.",
 		"Se rallenti, ti strappano la gloria.",
@@ -235,8 +235,8 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Firma fatta. Aspettano il tuo crollo.",
 		],
 		AUDIENCE_MOOD_COLD: [
-			"Il patto Ã¨ inciso. Ti misurano.",
-			"Hai firmato. Nessuno ti dÃ  tregua.",
+			"Il patto è inciso. Ti misurano.",
+			"Hai firmato. Nessuno ti dà tregua.",
 			"La firma pesa. Il pubblico resta in giudizio.",
 			"Patto chiuso. L'arena ti osserva.",
 		],
@@ -244,7 +244,7 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Hai firmato forte. L'arena vuole vedere.",
 			"Il patto accende la folla. Spingi ora.",
 			"Firma e alza il rischio. Ti chiedono il salto.",
-			"La folla ti vuole oltre. La firma Ã¨ l'inizio.",
+			"La folla ti vuole oltre. La firma è l'inizio.",
 		],
 	},
 	AUDIENCE_CONTEXT_GESTURE_CHOSEN: {
@@ -261,7 +261,7 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Scelta fatta. Ti valutano senza voce.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
-			"Hai scelto il gesto. Ora spingono di piÃ¹.",
+			"Hai scelto il gesto. Ora spingono di più.",
 			"La folla ti segue. Vogliono il prossimo strappo.",
 			"Il gesto accende l'arena. Ti vogliono oltre.",
 			"Hai mosso la folla. Non fermarti ora.",
@@ -281,9 +281,9 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Incasso preso. Il pubblico non si muove.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
-			"Ti fermi mentre urlano. Ora Ã¨ delusione.",
+			"Ti fermi mentre urlano. Ora è delusione.",
 			"Hai spento la corsa. La folla voleva il salto.",
-			"Incassi mentre vogliono di piÃ¹. Ti giudicano.",
+			"Incassi mentre vogliono di più. Ti giudicano.",
 			"Ti sei fermato in alto. Ti lasciano cadere.",
 		],
 	},
@@ -309,20 +309,20 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 	},
 	AUDIENCE_CONTEXT_RUN_LOSS: {
 		AUDIENCE_MOOD_FURY: [
-			"CosÃ¬ finisci. La folla non ti piange.",
+			"Così finisci. La folla non ti piange.",
 			"Sei caduto. Ti volevano in ginocchio.",
-			"Ãˆ finita. Il pubblico prende il tuo nome.",
+			"È finita. Il pubblico prende il tuo nome.",
 			"Perduto. Il loro giudizio resta addosso.",
 		],
 		AUDIENCE_MOOD_COLD: [
 			"Sei crollato. Nessun suono.",
 			"Fine della corsa. Il silenzio resta.",
 			"Caduta secca. Il pubblico non reagisce.",
-			"Ãˆ finita. Solo occhi fermi.",
+			"È finita. Solo occhi fermi.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
 			"Sei caduto. Hanno avuto il sangue.",
-			"Fine violenta. La folla ha ciÃ² che voleva.",
+			"Fine violenta. La folla ha ciò che voleva.",
 			"Hai perso. L'arena resta accesa.",
 			"Caduta finale. Hanno avuto il rischio.",
 		],
@@ -345,7 +345,7 @@ const AUDIENCE_CONTEXT_PHRASES_HARSH: Dictionary = {
 			"Un gesto debole. Ora ti strappano il rispetto.",
 		],
 		AUDIENCE_MOOD_COLD: [
-			"Il gesto Ã¨ sterile. Ti tengono in debito.",
+			"Il gesto è sterile. Ti tengono in debito.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
 			"Il gesto li accende, ma chiedono il crollo.",
@@ -453,7 +453,7 @@ const REGISTER_POOL_FINAL_CORRUPTION: Array[String] = [
 	"Soglia di deviazione superata. Fascicolo chiuso.",
 	"Corruzione confermata. Archiviazione definitiva.",
 	"Indice di compromissione: critico. Sentenza emessa.",
-	"IntegritÃ  del soggetto: insufficiente. Caso concluso.",
+	"Integrità del soggetto: insufficiente. Caso concluso.",
 	"Deriva irreversibile rilevata. Il Registro conclude.",
 	"Evidenza prevalente: debito. Fascicolo definito.",
 	"Profilo compromesso. Non sono richiesti ulteriori dati.",
@@ -474,7 +474,7 @@ const REGISTER_POOL_FINAL_SCARS: Array[String] = [
 	"Cicatrici critiche registrate. Archiviazione definitiva.",
 	"Stato del soggetto: degradato. Sentenza emessa.",
 	"Accumulo irreversibile. Caso concluso.",
-	"IntegritÃ  fisica compromessa. Il Registro conclude.",
+	"Integrità fisica compromessa. Il Registro conclude.",
 	"Evidenza prevalente: consumo. Fascicolo definito.",
 	"Segni sufficienti. Non sono richiesti ulteriori dati.",
 	"Profilo stabilizzato su danno. Atto finale registrato.",
@@ -663,9 +663,9 @@ const ARCH_TIME: StringName = &"TIME"
 const LEVEL3_BETS: Array[Dictionary] = BetCatalog.LEVEL3_BETS
 
 const LYING_PACT_REVEALS: Dictionary = {
-	BET_P3_LIE_MERCY: "VERITÃ€: La folla pretende spettacolo: ogni esitazione si paga.",
-	BET_P3_LIE_DEBT: "VERITÃ€: Il debito si rinnova: ciÃ² che prendi oggi lo restituisci domani.",
-	BET_P3_LIE_APPLAUSE: "VERITÃ€: L'applauso Ã¨ una trappola: piÃ¹ ti esaltano, piÃ¹ ti consumano.",
+	BET_P3_LIE_MERCY: "VERITÀ: La folla pretende spettacolo: ogni esitazione si paga.",
+	BET_P3_LIE_DEBT: "VERITÀ: Il debito si rinnova: ciò che prendi oggi lo restituisci domani.",
+	BET_P3_LIE_APPLAUSE: "VERITÀ: L'applauso è una trappola: più ti esaltano, più ti consumano.",
 }
 
 # LEGACY NAME: "damage_mod" profiles ritual adverse pressure in L3 (non-combat).
@@ -697,7 +697,7 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_EXECUTIONER,
 		"name": "EXECUTIONER",
-		"desc": "Condanne piÃ¹ dure.",
+		"desc": "Condanne più dure.",
 		"win_mod": -0.08,
 		"damage_mod": 0.1,
 		"weight": 2,
@@ -705,7 +705,7 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_TRICKSTER,
 		"name": "TRICKSTER",
-		"desc": "VolatilitÃ  estrema.",
+		"desc": "Volatilità estrema.",
 		"win_mod": 0.0,
 		"damage_mod": 0.0,
 		"weight": 2,
@@ -3333,7 +3333,7 @@ func _build_sentence_payload(bet_id: StringName) -> Dictionary:
 	elif not doom.begins_with("SE FALLISCI:"):
 		doom = "SE FALLISCI: %s" % doom
 	if _run_state.escalation_level >= 7 and doom.findn("ESCALATION") < 0:
-		doom = "%s\nESCALATION: NON HAI PIÃ™ MARGINE." % doom
+		doom = "%s\nESCALATION: NON HAI PIÙ MARGINE." % doom
 	return _ui_payload_factory.build_sentence_payload("SENTENZA", rule, doom, bet_id)
 
 func _get_sentence_rule(bet_id: StringName) -> String:
@@ -4370,7 +4370,7 @@ func _try_apply_open_wound_scar(chain_level: int) -> void:
 		origin_text,
 		scar_def,
 		"FERITA APERTA",
-		"Il sangue non si Ã¨ mai fermato.",
+		"Il sangue non si è mai fermato.",
 		"HP massimo ridotto e cure meno efficaci."
 	)
 	_add_scar(scar)
@@ -4444,4 +4444,6 @@ func _log_runtime_state(tag: String) -> void:
 			cam_pos,
 		]
 	)
+
+
 

@@ -117,13 +117,17 @@ func _apply_selection_visual() -> void:
 	var right_id: StringName = _offer_id_at(1)
 	var left_selected: bool = left_id != &"" and selected_bet_id == left_id
 	var right_selected: bool = right_id != &"" and selected_bet_id == right_id
-	# Legacy yellow outlines disabled.
+	# Legacy yellow outlines remain disabled by design.
 	left_selection_outline.visible = false
 	right_selection_outline.visible = false
 	if left_page != null:
-		left_page.modulate = Color(1, 1, 1, 1.0 if left_selected else 0.92)
+		left_page.modulate = Color(1.0, 0.98, 0.95, 1.0) if left_selected else Color(0.87, 0.84, 0.8, 0.9)
 	if right_page != null:
-		right_page.modulate = Color(1, 1, 1, 1.0 if right_selected else 0.92)
+		right_page.modulate = Color(1.0, 0.98, 0.95, 1.0) if right_selected else Color(0.87, 0.84, 0.8, 0.9)
+	if left_sign_button != null:
+		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2.ONE
+	if right_sign_button != null:
+		right_sign_button.scale = Vector2(1.04, 1.04) if right_selected else Vector2.ONE
 
 func _offer_id_at(index: int) -> StringName:
 	if index < 0 or index >= _betting_circle_options.size():
@@ -175,8 +179,10 @@ func _update_sigilla_state() -> void:
 	var right_ready: bool = right_id != &"" and not _submit_locked and selected_bet_id == right_id
 	if left_sign_button != null:
 		left_sign_button.disabled = not left_ready
+		left_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if left_ready else Color(0.7, 0.66, 0.6, 0.6)
 	if right_sign_button != null:
 		right_sign_button.disabled = not right_ready
+		right_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if right_ready else Color(0.7, 0.66, 0.6, 0.6)
 	if sigilla_button != null:
 		sigilla_button.disabled = true
 
@@ -250,3 +256,4 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 		if StringName(str(bet_data.get("id", ""))) == bet_id:
 			return bet_data
 	return {}
+

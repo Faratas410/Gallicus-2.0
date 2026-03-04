@@ -53,222 +53,22 @@ const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 ]
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
-		"title": "FASCICOLO CHIUSO â€” COMPROMISSIONE",
+		"title": "FASCICOLO CHIUSO - CORRUZIONE",
 		"icon": "res://assets/ui/icons/icon_ending_corruption.png",
 	},
 	"ending_glory": {
-		"title": "FASCICOLO CHIUSO â€” ASCESA",
+		"title": "FASCICOLO CHIUSO - GLORIA",
 		"icon": "res://assets/ui/icons/icon_ending_glory.png",
 	},
 	"ending_scars": {
-		"title": "FASCICOLO CHIUSO â€” CONSUMO",
+		"title": "FASCICOLO CHIUSO - CICATRICI",
 		"icon": "res://assets/ui/icons/icon_ending_scars.png",
 	},
 	"ending_pattern": {
-		"title": "FASCICOLO CHIUSO â€” PATTERN",
+		"title": "FASCICOLO CHIUSO - PATTERN",
 		"icon": "res://assets/ui/icons/icon_ending_pattern.png",
 	},
 }
-
-@onready var coins_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/CoinsRow/CoinsContent/CoinsLabel") as Label
-@onready var bet_badge_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
-@onready var glory_value_label: Label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
-@onready var escalation_bar: ProgressBar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as ProgressBar
-@onready var hud_root: Control = get_node_or_null("HUD") as Control
-@onready var hud_top_left_stats_box: Control = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn") as Control
-@onready var bet_modal: Control = _req("UI_RunRoot/Phase_INTRO") as Control
-@onready var betting_circle: BettingCircleUI = get_node_or_null("UI_RunRoot/BettingCircle") as BettingCircleUI
-@onready var modals_root: Control = get_node_or_null("UI_RunRoot") as Control
-@onready var pact_sealed_modal: Control = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION") as Control
-@onready var pact_sealed_panel: Panel = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION") as Panel
-@onready var pact_sealed_title: Label = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel/Lbl_FIRST_REACTION_TITLE") as Label
-@onready var pact_sealed_subtitle: Label = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel/Lbl_FIRST_REACTION_BODY") as Label
-@onready var resolve_ritual_modal: Control = get_node_or_null("UI_RunRoot/Phase_RESOLUTION") as Control
-@onready var resolve_ritual_panel: Panel = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION") as Panel
-@onready var resolve_ritual_title: Label = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel/Lbl_RESOLUTION_TITLE") as Label
-@onready var resolve_ritual_subtitle: Label = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
-@onready var intermediate_choice_modal: Control = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE") as Control
-@onready var intermediate_choice_panel: Panel = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE") as Panel
-@onready var intermediate_choice_label: Label = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLEPanel/Lbl_MID_CHOICE_TITLE") as Label
-@onready var intermediate_choice_placa_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0") as Button
-@onready var intermediate_choice_provoca_button: Button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1") as Button
-@onready var bet_panel: Panel = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO") as Panel
-@onready var modal_dimmer: ColorRect = get_node_or_null("UI_RunRoot/ModalDimmer") as ColorRect
-@onready var boot_fail_overlay: Control = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay") as Control
-@onready var boot_fail_body: Label = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Lbl_BootFail_Body") as Label
-@onready var boot_fail_button: Button = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Btn_BootFail_BackToMenu") as Button
-@onready var run_safe_margin: MarginContainer = get_node_or_null("UI_RunRoot/SafeMargin") as MarginContainer
-@onready var _lbl_intro_title: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLEPanel/Lbl_INTRO_TITLE") as Label
-@onready var _lbl_intro_subtitle: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel/Lbl_INTRO_SUBTITLE") as Label
-@onready var _lbl_intro_body: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODYPanel/Lbl_INTRO_BODY") as Label
-@onready var _lbl_intro_body_stake: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKEPanel/Lbl_INTRO_BODY_STAKE") as Label
-@onready var _lbl_intro_footer: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
-@onready var stake_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
-@onready var stake_input: SpinBox = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
-@onready var bet_buttons_container: BoxContainer = _req("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as BoxContainer
-@onready var special_arena_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLEPanel/Lbl_INTRO_SUBTITLE") as Label
-@onready var condanna_focus_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINTPanel/Lbl_INTRO_HINT") as Label
-@onready var bet_confirm_row: Control = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow") as Control
-@onready var bet_confirm_label: Label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
-@onready var bet_confirm_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM") as Button
-@onready var intro_select_win_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN") as Button
-@onready var intro_select_fast_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST") as Button
-@onready var seed_input: LineEdit = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
-@onready var seed_apply_button: Button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED") as Button
-@onready var _debug_overlay: Control = %DebugOverlay
-@onready var _debug_label: RichTextLabel = %Lbl_DebugOverlay
-@onready var debug_tools_panel: Panel = get_node_or_null("HUD/DebugTools") as Panel
-@onready var debug_seed_input: LineEdit = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedInput") as LineEdit
-@onready var debug_seed_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/SeedRow/SeedButton") as Button
-@onready var debug_restart_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/RestartRunButton") as Button
-@onready var debug_skip_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/DebugButtons/SkipArenaButton") as Button
-@onready var debug_copy_log_button: Button = get_node_or_null("HUD/DebugTools/DebugToolsVBox/CopyLogButton") as Button
-@onready var scar_popup_panel: PanelContainer = get_node_or_null("HUD/ScarPopupPanel") as PanelContainer
-@onready var scar_popup: RichTextLabel = get_node_or_null("HUD/ScarPopupPanel/ScarPopupMargin/ScarPopupTextPanel/ScarPopup") as RichTextLabel
-@onready var arena_resolution_panel: PanelContainer = get_node_or_null("HUD/ArenaResolutionOverlayPanel") as PanelContainer
-@onready var arena_resolution_label: Label = get_node_or_null("HUD/ArenaResolutionOverlayPanel/ArenaResolutionOverlay") as Label
-@onready var audience_context_panel: PanelContainer = get_node_or_null("HUD/AudienceContextLabelPanel") as PanelContainer
-@onready var audience_context_label: Label = get_node_or_null("HUD/AudienceContextLabelPanel/AudienceContextLabel") as Label
-@onready var register_blocker: Control = get_node_or_null("HUD/RegisterAnnotationBlocker") as Control
-@onready var register_annotation_label: Label = get_node_or_null("HUD/RegisterAnnotationBlocker/RegisterAnnotationLabelPanel/RegisterAnnotationLabel") as Label
-@onready var quick_cut_blocker: Control = get_node_or_null("HUD/QuickCutBlocker") as Control
-@onready var quick_cut_shade: ColorRect = get_node_or_null("HUD/QuickCutBlocker/QuickCutShade") as ColorRect
-@onready var quick_cut_label_panel: PanelContainer = get_node_or_null("HUD/QuickCutBlocker/QuickCutLabelPanel") as PanelContainer
-@onready var quick_cut_label: Label = get_node_or_null("HUD/QuickCutBlocker/QuickCutLabelPanel/QuickCutLabel") as Label
-@onready var arena_theme_title_panel: PanelContainer = get_node_or_null("HUD/ArenaThemeTitleLabelPanel") as PanelContainer
-@onready var arena_theme_title_label: Label = get_node_or_null("HUD/ArenaThemeTitleLabelPanel/ArenaThemeTitleLabel") as Label
-@onready var arena_theme_subtitle_panel: PanelContainer = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel") as PanelContainer
-@onready var arena_theme_subtitle_label: Label = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel/ArenaThemeSubtitleLabel") as Label
-@onready var sentence_banner: Control = get_node_or_null("HUD/SentenceBanner") as Control
-@onready var silence_overlay: CanvasItem = get_node_or_null("UI_RunRoot/Overlays/SilenceOverlay") as CanvasItem
-@onready var sentence_title_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitlePanel/SentenceTitle") as Label
-@onready var sentence_rule_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRulePanel/SentenceRule") as Label
-@onready var sentence_doom_label: Label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoomPanel/SentenceDoom") as Label
-@onready var game_over_modal: Control = get_node_or_null("UI_RunRoot/Phase_END_RUN") as Control
-@onready var game_over_panel: TextureRect = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN") as TextureRect
-@onready var ending_background: TextureRect = get_node_or_null("UI_RunRoot/EndingBackground") as TextureRect
-@onready var torch_flicker_overlay: TextureRect = get_node_or_null("UI_RunRoot/TorchFlickerOverlay") as TextureRect
-@onready var torch_flicker_player: AnimationPlayer = get_node_or_null("UI_RunRoot/TorchFlickerPlayer") as AnimationPlayer
-@onready var push_luck_modal: Control = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK") as Control
-@onready var push_luck_panel: Panel = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK") as Panel
-@onready var push_luck_title: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel/Lbl_PUSH_YOUR_LUCK_TITLE") as Label
-@onready var push_luck_info: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel/Lbl_PUSH_YOUR_LUCK_BODY") as Label
-@onready var push_luck_audience_label: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel/Lbl_PUSH_YOUR_LUCK_SUBTITLE") as Label
-@onready var push_luck_audience_reason: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINTPanel/Lbl_PUSH_YOUR_LUCK_HINT") as Label
-@onready var push_luck_details: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTERPanel/Lbl_PUSH_YOUR_LUCK_FOOTER") as Label
-@onready var push_luck_cashout_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Btn_PUSH_YOUR_LUCK_CASHOUT") as Button
-@onready var push_luck_cashout_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_0") as Label
-@onready var push_luck_condanna_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA") as Button
-@onready var push_luck_condanna_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_1") as Label
-@onready var push_luck_double_button: Button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE") as Button
-@onready var push_luck_double_note: Label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
-@onready var verdict_header: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE") as Label
-@onready var verdict_icon: TextureRect = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndingIcon") as TextureRect
-@onready var verdict_outcome: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel/Lbl_END_RUN_SUBTITLE") as Label
-@onready var verdict_sentence_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODY") as Label
-@onready var verdict_charge_label: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel/Lbl_END_RUN_HINT") as Label
-@onready var verdict_sections: VBoxContainer = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS") as VBoxContainer
-@onready var verdict_pacts_text: RichTextLabel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
-@onready var verdict_condanne_text: RichTextLabel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel/Lbl_END_RUN_CONDANNE_BODY") as RichTextLabel
-@onready var verdict_crowd_section: VBoxContainer = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD") as VBoxContainer
-@onready var verdict_crowd_text: Label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel/Lbl_END_RUN_CROWD_BODY") as Label
-@onready var game_over_scroll: ScrollContainer = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL") as ScrollContainer
-@onready var ending_text: RichTextLabel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER") as RichTextLabel
-@onready var restart_button: Button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART") as Button
-@onready var next_bet_button: Button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_NEXT_BET") as Button
-@onready var quit_button: Button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT") as Button
-@onready var controls_hint_panel: Panel = get_node_or_null("HUD/SafeMargin/TopRow/RightColumn/ControlsHintPanel") as Panel
-@onready var scars_panel: Panel = get_node_or_null("HUD/ScarsPanel") as Panel
-@onready var scars_label: Label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
-@onready var countdown_panel: PanelContainer = get_node_or_null("UI_RunRoot/CountdownLabelPanel") as PanelContainer
-@onready var countdown_label: Label = get_node_or_null("UI_RunRoot/CountdownLabelPanel/CountdownLabel") as Label
-@onready var fast_countdown_panel: PanelContainer = get_node_or_null("UI_RunRoot/FastCountdownLabelPanel") as PanelContainer
-@onready var fast_countdown_label: Label = get_node_or_null("UI_RunRoot/FastCountdownLabelPanel/FastCountdownLabel") as Label
-@onready var fast_blink_timer: Timer = get_node_or_null("UI_RunRoot/FastBlinkTimer") as Timer
-@onready var scars_detail_panel: Panel = get_node_or_null("UI_RunRoot/ScarsDetailPanel") as Panel
-@onready var scars_detail_text: Label = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel/ScarsDetailText") as Label
-@onready var scars_detail_close: Button = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
-
-
-var _bets_by_id: Dictionary = {}
-var _run_manager_port: RunManagerUiPort
-var _arena: Node
-var _player: Node = null
-var _has_seen_controls: bool = false
-var _fast_countdown_active: bool = false
-var _controls_first_run_active: bool = true
-var _selected_bet_id: String = ""
-var _pending_confirm_bet_id: String = ""
-var _pending_bets: Array = []
-var _current_bet_offer: Array[Dictionary] = []
-var _bet_buttons: Array[Button] = []
-var _bet_select_buttons_by_id: Dictionary = {}
-var _bet_signature_buttons_by_id: Dictionary = {}
-var _coins: int = 0
-var _glory: int = 0
-var _escalation_level: int = 0
-var _escalation_max: int = 0
-var _scar_popup_tween: Tween = null
-var _arena_resolution_tween: Tween = null
-var _register_annotation_tween: Tween = null
-var _quick_cut_tween: Tween = null
-var _bet_modal_fade_tween: Tween = null
-var _pact_sealed_modal_fade_tween: Tween = null
-var _resolve_ritual_modal_fade_tween: Tween = null
-var _intermediate_choice_modal_fade_tween: Tween = null
-var _push_luck_modal_fade_tween: Tween = null
-var _game_over_modal_fade_tween: Tween = null
-var _current_modal: Control = null
-var _last_finale_title: String = "RUN FAILED"
-var _last_finale_text: String = ""
-var _last_finale_scars: Array = []
-var _last_finale_ending_id: String = ""
-var _last_finale_seed: int = 0
-var _last_finale_stats: Dictionary = {}
-var _last_register_message: String = ""
-var _last_register_final: bool = false
-var _last_register_ending_key: String = ""
-var _last_ending_icon_path: String = ""
-var _last_next_bet_enabled: bool = false
-var _last_finale_hint: String = ""
-var _last_verdict_pacts: Array[String] = []
-var _last_verdict_condanne: Array[String] = []
-var _last_verdict_crowd_line: String = ""
-var _last_verdict_outcome: StringName = &"LOSS"
-var _last_verdict_sentence: String = ""
-var _last_verdict_charge: String = ""
-var _special_arena_payload: Dictionary = {}
-var _arena_theme_payload: Dictionary = {}
-var _last_ritual_outcome_snapshot: Dictionary = {}
-var _require_bet_confirm: bool = false
-var _scars_detail_text: String = ""
-var _debug_run_log: String = ""
-var _debug_seed: int = 0
-var _debug_arena_index: int = 0
-var _debug_escalation: int = 0
-var _debug_active_bet: String = ""
-var _debug_scars: Array[String] = []
-var _debug_special_arena: String = ""
-var _ending_mode_active: bool = false
-var _sentence_banner_sequence_id: int = 0
-var _is_signing: bool = false
-var _bet_confirm_default_text: String = ""
-var _phase_node_map: Dictionary = {}
-var _sign_feedback_tween: Tween = null
-var _sign_feedback_buttons: Array[Button] = []
-var _sign_feedback_panel: CanvasItem = null
-var _button_style_primary_normal: StyleBox = null
-var _button_style_primary_hover: StyleBox = null
-var _button_style_primary_pressed: StyleBox = null
-var _button_style_primary_disabled: StyleBox = null
-var _pyl_locked: bool = false
-var _pyl_lock_feedback_tween: Tween = null
-var _pyl_locked_buttons: Array[Button] = []
-var _betting_overlay_hud_visible_before: bool = true
-var _betting_overlay_hud_visibility_cached: bool = false
-var _betting_overlay_theme_title_visible_before: bool = false
-var _betting_overlay_theme_subtitle_visible_before: bool = false
-var _betting_overlay_theme_visibility_cached: bool = false
 const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_INTRO",
 	"UI_RunRoot/Phase_FIRST_REACTION",
@@ -740,7 +540,7 @@ func _on_run_started() -> void:
 		escalation_bar.visible = true
 	_escalation_level = 0
 	_update_escalation_bar()
-	set_active_bet_text("â€”")
+	set_active_bet_text("Nessuna scommessa attiva")
 	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
@@ -1023,10 +823,10 @@ func _coerce_string_list(values: Array) -> Array[String]:
 
 func _format_verdict_list(values: Array[String]) -> String:
 	if values.is_empty():
-		return "â€”"
+		return "-"
 	var lines: PackedStringArray = []
 	for value in values:
-		lines.append("â€¢ %s" % value)
+		lines.append("- %s" % value)
 	return "\n".join(lines)
 
 func _format_verdict_pacts_list(values: Array[String]) -> String:
@@ -1332,7 +1132,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 func set_active_bet(label: String, multiplier: float) -> void:
 	if bet_badge_value_label == null:
 		return
-	bet_badge_value_label.text = "%s Â· x%.1f" % [label, multiplier]
+	bet_badge_value_label.text = "%s x%.1f" % [label, multiplier]
 
 func set_active_bet_text(text: String) -> void:
 	if bet_badge_value_label == null:
@@ -1457,7 +1257,10 @@ func _on_intermediate_choice_opened() -> void:
 	_reset_sign_feedback()
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = RunPhaseContract.INTERMEDIATE_CHOICE
-	payload.title = "SCEGLI IL GESTO"
+	payload.title = "SELEZIONE GESTO"
+	payload.meta = {
+		"audience_message": "La folla osserva la tua scelta.",
+	}
 	payload.choices = ["placa", "provoca"]
 	payload.show_mid_choice = true
 	apply_run_ui_payload(payload)
@@ -1484,18 +1287,33 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 	if intermediate_choice_panel == null:
 		return
 	_set_bet_modal(false)
+	var audience_line: String = ""
+	if payload.meta.has("audience_message"):
+		audience_line = str(payload.meta.get("audience_message", "")).strip_edges()
+	var title: String = payload.title.strip_edges()
+	if title == "":
+		title = "SELEZIONE GESTO"
+	if title.find("\n") >= 0:
+		var parts: PackedStringArray = title.split("\n")
+		if audience_line == "" and parts.size() > 0:
+			audience_line = parts[0].strip_edges()
+		title = parts[parts.size() - 1].strip_edges()
+	if intermediate_choice_audience_label != null:
+		intermediate_choice_audience_label.text = audience_line
+		intermediate_choice_audience_label.visible = audience_line != ""
 	if intermediate_choice_label != null:
-		var title: String = payload.title
 		if title == "":
-			title = "SCEGLI IL GESTO"
+			title = "SELEZIONE GESTO"
 		intermediate_choice_label.text = title
 	_set_intermediate_choice_modal(true)
 	var choice_buttons: Array[Button] = []
 	if intermediate_choice_placa_button != null:
 		intermediate_choice_placa_button.visible = payload.choices.is_empty() or payload.choices.has("placa")
+		intermediate_choice_placa_button.modulate = Color(1, 1, 1, 0.93)
 		choice_buttons.append(intermediate_choice_placa_button)
 	if intermediate_choice_provoca_button != null:
 		intermediate_choice_provoca_button.visible = payload.choices.is_empty() or payload.choices.has("provoca")
+		intermediate_choice_provoca_button.modulate = Color(1, 1, 1, 0.93)
 		choice_buttons.append(intermediate_choice_provoca_button)
 	_apply_modal_read_delay(choice_buttons)
 
@@ -1587,11 +1405,11 @@ func _refresh_scars_ui(scars: Array) -> void:
 			effect_text = str(scar.get("effect", ""))
 		var origin: String = str(scar.get("origin", ""))
 		if visual_tag != "":
-			summary_lines.append("â€¢ %s %s" % [visual_tag, scar_name])
-			detail_lines.append("â€¢ %s %s" % [visual_tag, scar_name])
+			summary_lines.append("- %s" % visual_tag)
+			detail_lines.append("- %s" % visual_tag)
 		else:
-			summary_lines.append("â€¢ %s" % scar_name)
-			detail_lines.append("â€¢ %s" % scar_name)
+			summary_lines.append("- Cicatrice")
+			detail_lines.append("- Cicatrice")
 		if short_desc != "":
 			summary_lines.append("  %s" % short_desc)
 			detail_lines.append("  %s" % short_desc)
@@ -1690,20 +1508,20 @@ func _build_ending_scars_section() -> String:
 		var scar_name: String = "Cicatrice"
 		if scar.has("name"):
 			scar_name = str(scar["name"])
-		lines.append("â€¢ %s" % scar_name)
+		lines.append("- %s" % scar_name)
 	return "\n".join(lines)
 
 func _build_ending_meta_section() -> String:
 	var lines: Array[String] = []
-	if _last_register_final:
+	if _last_register_ending_key != "":
 		lines.append("FINAL: %s" % _get_register_ending_title(_last_register_ending_key))
-	if _last_register_message != "":
-		lines.append(_last_register_message)
-	if _last_finale_seed != 0:
-		lines.append("Traccia: %d" % _last_finale_seed)
+	if _last_finale_ending_id != "":
+		lines.append("ENDING ID: %s" % _last_finale_ending_id)
+	if _last_ending_icon_path != "":
+		lines.append("ICONA: %s" % _last_ending_icon_path)
 	if lines.is_empty():
 		return ""
-	lines.insert(0, "[b]Registro â€” estratto:[/b]")
+	lines.insert(0, "[b]Registro Finale[/b]")
 	return "\n".join(lines)
 
 func _get_register_ending_title(ending_key: String) -> String:
@@ -1725,10 +1543,13 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	ui_payload.phase = RunPhaseContract.PUSH_YOUR_LUCK
 	ui_payload.show_push_your_luck = true
 	ui_payload.meta = payload
-	ui_payload.title = "PUSH YOUR LUCK â€” %s" % str(payload.get("bet_name", ""))
-	ui_payload.body = fmt_system_state("stato attivo: accettato o rinunciato")
+	ui_payload.title = "PUSH YOUR LUCK"
+	ui_payload.subtitle = str(payload.get("subtitle", "Il registro e aperto."))
+	ui_payload.body = str(payload.get("body", "Incassa ora o aumenta esposizione."))
+	ui_payload.hint = str(payload.get("hint", "La condanna chiude il ciclo senza premio."))
+	ui_payload.footer = str(payload.get("footer", "Scegli un atto. La firma e irrevocabile."))
 	ui_payload.choices = ["cashout", "condanna", "double"]
-	apply_run_ui_payload(ui_payload)
+	_apply_run_ui_payload(ui_payload)
 
 func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:
@@ -1739,7 +1560,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_title != null:
 		push_luck_title.text = "Decisione"
 	if push_luck_info != null:
-		push_luck_info.text = "Chiusura / ContinuitÃ "
+		push_luck_info.text = "Chiusura / Continuita"
 	var doom_text: String = str(meta.get("next_doom", ""))
 	var condition_text: String = str(meta.get("condition", ""))
 	var pact_text: String = str(meta.get("next_pact", ""))
@@ -1769,7 +1590,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if cashout_modifier_text != "":
 		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
 	if push_luck_details != null:
-		push_luck_details.text = " Â· ".join(lines)
+		push_luck_details.text = "\n".join(lines) if not lines.is_empty() else "Nessun dettaglio."
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""
@@ -1837,11 +1658,38 @@ func _wire_intermediate_choice_buttons() -> void:
 		if not intermediate_choice_placa_button.pressed.is_connected(placa_callable):
 			intermediate_choice_placa_button.pressed.connect(placa_callable)
 		_wire_sign_preview(intermediate_choice_placa_button)
+		_wire_mid_choice_emphasis(intermediate_choice_placa_button)
 	if intermediate_choice_provoca_button != null:
 		var provoca_callable: Callable = Callable(self, "_on_intermediate_choice_provoca_pressed")
 		if not intermediate_choice_provoca_button.pressed.is_connected(provoca_callable):
 			intermediate_choice_provoca_button.pressed.connect(provoca_callable)
 		_wire_sign_preview(intermediate_choice_provoca_button)
+		_wire_mid_choice_emphasis(intermediate_choice_provoca_button)
+
+func _wire_mid_choice_emphasis(button: Button) -> void:
+	if button == null:
+		return
+	var enter_mouse: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, true)
+	if not button.mouse_entered.is_connected(enter_mouse):
+		button.mouse_entered.connect(enter_mouse)
+	var enter_focus: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, true)
+	if not button.focus_entered.is_connected(enter_focus):
+		button.focus_entered.connect(enter_focus)
+	var exit_mouse: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, false)
+	if not button.mouse_exited.is_connected(exit_mouse):
+		button.mouse_exited.connect(exit_mouse)
+	var exit_focus: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, false)
+	if not button.focus_exited.is_connected(exit_focus):
+		button.focus_exited.connect(exit_focus)
+
+func _on_mid_choice_emphasis(button: Button, active: bool) -> void:
+	if button == null or button.disabled:
+		return
+	var target_alpha: float = 1.0 if active else 0.93
+	var tween: Tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(button, "modulate", Color(1, 1, 1, target_alpha), 0.08)
 
 func _on_intermediate_choice_placa_pressed() -> void:
 	_apply_decision_lock(
@@ -2146,7 +1994,8 @@ func _create_bet_option(bet_id: String, bet: Dictionary, extra_note: String) -> 
 
 func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> Button:
 	var button: Button = Button.new()
-	button.flat = true
+	button.flat = false
+	button.focus_mode = Control.FOCUS_NONE
 	button.custom_minimum_size = Vector2(0, 230)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -2157,6 +2006,19 @@ func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> 
 	button.vertical_icon_alignment = VerticalAlignment.VERTICAL_ALIGNMENT_TOP
 	button.disabled = false
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	var normal_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_NORMAL_PATH)
+	var hover_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_HOVER_PATH)
+	var pressed_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_PRESSED_PATH)
+	var disabled_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_DISABLED_PATH)
+	if normal_style != null:
+		button.add_theme_stylebox_override("normal", normal_style)
+	if hover_style != null:
+		button.add_theme_stylebox_override("hover", hover_style)
+		button.add_theme_stylebox_override("focus", hover_style)
+	if pressed_style != null:
+		button.add_theme_stylebox_override("pressed", pressed_style)
+	if disabled_style != null:
+		button.add_theme_stylebox_override("disabled", disabled_style)
 	var pressed_callable: Callable = Callable(self, "_on_bet_choice_pressed").bind(bet_id)
 	if not button.pressed.is_connected(pressed_callable):
 		button.pressed.connect(pressed_callable)
@@ -2166,41 +2028,30 @@ func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> 
 func _create_signature_button(bet_id: String) -> Button:
 	var button: Button = Button.new()
 	button.text = "FIRMA"
-	button.custom_minimum_size = Vector2(0, 44)
+	button.flat = false
+	button.focus_mode = Control.FOCUS_NONE
+	button.custom_minimum_size = Vector2(0, 48)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.focus_mode = Control.FOCUS_ALL
 	button.add_theme_font_size_override("font_size", 18)
-	button.add_theme_constant_override("h_separation", 10)
-	button.add_theme_stylebox_override("normal", _build_signature_style(Color(0.46, 0.1, 0.08, 0.88), Color(0.64, 0.2, 0.14, 1.0)))
-	button.add_theme_stylebox_override("hover", _build_signature_style(Color(0.58, 0.15, 0.1, 0.94), Color(0.82, 0.35, 0.2, 1.0)))
-	button.add_theme_stylebox_override("focus", _build_signature_style(Color(0.58, 0.15, 0.1, 0.94), Color(0.82, 0.35, 0.2, 1.0)))
-	button.add_theme_stylebox_override("pressed", _build_signature_style(Color(0.35, 0.08, 0.06, 0.95), Color(0.74, 0.26, 0.16, 1.0)))
-	button.add_theme_stylebox_override("disabled", _build_signature_style(Color(0.28, 0.18, 0.16, 0.45), Color(0.45, 0.33, 0.3, 0.8)))
-	button.add_theme_color_override("font_color", Color(0.98, 0.93, 0.88, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(1.0, 0.97, 0.93, 1.0))
-	button.add_theme_color_override("font_focus_color", Color(1.0, 0.97, 0.93, 1.0))
-	button.add_theme_color_override("font_pressed_color", Color(0.97, 0.9, 0.82, 1.0))
+	var normal_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_NORMAL_PATH)
+	var hover_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_HOVER_PATH)
+	var pressed_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_PRESSED_PATH)
+	var disabled_style: StyleBox = _safe_load_stylebox(BUTTON_STYLE_PRIMARY_DISABLED_PATH)
+	if normal_style != null:
+		button.add_theme_stylebox_override("normal", normal_style)
+	if hover_style != null:
+		button.add_theme_stylebox_override("hover", hover_style)
+		button.add_theme_stylebox_override("focus", hover_style)
+	if pressed_style != null:
+		button.add_theme_stylebox_override("pressed", pressed_style)
+	if disabled_style != null:
+		button.add_theme_stylebox_override("disabled", disabled_style)
 	button.disabled = true
 	var pressed_callable: Callable = Callable(self, "_on_bet_signature_pressed").bind(bet_id)
 	if not button.pressed.is_connected(pressed_callable):
 		button.pressed.connect(pressed_callable)
 	_wire_sign_preview(button)
 	return button
-
-func _build_signature_style(bg: Color, border: Color) -> StyleBoxFlat:
-	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = bg
-	style.border_color = border
-	style.border_width_left = 2
-	style.border_width_top = 2
-	style.border_width_right = 2
-	style.border_width_bottom = 2
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
-	return style
-
 func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String) -> String:
 	var name_text: String = str(bet.get("display_title", bet.get("name", bet_id)))
 	var subtitle_text: String = str(bet.get("display_subtitle", ""))

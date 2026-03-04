@@ -1,64 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="FontVariation" path="res://assets/ui/fonts/font_title_outline.tres" id="8"]
-[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_normal.tres" id="9"]
-[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_hover.tres" id="10"]
-[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_pressed.tres" id="11"]
-[ext_resource type="StyleBox" path="res://ui/official/styleboxes/sb_button_primary_disabled.tres" id="12"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player_chicken.png" id="13"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
-texture = null
-texture_margin_left = 48.0
-texture_margin_top = 48.0
-texture_margin_right = 48.0
-texture_margin_bottom = 48.0
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
-texture = null
-texture_margin_left = 48.0
-texture_margin_top = 48.0
-texture_margin_right = 48.0
-texture_margin_bottom = 48.0
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
-texture = null
-texture_margin_left = 48.0
-texture_margin_top = 48.0
-texture_margin_right = 48.0
-texture_margin_bottom = 48.0
-content_margin_left = 20.0
-content_margin_top = 10.0
-content_margin_right = 20.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
-texture = null
-texture_margin_left = 48.0
-texture_margin_top = 48.0
-texture_margin_right = 48.0
-texture_margin_bottom = 48.0
-content_margin_left = 20.0
-content_margin_top = 10.0
-content_margin_right = 20.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5"]
-texture = null
-texture_margin_left = 48.0
-texture_margin_top = 48.0
-texture_margin_right = 48.0
-texture_margin_bottom = 48.0
-content_margin_left = 10.0
-content_margin_top = 4.0
-content_margin_right = 10.0
-content_margin_bottom = 4.0
+[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_dirty_paper_9slice.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/panels/contract_clean_paper_9slice.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="4"]
 
 [node name="BettingCircle" type="Control"]
 visible = false
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
@@ -66,234 +14,167 @@ size_flags_vertical = 3
 mouse_filter = 1
 script = ExtResource("1")
 
-[node name="Background" type="TextureRect" parent="."]
-anchor_left = 0.0
-anchor_top = 0.0
+[node name="BettingArenaBackground" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-mouse_filter = 1
-texture = ExtResource("13")
+mouse_filter = 2
+texture = ExtResource("4")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ContractPanel" type="Control" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -420.0
-offset_top = -260.0
-offset_right = 420.0
-offset_bottom = 260.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
+[node name="OverlayDim" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+color = Color(0, 0, 0, 0.62)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
 mouse_filter = 1
 
-[node name="PaperBack" type="Panel" parent="ContractPanel"]
-anchor_left = 0.0
-anchor_top = 0.0
+[node name="BookFrame" type="Control" parent="CenterContainer"]
+custom_minimum_size = Vector2(1120, 640)
+mouse_filter = 1
+
+[node name="SpellbookBg" type="TextureRect" parent="CenterContainer/BookFrame"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -12.0
-offset_top = -12.0
-offset_right = 12.0
-offset_bottom = 12.0
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="PaperFront" type="Panel" parent="ContractPanel"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="ContractVBox" type="VBoxContainer" parent="ContractPanel"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 32.0
-offset_top = 28.0
-offset_right = -32.0
-offset_bottom = -28.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="TitleLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox"]
-size_flags_horizontal = 3
-
-[node name="TitleLabel" type="Label" parent="ContractPanel/ContractVBox/TitleLabelPanel"]
-theme_type_variation = &"TitleLabel"
-text = "CIRCOLO SCOMMESSE"
+[node name="Title" type="Label" parent="CenterContainer/BookFrame"]
+anchor_left = 0.3
+anchor_top = 0.05
+anchor_right = 0.7
+anchor_bottom = 0.12
+text = "Arena del Sigillo\nQui ogni firma pesa."
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="BetOptions" type="VBoxContainer" parent="ContractPanel/ContractVBox"]
-size_flags_horizontal = 3
-size_flags_vertical = 3
+[node name="LeftPage" type="Control" parent="CenterContainer/BookFrame"]
+anchor_left = 0.07
+anchor_top = 0.16
+anchor_right = 0.47
+anchor_bottom = 0.88
+mouse_filter = 1
 
-[node name="BetOption1" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-custom_minimum_size = Vector2(0, 240)
-size_flags_horizontal = 3
-toggle_mode = true
-text = ""
-clip_text = false
-autowrap_mode = 2
-
-[node name="CardVBox" type="VBoxContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1"]
+[node name="LeftPaper" type="TextureRect" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 10.0
-offset_right = -12.0
-offset_bottom = -10.0
-size_flags_vertical = 3
-
-[node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/BetNameLabelPanel"]
-theme_type_variation = &"TitleLabel"
-text = "INCASSA E VAI"
-
-[node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
-custom_minimum_size = Vector2(0, 32)
-texture = ExtResource("13")
+texture = ExtResource("3")
 expand_mode = 1
-stretch_mode = 0
+stretch_mode = 6
 
-[node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/CondannaLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "❌ CONDANNA: ..."
-
-[node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/CondizioneLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "⚠️ CONDIZIONE: ..."
-
-[node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption1/CardVBox/PattoLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "✅ PATTO: ..."
-
-[node name="BetOption2" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-custom_minimum_size = Vector2(0, 240)
-size_flags_horizontal = 3
-toggle_mode = true
-text = ""
-clip_text = false
-autowrap_mode = 2
-
-[node name="CardVBox" type="VBoxContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2"]
+[node name="Btn_Left_Select" type="Button" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 10.0
-offset_right = -12.0
-offset_bottom = -10.0
-size_flags_vertical = 3
-
-[node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/BetNameLabelPanel"]
-theme_type_variation = &"TitleLabel"
-text = "SANGUE INTEGRO"
-
-[node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
-custom_minimum_size = Vector2(0, 32)
-texture = ExtResource("13")
-expand_mode = 1
-stretch_mode = 0
-
-[node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondannaLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "❌ CONDANNA: ..."
-
-[node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/CondizioneLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "⚠️ CONDIZIONE: ..."
-
-[node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption2/CardVBox/PattoLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "✅ PATTO: ..."
-
-[node name="BetOption3" type="Button" parent="ContractPanel/ContractVBox/BetOptions"]
-custom_minimum_size = Vector2(0, 240)
-size_flags_horizontal = 3
-toggle_mode = true
+flat = true
 text = ""
-clip_text = false
-autowrap_mode = 2
 
-[node name="CardVBox" type="VBoxContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3"]
+[node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 10.0
-offset_right = -12.0
-offset_bottom = -10.0
-size_flags_vertical = 3
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+mouse_filter = 2
 
-[node name="BetNameLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/LeftPage/Content"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
 
-[node name="BetNameLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/BetNameLabelPanel"]
-theme_type_variation = &"TitleLabel"
-text = "RADDOPPI O MUORI"
+[node name="Lbl_Left_Title" type="Label" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
+text = "VIA SINISTRA"
+autowrap_mode = 3
 
-[node name="CondannaIcon" type="TextureRect" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
-custom_minimum_size = Vector2(0, 32)
-texture = ExtResource("13")
+[node name="Rtl_Left_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
+custom_minimum_size = Vector2(0, 90)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="Rtl_Left_Explain" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="RightPage" type="Control" parent="CenterContainer/BookFrame"]
+anchor_left = 0.53
+anchor_top = 0.16
+anchor_right = 0.93
+anchor_bottom = 0.88
+mouse_filter = 1
+
+[node name="RightPaper" type="TextureRect" parent="CenterContainer/BookFrame/RightPage"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("3")
 expand_mode = 1
+stretch_mode = 6
+
+[node name="Btn_Right_Select" type="Button" parent="CenterContainer/BookFrame/RightPage"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+flat = true
+text = ""
+
+[node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/RightPage"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/RightPage/Content"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Lbl_Right_Title" type="Label" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
+text = "VIA DESTRA"
+autowrap_mode = 3
+
+[node name="Rtl_Right_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
+custom_minimum_size = Vector2(0, 90)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="Rtl_Right_Explain" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="Btn_Sigilla_Stamp" type="TextureButton" parent="CenterContainer/BookFrame"]
+anchor_left = 0.4
+anchor_top = 0.88
+anchor_right = 0.6
+anchor_bottom = 0.98
+texture_normal = ExtResource("3")
+texture_pressed = ExtResource("2")
+ignore_texture_size = true
 stretch_mode = 0
 
-[node name="CondannaLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="CondannaLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondannaLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "❌ CONDANNA: ..."
-
-[node name="CondizioneLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="CondizioneLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/CondizioneLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "⚠️ CONDIZIONE: ..."
-
-[node name="PattoLabelPanel" type="PanelContainer" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox"]
-size_flags_horizontal = 3
-
-[node name="PattoLabel" type="Label" parent="ContractPanel/ContractVBox/BetOptions/BetOption3/CardVBox/PattoLabelPanel"]
-autowrap_mode = 3
-clip_text = false
-text = "✅ PATTO: ..."
-
-[node name="SigillaButton" type="Button" parent="ContractPanel/ContractVBox"]
+[node name="Lbl_Sigilla" type="Label" parent="CenterContainer/BookFrame/Btn_Sigilla_Stamp"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 text = "SIGILLA"
-disabled = true
-size_flags_horizontal = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2

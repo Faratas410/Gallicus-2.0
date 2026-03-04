@@ -1,4 +1,4 @@
-﻿class_name FlowLogger
+class_name FlowLogger
 extends RefCounted
 
 enum Level {

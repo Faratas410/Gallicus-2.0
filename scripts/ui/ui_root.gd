@@ -1,4 +1,4 @@
-extends CanvasLayer
+﻿extends CanvasLayer
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -53,19 +53,19 @@ const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 ]
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
-		"title": "FASCICOLO CHIUSO — COMPROMISSIONE",
+		"title": "FASCICOLO CHIUSO â€” COMPROMISSIONE",
 		"icon": "res://assets/ui/icons/icon_ending_corruption.png",
 	},
 	"ending_glory": {
-		"title": "FASCICOLO CHIUSO — ASCESA",
+		"title": "FASCICOLO CHIUSO â€” ASCESA",
 		"icon": "res://assets/ui/icons/icon_ending_glory.png",
 	},
 	"ending_scars": {
-		"title": "FASCICOLO CHIUSO — CONSUMO",
+		"title": "FASCICOLO CHIUSO â€” CONSUMO",
 		"icon": "res://assets/ui/icons/icon_ending_scars.png",
 	},
 	"ending_pattern": {
-		"title": "FASCICOLO CHIUSO — PATTERN",
+		"title": "FASCICOLO CHIUSO â€” PATTERN",
 		"icon": "res://assets/ui/icons/icon_ending_pattern.png",
 	},
 }
@@ -485,7 +485,7 @@ func _ready() -> void:
 		if not arena.player_spawned.is_connected(arena_player_callable):
 			arena.player_spawned.connect(arena_player_callable)
 
-	print("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, _debug_overlay != null])
+	print_debug("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, _debug_overlay != null])
 
 func _init_phase_node_map() -> void:
 	_phase_node_map = {
@@ -738,9 +738,8 @@ func _on_run_started() -> void:
 		escalation_bar.visible = true
 	_escalation_level = 0
 	_update_escalation_bar()
-	set_active_bet_text("—")
+	set_active_bet_text("â€”")
 	_set_bet_modal(false)
-	_reset_bet_confirmation()
 	_reset_bet_confirmation()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
 	# countdown_requested will drive the actual seconds during the round.
@@ -1022,10 +1021,10 @@ func _coerce_string_list(values: Array) -> Array[String]:
 
 func _format_verdict_list(values: Array[String]) -> String:
 	if values.is_empty():
-		return "—"
+		return "â€”"
 	var lines: PackedStringArray = []
 	for value in values:
-		lines.append("• %s" % value)
+		lines.append("â€¢ %s" % value)
 	return "\n".join(lines)
 
 func _format_verdict_pacts_list(values: Array[String]) -> String:
@@ -1331,7 +1330,7 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 func set_active_bet(label: String, multiplier: float) -> void:
 	if bet_badge_value_label == null:
 		return
-	bet_badge_value_label.text = "%s · x%.1f" % [label, multiplier]
+	bet_badge_value_label.text = "%s Â· x%.1f" % [label, multiplier]
 
 func set_active_bet_text(text: String) -> void:
 	if bet_badge_value_label == null:
@@ -1588,11 +1587,11 @@ func _refresh_scars_ui(scars: Array) -> void:
 			effect_text = str(scar.get("effect", ""))
 		var origin: String = str(scar.get("origin", ""))
 		if visual_tag != "":
-			summary_lines.append("• %s %s" % [visual_tag, scar_name])
-			detail_lines.append("• %s %s" % [visual_tag, scar_name])
+			summary_lines.append("â€¢ %s %s" % [visual_tag, scar_name])
+			detail_lines.append("â€¢ %s %s" % [visual_tag, scar_name])
 		else:
-			summary_lines.append("• %s" % scar_name)
-			detail_lines.append("• %s" % scar_name)
+			summary_lines.append("â€¢ %s" % scar_name)
+			detail_lines.append("â€¢ %s" % scar_name)
 		if short_desc != "":
 			summary_lines.append("  %s" % short_desc)
 			detail_lines.append("  %s" % short_desc)
@@ -1691,7 +1690,7 @@ func _build_ending_scars_section() -> String:
 		var scar_name: String = "Cicatrice"
 		if scar.has("name"):
 			scar_name = str(scar["name"])
-		lines.append("• %s" % scar_name)
+		lines.append("â€¢ %s" % scar_name)
 	return "\n".join(lines)
 
 func _build_ending_meta_section() -> String:
@@ -1704,7 +1703,7 @@ func _build_ending_meta_section() -> String:
 		lines.append("Traccia: %d" % _last_finale_seed)
 	if lines.is_empty():
 		return ""
-	lines.insert(0, "[b]Registro — estratto:[/b]")
+	lines.insert(0, "[b]Registro â€” estratto:[/b]")
 	return "\n".join(lines)
 
 func _get_register_ending_title(ending_key: String) -> String:
@@ -1726,7 +1725,7 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	ui_payload.phase = RunPhaseContract.PUSH_YOUR_LUCK
 	ui_payload.show_push_your_luck = true
 	ui_payload.meta = payload
-	ui_payload.title = "PUSH YOUR LUCK — %s" % str(payload.get("bet_name", ""))
+	ui_payload.title = "PUSH YOUR LUCK â€” %s" % str(payload.get("bet_name", ""))
 	ui_payload.body = fmt_system_state("stato attivo: accettato o rinunciato")
 	ui_payload.choices = ["cashout", "condanna", "double"]
 	apply_run_ui_payload(ui_payload)
@@ -1740,7 +1739,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_title != null:
 		push_luck_title.text = "Decisione"
 	if push_luck_info != null:
-		push_luck_info.text = "Chiusura / Continuità"
+		push_luck_info.text = "Chiusura / ContinuitÃ "
 	var doom_text: String = str(meta.get("next_doom", ""))
 	var condition_text: String = str(meta.get("condition", ""))
 	var pact_text: String = str(meta.get("next_pact", ""))
@@ -1770,7 +1769,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if cashout_modifier_text != "":
 		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
 	if push_luck_details != null:
-		push_luck_details.text = " · ".join(lines)
+		push_luck_details.text = " Â· ".join(lines)
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""
@@ -2868,3 +2867,4 @@ func _get_enemies_alive() -> int:
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
+

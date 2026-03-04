@@ -1,4 +1,4 @@
-class_name FlowLogger
+﻿class_name FlowLogger
 extends RefCounted
 
 enum Level {
@@ -47,13 +47,22 @@ func log(tag: String, message: String = "") -> void:
 	print_debug(line)
 
 func log_phase(phase_name: String, note: String = "") -> void:
-	print("[FLOW] %s :: %s" % ["PHASE", "%s :: %s" % [phase_name, note]])
+	var message: String = phase_name
+	if not note.is_empty():
+		message = "%s :: %s" % [phase_name, note]
+	self.log("PHASE", message)
 
 func log_request(name: String, note: String = "") -> void:
-	print("[FLOW] %s :: %s" % ["REQ", "%s :: %s" % [name, note]])
+	var message: String = name
+	if not note.is_empty():
+		message = "%s :: %s" % [name, note]
+	self.log("REQ", message)
 
 func log_ui(action: String, note: String = "") -> void:
-	print("[FLOW] %s :: %s" % ["UI", "%s :: %s" % [action, note]])
+	var message: String = action
+	if not note.is_empty():
+		message = "%s :: %s" % [action, note]
+	self.log("UI", message)
 
 func log_resolve_debug(entry: Dictionary) -> void:
 	if level < Level.VERBOSE:

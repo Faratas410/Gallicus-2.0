@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -158,45 +158,45 @@ const AUDIENCE_MOOD_COLD: StringName = &"COLD"
 const AUDIENCE_MOOD_DELIRIUM: StringName = &"DELIRIUM"
 const AUDIENCE_POOL_SAFE: Array[String] = [
 	"Guarda come trema. Vuole vivere un altro giorno.",
-	"Non è un leone. È un topo con un casco.",
+	"Non Ã¨ un leone. Ãˆ un topo con un casco.",
 	"Scommessa piccola per un cuore piccolo.",
 	"Non cerca gloria. Cerca scuse.",
-	"Così si sopravvive… ma non si diventa leggenda.",
+	"CosÃ¬ si sopravviveâ€¦ ma non si diventa leggenda.",
 ]
 const AUDIENCE_POOL_MID: Array[String] = [
-	"Non troppo audace… non troppo vile.",
+	"Non troppo audaceâ€¦ non troppo vile.",
 	"Gioca con misura. Forse troppo.",
 	"Un passo avanti, ma non abbastanza.",
 	"Vuole vincere. Non vuole rischiare tutto.",
-	"È ambizione… o è paura mascherata?",
+	"Ãˆ ambizioneâ€¦ o Ã¨ paura mascherata?",
 ]
 const AUDIENCE_POOL_HIGH: Array[String] = [
 	"Ah! Finalmente qualcuno che osa.",
-	"Sfida la sorte… o la provoca?",
+	"Sfida la sorteâ€¦ o la provoca?",
 	"Vuole tutto. Potrebbe perdere tutto.",
-	"Se cade, farà rumore.",
-	"O sarà leggenda… o sarà cenere.",
+	"Se cade, farÃ  rumore.",
+	"O sarÃ  leggendaâ€¦ o sarÃ  cenere.",
 ]
 const AUDIENCE_PHRASES: Dictionary = {
 	"FURY": [
 		"Ti vogliono a terra, non al sicuro.",
-		"Ogni tuo respiro è un insulto.",
-		"Fischi e sputi, nessuna pietà.",
+		"Ogni tuo respiro Ã¨ un insulto.",
+		"Fischi e sputi, nessuna pietÃ .",
 		"Non ti credono degno di incassare.",
 		"Vogliono vederti spezzato.",
-		"Qui non c'è perdono per i timidi.",
-		"Il tuo sangue è l'unico applauso.",
+		"Qui non c'Ã¨ perdono per i timidi.",
+		"Il tuo sangue Ã¨ l'unico applauso.",
 		"Se esiti, ti divorano.",
 		"Sei debito, non eroe.",
 		"La folla in furia pretende il tuo crollo.",
 	],
 	"COLD": [
 		"Ti osservano e aspettano l'errore.",
-		"Il silenzio pesa più dell'acciaio.",
+		"Il silenzio pesa piÃ¹ dell'acciaio.",
 		"Non applaudono, registrano.",
 		"Nessun calore, solo misura.",
-		"Ti seguono senza pietà né favore.",
-		"Ogni mossa è un conto aperto.",
+		"Ti seguono senza pietÃ  nÃ© favore.",
+		"Ogni mossa Ã¨ un conto aperto.",
 		"Nessun grido, solo occhi fissi.",
 		"Ti concedono spazio, non rispetto.",
 		"Il pubblico calcola, non parteggia.",
@@ -204,7 +204,7 @@ const AUDIENCE_PHRASES: Dictionary = {
 	],
 	"DELIRIUM": [
 		"Ti vogliono oltre il limite, senza ritorno.",
-		"Ogni colpo chiede di più.",
+		"Ogni colpo chiede di piÃ¹.",
 		"Non cercano vittoria: cercano rovina.",
 		"Ti spingono al gesto che ti spezza.",
 		"Se rallenti, ti strappano la gloria.",
@@ -235,8 +235,8 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Firma fatta. Aspettano il tuo crollo.",
 		],
 		AUDIENCE_MOOD_COLD: [
-			"Il patto è inciso. Ti misurano.",
-			"Hai firmato. Nessuno ti dà tregua.",
+			"Il patto Ã¨ inciso. Ti misurano.",
+			"Hai firmato. Nessuno ti dÃ  tregua.",
 			"La firma pesa. Il pubblico resta in giudizio.",
 			"Patto chiuso. L'arena ti osserva.",
 		],
@@ -244,7 +244,7 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Hai firmato forte. L'arena vuole vedere.",
 			"Il patto accende la folla. Spingi ora.",
 			"Firma e alza il rischio. Ti chiedono il salto.",
-			"La folla ti vuole oltre. La firma è l'inizio.",
+			"La folla ti vuole oltre. La firma Ã¨ l'inizio.",
 		],
 	},
 	AUDIENCE_CONTEXT_GESTURE_CHOSEN: {
@@ -261,7 +261,7 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Scelta fatta. Ti valutano senza voce.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
-			"Hai scelto il gesto. Ora spingono di più.",
+			"Hai scelto il gesto. Ora spingono di piÃ¹.",
 			"La folla ti segue. Vogliono il prossimo strappo.",
 			"Il gesto accende l'arena. Ti vogliono oltre.",
 			"Hai mosso la folla. Non fermarti ora.",
@@ -281,9 +281,9 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Incasso preso. Il pubblico non si muove.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
-			"Ti fermi mentre urlano. Ora è delusione.",
+			"Ti fermi mentre urlano. Ora Ã¨ delusione.",
 			"Hai spento la corsa. La folla voleva il salto.",
-			"Incassi mentre vogliono di più. Ti giudicano.",
+			"Incassi mentre vogliono di piÃ¹. Ti giudicano.",
 			"Ti sei fermato in alto. Ti lasciano cadere.",
 		],
 	},
@@ -309,20 +309,20 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 	},
 	AUDIENCE_CONTEXT_RUN_LOSS: {
 		AUDIENCE_MOOD_FURY: [
-			"Così finisci. La folla non ti piange.",
+			"CosÃ¬ finisci. La folla non ti piange.",
 			"Sei caduto. Ti volevano in ginocchio.",
-			"È finita. Il pubblico prende il tuo nome.",
+			"Ãˆ finita. Il pubblico prende il tuo nome.",
 			"Perduto. Il loro giudizio resta addosso.",
 		],
 		AUDIENCE_MOOD_COLD: [
 			"Sei crollato. Nessun suono.",
 			"Fine della corsa. Il silenzio resta.",
 			"Caduta secca. Il pubblico non reagisce.",
-			"È finita. Solo occhi fermi.",
+			"Ãˆ finita. Solo occhi fermi.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
 			"Sei caduto. Hanno avuto il sangue.",
-			"Fine violenta. La folla ha ciò che voleva.",
+			"Fine violenta. La folla ha ciÃ² che voleva.",
 			"Hai perso. L'arena resta accesa.",
 			"Caduta finale. Hanno avuto il rischio.",
 		],
@@ -345,7 +345,7 @@ const AUDIENCE_CONTEXT_PHRASES_HARSH: Dictionary = {
 			"Un gesto debole. Ora ti strappano il rispetto.",
 		],
 		AUDIENCE_MOOD_COLD: [
-			"Il gesto è sterile. Ti tengono in debito.",
+			"Il gesto Ã¨ sterile. Ti tengono in debito.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
 			"Il gesto li accende, ma chiedono il crollo.",
@@ -453,7 +453,7 @@ const REGISTER_POOL_FINAL_CORRUPTION: Array[String] = [
 	"Soglia di deviazione superata. Fascicolo chiuso.",
 	"Corruzione confermata. Archiviazione definitiva.",
 	"Indice di compromissione: critico. Sentenza emessa.",
-	"Integrità del soggetto: insufficiente. Caso concluso.",
+	"IntegritÃ  del soggetto: insufficiente. Caso concluso.",
 	"Deriva irreversibile rilevata. Il Registro conclude.",
 	"Evidenza prevalente: debito. Fascicolo definito.",
 	"Profilo compromesso. Non sono richiesti ulteriori dati.",
@@ -474,7 +474,7 @@ const REGISTER_POOL_FINAL_SCARS: Array[String] = [
 	"Cicatrici critiche registrate. Archiviazione definitiva.",
 	"Stato del soggetto: degradato. Sentenza emessa.",
 	"Accumulo irreversibile. Caso concluso.",
-	"Integrità fisica compromessa. Il Registro conclude.",
+	"IntegritÃ  fisica compromessa. Il Registro conclude.",
 	"Evidenza prevalente: consumo. Fascicolo definito.",
 	"Segni sufficienti. Non sono richiesti ulteriori dati.",
 	"Profilo stabilizzato su danno. Atto finale registrato.",
@@ -663,9 +663,9 @@ const ARCH_TIME: StringName = &"TIME"
 const LEVEL3_BETS: Array[Dictionary] = BetCatalog.LEVEL3_BETS
 
 const LYING_PACT_REVEALS: Dictionary = {
-	BET_P3_LIE_MERCY: "VERITÀ: La folla pretende spettacolo: ogni esitazione si paga.",
-	BET_P3_LIE_DEBT: "VERITÀ: Il debito si rinnova: ciò che prendi oggi lo restituisci domani.",
-	BET_P3_LIE_APPLAUSE: "VERITÀ: L'applauso è una trappola: più ti esaltano, più ti consumano.",
+	BET_P3_LIE_MERCY: "VERITÃ€: La folla pretende spettacolo: ogni esitazione si paga.",
+	BET_P3_LIE_DEBT: "VERITÃ€: Il debito si rinnova: ciÃ² che prendi oggi lo restituisci domani.",
+	BET_P3_LIE_APPLAUSE: "VERITÃ€: L'applauso Ã¨ una trappola: piÃ¹ ti esaltano, piÃ¹ ti consumano.",
 }
 
 # LEGACY NAME: "damage_mod" profiles ritual adverse pressure in L3 (non-combat).
@@ -697,7 +697,7 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_EXECUTIONER,
 		"name": "EXECUTIONER",
-		"desc": "Condanne più dure.",
+		"desc": "Condanne piÃ¹ dure.",
 		"win_mod": -0.08,
 		"damage_mod": 0.1,
 		"weight": 2,
@@ -705,7 +705,7 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_TRICKSTER,
 		"name": "TRICKSTER",
-		"desc": "Volatilità estrema.",
+		"desc": "VolatilitÃ  estrema.",
 		"win_mod": 0.0,
 		"damage_mod": 0.0,
 		"weight": 2,
@@ -989,7 +989,7 @@ func _smoke_tick(now_msec: int) -> void:
 
 
 func _ready() -> void:
-	print("RunManager ready")
+	print_debug("RunManager ready")
 	_arena_themes = ArenaThemes.new()
 	_session_id = str(Time.get_unix_time_from_system())
 	if _flow_logger != null:
@@ -1030,11 +1030,8 @@ func _process(_delta: float) -> void:
 		_smoke_tick(Time.get_ticks_msec())
 
 
-func _connect_gameevents() -> void:
-	if _events_wired:
-		return
-	_events_wired = true
-	var bindings: Array[Array] = [
+func _gameevents_bindings() -> Array[Array]:
+	return [
 		[&"bet_placed", &"_on_bet_placed", false],
 		[&"bet_sealed", &"_on_bet_sealed", true],
 		[&"bet_confirmed", &"_on_bet_confirmed", true],
@@ -1067,19 +1064,46 @@ func _connect_gameevents() -> void:
 		[&"modal_closed", &"_on_modal_closed", true],
 		[&"settings_changed", &"_on_settings_changed", true],
 	]
-	for binding: Array in bindings:
+
+func _required_gameevents_signals() -> Array[StringName]:
+	var required: Array[StringName] = [
+		&"run_failed",
+		&"run_started",
+		&"coins_changed",
+		&"resolve_ritual_opened",
+		&"resolve_ritual_closed",
+		&"push_luck_opened",
+		&"push_luck_closed",
+		&"run_finale_selected",
+	]
+	for binding: Array in _gameevents_bindings():
+		var signal_name: StringName = binding[0]
+		var optional_if_missing: bool = binding[2]
+		if not optional_if_missing and not required.has(signal_name):
+			required.append(signal_name)
+	return required
+
+func _connect_gameevents() -> void:
+	if _events_wired:
+		return
+	_events_wired = true
+	for binding: Array in _gameevents_bindings():
 		var signal_name: StringName = binding[0]
 		var handler_name: StringName = binding[1]
-		var requires_has_signal: bool = binding[2]
-		if requires_has_signal and not GameEvents.has_signal(signal_name):
+		var optional_if_missing: bool = binding[2]
+		if not GameEvents.has_signal(signal_name):
+			if optional_if_missing:
+				continue
+			push_error("SANITY FAIL: GameEvents missing required signal '%s' for handler '%s'" % [str(signal_name), str(handler_name)])
 			continue
 		var signal_ref_variant: Variant = GameEvents.get(signal_name)
-		if signal_ref_variant is Signal:
-			var signal_ref: Signal = signal_ref_variant as Signal
-			var handler: Callable = Callable(self, handler_name)
-			if not signal_ref.is_connected(handler):
-				signal_ref.connect(handler)
-
+		if not (signal_ref_variant is Signal):
+			push_error("SANITY FAIL: GameEvents signal '%s' is not a Signal instance" % str(signal_name))
+			continue
+		var signal_ref: Signal = signal_ref_variant as Signal
+		var handler: Callable = Callable(self, handler_name)
+		if not signal_ref.is_connected(handler):
+			signal_ref.connect(handler)
 func _apply_saved_language() -> void:
 	var saved_language: String = SaveManager.get_language()
 	_apply_language(saved_language)
@@ -1147,26 +1171,13 @@ func _validate_game_events_signals() -> bool:
 		push_warning("SANITY DIAG: /root children=%s" % ", ".join(root_names))
 		errors.append("GameEvents node missing at /root/GameEvents")
 	else:
-		var required_signals: Array[String] = [
-			"bet_placed",
-			"betting_opened",
-			"run_failed",
-			"run_started",
-			"coins_changed",
-			"resolve_ritual_opened",
-			"resolve_ritual_closed",
-			"push_luck_opened",
-			"push_luck_closed",
-			"run_finale_selected",
-		]
-		for signal_name: String in required_signals:
+		for signal_name: StringName in _required_gameevents_signals():
 			if not ge.has_signal(signal_name):
-				errors.append("GameEvents missing signal '%s'" % signal_name)
+				errors.append("GameEvents missing signal '%s'" % str(signal_name))
 	if errors.size() > 0:
 		_abort_sanity("SANITY FAIL: %s" % "; ".join(errors))
 		return false
 	return true
-
 func _validate_boot() -> bool:
 	var errors: Array[String] = []
 	var ge: Node = get_node_or_null("/root/GameEvents") as Node
@@ -3322,7 +3333,7 @@ func _build_sentence_payload(bet_id: StringName) -> Dictionary:
 	elif not doom.begins_with("SE FALLISCI:"):
 		doom = "SE FALLISCI: %s" % doom
 	if _run_state.escalation_level >= 7 and doom.findn("ESCALATION") < 0:
-		doom = "%s\nESCALATION: NON HAI PIÙ MARGINE." % doom
+		doom = "%s\nESCALATION: NON HAI PIÃ™ MARGINE." % doom
 	return _ui_payload_factory.build_sentence_payload("SENTENZA", rule, doom, bet_id)
 
 func _get_sentence_rule(bet_id: StringName) -> String:
@@ -4359,7 +4370,7 @@ func _try_apply_open_wound_scar(chain_level: int) -> void:
 		origin_text,
 		scar_def,
 		"FERITA APERTA",
-		"Il sangue non si è mai fermato.",
+		"Il sangue non si Ã¨ mai fermato.",
 		"HP massimo ridotto e cure meno efficaci."
 	)
 	_add_scar(scar)
@@ -4433,3 +4444,4 @@ func _log_runtime_state(tag: String) -> void:
 			cam_pos,
 		]
 	)
+

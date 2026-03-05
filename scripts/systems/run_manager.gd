@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -3412,6 +3412,7 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 		"audience_reason": str(reward_text.get("audience_reason", "")),
 		"cashout_modifier": float(reward_text.get("cashout_modifier", 1.0)),
 		"cashout_modifier_text": str(reward_text.get("cashout_modifier_text", "")),
+		"state_line": _build_push_luck_state_line(),
 	})
 
 func _build_push_luck_choice_note() -> String:
@@ -3423,6 +3424,16 @@ func _build_push_luck_choice_note() -> String:
 	if notes.is_empty():
 		return ""
 	return " | ".join(notes)
+
+func _build_push_luck_state_line() -> String:
+	var pressure: int = clampi(_run_state.audience_pressure, 0, AUDIENCE_PRESSURE_MAX)
+	var corruption_value: int = clampi(int(run.get("corruption", _run_state.corruption)), 0, CORRUPTION_MAX)
+	return "Stato run: Gloria %d | Corruzione %d | Pressione %d/%d" % [
+		_run_state.glory,
+		corruption_value,
+		pressure,
+		AUDIENCE_PRESSURE_MAX,
+	]
 
 func _emit_sentence_banner_for_bet(bet_id: StringName) -> void:
 	if not GameEvents.has_signal("sentence_banner_requested"):

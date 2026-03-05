@@ -1,4 +1,4 @@
-﻿[gd_scene format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
@@ -660,7 +660,7 @@ theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "IL PATTO Ãˆ SIGILLATO."
+text = "IL PATTO E' SIGILLATO."
 
 [node name="Lbl_FIRST_REACTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 visible = false
@@ -1108,7 +1108,7 @@ theme_override_styles/panel = ExtResource("16")
 [node name="Lbl_PUSH_YOUR_LUCK_TITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel"]
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
-text = "PUSH YOUR LUCK"
+text = "RILANCIO DEL PATTO"
 
 [node name="Lbl_PUSH_YOUR_LUCK_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
@@ -1117,7 +1117,7 @@ theme_override_styles/panel = ExtResource("16")
 [node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel"]
 autowrap_mode = 2
 horizontal_alignment = 1
-text = "Il registro Ã¨ aperto: incassa ora o aumenta esposizione."
+text = "Il Registro e aperto: incassa ora o aumenta esposizione."
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
@@ -1147,7 +1147,7 @@ horizontal_alignment = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = true
-text = "Scegli un atto. La firma Ã¨ irrevocabile."
+text = "Scegli un atto. La firma e irrevocabile."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
@@ -1338,7 +1338,7 @@ offset_bottom = -12.0
 [node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
-text = "VERDETTO"
+text = "VERDETTO DEL REGISTRO"
 
 [node name="EndingIcon" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false

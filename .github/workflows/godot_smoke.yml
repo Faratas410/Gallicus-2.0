@@ -86,6 +86,10 @@ jobs:
         run: |
           set -e
           python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
+      - name: Validate .tscn encoding/header
+        run: |
+          set -e
+          python tools/ci/check_tscn_format.py
 
       - name: Validate GameEvents signal contract (v1)
         run: |
@@ -296,6 +300,10 @@ jobs:
         run: |
           set -e
           python tools/ci/verify_res_paths.py --project-root "$GALLICUS_PROJECT_ROOT"
+      - name: Validate .tscn encoding/header
+        run: |
+          set -e
+          python tools/ci/check_tscn_format.py
 
       - name: Validate GameEvents signal contract (v1)
         run: |

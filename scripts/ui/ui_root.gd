@@ -1,4 +1,4 @@
-﻿extends CanvasLayer
+extends CanvasLayer
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -22,6 +22,8 @@ const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
 const SIGN_LOCK_DARKEN_RGB: float = 0.82
 const SIGN_PREVIEW_SCALE: float = 1.015
 const QUICK_CUT_MAX_SECONDS: float = 1.5
+const VERDICT_REVEAL_STEP_SECONDS: float = 0.2
+const VERDICT_REVEAL_HOLD_SECONDS: float = 0.08
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb_button_primary_hover.tres"
@@ -176,6 +178,8 @@ var _resolve_ritual_modal_fade_tween: Tween = null
 var _intermediate_choice_modal_fade_tween: Tween = null
 var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
+var _verdict_reveal_tween: Tween = null
+var _verdict_reveal_sequence_id: int = 0
 
 var _betting_overlay_hud_visibility_cached: bool = false
 var _betting_overlay_hud_visible_before: bool = true
@@ -1129,6 +1133,7 @@ func _on_run_failed() -> void:
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	_refresh_verdict_panel()
+	await _play_verdict_reveal_sequence()
 	_reset_fast_countdown()
 	var ending_read_buttons: Array[Button] = []
 	if restart_button != null:
@@ -1242,6 +1247,69 @@ func _refresh_verdict_panel() -> void:
 		verdict_crowd_section.visible = crowd_line != ""
 	if verdict_crowd_text != null:
 		verdict_crowd_text.text = crowd_line
+
+func _set_verdict_canvas_alpha(alpha: float) -> void:
+	var targets: Array[CanvasItem] = []
+	if verdict_header != null:
+		targets.append(verdict_header)
+	if verdict_outcome != null:
+		targets.append(verdict_outcome)
+	if verdict_icon != null and verdict_icon.visible:
+		targets.append(verdict_icon)
+	if verdict_sentence_label != null:
+		targets.append(verdict_sentence_label)
+	if verdict_charge_label != null:
+		targets.append(verdict_charge_label)
+	if verdict_sections != null:
+		targets.append(verdict_sections)
+	for node in targets:
+		node.modulate.a = alpha
+
+func _reveal_verdict_group(group: Array[CanvasItem], sequence_id: int) -> bool:
+	var reveal_targets: Array[CanvasItem] = []
+	for node in group:
+		if node != null and node.visible:
+			node.modulate.a = 0.0
+			reveal_targets.append(node)
+	if reveal_targets.is_empty():
+		return sequence_id == _verdict_reveal_sequence_id
+	if _verdict_reveal_tween != null and _verdict_reveal_tween.is_valid():
+		_verdict_reveal_tween.kill()
+	_verdict_reveal_tween = create_tween()
+	_verdict_reveal_tween.set_trans(Tween.TRANS_SINE)
+	_verdict_reveal_tween.set_ease(Tween.EASE_OUT)
+	for node in reveal_targets:
+		_verdict_reveal_tween.parallel().tween_property(node, "modulate:a", 1.0, VERDICT_REVEAL_STEP_SECONDS)
+	await _verdict_reveal_tween.finished
+	if sequence_id != _verdict_reveal_sequence_id:
+		return false
+	await get_tree().create_timer(VERDICT_REVEAL_HOLD_SECONDS).timeout
+	return sequence_id == _verdict_reveal_sequence_id
+
+func _play_verdict_reveal_sequence() -> void:
+	_verdict_reveal_sequence_id += 1
+	var sequence_id: int = _verdict_reveal_sequence_id
+	_set_verdict_canvas_alpha(1.0)
+	var stage1: Array[CanvasItem] = []
+	if verdict_header != null:
+		stage1.append(verdict_header)
+	if verdict_outcome != null:
+		stage1.append(verdict_outcome)
+	if verdict_icon != null and verdict_icon.visible:
+		stage1.append(verdict_icon)
+	var stage2: Array[CanvasItem] = []
+	if verdict_sentence_label != null:
+		stage2.append(verdict_sentence_label)
+	if verdict_charge_label != null:
+		stage2.append(verdict_charge_label)
+	var stage3: Array[CanvasItem] = []
+	if verdict_sections != null:
+		stage3.append(verdict_sections)
+	if not await _reveal_verdict_group(stage1, sequence_id):
+		return
+	if not await _reveal_verdict_group(stage2, sequence_id):
+		return
+	await _reveal_verdict_group(stage3, sequence_id)
 
 func _set_verdict_mode(active: bool) -> void:
 	if verdict_header != null:
@@ -1711,6 +1779,24 @@ func _update_condanna_focus() -> void:
 		return
 	var arena_index: int = _get_arena_index()
 	condanna_focus_label.visible = arena_index <= 1
+	if condanna_focus_label.visible:
+		_update_bet_focus_telegraph()
+
+func _update_bet_focus_telegraph() -> void:
+	if condanna_focus_label == null or not condanna_focus_label.visible:
+		return
+	if _selected_bet_id == "":
+		condanna_focus_label.text = "Firma una via. Il Registro annota il prezzo."
+		return
+	var bet: Dictionary = _bets_by_id.get(_selected_bet_id, {}) as Dictionary
+	if bet.is_empty():
+		condanna_focus_label.text = "Firma una via. Il Registro annota il prezzo."
+		return
+	var title_text: String = str(bet.get("display_title", bet.get("name", _selected_bet_id))).strip_edges()
+	var doom_text: String = str(bet.get("doom_short", bet.get("doom", ""))).strip_edges()
+	if doom_text == "":
+		doom_text = "Clausola non esposta."
+	condanna_focus_label.text = "Firma focus: %s | Clausola: %s" % [title_text, doom_text]
 
 func _on_scars_updated(scars: Array) -> void:
 	_refresh_scars_ui(scars)
@@ -1939,12 +2025,15 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if cashout_modifier_text != "":
 		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
 	if push_luck_details != null:
-		push_luck_details.text = "  |  ".join(lines) if not lines.is_empty() else "Nessun dettaglio."
+		push_luck_details.text = ("- " + "\n- ".join(lines)) if not lines.is_empty() else "Nessun dettaglio."
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""
 	if push_luck_audience_reason != null:
-		push_luck_audience_reason.text = "Stato: in attesa di scelta."
+		var state_line: String = str(meta.get("state_line", "")).strip_edges()
+		if state_line == "":
+			state_line = "Stato: in attesa di scelta."
+		push_luck_audience_reason.text = state_line
 		push_luck_audience_reason.visible = true
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
@@ -2326,6 +2415,7 @@ func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 	if first_bet_id != "":
 		_selected_bet_id = first_bet_id
 	_refresh_bet_selection_visuals()
+	_update_bet_focus_telegraph()
 
 func _safe_load_stylebox(path: String) -> StyleBox:
 	if not ResourceLoader.exists(path, "StyleBox"):
@@ -2451,8 +2541,8 @@ func _set_bet_option_selected(bet_id: String, selected: bool) -> void:
 		select_button.add_theme_constant_override("line_spacing", 6)
 	var signature_button: Button = _bet_signature_buttons_by_id.get(bet_id, null) as Button
 	if signature_button != null:
-		signature_button.disabled = not selected
-		signature_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected else Color(1.0, 1.0, 1.0, 0.55)
+		signature_button.disabled = false
+		signature_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected else Color(1.0, 1.0, 1.0, 0.92)
 
 func _format_lock_note(reason: String, fallback: String) -> String:
 	var text: String = reason.strip_edges()
@@ -2536,6 +2626,7 @@ func _on_bet_choice_pressed(bet_id: String) -> void:
 		return
 	_selected_bet_id = bet_id
 	_refresh_bet_selection_visuals()
+	_update_bet_focus_telegraph()
 	get_viewport().gui_release_focus()
 
 func _on_bet_signature_pressed(bet_id: String) -> void:

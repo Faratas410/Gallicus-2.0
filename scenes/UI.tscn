@@ -575,7 +575,7 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
-texture = ExtResource("16")
+texture = ExtResource("17")
 expand_mode = 1
 stretch_mode = 5
 
@@ -590,7 +590,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
 modulate = Color(1, 1, 1, 0.16)
-texture = ExtResource("16")
+texture = ExtResource("17")
 expand_mode = 1
 stretch_mode = 5
 
@@ -740,6 +740,21 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.56)
 
+[node name="MidChoiceBackdrop" type="TextureRect" parent="UI_RunRoot/Phase_MID_CHOICE"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("17")
+texture_filter = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MidChoiceBackdropShade" type="ColorRect" parent="UI_RunRoot/Phase_MID_CHOICE"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.02, 0.02, 0.03, 0.62)
+
 [node name="Panel_MID_CHOICE" type="Panel" parent="UI_RunRoot/Phase_MID_CHOICE"]
 visible = false
 z_index = 1
@@ -749,14 +764,15 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -330.0
-offset_top = -190.0
-offset_right = 330.0
-offset_bottom = 190.0
+offset_left = -430.0
+offset_top = -250.0
+offset_right = 430.0
+offset_bottom = 250.0
 clip_contents = true
-custom_minimum_size = Vector2(660, 380)
+custom_minimum_size = Vector2(860, 500)
 
 [node name="BackgroundMidChoice" type="TextureRect" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -769,6 +785,7 @@ texture_filter = 0
 stretch_mode = 6
 
 [node name="MidChoiceShade" type="ColorRect" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1012,6 +1029,21 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.58)
 
+[node name="PushLuckBackdrop" type="TextureRect" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("17")
+texture_filter = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PushLuckBackdropShade" type="ColorRect" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.02, 0.02, 0.03, 0.64)
+
 [node name="Panel_PUSH_YOUR_LUCK" type="Panel" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK"]
 visible = false
 z_index = 1
@@ -1021,14 +1053,15 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -360.0
-offset_top = -210.0
-offset_right = 360.0
-offset_bottom = 210.0
+offset_left = -470.0
+offset_top = -290.0
+offset_right = 470.0
+offset_bottom = 290.0
 clip_contents = true
-custom_minimum_size = Vector2(720, 420)
+custom_minimum_size = Vector2(940, 580)
 
 [node name="BackgroundPushLuck" type="TextureRect" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1041,6 +1074,7 @@ texture_filter = 0
 stretch_mode = 6
 
 [node name="PushLuckShade" type="ColorRect" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1253,20 +1287,35 @@ anchor_bottom = 1.0
 offset_right = -300.0
 color = Color(0, 0, 0, 0)
 
+[node name="EndRunBackdrop" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("17")
+texture_filter = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EndRunBackdropShade" type="ColorRect" parent="UI_RunRoot/Phase_END_RUN"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.01, 0.01, 0.02, 0.74)
+
 [node name="Panel_END_RUN" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN"]
 visible = false
 z_index = 1
-anchor_left = 0.1
-anchor_top = 0.1
-anchor_right = 0.9
-anchor_bottom = 0.9
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 0.0
-offset_bottom = 0.0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = -300.0
+offset_right = 520.0
+offset_bottom = 300.0
 clip_contents = true
-custom_minimum_size = Vector2(960, 720)
-texture = ExtResource("16")
+custom_minimum_size = Vector2(1040, 600)
+texture = ExtResource("17")
 expand_mode = 1
 stretch_mode = 6
 
@@ -1385,13 +1434,28 @@ autowrap_mode = 2
 text = ""
 
 [node name="Btn_END_RUN_RESTART" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
+custom_minimum_size = Vector2(0, 44)
 text = "NUOVA RUN"
 
 [node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
+custom_minimum_size = Vector2(0, 44)
 text = "NEXT BET"
 
 [node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+theme_override_styles/normal = ExtResource("12")
+theme_override_styles/hover = ExtResource("13")
+theme_override_styles/pressed = ExtResource("14")
+theme_override_styles/disabled = ExtResource("15")
+custom_minimum_size = Vector2(0, 44)
 text = "TORNA AL MENU"
 
 [node name="WaxSeal" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
@@ -1405,7 +1469,7 @@ offset_top = -104.0
 offset_right = -16.0
 offset_bottom = -16.0
 mouse_filter = 1
-texture = ExtResource("16")
+texture = ExtResource("17")
 
 [node name="CountdownLabelPanel" type="PanelContainer" parent="UI_RunRoot"]
 visible = false
@@ -1493,6 +1557,12 @@ size_flags_horizontal = 3
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Nessuna cicatrice."
+
+
+
+
+
+
 
 
 

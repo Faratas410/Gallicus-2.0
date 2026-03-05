@@ -80,6 +80,8 @@ func set_offers(bets: Array[Dictionary]) -> void:
 		var mapped: Dictionary = _map_offer_for_display(bet)
 		if mapped.is_empty():
 			continue
+		if str(mapped.get("id", "")).strip_edges() == "":
+			mapped["id"] = StringName("offer_%d" % _betting_circle_options.size())
 		_betting_circle_options.append(mapped)
 	if _betting_circle_options.is_empty():
 		_refresh_from_catalog_if_empty()
@@ -222,14 +224,20 @@ func _play_stamp_feedback(button: TextureButton) -> void:
 func _update_sigilla_state() -> void:
 	var left_id: StringName = _offer_id_at(0)
 	var right_id: StringName = _offer_id_at(1)
-	var left_ready: bool = left_id != &"" and not _submit_locked and selected_bet_id == left_id
-	var right_ready: bool = right_id != &"" and not _submit_locked and selected_bet_id == right_id
+	var left_ready: bool = left_id != &"" and not _submit_locked
+	var right_ready: bool = right_id != &"" and not _submit_locked
 	if left_sign_button != null:
 		left_sign_button.disabled = not left_ready
-		left_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if left_ready else Color(0.7, 0.66, 0.6, 0.6)
+		if left_ready:
+			left_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == left_id else Color(0.92, 0.9, 0.86, 0.95)
+		else:
+			left_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
 	if right_sign_button != null:
 		right_sign_button.disabled = not right_ready
-		right_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if right_ready else Color(0.7, 0.66, 0.6, 0.6)
+		if right_ready:
+			right_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == right_id else Color(0.92, 0.9, 0.86, 0.95)
+		else:
+			right_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
 	if sigilla_button != null:
 		sigilla_button.disabled = true
 
@@ -260,7 +268,7 @@ func _refresh_from_catalog_if_empty() -> void:
 	_rebuild_options_from_catalog()
 
 func _map_offer_for_display(source_offer: Dictionary) -> Dictionary:
-	var bet_id: StringName = StringName(str(source_offer.get("id", "")))
+	var bet_id: StringName = StringName(str(source_offer.get("id", source_offer.get("bet_id", ""))))
 	var title: String = str(source_offer.get("display_title", source_offer.get("name", "")))
 	var doom_text: String = str(source_offer.get("doom", ""))
 	var condition_text: String = str(source_offer.get("condition", ""))
@@ -303,3 +311,4 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 		if StringName(str(bet_data.get("id", ""))) == bet_id:
 			return bet_data
 	return {}
+

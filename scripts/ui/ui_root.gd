@@ -533,6 +533,7 @@ func _bind_scene_nodes() -> void:
 	coins_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
 	glory_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
 	bet_badge_value_label = coins_label
+	hud_top_left_stats_box = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn") as Control
 	escalation_bar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as Range
 	scars_panel = get_node_or_null("HUD/ScarsPanel") as Control
 	scars_label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
@@ -1891,9 +1892,9 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	_set_bet_modal(false)
 	var meta: Dictionary = payload.meta
 	if push_luck_title != null:
-		push_luck_title.text = "Decisione"
+		push_luck_title.text = str(payload.title if payload.title != "" else "SPINGI LA SORTE")
 	if push_luck_info != null:
-		push_luck_info.text = "Chiusura / Continuita"
+		push_luck_info.text = str(payload.body if payload.body != "" else "Incassa ora o aumenta esposizione.")
 	var doom_text: String = str(meta.get("next_doom", ""))
 	var condition_text: String = str(meta.get("condition", ""))
 	var pact_text: String = str(meta.get("next_pact", ""))
@@ -1923,7 +1924,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if cashout_modifier_text != "":
 		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
 	if push_luck_details != null:
-		push_luck_details.text = "\n".join(lines) if not lines.is_empty() else "Nessun dettaglio."
+		push_luck_details.text = "  |  ".join(lines) if not lines.is_empty() else "Nessun dettaglio."
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""
@@ -2953,6 +2954,17 @@ func _refresh_modal_dimmer() -> void:
 		active = true
 	modal_dimmer.visible = active
 	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
+	if hud_top_left_stats_box != null:
+		var hide_left_hud: bool = false
+		if betting_circle != null and betting_circle.visible:
+			hide_left_hud = true
+		if intermediate_choice_modal != null and intermediate_choice_modal.visible:
+			hide_left_hud = true
+		if push_luck_modal != null and push_luck_modal.visible:
+			hide_left_hud = true
+		if game_over_modal != null and game_over_modal.visible:
+			hide_left_hud = true
+		hud_top_left_stats_box.visible = not hide_left_hud
 
 func _apply_betting_overlay_visual_suppression() -> void:
 	if hud_top_left_stats_box != null:
@@ -3108,6 +3120,10 @@ func _get_enemies_alive() -> int:
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
+
+
+
+
 
 
 

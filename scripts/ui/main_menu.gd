@@ -224,7 +224,7 @@ func _build_condanne_list() -> void:
 		return
 	var condanne: Array[CondannaData] = CondannaDataScript.defaults()
 	for condanna in condanne:
-		var entry_panel: PanelContainer = _create_condanna_entry_panel("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â %s" % condanna.title)
+		var entry_panel: PanelContainer = _create_condanna_entry_panel("- %s" % condanna.title)
 		var entry_label: Label = entry_panel.get_child(0) as Label
 		condanna_entries[condanna.id] = entry_label
 		_apply_condanna_style(condanna.id, entry_label)
@@ -260,21 +260,21 @@ func _build_museo_list() -> void:
 	var harsh_total: int = harsh_count if harsh_count > 0 else 15
 	_add_museo_header("PATTI DISPONIBILI (LIVELLO 3)")
 	if pact_ids.is_empty():
-		_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Nessun patto disponibile.")
+		_add_museo_item("- Nessun patto disponibile.")
 	else:
 		for pact_id in pact_ids:
 			var pact_title: String = _get_pact_display_name(pact_id)
-			_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â %s" % pact_title)
+			_add_museo_item("- %s" % pact_title)
 	_add_museo_header("ARENE TEMATICHE")
 	if arena_themes.is_empty():
-		_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Nessuna arena disponibile.")
+		_add_museo_item("- Nessuna arena disponibile.")
 	else:
 		for theme_id in arena_themes:
 			var theme_data: Dictionary = _arena_themes.get_theme(theme_id)
 			var theme_title: String = str(theme_data.get("title", ""))
 			if theme_title == "":
 				theme_title = str(theme_id)
-			_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â %s" % theme_title)
+			_add_museo_item("- %s" % theme_title)
 	_add_museo_header("VOCI DEL PUBBLICO")
 	_add_museo_item("Voci base: %d" % base_total)
 	var harsh_status: String = "SBLOCCATE" if harsh_unlocked else "BLOCCATE"
@@ -338,7 +338,7 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 		_apply_condanna_style(condanna_id, entry_label)
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
-	var tooltip_label_text: String = "%s\n\nCome ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¨ stata ottenuta:\n%s\n\n%s" % [
+	var tooltip_label_text: String = "%s\\n\\nCome e stata ottenuta:\\n%s\\n\\n%s" % [
 		condanna.title,
 		condanna.condition_text,
 		condanna.lore_text
@@ -519,7 +519,7 @@ func _apply_brightness(value: float) -> void:
 			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
 		brightness_overlay.color = overlay_color
 	if brightness_value != null:
-		brightness_value.text = tr("LuminositÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â : %.2f") % value
+		brightness_value.text = tr("Luminosita: %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -604,7 +604,7 @@ func _refresh_localized_ui() -> void:
 	if settings_title != null:
 		settings_title.text = tr("OPZIONI")
 	if brightness_label != null:
-		brightness_label.text = tr("LUMINOSITÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬")
+		brightness_label.text = tr("LUMINOSITA")
 	if language_label != null:
 		language_label.text = tr("LINGUA")
 	if volume_label != null:
@@ -719,3 +719,4 @@ func _on_menu_button_hover(button: Button, active: bool) -> void:
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "scale", target_scale, 0.12)
+

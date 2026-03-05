@@ -25,27 +25,27 @@ static func defaults() -> Array[CondannaData]:
 	var entries: Array[CondannaData] = []
 	entries.append(make(
 		&"CONDANNA_NON_MI_FERMERO",
-		"Non mi fermerò.",
-		"Hai rifiutato l’incasso quando potevi fermarti.",
-		"Il pubblico aveva già contato le monete.\nTu hai chiuso il pugno."
+		"Non mi fermero.",
+		"Hai rifiutato l'incasso quando potevi fermarti.",
+		"Il pubblico aveva gia contato le monete.\nTu hai chiuso il pugno."
 	))
 	entries.append(make(
 		&"CONDANNA_ANCORA",
 		"Ancora.",
-		"Hai rifiutato l’incasso più di una volta nella stessa run.",
+		"Hai rifiutato l'incasso piu di una volta nella stessa run.",
 		"La folla ha smesso di gridare.\nHa iniziato a guardare."
 	))
 	entries.append(make(
 		&"CONDANNA_FINCHE_REGGE",
-		"Finché regge.",
+		"Finche regge.",
 		"Hai continuato a rilanciare quando il rischio era ormai evidente.",
-		"Non era più una scommessa.\nEra una dimostrazione."
+		"Non era piu una scommessa.\nEra una dimostrazione."
 	))
 	entries.append(make(
 		&"CONDANNA_NON_DOVEVO_PROVARCI",
 		"Non dovevo provarci.",
 		"Hai rilanciato e perso la run subito dopo.",
-		"Il silenzio dell’arena\nè durato più del previsto."
+		"Il silenzio dell'arena\ne durato piu del previsto."
 	))
 	entries.append(make(
 		&"CONDANNA_FIRMATO",
@@ -61,21 +61,21 @@ static func defaults() -> Array[CondannaData]:
 	))
 	entries.append(make(
 		&"CONDANNA_L_HO_ACCETTATO",
-		"L’ho accettato.",
+		"L'ho accettato.",
 		"Hai scelto una condanna senza ricevere alcun reward.",
-		"La folla non ha capito.\nTu sì."
+		"La folla non ha capito.\nTu si."
 	))
 	entries.append(make(
 		&"CONDANNA_ERA_IL_PREZZO",
 		"Era il prezzo.",
 		"Hai perso la run a causa diretta di un patto firmato.",
-		"Non è stata sfortuna."
+		"Non e stata sfortuna."
 	))
 	entries.append(make(
 		&"CONDANNA_SO_COME_FINISCE",
 		"So come finisce.",
 		"Hai continuato una run nonostante le tue condizioni critiche.",
-		"Il corpo era già un avviso."
+		"Il corpo era gia un avviso."
 	))
 	entries.append(make(
 		&"CONDANNA_NON_OGGI",
@@ -97,15 +97,15 @@ static func defaults() -> Array[CondannaData]:
 	))
 	entries.append(make(
 		&"CONDANNA_E_FINITA_COSI",
-		"È finita così.",
+		"E finita cosi.",
 		"Hai perso la tua prima run.",
-		"L’arena non fa sconti ai nuovi."
+		"L'arena non fa sconti ai nuovi."
 	))
 	entries.append(make(
 		&"CONDANNA_NON_ABBASTANZA",
 		"Non abbastanza.",
 		"Hai perso la run vicino a una soglia decisiva.",
-		"La folla aveva già deciso."
+		"La folla aveva gia deciso."
 	))
 	entries.append(make(
 		&"CONDANNA_TROPPO_TARDI",
@@ -115,7 +115,7 @@ static func defaults() -> Array[CondannaData]:
 	))
 	entries.append(make(
 		&"CONDANNA_NON_E_COLPA_LORO",
-		"Non è colpa loro.",
+		"Non e colpa loro.",
 		"Hai perso la run senza errori meccanici evidenti.",
 		"Nessuno ha barato."
 	))
@@ -123,13 +123,13 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_RICORDATO",
 		"Ricordato.",
 		"Hai completato una run.",
-		"L’arena non dimentica."
+		"L'arena non dimentica."
 	))
 	entries.append(make(
 		&"CONDANNA_VISTO_DAL_PUBBLICO",
 		"Visto dal pubblico.",
-		"Hai attirato l’attenzione totale della folla.",
-		"Non eri più solo."
+		"Hai attirato l'attenzione totale della folla.",
+		"Non eri piu solo."
 	))
 	entries.append(make(
 		&"CONDANNA_IL_TUO_NOME",
@@ -139,9 +139,9 @@ static func defaults() -> Array[CondannaData]:
 	))
 	entries.append(make(
 		&"CONDANNA_NON_SARA_L_ULTIMA",
-		"Non sarà l’ultima.",
-		"Sei tornato all’arena dopo una sconfitta.",
-		"L’arena è ancora lì."
+		"Non sara l'ultima.",
+		"Sei tornato all'arena dopo una sconfitta.",
+		"L'arena e ancora li."
 	))
 
 	entries.append(make(
@@ -154,18 +154,18 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_REGISTRO_ASCESA",
 		"Registro: Ascesa.",
 		"Il Registro ha chiuso il fascicolo per ascesa (ending_glory).",
-		"L'evidenza di ascesa è risultata prevalente.\nIl fascicolo è stato definito."
+		"L'evidenza di ascesa e risultata prevalente.\nIl fascicolo e stato definito."
 	))
 	entries.append(make(
 		&"CONDANNA_REGISTRO_CONSUMO",
 		"Registro: Consumo.",
 		"Il Registro ha chiuso il fascicolo per consumo (ending_scars).",
-		"L'accumulo di danno è stato ritenuto definitivo.\nIl Registro ha concluso l'atto."
+		"L'accumulo di danno e stato ritenuto definitivo.\nIl Registro ha concluso l'atto."
 	))
 	entries.append(make(
 		&"CONDANNA_REGISTRO_PATTERN",
 		"Registro: Pattern.",
 		"Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).",
-		"La ripetizione è risultata sufficiente.\nLa classificazione è stata archiviata."
+		"La ripetizione e risultata sufficiente.\nLa classificazione e stata archiviata."
 	))
 	return entries

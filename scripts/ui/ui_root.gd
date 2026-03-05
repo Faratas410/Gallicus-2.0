@@ -44,7 +44,7 @@ const RUN_PHASE_PUSH_YOUR_LUCK: int = RunPhaseContract.PUSH_YOUR_LUCK
 const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
 const RUN_PHASE_RESOLUTION: int = RunPhaseContract.RESOLUTION
 const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
-const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_condition.png"
+const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_pact.png"
 const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 	{"label": "Modals/BetModal", "fallback": "UI_RunRoot/Phase_INTRO"},
 	{"label": "Modals/PactSealedModal", "fallback": "UI_RunRoot/Phase_FIRST_REACTION"},
@@ -54,19 +54,19 @@ const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
 		"title": "FASCICOLO CHIUSO - CORRUZIONE",
-		"icon": "res://assets/ui/icons/icon_ending_corruption.png",
+		"icon": "res://assets/ui/icons/icon_sentence.png",
 	},
 	"ending_glory": {
 		"title": "FASCICOLO CHIUSO - GLORIA",
-		"icon": "res://assets/ui/icons/icon_ending_glory.png",
+		"icon": "res://assets/ui/icons/icon_payout.png",
 	},
 	"ending_scars": {
 		"title": "FASCICOLO CHIUSO - CICATRICI",
-		"icon": "res://assets/ui/icons/icon_ending_scars.png",
+		"icon": "res://assets/ui/icons/icon_token_16.png",
 	},
 	"ending_pattern": {
 		"title": "FASCICOLO CHIUSO - PATTERN",
-		"icon": "res://assets/ui/icons/icon_ending_pattern.png",
+		"icon": "res://assets/ui/icons/icon_pact.png",
 	},
 }
 const _PHASE_CONTAINER_PATHS: Array[String] = [
@@ -1195,9 +1195,9 @@ func _refresh_verdict_panel() -> void:
 	if verdict_icon != null:
 		if _last_register_final:
 			var icon_path: String = _last_ending_icon_path
-			if icon_path == "" or not ResourceLoader.exists(icon_path):
+			if icon_path == "" or not ResourceLoader.exists(icon_path, "Texture2D"):
 				icon_path = ENDING_ICON_PLACEHOLDER_PATH
-			var icon_texture: Texture2D = load(icon_path) as Texture2D
+			var icon_texture: Texture2D = ResourceLoader.load(icon_path, "Texture2D") as Texture2D
 			verdict_icon.texture = icon_texture
 			verdict_icon.visible = icon_texture != null
 		else:
@@ -3120,6 +3120,7 @@ func _get_enemies_alive() -> int:
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
+
 
 
 

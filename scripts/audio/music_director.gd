@@ -6,25 +6,25 @@ const SILENT_DB: float = -60.0
 const FADE_SECONDS: float = 1.25
 const MUSIC_BUS_NAME: String = "Music"
 
-const MENU_TRACK_PATHS: Array[String] = [
+var MENU_TRACK_PATHS: Array[String] = [
 	"res://Music/Ambient1.mp3",
 	"res://Music/CreditsOrCutscene1.mp3",
 ]
-const RUN_SAFE_TRACK_PATHS: Array[String] = [
+var RUN_SAFE_TRACK_PATHS: Array[String] = [
 	"res://Music/Ambient2.mp3",
 	"res://Music/Ambient3.mp3",
 ]
-const RUN_TENSE_TRACK_PATHS: Array[String] = [
+var RUN_TENSE_TRACK_PATHS: Array[String] = [
 	"res://Music/Ambient4.mp3",
 	"res://Music/Darkness.mp3",
 	"res://Music/EternalDescent.mp3",
 ]
-const RUN_CLIMAX_TRACK_PATHS: Array[String] = [
+var RUN_CLIMAX_TRACK_PATHS: Array[String] = [
 	"res://Music/Infernal.mp3",
 	"res://Music/Doomfire.mp3",
 	"res://Music/Havoc.mp3",
 ]
-const ENDING_TRACK_PATHS: Array[String] = [
+var ENDING_TRACK_PATHS: Array[String] = [
 	"res://Music/LamentOfTheFallen.mp3",
 	"res://Music/CreditsOrCutscene1.mp3",
 ]
@@ -57,8 +57,8 @@ var _volume_scale: float = 1.0
 var _music_bus_index: int = -1
 
 func _ready() -> void:
-	_menu_player = get_node_or_null(menu_player_path) as AudioStreamPlayer
-	_run_player = get_node_or_null(run_player_path) as AudioStreamPlayer
+	_menu_player = _resolve_player(menu_player_path, "MenuThemePlayer")
+	_run_player = _resolve_player(run_player_path, "RunThemePlayer")
 	if _menu_player == null or _run_player == null:
 		push_warning("MusicDirector: missing audio players, music disabled.")
 		return
@@ -67,6 +67,20 @@ func _ready() -> void:
 	_wire_events()
 	_apply_saved_music_volume()
 	_play_menu_music_immediate()
+
+func _resolve_player(path: NodePath, fallback_name: String) -> AudioStreamPlayer:
+	var by_path: AudioStreamPlayer = get_node_or_null(path) as AudioStreamPlayer
+	if by_path != null:
+		return by_path
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+	var scene_root: Node = tree.current_scene
+	if scene_root == null:
+		scene_root = tree.root
+	if scene_root == null:
+		return null
+	return scene_root.find_child(fallback_name, true, false) as AudioStreamPlayer
 
 func _ensure_music_bus() -> void:
 	_music_bus_index = AudioServer.get_bus_index(MUSIC_BUS_NAME)
@@ -263,3 +277,19 @@ func _kill_fade_tween() -> void:
 	if _fade_tween != null and _fade_tween.is_valid():
 		_fade_tween.kill()
 	_fade_tween = null
+
+func _find_audio_player(node_name: String) -> AudioStreamPlayer:
+	var root: Node = get_tree().current_scene if get_tree() != null else null
+	if root == null:
+		return null
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node != null and node.name == node_name and node is AudioStreamPlayer:
+			return node as AudioStreamPlayer
+		for child: Node in node.get_children():
+			stack.append(child)
+	return null
+
+
+

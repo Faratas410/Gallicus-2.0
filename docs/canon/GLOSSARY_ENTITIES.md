@@ -1,4 +1,4 @@
-# CANON — GLOSSARY ENTITIES
+# CANON Ã¢â‚¬â€ GLOSSARY ENTITIES
 
 Status: Single source of truth
 
@@ -32,7 +32,7 @@ All changes to systems described here must update this document in the same PR.
 
 Type: Entity
 
-One-liner: Infrastruttura diegetica impersonale che registra pattern di rischio e convalida irreversibilità.
+One-liner: Infrastruttura diegetica impersonale che registra pattern di rischio e convalida irreversibilitÃƒÂ .
 
 Details: Sistema amministrativo non morale; parla raramente con tono freddo.
 
@@ -44,7 +44,7 @@ Related: Felix Gallicus, Scar, Registry: Silence, Registry: Corruption
 
 Type: Entity
 
-One-liner: Anomalia d’archivio: caso precedente non classificabile dal Registro.
+One-liner: Anomalia dÃ¢â‚¬â„¢archivio: caso precedente non classificabile dal Registro.
 
 Details: Non appare in scena; emerge come precedente nei log.
 
@@ -56,9 +56,9 @@ Related: The Register, Final narrative structure
 
 Type: Institution
 
-One-liner: Amministrazione dell’Arena che gestisce Registro, quote e legittimazione spettacolare del rischio.
+One-liner: Amministrazione dellÃ¢â‚¬â„¢Arena che gestisce Registro, quote e legittimazione spettacolare del rischio.
 
-Details: Non sono entità soprannaturali né autorità morali; operano come apparato gestionale che monetizza instabilità e reiterazione dopo il precedente.
+Details: Non sono entitÃƒÂ  soprannaturali nÃƒÂ© autoritÃƒÂ  morali; operano come apparato gestionale che monetizza instabilitÃƒÂ  e reiterazione dopo il precedente.
 
 Appears in: Lore / Meta
 
@@ -68,9 +68,9 @@ Related: The Register, Registry Precedent State, Felix Gallicus
 
 Type: State
 
-One-liner: Stato/manifestazione narrativa del Registro legato all’assenza di risposta o riduzione del segnale.
+One-liner: Stato/manifestazione narrativa del Registro legato allÃ¢â‚¬â„¢assenza di risposta o riduzione del segnale.
 
-Details: Rappresenta una modalità diegetica del sistema Registro.
+Details: Rappresenta una modalitÃƒÂ  diegetica del sistema Registro.
 
 Appears in: Run / Meta
 
@@ -92,9 +92,9 @@ Related: The Register, Registry: Silence, Felix Gallicus
 
 Type: System
 
-One-liner: Cicatrice persistente che certifica una perdita o irreversibilità accettata.
+One-liner: Cicatrice persistente che certifica una perdita o irreversibilitÃƒÂ  accettata.
 
-Details: È memoria della run ed elemento usato dal Registro per classificare il soggetto.
+Details: ÃƒË† memoria della run ed elemento usato dal Registro per classificare il soggetto.
 
 Appears in: Run / Meta
 
@@ -116,7 +116,7 @@ Related: Bet progression, Core loop
 
 Type: Meta
 
-One-liner: Progressione persistente tra run centrata su sblocco di nuove possibilità, non su power scaling lineare.
+One-liner: Progressione persistente tra run centrata su sblocco di nuove possibilitÃƒÂ , non su power scaling lineare.
 
 Details: Persistono unlock/gating/reward secondo regole documentate.
 
@@ -129,9 +129,9 @@ Related: Bet progression, Scar, Core loop
 
 Type: Runtime concept
 
-One-liner: Un ciclo completo di gioco governato da un solo RunManager, dall’avvio all’esito finale.
+One-liner: Un ciclo completo di gioco governato da un solo RunManager, dallÃ¢â‚¬â„¢avvio allÃ¢â‚¬â„¢esito finale.
 
-Details: Include selezione/rischio, progressione di fase e chiusura; è l’unità operativa canonica per stato e outcome.
+Details: Include selezione/rischio, progressione di fase e chiusura; ÃƒÂ¨ lÃ¢â‚¬â„¢unitÃƒÂ  operativa canonica per stato e outcome.
 
 Appears in: Runtime / Mechanics
 
@@ -155,7 +155,7 @@ Type: Outcome class
 
 One-liner: Classe di esito negativo/irreversibile usata per formalizzare il costo finale di una traiettoria di rischio.
 
-Details: Citata in design come “condanna”; non è premio, ma certificazione di perdita coerente con il patto accettato.
+Details: Citata in design come Ã¢â‚¬Å“condannaÃ¢â‚¬Â; non ÃƒÂ¨ premio, ma certificazione di perdita coerente con il patto accettato.
 
 Appears in: Mechanics / Lore
 
@@ -214,3 +214,19 @@ Details: A finale registrale il runtime emette `achievement_unlocked(achievement
 Appears in: Meta
 
 Related: End state, Archivi/Museo, Meta progression
+
+## REGISTRY_PRESSURE
+
+Type: Meta metric
+
+One-liner: Valore persistente nascosto che rappresenta la pressione classificatoria cumulata del Registro.
+
+Details: Aggiornato a fine run da RunManager usando Glory e Corruption; metrica interna non esposta in UI.
+
+## ERA
+
+Type: Registry state band
+
+One-liner: Banda di stato amministrativo finita del Registro (`0..4`, con `4` = Absence).
+
+Details: Progressione monotona e non esposta al player; influenza policy di tono/classificazione senza nuove fasi o azioni utente.

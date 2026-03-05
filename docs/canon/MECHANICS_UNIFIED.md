@@ -1,4 +1,4 @@
-﻿# CANON â€” MECHANICS UNIFIED
+# CANON Ã¢â‚¬â€ MECHANICS UNIFIED
 
 Status: Single source of truth
 
@@ -38,9 +38,9 @@ Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
 - Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
 - Candidate for archive after consolidation patch.
 
-GALLICUS Â· GAME FLOW DIEGETICO
+GALLICUS Ã‚Â· GAME FLOW DIEGETICO
 
-Versione: 1.0 â€” Prima Incisione
+Versione: 1.0 Ã¢â‚¬â€ Prima Incisione
 
 0. PRINCIPIO GUIDA
 
@@ -57,7 +57,7 @@ non riceve obiettivi tradizionali
 
 Riceve registrazioni.
 
-1. INIZIO ASSOLUTO â€” PRIMA RUN
+1. INIZIO ASSOLUTO Ã¢â‚¬â€ PRIMA RUN
 
 Stato del giocatore
 
@@ -87,7 +87,7 @@ La run inizia sempre con una scommessa iniziale.
 
 Non viene spiegato:
 
-perchÃ© si scommette
+perchÃƒÂ© si scommette
 
 cosa rappresenta
 
@@ -117,28 +117,28 @@ Non interattivo
 Contenuto (struttura, non testo fisso)
 
 Registrato:
-[descrizione neutra dellâ€™atto]
+[descrizione neutra dellÃ¢â‚¬â„¢atto]
 
 Esempi di struttura:
 
-â€œaccettata una perditaâ€
+Ã¢â‚¬Å“accettata una perditaÃ¢â‚¬Â
 
-â€œrinunciata unâ€™alternativaâ€
+Ã¢â‚¬Å“rinunciata unÃ¢â‚¬â„¢alternativaÃ¢â‚¬Â
 
-â€œfirmata una condizioneâ€
+Ã¢â‚¬Å“firmata una condizioneÃ¢â‚¬Â
 
 Non viene spiegato chi parla.
-Non viene spiegato perchÃ©.
+Non viene spiegato perchÃƒÂ©.
 
 4. PERCEZIONE DEL GIOCATORE (INTENZIONALE)
 
 Il giocatore non deve pensare:
 
-â€œAh, questo Ã¨ un narratore.â€
+Ã¢â‚¬Å“Ah, questo ÃƒÂ¨ un narratore.Ã¢â‚¬Â
 
 Deve pensare:
 
-â€œQualcosa ha preso nota.â€
+Ã¢â‚¬Å“Qualcosa ha preso nota.Ã¢â‚¬Â
 
 Il Registro non interrompe il flow.
 Lo taglia per un istante.
@@ -173,7 +173,7 @@ Risoluzione arena
 
 Conseguenza
 
-PossibilitÃ  di chiusura
+PossibilitÃƒÂ  di chiusura
 
 Rifiuto o accettazione
 
@@ -191,7 +191,7 @@ Ma lo sente.
 
 7. FINE DELLA PRIMA RUN
 
-Caso A â€” Morte precoce
+Caso A Ã¢â‚¬â€ Morte precoce
 
 Nessuna lettura finale
 
@@ -201,15 +201,15 @@ Nessuna spiegazione
 
 Al massimo:
 
-â€œRegistrato: interruzione non conclusiva.â€
+Ã¢â‚¬Å“Registrato: interruzione non conclusiva.Ã¢â‚¬Â
 
 Il player percepisce:
 
-â€œNon ho visto tutto.â€
+Ã¢â‚¬Å“Non ho visto tutto.Ã¢â‚¬Â
 
-Caso B â€” Arrivo alla Fine del Circuito (raro)
+Caso B Ã¢â‚¬â€ Arrivo alla Fine del Circuito (raro)
 
-Il Registro parla piÃ¹ a lungo, ma resta impersonale.
+Il Registro parla piÃƒÂ¹ a lungo, ma resta impersonale.
 
 Non racconta una storia.
 Fa una constatazione aggregata.
@@ -218,17 +218,17 @@ Struttura:
 
 apertura neutra
 
-2â€“3 pattern osservati
+2Ã¢â‚¬â€œ3 pattern osservati
 
 stato finale
 
 Esempio strutturale:
 
-â€œIl soggetto ha accettato ripetutamente condizioni irreversibili.
+Ã¢â‚¬Å“Il soggetto ha accettato ripetutamente condizioni irreversibili.
 
 Ha rifiutato la chiusura quando disponibile.
 
-Stato finale: definito.â€
+Stato finale: definito.Ã¢â‚¬Â
 
 Nessuna menzione a Felix Gallicus.
 Nessuna anomalia.
@@ -248,7 +248,7 @@ cosa fare ora
 
 Ma resta una domanda implicita:
 
-â€œSe continuoâ€¦ cambierÃ ?â€
+Ã¢â‚¬Å“Se continuoÃ¢â‚¬Â¦ cambierÃƒÂ ?Ã¢â‚¬Â
 
 9. OBIETTIVO PSICOLOGICO DEL FLOW
 
@@ -262,7 +262,7 @@ non sentirsi guidato
 
 non sentirsi giudicato
 
-Il Registro Ã¨ percepito come:
+Il Registro ÃƒÂ¨ percepito come:
 
 una presenza che aspetta.
 
@@ -276,16 +276,16 @@ il player lo ignora
 
 appare come UI di feedback
 
-sembra â€œcoolâ€ o teatrale
+sembra Ã¢â‚¬Å“coolÃ¢â‚¬Â o teatrale
 
 Il Registro deve sembrare inevitabile, non interessante.
 
 INCISIONE DI CHIUSURA
 
-Allâ€™inizio, Gallicus non racconta una storia.
+AllÃ¢â‚¬â„¢inizio, Gallicus non racconta una storia.
 Registra un comportamento.
 
-La storia verrÃ  letta solo quando sarÃ  troppo tardi per cambiarla.
+La storia verrÃƒÂ  letta solo quando sarÃƒÂ  troppo tardi per cambiarla.
 
 ## SOURCE: docs/game_flow_v2.md
 
@@ -300,9 +300,9 @@ La storia verrÃ  letta solo quando sarÃ  troppo tardi per cambiarla.
 ## Overlap
 - Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow.md.
 
-GALLICUS Â· GAME FLOW â€” FASE 2
+GALLICUS Ã‚Â· GAME FLOW Ã¢â‚¬â€ FASE 2
 
-Versione: 2.0 â€” Emergenza dellâ€™Anomalia
+Versione: 2.0 Ã¢â‚¬â€ Emergenza dellÃ¢â‚¬â„¢Anomalia
 
 0. PRINCIPIO GUIDA DELLA FASE 2
 
@@ -313,7 +313,7 @@ Il giocatore:
 
 conosce il Registro
 
-ne accetta lâ€™autoritÃ 
+ne accetta lÃ¢â‚¬â„¢autoritÃƒÂ 
 
 si fida della sua coerenza
 
@@ -321,7 +321,7 @@ La Fase 2 serve a incrinare questa fiducia.
 
 1. CONDIZIONE DI ACCESSO ALLA FASE 2
 
-La Fase 2 non Ã¨ legata a:
+La Fase 2 non ÃƒÂ¨ legata a:
 
 numero di run
 
@@ -339,12 +339,12 @@ rifiuto sistematico della chiusura
 
 accettazione consapevole di perdite non necessarie
 
-ðŸ‘‰ Il sistema determina che:
+Ã°Å¸â€˜â€° Il sistema determina che:
 
-il soggetto non Ã¨ solo definito,
+il soggetto non ÃƒÂ¨ solo definito,
 ma eccede le categorie disponibili.
 
-2. PRIMA CREPA â€” IL REGISTRO ESITA
+2. PRIMA CREPA Ã¢â‚¬â€ IL REGISTRO ESITA
 Evento
 
 Durante una registrazione, qualcosa cambia.
@@ -354,7 +354,7 @@ La forma.
 
 Differenze minime ma percepibili
 
-una pausa piÃ¹ lunga
+una pausa piÃƒÂ¹ lunga
 
 una frase meno standard
 
@@ -362,11 +362,11 @@ una struttura leggermente deviata
 
 Esempio strutturale (non testo definitivo):
 
-â€œRegistrato:
+Ã¢â‚¬Å“Registrato:
 accettata una perdita che non risulta necessaria
-secondo i parametri correnti.â€
+secondo i parametri correnti.Ã¢â‚¬Â
 
-âš ï¸ Ãˆ la prima volta che il Registro:
+Ã¢Å¡Â Ã¯Â¸Â ÃƒË† la prima volta che il Registro:
 
 fa riferimento ai propri parametri
 
@@ -376,20 +376,20 @@ suggerisce una discrepanza
 
 Il giocatore non deve pensare:
 
-â€œIl gioco Ã¨ buggato.â€
+Ã¢â‚¬Å“Il gioco ÃƒÂ¨ buggato.Ã¢â‚¬Â
 
 Deve pensare:
 
-â€œQuesto non doveva succedere.â€
+Ã¢â‚¬Å“Questo non doveva succedere.Ã¢â‚¬Â
 
 Il Registro non spiega.
 Non si corregge.
 Va avanti.
 
-4. DEFINIZIONE DELLâ€™ANOMALIA
-Cosâ€™Ã¨ unâ€™Anomalia
+4. DEFINIZIONE DELLÃ¢â‚¬â„¢ANOMALIA
+CosÃ¢â‚¬â„¢ÃƒÂ¨ unÃ¢â‚¬â„¢Anomalia
 
-Unâ€™Anomalia Ã¨ un soggetto che:
+UnÃ¢â‚¬â„¢Anomalia ÃƒÂ¨ un soggetto che:
 
 soddisfa i criteri di definizione
 
@@ -397,7 +397,7 @@ senza rientrare in nessuna classe narrativa prevista
 
 pur rispettando tutte le regole
 
-Non Ã¨:
+Non ÃƒÂ¨:
 
 un errore
 
@@ -405,9 +405,9 @@ un exploit
 
 una scelta segreta
 
-Ãˆ:
+ÃƒË†:
 
-un esito che il Registro puÃ² registrare,
+un esito che il Registro puÃƒÂ² registrare,
 ma non interpretare.
 
 5. INTRODUZIONE DI FELIX GALLICUS
@@ -418,14 +418,14 @@ Appare come referenza storica.
 
 Esempio strutturale:
 
-â€œNota di precedenza rilevata.
+Ã¢â‚¬Å“Nota di precedenza rilevata.
 
-Caso analogo: Felix Gallicus.â€
+Caso analogo: Felix Gallicus.Ã¢â‚¬Â
 
 Nessuna descrizione.
 Nessun contesto.
 
-Il nome Ã¨:
+Il nome ÃƒÂ¨:
 
 freddo
 
@@ -437,16 +437,16 @@ trattato come un ID storico
 
 Il Registro non chiarisce:
 
-chi Ã¨ Felix
+chi ÃƒÂ¨ Felix
 
 cosa ha fatto
 
-perchÃ© Ã¨ rilevante
+perchÃƒÂ© ÃƒÂ¨ rilevante
 
 Il player deve sentire:
 
-â€œNon sono il primo.
-Ma forse nessuno Ã¨ andato oltre.â€
+Ã¢â‚¬Å“Non sono il primo.
+Ma forse nessuno ÃƒÂ¨ andato oltre.Ã¢â‚¬Â
 
 7. CAMBIO DI TONO (GRADUALE)
 
@@ -468,9 +468,9 @@ Non emozione.
 Burocrazia che scricchiola.
 
 8. FINE DI UNA RUN ANOMALA
-Lettura finale â€” Variante
+Lettura finale Ã¢â‚¬â€ Variante
 
-Il finale non Ã¨ una sentenza pienamente chiusa.
+Il finale non ÃƒÂ¨ una sentenza pienamente chiusa.
 
 Struttura:
 
@@ -482,13 +482,13 @@ classificazione incompleta
 
 Esempio strutturale:
 
-â€œIl soggetto presenta un profilo coerente.
+Ã¢â‚¬Å“Il soggetto presenta un profilo coerente.
 
-La classificazione non Ã¨ conclusiva.
+La classificazione non ÃƒÂ¨ conclusiva.
 
-Stato: registrato in attesa.â€
+Stato: registrato in attesa.Ã¢â‚¬Â
 
-âš ï¸ Ãˆ la prima volta che:
+Ã¢Å¡Â Ã¯Â¸Â ÃƒË† la prima volta che:
 
 la run non viene chiusa narrativamente
 
@@ -498,14 +498,14 @@ il Registro non dichiara definizione
 
 Il player torna al menu con una certezza nuova:
 
-â€œIl Registro non Ã¨ infallibile.
-Ma io non so perchÃ©.â€
+Ã¢â‚¬Å“Il Registro non ÃƒÂ¨ infallibile.
+Ma io non so perchÃƒÂ©.Ã¢â‚¬Â
 
-Ed Ã¨ qui che nasce la spinta.
+Ed ÃƒÂ¨ qui che nasce la spinta.
 
 Non per vincere.
-Per capire cosa Ã¨ successo a Felix Gallicus
-e perchÃ© il sistema non sa piÃ¹ come leggerlo.
+Per capire cosa ÃƒÂ¨ successo a Felix Gallicus
+e perchÃƒÂ© il sistema non sa piÃƒÂ¹ come leggerlo.
 
 10. CONDIZIONE DI FALLIMENTO DELLA FASE 2
 
@@ -515,7 +515,7 @@ Felix viene spiegato subito
 
 il Registro diventa emotivo
 
-lâ€™anomalia sembra una â€œroute segretaâ€
+lÃ¢â‚¬â„¢anomalia sembra una Ã¢â‚¬Å“route segretaÃ¢â‚¬Â
 
 il player capisce troppo
 
@@ -525,14 +525,14 @@ strutturale, non narrativo.
 
 INCISIONE FINALE
 
-**Il Registro non perde autoritÃ  quando sbaglia.
+**Il Registro non perde autoritÃƒÂ  quando sbaglia.
 
 La perde quando incontra qualcosa
-che non Ã¨ stato progettato per capire.**
+che non ÃƒÂ¨ stato progettato per capire.**
 
 ## SOURCE: docs/FLOW_OFFICIAL_EA.md
 
-# GAL LICUS â€” Flow Ufficiale EA (Repo-Aligned Contract)
+# GAL LICUS Ã¢â‚¬â€ Flow Ufficiale EA (Repo-Aligned Contract)
 
 **Status:** SUPPORTING  
 **Scope:** Repository-aligned Level 3 flow narrative and signal sequence reference.  
@@ -546,14 +546,14 @@ che non Ã¨ stato progettato per capire.**
 - Candidate for archive after consolidation patch if fully subsumed by canonical flow contract.
 
 ## Scopo
-Documento canonico del flow â€œLevel 3â€ implementato nel repo corrente.
+Documento canonico del flow Ã¢â‚¬Å“Level 3Ã¢â‚¬Â implementato nel repo corrente.
 Serve per debugging, prevenzione regressioni e memoria dei passaggi.
 
 ## Principi invarianti
-1) RunManager Ã¨ autoritÃ  di stato e progressione.
-2) UI Ã¨ reattiva (emette solo request_*).
+1) RunManager ÃƒÂ¨ autoritÃƒÂ  di stato e progressione.
+2) UI ÃƒÂ¨ reattiva (emette solo request_*).
 3) Comunicazione cross-layer solo via GameEvents.
-4) Il flow runtime Ã¨ esplicito via `RunPhase` enum in `run_manager.gd`.
+4) Il flow runtime ÃƒÂ¨ esplicito via `RunPhase` enum in `run_manager.gd`.
 
 ## Level 3 Outcome Vocabulary (Canon)
 
@@ -570,7 +570,7 @@ Payload minimo raccomandato per `arena_completed` / superfici UI derivate:
 - `pressure_mod: float`
   - Modificatore di pressione rituale (no stat semantics).
 - `failure_chance: float`
-  - ProbabilitÃ  di esito avverso rituale determinata da bet/RNG.
+  - ProbabilitÃƒÂ  di esito avverso rituale determinata da bet/RNG.
 - `condemnation_flag: bool`
   - Indicatore esplicito che la risoluzione ha prodotto condanna/classificazione avversa.
 - `outcome_tier: String`
@@ -579,13 +579,13 @@ Payload minimo raccomandato per `arena_completed` / superfici UI derivate:
   - Motivazione rituale/registrale per log/UI (mai linguaggio combat).
 
 Note canoniche:
-- AutoritÃ  outcome Level 3: **solo patto + bet + RNG**.
-- Combat runtime Ã¨ disabilitato: nessuna autoritÃ  terminale da sistemi fisici legacy.
+- AutoritÃƒÂ  outcome Level 3: **solo patto + bet + RNG**.
+- Combat runtime ÃƒÂ¨ disabilitato: nessuna autoritÃƒÂ  terminale da sistemi fisici legacy.
 - Runtime Level 3 does not expose or consume legacy penalty signals/fields in active flow/UI wiring.
 - Level 3 run save payload includes `level3_schema = 2` as one-time migration boundary for sealed loss-consequence contract.
 - `glory` e `corruption` restano invarianti run-level in `RunState` e non ridefiniscono semantica combat.
 
-### Legacy combat semantics â†’ stato C6B
+### Legacy combat semantics Ã¢â€ â€™ stato C6B
 
 Le alias legacy di perdita/esito sono state rimosse dal contratto runtime Level 3 attivo.
 Le superfici runtime e UI devono usare esclusivamente chiavi canoniche rituali.
@@ -617,11 +617,11 @@ Le superfici runtime e UI devono usare esclusivamente chiavi canoniche rituali.
 ### 0) MENU
 RunPhase: MAIN_MENU  
 UI: menu principale  
-UI â†’ RunManager: request_new_run, request_continue_run
+UI Ã¢â€ â€™ RunManager: request_new_run, request_continue_run
 
 ### 1) RUN START (Level 3)
 RunPhase: RUN_INIT  
-RunManager: _start_level3_run() â†’ run_started â†’ start_arena()
+RunManager: _start_level3_run() Ã¢â€ â€™ run_started Ã¢â€ â€™ start_arena()
 
 ### 2) ARENA SETUP
 RunPhase: BET_PRESENT (entry dopo setup arena)  
@@ -633,8 +633,8 @@ RunManager: start_arena():
 
 ### 3) BET UI OPEN
 RunPhase: BET_PRESENT  
-RunManager â†’ UI: bet_ui_opened  
-UI â†’ RunManager: request_place_bet(bet_id)
+RunManager Ã¢â€ â€™ UI: bet_ui_opened  
+UI Ã¢â€ â€™ RunManager: request_place_bet(bet_id)
 - Offerte canoniche BET_PRESENT (L3 attivo): `CASH_OUT`, `DOUBLE_OR_DIE` (shape a 2 opzioni).
 
 ### 4) BET SELECTED + CHECKPOINT
@@ -646,19 +646,19 @@ RunManager: select_bet():
 - AUTOSAVE: RUN_FLOW_BET_SIGNED
 - avvia rituali/risoluzione
 
-### 5) RITUAL 1 â€” PACT SEALED
+### 5) RITUAL 1 Ã¢â‚¬â€ PACT SEALED
 RunPhase: BET_COMMITTED (rituale in flow interno)  
-RunManager â†’ UI: pact_sealed_opened  
+RunManager Ã¢â€ â€™ UI: pact_sealed_opened  
 Chiusura: pact_sealed_closed emesso dal RunManager (timer/flow interno)
 
 ### 6) REAZIONE PUBBLICO + GESTURE
 RunPhase: INTERMEDIATE_CHOICE  
 Dopo `pact_sealed_closed` il RunManager apre direttamente la fase gesto (senza `POST_BET_MESSAGES` nel flow attivo).  
-RunManager â†’ UI: payload INTERMEDIATE_CHOICE con messaggio pubblico + opzioni gesto  
-UI â†’ RunManager: request_mid_choice_select(0|1)  
+RunManager Ã¢â€ â€™ UI: payload INTERMEDIATE_CHOICE con messaggio pubblico + opzioni gesto  
+UI Ã¢â€ â€™ RunManager: request_mid_choice_select(0|1)  
 AUTOSAVE: RUN_FLOW_PUSH_LUCK
 
-### 7) RITUAL 2 â€” RESOLVE RITUAL + ARENA RESOLVE
+### 7) RITUAL 2 Ã¢â‚¬â€ RESOLVE RITUAL + ARENA RESOLVE
 RunPhase: RESOLUTION  
 Dopo la scelta gesto, il RunManager avvia `resolve_ritual_opened/closed` e poi risolve arena:
 - arena_started
@@ -668,8 +668,8 @@ AUTOSAVE: RUN_FLOW_INTERMEDIATE_CHOICE (subito dopo la risoluzione)
 
 ### 8) PUSH YOUR LUCK
 RunPhase: PUSH_YOUR_LUCK  
-RunManager â†’ UI: push_luck_opened(payload)  
-UI â†’ RunManager:
+RunManager Ã¢â€ â€™ UI: push_luck_opened(payload)  
+UI Ã¢â€ â€™ RunManager:
 - request_pyl_cashout
 - request_pyl_double
 
@@ -679,10 +679,10 @@ Regole canoniche L3 nel segmento PUSH_YOUR_LUCK:
 - Escalation Threshold Events: superamento soglie escalation (3/5/7) attiva eventi one-shot run-scoped (condanne + incremento corruzione) sotto sola autorita RunManager.
 
 Checkpoint:
-- Double â†’ AUTOSAVE RUN_FLOW_BET_OFFER e ritorno a ARENA_SETUP
-- Cashout â†’ end-run (nessun autosave; clear_run a fine)
+- Double Ã¢â€ â€™ AUTOSAVE RUN_FLOW_BET_OFFER e ritorno a ARENA_SETUP
+- Cashout Ã¢â€ â€™ end-run (nessun autosave; clear_run a fine)
 
-### 10) RUN END â€” VERDETTO
+### 10) RUN END Ã¢â‚¬â€ VERDETTO
 RunPhase: GAME_OVER  
 RunManager:
 - SaveManager.clear_run()
@@ -696,36 +696,36 @@ UI:
 
 Registro (provvisorio/finale):
 - END_RUN espone sempre `meta.register_message`.
-- `register_final` Ã¨ `false` finchÃ© `completed_bets < 3` (mai finale al primo giro).
-- Quando `completed_bets >= 3`, la chiusura fascicolo Ã¨ deterministica in prioritÃ : `corruption >= 70` â†’ `ending_corruption`; altrimenti `glory >= 100` â†’ `ending_glory`; altrimenti `scars_count >= 3` â†’ `ending_scars`; altrimenti `ending_pattern`.
-- In Registro Finale: `meta.next_bet_enabled = false`, il run Ã¨ terminale, `register_ending_key` Ã¨ obbligatorio e l'esito meta Ã¨ emesso una sola volta per run.
+- `register_final` ÃƒÂ¨ `false` finchÃƒÂ© `completed_bets < 3` (mai finale al primo giro).
+- Quando `completed_bets >= 3`, la chiusura fascicolo ÃƒÂ¨ deterministica in prioritÃƒÂ : `corruption >= 70` Ã¢â€ â€™ `ending_corruption`; altrimenti `glory >= 100` Ã¢â€ â€™ `ending_glory`; altrimenti `scars_count >= 3` Ã¢â€ â€™ `ending_scars`; altrimenti `ending_pattern`.
+- In Registro Finale: `meta.next_bet_enabled = false`, il run ÃƒÂ¨ terminale, `register_ending_key` ÃƒÂ¨ obbligatorio e l'esito meta ÃƒÂ¨ emesso una sola volta per run.
 - Wiring achievements canonico (sistema unlock esistente via Condanne/SaveManager):
-  - `ending_corruption` â†’ `CONDANNA_REGISTRO_COMPROMISSIONE`
-  - `ending_glory` â†’ `CONDANNA_REGISTRO_ASCESA`
-  - `ending_scars` â†’ `CONDANNA_REGISTRO_CONSUMO`
-  - `ending_pattern` â†’ `CONDANNA_REGISTRO_PATTERN`
+  - `ending_corruption` Ã¢â€ â€™ `CONDANNA_REGISTRO_COMPROMISSIONE`
+  - `ending_glory` Ã¢â€ â€™ `CONDANNA_REGISTRO_ASCESA`
+  - `ending_scars` Ã¢â€ â€™ `CONDANNA_REGISTRO_CONSUMO`
+  - `ending_pattern` Ã¢â€ â€™ `CONDANNA_REGISTRO_PATTERN`
 - On finale resta emesso anche `GameEvents.meta_progress_unlocked(ending_key)` una sola volta per run; `archive_entry_unlocked` resta side-effect meta separato.
 
 ---
 
 ## Checkpoints autosave (canonici)
-1) Dopo firma patto â†’ RUN_FLOW_BET_SIGNED
-2) Dopo scelta gesto â†’ RUN_FLOW_PUSH_LUCK
-3) Dopo risoluzione arena â†’ RUN_FLOW_INTERMEDIATE_CHOICE
-4) Dopo scelta Double â†’ RUN_FLOW_BET_OFFER
-5) End-run â†’ clear_run()
+1) Dopo firma patto Ã¢â€ â€™ RUN_FLOW_BET_SIGNED
+2) Dopo scelta gesto Ã¢â€ â€™ RUN_FLOW_PUSH_LUCK
+3) Dopo risoluzione arena Ã¢â€ â€™ RUN_FLOW_INTERMEDIATE_CHOICE
+4) Dopo scelta Double Ã¢â€ â€™ RUN_FLOW_BET_OFFER
+5) End-run Ã¢â€ â€™ clear_run()
 
 ---
 
 ## Bug hotspots
-- Rituali: open senza close â†’ softlock (timer/flow interno)
+- Rituali: open senza close Ã¢â€ â€™ softlock (timer/flow interno)
 - Betting: mismatch segnali request_place_bet
-- arena_completed senza payload outcome â†’ UI deve derivare da RunState
-- Legacy BetManager attivo insieme a Level 3 â†’ flow misto (da evitare)
+- arena_completed senza payload outcome Ã¢â€ â€™ UI deve derivare da RunState
+- Legacy BetManager attivo insieme a Level 3 Ã¢â€ â€™ flow misto (da evitare)
 
-## Regola dâ€™oro
-Se una UI non appare: non Ã¨ layout.  
-Ãˆ un open non emesso, un close non emesso o un listener non connesso.
+## Regola dÃ¢â‚¬â„¢oro
+Se una UI non appare: non ÃƒÂ¨ layout.  
+ÃƒË† un open non emesso, un close non emesso o un listener non connesso.
 
 ## SOURCE: docs/bet_progression.md
 
@@ -740,25 +740,25 @@ Se una UI non appare: non Ã¨ layout.
 ## Overlap
 - Overlaps with: docs/game_flow.md, docs/game_flow_v2.md.
 
-GALLICUS Â· PROGRESSIONE DELLE SCOMMESSE
+GALLICUS Ã‚Â· PROGRESSIONE DELLE SCOMMESSE
 
-Versione: 1.0 â€” Fondazionale
+Versione: 1.0 Ã¢â‚¬â€ Fondazionale
 
-1. PERCHÃ‰ ESISTONO LE SCOMMESSE
+1. PERCHÃƒâ€° ESISTONO LE SCOMMESSE
 
-Le scommesse non servono a vincere di piÃ¹.
+Le scommesse non servono a vincere di piÃƒÂ¹.
 Servono a rimandare la definizione del soggetto.
 
-Ogni scommessa Ã¨ un atto di rifiuto della chiusura.
+Ogni scommessa ÃƒÂ¨ un atto di rifiuto della chiusura.
 
-Il player non scommette perchÃ© conviene.
-Scommette perchÃ© fermarsi ora significherebbe accettare unâ€™identitÃ  incompleta.
+Il player non scommette perchÃƒÂ© conviene.
+Scommette perchÃƒÂ© fermarsi ora significherebbe accettare unÃ¢â‚¬â„¢identitÃƒÂ  incompleta.
 
 2. COSA OFFRONO DAVVERO
 
 Una scommessa offre:
 
-continuitÃ 
+continuitÃƒÂ 
 
 accesso a ulteriori decisioni
 
@@ -768,41 +768,41 @@ Non offre:
 
 sicurezza
 
-stabilitÃ 
+stabilitÃƒÂ 
 
 vera crescita
 
 3. STRUTTURA DELLA PROGRESSIONE
 
-La progressione delle scommesse Ã¨ qualitativa, non numerica.
+La progressione delle scommesse ÃƒÂ¨ qualitativa, non numerica.
 
 Ogni step:
 
 riduce le opzioni sicure
 
-introduce condanne piÃ¹ nette
+introduce condanne piÃƒÂ¹ nette
 
-aumenta la probabilitÃ  di Scar
+aumenta la probabilitÃƒÂ  di Scar
 
-La curva NON Ã¨:
+La curva NON ÃƒÂ¨:
 
-piÃ¹ reward
+piÃƒÂ¹ reward
 
-piÃ¹ difficoltÃ 
+piÃƒÂ¹ difficoltÃƒÂ 
 
-Ãˆ:
+ÃƒË†:
 
-meno via dâ€™uscita
+meno via dÃ¢â‚¬â„¢uscita
 
-4. PUSH YOUR LUCK â€” SIGNIFICATO REALE
+4. PUSH YOUR LUCK Ã¢â‚¬â€ SIGNIFICATO REALE
 
 Il push your luck non chiede:
 
-â€œVuoi rischiare?â€
+Ã¢â‚¬Å“Vuoi rischiare?Ã¢â‚¬Â
 
 Chiede:
 
-â€œAccetti di non chiudere ancora?â€
+Ã¢â‚¬Å“Accetti di non chiudere ancora?Ã¢â‚¬Â
 
 Ogni rifiuto della chiusura:
 
@@ -818,10 +818,10 @@ Le scommesse non creano sempre Scar
 
 Ma preparano il terreno
 
-Superate certe soglie â†’ la Scar Ã¨ inevitabile
+Superate certe soglie Ã¢â€ â€™ la Scar ÃƒÂ¨ inevitabile
 
 Il player non sa quando.
-Il sistema sÃ¬.
+Il sistema sÃƒÂ¬.
 
 6. CONDIZIONE DI FINE
 
@@ -829,7 +829,7 @@ La run termina quando:
 
 il sistema considera il soggetto definito
 
-non esistono piÃ¹ scommesse significative
+non esistono piÃƒÂ¹ scommesse significative
 
 la prosecuzione sarebbe solo reiterazione
 
@@ -841,13 +841,13 @@ Il Registro prende la parola.
 
 Il sistema scommesse fallisce se:
 
-il player cerca â€œla scelta giustaâ€
+il player cerca Ã¢â‚¬Å“la scelta giustaÃ¢â‚¬Â
 
 il rischio viene letto come ottimizzazione
 
 la chiusura non fa paura
 
-CHIUSURA â€” INCISIONE NELLA PIETRA
+CHIUSURA Ã¢â‚¬â€ INCISIONE NELLA PIETRA
 
 Questi due sistemi esistono per una sola ragione:
 
@@ -859,7 +859,7 @@ La subisce alla fine.
 
 ## SOURCE: docs/meta_progression.md
 
-# GALLICUS Â· META PROGRESSIONE
+# GALLICUS Ã‚Â· META PROGRESSIONE
 
 **Status:** SUPPORTING  
 **Scope:** Meta-progression design boundaries and unlock philosophy.  
@@ -870,23 +870,23 @@ La subisce alla fine.
 ## Overlap
 - Overlaps with: docs/bet_progression.md, docs/scar_system.md.
 
-Versione: 1.0 â€” Persistenza della Conoscenza
+Versione: 1.0 Ã¢â‚¬â€ Persistenza della Conoscenza
 
 ## 0. PRINCIPIO FONDANTE
 
 Gallicus non ricompensa la ripetizione.  
 Ricompensa la comprensione del rischio.
 
-Tra una run e lâ€™altra non sopravvive il potere.  
-Sopravvive solo ciÃ² che non puÃ² piÃ¹ essere disimparato.
+Tra una run e lÃ¢â‚¬â„¢altra non sopravvive il potere.  
+Sopravvive solo ciÃƒÂ² che non puÃƒÂ² piÃƒÂ¹ essere disimparato.
 
-## 1. COSA Ãˆ LA META-PROGRESSIONE
+## 1. COSA ÃƒË† LA META-PROGRESSIONE
 
-La meta-progression in Gallicus Ã¨:
+La meta-progression in Gallicus ÃƒÂ¨:
 
 accumulo di consapevolezza sistemica.
 
-Non Ã¨:
+Non ÃƒÂ¨:
 
 - crescita numerica
 - sblocco di vantaggi
@@ -894,20 +894,20 @@ Non Ã¨:
 
 ## 2. COSA PERSISTE TRA LE RUN
 
-### 2.1 Persistono solo ENTITÃ€ DI CONOSCENZA
+### 2.1 Persistono solo ENTITÃƒâ‚¬ DI CONOSCENZA
 
 Esempi ammessi:
 
-- nuove classi di scommesse (piÃ¹ rischiose)
+- nuove classi di scommesse (piÃƒÂ¹ rischiose)
 - nuove condanne narrative
-- nuove soglie di irreversibilitÃ 
-- nuove modalitÃ  di chiusura
+- nuove soglie di irreversibilitÃƒÂ 
+- nuove modalitÃƒÂ  di chiusura
 
-ðŸ‘‰ Ogni sblocco aumenta il rischio potenziale, mai la sicurezza.
+Ã°Å¸â€˜â€° Ogni sblocco aumenta il rischio potenziale, mai la sicurezza.
 
 ### 2.2 Registry references (boundary note)
 
-La descrizione diegetica di come il Registro "ricorda" il player Ã¨ stata spostata in `docs/canon/LORE_UNIFIED.md` per separazione categorie.
+La descrizione diegetica di come il Registro "ricorda" il player ÃƒÂ¨ stata spostata in `docs/canon/LORE_UNIFIED.md` per separazione categorie.
 
 In Mechanics resta solo il vincolo runtime:
 
@@ -933,9 +933,9 @@ Runtime enforcement note (Level 3): Player is visual-only (`Node2D`) and movemen
 
 Se qualcosa rende la prossima run:
 
-piÃ¹ facile
+piÃƒÂ¹ facile
 
-ðŸ‘‰ Ã¨ illegale.
+Ã°Å¸â€˜â€° ÃƒÂ¨ illegale.
 
 ## 4. RUOLO DI FELIX NELLA META-PROGRESSIONE (boundary note)
 
@@ -944,28 +944,28 @@ Le implicazioni narrative su Felix Gallicus sono state spostate in `docs/canon/L
 In Mechanics resta solo il vincolo sistemico:
 
 - la meta progression non sblocca vantaggi numerici
-- le nuove opzioni aumentano rischio e irreversibilitÃ 
+- le nuove opzioni aumentano rischio e irreversibilitÃƒÂ 
 
 ## 5. STRUTTURA DEGLI SBLOCCHI
 
 Ogni sblocco deve rispettare questa formula:
 
-PiÃ¹ avanti â†’ meno ritorno â†’ piÃ¹ irreversibilitÃ 
+PiÃƒÂ¹ avanti Ã¢â€ â€™ meno ritorno Ã¢â€ â€™ piÃƒÂ¹ irreversibilitÃƒÂ 
 
 Esempio strutturale:
 
 - nuova scommessa con payoff alto
-- condizione piÃ¹ stretta
-- condanna piÃ¹ devastante
+- condizione piÃƒÂ¹ stretta
+- condanna piÃƒÂ¹ devastante
 
 Mai:
 
-- â€œora sei piÃ¹ forteâ€
-- â€œora puoi correggereâ€
+- Ã¢â‚¬Å“ora sei piÃƒÂ¹ forteÃ¢â‚¬Â
+- Ã¢â‚¬Å“ora puoi correggereÃ¢â‚¬Â
 
 Sempre:
 
-â€œora puoi rischiare in modo piÃ¹ definitivo.â€
+Ã¢â‚¬Å“ora puoi rischiare in modo piÃƒÂ¹ definitivo.Ã¢â‚¬Â
 
 ## 6. RELAZIONE CON IL FINALE
 
@@ -977,18 +977,18 @@ La meta-progression:
 
 Cambia solo:
 
-quanto in lÃ  puoi spingerti la prossima volta.
+quanto in lÃƒÂ  puoi spingerti la prossima volta.
 
 ## 7. OBIETTIVO PSICOLOGICO
 
 Il player deve sentire:
 
-â€œSo di piÃ¹.  
-Ma per questoâ€¦ posso farmi molto piÃ¹ male.â€
+Ã¢â‚¬Å“So di piÃƒÂ¹.  
+Ma per questoÃ¢â‚¬Â¦ posso farmi molto piÃƒÂ¹ male.Ã¢â‚¬Â
 
 Non:
 
-â€œOra posso farcela.â€
+Ã¢â‚¬Å“Ora posso farcela.Ã¢â‚¬Â
 
 ## 8. CONDIZIONE DI FALLIMENTO DEL SISTEMA
 
@@ -997,24 +997,24 @@ La meta-progression fallisce se:
 - il player grind-a
 - cerca efficienza
 - accumula sicurezza
-- sente â€œprogressioneâ€
+- sente Ã¢â‚¬Å“progressioneÃ¢â‚¬Â
 
 Se il player dice:
 
-â€œFinalmente sono pronto.â€
+Ã¢â‚¬Å“Finalmente sono pronto.Ã¢â‚¬Â
 
-ðŸ‘‰ design fallito.
+Ã°Å¸â€˜â€° design fallito.
 
 Se dice:
 
-â€œOra so quanto puÃ² andare male.â€
+Ã¢â‚¬Å“Ora so quanto puÃƒÂ² andare male.Ã¢â‚¬Â
 
-ðŸ‘‰ design riuscito.
+Ã°Å¸â€˜â€° design riuscito.
 
 ## INCISIONE FINALE
 
 In Gallicus, la vera progressione  
-Ã¨ rendere possibile una sconfitta  
+ÃƒÂ¨ rendere possibile una sconfitta  
 che prima non potevi nemmeno immaginare.
 
 ## SOURCE: docs/scar_system.md
@@ -1030,17 +1030,17 @@ che prima non potevi nemmeno immaginare.
 ## Overlap
 - Overlaps with: docs/bet_progression.md, docs/meta_progression.md.
 
-GALLICUS Â· SCAR SYSTEM
+GALLICUS Ã‚Â· SCAR SYSTEM
 
-Versione: 1.0 â€” Fondazionale
+Versione: 1.0 Ã¢â‚¬â€ Fondazionale
 
 1. DEFINIZIONE
 
-Una Scar Ã¨ una registrazione irreversibile di una scelta ad alto rischio.
-Non rappresenta una penalitÃ , ma una perdita di reversibilitÃ .
+Una Scar ÃƒÂ¨ una registrazione irreversibile di una scelta ad alto rischio.
+Non rappresenta una penalitÃƒÂ , ma una perdita di reversibilitÃƒÂ .
 
-Una Scar esiste perchÃ© il sistema ha preso atto
-che il soggetto ha accettato di non poter piÃ¹ tornare indietro.
+Una Scar esiste perchÃƒÂ© il sistema ha preso atto
+che il soggetto ha accettato di non poter piÃƒÂ¹ tornare indietro.
 
 2. OBIETTIVO DEL SISTEMA
 
@@ -1050,7 +1050,7 @@ Rendere il finale narrativo inevitabile.
 
 Le Scar NON servono a:
 
-bilanciare la difficoltÃ 
+bilanciare la difficoltÃƒÂ 
 
 punire il giocatore
 
@@ -1058,7 +1058,7 @@ rallentare la run
 
 Servono a:
 
-definire lâ€™identitÃ  della run
+definire lÃ¢â‚¬â„¢identitÃƒÂ  della run
 
 costruire pattern leggibili dal Registro
 
@@ -1066,35 +1066,35 @@ impedire finali neutri
 
 3. PRINCIPI NON NEGOZIABILI
 
-3.1 IrreversibilitÃ  assoluta
+3.1 IrreversibilitÃƒÂ  assoluta
 
-Una Scar non puÃ² mai essere rimossa
+Una Scar non puÃƒÂ² mai essere rimossa
 
 Non esistono cure, cleanse, reset parziali
 
-La run puÃ² solo accumularle
+La run puÃƒÂ² solo accumularle
 
-3.2 Nessuna Scar Ã¨ neutra
+3.2 Nessuna Scar ÃƒÂ¨ neutra
 
 Ogni Scar:
 
-chiude almeno una possibilitÃ  futura
+chiude almeno una possibilitÃƒÂ  futura
 
 forza il player verso una direzione identitaria
 
-Se una Scar â€œaggiunge solo qualcosaâ€ â†’ Ã¨ illegale.
+Se una Scar Ã¢â‚¬Å“aggiunge solo qualcosaÃ¢â‚¬Â Ã¢â€ â€™ ÃƒÂ¨ illegale.
 
 3.3 Le Scar non si spiegano
 
-Il gioco non descrive mai lâ€™effetto finale narrativo
+Il gioco non descrive mai lÃ¢â‚¬â„¢effetto finale narrativo
 
-Il player vede solo lâ€™effetto sistemico immediato
+Il player vede solo lÃ¢â‚¬â„¢effetto sistemico immediato
 
 Il significato emerge solo nel finale
 
 4. STRUTTURA DI UNA SCAR
 
-Ogni Scar Ã¨ composta da tre strati:
+Ogni Scar ÃƒÂ¨ composta da tre strati:
 
 A. Effetto Sistemico
 
@@ -1104,7 +1104,7 @@ lock di opzioni
 
 alterazione delle scommesse
 
-deviazione delle probabilitÃ 
+deviazione delle probabilitÃƒÂ 
 
 B. Tag Identitario (invisibile)
 
@@ -1125,24 +1125,24 @@ Servono solo al Registro.
 
 C. Valenza Narrativa
 
-La Scar Ã¨ una frase implicita, es.:
+La Scar ÃƒÂ¨ una frase implicita, es.:
 
-â€œhai accettato una perdita non necessariaâ€
+Ã¢â‚¬Å“hai accettato una perdita non necessariaÃ¢â‚¬Â
 
-â€œhai rinunciato al controllo in cambio di continuitÃ â€
+Ã¢â‚¬Å“hai rinunciato al controllo in cambio di continuitÃƒÂ Ã¢â‚¬Â
 
 Questa frase non viene mai mostrata,
-ma sarÃ  letta nel finale.
+ma sarÃƒÂ  letta nel finale.
 
 5. QUANDO NASCE UNA SCAR
 
 Una Scar nasce solo se:
 
-una scommessa introduce irreversibilitÃ 
+una scommessa introduce irreversibilitÃƒÂ 
 
 una condizione viene accettata consapevolmente
 
-il player rifiuta piÃ¹ volte una chiusura disponibile
+il player rifiuta piÃƒÂ¹ volte una chiusura disponibile
 
 una run supera soglie di rischio cumulative
 
@@ -1155,21 +1155,21 @@ Ogni Scar viene registrata
 
 Il Registro non commenta
 
-Il Registro annota lâ€™atto, non lâ€™esito
+Il Registro annota lÃ¢â‚¬â„¢atto, non lÃ¢â‚¬â„¢esito
 
 Esempio di logica diegetica:
 
-â€œRegistrato: accettata una perdita che non era necessaria.â€
+Ã¢â‚¬Å“Registrato: accettata una perdita che non era necessaria.Ã¢â‚¬Â
 
 7. CONDIZIONE DI FALLIMENTO DEL SISTEMA
 
 Il sistema Scar fallisce se:
 
-una run puÃ² arrivare al finale senza Scar rilevanti
+una run puÃƒÂ² arrivare al finale senza Scar rilevanti
 
-le Scar sono percepite come â€œmalusâ€
+le Scar sono percepite come Ã¢â‚¬Å“malusÃ¢â‚¬Â
 
-il player tenta di â€œottimizzarleâ€.
+il player tenta di Ã¢â‚¬Å“ottimizzarleÃ¢â‚¬Â.
 
 
 ## Registry State & Destiny Conditions (Mechanical Addendum)
@@ -1249,3 +1249,19 @@ Glory is displayed in HUD as a numeric value only (no explanatory gameplay logic
 
 
 
+
+## Era System (Registry State Drift)
+
+- Hidden persistent meta keys:
+  - `meta.registry_pressure: float`
+  - `meta.registry_era: int`
+- Defaults when missing: `registry_pressure=0.0`, `registry_era=0`.
+- Canon domain for era is finite: `0..4` (`4` = Absence).
+- Authoritative update point is run closure (END_RUN authority in RunManager).
+- Deterministic pressure update at run end:
+  - `registry_pressure += glory * 0.25`
+  - `registry_pressure += corruption * 0.75`
+- Current contract: `registry_pressure` is persisted and used as hidden drift metric; it does not remap era bands directly.
+- Era progression remains silence-driven by registry canon logic.
+- Era is never exposed in UI (no bars, no numeric meta surface).
+- Policy impact remains indirect (audience/condanna/tone bias), with no new phases, actions, or signals.

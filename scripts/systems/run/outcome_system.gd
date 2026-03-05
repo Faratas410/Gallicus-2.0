@@ -190,7 +190,7 @@ func build_level3_loss_consequence(
 		"reset_escalation": true,
 	}
 
-func compute_level3_reward_coins(
+func compute_level3_reward_glory(
 	behavior_id: StringName,
 	reward_tier: int,
 	cashout_modifier: float
@@ -198,21 +198,21 @@ func compute_level3_reward_coins(
 	var tier: int = maxi(reward_tier, 1)
 	match behavior_id:
 		BET_CASH_OUT:
-			var reward: int = 10 * tier
+			var reward: int = tier
 			if cashout_modifier < 1.0:
 				reward = int(floor(float(reward) * cashout_modifier))
 				reward = maxi(reward, 0)
 			return reward
 		BET_DOUBLE_OR_DIE:
-			return 30 * tier
+			return 2 * tier
 		BET_DEBT_CHAIN:
-			return 18 * tier
+			return tier
 		BET_BLOOD_TAX:
-			return 26 * tier
+			return 2 * tier
 		BET_CROW_PLEASER:
-			return 14 * tier
+			return tier
 		BET_LAST_BREATH:
-			return 28 * tier
+			return 2 * tier
 		_:
 			return 0
 

@@ -52,7 +52,6 @@ func apply_payload_to_state(run_state: RunState, payload: Dictionary) -> Diction
 	var run_data: Dictionary = apply_result.get("run", {}) as Dictionary
 	var applied_runtime: Dictionary = {
 		"arena_index": int(run_data.get("arena_index", run_state.arena_index)),
-		"coins": int(run_data.get("coins", 0)),
 		"corruption": int(run_data.get("corruption", 0)),
 		"upgrades": {},
 	}
@@ -73,7 +72,6 @@ func _build_runtime_payload(runtime_fields: Dictionary) -> Dictionary:
 	return {
 		"level3_schema": LEVEL3_SCHEMA_VERSION,
 		"arena_index": int(runtime_fields.get("arena_index", 0)),
-		"coins": int(runtime_fields.get("coins", 0)),
 		"corruption": int(runtime_fields.get("corruption", 0)),
 		"upgrades": upgrades,
 	}

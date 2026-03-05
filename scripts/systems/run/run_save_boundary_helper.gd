@@ -12,7 +12,6 @@ func build_run_payload(run_state: RunState, runtime_run: Dictionary) -> Dictiona
 	var payload: Dictionary = {}
 
 	payload["arena_index"] = int(runtime_run.get("arena_index", run_state.arena_index))
-	payload["coins"] = int(runtime_run.get("coins", 0))
 	payload["corruption"] = int(runtime_run.get("corruption", run_state.corruption))
 	payload["glory"] = run_state.glory
 	payload["upgrades"] = {}
@@ -26,8 +25,6 @@ func apply_run_payload(run_state: RunState, runtime_run: Dictionary, payload: Di
 		run_state.arena_index = int(payload["arena_index"])
 		runtime_run["arena_index"] = run_state.arena_index
 
-	if payload.has("coins"):
-		runtime_run["coins"] = int(payload["coins"])
 
 	if payload.has("corruption"):
 		run_state.corruption = clampi(int(payload["corruption"]), 0, 100)

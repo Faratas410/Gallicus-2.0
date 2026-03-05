@@ -7,10 +7,9 @@ class_name RunUiPayloadFactory
 # Solo costruzione Dictionary UI
 
 
-func build_intro_payload(run_state: RunState, coins: int) -> Dictionary:
+func build_intro_payload(run_state: RunState) -> Dictionary:
 	var payload: Dictionary = {}
 	payload["arena_index"] = run_state.arena_index
-	payload["coins"] = coins
 	payload["corruption"] = run_state.corruption
 	payload["glory"] = run_state.glory
 	return payload

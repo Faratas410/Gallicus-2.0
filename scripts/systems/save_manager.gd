@@ -1,6 +1,6 @@
 extends Node
 
-const PROFILE_VERSION: int = 2
+const PROFILE_VERSION: int = 3
 const PROFILE_PATH: String = "user://profile.save"
 const TMP_PATH: String = "%s.tmp" % PROFILE_PATH
 const BAK_PATH: String = "%s.bak" % PROFILE_PATH
@@ -15,6 +15,7 @@ var _profile_loaded: bool = false
 var _profile_dirty: bool = false
 var _unlocked_ids: Array[StringName] = []
 var _settings: Dictionary = {}
+var _meta: Dictionary = {}
 
 const DEFAULT_LANGUAGE: String = "it"
 const DEFAULT_BRIGHTNESS: float = 1.0
@@ -34,6 +35,7 @@ func load_profile() -> void:
 	_profile_loaded = true
 	_unlocked_ids = []
 	_settings = _get_default_settings()
+	_meta = _get_default_meta()
 	_profile_dirty = false
 	if FileAccess.file_exists(PROFILE_PATH):
 		if _load_profile_from_path(PROFILE_PATH):
@@ -64,6 +66,7 @@ func save_profile() -> void:
 		"version": PROFILE_VERSION,
 		"unlocked_ids": _serialize_unlocked_ids(),
 		"settings": _serialize_settings(),
+		"meta": _serialize_meta(),
 	}
 	var json_text: String = JSON.stringify(payload)
 	var file: FileAccess = FileAccess.open(TMP_PATH, FileAccess.WRITE)
@@ -143,6 +146,30 @@ func get_music_volume() -> float:
 		load_profile()
 	return float(_settings.get("music_volume", DEFAULT_MUSIC_VOLUME))
 
+func get_registry_pressure() -> float:
+	if not _profile_loaded:
+		load_profile()
+	return float(_meta.get("registry_pressure", 0.0))
+
+func get_registry_era() -> int:
+	if not _profile_loaded:
+		load_profile()
+	return int(_meta.get("registry_era", 0))
+
+func set_registry_state(pressure: float, era: int) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized_pressure: float = _sanitize_registry_pressure(pressure)
+	var sanitized_era: int = _sanitize_registry_era(era)
+	var current_pressure: float = float(_meta.get("registry_pressure", 0.0))
+	var current_era: int = int(_meta.get("registry_era", 0))
+	if is_equal_approx(current_pressure, sanitized_pressure) and current_era == sanitized_era:
+		return
+	_meta["registry_pressure"] = sanitized_pressure
+	_meta["registry_era"] = sanitized_era
+	_profile_dirty = true
+	save_profile()
+
 func set_language(value: String) -> void:
 	if not _profile_loaded:
 		load_profile()
@@ -192,6 +219,9 @@ func _serialize_unlocked_ids() -> Array[String]:
 func _serialize_settings() -> Dictionary:
 	return _settings.duplicate(true)
 
+func _serialize_meta() -> Dictionary:
+	return _meta.duplicate(true)
+
 func _backup_corrupt_profile() -> void:
 	if not FileAccess.file_exists(PROFILE_PATH):
 		return
@@ -230,10 +260,13 @@ func _load_profile_from_path(path: String) -> bool:
 			if not _unlocked_ids.has(id):
 				_unlocked_ids.append(id)
 	_load_settings_from_profile(data)
+	_load_meta_from_profile(data)
 	return true
 
 func _validate_profile_dict(data: Dictionary) -> bool:
 	if data.has("unlocked_ids") and not (data["unlocked_ids"] is Array):
+		return false
+	if data.has("meta") and not (data["meta"] is Dictionary):
 		return false
 	return true
 
@@ -244,6 +277,8 @@ func _migrate(data: Dictionary, from_version: int) -> Dictionary:
 		match working_version:
 			1:
 				current = _migrate_v1_to_v2(current)
+			2:
+				current = _migrate_v2_to_v3(current)
 			_:
 				break
 		working_version += 1
@@ -252,12 +287,21 @@ func _migrate(data: Dictionary, from_version: int) -> Dictionary:
 func _migrate_v1_to_v2(data: Dictionary) -> Dictionary:
 	return data
 
+func _migrate_v2_to_v3(data: Dictionary) -> Dictionary:
+	return data
+
 func _get_default_settings() -> Dictionary:
 	return {
 		"language": DEFAULT_LANGUAGE,
 		"brightness": DEFAULT_BRIGHTNESS,
 		"master_volume": DEFAULT_MASTER_VOLUME,
 		"music_volume": DEFAULT_MUSIC_VOLUME,
+	}
+
+func _get_default_meta() -> Dictionary:
+	return {
+		"registry_pressure": 0.0,
+		"registry_era": 0,
 	}
 
 func _sanitize_language(value: String) -> String:
@@ -274,6 +318,14 @@ func _sanitize_master_volume(value: float) -> float:
 
 func _sanitize_music_volume(value: float) -> float:
 	return clamp(value, VOLUME_MIN, VOLUME_MAX)
+
+func _sanitize_registry_pressure(value: float) -> float:
+	return maxf(value, 0.0)
+
+func _sanitize_registry_era(value: int) -> int:
+	# Canon range is finite and monotonic: 0..4 (4 = Absence).
+	# Legacy values >= 5 are capped to 4 for in-place compatible migration.
+	return clampi(value, 0, 4)
 
 func _load_settings_from_profile(data: Dictionary) -> void:
 	var needs_save: bool = false
@@ -311,6 +363,31 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 		if not is_equal_approx(float(settings_value.get("music_volume", DEFAULT_MUSIC_VOLUME)), float(sanitized["music_volume"])):
 			needs_save = true
 	_settings = sanitized
+	if needs_save:
+		_profile_dirty = true
+
+func _load_meta_from_profile(data: Dictionary) -> void:
+	var needs_save: bool = false
+	var meta_value: Dictionary = {}
+	if data.has("meta") and data["meta"] is Dictionary:
+		meta_value = data["meta"] as Dictionary
+	else:
+		needs_save = true
+	var sanitized: Dictionary = _get_default_meta()
+	if meta_value.has("registry_pressure"):
+		sanitized["registry_pressure"] = _sanitize_registry_pressure(float(meta_value.get("registry_pressure", 0.0)))
+	else:
+		needs_save = true
+	if meta_value.has("registry_era"):
+		sanitized["registry_era"] = _sanitize_registry_era(int(meta_value.get("registry_era", 0)))
+	else:
+		needs_save = true
+	if not needs_save:
+		if not is_equal_approx(float(meta_value.get("registry_pressure", 0.0)), float(sanitized["registry_pressure"])):
+			needs_save = true
+		if int(meta_value.get("registry_era", 0)) != int(sanitized["registry_era"]):
+			needs_save = true
+	_meta = sanitized
 	if needs_save:
 		_profile_dirty = true
 

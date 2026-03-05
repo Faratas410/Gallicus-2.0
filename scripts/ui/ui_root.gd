@@ -111,7 +111,6 @@ var _button_style_primary_hover: StyleBox = null
 var _button_style_primary_pressed: StyleBox = null
 var _button_style_primary_disabled: StyleBox = null
 
-var _coins: int = 0
 var _glory: int = 0
 var _escalation_level: int = 0
 var _escalation_max: int = 0
@@ -202,7 +201,6 @@ var modal_dimmer: ColorRect = null
 var hud_top_left_stats_box: Control = null
 var run_safe_margin: Control = null
 
-var coins_label: Label = null
 var glory_value_label: Label = null
 var bet_badge_value_label: Label = null
 var escalation_bar: Range = null
@@ -348,9 +346,6 @@ func _ready() -> void:
 		_controls_first_run_active = true
 	_init_phase_node_map()
 	_verify_phase_paths()
-	var coins_changed_callable: Callable = Callable(self, "_on_coins_changed")
-	if not GameEvents.coins_changed.is_connected(coins_changed_callable):
-		GameEvents.coins_changed.connect(coins_changed_callable)
 	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
 	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
 		GameEvents.bet_placed.connect(bet_placed_callable)
@@ -522,7 +517,7 @@ func _ready() -> void:
 		if not arena.player_spawned.is_connected(arena_player_callable):
 			arena.player_spawned.connect(arena_player_callable)
 
-	print_debug("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, _debug_overlay != null])
+	print_debug("UI ready: bet_badge=%s bet_panel=%s debug=%s" % [bet_badge_value_label != null, bet_panel != null, _debug_overlay != null])
 
 func _bind_scene_nodes() -> void:
 	# Core roots / overlays
@@ -542,9 +537,8 @@ func _bind_scene_nodes() -> void:
 	ending_background = get_node_or_null("UI_RunRoot/EndingBackground") as Control
 
 	# HUD labels
-	coins_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
+	bet_badge_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
 	glory_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
-	bet_badge_value_label = coins_label
 	hud_top_left_stats_box = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn") as Control
 	escalation_bar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as Range
 	scars_panel = get_node_or_null("HUD/ScarsPanel") as Control
@@ -889,8 +883,6 @@ func show_countdown(seconds: int = 3) -> void:
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
 func _on_run_started() -> void:
 	_refresh_runtime_group_cache(false)
-	if coins_label != null:
-		coins_label.text = "Coins: 0"
 	if escalation_bar != null:
 		escalation_bar.visible = true
 	_escalation_level = 0
@@ -1567,11 +1559,6 @@ func _on_run_started_controls() -> void:
 func _on_run_failed_controls() -> void:
 	if controls_hint_panel != null and _has_seen_controls:
 		controls_hint_panel.visible = false
-
-func _on_coins_changed(coins: int) -> void:
-	if coins_label != null:
-		coins_label.text = "Coins: %d" % coins
-	_coins = coins
 
 func _set_glory_value(glory: int) -> void:
 	_glory = maxi(glory, 0)

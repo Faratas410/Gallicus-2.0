@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 @warning_ignore_start("unused_signal")
 signal run_started
@@ -19,7 +19,6 @@ signal audience_context_line_emitted(text: String)
 signal register_annotation(payload: Dictionary)
 signal condanna_registered(id: StringName)
 signal bet_failed(can_retry: bool)
-signal coins_changed(coins: int)
 signal escalation_changed(level: int, max_value: int)
 signal bet_placed(bet_id: String, stake: int, odds: float)
 signal bet_confirmed(pact_id: StringName, condition_id: StringName, sentence_id: StringName)

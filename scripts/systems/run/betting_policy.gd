@@ -40,14 +40,16 @@ func build_reward_text(inputs: Dictionary) -> Dictionary:
 	var penalty_threshold: int = int(inputs.get("cashout_penalty_threshold", 0))
 	var penalty_multiplier: float = float(inputs.get("cashout_penalty_multiplier", 0.8))
 	var has_registry_precedent: bool = bool(inputs.get("registry_has_precedent", false))
-	var audience_label: String = _get_audience_label(score, disable_threshold)
-	var audience_reason: String = _get_audience_reason(score, phrases, run_seed, arena_index)
+	var registry_era: int = clampi(int(inputs.get("registry_era", 0)), 0, 4)
+	var audience_label: String = _get_audience_label(score, disable_threshold, registry_era)
+	var audience_reason: String = _get_audience_reason(score, phrases, run_seed, arena_index, registry_era)
 	var cashout_policy: Dictionary = _build_audience_cashout_policy(
 		score,
 		disable_threshold,
 		penalty_threshold,
 		penalty_multiplier,
-		has_registry_precedent
+		has_registry_precedent,
+		registry_era
 	)
 	return {
 		"audience_label": audience_label,
@@ -128,41 +130,52 @@ func _weighted_pick_index(pool: Array[Dictionary], rng: RandomNumberGenerator, c
 
 func _get_weight(bet: Dictionary, config: Dictionary) -> int:
 	var weight: int = maxi(int(bet.get("weight", 1)), 0)
-	if not bool(config.get("registry_has_precedent", false)):
-		return weight
 	var behavior_map: Dictionary = config.get("level3_bet_behavior", {}) as Dictionary
 	var high_risk_behaviors: Array = config.get("high_risk_behaviors", []) as Array
 	var bet_id: StringName = StringName(str(bet.get("id", "")))
 	var behavior_id: StringName = StringName(str(behavior_map.get(bet_id, bet_id)))
 	var cash_out_id: StringName = StringName(str(config.get("cash_out_behavior", "")))
+	var registry_era: int = clampi(int(config.get("registry_era", 0)), 0, 4)
+	if not bool(config.get("registry_has_precedent", false)):
+		if registry_era >= 4 and high_risk_behaviors.has(behavior_id):
+			return weight + 1
+		return weight
 	if behavior_id == cash_out_id:
-		return maxi(weight - 1, 0)
+		var cashout_penalty: int = 1
+		if registry_era >= 4:
+			cashout_penalty = 2
+		return maxi(weight - cashout_penalty, 0)
 	if high_risk_behaviors.has(behavior_id):
-		return weight + 1
+		var high_risk_bonus: int = 1
+		if registry_era >= 4:
+			high_risk_bonus = 2
+		return weight + high_risk_bonus
 	return weight
 
-func _get_audience_label(score: int, cashout_disable_threshold: int) -> String:
-	if score <= cashout_disable_threshold:
+func _get_audience_label(score: int, cashout_disable_threshold: int, registry_era: int) -> String:
+	var adjusted_score: int = score + maxi(registry_era - 2, 0)
+	if adjusted_score <= cashout_disable_threshold:
 		return "FOLLA IN FURIA"
-	if score <= -1:
+	if adjusted_score <= -1:
 		return "FOLLA OSTILE"
-	if score == 0:
+	if adjusted_score == 0:
 		return "FOLLA TIEPIDA"
-	if score <= 2:
+	if adjusted_score <= 2:
 		return "FOLLA IN ASCOLTO"
 	return "FOLLA IN DELIRIO"
 
-func _get_audience_reason(score: int, audience_phrases: Dictionary, run_seed: int, arena_index: int) -> String:
+func _get_audience_reason(score: int, audience_phrases: Dictionary, run_seed: int, arena_index: int, registry_era: int) -> String:
+	var adjusted_score: int = score + maxi(registry_era - 2, 0)
 	var mood: String = "DELIRIUM"
-	if score <= -1:
+	if adjusted_score <= -1:
 		mood = "FURY"
-	elif score <= 2:
+	elif adjusted_score <= 2 and registry_era < 4:
 		mood = "COLD"
 	var phrases: Array = audience_phrases.get(mood, []) as Array
 	if phrases.is_empty():
 		return ""
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = run_seed + arena_index * 37 + score * 13
+	rng.seed = run_seed + arena_index * 37 + adjusted_score * 13 + registry_era * 19
 	var pick_idx: int = rng.randi_range(0, phrases.size() - 1)
 	return str(phrases[pick_idx])
 
@@ -171,7 +184,8 @@ func _build_audience_cashout_policy(
 	cashout_disable_threshold: int,
 	cashout_penalty_threshold: int,
 	cashout_penalty_multiplier: float,
-	has_registry_precedent: bool
+	has_registry_precedent: bool,
+	registry_era: int
 ) -> Dictionary:
 	var cashout_enabled: bool = score > cashout_disable_threshold
 	var cashout_modifier: float = 1.0
@@ -182,7 +196,10 @@ func _build_audience_cashout_policy(
 	elif score <= cashout_penalty_threshold:
 		cashout_modifier = cashout_penalty_multiplier
 		cashout_modifier_text = "Incasso penalizzato: x%.1f" % cashout_modifier
-	if has_registry_precedent and cashout_enabled:
+	if registry_era >= 4 and cashout_enabled:
+		cashout_modifier = cashout_modifier * 0.90
+		cashout_modifier_text = "Incasso sotto revisione: x%.2f" % cashout_modifier
+	elif has_registry_precedent and cashout_enabled:
 		cashout_modifier = cashout_modifier * 0.95
 		cashout_modifier_text = "Incasso penalizzato: x%.2f" % cashout_modifier
 	return {

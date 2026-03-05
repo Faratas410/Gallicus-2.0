@@ -46,7 +46,7 @@ func build_pact_text(
 	bet_coward_id: String,
 	bet_pure_blood_id: String,
 	bet_double_or_die_id: String,
-	bet_coward_coin_reward: int,
+	bet_coward_glory_reward: int,
 	bet_pure_hp_bonus: int
 ) -> String:
 	if level3_enabled:
@@ -59,7 +59,7 @@ func build_pact_text(
 	var reward_scale: int = get_reward_scale(chain_level)
 	match bet_id:
 		bet_coward_id:
-			return "Ricompensa minore: +%d monete" % (bet_coward_coin_reward * reward_scale)
+			return "Ricompensa minore: +%d gloria" % (bet_coward_glory_reward * reward_scale)
 		bet_pure_blood_id:
 			return "Upgrade forte: +%d HP max" % (bet_pure_hp_bonus * reward_scale)
 		bet_double_or_die_id:

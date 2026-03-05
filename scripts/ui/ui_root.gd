@@ -24,6 +24,10 @@ const SIGN_PREVIEW_SCALE: float = 1.015
 const QUICK_CUT_MAX_SECONDS: float = 1.5
 const VERDICT_REVEAL_STEP_SECONDS: float = 0.2
 const VERDICT_REVEAL_HOLD_SECONDS: float = 0.08
+const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.25
+const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.30
+const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.30
+const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.20
 const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb_button_primary_hover.tres"
@@ -46,7 +50,7 @@ const RUN_PHASE_PUSH_YOUR_LUCK: int = RunPhaseContract.PUSH_YOUR_LUCK
 const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
 const RUN_PHASE_RESOLUTION: int = RunPhaseContract.RESOLUTION
 const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
-const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_pact.png"
+const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_sentence.png"
 const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 	{"label": "Modals/BetModal", "fallback": "UI_RunRoot/Phase_INTRO"},
 	{"label": "Modals/PactSealedModal", "fallback": "UI_RunRoot/Phase_FIRST_REACTION"},
@@ -55,20 +59,20 @@ const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 ]
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
-		"title": "FASCICOLO CHIUSO - CORRUZIONE",
+		"title": "FASCICOLO CHIUSO - COMPROMISSIONE",
 		"icon": "res://assets/ui/icons/icon_sentence.png",
 	},
 	"ending_glory": {
-		"title": "FASCICOLO CHIUSO - GLORIA",
+		"title": "FASCICOLO CHIUSO - ASCESA",
 		"icon": "res://assets/ui/icons/icon_payout.png",
 	},
 	"ending_scars": {
-		"title": "FASCICOLO CHIUSO - CICATRICI",
+		"title": "FASCICOLO CHIUSO - CONSUMO",
 		"icon": "res://assets/ui/icons/icon_token_16.png",
 	},
 	"ending_pattern": {
 		"title": "FASCICOLO CHIUSO - PATTERN",
-		"icon": "res://assets/ui/icons/icon_pact.png",
+		"icon": "res://assets/ui/icons/icon_sentence.png",
 	},
 }
 const _PHASE_CONTAINER_PATHS: Array[String] = [
@@ -619,6 +623,9 @@ func _bind_scene_nodes() -> void:
 	verdict_header = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE") as Label
 	verdict_icon = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndingIcon") as TextureRect
 	verdict_outcome = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel/Lbl_END_RUN_SUBTITLE") as Label
+	verdict_sentence_label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODY") as Label
+	verdict_charge_label = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel/Lbl_END_RUN_HINT") as Label
+	game_over_scroll = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL") as ScrollContainer
 	ending_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER") as RichTextLabel
 	verdict_sections = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS") as Control
 	verdict_pacts_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
@@ -690,6 +697,12 @@ func show_phase(phase: int) -> void:
 		)
 	elif phase == RUN_PHASE_PUSH_YOUR_LUCK:
 		_reset_decision_surface(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
+	if hud_top_left_stats_box != null:
+		hud_top_left_stats_box.visible = phase != RUN_PHASE_END_RUN
+	if arena_theme_title_panel != null:
+		arena_theme_title_panel.visible = phase != RUN_PHASE_END_RUN
+	if arena_theme_subtitle_panel != null:
+		arena_theme_subtitle_panel.visible = phase != RUN_PHASE_END_RUN
 	_apply_visual_tier(_active_visual_tier)
 	_set_silence_overlay_active(_silence_overlay_active)
 	_refresh_modal_dimmer()
@@ -1195,13 +1208,13 @@ func _refresh_verdict_panel() -> void:
 	if verdict_header != null:
 		var title_text: String = _last_finale_title.strip_edges()
 		if title_text == "":
-			title_text = "VERDETTO"
+			title_text = "AGGIORNAMENTO DEL REGISTRO"
 		verdict_header.text = title_text
 	if verdict_outcome != null:
-		if _last_register_message != "":
-			verdict_outcome.text = _last_register_message
+		if _last_register_final:
+			verdict_outcome.text = "Protocollo di classificazione completato."
 		else:
-			verdict_outcome.text = _get_verdict_outcome_text(_last_verdict_outcome)
+			verdict_outcome.text = "Chiusura non applicata."
 	if verdict_icon != null:
 		if _last_register_final:
 			var icon_path: String = _last_ending_icon_path
@@ -1214,15 +1227,17 @@ func _refresh_verdict_panel() -> void:
 			verdict_icon.texture = null
 			verdict_icon.visible = false
 	if verdict_sentence_label != null:
-		var sentence_text: String = _last_verdict_sentence.strip_edges()
-		if sentence_text == "":
-			sentence_text = fmt_system_state("registrato")
-		verdict_sentence_label.text = "Esito: %s" % sentence_text
+		var body_text: String = _last_register_message.strip_edges()
+		if body_text == "":
+			body_text = fmt_system_state("nessuna annotazione registrata")
+		verdict_sentence_label.text = body_text
 	if verdict_charge_label != null:
-		var status_text: String = "Stato: non conclusivo."
-		if _last_register_final:
-			status_text = "Stato: conclusivo."
+		var status_text: String = "Stato: chiusura definitiva."
+		if _last_next_bet_enabled:
+			status_text = "Stato: in attesa di prosecuzione."
 		verdict_charge_label.text = status_text
+	if ending_text != null:
+		ending_text.text = "[center]Registro Arena - Lettura amministrativa[/center]"
 	if verdict_pacts_text != null:
 		var pacts_text: String = _format_verdict_pacts_list(_last_verdict_pacts).strip_edges()
 		verdict_pacts_text.text = pacts_text
@@ -1262,6 +1277,8 @@ func _set_verdict_canvas_alpha(alpha: float) -> void:
 		targets.append(verdict_charge_label)
 	if verdict_sections != null:
 		targets.append(verdict_sections)
+	if ending_text != null:
+		targets.append(ending_text)
 	for node in targets:
 		node.modulate.a = alpha
 
@@ -1289,27 +1306,57 @@ func _reveal_verdict_group(group: Array[CanvasItem], sequence_id: int) -> bool:
 func _play_verdict_reveal_sequence() -> void:
 	_verdict_reveal_sequence_id += 1
 	var sequence_id: int = _verdict_reveal_sequence_id
-	_set_verdict_canvas_alpha(1.0)
-	var stage1: Array[CanvasItem] = []
+	_set_end_run_buttons_enabled(false)
+	_set_verdict_canvas_alpha(0.0)
 	if verdict_header != null:
-		stage1.append(verdict_header)
+		verdict_header.modulate.a = 1.0
+	var stage_subtitle: Array[CanvasItem] = []
 	if verdict_outcome != null:
-		stage1.append(verdict_outcome)
+		stage_subtitle.append(verdict_outcome)
 	if verdict_icon != null and verdict_icon.visible:
-		stage1.append(verdict_icon)
-	var stage2: Array[CanvasItem] = []
+		stage_subtitle.append(verdict_icon)
+	var stage_body: Array[CanvasItem] = []
 	if verdict_sentence_label != null:
-		stage2.append(verdict_sentence_label)
+		stage_body.append(verdict_sentence_label)
+	var stage_details: Array[CanvasItem] = []
 	if verdict_charge_label != null:
-		stage2.append(verdict_charge_label)
-	var stage3: Array[CanvasItem] = []
+		stage_details.append(verdict_charge_label)
 	if verdict_sections != null:
-		stage3.append(verdict_sections)
-	if not await _reveal_verdict_group(stage1, sequence_id):
+		stage_details.append(verdict_sections)
+	if ending_text != null:
+		stage_details.append(ending_text)
+	if not await _wait_verdict_delay(VERDICT_STAGE_SUBTITLE_DELAY_SECONDS, sequence_id):
 		return
-	if not await _reveal_verdict_group(stage2, sequence_id):
+	if not await _reveal_verdict_group(stage_subtitle, sequence_id):
 		return
-	await _reveal_verdict_group(stage3, sequence_id)
+	if not await _wait_verdict_delay(VERDICT_STAGE_BODY_DELAY_SECONDS, sequence_id):
+		return
+	if not await _reveal_verdict_group(stage_body, sequence_id):
+		return
+	if not await _wait_verdict_delay(VERDICT_STAGE_DETAILS_DELAY_SECONDS, sequence_id):
+		return
+	if not await _reveal_verdict_group(stage_details, sequence_id):
+		return
+	if not await _wait_verdict_delay(VERDICT_STAGE_BUTTONS_DELAY_SECONDS, sequence_id):
+		return
+	_set_end_run_buttons_enabled(true)
+
+func _wait_verdict_delay(seconds: float, sequence_id: int) -> bool:
+	if seconds <= 0.0:
+		return sequence_id == _verdict_reveal_sequence_id
+	await get_tree().create_timer(seconds).timeout
+	return sequence_id == _verdict_reveal_sequence_id
+
+func _set_end_run_buttons_enabled(enabled: bool) -> void:
+	if restart_button != null:
+		restart_button.visible = true
+		restart_button.disabled = not enabled
+	if quit_button != null:
+		quit_button.visible = true
+		quit_button.disabled = not enabled
+	if next_bet_button != null:
+		next_bet_button.visible = _last_next_bet_enabled
+		next_bet_button.disabled = (not enabled) or (not _last_next_bet_enabled)
 
 func _set_verdict_mode(active: bool) -> void:
 	if verdict_header != null:
@@ -1327,9 +1374,9 @@ func _set_verdict_mode(active: bool) -> void:
 	if verdict_crowd_section != null and active:
 		verdict_crowd_section.visible = _last_verdict_crowd_line.strip_edges() != ""
 	if game_over_scroll != null:
-		game_over_scroll.visible = not active
+		game_over_scroll.visible = active
 	if ending_text != null:
-		ending_text.visible = not active
+		ending_text.visible = active
 
 func _get_verdict_outcome_text(outcome: StringName) -> String:
 	match outcome:
@@ -1755,11 +1802,11 @@ func _update_arena_theme_ui() -> void:
 		if arena_theme_title_label != null:
 			arena_theme_title_label.visible = false
 		if arena_theme_title_panel != null:
-			arena_theme_title_panel.visible = false
+			arena_theme_title_panel.visible = phase != RUN_PHASE_END_RUN
 		if arena_theme_subtitle_label != null:
 			arena_theme_subtitle_label.visible = false
 		if arena_theme_subtitle_panel != null:
-			arena_theme_subtitle_panel.visible = false
+			arena_theme_subtitle_panel.visible = phase != RUN_PHASE_END_RUN
 		return
 	var title: String = str(_arena_theme_payload.get("title", ""))
 	var subtitle: String = str(_arena_theme_payload.get("subtitle", ""))
@@ -3094,9 +3141,9 @@ func _apply_betting_overlay_visual_suppression() -> void:
 	if arena_theme_title_panel != null or arena_theme_subtitle_panel != null:
 		_betting_overlay_theme_visibility_cached = true
 	if arena_theme_title_panel != null:
-		arena_theme_title_panel.visible = false
+		arena_theme_title_panel.visible = phase != RUN_PHASE_END_RUN
 	if arena_theme_subtitle_panel != null:
-		arena_theme_subtitle_panel.visible = false
+		arena_theme_subtitle_panel.visible = phase != RUN_PHASE_END_RUN
 
 func _restore_betting_overlay_visual_suppression() -> void:
 	if hud_top_left_stats_box != null and _betting_overlay_hud_visibility_cached:
@@ -3236,6 +3283,18 @@ func _get_enemies_alive() -> int:
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

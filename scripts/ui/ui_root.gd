@@ -104,6 +104,7 @@ var _run_manager_port: RunManagerUiPort = null
 var _arena: Node = null
 var _player: Node = null
 var _phase_node_map: Dictionary = {}
+var _last_shown_phase: int = -1
 
 var _button_style_primary_normal: StyleBox = null
 var _button_style_primary_hover: StyleBox = null
@@ -663,6 +664,7 @@ func _verify_phase_paths() -> void:
 			push_error("UI: missing phase mapping target for %s" % str(mapped_phase))
 
 func show_phase(phase: int) -> void:
+	_last_shown_phase = phase
 	if _phase_node_map.is_empty():
 		push_error("UI: missing phase mapping for %s" % str(phase))
 		return
@@ -700,9 +702,9 @@ func show_phase(phase: int) -> void:
 	if hud_top_left_stats_box != null:
 		hud_top_left_stats_box.visible = phase != RUN_PHASE_END_RUN
 	if arena_theme_title_panel != null:
-		arena_theme_title_panel.visible = phase != RUN_PHASE_END_RUN
+		arena_theme_title_panel.visible = _last_shown_phase != RUN_PHASE_END_RUN
 	if arena_theme_subtitle_panel != null:
-		arena_theme_subtitle_panel.visible = phase != RUN_PHASE_END_RUN
+		arena_theme_subtitle_panel.visible = _last_shown_phase != RUN_PHASE_END_RUN
 	_apply_visual_tier(_active_visual_tier)
 	_set_silence_overlay_active(_silence_overlay_active)
 	_refresh_modal_dimmer()
@@ -1802,11 +1804,11 @@ func _update_arena_theme_ui() -> void:
 		if arena_theme_title_label != null:
 			arena_theme_title_label.visible = false
 		if arena_theme_title_panel != null:
-			arena_theme_title_panel.visible = phase != RUN_PHASE_END_RUN
+			arena_theme_title_panel.visible = _last_shown_phase != RUN_PHASE_END_RUN
 		if arena_theme_subtitle_label != null:
 			arena_theme_subtitle_label.visible = false
 		if arena_theme_subtitle_panel != null:
-			arena_theme_subtitle_panel.visible = phase != RUN_PHASE_END_RUN
+			arena_theme_subtitle_panel.visible = _last_shown_phase != RUN_PHASE_END_RUN
 		return
 	var title: String = str(_arena_theme_payload.get("title", ""))
 	var subtitle: String = str(_arena_theme_payload.get("subtitle", ""))
@@ -3141,9 +3143,9 @@ func _apply_betting_overlay_visual_suppression() -> void:
 	if arena_theme_title_panel != null or arena_theme_subtitle_panel != null:
 		_betting_overlay_theme_visibility_cached = true
 	if arena_theme_title_panel != null:
-		arena_theme_title_panel.visible = phase != RUN_PHASE_END_RUN
+		arena_theme_title_panel.visible = _last_shown_phase != RUN_PHASE_END_RUN
 	if arena_theme_subtitle_panel != null:
-		arena_theme_subtitle_panel.visible = phase != RUN_PHASE_END_RUN
+		arena_theme_subtitle_panel.visible = _last_shown_phase != RUN_PHASE_END_RUN
 
 func _restore_betting_overlay_visual_suppression() -> void:
 	if hud_top_left_stats_box != null and _betting_overlay_hud_visibility_cached:

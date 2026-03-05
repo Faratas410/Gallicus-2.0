@@ -318,6 +318,7 @@ var scar_popup: Label = null
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_run_manager_port = RunManagerUiPort.new(get_tree())
+	_bind_scene_nodes()
 	if boot_fail_button != null:
 		var boot_fail_callable: Callable = Callable(self, "_on_boot_fail_back_to_menu")
 		if not boot_fail_button.pressed.is_connected(boot_fail_callable):
@@ -510,6 +511,113 @@ func _ready() -> void:
 			arena.player_spawned.connect(arena_player_callable)
 
 	print_debug("UI ready: coins=%s bet_panel=%s debug=%s" % [coins_label != null, bet_panel != null, _debug_overlay != null])
+
+func _bind_scene_nodes() -> void:
+	# Core roots / overlays
+	hud_root = get_node_or_null("HUD") as Control
+	modals_root = get_node_or_null("UI_RunRoot") as Control
+	modal_dimmer = get_node_or_null("UI_RunRoot/ModalDimmer") as ColorRect
+	run_safe_margin = get_node_or_null("UI_RunRoot/SafeMargin") as Control
+	controls_hint_panel = get_node_or_null("UI_RunRoot/SafeMargin/Grid/BottomHintRow") as Control
+	boot_fail_overlay = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay") as Control
+	boot_fail_body = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Lbl_BootFail_Body") as Label
+	boot_fail_button = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Btn_BootFail_BackToMenu") as Button
+	_debug_overlay = get_node_or_null("UI_RunRoot/DebugOverlay") as Control
+	_debug_label = get_node_or_null("UI_RunRoot/DebugOverlay/Lbl_DebugOverlayPanel/Lbl_DebugOverlay") as Label
+	silence_overlay = get_node_or_null("UI_RunRoot/Overlays/SilenceOverlay/SilenceRect") as ColorRect
+	torch_flicker_overlay = get_node_or_null("UI_RunRoot/TorchFlickerOverlay") as ColorRect
+	torch_flicker_player = get_node_or_null("UI_RunRoot/TorchFlickerPlayer") as AnimationPlayer
+	ending_background = get_node_or_null("UI_RunRoot/EndingBackground") as Control
+
+	# HUD labels
+	coins_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
+	glory_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
+	bet_badge_value_label = coins_label
+	escalation_bar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as Range
+	scars_panel = get_node_or_null("HUD/ScarsPanel") as Control
+	scars_label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
+	audience_context_panel = get_node_or_null("HUD/AudienceContextLabelPanel") as Control
+	audience_context_label = get_node_or_null("HUD/AudienceContextLabelPanel/AudienceContextLabel") as Label
+	register_blocker = get_node_or_null("HUD/RegisterAnnotationBlocker") as Control
+	register_annotation_label = get_node_or_null("HUD/RegisterAnnotationBlocker/RegisterAnnotationLabelPanel/RegisterAnnotationLabel") as Label
+	quick_cut_blocker = get_node_or_null("HUD/QuickCutBlocker") as Control
+	quick_cut_shade = get_node_or_null("HUD/QuickCutBlocker/QuickCutShade") as ColorRect
+	quick_cut_label_panel = get_node_or_null("HUD/QuickCutBlocker/QuickCutLabelPanel") as Control
+	quick_cut_label = get_node_or_null("HUD/QuickCutBlocker/QuickCutLabelPanel/QuickCutLabel") as Label
+	sentence_banner = get_node_or_null("HUD/SentenceBanner") as Control
+	sentence_title_label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceTitlePanel/SentenceTitle") as Label
+	sentence_rule_label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceRulePanel/SentenceRule") as Label
+	sentence_doom_label = get_node_or_null("HUD/SentenceBanner/SentencePanel/SentenceMargin/SentenceVBox/SentenceDoomPanel/SentenceDoom") as Label
+	arena_theme_title_panel = get_node_or_null("HUD/ArenaThemeTitleLabelPanel") as Control
+	arena_theme_title_label = get_node_or_null("HUD/ArenaThemeTitleLabelPanel/ArenaThemeTitleLabel") as Label
+	arena_theme_subtitle_panel = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel") as Control
+	arena_theme_subtitle_label = get_node_or_null("HUD/ArenaThemeSubtitleLabelPanel/ArenaThemeSubtitleLabel") as Label
+	special_arena_label = arena_theme_title_label
+	condanna_focus_label = arena_theme_subtitle_label
+
+	# Intro / betting
+	bet_modal = get_node_or_null("UI_RunRoot/Phase_INTRO") as Control
+	bet_panel = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO") as Control
+	bet_buttons_container = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as Control
+	stake_row = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
+	stake_input = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
+	seed_input = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
+	seed_apply_button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedApplyButton") as Button
+	bet_confirm_row = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow") as Control
+	bet_confirm_label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
+	bet_confirm_button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM") as Button
+	betting_circle = get_node_or_null("UI_RunRoot/BettingCircle") as BettingCircleUI
+
+	# Pact / resolve
+	pact_sealed_modal = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION") as Control
+	pact_sealed_panel = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION") as Control
+	pact_sealed_title = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel/Lbl_FIRST_REACTION_TITLE") as Label
+	pact_sealed_subtitle = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel/Lbl_FIRST_REACTION_BODY") as Label
+	resolve_ritual_modal = get_node_or_null("UI_RunRoot/Phase_RESOLUTION") as Control
+	resolve_ritual_panel = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION") as Control
+	resolve_ritual_title = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel/Lbl_RESOLUTION_TITLE") as Label
+	resolve_ritual_subtitle = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
+
+	# Mid choice
+	intermediate_choice_modal = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE") as Control
+	intermediate_choice_panel = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE") as Control
+	intermediate_choice_label = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLEPanel/Lbl_MID_CHOICE_TITLE") as Label
+	intermediate_choice_audience_label = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_AUDIENCEPanel/Lbl_MID_CHOICE_AUDIENCE") as Label
+	intermediate_choice_placa_button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0") as Button
+	intermediate_choice_provoca_button = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1") as Button
+
+	# Push your luck
+	push_luck_modal = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK") as Control
+	push_luck_panel = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK") as Control
+	push_luck_title = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel/Lbl_PUSH_YOUR_LUCK_TITLE") as Label
+	push_luck_info = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel/Lbl_PUSH_YOUR_LUCK_BODY") as Label
+	push_luck_details = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel/Lbl_PUSH_YOUR_LUCK_SUBTITLE") as Label
+	push_luck_audience_label = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINTPanel/Lbl_PUSH_YOUR_LUCK_HINT") as Label
+	push_luck_audience_reason = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTERPanel/Lbl_PUSH_YOUR_LUCK_FOOTER") as Label
+	push_luck_cashout_button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Btn_PUSH_YOUR_LUCK_CASHOUT") as Button
+	push_luck_cashout_note = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_0") as Label
+	push_luck_condanna_button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA") as Button
+	push_luck_double_button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE") as Button
+	push_luck_double_note = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
+
+	# End run
+	scars_detail_panel = get_node_or_null("UI_RunRoot/ScarsDetailPanel") as Control
+	scars_detail_text = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel/ScarsDetailText") as RichTextLabel
+	scars_detail_close = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
+	game_over_modal = get_node_or_null("UI_RunRoot/Phase_END_RUN") as Control
+	game_over_panel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN") as Control
+	verdict_header = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE") as Label
+	verdict_icon = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndingIcon") as TextureRect
+	verdict_outcome = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel/Lbl_END_RUN_SUBTITLE") as Label
+	ending_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER") as RichTextLabel
+	verdict_sections = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS") as Control
+	verdict_pacts_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
+	verdict_condanne_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel/Lbl_END_RUN_CONDANNE_BODY") as RichTextLabel
+	verdict_crowd_section = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD") as Control
+	verdict_crowd_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel/Lbl_END_RUN_CROWD_BODY") as Label
+	restart_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART") as Button
+	next_bet_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_NEXT_BET") as Button
+	quit_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT") as Button
 
 func _init_phase_node_map() -> void:
 	_phase_node_map = {

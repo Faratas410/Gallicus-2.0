@@ -1,4 +1,4 @@
-﻿extends Control
+extends Control
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -18,6 +18,7 @@ const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
 const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
+@onready var menu_center: CenterContainer = get_node("CenterContainer") as CenterContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
 @onready var credits_panel: Control = get_node("CreditsPanel") as Control
 @onready var settings_panel: Control = get_node("SettingsPanel") as Control
@@ -82,7 +83,7 @@ var _run_manager_port: RunManagerUiPort = null
 var _menu_next_step_hint: String = ""
 var _menu_idle_time: float = 0.0
 var _menu_buttons: Array[Button] = []
-var _menu_vbox_base_position: Vector2 = Vector2.ZERO
+var _menu_center_base_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	_ensure_i18n_loaded()
@@ -97,8 +98,8 @@ func _ready() -> void:
 	_build_condanne_list()
 	_cache_menu_buttons()
 	_wire_menu_button_animations()
-	if menu_vbox != null:
-		_menu_vbox_base_position = menu_vbox.position
+	if menu_center != null:
+		_menu_center_base_position = menu_center.position
 	continue_button.pressed.connect(_on_continue_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	achievements_button.pressed.connect(_on_achievements_pressed)
@@ -196,8 +197,8 @@ func _show_achievements() -> void:
 		_build_condanne_list()
 	_cache_menu_buttons()
 	_wire_menu_button_animations()
-	if menu_vbox != null:
-		_menu_vbox_base_position = menu_vbox.position
+	if menu_center != null:
+		_menu_center_base_position = menu_center.position
 	_build_museo_list()
 	_set_achievements_tab(ACHIEVEMENTS_TAB_CONDANNE)
 	_refresh_condanne_visuals()
@@ -223,7 +224,7 @@ func _build_condanne_list() -> void:
 		return
 	var condanne: Array[CondannaData] = CondannaDataScript.defaults()
 	for condanna in condanne:
-		var entry_panel: PanelContainer = _create_condanna_entry_panel("Ã¢â‚¬â€ %s" % condanna.title)
+		var entry_panel: PanelContainer = _create_condanna_entry_panel("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â %s" % condanna.title)
 		var entry_label: Label = entry_panel.get_child(0) as Label
 		condanna_entries[condanna.id] = entry_label
 		_apply_condanna_style(condanna.id, entry_label)
@@ -259,21 +260,21 @@ func _build_museo_list() -> void:
 	var harsh_total: int = harsh_count if harsh_count > 0 else 15
 	_add_museo_header("PATTI DISPONIBILI (LIVELLO 3)")
 	if pact_ids.is_empty():
-		_add_museo_item("Ã¢â‚¬â€ Nessun patto disponibile.")
+		_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Nessun patto disponibile.")
 	else:
 		for pact_id in pact_ids:
 			var pact_title: String = _get_pact_display_name(pact_id)
-			_add_museo_item("Ã¢â‚¬â€ %s" % pact_title)
+			_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â %s" % pact_title)
 	_add_museo_header("ARENE TEMATICHE")
 	if arena_themes.is_empty():
-		_add_museo_item("Ã¢â‚¬â€ Nessuna arena disponibile.")
+		_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Nessuna arena disponibile.")
 	else:
 		for theme_id in arena_themes:
 			var theme_data: Dictionary = _arena_themes.get_theme(theme_id)
 			var theme_title: String = str(theme_data.get("title", ""))
 			if theme_title == "":
 				theme_title = str(theme_id)
-			_add_museo_item("Ã¢â‚¬â€ %s" % theme_title)
+			_add_museo_item("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â %s" % theme_title)
 	_add_museo_header("VOCI DEL PUBBLICO")
 	_add_museo_item("Voci base: %d" % base_total)
 	var harsh_status: String = "SBLOCCATE" if harsh_unlocked else "BLOCCATE"
@@ -337,7 +338,7 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 		_apply_condanna_style(condanna_id, entry_label)
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
-	var tooltip_label_text: String = "%s\n\nCome ÃƒÂ¨ stata ottenuta:\n%s\n\n%s" % [
+	var tooltip_label_text: String = "%s\n\nCome ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¨ stata ottenuta:\n%s\n\n%s" % [
 		condanna.title,
 		condanna.condition_text,
 		condanna.lore_text
@@ -518,7 +519,7 @@ func _apply_brightness(value: float) -> void:
 			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
 		brightness_overlay.color = overlay_color
 	if brightness_value != null:
-		brightness_value.text = tr("LuminositÃƒÂ : %.2f") % value
+		brightness_value.text = tr("LuminositÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â : %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -603,7 +604,7 @@ func _refresh_localized_ui() -> void:
 	if settings_title != null:
 		settings_title.text = tr("OPZIONI")
 	if brightness_label != null:
-		brightness_label.text = tr("LUMINOSITÃƒâ‚¬")
+		brightness_label.text = tr("LUMINOSITÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬")
 	if language_label != null:
 		language_label.text = tr("LINGUA")
 	if volume_label != null:
@@ -673,9 +674,9 @@ func _process(delta: float) -> void:
 	if title_label != null:
 		var pulse: float = 0.92 + (sin(_menu_idle_time * MENU_TITLE_PULSE_SPEED) * 0.08)
 		title_label.modulate = Color(pulse, pulse, pulse, 1.0)
-	if menu_vbox != null and menu_vbox.visible:
+	if menu_center != null and menu_vbox != null and menu_vbox.visible:
 		var bob_y: float = sin(_menu_idle_time * MENU_IDLE_BOB_SPEED) * MENU_IDLE_BOB_AMPLITUDE
-		menu_vbox.position = _menu_vbox_base_position + Vector2(0.0, bob_y)
+		menu_center.position = _menu_center_base_position + Vector2(0.0, bob_y)
 
 func _cache_menu_buttons() -> void:
 	_menu_buttons = [

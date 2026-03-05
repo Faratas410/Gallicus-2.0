@@ -1,4 +1,4 @@
-[gd_scene format=3]
+﻿[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
@@ -219,7 +219,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "Il patto viene giudicato..."
+text = "Il patto è sottoposto a giudizio..."
 
 [node name="AudienceContextLabelPanel" type="PanelContainer" parent="HUD"]
 visible = false
@@ -686,7 +686,7 @@ size_flags_horizontal = 3
 horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
-text = "La folla trattiene il fiato."
+text = "La folla trattiene il respiro."
 
 [node name="Btn_FIRST_REACTION_NEXT" type="Button" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 theme_override_styles/normal = ExtResource("12")
@@ -763,7 +763,7 @@ size_flags_horizontal = 3
 horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
-text = "Il patto viene giudicato."
+text = "Il patto è sottoposto a giudizio."
 
 [node name="Btn_RESOLUTION_NEXT" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
 theme_override_styles/normal = ExtResource("12")
@@ -859,7 +859,7 @@ theme_override_styles/panel = ExtResource("16")
 [node name="Lbl_MID_CHOICE_AUDIENCE" type="Label" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_AUDIENCEPanel"]
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "La folla osserva la tua scelta."
+text = "La folla osserva."
 
 [node name="Lbl_MID_CHOICE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
 size_flags_horizontal = 3
@@ -966,7 +966,7 @@ theme_override_styles/panel = ExtResource("16")
 
 [node name="Lbl_INTRO_TITLE" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLEPanel"]
 theme_type_variation = &"TitleLabel"
-text = "Scommessa Arena"
+text = "Scommessa dell'Arena"
 
 [node name="Lbl_INTRO_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 size_flags_horizontal = 3
@@ -987,7 +987,7 @@ autowrap_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = true
-text = "FOCUS: Leggi prima la CONDANNA."
+text = "La condanna precede la firma."
 
 [node name="SeedRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 
@@ -1031,14 +1031,14 @@ custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 autowrap_mode = 2
 icon = null
-text = "RADDOPPI O MUORI"
+text = "RILANCIO TOTALE"
 
 [node name="Btn_INTRO_SELECT_FAST" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons"]
 custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 autowrap_mode = 2
 icon = null
-text = "INCASSA E VAI"
+text = "CHIUDI IL PATTO"
 
 [node name="BetConfirmRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 visible = false
@@ -1378,7 +1378,7 @@ offset_bottom = -12.0
 [node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
-text = "VERDETTO DEL REGISTRO"
+text = "LETTURA DEL REGISTRO"
 
 [node name="EndingIcon" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false
@@ -1605,6 +1605,8 @@ size_flags_horizontal = 3
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Nessuna cicatrice."
+
+
 
 
 

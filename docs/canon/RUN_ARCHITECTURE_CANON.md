@@ -1,4 +1,4 @@
-# CANON — RUN ARCHITECTURE CANON
+﻿# CANON â€” RUN ARCHITECTURE CANON
 
 Status: Single source of truth
 
@@ -61,18 +61,19 @@ All changes to systems described here must update this document in the same PR.
 
 - Rendering and visual composition.
 - Direct UI node mutation as gameplay authority.
-- Economy/progression legacy systems (`coins`/`tokens`/`xp`/`level`): partially purged; intro token-shop request/cost API and progression event-bus signal wiring are removed from active Level 3 flow and must not be reintroduced as RunManager authority.
+- Economy/progression legacy systems (`coins`/	okens`/`xp`/`level`): partially purged; intro token-shop request/cost API and progression event-bus signal wiring are removed from active Level 3 flow and must not be reintroduced as RunManager authority.
 - Run save payload for active Level 3 excludes legacy progression/shop keys (`level`, `xp`, `difficulty_tier`, `upgrade_tokens`, `upgrade_costs`) and keeps only runtime-required fields (`arena_index`, `coins`, `corruption`, `upgrades`).
 - In active Level 3, `run.corruption` is an integer runtime field with hard cap `100`; it initializes at `0` on new run and is clamped on load.
 - In active Level 3, `RunState` also serializes passive Scar runtime fields: `scar_double_count`, `scar_pact_count`, `volatility`, `scar_rng_state`, `scar_roll_index`, `last_pact_corruption_arena_index`, `last_pact_corruption_bet_id` (save/load deterministic Scar RNG continuity + idempotent pact corruption ingestion guard).
+- In active Level 3, `RunState` serializes push-luck pressure/echo/threshold state (`audience_pressure`, `audience_pressure_peak`, `signature_echo_bonus_pending`, `signature_echo_note`, `escalation_threshold_3_fired`, `escalation_threshold_5_fired`, `escalation_threshold_7_fired`) and `RunManager` remains sole authority for mutating them.
 - In active Level 3, `run.upgrades` is sanitized to an empty schema (`{}`) on init/load/save; legacy stat keys are ignored.
 - In active Level 3, combat authority is disabled (`Player`/enemy damage-death runtime is inert) and run termination must not originate from player-death signals.
 - In active Level 3, enemy instantiation runtime is removed from `Arena`; `Player` is a visual-only `Node2D` (no CharacterBody2D physics authority), and player/enemy collision-combat runtime is not authoritative.
 - In active Level 3, no combat/health/enemy gameplay authority is active; groups and scene nodes remain visual/passive runtime surfaces only.
 - In active Level 3, enemy combat HUD assets/wiring (enemy health bars) are removed from active UI runtime path.
 - In active Level 3, outcome payload semantics are ritual-only: legacy combat keys are deprecated, and UI bindings must target ritual keys only (no exposed enemy/damage/HP semantics).
-- In active Level 3, `resolve_level3_arena` payload no longer emits legacy aliases (`enemy_profile`, `damage_mod`, `damage_chance`, `took_damage`); runtime flow consumes canonical ritual keys (`risk_profile`, `pressure_mod`, `failure_chance`, `condemnation_flag`, `outcome_tier`, `outcome_reason`) plus flow keys (`won`, `notes`).
-- In active Level 3, RunManager flow consumes `condemnation_flag` as authoritative adverse/condanna signal; legacy `took_damage` alias is non-authoritative and must not drive flow branches.
+- In active Level 3, `resolve_level3_arena` payload no longer emits legacy aliases (`enemy_profile`, `damage_mod`, `damage_chance`, 	ook_damage`); runtime flow consumes canonical ritual keys (`risk_profile`, `pressure_mod`, `failure_chance`, `condemnation_flag`, `outcome_tier`, `outcome_reason`) plus flow keys (`won`, `notes`).
+- In active Level 3, RunManager flow consumes `condemnation_flag` as authoritative adverse/condanna signal; legacy 	ook_damage` alias is non-authoritative and must not drive flow branches.
 - In active Level 3 loss ingestion, RunManager consumes canonical consequence keys `corruption_gain` and `end_reason`; legacy `hp_loss`/`provoke_failed`/`double_or_die_failed` are removed from active Level 3 consequence contract.
 - In active Level 3 run save payload, `run.level3_schema = 2` marks the hard-sealed canonical loss contract boundary.
 - Continue-load is strict-sealed: payloads missing `run.level3_schema` or with `run.level3_schema != 2` are rejected without migration, run save is cleared, and flow returns to `MAIN_MENU` via RunManager phase setter.
@@ -211,6 +212,8 @@ All changes to systems described here must update this document in the same PR.
 
 ## Phase Contract
 
+- `request_ritual_advance(kind)` is an optional UI intent (`kind` = `pact` / `resolve`) consumed by RunManager to shorten ritual wait loops; RunManager remains sole authority for close timing and phase progression.
+
 The phase contract is explicit and mandatory:
 
 - `_set_phase()` is the **only** method allowed to mutate `RunPhase`.
@@ -261,19 +264,19 @@ Canonical Level 3 post-bet sequence (active flow authority):
 
 ## Dependency direction (allowed)
 
-- `RunManager` → `RunState`
-- `RunManager` → `scripts/systems/run/*`
-- `RunManager` → `scripts/content/*`
-- `RunManager` → `RunUiPayload` → UI render scripts
-- `RunManager` ↔ `GameEvents` (request in, outcome out)
-- `RunManager` → `SaveSystem` (`RunState` persistence)
+- `RunManager` â†’ `RunState`
+- `RunManager` â†’ `scripts/systems/run/*`
+- `RunManager` â†’ `scripts/content/*`
+- `RunManager` â†’ `RunUiPayload` â†’ UI render scripts
+- `RunManager` â†” `GameEvents` (request in, outcome out)
+- `RunManager` â†’ `SaveSystem` (`RunState` persistence)
 
 Forbidden direction examples:
 
-- UI → phase mutation
-- systems/run/* → `GameEvents.emit_*`
-- systems/run/* → scene-tree authority (`get_tree`) for flow control
-- catalogs → gameplay mutation
+- UI â†’ phase mutation
+- systems/run/* â†’ `GameEvents.emit_*`
+- systems/run/* â†’ scene-tree authority (`get_tree`) for flow control
+- catalogs â†’ gameplay mutation
 
 ## Where to add things
 
@@ -361,35 +364,35 @@ These panels must exist and must not be freed while a run is active.
 
 ## GameEvents Signals (required for Level 3 flow)
 
-> If a signal’s emitter/listener cannot be proven from code, it is marked as:
+> If a signalâ€™s emitter/listener cannot be proven from code, it is marked as:
 > **UNKNOWN (needs editor validation)**.
 
 | Signal | Emitted by | Listened by | Connection (file/func) |
 | --- | --- | --- | --- |
-| `request_new_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_new_game_pressed` → `scripts/systems/run_manager.gd::_ready` |
-| `request_continue_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_continue_pressed` → `scripts/systems/run_manager.gd::_ready` |
-| `continue_rejected` | RunManager | MainMenu UI | `scripts/systems/run_manager.gd::_reject_invalid_continue_payload` → `scripts/ui/main_menu.gd::_ready` |
-| `request_place_bet` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_intro_bet_selected` → `scripts/systems/run_manager.gd::_ready` |
-| `bet_ui_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_level3_bet_ui` → `scripts/ui/ui_root.gd::_ready` |
-| `bet_placed` | RunManager | UI Root, RunManager | `scripts/systems/run_manager.gd::select_bet` → `scripts/ui/ui_root.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
-| `pact_sealed_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` → `scripts/ui/ui_root.gd::_ready` |
-| `pact_sealed_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` → `scripts/ui/ui_root.gd::_ready` |
-| `resolve_ritual_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` → `scripts/ui/ui_root.gd::_ready` |
-| `resolve_ritual_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` → `scripts/ui/ui_root.gd::_ready` |
-| `arena_started` | RunManager | UI Root | `scripts/systems/run_manager.gd::_resolve_ritual_outcome` → `scripts/ui/ui_root.gd::_ready` |
+| `request_new_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_new_game_pressed` â†’ `scripts/systems/run_manager.gd::_ready` |
+| `request_continue_run` | MainMenu UI | RunManager | `scripts/ui/main_menu.gd::_on_continue_pressed` â†’ `scripts/systems/run_manager.gd::_ready` |
+| `continue_rejected` | RunManager | MainMenu UI | `scripts/systems/run_manager.gd::_reject_invalid_continue_payload` â†’ `scripts/ui/main_menu.gd::_ready` |
+| `request_place_bet` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_intro_bet_selected` â†’ `scripts/systems/run_manager.gd::_ready` |
+| `bet_ui_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_level3_bet_ui` â†’ `scripts/ui/ui_root.gd::_ready` |
+| `bet_placed` | RunManager | UI Root, RunManager | `scripts/systems/run_manager.gd::select_bet` â†’ `scripts/ui/ui_root.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
+| `pact_sealed_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` â†’ `scripts/ui/ui_root.gd::_ready` |
+| `pact_sealed_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_pact_sealed_ritual` â†’ `scripts/ui/ui_root.gd::_ready` |
+| `resolve_ritual_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` â†’ `scripts/ui/ui_root.gd::_ready` |
+| `resolve_ritual_closed` | RunManager | UI Root | `scripts/systems/run_manager.gd::_start_resolve_ritual` â†’ `scripts/ui/ui_root.gd::_ready` |
+| `arena_started` | RunManager | UI Root | `scripts/systems/run_manager.gd::_resolve_ritual_outcome` â†’ `scripts/ui/ui_root.gd::_ready` |
 | `arena_completed` | RunManager | UNKNOWN (needs editor validation) | `scripts/systems/run_manager.gd::_resolve_ritual_outcome` |
-| `request_mid_choice_select` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_mid_choice_select` → `scripts/systems/run_manager.gd::_ready` |
-| `push_luck_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_push_luck_choice` → `scripts/ui/ui_root.gd::_ready` |
-| `request_pyl_cashout` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` → `scripts/systems/run_manager.gd::_ready` |
-| `request_pyl_double` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` → `scripts/systems/run_manager.gd::_ready` |
-| `run_debug_state_updated` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_debug_state` (includes `glory`, `scar_double_count`, `scar_pact_count`, `volatility`) → `scripts/ui/ui_root.gd::_on_run_debug_state_updated` |
-| `run_finale_selected` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_finale` → `scripts/ui/ui_root.gd::_ready` |
-| `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` (gameplay failure reasons only; excludes `INFRA_FAILURE`) → `scripts/ui/ui_root.gd::_ready`, `scripts/Arena.gd::_ready` |
-| `request_show_main_menu` | UI Root | MainMenu UI, RunManager (log-only) | `scripts/ui/ui_root.gd::_on_quit_pressed` → `scripts/ui/main_menu.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
+| `request_mid_choice_select` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_mid_choice_select` â†’ `scripts/systems/run_manager.gd::_ready` |
+| `push_luck_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_push_luck_choice` â†’ `scripts/ui/ui_root.gd::_ready` |
+| `request_pyl_cashout` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` â†’ `scripts/systems/run_manager.gd::_ready` |
+| `request_pyl_double` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` â†’ `scripts/systems/run_manager.gd::_ready` |
+| `run_debug_state_updated` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_debug_state` (includes `glory`, `scar_double_count`, `scar_pact_count`, `volatility`) â†’ `scripts/ui/ui_root.gd::_on_run_debug_state_updated` |
+| `run_finale_selected` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_finale` â†’ `scripts/ui/ui_root.gd::_ready` |
+| `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` (gameplay failure reasons only; excludes `INFRA_FAILURE`) â†’ `scripts/ui/ui_root.gd::_ready`, `scripts/Arena.gd::_ready` |
+| `request_show_main_menu` | UI Root | MainMenu UI, RunManager (log-only) | `scripts/ui/ui_root.gd::_on_quit_pressed` â†’ `scripts/ui/main_menu.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
 
 ## SOURCE: docs/run_ui_phase_paths_and_names.md
 
-# Run UI — Phase Paths and Node Names
+# Run UI â€” Phase Paths and Node Names
 
 This document lists the canonical run UI phase containers and their key node names after the phase-based rename.
 
@@ -484,15 +487,15 @@ Scene: `res://scenes/UI.tscn`
   - phase map (`_phase_node_map`) and `show_phase(phase: int)`
 - `scripts/systems/run_manager.gd`
   - sanity checks and `_ensure_flow_panel(...)` paths updated to `UI_RunRoot/Phase_*`
-# Level 3 — Resolution Phase Contract Clarification
+# Level 3 â€” Resolution Phase Contract Clarification
 
 ## Mainline vs Alternate Path
 
-In Level 3, the canonical “mainline” run progression is:
+In Level 3, the canonical â€œmainlineâ€ run progression is:
 
 INTRO -> FIRST_REACTION -> INTERMEDIATE_CHOICE (MID_CHOICE UI) -> PUSH_YOUR_LUCK -> END_RUN
 
-The user-facing “resolution moment” between MID_CHOICE and PUSH_YOUR_LUCK is implemented as a
+The user-facing â€œresolution momentâ€ between MID_CHOICE and PUSH_YOUR_LUCK is implemented as a
 **resolve-ritual overlay** (event-driven), not as a dedicated mainline RunPhase step.
 
 
@@ -516,6 +519,10 @@ progression.
 Guardrail:
 
 - Do not assume RunPhase.RESOLUTION is entered in the mainline.
-- Do not gate PUSH_YOUR_LUCK on “having been in RunPhase.RESOLUTION”.
+- Do not gate PUSH_YOUR_LUCK on â€œhaving been in RunPhase.RESOLUTIONâ€.
 - Any future change that makes RESOLUTION a mainline phase must update this canon section
   and the corresponding UI boundary rules.
+
+
+
+

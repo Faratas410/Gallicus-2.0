@@ -1,4 +1,4 @@
-extends CanvasLayer
+﻿extends CanvasLayer
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -252,6 +252,8 @@ var resolve_ritual_modal: Control = null
 var resolve_ritual_panel: Control = null
 var resolve_ritual_title: Label = null
 var resolve_ritual_subtitle: Label = null
+var pact_sealed_advance_button: Button = null
+var resolve_ritual_advance_button: Button = null
 
 var intermediate_choice_modal: Control = null
 var intermediate_choice_panel: Control = null
@@ -501,6 +503,7 @@ func _ready() -> void:
 				scars_detail_close.pressed.connect(close_callable)
 	_wire_intermediate_choice_buttons()
 	_wire_push_luck_buttons()
+	_wire_ritual_advance_buttons()
 	_wire_intro_phase_buttons()
 
 	_refresh_runtime_group_cache(true)
@@ -574,10 +577,12 @@ func _bind_scene_nodes() -> void:
 	pact_sealed_panel = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION") as Control
 	pact_sealed_title = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel/Lbl_FIRST_REACTION_TITLE") as Label
 	pact_sealed_subtitle = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel/Lbl_FIRST_REACTION_BODY") as Label
+	pact_sealed_advance_button = get_node_or_null("UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Btn_FIRST_REACTION_NEXT") as Button
 	resolve_ritual_modal = get_node_or_null("UI_RunRoot/Phase_RESOLUTION") as Control
 	resolve_ritual_panel = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION") as Control
 	resolve_ritual_title = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel/Lbl_RESOLUTION_TITLE") as Label
 	resolve_ritual_subtitle = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
+	resolve_ritual_advance_button = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_NEXT") as Button
 
 	# Mid choice
 	intermediate_choice_modal = get_node_or_null("UI_RunRoot/Phase_MID_CHOICE") as Control
@@ -1547,6 +1552,11 @@ func _on_pact_sealed_closed() -> void:
 	_set_pact_sealed_modal(false)
 	_refresh_modal_dimmer()
 
+func _on_pact_ritual_next_pressed() -> void:
+	if not GameEvents.has_signal("request_ritual_advance"):
+		return
+	GameEvents.request_ritual_advance.emit("pact")
+
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_reset_sign_feedback()
 	_pre_resolve_tension_boost()
@@ -1564,6 +1574,11 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 func _on_resolve_ritual_closed() -> void:
 	_set_resolve_ritual_modal(false)
 	_refresh_modal_dimmer()
+
+func _on_resolve_ritual_next_pressed() -> void:
+	if not GameEvents.has_signal("request_ritual_advance"):
+		return
+	GameEvents.request_ritual_advance.emit("resolve")
 
 func enqueue_post_bet_message(payload: Dictionary) -> void:
 	_show_post_bet_payload(payload)
@@ -1985,6 +2000,16 @@ func _wire_push_luck_buttons() -> void:
 		if not push_luck_double_button.pressed.is_connected(double_callable):
 			push_luck_double_button.pressed.connect(double_callable)
 		_wire_sign_preview(push_luck_double_button)
+
+func _wire_ritual_advance_buttons() -> void:
+	if pact_sealed_advance_button != null:
+		var pact_callable: Callable = Callable(self, "_on_pact_ritual_next_pressed")
+		if not pact_sealed_advance_button.pressed.is_connected(pact_callable):
+			pact_sealed_advance_button.pressed.connect(pact_callable)
+	if resolve_ritual_advance_button != null:
+		var resolve_callable: Callable = Callable(self, "_on_resolve_ritual_next_pressed")
+		if not resolve_ritual_advance_button.pressed.is_connected(resolve_callable):
+			resolve_ritual_advance_button.pressed.connect(resolve_callable)
 
 func _wire_intermediate_choice_buttons() -> void:
 	if intermediate_choice_placa_button != null:
@@ -3120,6 +3145,14 @@ func _get_enemies_alive() -> int:
 	if arena and arena.has_method("get_enemies_remaining"):
 		return int(arena.get_enemies_remaining())
 	return 0
+
+
+
+
+
+
+
+
 
 
 

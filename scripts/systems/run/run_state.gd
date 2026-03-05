@@ -1,4 +1,4 @@
-class_name RunState
+﻿class_name RunState
 extends RefCounted
 
 var run_seed: int = 0
@@ -16,6 +16,8 @@ var doubles: int = 0
 var max_escalation: int = 0
 var arenas_cleared: int = 0
 var audience_score: int = 0
+var audience_pressure: int = 0
+var audience_pressure_peak: int = 0
 var refuse_cashout_count_this_run: int = 0
 var last_action_was_rilancio: bool = false
 var run_is_over: bool = false
@@ -64,6 +66,8 @@ var intermediate_double_disabled_once: bool = false
 var intermediate_bonus_tier: int = 0
 var intermediate_choice_note: String = ""
 var intermediate_loss_penalty_pending: bool = false
+var signature_echo_bonus_pending: int = 0
+var signature_echo_note: String = ""
 var provoke_armed: bool = false
 var failed_high_risk_bets: int = 0
 var run_end_reason: String = ""
@@ -91,6 +95,9 @@ var scar_rng_state: int = 0
 var scar_roll_index: int = 0
 var last_pact_corruption_arena_index: int = -1
 var last_pact_corruption_bet_id: StringName = &""
+var escalation_threshold_3_fired: bool = false
+var escalation_threshold_5_fired: bool = false
+var escalation_threshold_7_fired: bool = false
 
 func reset() -> void:
 	run_seed = 0
@@ -108,6 +115,8 @@ func reset() -> void:
 	max_escalation = 0
 	arenas_cleared = 0
 	audience_score = 0
+	audience_pressure = 0
+	audience_pressure_peak = 0
 	refuse_cashout_count_this_run = 0
 	last_action_was_rilancio = false
 	run_is_over = false
@@ -156,6 +165,8 @@ func reset() -> void:
 	intermediate_bonus_tier = 0
 	intermediate_choice_note = ""
 	intermediate_loss_penalty_pending = false
+	signature_echo_bonus_pending = 0
+	signature_echo_note = ""
 	provoke_armed = false
 	failed_high_risk_bets = 0
 	run_end_reason = ""
@@ -183,6 +194,9 @@ func reset() -> void:
 	scar_roll_index = 0
 	last_pact_corruption_arena_index = -1
 	last_pact_corruption_bet_id = &""
+	escalation_threshold_3_fired = false
+	escalation_threshold_5_fired = false
+	escalation_threshold_7_fired = false
 
 func to_dict() -> Dictionary:
 	return {
@@ -199,6 +213,8 @@ func to_dict() -> Dictionary:
 		"max_escalation": max_escalation,
 		"arenas_cleared": arenas_cleared,
 		"audience_score": audience_score,
+		"audience_pressure": audience_pressure,
+		"audience_pressure_peak": audience_pressure_peak,
 		"refuse_cashout_count_this_run": refuse_cashout_count_this_run,
 		"last_action_was_rilancio": last_action_was_rilancio,
 		"run_is_over": run_is_over,
@@ -244,6 +260,8 @@ func to_dict() -> Dictionary:
 		"intermediate_bonus_tier": intermediate_bonus_tier,
 		"intermediate_choice_note": intermediate_choice_note,
 		"intermediate_loss_penalty_pending": intermediate_loss_penalty_pending,
+		"signature_echo_bonus_pending": signature_echo_bonus_pending,
+		"signature_echo_note": signature_echo_note,
 		"provoke_armed": provoke_armed,
 		"failed_high_risk_bets": failed_high_risk_bets,
 		"run_end_reason": run_end_reason,
@@ -271,6 +289,9 @@ func to_dict() -> Dictionary:
 		"scar_roll_index": scar_roll_index,
 		"last_pact_corruption_arena_index": last_pact_corruption_arena_index,
 		"last_pact_corruption_bet_id": String(last_pact_corruption_bet_id),
+		"escalation_threshold_3_fired": escalation_threshold_3_fired,
+		"escalation_threshold_5_fired": escalation_threshold_5_fired,
+		"escalation_threshold_7_fired": escalation_threshold_7_fired,
 	}
 
 func from_dict(d: Dictionary) -> void:
@@ -287,6 +308,8 @@ func from_dict(d: Dictionary) -> void:
 	max_escalation = int(d.get("max_escalation", 0))
 	arenas_cleared = int(d.get("arenas_cleared", 0))
 	audience_score = int(d.get("audience_score", 0))
+	audience_pressure = int(d.get("audience_pressure", 0))
+	audience_pressure_peak = int(d.get("audience_pressure_peak", 0))
 	refuse_cashout_count_this_run = int(d.get("refuse_cashout_count_this_run", 0))
 	last_action_was_rilancio = bool(d.get("last_action_was_rilancio", false))
 	run_is_over = bool(d.get("run_is_over", false))
@@ -332,6 +355,8 @@ func from_dict(d: Dictionary) -> void:
 	intermediate_bonus_tier = int(d.get("intermediate_bonus_tier", 0))
 	intermediate_choice_note = str(d.get("intermediate_choice_note", ""))
 	intermediate_loss_penalty_pending = bool(d.get("intermediate_loss_penalty_pending", false))
+	signature_echo_bonus_pending = int(d.get("signature_echo_bonus_pending", 0))
+	signature_echo_note = str(d.get("signature_echo_note", ""))
 	provoke_armed = bool(d.get("provoke_armed", false))
 	failed_high_risk_bets = int(d.get("failed_high_risk_bets", 0))
 	run_end_reason = str(d.get("run_end_reason", ""))
@@ -359,6 +384,9 @@ func from_dict(d: Dictionary) -> void:
 	scar_roll_index = int(d.get("scar_roll_index", 0))
 	last_pact_corruption_arena_index = int(d.get("last_pact_corruption_arena_index", -1))
 	last_pact_corruption_bet_id = StringName(str(d.get("last_pact_corruption_bet_id", "")))
+	escalation_threshold_3_fired = bool(d.get("escalation_threshold_3_fired", false))
+	escalation_threshold_5_fired = bool(d.get("escalation_threshold_5_fired", false))
+	escalation_threshold_7_fired = bool(d.get("escalation_threshold_7_fired", false))
 
 func _serialize_stringname_array(items: Array) -> Array[String]:
 	var values: Array[String] = []
@@ -374,3 +402,6 @@ func _parse_stringname_array(items: Array) -> Array[StringName]:
 			continue
 		values.append(StringName(text))
 	return values
+
+
+

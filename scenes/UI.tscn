@@ -1,4 +1,4 @@
-[gd_scene format=3]
+﻿[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/BettingCircle.tscn" id="6"]
@@ -660,7 +660,7 @@ theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "IL PATTO È SIGILLATO."
+text = "IL PATTO Ãˆ SIGILLATO."
 
 [node name="Lbl_FIRST_REACTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 visible = false
@@ -671,6 +671,10 @@ horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
 text = "La folla trattiene il fiato."
+
+[node name="Btn_FIRST_REACTION_NEXT" type="Button" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
+size_flags_horizontal = 4
+text = "AVANTI"
 
 [node name="Phase_RESOLUTION" type="Control" parent="UI_RunRoot"]
 visible = false
@@ -724,6 +728,10 @@ horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
 text = "Il patto viene giudicato."
+
+[node name="Btn_RESOLUTION_NEXT" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+size_flags_horizontal = 4
+text = "AVANTI"
 
 [node name="Phase_MID_CHOICE" type="Control" parent="UI_RunRoot"]
 visible = false
@@ -1109,7 +1117,7 @@ theme_override_styles/panel = ExtResource("16")
 [node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel"]
 autowrap_mode = 2
 horizontal_alignment = 1
-text = "Il registro è aperto: incassa ora o aumenta esposizione."
+text = "Il registro Ã¨ aperto: incassa ora o aumenta esposizione."
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
@@ -1139,7 +1147,7 @@ horizontal_alignment = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = true
-text = "Scegli un atto. La firma è irrevocabile."
+text = "Scegli un atto. La firma Ã¨ irrevocabile."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
@@ -1557,6 +1565,9 @@ size_flags_horizontal = 3
 size_flags_horizontal = 3
 autowrap_mode = 2
 text = "Nessuna cicatrice."
+
+
+
 
 
 

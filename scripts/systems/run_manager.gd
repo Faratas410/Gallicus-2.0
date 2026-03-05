@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -39,6 +39,8 @@ enum RunPhase {
 
 const PACT_SEALED_SECONDS: float = 0.7
 const RESOLVE_RITUAL_SECONDS: float = 0.9
+const RITUAL_STEP_SECONDS: float = 0.05
+const RITUAL_MAX_SECONDS: float = 7.0
 const QUICK_CUT_RESOLVE_BUFFER_SECONDS: float = 0.08
 const QUICK_CUT_DURATION_MIN_SECONDS: float = 0.8
 const QUICK_CUT_DURATION_MAX_SECONDS: float = 1.2
@@ -148,6 +150,9 @@ const AUDIENCE_ATTENTION_THRESHOLD: int = 3
 const AUDIENCE_CASHOUT_DISABLE_THRESHOLD: int = -3
 const AUDIENCE_CASHOUT_PENALTY_THRESHOLD: int = 0
 const AUDIENCE_CASHOUT_PENALTY_MULTIPLIER: float = 0.8
+const AUDIENCE_PRESSURE_MAX: int = 5
+const AUDIENCE_PRESSURE_PENALTY_THRESHOLD: int = 2
+const AUDIENCE_PRESSURE_PENALTY_STEP: float = 0.05
 const AUDIENCE_CONTEXT_PACT_SIGNED: StringName = &"PACT_SIGNED"
 const AUDIENCE_CONTEXT_GESTURE_CHOSEN: StringName = &"GESTURE_CHOSEN"
 const AUDIENCE_CONTEXT_CASH_OUT: StringName = &"CASH_OUT"
@@ -158,45 +163,45 @@ const AUDIENCE_MOOD_COLD: StringName = &"COLD"
 const AUDIENCE_MOOD_DELIRIUM: StringName = &"DELIRIUM"
 const AUDIENCE_POOL_SAFE: Array[String] = [
 	"Guarda come trema. Vuole vivere un altro giorno.",
-	"Non è un leone. È un topo con un casco.",
+	"Non Ã¨ un leone. Ãˆ un topo con un casco.",
 	"Scommessa piccola per un cuore piccolo.",
 	"Non cerca gloria. Cerca scuse.",
-	"Così si sopravvive… ma non si diventa leggenda.",
+	"CosÃ¬ si sopravviveâ€¦ ma non si diventa leggenda.",
 ]
 const AUDIENCE_POOL_MID: Array[String] = [
-	"Non troppo audace… non troppo vile.",
+	"Non troppo audaceâ€¦ non troppo vile.",
 	"Gioca con misura. Forse troppo.",
 	"Un passo avanti, ma non abbastanza.",
 	"Vuole vincere. Non vuole rischiare tutto.",
-	"È ambizione… o è paura mascherata?",
+	"Ãˆ ambizioneâ€¦ o Ã¨ paura mascherata?",
 ]
 const AUDIENCE_POOL_HIGH: Array[String] = [
 	"Ah! Finalmente qualcuno che osa.",
-	"Sfida la sorte… o la provoca?",
+	"Sfida la sorteâ€¦ o la provoca?",
 	"Vuole tutto. Potrebbe perdere tutto.",
-	"Se cade, farà rumore.",
-	"O sarà leggenda… o sarà cenere.",
+	"Se cade, farÃ  rumore.",
+	"O sarÃ  leggendaâ€¦ o sarÃ  cenere.",
 ]
 const AUDIENCE_PHRASES: Dictionary = {
 	"FURY": [
 		"Ti vogliono a terra, non al sicuro.",
-		"Ogni tuo respiro è un insulto.",
-		"Fischi e sputi, nessuna pietà.",
+		"Ogni tuo respiro Ã¨ un insulto.",
+		"Fischi e sputi, nessuna pietÃ .",
 		"Non ti credono degno di incassare.",
 		"Vogliono vederti spezzato.",
-		"Qui non c'è perdono per i timidi.",
-		"Il tuo sangue è l'unico applauso.",
+		"Qui non c'Ã¨ perdono per i timidi.",
+		"Il tuo sangue Ã¨ l'unico applauso.",
 		"Se esiti, ti divorano.",
 		"Sei debito, non eroe.",
 		"La folla in furia pretende il tuo crollo.",
 	],
 	"COLD": [
 		"Ti osservano e aspettano l'errore.",
-		"Il silenzio pesa più dell'acciaio.",
+		"Il silenzio pesa piÃ¹ dell'acciaio.",
 		"Non applaudono, registrano.",
 		"Nessun calore, solo misura.",
-		"Ti seguono senza pietà né favore.",
-		"Ogni mossa è un conto aperto.",
+		"Ti seguono senza pietÃ  nÃ© favore.",
+		"Ogni mossa Ã¨ un conto aperto.",
 		"Nessun grido, solo occhi fissi.",
 		"Ti concedono spazio, non rispetto.",
 		"Il pubblico calcola, non parteggia.",
@@ -204,7 +209,7 @@ const AUDIENCE_PHRASES: Dictionary = {
 	],
 	"DELIRIUM": [
 		"Ti vogliono oltre il limite, senza ritorno.",
-		"Ogni colpo chiede di più.",
+		"Ogni colpo chiede di piÃ¹.",
 		"Non cercano vittoria: cercano rovina.",
 		"Ti spingono al gesto che ti spezza.",
 		"Se rallenti, ti strappano la gloria.",
@@ -235,8 +240,8 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Firma fatta. Aspettano il tuo crollo.",
 		],
 		AUDIENCE_MOOD_COLD: [
-			"Il patto è inciso. Ti misurano.",
-			"Hai firmato. Nessuno ti dà tregua.",
+			"Il patto Ã¨ inciso. Ti misurano.",
+			"Hai firmato. Nessuno ti dÃ  tregua.",
 			"La firma pesa. Il pubblico resta in giudizio.",
 			"Patto chiuso. L'arena ti osserva.",
 		],
@@ -244,7 +249,7 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Hai firmato forte. L'arena vuole vedere.",
 			"Il patto accende la folla. Spingi ora.",
 			"Firma e alza il rischio. Ti chiedono il salto.",
-			"La folla ti vuole oltre. La firma è l'inizio.",
+			"La folla ti vuole oltre. La firma Ã¨ l'inizio.",
 		],
 	},
 	AUDIENCE_CONTEXT_GESTURE_CHOSEN: {
@@ -261,7 +266,7 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Scelta fatta. Ti valutano senza voce.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
-			"Hai scelto il gesto. Ora spingono di più.",
+			"Hai scelto il gesto. Ora spingono di piÃ¹.",
 			"La folla ti segue. Vogliono il prossimo strappo.",
 			"Il gesto accende l'arena. Ti vogliono oltre.",
 			"Hai mosso la folla. Non fermarti ora.",
@@ -281,9 +286,9 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 			"Incasso preso. Il pubblico non si muove.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
-			"Ti fermi mentre urlano. Ora è delusione.",
+			"Ti fermi mentre urlano. Ora Ã¨ delusione.",
 			"Hai spento la corsa. La folla voleva il salto.",
-			"Incassi mentre vogliono di più. Ti giudicano.",
+			"Incassi mentre vogliono di piÃ¹. Ti giudicano.",
 			"Ti sei fermato in alto. Ti lasciano cadere.",
 		],
 	},
@@ -309,20 +314,20 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 	},
 	AUDIENCE_CONTEXT_RUN_LOSS: {
 		AUDIENCE_MOOD_FURY: [
-			"Così finisci. La folla non ti piange.",
+			"CosÃ¬ finisci. La folla non ti piange.",
 			"Sei caduto. Ti volevano in ginocchio.",
-			"È finita. Il pubblico prende il tuo nome.",
+			"Ãˆ finita. Il pubblico prende il tuo nome.",
 			"Perduto. Il loro giudizio resta addosso.",
 		],
 		AUDIENCE_MOOD_COLD: [
 			"Sei crollato. Nessun suono.",
 			"Fine della corsa. Il silenzio resta.",
 			"Caduta secca. Il pubblico non reagisce.",
-			"È finita. Solo occhi fermi.",
+			"Ãˆ finita. Solo occhi fermi.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
 			"Sei caduto. Hanno avuto il sangue.",
-			"Fine violenta. La folla ha ciò che voleva.",
+			"Fine violenta. La folla ha ciÃ² che voleva.",
 			"Hai perso. L'arena resta accesa.",
 			"Caduta finale. Hanno avuto il rischio.",
 		],
@@ -345,7 +350,7 @@ const AUDIENCE_CONTEXT_PHRASES_HARSH: Dictionary = {
 			"Un gesto debole. Ora ti strappano il rispetto.",
 		],
 		AUDIENCE_MOOD_COLD: [
-			"Il gesto è sterile. Ti tengono in debito.",
+			"Il gesto Ã¨ sterile. Ti tengono in debito.",
 		],
 		AUDIENCE_MOOD_DELIRIUM: [
 			"Il gesto li accende, ma chiedono il crollo.",
@@ -453,7 +458,7 @@ const REGISTER_POOL_FINAL_CORRUPTION: Array[String] = [
 	"Soglia di deviazione superata. Fascicolo chiuso.",
 	"Corruzione confermata. Archiviazione definitiva.",
 	"Indice di compromissione: critico. Sentenza emessa.",
-	"Integrità del soggetto: insufficiente. Caso concluso.",
+	"IntegritÃ  del soggetto: insufficiente. Caso concluso.",
 	"Deriva irreversibile rilevata. Il Registro conclude.",
 	"Evidenza prevalente: debito. Fascicolo definito.",
 	"Profilo compromesso. Non sono richiesti ulteriori dati.",
@@ -474,7 +479,7 @@ const REGISTER_POOL_FINAL_SCARS: Array[String] = [
 	"Cicatrici critiche registrate. Archiviazione definitiva.",
 	"Stato del soggetto: degradato. Sentenza emessa.",
 	"Accumulo irreversibile. Caso concluso.",
-	"Integrità fisica compromessa. Il Registro conclude.",
+	"IntegritÃ  fisica compromessa. Il Registro conclude.",
 	"Evidenza prevalente: consumo. Fascicolo definito.",
 	"Segni sufficienti. Non sono richiesti ulteriori dati.",
 	"Profilo stabilizzato su danno. Atto finale registrato.",
@@ -663,9 +668,9 @@ const ARCH_TIME: StringName = &"TIME"
 const LEVEL3_BETS: Array[Dictionary] = BetCatalog.LEVEL3_BETS
 
 const LYING_PACT_REVEALS: Dictionary = {
-	BET_P3_LIE_MERCY: "VERITÀ: La folla pretende spettacolo: ogni esitazione si paga.",
-	BET_P3_LIE_DEBT: "VERITÀ: Il debito si rinnova: ciò che prendi oggi lo restituisci domani.",
-	BET_P3_LIE_APPLAUSE: "VERITÀ: L'applauso è una trappola: più ti esaltano, più ti consumano.",
+	BET_P3_LIE_MERCY: "VERITÃ€: La folla pretende spettacolo: ogni esitazione si paga.",
+	BET_P3_LIE_DEBT: "VERITÃ€: Il debito si rinnova: ciÃ² che prendi oggi lo restituisci domani.",
+	BET_P3_LIE_APPLAUSE: "VERITÃ€: L'applauso Ã¨ una trappola: piÃ¹ ti esaltano, piÃ¹ ti consumano.",
 }
 
 # LEGACY NAME: "damage_mod" profiles ritual adverse pressure in L3 (non-combat).
@@ -697,7 +702,7 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_EXECUTIONER,
 		"name": "EXECUTIONER",
-		"desc": "Condanne più dure.",
+		"desc": "Condanne piÃ¹ dure.",
 		"win_mod": -0.08,
 		"damage_mod": 0.1,
 		"weight": 2,
@@ -705,7 +710,7 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 	{
 		"id": ENEMY_TRICKSTER,
 		"name": "TRICKSTER",
-		"desc": "Volatilità estrema.",
+		"desc": "VolatilitÃ  estrema.",
 		"win_mod": 0.0,
 		"damage_mod": 0.0,
 		"weight": 2,
@@ -754,6 +759,8 @@ var _resolving_ritual: bool = false
 var _pact_sealed_sequence_id: int = 0
 var _resolve_ritual_sequence_id: int = 0
 var _resolve_ritual_reward_applied: bool = false
+var _ritual_advance_pact_requested: bool = false
+var _ritual_advance_resolve_requested: bool = false
 var _run_state: RunState = RunState.new()
 var _save_system: SaveSystem = SaveSystemScript.new()
 var _save_continue_boundary: SaveContinueBoundary = SaveContinueBoundaryScript.new()
@@ -1042,6 +1049,7 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"request_push_luck_double", &"_on_request_push_luck_double", true],
 		[&"post_arena_choice_selected", &"_on_post_arena_choice_selected", true],
 		[&"request_intermediate_choice", &"_on_request_intermediate_choice", true],
+		[&"request_ritual_advance", &"_on_request_ritual_advance", true],
 		[&"request_intro_apply_seed", &"_on_request_intro_apply_seed", true],
 		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
 		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
@@ -1534,8 +1542,18 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	_close_audience_context_line()
 	_flow_log("pact_sealed_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_smoke_mark("PACT_SEALED_OPENED")
+	_ritual_advance_pact_requested = false
 	GameEvents.pact_sealed_opened.emit()
-	await get_tree().create_timer(PACT_SEALED_SECONDS).timeout
+	var elapsed_seconds: float = 0.0
+	while elapsed_seconds < RITUAL_MAX_SECONDS:
+		await get_tree().create_timer(RITUAL_STEP_SECONDS).timeout
+		if sequence_id != _pact_sealed_sequence_id:
+			return
+		elapsed_seconds += RITUAL_STEP_SECONDS
+		if elapsed_seconds >= PACT_SEALED_SECONDS and _ritual_advance_pact_requested:
+			break
+		if elapsed_seconds >= PACT_SEALED_SECONDS * 2.0:
+			break
 	if sequence_id != _pact_sealed_sequence_id:
 		return
 	GameEvents.pact_sealed_closed.emit()
@@ -1559,8 +1577,18 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	)
 	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_smoke_mark("RESOLVE_OPENED")
+	_ritual_advance_resolve_requested = false
 	GameEvents.resolve_ritual_opened.emit(payload)
-	await get_tree().create_timer(RESOLVE_RITUAL_SECONDS).timeout
+	var elapsed_seconds: float = 0.0
+	while elapsed_seconds < RITUAL_MAX_SECONDS:
+		await get_tree().create_timer(RITUAL_STEP_SECONDS).timeout
+		if sequence_id != _resolve_ritual_sequence_id:
+			return
+		elapsed_seconds += RITUAL_STEP_SECONDS
+		if elapsed_seconds >= RESOLVE_RITUAL_SECONDS and _ritual_advance_resolve_requested:
+			break
+		if elapsed_seconds >= RESOLVE_RITUAL_SECONDS * 2.0:
+			break
 	if sequence_id != _resolve_ritual_sequence_id:
 		return
 	GameEvents.resolve_ritual_closed.emit()
@@ -2852,6 +2880,16 @@ func _on_request_intermediate_choice(choice_id: String) -> void:
 		return
 	push_error("RunManager: request_choose_mid invalid choice '%s'" % choice_id)
 
+func _on_request_ritual_advance(kind: String) -> void:
+	_touch_request_activity("request_ritual_advance(kind=%s)" % kind)
+	var normalized: String = kind.strip_edges().to_lower()
+	if normalized == "pact" and _phase == RunPhase.BET_COMMITTED:
+		_ritual_advance_pact_requested = true
+		return
+	if normalized == "resolve" and _phase == RunPhase.RESOLUTION:
+		_ritual_advance_resolve_requested = true
+		return
+
 func _apply_intermediate_choice(choice_id: String) -> void:
 	print_debug("[FLOW] intermediate_choice_received :: arena=%d, choice=%s" % [_run_state.arena_index, choice_id])
 	_waiting_for_intermediate_choice = false
@@ -2859,6 +2897,8 @@ func _apply_intermediate_choice(choice_id: String) -> void:
 	_run_state.intermediate_bonus_tier = 0
 	_run_state.intermediate_choice_note = ""
 	_run_state.intermediate_loss_penalty_pending = false
+	_run_state.signature_echo_bonus_pending = 0
+	_run_state.signature_echo_note = ""
 	_run_state.provoke_armed = false
 	var normalized_choice: String = choice_id.strip_edges().to_lower()
 	var escalation_delta: int = 0
@@ -2871,6 +2911,10 @@ func _apply_intermediate_choice(choice_id: String) -> void:
 			_run_state.intermediate_choice_note = "Gesto: Provoca."
 		_:
 			_run_state.intermediate_choice_note = ""
+	var bet_id: StringName = _run_state.intermediate_pending_bet_id
+	if bet_id == &"":
+		bet_id = _run_state.last_selected_bet_id
+	_update_signature_echo_from_choice(normalized_choice, bet_id)
 	if escalation_delta != 0:
 		var previous_level: int = _run_state.escalation_level
 		var next_level: int = clampi(previous_level + escalation_delta, 0, ESCALATION_MAX)
@@ -2880,12 +2924,10 @@ func _apply_intermediate_choice(choice_id: String) -> void:
 		if next_level > _run_state.max_escalation:
 			_run_state.max_escalation = next_level
 		if next_level != previous_level:
+			_apply_escalation_threshold_events(previous_level, next_level)
 			_emit_escalation_changed()
 			_emit_run_debug_state()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_GESTURE_CHOSEN)
-	var bet_id: StringName = _run_state.intermediate_pending_bet_id
-	if bet_id == &"":
-		bet_id = _run_state.last_selected_bet_id
 	_run_state.intermediate_pending_bet_id = &""
 	_start_resolve_ritual(bet_id)
 	_autosave_run_checkpoint(RUN_FLOW_PUSH_LUCK, bet_id)
@@ -2911,6 +2953,8 @@ func _take_payout() -> void:
 		return
 	var bet_id_name: StringName = StringName(_run_state.current_bet_id)
 	var bonus_tier: int = _consume_intermediate_choice_bonus()
+	_consume_signature_echo_bonus()
+	_apply_audience_pressure_delta(-2)
 	_waiting_for_push_luck = false
 	_run_state.last_action_was_rilancio = false
 	_run_state.risky_choice_made_recently = false
@@ -2943,6 +2987,8 @@ func _handle_push_luck_condanna() -> void:
 	if not _waiting_for_push_luck:
 		return
 	_consume_intermediate_choice_bonus()
+	_consume_signature_echo_bonus()
+	_apply_audience_pressure_delta(-1)
 	_waiting_for_push_luck = false
 	_run_state.last_action_was_rilancio = false
 	_update_arena_visual_only()
@@ -2983,6 +3029,7 @@ func _push_your_luck() -> void:
 	if _run_state.escalation_level >= ESCALATION_HIGH_THRESHOLD:
 		_register_condanna(CONDANNA_FINCHE_REGGE)
 	_run_state.last_action_was_rilancio = true
+	var echo_bonus: int = _consume_signature_echo_bonus()
 	_waiting_for_push_luck = false
 	_reset_intermediate_choice_modifiers()
 	_run_state.special_arena_cashout_lock_reason = ""
@@ -2990,7 +3037,10 @@ func _push_your_luck() -> void:
 	GameEvents.push_luck_closed.emit()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_CONTINUE)
 	_resolve_ritual_reward_applied = false
-	_run_state.escalation_level = maxi(_run_state.escalation_level + 1, 1)
+	var previous_level: int = _run_state.escalation_level
+	_run_state.escalation_level = maxi(_run_state.escalation_level + 1 + echo_bonus, 1)
+	_apply_audience_pressure_delta(1 + echo_bonus)
+	_apply_escalation_threshold_events(previous_level, _run_state.escalation_level)
 	_try_register_risk_threshold_scar()
 	_run_state.level3_reward_tier = maxi(_run_state.level3_reward_tier + 1, 1)
 	var next_doubles_count: int = _run_state.level3_doubles + 1
@@ -3189,11 +3239,58 @@ func _reset_intermediate_choice_modifiers() -> void:
 	_run_state.intermediate_double_disabled_once = false
 	_run_state.intermediate_bonus_tier = 0
 	_run_state.intermediate_choice_note = ""
+	_run_state.signature_echo_bonus_pending = 0
+	_run_state.signature_echo_note = ""
 
 func _consume_intermediate_choice_bonus() -> int:
 	var bonus: int = _run_state.intermediate_bonus_tier
 	_reset_intermediate_choice_modifiers()
 	return bonus
+
+func _update_signature_echo_from_choice(choice_id: String, bet_id: StringName) -> void:
+	_run_state.signature_echo_bonus_pending = 0
+	_run_state.signature_echo_note = ""
+	if choice_id != "provoca":
+		return
+	if bet_id == &"":
+		return
+	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
+	if not _is_high_risk_behavior(behavior_id):
+		return
+	_run_state.signature_echo_bonus_pending = 1
+	_run_state.signature_echo_note = "Eco firma: la folla pretende rilancio pieno."
+
+func _consume_signature_echo_bonus() -> int:
+	var bonus: int = maxi(_run_state.signature_echo_bonus_pending, 0)
+	_run_state.signature_echo_bonus_pending = 0
+	_run_state.signature_echo_note = ""
+	return bonus
+
+func _apply_audience_pressure_delta(delta: int) -> void:
+	if delta == 0:
+		return
+	var next_pressure: int = clampi(_run_state.audience_pressure + delta, 0, AUDIENCE_PRESSURE_MAX)
+	if next_pressure == _run_state.audience_pressure:
+		return
+	_run_state.audience_pressure = next_pressure
+	if next_pressure > _run_state.audience_pressure_peak:
+		_run_state.audience_pressure_peak = next_pressure
+
+func _apply_escalation_threshold_events(previous_level: int, next_level: int) -> void:
+	if next_level <= previous_level:
+		return
+	if next_level >= 3 and not _run_state.escalation_threshold_3_fired:
+		_run_state.escalation_threshold_3_fired = true
+		_apply_corruption(1)
+		_register_condanna(CONDANNA_NON_OGGI)
+	if next_level >= 5 and not _run_state.escalation_threshold_5_fired:
+		_run_state.escalation_threshold_5_fired = true
+		_apply_corruption(1)
+		_register_condanna(CONDANNA_TROPPO_TARDI)
+	if next_level >= 7 and not _run_state.escalation_threshold_7_fired:
+		_run_state.escalation_threshold_7_fired = true
+		_apply_corruption(1)
+		_register_condanna(CONDANNA_NON_E_COLPA_LORO)
 
 func _apply_intermediate_loss_penalty_if_needed() -> void:
 	if not _run_state.intermediate_loss_penalty_pending:
@@ -3308,7 +3405,7 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 		"cashout_lock_reason": cashout_lock_reason,
 		"audience_cashout_lock_reason": str(reward_text.get("cashout_lock_reason", "")),
 		"double_lock_reason": double_lock_reason,
-		"choice_note": _run_state.intermediate_choice_note,
+		"choice_note": _build_push_luck_choice_note(),
 		"arena_index": _run_state.arena_index,
 		"arena_target": _run_state.level3_target_arenas,
 		"audience_label": str(reward_text.get("audience_label", "")),
@@ -3316,6 +3413,16 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 		"cashout_modifier": float(reward_text.get("cashout_modifier", 1.0)),
 		"cashout_modifier_text": str(reward_text.get("cashout_modifier_text", "")),
 	})
+
+func _build_push_luck_choice_note() -> String:
+	var notes: Array[String] = []
+	if _run_state.intermediate_choice_note != "":
+		notes.append(_run_state.intermediate_choice_note)
+	if _run_state.signature_echo_note != "":
+		notes.append(_run_state.signature_echo_note)
+	if notes.is_empty():
+		return ""
+	return " | ".join(notes)
 
 func _emit_sentence_banner_for_bet(bet_id: StringName) -> void:
 	if not GameEvents.has_signal("sentence_banner_requested"):
@@ -3333,7 +3440,7 @@ func _build_sentence_payload(bet_id: StringName) -> Dictionary:
 	elif not doom.begins_with("SE FALLISCI:"):
 		doom = "SE FALLISCI: %s" % doom
 	if _run_state.escalation_level >= 7 and doom.findn("ESCALATION") < 0:
-		doom = "%s\nESCALATION: NON HAI PIÙ MARGINE." % doom
+		doom = "%s\nESCALATION: NON HAI PIÃ™ MARGINE." % doom
 	return _ui_payload_factory.build_sentence_payload("SENTENZA", rule, doom, bet_id)
 
 func _get_sentence_rule(bet_id: StringName) -> String:
@@ -3391,6 +3498,10 @@ func _update_audience_after_arena(result: ArenaResult) -> void:
 		delta = -2
 	if delta == 0:
 		return
+	if result.won:
+		_apply_audience_pressure_delta(-1)
+	else:
+		_apply_audience_pressure_delta(1)
 	_run_state.audience_score = clampi(_run_state.audience_score + delta, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
 	_check_audience_condanne()
 	if _run_state.audience_score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
@@ -3458,7 +3569,22 @@ func _build_audience_reward_text() -> Dictionary:
 		"cashout_penalty_multiplier": AUDIENCE_CASHOUT_PENALTY_MULTIPLIER,
 		"registry_has_precedent": _registry_has_precedent,
 	})
-	return _betting_payload_factory.build_audience_payload_fragments(reward_text)
+	var fragments: Dictionary = _betting_payload_factory.build_audience_payload_fragments(reward_text)
+	var pressure: int = clampi(_run_state.audience_pressure, 0, AUDIENCE_PRESSURE_MAX)
+	if pressure >= AUDIENCE_PRESSURE_PENALTY_THRESHOLD and bool(fragments.get("cashout_enabled", true)):
+		var base_modifier: float = float(fragments.get("cashout_modifier", 1.0))
+		var pressure_penalty: float = clampf(1.0 - float(pressure - AUDIENCE_PRESSURE_PENALTY_THRESHOLD + 1) * AUDIENCE_PRESSURE_PENALTY_STEP, 0.7, 1.0)
+		var pressure_modifier: float = base_modifier * pressure_penalty
+		fragments["cashout_modifier"] = pressure_modifier
+		fragments["cashout_modifier_text"] = "Incasso sotto pressione: x%.2f" % pressure_modifier
+	var pressure_line: String = "Pressione folla: %d/%d" % [pressure, AUDIENCE_PRESSURE_MAX]
+	var reason_text: String = str(fragments.get("audience_reason", ""))
+	if reason_text == "":
+		reason_text = pressure_line
+	else:
+		reason_text = "%s\n%s" % [reason_text, pressure_line]
+	fragments["audience_reason"] = reason_text
+	return fragments
 
 func _apply_bet_reward_scaled(bet_id: String, chain_level: int) -> void:
 	var reward_scale: int = _bet_system.get_reward_scale(chain_level)
@@ -4370,7 +4496,7 @@ func _try_apply_open_wound_scar(chain_level: int) -> void:
 		origin_text,
 		scar_def,
 		"FERITA APERTA",
-		"Il sangue non si è mai fermato.",
+		"Il sangue non si Ã¨ mai fermato.",
 		"HP massimo ridotto e cure meno efficaci."
 	)
 	_add_scar(scar)
@@ -4444,6 +4570,28 @@ func _log_runtime_state(tag: String) -> void:
 			cam_pos,
 		]
 	)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

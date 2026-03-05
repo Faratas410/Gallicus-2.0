@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 @warning_ignore_start("unused_signal")
 signal run_started
@@ -35,6 +35,7 @@ signal pact_sealed_opened
 signal pact_sealed_closed
 signal resolve_ritual_opened(payload: Dictionary)
 signal resolve_ritual_closed
+signal request_ritual_advance(kind: String)
 signal micro_interpretive_quick_cut_requested(payload: Dictionary)
 signal intermediate_choice_opened
 signal push_luck_opened(payload: Dictionary)
@@ -84,3 +85,5 @@ func set_gameplay_enabled(enabled: bool) -> void:
 		return
 	gameplay_enabled = enabled
 	gameplay_enabled_changed.emit(enabled)
+
+

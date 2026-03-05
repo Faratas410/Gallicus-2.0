@@ -3,10 +3,15 @@
 **Status:** SUPPORTING (inventory map, not canon owner).  
 **Purpose:** Current repository layout and ownership boundaries aligned with canon.  
 **Canonical references:**
+- `docs/canon/FOUNDATIONS.md`
 - `docs/canon/PROCESS_AND_FREEZE.md`
 - `docs/canon/RUN_ARCHITECTURE_CANON.md`
 - `docs/canon/MECHANICS_UNIFIED.md`
+- `docs/canon/GLOSSARY_ENTITIES.md`
+- `docs/canon/LORE_UNIFIED.md`
 - `docs/canon/UI_CANON.md`
+- `docs/canon/REGISTRY_SYSTEM_SPEC.md`
+- `docs/canon/REGISTRY_ERA_CHRONICLE.md`
 - `docs/canon/CANON_DEPENDENCY_MATRIX.md`
 
 ## Runtime invariants snapshot

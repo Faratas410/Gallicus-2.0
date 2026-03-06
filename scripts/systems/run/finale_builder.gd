@@ -2,7 +2,7 @@ extends RefCounted
 class_name FinaleBuilder
 
 const EndingRulesScript = preload("res://data/ending_rules.gd")
-const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
+const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
 
 
 func build_finale_payload(inputs: Dictionary) -> Dictionary:
@@ -66,11 +66,11 @@ func build_path_trace_from_bet_history(bet_history: Array[StringName]) -> Dictio
 		"path_unknown_count": 0,
 	}
 	for bet_id: StringName in bet_history:
-		var path_tag: StringName = BetCatalog.get_path_tag_for_bet_id(bet_id)
+		var path_tag: StringName = BetCatalogScript.get_path_tag_for_bet_id(bet_id)
 		match path_tag:
-			BetCatalog.PATH_PRUDENCE:
+			BetCatalogScript.PATH_PRUDENCE:
 				trace["path_prudence_count"] = int(trace.get("path_prudence_count", 0)) + 1
-			BetCatalog.PATH_HUBRIS:
+			BetCatalogScript.PATH_HUBRIS:
 				trace["path_hubris_count"] = int(trace.get("path_hubris_count", 0)) + 1
 			_:
 				trace["path_unknown_count"] = int(trace.get("path_unknown_count", 0)) + 1

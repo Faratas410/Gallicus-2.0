@@ -790,7 +790,6 @@ func _wire_intro_phase_buttons() -> void:
 func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_popup == null:
 		return
-	var scar_name: String = str(scar.get("name", "Cicatrice"))
 	var scar_story: String = str(scar.get("narrative_text", ""))
 	if scar_story == "":
 		scar_story = str(scar.get("story", ""))
@@ -1865,7 +1864,6 @@ func _refresh_scars_ui(scars: Array) -> void:
 	var detail_lines: Array[String] = []
 	for scar_value: Dictionary in scars:
 		var scar: Dictionary = scar_value as Dictionary
-		var scar_name: String = str(scar.get("name", "Cicatrice"))
 		var visual_tag: String = str(scar.get("visual_tag", ""))
 		var short_desc: String = str(scar.get("short_desc", ""))
 		var story: String = str(scar.get("narrative_text", ""))

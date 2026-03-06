@@ -2,7 +2,7 @@ class_name SaveContinueBoundary
 extends RefCounted
 
 const SaveSystemScript := preload("res://scripts/systems/run/save_system.gd")
-const RunState := preload("res://scripts/systems/run/run_state.gd")
+const RunStateScript := preload("res://scripts/systems/run/run_state.gd")
 
 const LEVEL3_SCHEMA_VERSION: int = 2
 
@@ -11,7 +11,7 @@ var _save_system: SaveSystem = SaveSystemScript.new()
 func build_save_payload(run_state: RunState, runtime_fields: Dictionary) -> Dictionary:
 	if run_state == null:
 		return {}
-	var payload_state: RunState = RunState.new()
+	var payload_state: RunState = RunStateScript.new()
 	payload_state.reset()
 	payload_state.from_dict(run_state.to_dict())
 	if runtime_fields.has("scars") and runtime_fields["scars"] is Array:

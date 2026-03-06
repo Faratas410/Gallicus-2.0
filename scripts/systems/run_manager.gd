@@ -13,7 +13,7 @@ extends Node
 
 @export var arena_path: NodePath
 @export var player_path: NodePath
-@export var arena_clear_reward: int = GameConstants.ARENA_CLEAR_REWARD
+@export var arena_clear_reward: int = GameConstantsScript.ARENA_CLEAR_REWARD
 @export var arena_scene: PackedScene
 @export var player_scene: PackedScene
 
@@ -51,30 +51,30 @@ const QUICK_CUT_NO_TEXT_MAX_ERA3_FIXED: float = 0.15
 const QUICK_CUT_GLITCH_CHANCE: float = 0.35
 const INTERMEDIATE_PROVOCA_BONUS_TIER: int = 1
 const INTERMEDIATE_PROVOCA_CORRUPTION_PENALTY: int = 1
-const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
-const BET_CASH_OUT: StringName = BetCatalog.BET_CASH_OUT
-const BET_DOUBLE_OR_DIE_L3: StringName = BetCatalog.BET_DOUBLE_OR_DIE
-const BET_DEBT_CHAIN: StringName = BetCatalog.BET_DEBT_CHAIN
-const BET_BLOOD_TAX: StringName = BetCatalog.BET_BLOOD_TAX
-const BET_CROW_PLEASER: StringName = BetCatalog.BET_CROW_PLEASER
-const BET_LAST_BREATH: StringName = BetCatalog.BET_LAST_BREATH
-const BET_P3_WAX_SEAL: StringName = BetCatalog.BET_P3_WAX_SEAL
-const BET_P3_BLOOD_LEDGER: StringName = BetCatalog.BET_P3_BLOOD_LEDGER
-const BET_P3_DEBT_MIRROR: StringName = BetCatalog.BET_P3_DEBT_MIRROR
-const BET_P3_CROWD_FEAST: StringName = BetCatalog.BET_P3_CROWD_FEAST
-const BET_P3_LAST_WAGER: StringName = BetCatalog.BET_P3_LAST_WAGER
-const BET_P3_RED_VERDICT: StringName = BetCatalog.BET_P3_RED_VERDICT
-const BET_P3_CHAIN_OATH: StringName = BetCatalog.BET_P3_CHAIN_OATH
-const BET_P3_TITHE_OF_BONE: StringName = BetCatalog.BET_P3_TITHE_OF_BONE
-const BET_P3_GLORY_TAX: StringName = BetCatalog.BET_P3_GLORY_TAX
-const BET_P3_MERCY_BAIT: StringName = BetCatalog.BET_P3_MERCY_BAIT
-const BET_P3_SILENCE_BRIBE: StringName = BetCatalog.BET_P3_SILENCE_BRIBE
-const BET_P3_FINAL_APPLAUSE: StringName = BetCatalog.BET_P3_FINAL_APPLAUSE
-const BET_P3_LIE_MERCY: StringName = BetCatalog.BET_P3_LIE_MERCY
-const BET_P3_LIE_DEBT: StringName = BetCatalog.BET_P3_LIE_DEBT
-const BET_P3_LIE_APPLAUSE: StringName = BetCatalog.BET_P3_LIE_APPLAUSE
+const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
+const BET_CASH_OUT: StringName = BetCatalogScript.BET_CASH_OUT
+const BET_DOUBLE_OR_DIE_L3: StringName = BetCatalogScript.BET_DOUBLE_OR_DIE
+const BET_DEBT_CHAIN: StringName = BetCatalogScript.BET_DEBT_CHAIN
+const BET_BLOOD_TAX: StringName = BetCatalogScript.BET_BLOOD_TAX
+const BET_CROW_PLEASER: StringName = BetCatalogScript.BET_CROW_PLEASER
+const BET_LAST_BREATH: StringName = BetCatalogScript.BET_LAST_BREATH
+const BET_P3_WAX_SEAL: StringName = BetCatalogScript.BET_P3_WAX_SEAL
+const BET_P3_BLOOD_LEDGER: StringName = BetCatalogScript.BET_P3_BLOOD_LEDGER
+const BET_P3_DEBT_MIRROR: StringName = BetCatalogScript.BET_P3_DEBT_MIRROR
+const BET_P3_CROWD_FEAST: StringName = BetCatalogScript.BET_P3_CROWD_FEAST
+const BET_P3_LAST_WAGER: StringName = BetCatalogScript.BET_P3_LAST_WAGER
+const BET_P3_RED_VERDICT: StringName = BetCatalogScript.BET_P3_RED_VERDICT
+const BET_P3_CHAIN_OATH: StringName = BetCatalogScript.BET_P3_CHAIN_OATH
+const BET_P3_TITHE_OF_BONE: StringName = BetCatalogScript.BET_P3_TITHE_OF_BONE
+const BET_P3_GLORY_TAX: StringName = BetCatalogScript.BET_P3_GLORY_TAX
+const BET_P3_MERCY_BAIT: StringName = BetCatalogScript.BET_P3_MERCY_BAIT
+const BET_P3_SILENCE_BRIBE: StringName = BetCatalogScript.BET_P3_SILENCE_BRIBE
+const BET_P3_FINAL_APPLAUSE: StringName = BetCatalogScript.BET_P3_FINAL_APPLAUSE
+const BET_P3_LIE_MERCY: StringName = BetCatalogScript.BET_P3_LIE_MERCY
+const BET_P3_LIE_DEBT: StringName = BetCatalogScript.BET_P3_LIE_DEBT
+const BET_P3_LIE_APPLAUSE: StringName = BetCatalogScript.BET_P3_LIE_APPLAUSE
 const ArenaThemes = preload("res://data/arena_themes.gd")
-const GameConstants = preload("res://scripts/systems/constants.gd")
+const GameConstantsScript = preload("res://scripts/systems/constants.gd")
 const SmokeDriverScript = preload("res://scripts/systems/run/smoke_driver.gd")
 const FlowWatchdogScript = preload("res://scripts/systems/run/flow_watchdog.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
@@ -85,8 +85,8 @@ const OutcomeSystemScript = preload("res://scripts/systems/run/outcome_system.gd
 const ScarPolicyScript = preload("res://scripts/systems/run/scar_policy.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
 
-const LEVEL3_BET_BEHAVIOR: Dictionary[StringName, StringName] = BetCatalog.LEVEL3_BET_BEHAVIOR
-const LEVEL3_PACT_UNLOCKS: Dictionary[StringName, StringName] = BetCatalog.LEVEL3_PACT_UNLOCKS
+const LEVEL3_BET_BEHAVIOR: Dictionary[StringName, StringName] = BetCatalogScript.LEVEL3_BET_BEHAVIOR
+const LEVEL3_PACT_UNLOCKS: Dictionary[StringName, StringName] = BetCatalogScript.LEVEL3_PACT_UNLOCKS
 const SaveSystemScript = preload("res://scripts/systems/run/save_system.gd")
 const SaveContinueBoundaryScript = preload("res://scripts/systems/run/save_continue_boundary.gd")
 const RunSaveBoundaryHelperScript = preload("res://scripts/systems/run/run_save_boundary_helper.gd")
@@ -661,7 +661,7 @@ const ARCH_DEBT: StringName = &"DEBT"
 const ARCH_EGO: StringName = &"EGO"
 const ARCH_TIME: StringName = &"TIME"
 
-const LEVEL3_BETS: Array[Dictionary] = BetCatalog.LEVEL3_BETS
+const LEVEL3_BETS: Array[Dictionary] = BetCatalogScript.LEVEL3_BETS
 
 const LYING_PACT_REVEALS: Dictionary = {
 	BET_P3_LIE_MERCY: "VERITÀ: La folla pretende spettacolo: ogni esitazione si paga.",
@@ -720,7 +720,7 @@ const DEBUG_RUNTIME_LOGS: bool = false
 
 const BET_COWARD: String = "COWARD"
 const BET_PURE_BLOOD: String = "PURE_BLOOD"
-const BET_DOUBLE_OR_DIE: String = String(BetCatalog.BET_DOUBLE_OR_DIE)
+const BET_DOUBLE_OR_DIE: String = String(BetCatalogScript.BET_DOUBLE_OR_DIE)
 const SCAR_OPEN_WOUND_HP_PENALTY: int = 20
 
 var run: Dictionary = {
@@ -742,9 +742,7 @@ var _is_game_over: bool = false
 var _phase: RunPhase = RunPhase.NONE
 var _gameplay_phase: RunPhase = RunPhase.PREP
 var _pending_resolution_bet_id: StringName = &""
-var _prep_sequence_id: int = 0
 var _has_started_run: bool = false
-var _boot_countdown_skipped: bool = false
 var _modal_lock_count: int = 0
 var _arena_suspended: bool = false
 var _arena_visual_only: bool = false
@@ -1261,7 +1259,7 @@ func _require_phase(expected_phase: RunPhase, context: String, gate_ok: bool = t
 	push_error("RunManager: %s in wrong phase %s\nSNAPSHOT:\n%s" % [context, str(_phase), _flow_snapshot(context)])
 	return false
 
-func _guard_phase(expected_phase: int, context: String) -> bool:
+func _guard_phase(expected_phase: RunPhase, context: String) -> bool:
 	_touch_request_activity(context)
 	if _phase == expected_phase:
 		return true
@@ -1843,8 +1841,8 @@ func _open_level3_bet_ui() -> void:
 	GameEvents.bet_opened.emit()
 
 func _build_level3_bet_offer() -> Array[Dictionary]:
-	var available: Array[Dictionary] = BetCatalog.level3_active_bets()
-	var desired_count: int = BetCatalog.level3_active_bet_ids().size()
+	var available: Array[Dictionary] = BetCatalogScript.level3_active_bets()
+	var desired_count: int = BetCatalogScript.level3_active_bet_ids().size()
 	var offer_seed: int = _compute_level3_offer_seed()
 	var result: Dictionary = _betting_policy.build_bet_offer(
 		offer_seed,
@@ -1896,7 +1894,7 @@ func _get_available_level3_bets() -> Array[Dictionary]:
 	return available
 
 func _is_level3_bet_unlocked(bet_id: StringName) -> bool:
-	var unlock_id: StringName = BetCatalog.get_level3_pact_unlock(bet_id)
+	var unlock_id: StringName = BetCatalogScript.get_level3_pact_unlock(bet_id)
 	if unlock_id != &"" and not _is_unlocked(unlock_id):
 		return false
 	return true
@@ -2382,7 +2380,7 @@ func _compute_level3_enemy_seed() -> int:
 
 func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
 	var scar_names: Array[String] = []
-	var bet_token: String = BetCatalog.get_bet_debug_token(bet_id)
+	var bet_token: String = BetCatalogScript.get_bet_debug_token(bet_id)
 	for scar_name: StringName in scars_applied:
 		scar_names.append(String(scar_name))
 	print(
@@ -2437,7 +2435,7 @@ func _resolve_level3_arena() -> ArenaResult:
 	return result
 
 func _get_level3_bet_behavior(bet_id: StringName) -> StringName:
-	var mapped: StringName = BetCatalog.map_level3_behavior(bet_id)
+	var mapped: StringName = BetCatalogScript.map_level3_behavior(bet_id)
 	return StringName(str(mapped))
 
 func _handle_level3_win(bet_id: StringName, _result: ArenaResult) -> void:
@@ -2659,8 +2657,8 @@ func _mut_mainmenu_show_menu(_step: Dictionary) -> void:
 	_debug_show_main_menu_received()
 	request_quit_to_menu()
 
-func _apply_state_mutation(name: String) -> void:
-	_apply_state_mutation_step({"name": name})
+func _apply_state_mutation(mutation_name: String) -> void:
+	_apply_state_mutation_step({"name": mutation_name})
 
 func _build_flow_executor_hooks() -> RunFlowExecutorHooks:
 	return RunFlowExecutorHooksScript.new(
@@ -4217,11 +4215,11 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
 	if next == RunPhase.BET_PRESENT:
-		var previous_phase: RunPhase = _phase
-		_flow_logger.log_phase(str(next), "from=%s reason=%s" % [str(previous_phase), reason])
-		var now_ms: int = Time.get_ticks_msec()
-		_last_phase_change_ms = now_ms
-		_last_activity_ms = now_ms
+		var previous_phase_bet_present: RunPhase = _phase
+		_flow_logger.log_phase(str(next), "from=%s reason=%s" % [str(previous_phase_bet_present), reason])
+		var now_ms_bet_present: int = Time.get_ticks_msec()
+		_last_phase_change_ms = now_ms_bet_present
+		_last_activity_ms = now_ms_bet_present
 		_phase = next
 		_enter_bet_present()
 		if _is_smoke_mode():

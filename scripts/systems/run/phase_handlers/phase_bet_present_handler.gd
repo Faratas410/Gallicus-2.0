@@ -1,7 +1,7 @@
 extends RunPhaseHandlerBase
 class_name PhaseBetPresentHandler
 
-func build_ui_payload(run_state: RunState, inputs: Dictionary = {}) -> Dictionary:
+func build_ui_payload(run_state: RunState, _inputs: Dictionary = {}) -> Dictionary:
 	return {
 		"arena_index": run_state.arena_index,
 		"corruption": run_state.corruption,

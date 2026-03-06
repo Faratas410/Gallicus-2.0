@@ -1,7 +1,7 @@
 class_name SaveSystem
 extends RefCounted
 
-const RunState := preload("res://scripts/systems/run/run_state.gd")
+const RunStateScript := preload("res://scripts/systems/run/run_state.gd")
 const RUN_SCHEMA_VERSION: int = 1
 const RUN_PATH: String = "user://run.save"
 const RUN_TMP_PATH: String = "%s.tmp" % RUN_PATH
@@ -31,7 +31,7 @@ func load_run() -> Dictionary:
 		return {}
 	if not payload.has("run_state") or not (payload["run_state"] is Dictionary):
 		return {}
-	var state: RunState = RunState.new()
+	var state: RunState = RunStateScript.new()
 	state.reset()
 	state.from_dict(payload["run_state"] as Dictionary)
 	return {
@@ -58,7 +58,7 @@ func apply_level3_payload(run_state: RunState, payload: Dictionary) -> Dictionar
 	var validation: Dictionary = validate_level3_payload(payload)
 	if not bool(validation.get("ok", false)):
 		return validation
-	var next_state: RunState = RunState.new()
+	var next_state: RunState = RunStateScript.new()
 	next_state.reset()
 	next_state.from_dict(payload.get("run_state", {}) as Dictionary)
 	if next_state.run_save_flow_step == &"":

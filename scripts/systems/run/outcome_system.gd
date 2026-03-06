@@ -1,7 +1,7 @@
 extends RefCounted
 class_name RunOutcomeSystem
 
-const BetCatalog = preload("res://scripts/content/bet_catalog.gd")
+const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
 
 const BET_CASH_OUT: StringName = &"CASH_OUT"
 const BET_DOUBLE_OR_DIE: StringName = &"DOUBLE_OR_DIE"
@@ -111,7 +111,7 @@ func build_level3_loss_consequence(
 	enemy_profile: StringName,
 	provoke_armed: bool,
 	next_loss_hp_penalty: int,
-	scar_open_wound_hp_penalty: int
+	_scar_open_wound_hp_penalty: int
 ) -> Dictionary:
 	if provoke_armed:
 		# Canon ritual vocabulary (Patch 9A).

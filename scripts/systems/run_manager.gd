@@ -1453,14 +1453,14 @@ func _start_level3_run() -> void:
 	_run_state.special_arena_index = _pick_special_arena_index(_run_state.level3_target_arenas)
 
 	_reset_scars()
-		run["arena_index"] = 0
+	run["arena_index"] = 0
 	run["corruption"] = 0
 	_run_state.corruption = 0
 	_runstate_kernel.enforce_invariants(_run_state)
 	_reset_upgrades()
 
 	GameEvents.run_started.emit()
-		_set_runtime_gate_phase(RunPhase.PREP)
+	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	_emit_run_debug_state()
 	start_arena()

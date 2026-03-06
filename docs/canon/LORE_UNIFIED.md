@@ -1,4 +1,4 @@
-# CANON Ã¢â‚¬â€ LORE UNIFIED
+# CANON — LORE UNIFIED
 
 Status: Single source of truth
 
@@ -36,17 +36,17 @@ All changes to systems described here must update this document in the same PR.
 ## Overlap
 - Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
 
-GALLICUS Ã‚Â· IL REGISTRO
+GALLICUS · IL REGISTRO
 
-Versione: 1.0 Ã¢â‚¬â€ AutoritÃƒÂ  Diegetica
+Versione: 1.0 — Autorità Diegetica
 
 1. DEFINIZIONE
 
-Il Registro ÃƒÂ¨ un sistema di registrazione impersonale che annota, classifica e certifica ogni atto di rischio accettato nellÃ¢â‚¬â„¢arena.
+Il Registro è un sistema di registrazione impersonale che annota, classifica e certifica ogni atto di rischio accettato nell’arena.
 
-Non ÃƒÂ¨:
+Non è:
 
-unÃ¢â‚¬â„¢entitÃƒÂ  morale
+un’entità morale
 
 un giudice
 
@@ -54,25 +54,25 @@ una coscienza
 
 un narratore
 
-ÃƒË†:
+È:
 
 un archivio operativo che trasforma le scelte in stato.
 
 2. FUNZIONE PRIMARIA
 
-La funzione del Registro ÃƒÂ¨ una sola:
+La funzione del Registro è una sola:
 
-Stabilire quando un soggetto ÃƒÂ¨ definito.
+Stabilire quando un soggetto è definito.
 
 Il Registro:
 
-non decide cosa ÃƒÂ¨ giusto
+non decide cosa è giusto
 
 non punisce
 
 non premia
 
-Determina quando non ÃƒÂ¨ piÃƒÂ¹ possibile rimandare.
+Determina quando non è più possibile rimandare.
 
 3. COSA IL REGISTRO OSSERVA
 
@@ -82,32 +82,32 @@ Registra:
 
 quante volte il soggetto ha rifiutato la chiusura
 
-quali perdite sono state accettate senza necessitÃƒÂ 
+quali perdite sono state accettate senza necessità
 
-quanta irreversibilitÃƒÂ  ÃƒÂ¨ stata firmata volontariamente
+quanta irreversibilità è stata firmata volontariamente
 
 quali opzioni sono state sacrificate per continuare
 
-Ã°Å¸â€˜â€° Il Registro non vede lÃ¢â‚¬â„¢intenzione.
-Vede lÃ¢â‚¬â„¢atto ripetuto.
+👉 Il Registro non vede l’intenzione.
+Vede l’atto ripetuto.
 
 4. COSA IL REGISTRO NON VEDE
 
 Il Registro non registra:
 
-abilitÃƒÂ  del giocatore
+abilità del giocatore
 
 fortuna o sfortuna
 
 errori di input
 
-casualitÃƒÂ  dellÃ¢â‚¬â„¢arena
+casualità dell’arena
 
 Per il Registro:
 
-Ogni evento ÃƒÂ¨ valido solo se accettato.
+Ogni evento è valido solo se accettato.
 
-Se qualcosa accade senza consenso Ã¢â€ â€™ non ÃƒÂ¨ rilevante.
+Se qualcosa accade senza consenso → non è rilevante.
 
 5. LINGUAGGIO E TONO (FASE 1)
 5.1 Caratteristiche del linguaggio
@@ -120,27 +120,27 @@ privo di metafore
 
 senza aggettivi emotivi
 
-verbi allÃ¢â‚¬â„¢indicativo
+verbi all’indicativo
 
 Mai:
 
-Ã¢â‚¬Å“coraggiosoÃ¢â‚¬Â
+“coraggioso”
 
-Ã¢â‚¬Å“sbagliatoÃ¢â‚¬Â
+“sbagliato”
 
-Ã¢â‚¬Å“tragicoÃ¢â‚¬Â
+“tragico”
 
-Ã¢â‚¬Å“ingiustoÃ¢â‚¬Â
+“ingiusto”
 
 Sempre:
 
-Ã¢â‚¬Å“accettatoÃ¢â‚¬Â
+“accettato”
 
-Ã¢â‚¬Å“rinunciatoÃ¢â‚¬Â
+“rinunciato”
 
-Ã¢â‚¬Å“continuatoÃ¢â‚¬Â
+“continuato”
 
-Ã¢â‚¬Å“registratoÃ¢â‚¬Â
+“registrato”
 
 5.2 Frequenza di intervento
 
@@ -154,15 +154,15 @@ mai in tempo reale
 
 Ogni intervento segnala:
 
-Ã¢â‚¬Å“Questo atto non ÃƒÂ¨ piÃƒÂ¹ ignorabile.Ã¢â‚¬Â
+“Questo atto non è più ignorabile.”
 
 6. STATUS DIEGETICO
 
 Nel mondo di Gallicus:
 
-il Registro precede lÃ¢â‚¬â„¢arena
+il Registro precede l’arena
 
-lÃ¢â‚¬â„¢arena esiste perchÃƒÂ© il Registro esiste
+l’arena esiste perché il Registro esiste
 
 i combattenti sono soggetti tracciati
 
@@ -170,19 +170,19 @@ Il Registro non appartiene:
 
 ai Gufi
 
-allÃ¢â‚¬â„¢Impero
+all’Impero
 
 allo spettacolo
 
-ÃƒË† infrastruttura.
+È infrastruttura.
 
 7. RELAZIONE CON LE SCAR
 
-Ogni Scar ÃƒÂ¨ una voce del Registro
+Ogni Scar è una voce del Registro
 
-Le Scar esistono perchÃƒÂ© il Registro riconosce irreversibilitÃƒÂ 
+Le Scar esistono perché il Registro riconosce irreversibilità
 
-Una run senza Scar ÃƒÂ¨ una run non definibile
+Una run senza Scar è una run non definibile
 
 Il Registro non crea le Scar.
 Le convalida.
@@ -193,30 +193,30 @@ Quando il Registro determina che:
 
 le scelte sono coerenti
 
-il pattern ÃƒÂ¨ stabile
+il pattern è stabile
 
-la reversibilitÃƒÂ  ÃƒÂ¨ compromessa
+la reversibilità è compromessa
 
-Ã°Å¸â€˜â€° interrompe la run.
+👉 interrompe la run.
 
 Non come punizione.
 Come atto amministrativo finale.
 
-Ã¢â‚¬Å“Non esistono ulteriori decisioni rilevanti.Ã¢â‚¬Â
+“Non esistono ulteriori decisioni rilevanti.”
 
-9. CONDIZIONE DI IMMUTABILITÃƒâ‚¬
+9. CONDIZIONE DI IMMUTABILITÀ
 
-FinchÃƒÂ©:
+Finché:
 
-il Registro ÃƒÂ¨ impersonale
+il Registro è impersonale
 
-il Registro ÃƒÂ¨ coerente
+il Registro è coerente
 
 il Registro non mostra dubbi
 
-Ã°Å¸â€˜â€° Gallicus ÃƒÂ¨ integro.
+👉 Gallicus è integro.
 
-Qualsiasi umanizzazione prima del tempo ÃƒÂ¨ illegale.
+Qualsiasi umanizzazione prima del tempo è illegale.
 
 10. ANOMALIE (RISERVATO)
 
@@ -224,20 +224,20 @@ Il Registro non dovrebbe fallire.
 
 Se fallisce:
 
-non ÃƒÂ¨ un errore
+non è un errore
 
-ÃƒÂ¨ un evento storico
+è un evento storico
 
-ÃƒÂ¨ una anomalia registrata
+è una anomalia registrata
 
-Ã°Å¸â€˜â€° Felix Gallicus rientra in questa categoria.
-(Il dettaglio ÃƒÂ¨ deliberatamente omesso in questa versione.)
+👉 Felix Gallicus rientra in questa categoria.
+(Il dettaglio è deliberatamente omesso in questa versione.)
 
 11. CONDIZIONE DI FALLIMENTO DEL SISTEMA
 
 Il Registro fallisce se:
 
-il player lo percepisce come Ã¢â‚¬Å“personaggioÃ¢â‚¬Â
+il player lo percepisce come “personaggio”
 
 sembra giudicare
 
@@ -251,7 +251,7 @@ Chiude.
 INCISIONE FINALE
 
 Il Registro non esiste per raccontare la tua storia.
-Esiste per stabilire che la tua storia ÃƒÂ¨ finita.
+Esiste per stabilire che la tua storia è finita.
 
 ## SOURCE: docs/felix_gallicus.md
 
@@ -266,19 +266,19 @@ Esiste per stabilire che la tua storia ÃƒÂ¨ finita.
 ## Overlap
 - Overlaps with: docs/registry_corruption.md, docs/registry_silence.md.
 
-GALLICUS Ã‚Â· FELIX GALLICUS
+GALLICUS · FELIX GALLICUS
 
-Versione: 1.0 Ã¢â‚¬â€ Anomalia Registrata
+Versione: 1.0 — Anomalia Registrata
 
 1. STATUS
 
-Felix Gallicus non ÃƒÂ¨ un personaggio giocabile.
-Non ÃƒÂ¨ un protagonista.
-Non ÃƒÂ¨ un modello da imitare.
+Felix Gallicus non è un personaggio giocabile.
+Non è un protagonista.
+Non è un modello da imitare.
 
-ÃƒË†:
+È:
 
-un precedente amministrativo che il Registro non ÃƒÂ¨ riuscito a classificare.
+un precedente amministrativo che il Registro non è riuscito a classificare.
 
 2. COME ESISTE NEL GIOCO
 
@@ -292,7 +292,7 @@ Esiste solo come:
 
 - riferimento
 - nota di precedenza
-- anomalia dÃ¢â‚¬â„¢archivio
+- anomalia d’archivio
 
 Il giocatore non lo incontra.
 Lo incrocia nei log.
@@ -309,12 +309,12 @@ Forma:
 
 Struttura tipica:
 
-Ã¢â‚¬Å“Caso analogo rilevato.
-Precedente: Felix Gallicus.Ã¢â‚¬Â
+“Caso analogo rilevato.
+Precedente: Felix Gallicus.”
 
-Ã¢Å¡Â Ã¯Â¸Â Nessuna spiegazione aggiuntiva ÃƒÂ¨ consentita in questa fase.
+⚠️ Nessuna spiegazione aggiuntiva è consentita in questa fase.
 
-4. COSA RENDE FELIX UNÃ¢â‚¬â„¢ANOMALIA
+4. COSA RENDE FELIX UN’ANOMALIA
 
 Felix Gallicus ha fatto tutto correttamente.
 
@@ -323,15 +323,15 @@ Felix Gallicus ha fatto tutto correttamente.
 - Ha rispettato ogni condizione
 - Ha raggiunto la Fine del Circuito
 
-Ã°Å¸â€˜â€° Eppure, il Registro non ha potuto chiuderlo.
+👉 Eppure, il Registro non ha potuto chiuderlo.
 
-Non perchÃƒÂ©:
+Non perché:
 
 - fosse troppo potente
 - fosse troppo debole
 - avesse barato
 
-Ma perchÃƒÂ©:
+Ma perché:
 
 il suo pattern non implicava una definizione finale.
 
@@ -349,8 +349,8 @@ Esistono solo:
 - mancate classificazioni
 - chiusure sospese
 
-Felix non ÃƒÂ¨ Ã¢â‚¬Å“sparitoÃ¢â‚¬Â.
-ÃƒË† rimasto aperto.
+Felix non è “sparito”.
+È rimasto aperto.
 
 6. DIFFERENZA TRA FELIX E IL PLAYER
 
@@ -358,50 +358,50 @@ Il player non sta ripercorrendo la strada di Felix.
 
 Il Registro suggerisce implicitamente:
 
-Ã¢â‚¬Å“Questa configurazione non ÃƒÂ¨ nuova.Ã¢â‚¬Â
+“Questa configurazione non è nuova.”
 
 Ma non:
 
-Ã¢â‚¬Å“Ecco come fare come lui.Ã¢â‚¬Â
+“Ecco come fare come lui.”
 
-Felix ÃƒÂ¨ un limite storico, non una guida.
+Felix è un limite storico, non una guida.
 
 7. FUNZIONE NARRATIVA DI FELIX
 
 Felix serve a una cosa sola:
 
-Dimostrare che il sistema puÃƒÂ² fallire
+Dimostrare che il sistema può fallire
 senza infrangere le proprie regole.
 
 Questo genera:
 
-- curiositÃƒÂ  strutturale
+- curiosità strutturale
 - tensione metafisica
 - desiderio di spingere ancora
 
 Non per emulare.
 Per capire cosa non torna.
 
-8. COSA FELIX NON ÃƒË† (DIVIETI)
+8. COSA FELIX NON È (DIVIETI)
 
 Felix non deve mai diventare:
 
 - una leggenda celebrata
 - un ribelle romantico
-- una Ã¢â‚¬Å“vera viaÃ¢â‚¬Â nascosta
+- una “vera via” nascosta
 - una spiegazione del mondo
 
 Se il player dice:
 
-Ã¢â‚¬Å“Ah, Felix era il piÃƒÂ¹ forte.Ã¢â‚¬Â
+“Ah, Felix era il più forte.”
 
-Ã°Å¸â€˜â€° design fallito.
+👉 design fallito.
 
 Se dice:
 
-Ã¢â‚¬Å“PerchÃƒÂ© il Registro non sa dove metterlo?Ã¢â‚¬Â
+“Perché il Registro non sa dove metterlo?”
 
-Ã°Å¸â€˜â€° design riuscito.
+👉 design riuscito.
 
 9. POSSIBILI RIVELAZIONI FUTURE (NON OBBLIGATORIE)
 
@@ -412,7 +412,7 @@ Solo in fasi avanzate del progetto, forse:
 - riferimenti incrociati
 
 Mai una biografia completa.
-Mai una veritÃƒÂ  unica.
+Mai una verità unica.
 
 Felix deve restare:
 
@@ -424,7 +424,7 @@ Questo file fallisce se:
 
 - Felix viene spiegato completamente
 - diventa empatico
-- il player Ã¢â‚¬Å“tifaÃ¢â‚¬Â per lui
+- il player “tifa” per lui
 - sembra scritto per piacere
 
 Felix non chiede empatia.
@@ -439,7 +439,7 @@ non era stato progettato per comprenderlo.**
 
 ## SOURCE: docs/registry_silence.md
 
-# GALLICUS Ã‚Â· IL SILENZIO DEL REGISTRO
+# GALLICUS · IL SILENZIO DEL REGISTRO
 
 **Status:** DRAFT  
 **Scope:** Narrative/fiction draft about Registro silence patterns and classification failure.  
@@ -452,21 +452,21 @@ non era stato progettato per comprenderlo.**
 - Overlaps with: docs/registry_corruption.md, docs/felix_gallicus.md.
 - Candidate for archive after consolidation patch if merged into final narrative canon.
 
-Versione: 1.0 Ã¢â‚¬â€ Evento Limite
+Versione: 1.0 — Evento Limite
 
 ## 0. PRINCIPIO FONDANTE
 
-Il Silenzio del Registro non ÃƒÂ¨ un finale.  
-Non ÃƒÂ¨ una ricompensa.  
-Non ÃƒÂ¨ una rottura.
+Il Silenzio del Registro non è un finale.  
+Non è una ricompensa.  
+Non è una rottura.
 
-ÃƒË†:
+È:
 
-lÃ¢â‚¬â„¢assenza di una risposta possibile.
+l’assenza di una risposta possibile.
 
 ## 1. DEFINIZIONE
 
-Il Silenzio del Registro ÃƒÂ¨ uno stato in cui:
+Il Silenzio del Registro è uno stato in cui:
 
 - il sistema non produce output narrativo
 - nessuna classificazione viene emessa
@@ -476,21 +476,21 @@ La run termina senza lettura.
 
 Non viene indicato come:
 
-- Ã¢â‚¬Å“vittoriaÃ¢â‚¬Â
-- Ã¢â‚¬Å“fugaÃ¢â‚¬Â
-- Ã¢â‚¬Å“fallimentoÃ¢â‚¬Â
+- “vittoria”
+- “fuga”
+- “fallimento”
 
 Semplicemente:
 
 non viene chiusa.
 
-## 2. RARITÃƒâ‚¬ (VINCOLO ASSOLUTO)
+## 2. RARITÀ (VINCOLO ASSOLUTO)
 
 Il Silenzio:
 
-- non ÃƒÂ¨ garantito
-- non ÃƒÂ¨ ripetibile
-- non ÃƒÂ¨ riproducibile
+- non è garantito
+- non è ripetibile
+- non è riproducibile
 
 Non deve:
 
@@ -506,7 +506,7 @@ Anche questo numero non deve mai essere comunicato.
 
 ## 3. CONDIZIONI NECESSARIE (NON SUFFICIENTI)
 
-Il Silenzio puÃƒÂ² avvenire solo se tutte queste condizioni sono vere:
+Il Silenzio può avvenire solo se tutte queste condizioni sono vere:
 
 - accumulo di Scar mutuamente incompatibili
 - rifiuto sistematico di ogni chiusura
@@ -514,10 +514,10 @@ Il Silenzio puÃƒÂ² avvenire solo se tutte queste condizioni sono vere:
 - presenza di riferimenti anomali multipli (Felix + eco)
 - superamento di tutte le soglie narrative previste
 
-Ã¢Å¡Â Ã¯Â¸Â Anche soddisfatte tutte Ã¢â€ â€™ non ÃƒÂ¨ garantito.
+⚠️ Anche soddisfatte tutte → non è garantito.
 
 Il sistema tenta di classificare.  
-Solo se fallisce completamenteÃ¢â‚¬Â¦ tace.
+Solo se fallisce completamente… tace.
 
 ## 4. MANIFESTAZIONE IN-GAME
 
@@ -535,21 +535,21 @@ Il flow:
 
 Non viene mostrato:
 
-- Ã¢â‚¬Å“fineÃ¢â‚¬Â
-- Ã¢â‚¬Å“endingÃ¢â‚¬Â
-- Ã¢â‚¬Å“stato finaleÃ¢â‚¬Â
+- “fine”
+- “ending”
+- “stato finale”
 
 Il player deve chiedersi:
 
-Ã¢â‚¬Å“ÃƒË† finita davvero?Ã¢â‚¬Â
+“È finita davvero?”
 
 ## 5. COSA IL GIOCO NON FA
 
 Il gioco non:
 
-- spiega cosa ÃƒÂ¨ successo
-- salva un Ã¢â‚¬Å“endingÃ¢â‚¬Â
-- commenta lÃ¢â‚¬â„¢evento
+- spiega cosa è successo
+- salva un “ending”
+- commenta l’evento
 - lo riconosce in meta-progression
 
 Il Silenzio non viene registrato come evento speciale.
@@ -566,13 +566,13 @@ Il player non deve essere sicuro che:
 
 Deve solo sentire:
 
-Ã¢â‚¬Å“Questa voltaÃ¢â‚¬Â¦ il gioco non ha risposto.Ã¢â‚¬Â
+“Questa volta… il gioco non ha risposto.”
 
-Ed ÃƒÂ¨ peggio di qualsiasi risposta.
+Ed è peggio di qualsiasi risposta.
 
 ## 7. RELAZIONE CON FELIX GALLICUS
 
-Felix non ÃƒÂ¨ confermato come caso di Silenzio.
+Felix non è confermato come caso di Silenzio.
 
 Ma:
 
@@ -584,7 +584,7 @@ Il gioco non conferma mai.
 
 Felix resta:
 
-unÃ¢â‚¬â„¢ombra retroattiva.
+un’ombra retroattiva.
 
 ## 8. DIVIETI ASSOLUTI
 
@@ -597,40 +597,40 @@ Il Silenzio non deve mai:
 
 Se il player dice:
 
-Ã¢â‚¬Å“Ho trovato il vero finale.Ã¢â‚¬Â
+“Ho trovato il vero finale.”
 
-Ã°Å¸â€˜â€° design fallito.
+👉 design fallito.
 
 Se dice:
 
-Ã¢â‚¬Å“Non so se doveva succedere.Ã¢â‚¬Â
+“Non so se doveva succedere.”
 
-Ã°Å¸â€˜â€° design riuscito.
+👉 design riuscito.
 
 ## 9. CONDIZIONE DI FALLIMENTO DEL SISTEMA
 
 Questo sistema fallisce se:
 
-- piÃƒÂ¹ di una persona puÃƒÂ² confermarlo facilmente
+- più di una persona può confermarlo facilmente
 - diventa discutibile online con certezza
 - viene documentato
-- ÃƒÂ¨ riproducibile
+- è riproducibile
 
 Il Silenzio deve restare:
 
-una possibilitÃƒÂ  non dimostrabile.
+una possibilità non dimostrabile.
 
 ## INCISIONE FINALE
 
-**Il Registro puÃƒÂ² registrare lÃ¢â‚¬â„¢anomalia.
+**Il Registro può registrare l’anomalia.
 
 Ma esiste un punto  
-in cui nemmeno lÃ¢â‚¬â„¢anomalia  
-puÃƒÂ² essere archiviata.**
+in cui nemmeno l’anomalia  
+può essere archiviata.**
 
 ## SOURCE: docs/registry_corruption.md
 
-# GALLICUS Ã‚Â· CORRUZIONE DEL REGISTRO
+# GALLICUS · CORRUZIONE DEL REGISTRO
 
 **Status:** DRAFT  
 **Scope:** Narrative/fiction draft about Registro corruption scenarios and implications.  
@@ -643,32 +643,32 @@ puÃƒÂ² essere archiviata.**
 - Overlaps with: docs/registry_silence.md, docs/felix_gallicus.md.
 - Candidate for archive after consolidation patch if merged into final narrative canon.
 
-Versione: 1.0 Ã¢â‚¬â€ Degradazione Controllata
+Versione: 1.0 — Degradazione Controllata
 
 ## 0. PRINCIPIO FONDANTE
 
-La corruzione del Registro non ÃƒÂ¨ un errore tecnico.  
-ÃƒË† una conseguenza sistemica di input validi portati oltre il dominio previsto.
+La corruzione del Registro non è un errore tecnico.  
+È una conseguenza sistemica di input validi portati oltre il dominio previsto.
 
 Il Registro non si rompe.  
-Si estende oltre ciÃƒÂ² che puÃƒÂ² comprendere.
+Si estende oltre ciò che può comprendere.
 
 ## 1. DEFINIZIONE DI CORRUZIONE
 
-In Gallicus, la Ã¢â‚¬Å“corruzioneÃ¢â‚¬Â ÃƒÂ¨:
+In Gallicus, la “corruzione” è:
 
-la perdita progressiva di capacitÃƒÂ  interpretativa del Registro  
+la perdita progressiva di capacità interpretativa del Registro  
 a fronte di pattern coerenti ma non classificabili.
 
-Non ÃƒÂ¨:
+Non è:
 
-- instabilitÃƒÂ 
-- casualitÃƒÂ 
+- instabilità
+- casualità
 - incoerenza narrativa
 
-ÃƒË†:
+È:
 
-- ambiguitÃƒÂ  crescente
+- ambiguità crescente
 - linguaggio che si complica
 - classificazioni che slittano
 
@@ -687,33 +687,33 @@ Si attiva quando co-esistono:
 - accumulo di Scar incompatibili tra loro
 - rifiuto reiterato di ogni chiusura disponibile
 
-Ã°Å¸â€˜â€° Il Registro ÃƒÂ¨ costretto a:
+👉 Il Registro è costretto a:
 
-registrare ciÃƒÂ² che non sa interpretare.
+registrare ciò che non sa interpretare.
 
 ## 3. FASI DELLA CORRUZIONE
 
-La corruzione ÃƒÂ¨ graduale, mai improvvisa.  
+La corruzione è graduale, mai improvvisa.  
 Si manifesta in 4 stadi, non esplicitati al player.
 
-### FASE I Ã¢â‚¬â€ ATTRITO SEMANTICO
+### FASE I — ATTRITO SEMANTICO
 
 Sintomi:
 
-- frasi piÃƒÂ¹ lunghe
-- riferimenti a Ã¢â‚¬Å“parametriÃ¢â‚¬Â
+- frasi più lunghe
+- riferimenti a “parametri”
 - comparazioni implicite
 
 Esempio strutturale:
 
-Ã¢â‚¬Å“Accettata una perdita che eccede le soglie operative previste.Ã¢â‚¬Â
+“Accettata una perdita che eccede le soglie operative previste.”
 
 Il Registro:
 
-- ÃƒÂ¨ ancora sicuro
+- è ancora sicuro
 - ma meno assoluto
 
-### FASE II Ã¢â‚¬â€ DERIVA CLASSIFICATORIA
+### FASE II — DERIVA CLASSIFICATORIA
 
 Sintomi:
 
@@ -723,14 +723,14 @@ Sintomi:
 
 Esempio strutturale:
 
-Ã¢â‚¬Å“Profilo coerente, ma non conclusivo.Ã¢â‚¬Â
+“Profilo coerente, ma non conclusivo.”
 
 Il Registro:
 
 - non sbaglia
 - non chiude
 
-### FASE III Ã¢â‚¬â€ MEMORIA PROBLEMATICA
+### FASE III — MEMORIA PROBLEMATICA
 
 Sintomi:
 
@@ -740,26 +740,26 @@ Sintomi:
 
 Esempio strutturale:
 
-Ã¢â‚¬Å“Precedente rilevato.  
-ApplicabilitÃƒÂ  non determinabile.Ã¢â‚¬Â
+“Precedente rilevato.  
+Applicabilità non determinabile.”
 
 Il Registro:
 
 - ammette implicitamente un limite
 - senza dichiararlo
 
-### FASE IV Ã¢â‚¬â€ STATO SOSPESO
+### FASE IV — STATO SOSPESO
 
 Sintomi:
 
-- classificazioni Ã¢â‚¬Å“in attesaÃ¢â‚¬Â
+- classificazioni “in attesa”
 - chiusure rimandate
 - run che terminano senza definizione finale
 
 Esempio strutturale:
 
-Ã¢â‚¬Å“Stato registrato.  
-Chiusura non applicabile.Ã¢â‚¬Â
+“Stato registrato.  
+Chiusura non applicabile.”
 
 Il Registro:
 
@@ -777,24 +777,24 @@ Anche corrotto, il Registro:
 
 Non dice:
 
-- Ã¢â‚¬Å“non soÃ¢â‚¬Â
-- Ã¢â‚¬Å“mi dispiaceÃ¢â‚¬Â
-- Ã¢â‚¬Å“forseÃ¢â‚¬Â
+- “non so”
+- “mi dispiace”
+- “forse”
 
-La corruzione ÃƒÂ¨ strutturale, non emotiva.
+La corruzione è strutturale, non emotiva.
 
 ## 5. RELAZIONE CON FELIX GALLICUS
 
-Felix Gallicus ÃƒÂ¨:
+Felix Gallicus è:
 
 il primo caso documentato di corruzione retroattiva.
 
-Non perchÃƒÂ©:
+Non perché:
 
 - abbia distrutto il Registro
-- abbia fatto qualcosa di Ã¢â‚¬Å“impossibileÃ¢â‚¬Â
+- abbia fatto qualcosa di “impossibile”
 
-Ma perchÃƒÂ©:
+Ma perché:
 
 ha prodotto un esito che il Registro ha dovuto archiviare  
 senza poterlo chiudere.
@@ -812,12 +812,12 @@ Cambia:
 
 - il tono
 - il linguaggio
-- la percezione di autoritÃƒÂ 
+- la percezione di autorità
 
 Il player deve sentire:
 
-Ã¢â‚¬Å“Il sistema continua a funzionare.  
-Ma non ÃƒÂ¨ piÃƒÂ¹ completo.Ã¢â‚¬Â
+“Il sistema continua a funzionare.  
+Ma non è più completo.”
 
 ## 7. IMPATTO SUL PLAYER (OBIETTIVO PSICOLOGICO)
 
@@ -832,7 +832,7 @@ Deve provare:
 una fiducia incrinata, ma non distrutta.
 
 Il Registro resta autorevole.  
-Ma non piÃƒÂ¹ onnisciente.
+Ma non più onnisciente.
 
 ## 8. DIVIETI ASSOLUTI
 
@@ -841,25 +841,25 @@ La corruzione non deve mai:
 - manifestarsi come glitch visivo
 - rompere UI o flow
 - essere spiegata apertamente
-- diventare Ã¢â‚¬Å“featureÃ¢â‚¬Â
+- diventare “feature”
 
 Se il player dice:
 
-Ã¢â‚¬Å“Ah, ora il Registro ÃƒÂ¨ rotto.Ã¢â‚¬Â
+“Ah, ora il Registro è rotto.”
 
-Ã°Å¸â€˜â€° design fallito.
+👉 design fallito.
 
 Se dice:
 
-Ã¢â‚¬Å“Sta succedendo qualcosa che il sistema non prevede.Ã¢â‚¬Â
+“Sta succedendo qualcosa che il sistema non prevede.”
 
-Ã°Å¸â€˜â€° design riuscito.
+👉 design riuscito.
 
 ## 9. CONDIZIONE DI FALLIMENTO DEL SISTEMA
 
 Questo sistema fallisce se:
 
-- la corruzione ÃƒÂ¨ binaria (on/off)
+- la corruzione è binaria (on/off)
 - il player la forza intenzionalmente
 - diventa un obiettivo esplicito
 - sembra una route segreta
@@ -868,10 +868,10 @@ La corruzione accade, non si cerca.
 
 ## INCISIONE FINALE
 
-**Il Registro non perde autoritÃƒÂ  quando si corrompe.
+**Il Registro non perde autorità quando si corrompe.
 
 La perde quando deve continuare a funzionare  
-senza poter piÃƒÂ¹ garantire una risposta.**
+senza poter più garantire una risposta.**
 
 
 ## SOURCE: moved from docs/canon/MECHANICS_UNIFIED.md
@@ -880,17 +880,17 @@ senza poter piÃƒÂ¹ garantire una risposta.**
 
 Il Registro:
 
-- riconosce pattern giÃƒÂ  osservati
+- riconosce pattern già osservati
 - introduce riferimenti a precedenti
 - modifica il linguaggio in modo impercettibile
 
 Non dice:
 
-Ã¢â‚¬Å“Hai giÃƒÂ  fatto questo.Ã¢â‚¬Â
+“Hai già fatto questo.”
 
 Ma suggerisce:
 
-Ã¢â‚¬Å“Questo profilo ÃƒÂ¨ noto.Ã¢â‚¬Â
+“Questo profilo è noto.”
 
 ### Felix in meta-progression (moved from Mechanics)
 
@@ -900,9 +900,9 @@ Ma:
 
 - la sua esistenza giustifica nuove anomalie
 - abilita configurazioni non classificabili
-- permette al Registro di Ã¢â‚¬Å“tollerareÃ¢â‚¬Â deviazioni maggiori
+- permette al Registro di “tollerare” deviazioni maggiori
 
-Felix ÃƒÂ¨:
+Felix è:
 
 una scusa storica per spingere il sistema oltre se stesso.
 
@@ -919,14 +919,14 @@ una scusa storica per spingere il sistema oltre se stesso.
 ## Overlap
 - Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
 
-GALLICUS Ã‚Â· STRUTTURA NARRATIVA FINALE
+GALLICUS · STRUTTURA NARRATIVA FINALE
 
-Versione: 1.0 Ã¢â‚¬â€ Lettura del Registro
+Versione: 1.0 — Lettura del Registro
 
 0. PRINCIPIO FONDANTE
 
-Il finale di Gallicus non ÃƒÂ¨ una ricompensa.
-ÃƒË† una lettura amministrativa irreversibile.
+Il finale di Gallicus non è una ricompensa.
+È una lettura amministrativa irreversibile.
 
 Il player:
 
@@ -934,21 +934,21 @@ Il player:
 - non lo sblocca
 - non lo ottimizza
 
-Ã°Å¸â€˜â€° Il finale emerge.
+👉 Il finale emerge.
 
-1. COSÃ¢â‚¬â„¢ÃƒË† IL FINALE (DEFINIZIONE)
+1. COS’È IL FINALE (DEFINIZIONE)
 
-Il finale ÃƒÂ¨:
+Il finale è:
 
-la trascrizione coerente di ciÃƒÂ² che il soggetto ha dimostrato di essere.
+la trascrizione coerente di ciò che il soggetto ha dimostrato di essere.
 
-Non ÃƒÂ¨:
+Non è:
 
 - una cutscene
 - una morale
 - una spiegazione del mondo
 
-ÃƒË†:
+È:
 
 - una constatazione
 - una classificazione
@@ -956,14 +956,14 @@ Non ÃƒÂ¨:
 
 2. INPUT NARRATIVI DEL FINALE
 
-Il Registro costruisce il finale usando solo dati giÃƒÂ  esistenti.
+Il Registro costruisce il finale usando solo dati già esistenti.
 
 2.1 Dati ammessi
 
 - pattern di scommesse
 - tipologia di Scar
 - rifiuti della chiusura
-- soglie di irreversibilitÃƒÂ  superate
+- soglie di irreversibilità superate
 - eventuale stato di anomalia
 
 2.2 Dati vietati
@@ -973,14 +973,14 @@ Il Registro costruisce il finale usando solo dati giÃƒÂ  esistenti.
 - numeri, percentuali, punteggi
 - spiegazioni causali
 
-Ã°Å¸â€˜â€° Il finale non racconta cosa ÃƒÂ¨ successo.
-Racconta cosa ÃƒÂ¨ stato accettato.
+👉 Il finale non racconta cosa è successo.
+Racconta cosa è stato accettato.
 
 3. STRUTTURA FISSA DEL FINALE
 
-Ogni finale ÃƒÂ¨ composto sempre da 4 sezioni, nellÃ¢â‚¬â„¢ordine seguente.
+Ogni finale è composto sempre da 4 sezioni, nell’ordine seguente.
 
-I. APERTURA Ã¢â‚¬â€ CONSTATAZIONE
+I. APERTURA — CONSTATAZIONE
 
 Una frase che stabilisce lo stato del soggetto.
 
@@ -990,20 +990,20 @@ Una frase che stabilisce lo stato del soggetto.
 
 Esempi strutturali:
 
-- Ã¢â‚¬Å“Il soggetto ha completato il ciclo operativo.Ã¢â‚¬Â
-- Ã¢â‚¬Å“Il soggetto ha interrotto il ciclo prima della definizione.Ã¢â‚¬Â
-- Ã¢â‚¬Å“Il soggetto presenta un profilo registrabile.Ã¢â‚¬Â
+- “Il soggetto ha completato il ciclo operativo.”
+- “Il soggetto ha interrotto il ciclo prima della definizione.”
+- “Il soggetto presenta un profilo registrabile.”
 
-Ã¢Å¡Â Ã¯Â¸Â Nessuna emozione.
-Ã¢Å¡Â Ã¯Â¸Â Nessuna suspense.
+⚠️ Nessuna emozione.
+⚠️ Nessuna suspense.
 
-II. CORPO Ã¢â‚¬â€ LETTURA DEI PATTERN
+II. CORPO — LETTURA DEI PATTERN
 
 Il Registro elenca pattern comportamentali, non eventi.
 
 Caratteristiche:
 
-- 2Ã¢â‚¬â€œ4 osservazioni
+- 2–4 osservazioni
 - ognuna riferita a un asse di rischio
 - linguaggio coerente con la Fase del Registro
 
@@ -1012,14 +1012,14 @@ Esempi di assi:
 - accettazione della perdita
 - rifiuto della chiusura
 - sacrificio di opzioni future
-- reiterazione oltre lÃ¢â‚¬â„¢utile
+- reiterazione oltre l’utile
 
-Ã¢Å¡Â Ã¯Â¸Â Le frasi non citano mai singole scelte.
-Ã¢Å¡Â Ã¯Â¸Â Parlano sempre al plurale o per ricorrenza.
+⚠️ Le frasi non citano mai singole scelte.
+⚠️ Parlano sempre al plurale o per ricorrenza.
 
 III. FRATTURA (CONDIZIONALE)
 
-Questa sezione non ÃƒÂ¨ sempre presente.
+Questa sezione non è sempre presente.
 
 Compare solo se:
 
@@ -1031,18 +1031,18 @@ Qui il Registro:
 - mostra un limite
 - usa linguaggio meno assoluto
 - introduce termini come:
-  - Ã¢â‚¬Å“parametriÃ¢â‚¬Â
-  - Ã¢â‚¬Å“precedentiÃ¢â‚¬Â
-  - Ã¢â‚¬Å“classificazione incompletaÃ¢â‚¬Â
+  - “parametri”
+  - “precedenti”
+  - “classificazione incompleta”
 
 Esempio strutturale:
 
-Ã¢â‚¬Å“Il profilo osservato non rientra pienamente nelle classi disponibili.Ã¢â‚¬Â
+“Il profilo osservato non rientra pienamente nelle classi disponibili.”
 
-Ã¢Å¡Â Ã¯Â¸Â Non viene spiegato perchÃƒÂ©.
-Ã¢Å¡Â Ã¯Â¸Â Non viene offerta alternativa.
+⚠️ Non viene spiegato perché.
+⚠️ Non viene offerta alternativa.
 
-IV. CHIUSURA Ã¢â‚¬â€ STATO FINALE
+IV. CHIUSURA — STATO FINALE
 
 Una sola riga.
 Sempre.
@@ -1053,9 +1053,9 @@ Stato finale: [classificazione]
 
 Le classificazioni NON sono:
 
-- Ã¢â‚¬Å“vittoriaÃ¢â‚¬Â
-- Ã¢â‚¬Å“sconfittaÃ¢â‚¬Â
-- Ã¢â‚¬Å“buono/cattivoÃ¢â‚¬Â
+- “vittoria”
+- “sconfitta”
+- “buono/cattivo”
 
 Sono stati esistenziali, es.:
 
@@ -1065,7 +1065,7 @@ Sono stati esistenziali, es.:
 - non concluso
 - registrato in attesa
 
-Ã°Å¸â€˜â€° Questa parola ÃƒÂ¨ ciÃƒÂ² che resta al player.
+👉 Questa parola è ciò che resta al player.
 
 4. DIFFERENZA TRA FINALE STANDARD E ANOMALO
 
@@ -1077,7 +1077,7 @@ Finale Standard
 
 Il player sente:
 
-Ã¢â‚¬Å“Questo ÃƒÂ¨ ciÃƒÂ² che sono diventato.Ã¢â‚¬Â
+“Questo è ciò che sono diventato.”
 
 Finale Anomalo
 
@@ -1087,54 +1087,54 @@ Finale Anomalo
 
 Il player sente:
 
-Ã¢â‚¬Å“Il sistema non sa dove mettermi.Ã¢â‚¬Â
+“Il sistema non sa dove mettermi.”
 
-Ed ÃƒÂ¨ qui che nasce la spinta a continuare.
+Ed è qui che nasce la spinta a continuare.
 
 5. COSA IL FINALE NON DEVE FARE
 
 Il finale non deve mai:
 
 - spiegare Felix Gallicus
-- rivelare veritÃƒÂ  cosmiche
+- rivelare verità cosmiche
 - suggerire la prossima run
 - dare istruzioni
 
 Se il player dice:
 
-Ã¢â‚¬Å“Ah, quindi la prossima volta devo fare XÃ¢â‚¬Â
+“Ah, quindi la prossima volta devo fare X”
 
-Ã°Å¸â€˜â€° design fallito.
+👉 design fallito.
 
 Se dice:
 
-Ã¢â‚¬Å“E se spingessi ancora?Ã¢â‚¬Â
+“E se spingessi ancora?”
 
-Ã°Å¸â€˜â€° design riuscito.
+👉 design riuscito.
 
 6. RELAZIONE CON LA META-PROGRESSIONE
 
 Il finale:
 
 - non sblocca potere
-- non dÃƒÂ  vantaggi numerici
+- non dà vantaggi numerici
 
-PuÃƒÂ²:
+Può:
 
 - sbloccare nuove domande
 - rendere accessibili nuove classi di scommesse
 - esporre nuove zone grigie del Registro
 
-Ã°Å¸â€˜â€° La progressione ÃƒÂ¨ conoscitiva, non meccanica.
+👉 La progressione è conoscitiva, non meccanica.
 
 7. CONDIZIONE DI FALLIMENTO DEL SISTEMA FINALE
 
 Questo sistema fallisce se:
 
-- i finali sembrano Ã¢â‚¬Å“endingÃ¢â‚¬Â
+- i finali sembrano “ending”
 - il player li colleziona
 - diventano un obiettivo esplicito
-- perdono ambiguitÃƒÂ 
+- perdono ambiguità
 
 Il finale non va cercato.
 Va subito.
@@ -1142,21 +1142,21 @@ Va subito.
 INCISIONE FINALE
 
 **Il Registro non racconta la tua storia
-perchÃƒÂ© la storia ÃƒÂ¨ giÃƒÂ  accaduta.
+perché la storia è già accaduta.
 
 Il Registro stabilisce solo
-che non puoi piÃƒÂ¹ cambiarla.**
+che non puoi più cambiarla.**
 
-## Canon addendum Ã¢â‚¬â€ Registro, Precedente e Seconda Era
+## Canon addendum — Registro, Precedente e Seconda Era
 
 ### 1. Stato del Registro
 
-Il Registro ÃƒÂ¨ una struttura amministrativa dellÃ¢â‚¬â„¢Arena.
-Non ÃƒÂ¨ un artefatto mistico.
-Non ÃƒÂ¨ unÃ¢â‚¬â„¢entitÃƒÂ  cosciente.
-ÃƒË† il sistema di archiviazione, classificazione e legittimazione delle condanne e delle scommesse.
+Il Registro è una struttura amministrativa dell’Arena.
+Non è un artefatto mistico.
+Non è un’entità cosciente.
+È il sistema di archiviazione, classificazione e legittimazione delle condanne e delle scommesse.
 
-Il Registro puÃƒÂ² trovarsi in due stati canonici.
+Il Registro può trovarsi in due stati canonici.
 
 #### 1.1 Registro integro
 
@@ -1164,61 +1164,61 @@ Condizione:
 
 - Nessun precedente registrato.
 
-ProprietÃƒÂ :
+Proprietà:
 
 - Le classificazioni sono coerenti.
 - Le anomalie vengono chiuse.
-- La libertÃƒÂ  ÃƒÂ¨ generabile come esito raro ma possibile.
+- La libertà è generabile come esito raro ma possibile.
 - Le pagine vengono archiviate senza eco.
 
-In questo stato, una run puÃƒÂ² concludersi con una vera liberazione.
+In questo stato, una run può concludersi con una vera liberazione.
 
 #### 1.2 Registro con precedente
 
 Condizione:
 
-- Almeno una run completa ÃƒÂ¨ stata archiviata come esito definitivo.
+- Almeno una run completa è stata archiviata come esito definitivo.
 
 Effetto:
 
 - Il Registro possiede memoria strutturale.
-- Le nuove run non sono piÃƒÂ¹ generate in stato di innocenza sistemica.
+- Le nuove run non sono più generate in stato di innocenza sistemica.
 
-ProprietÃƒÂ :
+Proprietà:
 
-- La libertÃƒÂ  non ÃƒÂ¨ piÃƒÂ¹ generabile.
-- Le condizioni che permettevano lÃ¢â‚¬â„¢uscita non si presenteranno piÃƒÂ¹.
+- La libertà non è più generabile.
+- Le condizioni che permettevano l’uscita non si presenteranno più.
 - Le classificazioni tendono verso la reiterazione.
 - Le anomalie diventano materiale narrativo.
 
 Il giocatore non viene informato di questo stato.
 
-### 2. LibertÃƒÂ 
+### 2. Libertà
 
-La libertÃƒÂ  ÃƒÂ¨ un esito reale ma temporalmente limitato.
+La libertà è un esito reale ma temporalmente limitato.
 
 Regola canonica:
 
-- La libertÃƒÂ  ÃƒÂ¨ ottenibile solo in stato di Registro Integro.
-- Dopo la registrazione del primo precedente, la libertÃƒÂ  non ÃƒÂ¨ piÃƒÂ¹ raggiungibile.
+- La libertà è ottenibile solo in stato di Registro Integro.
+- Dopo la registrazione del primo precedente, la libertà non è più raggiungibile.
 
 Non esiste annuncio interno.
 Non esiste comunicazione esplicita.
-Il sistema si limita a non generare piÃƒÂ¹ quella condizione.
+Il sistema si limita a non generare più quella condizione.
 
 ### 3. Corruzione del Registro
 
-La corruzione non ÃƒÂ¨ una variabile numerica.
-Non ÃƒÂ¨ una barra.
-Non ÃƒÂ¨ un effetto mistico.
+La corruzione non è una variabile numerica.
+Non è una barra.
+Non è un effetto mistico.
 
-ÃƒË† la conseguenza della memoria.
+È la conseguenza della memoria.
 
 Manifestazioni:
 
 - Linguaggio alterato.
 - Ricorrenza di pattern.
-- Pluricondannati piÃƒÂ¹ frequenti.
+- Pluricondannati più frequenti.
 - Tono progressivamente deformato.
 - Enfatizzazione delle cicatrici.
 
@@ -1227,9 +1227,9 @@ Altera la narrazione, la classificazione e il contesto.
 
 ### 4. I Gufi
 
-I Gufi sono lÃ¢â‚¬â„¢amministrazione dellÃ¢â‚¬â„¢Arena.
+I Gufi sono l’amministrazione dell’Arena.
 
-Non sono entitÃƒÂ  soprannaturali.
+Non sono entità soprannaturali.
 Non sono custodi morali.
 Non sono narratori.
 
@@ -1246,22 +1246,22 @@ In stato di Registro Integro:
 
 Dopo il precedente:
 
-- I Gufi sfruttano lÃ¢â‚¬â„¢instabilitÃƒÂ .
+- I Gufi sfruttano l’instabilità.
 - Le anomalie diventano spettacolo.
 - I pluricondannati diventano prodotto premium.
 
-I Gufi non bloccano la libertÃƒÂ .
-Rendono piÃƒÂ¹ profittevole la sua assenza.
+I Gufi non bloccano la libertà.
+Rendono più profittevole la sua assenza.
 
 ### 5. Felix Gallicus
 
-Felix non ÃƒÂ¨ prova di libertÃƒÂ .
-Felix ÃƒÂ¨ simbolo di permanenza.
+Felix non è prova di libertà.
+Felix è simbolo di permanenza.
 
-ÃƒË† la figura che legittima la reiterazione.
-ÃƒË† il nome che giustifica lÃ¢â‚¬â„¢eternitÃƒÂ  nellÃ¢â‚¬â„¢Arena.
+È la figura che legittima la reiterazione.
+È il nome che giustifica l’eternità nell’Arena.
 
-Felix ÃƒÂ¨ marchio.
+Felix è marchio.
 Non eccezione.
 
 ### 6. Invarianti canonici
@@ -1270,7 +1270,7 @@ Non eccezione.
 - Nessuna run viene invalidata retroattivamente.
 - La corruzione non modifica direttamente le meccaniche.
 - Il sistema non rivela mai esplicitamente lo stato del Registro.
-- Il giocatore non riceve conferma che la libertÃƒÂ  sia stata resa impossibile.
+- Il giocatore non riceve conferma che la libertà sia stata resa impossibile.
 
 ### Corruzione amministrativa cumulativa (addendum)
 

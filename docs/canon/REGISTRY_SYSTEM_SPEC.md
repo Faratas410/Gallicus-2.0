@@ -21,7 +21,7 @@ This document formalizes:
 - Terminal absence state
 - Structural non-loopability
 - Non-farmability guarantees
-- Indirect fixationâ€“Silence relationship
+- Indirect fixation–Silence relationship
 - Ontological constraints on compression
 
 This specification does NOT:
@@ -42,7 +42,7 @@ Range:
 
 ```text
 registry_era: int
-0 â†’ 3
+0 → 3
 ```
 
 After Era 3 Silence:
@@ -71,7 +71,7 @@ Era transitions are:
 Each Era change includes a 3-run invisible ramp:
 
 ```text
-era_progress âˆˆ {0.33, 0.66, 1.00}
+era_progress ∈ {0.33, 0.66, 1.00}
 ```
 
 Effects scale gradually during first three runs after transition.
@@ -84,10 +84,10 @@ Each run tracks a multidimensional signature:
 
 ```text
 behavior_signature {
-    risk_bias: float (-1.0 â†’ +1.0)
-    repetition_bias: float (0.0 â†’ 1.0)
-    scar_tolerance: float (0.0 â†’ 1.0)
-    volatility: float (0.0 â†’ 1.0)
+    risk_bias: float (-1.0 → +1.0)
+    repetition_bias: float (0.0 → 1.0)
+    scar_tolerance: float (0.0 → 1.0)
+    volatility: float (0.0 → 1.0)
 }
 ```
 
@@ -110,7 +110,7 @@ signature_coherence =
     (volatility * w4)
 ```
 
-Normalized 0 â†’ 1.
+Normalized 0 → 1.
 
 Signature becomes FIXED when:
 
@@ -160,20 +160,20 @@ If signature returns to liquid state, ambiguity may return.
 
 ## 8. Era Effects Matrix (Structural)
 
-### ERA 0 â€” Intact
+### ERA 0 — Intact
 
 - Neutral convergence
 - Full linguistic density
 - Balanced offer structure
 
-### ERA 1 â€” Rigid
+### ERA 1 — Rigid
 
 - Increased signature gravity
 - Slight offer polarization
 - Reduced linguistic ambiguity
 - Faster interpretive convergence
 
-### ERA 2 â€” Unstable
+### ERA 2 — Unstable
 
 - Controlled asymmetry in offer structure
 - Reduced lexical coherence
@@ -182,7 +182,7 @@ If signature returns to liquid state, ambiguity may return.
 
 No new mechanics introduced.
 
-### ERA 3 â€” Terminal
+### ERA 3 — Terminal
 
 - Rarefied language
 - Minimal commentary
@@ -194,10 +194,10 @@ When signature is fixed:
 Occasional compression event allowed:
 
 Two semantically distinct offers
-â†’ Ontologically convergent outcomes
-â†’ Deterministic
-â†’ Never majority frequency
-â†’ Never economy-altering
+→ Ontologically convergent outcomes
+→ Deterministic
+→ Never majority frequency
+→ Never economy-altering
 
 Compression represents structural exhaustion, not deception.
 
@@ -217,7 +217,7 @@ Silence:
 
 Silence is never framed as victory or defeat.
 
-## 10. Era 4 â€” Absence of Register
+## 10. Era 4 — Absence of Register
 
 Triggered after Silence in Era 3.
 
@@ -293,9 +293,9 @@ Implementation must halt immediately if:
 
 The Stratified Convergence Model is explicitly non-cyclical.
 
-- Era progression is strictly monotonic (0 â†’ 4)
+- Era progression is strictly monotonic (0 → 4)
 - No reset to Era 0 is permitted
-- No post-final â€œNew Game+â€ state may reinitialize the Register
+- No post-final “New Game+” state may reinitialize the Register
 - No hidden recursion or seasonal cycling allowed
 
 The structure is finite by canon definition.
@@ -346,7 +346,7 @@ It reflects diminishing interpretive diversity as terminal convergence approache
 
 Any use of compression as hidden manipulation violates canon.
 
-## 19. Micro Interpretive Quick Cut (Era 2â€“3 Runtime Hook)
+## 19. Micro Interpretive Quick Cut (Era 2–3 Runtime Hook)
 
 Quick Cut is a deterministic, transient interpretive interruption integrated into the existing runtime transition between outcome resolution and next phase progression.
 
@@ -368,7 +368,7 @@ Quick Cut is never guaranteed and never reaches 100% activation.
 Flow integration constraints:
 
 - Quick Cut is NOT a new phase
-- It is inserted as an optional transient interruption inside existing Resolve â†’ Next Phase progression
+- It is inserted as an optional transient interruption inside existing Resolve → Next Phase progression
 - No phase enum changes
 - No new manager
 - No duplicated authority
@@ -380,13 +380,13 @@ Visual contract:
 - Hard cut style (no slow fade)
 - ~80ms buffer after resolve
 - Immediate full-screen interpretive interruption
-- Duration bounded to 0.8â€“1.2 seconds (hard maximum 1.5 seconds)
+- Duration bounded to 0.8–1.2 seconds (hard maximum 1.5 seconds)
 - Immediate return to normal flow after hold
 
 Background treatment (Choice D):
 
 - Arena remains visible
-- Desaturation constrained to 70â€“85%
+- Desaturation constrained to 70–85%
 - Luminance reduction constrained to <=15%
 - No blur
 - No vignette

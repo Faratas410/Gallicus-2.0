@@ -1825,7 +1825,7 @@ func start_next_bet_round() -> void:
 func reset_run() -> void:
 	get_tree().paused = false
 	Engine.time_scale = 1.0
-		start_new_run()
+	start_new_run()
 
 func _open_bet_ui(_from_victory: bool = false) -> void:
 	_open_level3_bet_ui()

@@ -2,7 +2,7 @@
 
 Elenco report storici/audit (non canonici).
 
-## Active reports (retained)
+## Retained reports (historical)
 - [2026-02-24_l3_flow_audit_closeout.md](2026-02-24_l3_flow_audit_closeout.md) — Closeout audit flow L3 e hardening confini UI/phase.
 - [2026-02-25_patch_audit_sprint_authority_drift.md](2026-02-25_patch_audit_sprint_authority_drift.md) — Audit sprint su drift di autorità e compliance L3.
 - [level3_integrity_audit_report.md](level3_integrity_audit_report.md) — Audit integrità L3 (snapshot storico).

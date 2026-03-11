@@ -1,6 +1,6 @@
-# Reports Index
+# Reports Area Retired
 
-Elenco report storici/audit (non canonici).
+La precedente raccolta di report storici è stata rimossa dal repository.
 
 ## Retained reports (historical)
 - [2026-02-24_l3_flow_audit_closeout.md](2026-02-24_l3_flow_audit_closeout.md) — Closeout audit flow L3 e hardening confini UI/phase.

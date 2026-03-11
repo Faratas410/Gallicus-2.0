@@ -301,10 +301,10 @@ Forbidden direction examples:
 **Scope:** High-level split between canonical runtime and legacy/non-runtime code surfaces.  
 **Source of truth:** docs/run_architecture_ledger.md, docs/repo_map.md  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/repo_map.md, docs/reports/technical_resume_level3_canonical_it.md.
+**Notes:** Overlaps with: docs/repo_map.md.
 
 ## Overlap
-- Overlaps with: docs/repo_map.md, docs/reports/technical_resume_level3_canonical_it.md.
+- Overlaps with: docs/repo_map.md.
 
 ## Runtime L3 (active path)
 

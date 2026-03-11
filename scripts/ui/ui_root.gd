@@ -28,7 +28,6 @@ const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.25
 const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.30
 const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.30
 const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.20
-const BETTING_CIRCLE_SCENE_PATH: String = "res://scenes/ui/BettingCircle.tscn"
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://ui/official/styleboxes/sb_button_primary_pressed.tres"
@@ -705,7 +704,7 @@ func show_phase(phase: int) -> void:
 
 func _validate_ui_boot() -> bool:
 	var errors: Array[String] = []
-	if get_node_or_null("UI_RunRoot/BettingCircle") == null and not ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
+	if get_node_or_null("UI_RunRoot/BettingCircle") == null:
 		errors.append("UI_RunRoot/BettingCircle")
 	var ending_text_path: String = "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER"
 	if get_node_or_null(ending_text_path) == null:
@@ -1599,7 +1598,7 @@ func _on_bet_ui_opened(bets: Array[Dictionary]) -> void:
 			_lbl_intro_body_stake.text = str(intro_payload.get("stake_text", ""))
 		if _lbl_intro_footer != null:
 			_lbl_intro_footer.text = str(intro_payload.get("footer", ""))
-	if betting_circle != null or ResourceLoader.exists(BETTING_CIRCLE_SCENE_PATH):
+	if betting_circle != null:
 		open_bet_circle(bets)
 		return
 	if game_over_panel != null and game_over_panel.visible:
@@ -3148,26 +3147,9 @@ func open_bet_circle(bets: Array[Dictionary]) -> void:
 	_current_bet_offer.append_array(bets)
 	var circle: BettingCircleUI = betting_circle
 	if circle == null:
-		if modals_root == null:
-			push_error("SANITY FAIL UI: BetCircle missing")
-			return
-		var circle_scene: PackedScene = load(BETTING_CIRCLE_SCENE_PATH) as PackedScene
-		if circle_scene == null:
-			push_error("SANITY FAIL UI: BetCircle missing")
-			return
-		var instance: Node = circle_scene.instantiate()
-		if instance == null:
-			push_error("SANITY FAIL UI: BetCircle missing")
-			return
-		instance.name = "BettingCircle"
-		modals_root.add_child(instance)
-		circle = instance as BettingCircleUI
-		if circle == null:
-			push_error("SANITY FAIL UI: BetCircle missing")
-			return
-		betting_circle = circle
-	if circle != null:
-		circle.set_offers(bets)
+		push_error("SANITY FAIL UI: BetCircle missing")
+		return
+	circle.set_offers(bets)
 	show_modal(circle)
 	circle.modulate.a = 1.0
 	circle.process_mode = Node.PROCESS_MODE_INHERIT

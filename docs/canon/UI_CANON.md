@@ -107,10 +107,10 @@ All changes to systems described here must update this document in the same PR.
 **Scope:** Official UI asset and theme ledger, including authority and replacement policy.  
 **Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/repo_map.md  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/repo_map.md, docs/reports/technical_review_resume_it.md.
+**Notes:** Overlaps with: docs/repo_map.md.
 
 ## Overlap
-- Overlaps with: docs/repo_map.md, docs/reports/technical_review_resume_it.md.
+- Overlaps with: docs/repo_map.md.
 
 ## Scope
 - Patch type: Foundation only (no scene-wide texture replacement in this patch).

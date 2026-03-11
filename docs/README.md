@@ -1,10 +1,12 @@
 # Documentation Entry
 
-Start here:
-1. PROCESS_AND_FREEZE
-2. RUN_ARCHITECTURE_CANON
-3. MECHANICS_UNIFIED
-4. GLOSSARY_ENTITIES
-5. LORE_UNIFIED
+La documentazione attiva è organizzata con entrypoint operativo in:
 
-Reports are historical and non-authoritative.
+- `docs/active/INDEX.md`
+
+## Percorso consigliato
+
+1. Apri `docs/active/INDEX.md`.
+2. Parti da `docs/canon/FOUNDATIONS.md`.
+3. Usa `docs/canon/CANON_DEPENDENCY_MATRIX.md` per ownership e precedence.
+4. Consulta solo il file canon owner della categoria interessata.

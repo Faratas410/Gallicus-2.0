@@ -1,0 +1,6 @@
+# Known suspect duplicate/drift filename findings.
+# Format: token:<path> or collision:<path>
+# Keep this list small and intentional; remove entries when files are cleaned.
+
+token:_tmp_uiroot_unknown.txt
+token:_tmp_uiroot_unknown2.txt

@@ -1,7 +1,7 @@
 extends RefCounted
 class_name UIFactory
 
-const MAIN_PANEL_STYLEBOX_PATH: String = "res://ui/official/styleboxes/sb_panel_main.tres"
+const MAIN_PANEL_STYLEBOX_PATH: String = "res://assets/ui/official/styleboxes/sb_panel_main.tres"
 const BODY_FONT_PATH: String = "res://assets/ui/fonts/font_body.tres"
 
 static func create_sprite_label(text: String) -> PanelContainer:

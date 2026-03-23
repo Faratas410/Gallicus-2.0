@@ -8,7 +8,7 @@ run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.6")
 
 [gui]
-theme/custom="res://ui/theme/official_theme.tres"
+theme/custom="res://assets/ui/theme/official_theme.tres"
 
 [autoload]
 GameEvents="*res://scripts/systems/game_events.gd"

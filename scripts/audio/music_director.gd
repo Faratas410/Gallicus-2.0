@@ -7,26 +7,26 @@ const FADE_SECONDS: float = 1.25
 const MUSIC_BUS_NAME: String = "Music"
 
 var MENU_TRACK_PATHS: Array[String] = [
-	"res://Music/Ambient1.mp3",
-	"res://Music/CreditsOrCutscene1.mp3",
+	"res://assets/audio/Ambient1.mp3",
+	"res://assets/audio/CreditsOrCutscene1.mp3",
 ]
 var RUN_SAFE_TRACK_PATHS: Array[String] = [
-	"res://Music/Ambient2.mp3",
-	"res://Music/Ambient3.mp3",
+	"res://assets/audio/Ambient2.mp3",
+	"res://assets/audio/Ambient3.mp3",
 ]
 var RUN_TENSE_TRACK_PATHS: Array[String] = [
-	"res://Music/Ambient4.mp3",
-	"res://Music/Darkness.mp3",
-	"res://Music/EternalDescent.mp3",
+	"res://assets/audio/Ambient4.mp3",
+	"res://assets/audio/Darkness.mp3",
+	"res://assets/audio/EternalDescent.mp3",
 ]
 var RUN_CLIMAX_TRACK_PATHS: Array[String] = [
-	"res://Music/Infernal.mp3",
-	"res://Music/Doomfire.mp3",
-	"res://Music/Havoc.mp3",
+	"res://assets/audio/Infernal.mp3",
+	"res://assets/audio/Doomfire.mp3",
+	"res://assets/audio/Havoc.mp3",
 ]
 var ENDING_TRACK_PATHS: Array[String] = [
-	"res://Music/LamentOfTheFallen.mp3",
-	"res://Music/CreditsOrCutscene1.mp3",
+	"res://assets/audio/LamentOfTheFallen.mp3",
+	"res://assets/audio/CreditsOrCutscene1.mp3",
 ]
 
 const MENU_TARGET_DB: float = -14.0

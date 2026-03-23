@@ -24,7 +24,7 @@ All changes to systems described here must update this document in the same PR.
 
 **Status:** SUPPORTING  
 **Scope:** Operational freeze policy for patch scope and stop conditions.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/00_RISK_DRIVEN_DESIGN_BIBLE  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/CODEX_GOLDEN_CHECKLIST.md.
 - Candidate for archive after consolidation patch if freeze policy is merged into canon operations docs.
@@ -45,7 +45,7 @@ All changes to systems described here must update this document in the same PR.
 
 ### Vincoli in vigore durante il freeze
 - Valgono integralmente i vincoli di `docs/CODEX_GOLDEN_CHECKLIST.md`.
-- Valgono integralmente gli intenti di `docs/00_RISK_DRIVEN_DESIGN_BIBLE`.
+- Valgono integralmente gli intenti di `docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md`.
 - Una task = una patch minimale, localizzata, reversibile.
 
 ### Criterio di stop
@@ -221,7 +221,7 @@ Se un file non è elencato qui, si assume “non mappato” → trattarlo come C
 
 - res://scripts/ui/** (UI logic + copy formatting)
 - res://scenes/** (solo layout/presentazione; no flow wiring senza richiesta esplicita)
-- res://ui/** (themes, shaders, atlas wiring)
+- res://assets/ui/** (themes, shaders, atlas wiring)
 - res://assets/** (resource binding, import, fonts, sprites)
 - res://data/** (cataloghi statici; pure data)
 

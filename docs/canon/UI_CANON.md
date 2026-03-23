@@ -105,19 +105,19 @@ All changes to systems described here must update this document in the same PR.
 
 **Status:** CANON  
 **Scope:** Official UI asset and theme ledger, including authority and replacement policy.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/repo_map.md  
+**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/support/repo_map.md  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/repo_map.md.
+**Notes:** Overlaps with: docs/support/repo_map.md.
 
 ## Overlap
-- Overlaps with: docs/repo_map.md.
+- Overlaps with: docs/support/repo_map.md.
 
 ## Scope
 - Patch type: Foundation only (no scene-wide texture replacement in this patch).
 - Source-of-truth UI asset folder for adopted runtime main-menu atlas source: `res://assets/MainMenu/`.
-- `res://UI Official/` remains the raw external reference pack.
-- Authoritative theme resource: `res://ui/theme/official_theme.tres`.
-- Authoritative UI font wrapper: `res://ui/fonts/italiana_regular_font.tres`.
+- `res://assets/ui/official_source/` remains the raw external reference pack.
+- Authoritative theme resource: `res://assets/ui/theme/official_theme.tres`.
+- Authoritative UI font wrapper: `res://assets/ui/fonts/italiana_regular_font.tres`.
 
 ## Run flow payload contract (INTERMEDIATE_CHOICE)
 - `RunManager` remains sole authority for phase progression and emits `RunUiPayload` for `INTERMEDIATE_CHOICE`.
@@ -168,9 +168,9 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 
 ## Theme assignment point (single authority)
 - Chosen authority: **ProjectSettings → GUI → Theme → Custom** (`project.godot`, `[gui] theme/custom`).
-- Patch decision (active): **assigned** at ProjectSettings level via `project.godot` `[gui] theme/custom="res://ui/theme/official_theme.tres"`.
+- Patch decision (active): **assigned** at ProjectSettings level via `project.godot` `[gui] theme/custom="res://assets/ui/theme/official_theme.tres"`.
 - Rationale: establish a single fallback theme authority for controls without altering runtime flow authority; per-scene/per-node overrides remain allowed as localized exceptions during migration.
-- Runtime visual baseline: `res://ui/theme/official_theme.tres` defines non-empty stylebox entries for `Button` states (`normal`, `hover`, `pressed`, `disabled`) and `PanelContainer.panel` using official stylebox resources.
+- Runtime visual baseline: `res://assets/ui/theme/official_theme.tres` defines non-empty stylebox entries for `Button` states (`normal`, `hover`, `pressed`, `disabled`) and `PanelContainer.panel` using official stylebox resources.
 - Runtime scenes `res://scenes/UI.tscn` and `res://scenes/ui/BettingCircle.tscn` remove local `theme_override_styles/*`, `theme_override_fonts/*`, `theme_override_constants/*`, and `theme_override_colors/*` assignments so controls inherit global theme authority by default.
 - Pilot redundancy trim: in `res://scenes/Main.tscn`, main menu buttons `ContinueButton`, `NewGameButton`, and `LoadGameButton` now inherit global `Button` styleboxes from `project.godot` theme authority instead of duplicating identical local `theme_override_styles/*`.
 
@@ -178,17 +178,17 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 
 ### Buttons (Main Menu pilot)
 - Official assets selected:
-  - `res://ui/official/atlas/at_button_primary_normal.tres` (`Rect2(0, 160, 48, 16)` from `UI assets (1x).png`)
-  - `res://ui/official/atlas/at_button_primary_hover.tres` (`Rect2(48, 160, 48, 16)`)
-  - `res://ui/official/atlas/at_button_primary_pressed.tres` (`Rect2(96, 160, 48, 16)`)
-  - `res://ui/official/atlas/at_button_primary_disabled.tres` (`Rect2(0, 160, 48, 16)`, muted via `modulate_color`)
+  - `res://assets/ui/official/atlas/at_button_primary_normal.tres` (`Rect2(0, 160, 48, 16)` from `UI assets (1x).png`)
+  - `res://assets/ui/official/atlas/at_button_primary_hover.tres` (`Rect2(48, 160, 48, 16)`)
+  - `res://assets/ui/official/atlas/at_button_primary_pressed.tres` (`Rect2(96, 160, 48, 16)`)
+  - `res://assets/ui/official/atlas/at_button_primary_disabled.tres` (`Rect2(0, 160, 48, 16)`, muted via `modulate_color`)
 - Applied on scene: `res://scenes/Main.tscn` main menu buttons (`ContinueButton`, `NewGameButton`, `LoadGameButton`, `AchievementsButton`, `SettingsButton`, `CreditsButton`) through local `theme_override_styles/*`.
 - Legacy references replaced: removed main-menu dependency on `res://assets/ui/gallicus_ui_theme.tres` for button rendering in this scene.
 
 ### Panels / Background boxes (Main Menu pilot)
 - Official assets selected:
-  - `res://ui/official/atlas/at_panel_main.tres` (`Rect2(0, 0, 48, 48)` from `UI assets (1x).png`)
-- Applied on scene: `res://scenes/Main.tscn` node `MenuLayer/MainMenu/CenterContainer/MainPanel` via `res://ui/official/styleboxes/sb_panel_main.tres`.
+  - `res://assets/ui/official/atlas/at_panel_main.tres` (`Rect2(0, 0, 48, 48)` from `UI assets (1x).png`)
+- Applied on scene: `res://scenes/Main.tscn` node `MenuLayer/MainMenu/CenterContainer/MainPanel` via `res://assets/ui/official/styleboxes/sb_panel_main.tres`.
 - Legacy references replaced: no legacy panel texture remained on the visible main menu root container (new `MainPanel` is official atlas-backed).
 
 ### Banners / Dividers
@@ -223,9 +223,9 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 - Scripts with explicit texture loading (`load("res://...png")`, `preload("res://...png")`).
 
 ## References used
-- `res://UI Official/Reference sheet.png`
+- `res://assets/ui/official_source/Reference sheet.png`
 - `res://assets/ui/icons/icon_condition.png`
-- `res://UI Official/Italiana-Regular.ttf`
+- `res://assets/ui/official_source/Italiana-Regular.ttf`
 
 ## SOURCE: docs/ui_audio_map.md
 
@@ -269,21 +269,21 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 
 **Status:** SUPPORTING  
 **Scope:** Canonical runtime audio path policy and tracked Music assets.  
-**Source of truth:** docs/repo_map.md, docs/ui_audio_map.md  
+**Source of truth:** docs/support/repo_map.md, docs/ui_audio_map.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/ui_audio_map.md.
 
 ## Overlap
 - Overlaps with: docs/ui_audio_map.md.
 
-Canonical runtime audio location: `res://Music/`.
+Canonical runtime audio location: `res://assets/audio/`.
 
 Rules:
-- All runtime audio references must use `res://Music/<file>.mp3`.
+- All runtime audio references must use `res://assets/audio/<file>.mp3`.
 - Root-level references like `res://<file>.mp3` are not allowed.
 - This patch does not move or rename audio binaries; it only documents canonical paths.
 
-Current MP3 files under `res://Music/`:
+Current MP3 files under `res://assets/audio/`:
 - AbyssalEcho.mp3
 - Ambient1.mp3
 - Ambient2.mp3

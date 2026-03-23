@@ -733,7 +733,7 @@ Se una UI non appare: non è layout.
 
 **Status:** SUPPORTING  
 **Scope:** Design doctrine for bet progression and risk escalation tone.  
-**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/game_flow_v2.md  
+**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/game_flow_v2.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/game_flow.md, docs/game_flow_v2.md.
 
@@ -863,7 +863,7 @@ La subisce alla fine.
 
 **Status:** SUPPORTING  
 **Scope:** Meta-progression design boundaries and unlock philosophy.  
-**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/CODEX_GOLDEN_CHECKLIST.md  
+**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/CODEX_GOLDEN_CHECKLIST.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/bet_progression.md, docs/scar_system.md.
 
@@ -1023,7 +1023,7 @@ che prima non potevi nemmeno immaginare.
 
 **Status:** SUPPORTING  
 **Scope:** Design and behavior notes for scars as persistent run consequences.  
-**Source of truth:** docs/00_RISK_DRIVEN_DESIGN_BIBLE, docs/run_architecture_ledger.md  
+**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/run_architecture_ledger.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/bet_progression.md, docs/meta_progression.md.
 

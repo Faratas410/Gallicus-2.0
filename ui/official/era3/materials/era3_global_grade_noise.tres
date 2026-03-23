@@ -1,6 +1,0 @@
-[gd_resource type="ShaderMaterial" format=3]
-
-[ext_resource type="Shader" path="res://ui/official/era3/shaders/era3_global_grade_noise.gdshader" id=1]
-
-[resource]
-shader = ExtResource(1)

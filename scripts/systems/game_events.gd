@@ -21,8 +21,6 @@ signal condanna_registered(id: StringName)
 signal bet_failed(can_retry: bool)
 signal escalation_changed(level: int, max_value: int)
 signal bet_placed(bet_id: String, stake: int, odds: float)
-signal bet_confirmed(pact_id: StringName, condition_id: StringName, sentence_id: StringName)
-signal bet_sealed(bet_choice: Dictionary)
 signal bet_selected(bet_id: String)
 signal bet_ui_opened(bets: Array)
 signal bet_ui_closed
@@ -39,7 +37,6 @@ signal micro_interpretive_quick_cut_requested(payload: Dictionary)
 signal intermediate_choice_opened
 signal push_luck_opened(payload: Dictionary)
 signal push_luck_closed
-signal post_arena_choice_selected(choice_id: StringName)
 signal run_phase_changed(phase: int)
 signal countdown_requested(seconds: int)
 signal gameplay_enabled_changed(enabled: bool)
@@ -57,9 +54,6 @@ signal request_reset_run
 signal request_retry_run
 signal request_continue_run
 signal continue_rejected(reason: String)
-signal request_push_luck_cashout
-signal request_push_luck_double
-signal request_intermediate_choice(choice_id: String)
 signal request_intro_apply_seed(seed_text: String)
 signal request_intro_select_bet(bet_id: String)
 signal request_intro_confirm

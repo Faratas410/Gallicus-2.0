@@ -34,7 +34,7 @@ ma overlay attivati tramite eventi e payload "kind".
 In Level 3 attuale:
 
 - FIRST_REACTION post-bet messaging utilizza queue/event payload (kind/title/subtitle)
-- RESOLUTION ritual utilizza resolve_ritual_opened / resolve_ritual_closed
+- Resolve ritual overlay (container `Phase_RESOLUTION`) utilizza resolve_ritual_opened / resolve_ritual_closed
 
 Questi NON sono guidati da payload.phase,
 ma da eventi GameEvents e queue payload.
@@ -350,6 +350,6 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 ## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)
 - `Phase_FIRST_REACTION` (`IL PATTO È SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
-- `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.
+- Resolve ritual overlay container `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.
 - Scope guard: this contract removes only legacy post-bet copy selection (`POST_BET_TEXTS`) and does not alter phase/event sequencing authority.
 

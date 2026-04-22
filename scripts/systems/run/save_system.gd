@@ -2,6 +2,7 @@ class_name SaveSystem
 extends RefCounted
 
 const RunStateScript := preload("res://scripts/systems/run/run_state.gd")
+const RunSaveFlowStepContractScript := preload("res://scripts/contracts/run_save_flow_step_contract.gd")
 const RUN_SCHEMA_VERSION: int = 1
 const RUN_PATH: String = "user://run.save"
 const RUN_TMP_PATH: String = "%s.tmp" % RUN_PATH
@@ -62,7 +63,7 @@ func apply_level3_payload(run_state: RunState, payload: Dictionary) -> Dictionar
 	next_state.reset()
 	next_state.from_dict(payload.get("run_state", {}) as Dictionary)
 	if next_state.run_save_flow_step == &"":
-		next_state.run_save_flow_step = &"BET_OFFER"
+		next_state.run_save_flow_step = RunSaveFlowStepContractScript.BET_OFFER
 	if next_state.run_seed <= 0:
 		return {"ok": false, "reason": "invalid_run_seed"}
 	if next_state.run_is_over:

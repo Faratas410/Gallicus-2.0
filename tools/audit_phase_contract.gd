@@ -60,7 +60,7 @@ func _initialize() -> void:
 		ok = false
 
 	# 2) UI scene must contain at least one Phase_* node (sanity) and should contain canonical containers.
-	# Canonical phase containers (UI contract doc): INTRO, FIRST_REACTION, MID_CHOICE, PUSH_YOUR_LUCK, RESOLUTION, END_RUN
+	# Canonical containers (UI contract doc): INTRO, FIRST_REACTION, MID_CHOICE, PUSH_YOUR_LUCK, RESOLUTION overlay container, END_RUN
 	var required_phase_nodes: Array[String] = [
 		"Phase_INTRO",
 		"Phase_FIRST_REACTION",

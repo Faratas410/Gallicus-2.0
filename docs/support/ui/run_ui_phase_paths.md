@@ -3,7 +3,7 @@ Date: 2026-02-11
 
 # Run UI — Phase Paths and Node Names
 
-This document lists the canonical run UI phase containers and their key node names after the phase-based rename.
+This document lists the canonical run UI phase containers and ritual overlay containers after the phase-based rename.
 
 Scene: `res://scenes/UI.tscn`
 
@@ -11,7 +11,7 @@ Scene: `res://scenes/UI.tscn`
 
 - `UI_RunRoot`
 
-## Phase containers
+## Phase containers and ritual overlay containers
 
 - `UI_RunRoot/Phase_INTRO`
 - `UI_RunRoot/Phase_FIRST_REACTION`
@@ -68,7 +68,7 @@ Scene: `res://scenes/UI.tscn`
 - `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE`
 - `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE`
 
-### RESOLUTION
+### RESOLVE_RITUAL_OVERLAY_CONTAINER (Phase_RESOLUTION)
 
 - `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION`
 - `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLE`

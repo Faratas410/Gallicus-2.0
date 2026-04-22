@@ -13,4 +13,4 @@ const POST_BET_MESSAGES: int = 14
 const INTERMEDIATE_CHOICE: int = 15
 const PUSH_YOUR_LUCK: int = 16
 const NEXT_BET: int = 17
-const RESOLUTION: int = 18
+const RESOLUTION: int = 18 # Legacy compat slot; active resolve flow is ritual/event-driven.

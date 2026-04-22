@@ -176,7 +176,7 @@ All changes to systems described here must update this document in the same PR.
 - `PhaseBetPresentHandler` (`res://scripts/systems/run/phase_handlers/phase_bet_present_handler.gd`) builds BET_PRESENT UI payload metadata.
 - `PhaseIntermediateChoiceHandler` (`res://scripts/systems/run/phase_handlers/phase_intermediate_choice_handler.gd`) builds INTERMEDIATE_CHOICE UI payload metadata.
 - `PhasePushYourLuckHandler` (`res://scripts/systems/run/phase_handlers/phase_push_your_luck_handler.gd`) builds PUSH_YOUR_LUCK UI payload metadata.
-- `PhaseResolutionHandler` (`res://scripts/systems/run/phase_handlers/phase_resolution_handler.gd`) builds RESOLUTION UI payload metadata.
+- No dedicated `PhaseResolutionHandler` is active in current runtime; resolve ritual UI is event-driven from RunManager.
 - `PhaseGameOverHandler` (`res://scripts/systems/run/phase_handlers/phase_game_over_handler.gd`) builds GAME_OVER/finale payload input metadata consumed by RunManager finale emission.
 - `PhaseResult` (`res://scripts/systems/run/phase_handlers/phase_result.gd`) is the standardized non-authoritative handler return contract (`handled`, `action`, optional payload/event intent metadata) interpreted by RunManager.
 - `PhasePushYourLuckHandler.handle_request(...)` currently supports delegated intent classification for `request_pyl_cashout` and `request_pyl_double`; RunManager remains responsible for executing state mutation, event emission, and phase/end-run sequencing.
@@ -229,8 +229,8 @@ The phase contract is explicit and mandatory:
 Canonical Level 3 post-bet sequence (active flow authority):
 1. `BET_COMMITTED` emits `pact_sealed_opened/closed` ritual.
 2. On `pact_sealed_closed`, `RunManager` opens `INTERMEDIATE_CHOICE` directly.
-3. `INTERMEDIATE_CHOICE` accepts gesture request and then starts `RESOLUTION` ritual.
-4. `RESOLUTION` emits `resolve_ritual_opened/closed`, resolves arena, then opens `PUSH_YOUR_LUCK`.
+3. `INTERMEDIATE_CHOICE` accepts gesture request and starts the resolve ritual overlay (`resolve_ritual_opened/closed`).
+4. After ritual close, RunManager resolves arena outcome and opens `PUSH_YOUR_LUCK`.
 5. `POST_BET_MESSAGES` is legacy/unreachable in active Level 3 flow and must not gate `INTERMEDIATE_CHOICE`; enum slot value `14` remains reserved (`POST_BET_MESSAGES`) while active gesture phase is `INTERMEDIATE_CHOICE=15` for UI contract alignment.
 6. Active Level 3 flow must not depend on `arena_message_queue_completed` callback or fallback timer paths for post-bet progression.
 
@@ -253,6 +253,7 @@ Canonical Level 3 post-bet sequence (active flow authority):
   - no phase orchestration, no `GameEvents` emission, and no UI authority.
 - `SaveContinueBoundary` (`res://scripts/systems/run/save_continue_boundary.gd`)
   - builds Level 3 save payloads, validates continue payload seal/boundary, and applies pure payload-to-state mapping before RunManager orchestration/routing.
+  - owns boundary-only normalization of legacy `run_save_flow_step` values to canonical live values.
   - no phase orchestration, no scene-tree access, and no `GameEvents` emission.
 
 ## Event rules (GameEvents)
@@ -456,7 +457,7 @@ Scene: `res://scenes/UI.tscn`
 - `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE`
 - `UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE`
 
-### RESOLUTION
+### RESOLVE_RITUAL_OVERLAY_CONTAINER (Phase_RESOLUTION)
 
 - `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION`
 - `UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLE`
@@ -510,18 +511,43 @@ This overlay is presented via UI event/queue payload (kind/title/subtitle or rit
 and it does not require entering RunPhase.RESOLUTION as a mainline phase.
 
 
-## RunPhase.RESOLUTION (Alternate / Non-Mainline)
+## RunPhase.RESOLUTION (Compatibility Residue, Non-Mainline)
 
-RunPhase.RESOLUTION may exist in the enum and may be reachable via alternate/legacy paths
-(e.g. resolve_arena style entrypoints), but it is **not part of the current Level 3 mainline**
-progression.
+RunPhase.RESOLUTION remains only as compatibility residue (enum slot + legacy save normalization
+at continue/load boundary) and is **not part of the current Level 3 mainline** progression.
 
 Guardrail:
 
 - Do not assume RunPhase.RESOLUTION is entered in the mainline.
 - Do not gate PUSH_YOUR_LUCK on “having been in RunPhase.RESOLUTION”.
-- Any future change that makes RESOLUTION a mainline phase must update this canon section
+- Any future change that reactivates RESOLUTION as a runtime-entered phase must update this canon section
   and the corresponding UI boundary rules.
+
+
+## run_save_flow_step Contract (Strict Live Set)
+
+Canonical live values are centralized in:
+`res://scripts/contracts/run_save_flow_step_contract.gd`
+
+Live runtime must carry only:
+
+- `BET_SIGNED`
+- `INTERMEDIATE_CHOICE`
+- `PUSH_LUCK`
+- `BET_OFFER`
+
+Boundary-only legacy accepted values (load/continue normalization only):
+
+- `RESOLUTION`
+- `RUN_FLOW_RESOLUTION`
+- `PHASE_RESOLUTION`
+- `"18"`
+
+Normalization policy:
+
+- Legacy values above -> `INTERMEDIATE_CHOICE`.
+- Empty step or step requiring missing bet id -> deterministic fallback `BET_OFFER`.
+- Unknown non-mappable values -> hard reject continue payload (`invalid_run_save_flow_step:*`).
 
 
 

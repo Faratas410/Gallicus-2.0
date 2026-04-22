@@ -659,7 +659,7 @@ UI → RunManager: request_mid_choice_select(0|1)
 AUTOSAVE: RUN_FLOW_PUSH_LUCK
 
 ### 7) RITUAL 2 — RESOLVE RITUAL + ARENA RESOLVE
-RunPhase: RESOLUTION  
+RunPhase: INTERMEDIATE_CHOICE (ritual overlay interno, nessun ingresso in RunPhase.RESOLUTION)  
 Dopo la scelta gesto, il RunManager avvia `resolve_ritual_opened/closed` e poi risolve arena:
 - arena_started
 - arena_completed(arena_index)

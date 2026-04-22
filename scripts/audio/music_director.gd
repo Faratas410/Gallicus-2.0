@@ -171,7 +171,7 @@ func _phase_to_track_set(phase: int) -> int:
 			return TrackSet.SAFE
 		RunPhaseContractScript.BET_COMMITTED, RunPhaseContractScript.POST_BET_MESSAGES, RunPhaseContractScript.INTERMEDIATE_CHOICE:
 			return TrackSet.TENSE
-		RunPhaseContractScript.PUSH_YOUR_LUCK, RunPhaseContractScript.RESOLUTION:
+		RunPhaseContractScript.PUSH_YOUR_LUCK:
 			return TrackSet.CLIMAX
 		RunPhaseContractScript.GAME_OVER:
 			return TrackSet.ENDING

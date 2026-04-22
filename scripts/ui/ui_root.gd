@@ -47,7 +47,6 @@ const RUN_PHASE_FIRST_REACTION: int = RunPhaseContract.POST_BET_MESSAGES
 const RUN_PHASE_MID_CHOICE: int = RunPhaseContract.INTERMEDIATE_CHOICE
 const RUN_PHASE_PUSH_YOUR_LUCK: int = RunPhaseContract.PUSH_YOUR_LUCK
 const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
-const RUN_PHASE_RESOLUTION: int = RunPhaseContract.RESOLUTION
 const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
 const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_sentence.png"
 const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
@@ -640,7 +639,6 @@ func _init_phase_node_map() -> void:
 		RUN_PHASE_MID_CHOICE: intermediate_choice_modal,
 		RUN_PHASE_PUSH_YOUR_LUCK: push_luck_modal,
 		RUN_PHASE_NEXT_BET: bet_modal,
-		RUN_PHASE_RESOLUTION: resolve_ritual_modal,
 		RUN_PHASE_END_RUN: game_over_modal,
 	}
 

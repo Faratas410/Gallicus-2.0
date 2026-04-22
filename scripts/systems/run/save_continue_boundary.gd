@@ -3,8 +3,10 @@ extends RefCounted
 
 const SaveSystemScript := preload("res://scripts/systems/run/save_system.gd")
 const RunStateScript := preload("res://scripts/systems/run/run_state.gd")
+const RunSaveFlowStepContractScript := preload("res://scripts/contracts/run_save_flow_step_contract.gd")
 
 const LEVEL3_SCHEMA_VERSION: int = 2
+const LEGACY_RESOLUTION_PHASE_VALUE: int = 18
 
 var _save_system: SaveSystem = SaveSystemScript.new()
 
@@ -50,6 +52,9 @@ func apply_payload_to_state(run_state: RunState, payload: Dictionary) -> Diction
 	if not bool(apply_result.get("ok", false)):
 		return {"ok": false, "reason": str(apply_result.get("reason", "invalid_continue_payload")), "applied_runtime": {}}
 	var run_data: Dictionary = apply_result.get("run", {}) as Dictionary
+	var normalization: Dictionary = _normalize_flow_step_at_boundary(run_state, payload, run_data)
+	if not bool(normalization.get("ok", false)):
+		return {"ok": false, "reason": str(normalization.get("reason", "invalid_run_save_flow_step")), "applied_runtime": {}}
 	var applied_runtime: Dictionary = {
 		"arena_index": int(run_data.get("arena_index", run_state.arena_index)),
 		"corruption": int(run_data.get("corruption", 0)),
@@ -64,6 +69,42 @@ func apply_payload_to_state(run_state: RunState, payload: Dictionary) -> Diction
 		"scars_detail": (apply_result.get("scars_detail", []) as Array).duplicate(true),
 		"applied_runtime": applied_runtime,
 	}
+
+func _normalize_flow_step_at_boundary(run_state: RunState, payload: Dictionary, run_data: Dictionary) -> Dictionary:
+	# Boundary-only normalization contract:
+	# - Canonical live values are defined by RunSaveFlowStepContract.
+	# - Legacy aliases are accepted only here and mapped to canonical values.
+	# - After this function, run_state.run_save_flow_step must be canonical.
+	var had_legacy_resolution_phase: bool = false
+	if run_data.has("phase") and typeof(run_data.get("phase")) == TYPE_INT:
+		had_legacy_resolution_phase = int(run_data.get("phase", -1)) == LEGACY_RESOLUTION_PHASE_VALUE
+	var raw_run_state: Dictionary = payload.get("run_state", {}) as Dictionary
+	if raw_run_state.has("phase") and typeof(raw_run_state.get("phase")) == TYPE_INT:
+		had_legacy_resolution_phase = had_legacy_resolution_phase or int(raw_run_state.get("phase", -1)) == LEGACY_RESOLUTION_PHASE_VALUE
+
+	var raw_flow_step: StringName = run_state.run_save_flow_step
+	var candidate_bet_id: StringName = _resolve_candidate_bet_id(run_state)
+	var normalized_flow_step: StringName = RunSaveFlowStepContractScript.normalize_boundary_value(
+		raw_flow_step,
+		had_legacy_resolution_phase,
+		candidate_bet_id != &""
+	)
+	if normalized_flow_step == &"":
+		return {"ok": false, "reason": "invalid_run_save_flow_step:%s" % String(raw_flow_step)}
+	run_state.run_save_flow_step = normalized_flow_step
+	if RunSaveFlowStepContractScript.requires_bet_id(normalized_flow_step):
+		run_state.run_save_flow_bet_id = candidate_bet_id
+	else:
+		run_state.run_save_flow_bet_id = &""
+	return {"ok": true, "reason": ""}
+
+
+func _resolve_candidate_bet_id(run_state: RunState) -> StringName:
+	if run_state.run_save_flow_bet_id != &"":
+		return run_state.run_save_flow_bet_id
+	if run_state.current_bet_id != "":
+		return StringName(run_state.current_bet_id)
+	return &""
 
 func _build_runtime_payload(runtime_fields: Dictionary) -> Dictionary:
 	var upgrades: Dictionary = {}

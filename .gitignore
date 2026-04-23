@@ -1,0 +1,17 @@
+# Godot local cache/import state
+.godot/
+.import/
+*.import
+
+# Local smoke/runtime diagnostics
+smoke_*.log
+godot_*.log
+artifacts/
+.tmp_smoke/
+
+# Local tool downloads
+tools/godot/
+
+# Python cache
+__pycache__/
+*.pyc

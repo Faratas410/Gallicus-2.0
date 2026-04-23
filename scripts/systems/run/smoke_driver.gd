@@ -4,9 +4,9 @@ extends RefCounted
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
 const SCENARIO_BET_PRESENT: String = "BET_PRESENT"
 const SCENARIO_FULL_RUN: String = "FULL_RUN"
-const PHASE_NAME_MAIN_MENU: String = RunPhaseContractScript.get_name(RunPhaseContractScript.MAIN_MENU)
-const PHASE_NAME_RUN_INIT: String = RunPhaseContractScript.get_name(RunPhaseContractScript.RUN_INIT)
-const PHASE_NAME_BET_PRESENT: String = RunPhaseContractScript.get_name(RunPhaseContractScript.BET_PRESENT)
+var _phase_name_main_menu: String = RunPhaseContractScript.get_name(RunPhaseContractScript.MAIN_MENU)
+var _phase_name_run_init: String = RunPhaseContractScript.get_name(RunPhaseContractScript.RUN_INIT)
+var _phase_name_bet_present: String = RunPhaseContractScript.get_name(RunPhaseContractScript.BET_PRESENT)
 
 var _new_run_requested: bool = false
 var _step_logged_run_init: bool = false
@@ -64,7 +64,7 @@ func on_tick(phase_name: String, _selected_bet_id: String, _completed_bets: int,
 
 
 func _on_bet_present_tick(result: Dictionary, phase_name: String) -> Dictionary:
-	if phase_name == PHASE_NAME_BET_PRESENT:
+	if phase_name == _phase_name_bet_present:
 		_append_log(result, "SMOKE:STEP=BET_PRESENT_REACHED")
 		if not _gate_quit_requested:
 			_gate_quit_requested = true
@@ -72,10 +72,10 @@ func _on_bet_present_tick(result: Dictionary, phase_name: String) -> Dictionary:
 			result["request_quit_gate"] = true
 		result["stop_driver"] = true
 		return result
-	if phase_name == PHASE_NAME_RUN_INIT and not _step_logged_run_init:
+	if phase_name == _phase_name_run_init and not _step_logged_run_init:
 		_step_logged_run_init = true
 		_append_log(result, "SMOKE:STEP=RUN_INIT_SEEN")
-	if phase_name == PHASE_NAME_MAIN_MENU and not _new_run_requested:
+	if phase_name == _phase_name_main_menu and not _new_run_requested:
 		_new_run_requested = true
 		_append_log(result, "SMOKE:STEP=REQUEST_NEW_RUN")
 		_append_log(result, "SMOKE:NEW_RUN_REQUESTED")

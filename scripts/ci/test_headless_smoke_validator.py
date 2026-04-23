@@ -3,7 +3,16 @@
 
 from __future__ import annotations
 
-from run_headless_smoke import SCENARIO_BET_PRESENT, SCENARIO_FULL_RUN, validate_log_text
+from run_headless_smoke import (
+    SCENARIO_BET_PRESENT,
+    SCENARIO_FULL_RUN,
+    SMOKE_CLASS_NATIVE_CRASH_AFTER_BOOTSTRAP,
+    SMOKE_CLASS_NATIVE_CRASH_AFTER_MILESTONE,
+    SMOKE_CLASS_NATIVE_CRASH_BEFORE_BOOTSTRAP,
+    SMOKE_CLASS_STALL_OR_WATCHDOG,
+    _classify_runtime_failure,
+    validate_log_text,
+)
 
 
 def fail(message: str) -> int:
@@ -65,6 +74,46 @@ def main() -> int:
         return fail(
             "expected FULL_RUN missing milestone failure for RESOLVE_CLOSED, "
             f"got: {invalid_failures}"
+        )
+
+    class_before_bootstrap, _, _ = _classify_runtime_failure(
+        -1073741819,
+        "SMOKE:RUNNER_START scenario=BET_PRESENT\n",
+    )
+    if class_before_bootstrap != SMOKE_CLASS_NATIVE_CRASH_BEFORE_BOOTSTRAP:
+        return fail(
+            "expected crash-before-bootstrap classification, "
+            f"got: {class_before_bootstrap}"
+        )
+
+    class_after_bootstrap, _, _ = _classify_runtime_failure(
+        -1073741819,
+        "SMOKE:RUNNER_START scenario=BET_PRESENT\nSMOKE:BOOT_OK\n",
+    )
+    if class_after_bootstrap != SMOKE_CLASS_NATIVE_CRASH_AFTER_BOOTSTRAP:
+        return fail(
+            "expected crash-after-bootstrap classification, "
+            f"got: {class_after_bootstrap}"
+        )
+
+    class_after_milestone, _, _ = _classify_runtime_failure(
+        -1073741819,
+        "SMOKE:BOOT_OK\nSMOKE:MILESTONE=BET_PRESENT\n",
+    )
+    if class_after_milestone != SMOKE_CLASS_NATIVE_CRASH_AFTER_MILESTONE:
+        return fail(
+            "expected crash-after-milestone classification, "
+            f"got: {class_after_milestone}"
+        )
+
+    class_timeout, _, _ = _classify_runtime_failure(
+        124,
+        "SMOKE:RUNNER_START scenario=FULL_RUN\nSMOKE:TIMEOUT_HARD_KILL\n",
+    )
+    if class_timeout != SMOKE_CLASS_STALL_OR_WATCHDOG:
+        return fail(
+            "expected stall/watchdog classification for timeout marker, "
+            f"got: {class_timeout}"
         )
 
     print("[OK][HEADLESS_SMOKE_VALIDATOR] smoke validator checks passed")

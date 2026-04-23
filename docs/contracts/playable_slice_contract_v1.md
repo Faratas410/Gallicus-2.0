@@ -21,8 +21,8 @@ No new mechanics are introduced in this slice.
 
 Slice is complete when all of the following are true:
 
-- Runtime smoke BET_PRESENT scenario passes headlessly.
-- Runtime smoke FULL_RUN scenario passes headlessly and includes:
+- Runtime smoke BET_PRESENT scenario passes headlessly on canonical CI/Linux surface.
+- Runtime smoke FULL_RUN scenario passes headlessly on canonical CI/Linux surface and includes:
   - `BET_PRESENT`
   - `PACT_SEALED_OPENED/CLOSED`
   - `INTERMEDIATE_CHOICE`
@@ -31,6 +31,7 @@ Slice is complete when all of the following are true:
   - `END_RUN` and `END_RUN_FINAL`
 - Canonical request/flow signals for the loop remain present in `GameEvents`.
 - RunManager remains sole authority for request handling and phase progression.
+- Local Windows headless smoke runs are diagnostic-only and non-signoff.
 
 ## Required Systems (Slice-Critical)
 

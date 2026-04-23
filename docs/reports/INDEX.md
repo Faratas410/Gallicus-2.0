@@ -1,9 +1,9 @@
 # Reports Index
 
-Questa cartella è riservata ai report correnti/non archiviati.
+This folder stores current (non-archived) reports.
 
 ## Current reports
-- Nessun report corrente presente nel repository.
+- `playable_slice_m2_m3_status_2026-04-23.md`
 
 ## Archived reports
-- Vedi `docs/archive/INDEX.md` per i report storici conservati.
+- See `docs/archive/INDEX.md` for historical archived reports.

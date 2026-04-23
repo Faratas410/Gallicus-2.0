@@ -770,6 +770,9 @@ func _wire_intro_phase_buttons() -> void:
 func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_popup == null:
 		return
+	var scar_name: String = str(scar.get("name", ""))
+	if scar_name == "":
+		scar_name = str(scar.get("id", "Scar"))
 	var scar_story: String = str(scar.get("narrative_text", ""))
 	if scar_story == "":
 		scar_story = str(scar.get("story", ""))

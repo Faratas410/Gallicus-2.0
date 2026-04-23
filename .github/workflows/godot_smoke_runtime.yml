@@ -61,13 +61,17 @@ jobs:
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit > import.log 2>&1
-          tail -n 200 import.log || true
+          LOG_DIR="artifacts/${{ matrix.scenario }}"
+          mkdir -p "$LOG_DIR"
+          xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit > "$LOG_DIR/import.log" 2>&1
+          tail -n 200 "$LOG_DIR/import.log" || true
 
       - name: Run scenario smoke
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
+          LOG_DIR="artifacts/${{ matrix.scenario }}"
+          mkdir -p "$LOG_DIR"
           if [ "${{ matrix.scenario }}" = "BET_PRESENT" ]; then
             TIMEOUT_SEC=45
             HARD_TIMEOUT_SEC=60
@@ -82,14 +86,14 @@ jobs:
             --timeout-sec "$TIMEOUT_SEC" \
             --hard-timeout-sec "$HARD_TIMEOUT_SEC" \
             --use-xvfb \
-            --log-file "smoke_${{ matrix.scenario }}.log"
+            --log-file "$LOG_DIR/smoke.log" \
+            --summary-file "$LOG_DIR/smoke_summary.json"
 
       - name: Upload smoke logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke_logs_${{ matrix.scenario }}
+          name: smoke_runtime_${{ matrix.scenario }}
           path: |
-            smoke_${{ matrix.scenario }}.log
-            import.log
+            artifacts/${{ matrix.scenario }}
           if-no-files-found: ignore

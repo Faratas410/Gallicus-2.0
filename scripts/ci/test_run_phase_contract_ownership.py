@@ -107,8 +107,8 @@ def main() -> int:
         if expected not in enum_block:
             return fail(f"RunManager enum must mirror RunPhaseContract identity: missing '{expected}'")
 
-    if "return RunPhaseContractScript.get_name(int(phase))" not in run_manager:
-        return fail("RunManager phase-to-name path must use RunPhaseContractScript.get_name")
+    if "return RunPhaseContract.get_name(int(phase))" not in run_manager:
+        return fail("RunManager phase-to-name path must use RunPhaseContract.get_name")
     if "str(_phase)" in run_manager:
         return fail("run_manager diagnostics must not stringify raw phase ids with str(_phase)")
     if "str(payload.phase)" in run_manager:
@@ -117,8 +117,8 @@ def main() -> int:
         return fail("run_manager phase logging must not use ad-hoc str(...) phase naming")
     if "format_phase_debug_line(_phase_to_name(next), reason)" not in run_manager:
         return fail("run_manager debug phase line must use contract-driven phase name")
-    if "phase=%s\" % RunPhaseContractScript.get_name(int(payload.phase))" not in run_manager:
-        return fail("run_manager UI flow logs must render phase names via RunPhaseContractScript.get_name")
+    if "phase=%s\" % RunPhaseContract.get_name(int(payload.phase))" not in run_manager:
+        return fail("run_manager UI flow logs must render phase names via RunPhaseContract.get_name")
 
     if "func format_phase_debug_line(phase_name: String, reason: String) -> String" not in flow_diagnostics:
         return fail("flow_diagnostics phase debug formatter must accept contract-driven phase names")
@@ -152,9 +152,9 @@ def main() -> int:
 
     # SmokeDriver may compare phase-name tokens, but names must be derived from RunPhaseContract.get_name.
     required_smoke_phase_name_consts = (
-        "const PHASE_NAME_MAIN_MENU: String = RunPhaseContractScript.get_name(RunPhaseContractScript.MAIN_MENU)",
-        "const PHASE_NAME_RUN_INIT: String = RunPhaseContractScript.get_name(RunPhaseContractScript.RUN_INIT)",
-        "const PHASE_NAME_BET_PRESENT: String = RunPhaseContractScript.get_name(RunPhaseContractScript.BET_PRESENT)",
+        "var _phase_name_main_menu: String = RunPhaseContract.get_name(RunPhaseContractScript.MAIN_MENU)",
+        "var _phase_name_run_init: String = RunPhaseContract.get_name(RunPhaseContractScript.RUN_INIT)",
+        "var _phase_name_bet_present: String = RunPhaseContract.get_name(RunPhaseContractScript.BET_PRESENT)",
     )
     for token in required_smoke_phase_name_consts:
         if token not in smoke_driver:

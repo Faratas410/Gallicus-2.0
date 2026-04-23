@@ -4,9 +4,9 @@ extends RefCounted
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
 const SCENARIO_BET_PRESENT: String = "BET_PRESENT"
 const SCENARIO_FULL_RUN: String = "FULL_RUN"
-var _phase_name_main_menu: String = RunPhaseContractScript.get_name(RunPhaseContractScript.MAIN_MENU)
-var _phase_name_run_init: String = RunPhaseContractScript.get_name(RunPhaseContractScript.RUN_INIT)
-var _phase_name_bet_present: String = RunPhaseContractScript.get_name(RunPhaseContractScript.BET_PRESENT)
+var _phase_name_main_menu: String = RunPhaseContract.get_name(RunPhaseContractScript.MAIN_MENU)
+var _phase_name_run_init: String = RunPhaseContract.get_name(RunPhaseContractScript.RUN_INIT)
+var _phase_name_bet_present: String = RunPhaseContract.get_name(RunPhaseContractScript.BET_PRESENT)
 
 var _new_run_requested: bool = false
 var _step_logged_run_init: bool = false

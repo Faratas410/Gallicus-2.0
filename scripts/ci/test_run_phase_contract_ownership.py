@@ -75,8 +75,8 @@ def main() -> int:
         return fail("RunPhaseContract must expose NAME_BY_ID mapping")
     if "const CANONICAL_LIVE_PHASE_IDS: Array[int]" not in contract:
         return fail("RunPhaseContract must expose CANONICAL_LIVE_PHASE_IDS")
-    if "static func get_name(phase_id: int) -> String" not in contract:
-        return fail("RunPhaseContract must expose get_name(phase_id)")
+    if "static func get_phase_name(phase_id: int) -> String" not in contract:
+        return fail("RunPhaseContract must expose get_phase_name(phase_id)")
     if "const POST_BET_MESSAGES: int = 14" not in contract:
         return fail("RunPhaseContract must keep POST_BET_MESSAGES compat slot id")
 
@@ -107,8 +107,8 @@ def main() -> int:
         if expected not in enum_block:
             return fail(f"RunManager enum must mirror RunPhaseContract identity: missing '{expected}'")
 
-    if "return RunPhaseContract.get_name(int(phase))" not in run_manager:
-        return fail("RunManager phase-to-name path must use RunPhaseContract.get_name")
+    if "return RunPhaseContract.get_phase_name(int(phase))" not in run_manager:
+        return fail("RunManager phase-to-name path must use RunPhaseContract.get_phase_name")
     if "str(_phase)" in run_manager:
         return fail("run_manager diagnostics must not stringify raw phase ids with str(_phase)")
     if "str(payload.phase)" in run_manager:
@@ -117,8 +117,8 @@ def main() -> int:
         return fail("run_manager phase logging must not use ad-hoc str(...) phase naming")
     if "format_phase_debug_line(_phase_to_name(next), reason)" not in run_manager:
         return fail("run_manager debug phase line must use contract-driven phase name")
-    if "phase=%s\" % RunPhaseContract.get_name(int(payload.phase))" not in run_manager:
-        return fail("run_manager UI flow logs must render phase names via RunPhaseContract.get_name")
+    if "phase=%s\" % RunPhaseContract.get_phase_name(int(payload.phase))" not in run_manager:
+        return fail("run_manager UI flow logs must render phase names via RunPhaseContract.get_phase_name")
 
     if "func format_phase_debug_line(phase_name: String, reason: String) -> String" not in flow_diagnostics:
         return fail("flow_diagnostics phase debug formatter must accept contract-driven phase names")
@@ -131,8 +131,8 @@ def main() -> int:
         return fail("music_director must not treat POST_BET_MESSAGES as active track-routing phase")
     if "RunPhaseContractScript.MAIN_MENU" not in ui_main_menu:
         return fail("main_menu must use RunPhaseContractScript constants directly")
-    if "RunPhaseContract.get_name(" not in ui_root:
-        return fail("ui_root phase mapping diagnostics must use RunPhaseContract.get_name")
+    if "RunPhaseContract.get_phase_name(" not in ui_root:
+        return fail("ui_root phase mapping diagnostics must use RunPhaseContract.get_phase_name")
     if re.search(r"RunPhase\.POST_BET_MESSAGES\b", run_manager):
         return fail("run_manager must not accept/route live RunPhase.POST_BET_MESSAGES surfaces")
 
@@ -150,11 +150,11 @@ def main() -> int:
                 f"{ui_script_path}:{index}"
             )
 
-    # SmokeDriver may compare phase-name tokens, but names must be derived from RunPhaseContract.get_name.
+    # SmokeDriver may compare phase-name tokens, but names must be derived from RunPhaseContract.get_phase_name.
     required_smoke_phase_name_consts = (
-        "var _phase_name_main_menu: String = RunPhaseContract.get_name(RunPhaseContractScript.MAIN_MENU)",
-        "var _phase_name_run_init: String = RunPhaseContract.get_name(RunPhaseContractScript.RUN_INIT)",
-        "var _phase_name_bet_present: String = RunPhaseContract.get_name(RunPhaseContractScript.BET_PRESENT)",
+        "var _phase_name_main_menu: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.MAIN_MENU)",
+        "var _phase_name_run_init: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.RUN_INIT)",
+        "var _phase_name_bet_present: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.BET_PRESENT)",
     )
     for token in required_smoke_phase_name_consts:
         if token not in smoke_driver:

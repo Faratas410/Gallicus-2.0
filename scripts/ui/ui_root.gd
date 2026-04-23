@@ -637,12 +637,12 @@ func _verify_phase_paths() -> void:
 		var mapped_phase: int = int(phase_key)
 		var mapped_node: Control = _phase_node_map.get(mapped_phase, null) as Control
 		if mapped_node == null:
-			push_error("UI: missing phase mapping target for %s" % RunPhaseContract.get_name(mapped_phase))
+			push_error("UI: missing phase mapping target for %s" % RunPhaseContract.get_phase_name(mapped_phase))
 
 func show_phase(phase: int) -> void:
 	_last_shown_phase = phase
 	if _phase_node_map.is_empty():
-		push_error("UI: missing phase mapping for %s" % RunPhaseContract.get_name(phase))
+		push_error("UI: missing phase mapping for %s" % RunPhaseContract.get_phase_name(phase))
 		return
 	print_debug("[FLOW][UI] show_phase input=%d mid_choice_contract=%d map_keys=%s" % [
 		phase,
@@ -656,7 +656,7 @@ func show_phase(phase: int) -> void:
 			phase_node.visible = false
 	var target: Control = _phase_node_map.get(phase, null) as Control
 	if target == null:
-		push_error("UI: unmapped phase %s" % RunPhaseContract.get_name(phase))
+		push_error("UI: unmapped phase %s" % RunPhaseContract.get_phase_name(phase))
 		_refresh_modal_dimmer()
 		return
 	target.visible = true

@@ -824,19 +824,19 @@ func _is_smoke_mode() -> bool:
 	return _smoke.is_smoke_mode()
 
 func _phase_to_name(phase: RunPhase) -> String:
-	return RunPhaseContract.get_name(int(phase))
+	return RunPhaseContract.get_phase_name(int(phase))
 
 
 func _phase_list_to_names(phases: Array) -> Array[String]:
 	var names: Array[String] = []
 	for phase_value: Variant in phases:
-		names.append(RunPhaseContract.get_name(int(phase_value)))
+		names.append(RunPhaseContract.get_phase_name(int(phase_value)))
 	return names
 
 
 func _phase_variant_to_name(value: Variant) -> String:
 	if value is int:
-		return RunPhaseContract.get_name(int(value))
+		return RunPhaseContract.get_phase_name(int(value))
 	return str(value)
 
 
@@ -3189,7 +3189,7 @@ func _emit_ui(payload: RunUiPayload) -> void:
 	var now_ms: int = Time.get_ticks_msec()
 	_last_ui_render_ms = now_ms
 	_last_activity_ms = now_ms
-	_flow_logger.log_ui("emit_payload", "phase=%s" % RunPhaseContract.get_name(int(payload.phase)))
+	_flow_logger.log_ui("emit_payload", "phase=%s" % RunPhaseContract.get_phase_name(int(payload.phase)))
 	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null:
 		return

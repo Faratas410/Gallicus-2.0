@@ -221,7 +221,7 @@ The phase contract is explicit and mandatory:
 - RunPhase identity source of truth is `res://scripts/contracts/run_phase_contract.gd`.
 - Consumer mirrors (for example `RunManager` local typed enum) must reference `RunPhaseContract` constants and must not redefine numeric ids.
 - UI render consumers should reference `RunPhaseContract` constants directly; local `RUN_PHASE_*` alias constants are forbidden unless explicitly marked compatibility-only.
-- Runtime/UI/tools diagnostics must resolve phase names via `RunPhaseContract.get_name(...)`; consumer-local phase-name maps/stringification are non-authoritative and forbidden.
+- Runtime/UI/tools diagnostics must resolve phase names via `RunPhaseContract.get_phase_name(...)`; consumer-local phase-name maps/stringification are non-authoritative and forbidden.
 - UI lifecycle consumption is reactive-only: `ui_root.gd` keeps a single primary handler for `run_started` and `run_failed` each; duplicate auxiliary handlers for the same signal are contract drift.
 - UI payload rendering uses one authoritative entrypoint (`apply_run_ui_payload(...)`); local wrapper aliases are non-authoritative.
 - Standard `GameEvents` runtime->UI wiring in `ui_root.gd` must use declarative spec tables and one guarded connect helper; avoid repeated per-signal inline connect branches in `_ready()`.

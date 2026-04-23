@@ -12,7 +12,7 @@ Authoritative in this contract means:
 - Numeric phase ids
 - Canonical phase names (`NAME_BY_ID`)
 - Canonical live set (`CANONICAL_LIVE_PHASE_IDS`)
-- Canonical phase-name rendering via `RunPhaseContract.get_name(...)`
+- Canonical phase-name rendering via `RunPhaseContract.get_phase_name(...)`
 
 No other runtime, UI, tool, or test file may redefine numeric ids for RunPhase.
 
@@ -40,7 +40,7 @@ Runtime gate/internal ids also remain in contract:
 - `RunManager` may keep a local typed `enum RunPhase` mirror only as a consumer surface.
   - Every enum value must reference `RunPhaseContractScript.<NAME>`.
   - Hardcoded numeric ids inside `RunManager` enum are forbidden.
-- Runtime/UI/tools diagnostics must render phase names via `RunPhaseContract.get_name(...)` (or `RunPhaseContractScript.get_name(...)`).
+- Runtime/UI/tools diagnostics must render phase names via `RunPhaseContract.get_phase_name(...)`.
 - Consumer-local phase-name maps or ad-hoc phase stringification are forbidden.
 - UI must consume `RunPhaseContract` (or `RunPhaseContractScript`) constants directly.
 - UI runtime lifecycle wiring must keep one primary handler per lifecycle signal (`run_started`, `run_failed`) in `ui_root.gd`; duplicate auxiliary handlers for the same signal are forbidden.

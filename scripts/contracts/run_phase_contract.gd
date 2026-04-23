@@ -54,7 +54,7 @@ const NON_CANONICAL_RUNTIME_PHASE_IDS: Array[int] = [
 	RESOLUTION,
 ]
 
-static func get_name(phase_id: int) -> String:
+static func get_phase_name(phase_id: int) -> String:
 	if NAME_BY_ID.has(phase_id):
 		return str(NAME_BY_ID.get(phase_id, ""))
 	return str(phase_id)

@@ -808,6 +808,8 @@ var _smoke_timeout_deadline_msec: int = -1
 var _smoke_driver_active: bool = false
 var _smoke_driver_next_tick_msec: int = -1
 var _smoke_full_run_step: String = ""
+var _smoke_full_run_pact_advance_sent: bool = false
+var _smoke_full_run_resolve_advance_sent: bool = false
 var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
 var _flow_diagnostics: FlowDiagnostics = FlowDiagnostics.new()
 var _finale_builder: FinaleBuilder = FinaleBuilder.new()
@@ -854,6 +856,8 @@ func _smoke_start_scenario() -> void:
 	if _smoke_driver_active:
 		return
 	_smoke_full_run_step = ""
+	_smoke_full_run_pact_advance_sent = false
+	_smoke_full_run_resolve_advance_sent = false
 	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
 	if scenario == "FULL_RUN":
 		print("SMOKE:STEP=SCENARIO_FULL_RUN_START")
@@ -919,13 +923,25 @@ func _run_smoke_full_run_driver() -> void:
 		if bet_id == "":
 			return
 		_smoke_full_run_step = "BET_PRESENT"
+		_smoke_full_run_pact_advance_sent = false
+		_smoke_full_run_resolve_advance_sent = false
 		print("SMOKE:REQ=request_place_bet bet_id=%s" % bet_id)
 		_on_request_place_bet(bet_id, 0)
+		return
+	if _phase == RunPhase.BET_COMMITTED and not _smoke_full_run_pact_advance_sent:
+		_smoke_full_run_pact_advance_sent = true
+		print("SMOKE:REQ=request_ritual_advance kind=pact")
+		_on_request_ritual_advance("pact")
 		return
 	if _phase == RunPhase.INTERMEDIATE_CHOICE and _smoke_full_run_step != "INTERMEDIATE_CHOICE":
 		_smoke_full_run_step = "INTERMEDIATE_CHOICE"
 		print("SMOKE:REQ=request_mid_choice_select index=0")
 		_on_request_mid_choice_select(0)
+		return
+	if _phase == RunPhase.INTERMEDIATE_CHOICE and _resolving_ritual and not _smoke_full_run_resolve_advance_sent:
+		_smoke_full_run_resolve_advance_sent = true
+		print("SMOKE:REQ=request_ritual_advance kind=resolve")
+		_on_request_ritual_advance("resolve")
 		return
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step != "PUSH_YOUR_LUCK":
 		_smoke_full_run_step = "PUSH_YOUR_LUCK"

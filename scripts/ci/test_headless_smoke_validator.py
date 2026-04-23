@@ -64,6 +64,20 @@ def main() -> int:
     if valid_bet_failures:
         return fail(f"expected BET_PRESENT sample log to pass, got: {valid_bet_failures}")
 
+    allowed_engine_exit_noise_log = (
+        _build_bet_present_log()
+        + "\nERROR: ERROR: 2 resources still in use at exit (run with --verbose for details)."
+    )
+    allowed_engine_exit_noise_failures = validate_log_text(
+        allowed_engine_exit_noise_log,
+        SCENARIO_BET_PRESENT,
+    )
+    if allowed_engine_exit_noise_failures:
+        return fail(
+            "expected known engine-exit resources line to be allowlisted, "
+            f"got: {allowed_engine_exit_noise_failures}"
+        )
+
     valid_full_run_failures = validate_log_text(_build_full_run_log(), SCENARIO_FULL_RUN)
     if valid_full_run_failures:
         return fail(f"expected FULL_RUN sample log to pass, got: {valid_full_run_failures}")

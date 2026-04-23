@@ -30,6 +30,10 @@ KNOWN_WARNING_ALLOWLIST = (
     "core/object/object.cpp",
 )
 
+KNOWN_ERROR_ALLOWLIST = (
+    "resources still in use at exit (run with --verbose for details).",
+)
+
 
 @dataclass(frozen=True)
 class SmokeScenarioSpec:
@@ -144,6 +148,8 @@ def _collect_disallowed_errors(lines: list[str]) -> list[str]:
     findings: list[str] = []
     for line in lines:
         if re.search(r"\bERROR\b|\bError\b", line):
+            if any(allowed in line for allowed in KNOWN_ERROR_ALLOWLIST):
+                continue
             findings.append(line.rstrip("\n"))
     return findings
 

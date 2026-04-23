@@ -39,15 +39,6 @@ const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
 const SCARS_PANEL_MAX_HEIGHT: float = 360.0
-const RUN_PHASE_MAIN_MENU: int = RunPhaseContract.MAIN_MENU
-const RUN_PHASE_RUN_INIT: int = RunPhaseContract.RUN_INIT
-const RUN_PHASE_BET_PRESENT: int = RunPhaseContract.BET_PRESENT
-const RUN_PHASE_BET_COMMITTED: int = RunPhaseContract.BET_COMMITTED
-const RUN_PHASE_FIRST_REACTION: int = RunPhaseContract.POST_BET_MESSAGES
-const RUN_PHASE_MID_CHOICE: int = RunPhaseContract.INTERMEDIATE_CHOICE
-const RUN_PHASE_PUSH_YOUR_LUCK: int = RunPhaseContract.PUSH_YOUR_LUCK
-const RUN_PHASE_NEXT_BET: int = RunPhaseContract.NEXT_BET
-const RUN_PHASE_END_RUN: int = RunPhaseContract.GAME_OVER
 const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_sentence.png"
 const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 	{"label": "Modals/BetModal", "fallback": "UI_RunRoot/Phase_INTRO"},
@@ -80,6 +71,39 @@ const _PHASE_CONTAINER_PATHS: Array[String] = [
 	"UI_RunRoot/Phase_PUSH_YOUR_LUCK",
 	"UI_RunRoot/Phase_RESOLUTION",
 	"UI_RunRoot/Phase_END_RUN",
+]
+const _GAME_EVENT_WIRING_REQUIRED: Array[Dictionary] = [
+	{"signal": &"bet_placed", "handler": &"_on_bet_placed"},
+	{"signal": &"run_started", "handler": &"_on_run_started"},
+	{"signal": &"run_failed", "handler": &"_on_run_failed"},
+	{"signal": &"bet_failed", "handler": &"_on_bet_failed"},
+	{"signal": &"bet_ui_opened", "handler": &"_on_bet_ui_opened"},
+	{"signal": &"bet_ui_closed", "handler": &"_on_bet_ui_closed"},
+	{"signal": &"arena_started", "handler": &"_on_arena_started"},
+	{"signal": &"betting_opened", "handler": &"_on_betting_opened"},
+	{"signal": &"countdown_requested", "handler": &"_on_countdown_requested"},
+]
+const _GAME_EVENT_WIRING_GUARDED: Array[Dictionary] = [
+	{"signal": &"run_ended", "handler": &"_on_run_ended"},
+	{"signal": &"run_finale_selected", "handler": &"_on_run_finale_selected"},
+	{"signal": &"run_debug_state_updated", "handler": &"_on_run_debug_state_updated"},
+	{"signal": &"sentence_banner_requested", "handler": &"_on_sentence_banner_requested"},
+	{"signal": &"audience_context_line_emitted", "handler": &"_on_audience_context_line_emitted"},
+	{"signal": &"register_annotation", "handler": &"_on_register_annotation"},
+	{"signal": &"micro_interpretive_quick_cut_requested", "handler": &"_on_micro_interpretive_quick_cut_requested"},
+	{"signal": &"escalation_changed", "handler": &"_on_escalation_changed"},
+	{"signal": &"run_log_ready", "handler": &"_on_run_log_ready"},
+	{"signal": &"special_arena_started", "handler": &"_on_special_arena_started"},
+	{"signal": &"arena_theme_changed", "handler": &"_on_arena_theme_changed"},
+	{"signal": &"bet_selected", "handler": &"_on_bet_selected"},
+	{"signal": &"pact_sealed_opened", "handler": &"_on_pact_sealed_opened"},
+	{"signal": &"pact_sealed_closed", "handler": &"_on_pact_sealed_closed"},
+	{"signal": &"resolve_ritual_opened", "handler": &"_on_resolve_ritual_opened"},
+	{"signal": &"resolve_ritual_closed", "handler": &"_on_resolve_ritual_closed"},
+	{"signal": &"push_luck_opened", "handler": &"_on_push_luck_opened"},
+	{"signal": &"push_luck_closed", "handler": &"_on_push_luck_closed"},
+	{"signal": &"scars_updated", "handler": &"_on_scars_updated"},
+	{"signal": &"scar_applied", "handler": &"_on_scar_applied"},
 ]
 const _ERA2_THEME_IDS: Array[StringName] = [
 	&"ARENA_BLOOD",
@@ -344,102 +368,7 @@ func _ready() -> void:
 		_controls_first_run_active = true
 	_init_phase_node_map()
 	_verify_phase_paths()
-	var bet_placed_callable: Callable = Callable(self, "_on_bet_placed")
-	if not GameEvents.bet_placed.is_connected(bet_placed_callable):
-		GameEvents.bet_placed.connect(bet_placed_callable)
-	var run_started_callable: Callable = Callable(self, "_on_run_started")
-	if not GameEvents.run_started.is_connected(run_started_callable):
-		GameEvents.run_started.connect(run_started_callable)
-	var run_started_ui_callable: Callable = Callable(self, "_on_run_started_ui")
-	if not GameEvents.run_started.is_connected(run_started_ui_callable):
-		GameEvents.run_started.connect(run_started_ui_callable)
-	var run_failed_callable: Callable = Callable(self, "_on_run_failed")
-	if not GameEvents.run_failed.is_connected(run_failed_callable):
-		GameEvents.run_failed.connect(run_failed_callable)
-	var run_ended_callable: Callable = Callable(self, "_on_run_ended")
-	if GameEvents.has_signal("run_ended") and not GameEvents.run_ended.is_connected(run_ended_callable):
-		GameEvents.run_ended.connect(run_ended_callable)
-	var run_finale_callable: Callable = Callable(self, "_on_run_finale_selected")
-	if GameEvents.has_signal("run_finale_selected") and not GameEvents.run_finale_selected.is_connected(run_finale_callable):
-		GameEvents.run_finale_selected.connect(run_finale_callable)
-	var run_debug_callable: Callable = Callable(self, "_on_run_debug_state_updated")
-	if GameEvents.has_signal("run_debug_state_updated") and not GameEvents.run_debug_state_updated.is_connected(run_debug_callable):
-		GameEvents.run_debug_state_updated.connect(run_debug_callable)
-	var sentence_banner_callable: Callable = Callable(self, "_on_sentence_banner_requested")
-	if GameEvents.has_signal("sentence_banner_requested") and not GameEvents.sentence_banner_requested.is_connected(sentence_banner_callable):
-		GameEvents.sentence_banner_requested.connect(sentence_banner_callable)
-	var audience_context_callable: Callable = Callable(self, "_on_audience_context_line_emitted")
-	if GameEvents.has_signal("audience_context_line_emitted") and not GameEvents.audience_context_line_emitted.is_connected(audience_context_callable):
-		GameEvents.audience_context_line_emitted.connect(audience_context_callable)
-	var register_annotation_callable: Callable = Callable(self, "_on_register_annotation")
-	if GameEvents.has_signal("register_annotation") and not GameEvents.register_annotation.is_connected(register_annotation_callable):
-		GameEvents.register_annotation.connect(register_annotation_callable)
-	var quick_cut_callable: Callable = Callable(self, "_on_micro_interpretive_quick_cut_requested")
-	if GameEvents.has_signal("micro_interpretive_quick_cut_requested") and not GameEvents.micro_interpretive_quick_cut_requested.is_connected(quick_cut_callable):
-		GameEvents.micro_interpretive_quick_cut_requested.connect(quick_cut_callable)
-	var escalation_changed_callable: Callable = Callable(self, "_on_escalation_changed")
-	if GameEvents.has_signal("escalation_changed") and not GameEvents.escalation_changed.is_connected(escalation_changed_callable):
-		GameEvents.escalation_changed.connect(escalation_changed_callable)
-	var run_log_callable: Callable = Callable(self, "_on_run_log_ready")
-	if GameEvents.has_signal("run_log_ready") and not GameEvents.run_log_ready.is_connected(run_log_callable):
-		GameEvents.run_log_ready.connect(run_log_callable)
-	var special_arena_callable: Callable = Callable(self, "_on_special_arena_started")
-	if GameEvents.has_signal("special_arena_started") and not GameEvents.special_arena_started.is_connected(special_arena_callable):
-		GameEvents.special_arena_started.connect(special_arena_callable)
-	var arena_theme_callable: Callable = Callable(self, "_on_arena_theme_changed")
-	if GameEvents.has_signal("arena_theme_changed") and not GameEvents.arena_theme_changed.is_connected(arena_theme_callable):
-		GameEvents.arena_theme_changed.connect(arena_theme_callable)
-	var bet_failed_callable: Callable = Callable(self, "_on_bet_failed")
-	if not GameEvents.bet_failed.is_connected(bet_failed_callable):
-		GameEvents.bet_failed.connect(bet_failed_callable)
-	var run_started_controls_callable: Callable = Callable(self, "_on_run_started_controls")
-	if not GameEvents.run_started.is_connected(run_started_controls_callable):
-		GameEvents.run_started.connect(run_started_controls_callable)
-	var run_failed_controls_callable: Callable = Callable(self, "_on_run_failed_controls")
-	if not GameEvents.run_failed.is_connected(run_failed_controls_callable):
-		GameEvents.run_failed.connect(run_failed_controls_callable)
-	var bet_ui_opened_callable: Callable = Callable(self, "_on_bet_ui_opened")
-	if not GameEvents.bet_ui_opened.is_connected(bet_ui_opened_callable):
-		GameEvents.bet_ui_opened.connect(bet_ui_opened_callable)
-	var bet_selected_callable: Callable = Callable(self, "_on_bet_selected")
-	if GameEvents.has_signal("bet_selected") and not GameEvents.bet_selected.is_connected(bet_selected_callable):
-		GameEvents.bet_selected.connect(bet_selected_callable)
-	var bet_ui_closed_callable: Callable = Callable(self, "_on_bet_ui_closed")
-	if not GameEvents.bet_ui_closed.is_connected(bet_ui_closed_callable):
-		GameEvents.bet_ui_closed.connect(bet_ui_closed_callable)
-	var pact_sealed_opened_callable: Callable = Callable(self, "_on_pact_sealed_opened")
-	if GameEvents.has_signal("pact_sealed_opened") and not GameEvents.pact_sealed_opened.is_connected(pact_sealed_opened_callable):
-		GameEvents.pact_sealed_opened.connect(pact_sealed_opened_callable)
-	var pact_sealed_closed_callable: Callable = Callable(self, "_on_pact_sealed_closed")
-	if GameEvents.has_signal("pact_sealed_closed") and not GameEvents.pact_sealed_closed.is_connected(pact_sealed_closed_callable):
-		GameEvents.pact_sealed_closed.connect(pact_sealed_closed_callable)
-	var resolve_ritual_opened_callable: Callable = Callable(self, "_on_resolve_ritual_opened")
-	if GameEvents.has_signal("resolve_ritual_opened") and not GameEvents.resolve_ritual_opened.is_connected(resolve_ritual_opened_callable):
-		GameEvents.resolve_ritual_opened.connect(resolve_ritual_opened_callable)
-	var resolve_ritual_closed_callable: Callable = Callable(self, "_on_resolve_ritual_closed")
-	if GameEvents.has_signal("resolve_ritual_closed") and not GameEvents.resolve_ritual_closed.is_connected(resolve_ritual_closed_callable):
-		GameEvents.resolve_ritual_closed.connect(resolve_ritual_closed_callable)
-	var arena_started_callable: Callable = Callable(self, "_on_arena_started")
-	if not GameEvents.arena_started.is_connected(arena_started_callable):
-		GameEvents.arena_started.connect(arena_started_callable)
-	var betting_opened_callable: Callable = Callable(self, "_on_betting_opened")
-	if not GameEvents.betting_opened.is_connected(betting_opened_callable):
-		GameEvents.betting_opened.connect(betting_opened_callable)
-	var push_luck_opened_callable: Callable = Callable(self, "_on_push_luck_opened")
-	if GameEvents.has_signal("push_luck_opened") and not GameEvents.push_luck_opened.is_connected(push_luck_opened_callable):
-		GameEvents.push_luck_opened.connect(push_luck_opened_callable)
-	var push_luck_closed_callable: Callable = Callable(self, "_on_push_luck_closed")
-	if GameEvents.has_signal("push_luck_closed") and not GameEvents.push_luck_closed.is_connected(push_luck_closed_callable):
-		GameEvents.push_luck_closed.connect(push_luck_closed_callable)
-	var countdown_callable: Callable = Callable(self, "_on_countdown_requested")
-	if not GameEvents.countdown_requested.is_connected(countdown_callable):
-		GameEvents.countdown_requested.connect(countdown_callable)
-	var scars_updated_callable: Callable = Callable(self, "_on_scars_updated")
-	if GameEvents.has_signal("scars_updated") and not GameEvents.scars_updated.is_connected(scars_updated_callable):
-		GameEvents.scars_updated.connect(scars_updated_callable)
-	var scar_applied_callable: Callable = Callable(self, "_on_scar_applied")
-	if GameEvents.has_signal("scar_applied") and not GameEvents.scar_applied.is_connected(scar_applied_callable):
-		GameEvents.scar_applied.connect(scar_applied_callable)
+	_wire_standard_game_event_signals()
 	_refresh_scars_ui([])
 
 	if bet_panel == null:
@@ -516,6 +445,63 @@ func _ready() -> void:
 			arena.player_spawned.connect(arena_player_callable)
 
 	print_debug("UI ready: bet_badge=%s bet_panel=%s debug=%s" % [bet_badge_value_label != null, bet_panel != null, _debug_overlay != null])
+
+func _wire_standard_game_event_signals() -> void:
+	for required_spec: Dictionary in _GAME_EVENT_WIRING_REQUIRED:
+		var required_signal_name: StringName = StringName(str(required_spec.get("signal", "")))
+		var required_handler_name: StringName = StringName(str(required_spec.get("handler", "")))
+		_connect_game_event_signal(required_signal_name, required_handler_name, false)
+	for guarded_spec: Dictionary in _GAME_EVENT_WIRING_GUARDED:
+		var guarded_signal_name: StringName = StringName(str(guarded_spec.get("signal", "")))
+		var guarded_handler_name: StringName = StringName(str(guarded_spec.get("handler", "")))
+		_connect_game_event_signal(guarded_signal_name, guarded_handler_name, true)
+
+func _connect_game_event_signal(signal_name: StringName, handler_name: StringName, require_has_signal: bool) -> void:
+	if signal_name == StringName() or handler_name == StringName():
+		return
+	var signal_name_text: String = str(signal_name)
+	if not GameEvents.has_signal(signal_name_text):
+		if require_has_signal:
+			return
+		push_error("UI wiring missing required GameEvents signal: %s" % signal_name_text)
+		return
+	var handler_callable: Callable = Callable(self, handler_name)
+	if GameEvents.is_connected(signal_name, handler_callable):
+		return
+	var connect_error: int = GameEvents.connect(signal_name, handler_callable)
+	if connect_error != OK:
+		push_error("UI wiring failed for GameEvents.%s -> %s (error=%d)" % [
+			signal_name_text,
+			str(handler_name),
+			connect_error,
+		])
+
+func _emit_game_event_signal_if_available(signal_name: StringName, args: Array = []) -> bool:
+	if GameEvents == null:
+		return false
+	var signal_name_text: String = str(signal_name)
+	if signal_name_text == "":
+		return false
+	if not GameEvents.has_signal(signal_name_text):
+		return false
+	var emit_payload: Array = [signal_name_text]
+	emit_payload.append_array(args)
+	GameEvents.callv("emit_signal", emit_payload)
+	return true
+
+func _has_game_event_signal(signal_name: StringName) -> bool:
+	if GameEvents == null:
+		return false
+	var signal_name_text: String = str(signal_name)
+	if signal_name_text == "":
+		return false
+	return GameEvents.has_signal(signal_name_text)
+
+func _emit_modal_telemetry(modal_key: String, active: bool) -> void:
+	if active:
+		_emit_game_event_signal_if_available(&"modal_opened", [modal_key])
+	else:
+		_emit_game_event_signal_if_available(&"modal_closed", [modal_key])
 
 func _bind_scene_nodes() -> void:
 	# Core roots / overlays
@@ -631,15 +617,14 @@ func _bind_scene_nodes() -> void:
 
 func _init_phase_node_map() -> void:
 	_phase_node_map = {
-		RUN_PHASE_MAIN_MENU: bet_modal,
-		RUN_PHASE_RUN_INIT: bet_modal,
-		RUN_PHASE_BET_PRESENT: bet_modal,
-		RUN_PHASE_BET_COMMITTED: pact_sealed_modal,
-		RUN_PHASE_FIRST_REACTION: pact_sealed_modal,
-		RUN_PHASE_MID_CHOICE: intermediate_choice_modal,
-		RUN_PHASE_PUSH_YOUR_LUCK: push_luck_modal,
-		RUN_PHASE_NEXT_BET: bet_modal,
-		RUN_PHASE_END_RUN: game_over_modal,
+		RunPhaseContract.MAIN_MENU: bet_modal,
+		RunPhaseContract.RUN_INIT: bet_modal,
+		RunPhaseContract.BET_PRESENT: bet_modal,
+		RunPhaseContract.BET_COMMITTED: pact_sealed_modal,
+		RunPhaseContract.INTERMEDIATE_CHOICE: intermediate_choice_modal,
+		RunPhaseContract.PUSH_YOUR_LUCK: push_luck_modal,
+		RunPhaseContract.NEXT_BET: bet_modal,
+		RunPhaseContract.GAME_OVER: game_over_modal,
 	}
 
 func _verify_phase_paths() -> void:
@@ -652,17 +637,16 @@ func _verify_phase_paths() -> void:
 		var mapped_phase: int = int(phase_key)
 		var mapped_node: Control = _phase_node_map.get(mapped_phase, null) as Control
 		if mapped_node == null:
-			push_error("UI: missing phase mapping target for %s" % str(mapped_phase))
+			push_error("UI: missing phase mapping target for %s" % RunPhaseContract.get_name(mapped_phase))
 
 func show_phase(phase: int) -> void:
 	_last_shown_phase = phase
 	if _phase_node_map.is_empty():
-		push_error("UI: missing phase mapping for %s" % str(phase))
+		push_error("UI: missing phase mapping for %s" % RunPhaseContract.get_name(phase))
 		return
-	print_debug("[FLOW][UI] show_phase input=%d mid_choice_contract=%d mid_choice_alias=%d map_keys=%s" % [
+	print_debug("[FLOW][UI] show_phase input=%d mid_choice_contract=%d map_keys=%s" % [
 		phase,
 		RunPhaseContract.INTERMEDIATE_CHOICE,
-		RUN_PHASE_MID_CHOICE,
 		str(_phase_node_map.keys()),
 	])
 	for mapped_phase_key: Variant in _phase_node_map.keys():
@@ -672,7 +656,7 @@ func show_phase(phase: int) -> void:
 			phase_node.visible = false
 	var target: Control = _phase_node_map.get(phase, null) as Control
 	if target == null:
-		push_error("UI: unmapped phase %s" % str(phase))
+		push_error("UI: unmapped phase %s" % RunPhaseContract.get_name(phase))
 		_refresh_modal_dimmer()
 		return
 	target.visible = true
@@ -680,18 +664,18 @@ func show_phase(phase: int) -> void:
 	print_debug("[FLOW][UI] show_phase=%d node=%s" % [phase, String(target.name)])
 	_reset_sign_feedback()
 	_reset_pyl_lock_state()
-	if phase == RUN_PHASE_BET_PRESENT or phase == RUN_PHASE_NEXT_BET:
+	if phase == RunPhaseContract.BET_PRESENT or phase == RunPhaseContract.NEXT_BET:
 		_reset_decision_surface(bet_panel, _bet_buttons, condanna_focus_label)
-	elif phase == RUN_PHASE_MID_CHOICE:
+	elif phase == RunPhaseContract.INTERMEDIATE_CHOICE:
 		_reset_decision_surface(
 			intermediate_choice_panel,
 			[intermediate_choice_placa_button, intermediate_choice_provoca_button],
 			intermediate_choice_label
 		)
-	elif phase == RUN_PHASE_PUSH_YOUR_LUCK:
+	elif phase == RunPhaseContract.PUSH_YOUR_LUCK:
 		_reset_decision_surface(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if hud_top_left_stats_box != null:
-		hud_top_left_stats_box.visible = phase != RUN_PHASE_END_RUN
+		hud_top_left_stats_box.visible = phase != RunPhaseContract.GAME_OVER
 	if arena_theme_title_panel != null:
 		arena_theme_title_panel.visible = false
 	if arena_theme_subtitle_panel != null:
@@ -764,8 +748,7 @@ func _show_boot_fail(missing: Array[String]) -> void:
 	push_error("UI BOOT FAIL: missing=%s" % ", ".join(missing))
 
 func _on_boot_fail_back_to_menu() -> void:
-	if GameEvents != null and GameEvents.has_signal("request_show_main_menu"):
-		GameEvents.request_show_main_menu.emit()
+	_emit_game_event_signal_if_available(&"request_show_main_menu")
 
 func _wire_seed_input() -> void:
 	if seed_apply_button == null:
@@ -856,8 +839,7 @@ func _on_seed_apply_pressed() -> void:
 	if seed_input == null:
 		return
 	var text_value: String = seed_input.text.strip_edges()
-	if GameEvents.has_signal("request_intro_apply_seed"):
-		GameEvents.request_intro_apply_seed.emit(text_value)
+	_emit_game_event_signal_if_available(&"request_intro_apply_seed", [text_value])
 
 func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:
@@ -933,9 +915,8 @@ func _on_run_started() -> void:
 		_reset_fast_countdown()
 	_refresh_modal_dimmer()
 	_hide_scars_detail()
-
-func _on_run_started_ui() -> void:
-	_refresh_runtime_group_cache(false)
+	if controls_hint_panel != null:
+		controls_hint_panel.visible = _controls_first_run_active and (not _has_seen_controls)
 
 func _on_sentence_banner_requested(payload: Dictionary) -> void:
 	if sentence_banner == null:
@@ -1148,6 +1129,8 @@ func _on_run_failed() -> void:
 	_apply_modal_read_delay(ending_read_buttons)
 	_refresh_modal_dimmer()
 	_hide_scars_detail()
+	if controls_hint_panel != null and _has_seen_controls:
+		controls_hint_panel.visible = false
 
 func _on_run_ended(_reason: String, _summary: Dictionary) -> void:
 	if game_over_modal == null:
@@ -1547,15 +1530,6 @@ func _on_countdown_requested(seconds: int) -> void:
 		return
 	await show_countdown(seconds)
 
-func _on_run_started_controls() -> void:
-	if controls_hint_panel == null:
-		return
-	controls_hint_panel.visible = _controls_first_run_active and (not _has_seen_controls)
-
-func _on_run_failed_controls() -> void:
-	if controls_hint_panel != null and _has_seen_controls:
-		controls_hint_panel.visible = false
-
 func _set_glory_value(glory: int) -> void:
 	_glory = maxi(glory, 0)
 	if glory_value_label != null:
@@ -1653,9 +1627,7 @@ func _on_pact_sealed_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_pact_ritual_next_pressed() -> void:
-	if not GameEvents.has_signal("request_ritual_advance"):
-		return
-	GameEvents.request_ritual_advance.emit("pact")
+	_emit_game_event_signal_if_available(&"request_ritual_advance", ["pact"])
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_reset_sign_feedback()
@@ -1676,9 +1648,7 @@ func _on_resolve_ritual_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_resolve_ritual_next_pressed() -> void:
-	if not GameEvents.has_signal("request_ritual_advance"):
-		return
-	GameEvents.request_ritual_advance.emit("resolve")
+	_emit_game_event_signal_if_available(&"request_ritual_advance", ["resolve"])
 
 func enqueue_post_bet_message(payload: Dictionary) -> void:
 	_show_post_bet_payload(payload)
@@ -1711,16 +1681,13 @@ func _on_intermediate_choice_opened() -> void:
 	payload.show_mid_choice = true
 	apply_run_ui_payload(payload)
 
-func _apply_run_ui_payload(payload: RunUiPayload) -> void:
-	apply_run_ui_payload(payload)
-
 func apply_run_ui_payload(payload: RunUiPayload) -> void:
 	if payload == null:
 		return
 	var target_phase: int = payload.phase
-	if payload.show_mid_choice and target_phase != RUN_PHASE_MID_CHOICE:
-		print_debug("[FLOW][UI] normalize phase for mid_choice payload=%d -> %d" % [target_phase, RUN_PHASE_MID_CHOICE])
-		target_phase = RUN_PHASE_MID_CHOICE
+	if payload.show_mid_choice and target_phase != RunPhaseContract.INTERMEDIATE_CHOICE:
+		print_debug("[FLOW][UI] normalize phase for mid_choice payload=%d -> %d" % [target_phase, RunPhaseContract.INTERMEDIATE_CHOICE])
+		target_phase = RunPhaseContract.INTERMEDIATE_CHOICE
 	print_debug("[FLOW][UI] apply_run_ui_payload phase=%d show_mid_choice=%s show_push_your_luck=%s" % [
 		payload.phase,
 		str(payload.show_mid_choice),
@@ -1931,12 +1898,7 @@ func _on_scars_detail_closed() -> void:
 	_hide_scars_detail()
 
 func _set_scars_detail_modal(active: bool) -> void:
-	if active:
-		if GameEvents.has_signal("modal_opened"):
-			GameEvents.modal_opened.emit("scars_detail")
-	else:
-		if GameEvents.has_signal("modal_closed"):
-			GameEvents.modal_closed.emit("scars_detail")
+	_emit_modal_telemetry("scars_detail", active)
 	_refresh_modal_dimmer()
 
 func _refresh_game_over_scars() -> void:
@@ -2015,7 +1977,7 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	ui_payload.hint = str(payload.get("hint", "La condanna chiude il ciclo senza premio."))
 	ui_payload.footer = str(payload.get("footer", "Scegli un atto. La firma e irrevocabile."))
 	ui_payload.choices = ["cashout", "condanna", "double"]
-	_apply_run_ui_payload(ui_payload)
+	apply_run_ui_payload(ui_payload)
 
 func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:
@@ -2176,8 +2138,7 @@ func _on_intermediate_choice_placa_pressed() -> void:
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
 		intermediate_choice_label
 	)
-	if GameEvents.has_signal("request_mid_choice_select"):
-		GameEvents.request_mid_choice_select.emit(0)
+	_emit_game_event_signal_if_available(&"request_mid_choice_select", [0])
 
 func _on_intermediate_choice_provoca_pressed() -> void:
 	_apply_decision_lock(
@@ -2185,8 +2146,7 @@ func _on_intermediate_choice_provoca_pressed() -> void:
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
 		intermediate_choice_label
 	)
-	if GameEvents.has_signal("request_mid_choice_select"):
-		GameEvents.request_mid_choice_select.emit(1)
+	_emit_game_event_signal_if_available(&"request_mid_choice_select", [1])
 
 func _wire_debug_tools() -> void:
 	if not OS.is_debug_build():
@@ -2215,16 +2175,13 @@ func _on_debug_seed_pressed() -> void:
 	if not text_value.is_valid_int():
 		return
 	var seed_value: int = int(text_value)
-	if GameEvents.has_signal("request_set_run_seed"):
-		GameEvents.request_set_run_seed.emit(seed_value)
+	_emit_game_event_signal_if_available(&"request_set_run_seed", [seed_value])
 
 func _on_debug_restart_pressed() -> void:
-	if GameEvents.has_signal("request_reset_run"):
-		GameEvents.request_reset_run.emit()
+	_emit_game_event_signal_if_available(&"request_reset_run")
 
 func _on_debug_skip_pressed() -> void:
-	if GameEvents.has_signal("request_skip_arena_resolution"):
-		GameEvents.request_skip_arena_resolution.emit()
+	_emit_game_event_signal_if_available(&"request_skip_arena_resolution")
 
 func _on_debug_copy_log_pressed() -> void:
 	if _debug_run_log == "":
@@ -2236,24 +2193,21 @@ func _on_push_luck_cashout_pressed() -> void:
 		return
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
-	if GameEvents.has_signal("request_pyl_cashout"):
-		GameEvents.request_pyl_cashout.emit()
+	_emit_game_event_signal_if_available(&"request_pyl_cashout")
 
 func _on_push_luck_condanna_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
-	if GameEvents.has_signal("request_pyl_condanna"):
-		GameEvents.request_pyl_condanna.emit()
+	_emit_game_event_signal_if_available(&"request_pyl_condanna")
 
 func _on_push_luck_double_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
-	if GameEvents.has_signal("request_pyl_double"):
-		GameEvents.request_pyl_double.emit()
+	_emit_game_event_signal_if_available(&"request_pyl_double")
 
 func _is_pyl_button(button: Button) -> bool:
 	if button == null or push_luck_panel == null:
@@ -2317,7 +2271,7 @@ func _on_bet_fast_pressed() -> void:
 	_emit_intro_bet_request(1)
 
 func _emit_intro_bet_request(slot_index: int) -> void:
-	if not GameEvents.has_signal("request_place_bet"):
+	if not _has_game_event_signal(&"request_place_bet"):
 		return
 	var bet_ids: PackedStringArray = BetCatalog.level3_bet_ids()
 	if slot_index < 0 or slot_index >= bet_ids.size():
@@ -2327,21 +2281,18 @@ func _emit_intro_bet_request(slot_index: int) -> void:
 	if bet_id == "":
 		push_error("UIRoot: intro bet id empty at slot %d" % slot_index)
 		return
-	GameEvents.request_place_bet.emit(bet_id, 0)
+	_emit_game_event_signal_if_available(&"request_place_bet", [bet_id, 0])
 
 func _on_restart_pressed() -> void:
-	if GameEvents.has_signal("request_end_run_restart"):
-		GameEvents.request_end_run_restart.emit()
+	_emit_game_event_signal_if_available(&"request_end_run_restart")
 
 func _on_retry_pressed() -> void:
-	if GameEvents.has_signal("request_end_run_next_bet"):
-		GameEvents.request_end_run_next_bet.emit()
+	_emit_game_event_signal_if_available(&"request_end_run_next_bet")
 
 func _request_reset() -> void:
 	_set_game_over_modal(false)
 
-	if GameEvents.has_signal("request_new_run"):
-		GameEvents.request_new_run.emit()
+	_emit_game_event_signal_if_available(&"request_new_run")
 	_hide_scars_detail()
 	_refresh_modal_dimmer()
 
@@ -2351,14 +2302,12 @@ func _request_next_bet() -> void:
 
 func _request_retry() -> void:
 	_set_game_over_modal(false)
-	if GameEvents.has_signal("request_retry_run"):
-		GameEvents.request_retry_run.emit()
+	_emit_game_event_signal_if_available(&"request_retry_run")
 	_hide_scars_detail()
 	_refresh_modal_dimmer()
 
 func _on_quit_pressed() -> void:
-	if GameEvents.has_signal("request_end_run_quit"):
-		GameEvents.request_end_run_quit.emit()
+	_emit_game_event_signal_if_available(&"request_end_run_quit")
 
 func _handle_fast_countdown(seconds: int) -> void:
 	if fast_countdown_label == null:
@@ -2668,8 +2617,7 @@ func _on_bet_signature_pressed(bet_id: String) -> void:
 	_place_bet(bet_id)
 
 func _on_bet_confirm_pressed() -> void:
-	if GameEvents.has_signal("request_intro_confirm"):
-		GameEvents.request_intro_confirm.emit()
+	_emit_game_event_signal_if_available(&"request_intro_confirm")
 
 func _place_bet(bet_id: String) -> void:
 	_selected_bet_id = bet_id
@@ -2678,8 +2626,7 @@ func _place_bet(bet_id: String) -> void:
 	var sign_buttons: Array[Button] = []
 	sign_buttons.append_array(_bet_buttons)
 	_apply_decision_lock(_resolve_bet_sign_panel() as Control, sign_buttons, condanna_focus_label)
-	if GameEvents.has_signal("request_place_bet"):
-		GameEvents.request_place_bet.emit(bet_id, 0)
+	_emit_game_event_signal_if_available(&"request_place_bet", [bet_id, 0])
 
 func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label) -> void:
 	for button: Button in buttons:
@@ -2939,11 +2886,7 @@ func _set_bet_modal(active: bool) -> void:
 	_bet_modal_fade_tween = _fade_modal(bet_panel, bet_modal, active, _bet_modal_fade_tween)
 	if active:
 		_play_modal_pop(bet_panel)
-		if GameEvents.has_signal("modal_opened"):
-			GameEvents.modal_opened.emit("bet")
-	else:
-		if GameEvents.has_signal("modal_closed"):
-			GameEvents.modal_closed.emit("bet")
+	_emit_modal_telemetry("bet", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
@@ -2953,11 +2896,7 @@ func _set_pact_sealed_modal(active: bool) -> void:
 	_pact_sealed_modal_fade_tween = _fade_modal(pact_sealed_panel, pact_sealed_modal, active, _pact_sealed_modal_fade_tween)
 	if active:
 		_play_modal_pop(pact_sealed_panel)
-		if GameEvents.has_signal("modal_opened"):
-			GameEvents.modal_opened.emit("pact_sealed")
-	else:
-		if GameEvents.has_signal("modal_closed"):
-			GameEvents.modal_closed.emit("pact_sealed")
+	_emit_modal_telemetry("pact_sealed", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
@@ -2967,11 +2906,7 @@ func _set_resolve_ritual_modal(active: bool) -> void:
 	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween)
 	if active:
 		_play_modal_pop(resolve_ritual_panel)
-		if GameEvents.has_signal("modal_opened"):
-			GameEvents.modal_opened.emit("resolve_ritual")
-	else:
-		if GameEvents.has_signal("modal_closed"):
-			GameEvents.modal_closed.emit("resolve_ritual")
+	_emit_modal_telemetry("resolve_ritual", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
@@ -2986,11 +2921,7 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 	)
 	if active:
 		_play_modal_pop(intermediate_choice_panel)
-		if GameEvents.has_signal("modal_opened"):
-			GameEvents.modal_opened.emit("intermediate_choice")
-	else:
-		if GameEvents.has_signal("modal_closed"):
-			GameEvents.modal_closed.emit("intermediate_choice")
+	_emit_modal_telemetry("intermediate_choice", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
@@ -3000,11 +2931,7 @@ func _set_push_luck_modal(active: bool) -> void:
 	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween)
 	if active:
 		_play_modal_pop(push_luck_panel)
-		if GameEvents.has_signal("modal_opened"):
-			GameEvents.modal_opened.emit("push_luck")
-	else:
-		if GameEvents.has_signal("modal_closed"):
-			GameEvents.modal_closed.emit("push_luck")
+	_emit_modal_telemetry("push_luck", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
@@ -3015,12 +2942,10 @@ func _set_game_over_modal(active: bool) -> void:
 	if active:
 		_play_modal_pop(game_over_panel)
 		enter_ending_mode()
-		if GameEvents.has_signal("modal_opened"):
-			GameEvents.modal_opened.emit("ending")
+		_emit_modal_telemetry("ending", true)
 	else:
 		exit_ending_mode()
-		if GameEvents.has_signal("modal_closed"):
-			GameEvents.modal_closed.emit("ending")
+		_emit_modal_telemetry("ending", false)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 
@@ -3217,14 +3142,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				DisplayServer.clipboard_set(str(_debug_seed))
 			if event.keycode == KEY_F4:
 				var clipboard_text: String = DisplayServer.clipboard_get()
-				if clipboard_text.is_valid_int() and GameEvents.has_signal("request_set_run_seed"):
-					GameEvents.request_set_run_seed.emit(int(clipboard_text))
+				if clipboard_text.is_valid_int():
+					_emit_game_event_signal_if_available(&"request_set_run_seed", [int(clipboard_text)])
 			if event.keycode == KEY_F5:
-				if GameEvents.has_signal("request_reset_run"):
-					GameEvents.request_reset_run.emit()
+				_emit_game_event_signal_if_available(&"request_reset_run")
 			if event.keycode == KEY_F6:
-				if GameEvents.has_signal("request_skip_arena_resolution"):
-					GameEvents.request_skip_arena_resolution.emit()
+				_emit_game_event_signal_if_available(&"request_skip_arena_resolution")
 
 func _req(path: String) -> Node:
 	var n: Node = get_node_or_null(path)

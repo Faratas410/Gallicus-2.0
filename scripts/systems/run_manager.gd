@@ -17,23 +17,28 @@ extends Node
 @export var arena_scene: PackedScene
 @export var player_scene: PackedScene
 
+const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
+
 # RUN FLOW (contract)
 # MAIN_MENU -> RUN_INIT -> BET_PRESENT -> BET_COMMITTED
 # -> INTERMEDIATE_CHOICE -> ritual resolve sequence -> PUSH_YOUR_LUCK (or NEXT_BET)
+#
+# IMPORTANT: RunPhase numeric identity is owned by RunPhaseContractScript.
+# This enum is a typed local mirror only (consumer surface for readability/type hints).
 enum RunPhase {
-	NONE = -1,
-	PREP = 0,
-	LIVE = 1,
-	GAME_OVER = 2,
-	MAIN_MENU = 10,
-	RUN_INIT = 11,
-	BET_PRESENT = 12,
-	BET_COMMITTED = 13,
-	POST_BET_MESSAGES = 14, # RESERVED (removed in L3)
-	INTERMEDIATE_CHOICE = 15,
-	PUSH_YOUR_LUCK = 16,
-	NEXT_BET = 17,
-	RESOLUTION = 18, # LEGACY COMPAT SLOT (non-mainline in active L3 flow)
+	NONE = RunPhaseContractScript.NONE,
+	PREP = RunPhaseContractScript.PREP,
+	LIVE = RunPhaseContractScript.LIVE,
+	GAME_OVER = RunPhaseContractScript.GAME_OVER,
+	MAIN_MENU = RunPhaseContractScript.MAIN_MENU,
+	RUN_INIT = RunPhaseContractScript.RUN_INIT,
+	BET_PRESENT = RunPhaseContractScript.BET_PRESENT,
+	BET_COMMITTED = RunPhaseContractScript.BET_COMMITTED,
+	POST_BET_MESSAGES = RunPhaseContractScript.POST_BET_MESSAGES, # RESERVED (removed in L3)
+	INTERMEDIATE_CHOICE = RunPhaseContractScript.INTERMEDIATE_CHOICE,
+	PUSH_YOUR_LUCK = RunPhaseContractScript.PUSH_YOUR_LUCK,
+	NEXT_BET = RunPhaseContractScript.NEXT_BET,
+	RESOLUTION = RunPhaseContractScript.RESOLUTION, # LEGACY COMPAT SLOT (non-mainline in active L3 flow)
 }
 
 const PACT_SEALED_SECONDS: float = 0.7
@@ -819,35 +824,21 @@ func _is_smoke_mode() -> bool:
 	return _smoke.is_smoke_mode()
 
 func _phase_to_name(phase: RunPhase) -> String:
-	match phase:
-		RunPhase.NONE:
-			return "NONE"
-		RunPhase.PREP:
-			return "PREP"
-		RunPhase.LIVE:
-			return "LIVE"
-		RunPhase.GAME_OVER:
-			return "GAME_OVER"
-		RunPhase.MAIN_MENU:
-			return "MAIN_MENU"
-		RunPhase.RUN_INIT:
-			return "RUN_INIT"
-		RunPhase.BET_PRESENT:
-			return "BET_PRESENT"
-		RunPhase.BET_COMMITTED:
-			return "BET_COMMITTED"
-		RunPhase.POST_BET_MESSAGES:
-			return "POST_BET_MESSAGES"
-		RunPhase.INTERMEDIATE_CHOICE:
-			return "INTERMEDIATE_CHOICE"
-		RunPhase.PUSH_YOUR_LUCK:
-			return "PUSH_YOUR_LUCK"
-		RunPhase.NEXT_BET:
-			return "NEXT_BET"
-		RunPhase.RESOLUTION:
-			return "RESOLUTION"
-		_:
-			return str(phase)
+	return RunPhaseContractScript.get_name(int(phase))
+
+
+func _phase_list_to_names(phases: Array) -> Array[String]:
+	var names: Array[String] = []
+	for phase_value: Variant in phases:
+		names.append(RunPhaseContractScript.get_name(int(phase_value)))
+	return names
+
+
+func _phase_variant_to_name(value: Variant) -> String:
+	if value is int:
+		return RunPhaseContractScript.get_name(int(value))
+	return str(value)
+
 
 func _start_smoke_timeout_timer() -> void:
 	if not _is_smoke_mode():
@@ -1130,7 +1121,7 @@ func _boot() -> void:
 	_set_phase(RunPhase.MAIN_MENU, "boot")
 	if _is_smoke_mode():
 		print("SMOKE:BOOT_OK")
-		print("SMOKE:PHASE=MAIN_MENU")
+		print("SMOKE:PHASE=%s" % _phase_to_name(RunPhase.MAIN_MENU))
 		if OS.has_environment("GALLICUS_SMOKE_SCENARIO"):
 			_smoke_start_scenario()
 		elif OS.get_environment("GALLICUS_SMOKE_TRIGGER_NEW_RUN") == "1":
@@ -1238,13 +1229,19 @@ func _guard_request_phase(request_name: String, allowed_phases: Array[RunPhase])
 	for allowed_phase: RunPhase in allowed_phases:
 		if _phase == allowed_phase:
 			return true
-	push_error(_flow_diagnostics.format_wrong_phase_request_error(request_name, str(_phase), str(allowed_phases), _flow_logger.dump_last(30), _flow_snapshot("wrong_phase")))
+	push_error(_flow_diagnostics.format_wrong_phase_request_error(
+		request_name,
+		_phase_to_name(_phase),
+		str(_phase_list_to_names(allowed_phases)),
+		_flow_logger.dump_last(30),
+		_flow_snapshot("wrong_phase")
+	))
 	return false
 
 func _require_phase(expected_phase: RunPhase, context: String, gate_ok: bool = true) -> bool:
 	if gate_ok and _phase == expected_phase:
 		return true
-	push_error("RunManager: %s in wrong phase %s\nSNAPSHOT:\n%s" % [context, str(_phase), _flow_snapshot(context)])
+	push_error("RunManager: %s in wrong phase %s\nSNAPSHOT:\n%s" % [context, _phase_to_name(_phase), _flow_snapshot(context)])
 	return false
 
 func _guard_phase(expected_phase: RunPhase, context: String) -> bool:
@@ -1254,8 +1251,8 @@ func _guard_phase(expected_phase: RunPhase, context: String) -> bool:
 	push_error(
 		_flow_diagnostics.format_wrong_phase_request_error(
 			context,
-			str(_phase),
-			str([expected_phase]),
+			_phase_to_name(_phase),
+			str(_phase_list_to_names([expected_phase])),
 			_flow_logger.dump_last(30),
 			_flow_snapshot(context)
 		)
@@ -1265,7 +1262,7 @@ func _guard_phase(expected_phase: RunPhase, context: String) -> bool:
 func _flow_snapshot(note: String) -> String:
 	return _flow_watchdog.build_snapshot(
 		note,
-		str(_phase),
+		_phase_to_name(_phase),
 		_last_request,
 		_last_phase_change_ms,
 		_last_ui_render_ms,
@@ -1315,7 +1312,7 @@ func request_quit_to_menu() -> void:
 func request_load_continue() -> void:
 	_touch_request_activity("request_load_continue()")
 	if _phase != RunPhase.MAIN_MENU and _phase != RunPhase.NONE:
-		push_error("RunManager: request_load_continue in wrong phase %s\nSNAPSHOT:\n%s" % [str(_phase), _flow_snapshot("request_load_continue")])
+		push_error("RunManager: request_load_continue in wrong phase %s\nSNAPSHOT:\n%s" % [_phase_to_name(_phase), _flow_snapshot("request_load_continue")])
 		return
 	var payload: Dictionary = _save_system.load_run_payload()
 	if payload.is_empty():
@@ -1462,7 +1459,7 @@ func start_arena() -> void:
 
 func select_bet(bet_id: StringName) -> void:
 	if not _waiting_for_bet or _phase != RunPhase.BET_PRESENT:
-		push_error("RunManager: select_bet in wrong phase %s" % [str(_phase)])
+		push_error("RunManager: select_bet in wrong phase %s" % [_phase_to_name(_phase)])
 		return
 	_confirm_pact_with_bet_id(bet_id)
 
@@ -2686,7 +2683,7 @@ func _on_request_intro_select_bet(bet_id: String) -> void:
 
 func _apply_intro_select_bet_request(bet_id: String) -> void:
 	if not _waiting_for_bet:
-		push_error("RunManager: request_intro_select_bet in wrong phase %s" % [str(_phase)])
+		push_error("RunManager: request_intro_select_bet in wrong phase %s" % [_phase_to_name(_phase)])
 		return
 	var selected_bet_id: StringName = StringName(bet_id.strip_edges())
 	if selected_bet_id == &"":
@@ -3192,7 +3189,7 @@ func _emit_ui(payload: RunUiPayload) -> void:
 	var now_ms: int = Time.get_ticks_msec()
 	_last_ui_render_ms = now_ms
 	_last_activity_ms = now_ms
-	_flow_logger.log_ui("emit_payload", "phase=%s" % str(payload.phase))
+	_flow_logger.log_ui("emit_payload", "phase=%s" % RunPhaseContractScript.get_name(int(payload.phase)))
 	_refresh_sanity_ui_root()
 	if _sanity_ui_root == null:
 		return
@@ -4062,21 +4059,21 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
 	if not _has_enter_phase_handler(next):
-		push_error(_flow_diagnostics.format_missing_enter_phase_error(str(next), _flow_logger.dump_last(30)))
+		push_error(_flow_diagnostics.format_missing_enter_phase_error(_phase_to_name(next), _flow_logger.dump_last(30)))
 		return
 	var previous_phase: RunPhase = _phase
-	_flow_logger.log_phase(str(next), "from=%s reason=%s" % [str(previous_phase), reason])
+	_flow_logger.log_phase(_phase_to_name(next), "from=%s reason=%s" % [_phase_to_name(previous_phase), reason])
 	var now_ms: int = Time.get_ticks_msec()
 	_last_phase_change_ms = now_ms
 	_last_activity_ms = now_ms
 	_phase = next
 	if not _run_enter_phase(next):
-		push_error(_flow_diagnostics.format_missing_enter_phase_error(str(next), _flow_logger.dump_last(30)))
+		push_error(_flow_diagnostics.format_missing_enter_phase_error(_phase_to_name(next), _flow_logger.dump_last(30)))
 		return
 	if _is_smoke_mode():
 		print("SMOKE:PHASE=%s" % _phase_to_name(next))
 	if OS.is_debug_build() and reason != "":
-		print_debug(_flow_diagnostics.format_phase_debug_line(int(next), reason))
+		print_debug(_flow_diagnostics.format_phase_debug_line(_phase_to_name(next), reason))
 
 func _touch_request_activity(request_name: String) -> void:
 	_last_request = request_name
@@ -4177,7 +4174,7 @@ func _enter_end_run_phase() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.GAME_OVER, "FINE RUN"))
 
 func set_phase(p: Variant) -> void:
-	var legacy_intent: String = "phase=%s reason=legacy_set_phase" % [str(p)]
+	var legacy_intent: String = "phase=%s reason=legacy_set_phase" % [_phase_variant_to_name(p)]
 	_flow_log("legacy_set_phase_rejected", legacy_intent)
 	push_error("RunManager: legacy set_phase call rejected (%s)" % legacy_intent)
 	if OS.is_debug_build():

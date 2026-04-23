@@ -25,6 +25,10 @@ The following legacy values are accepted **only** during load/continue normaliza
 - `RESOLUTION`
 - `RUN_FLOW_RESOLUTION`
 - `PHASE_RESOLUTION`
+- `POST_BET_MESSAGES`
+- `RUN_FLOW_POST_BET_MESSAGES`
+- `PHASE_POST_BET_MESSAGES`
+- `14`
 - `18`
 
 These values must never survive into live runtime dispatch.
@@ -32,6 +36,9 @@ These values must never survive into live runtime dispatch.
 ## Migration Rules
 
 - Legacy values above normalize to `INTERMEDIATE_CHOICE`.
+- Legacy non-mainline phase ids from saved payload boundary fields (`run.phase` / `run_state.phase`) are normalized deterministically:
+  - `POST_BET_MESSAGES` phase id `14` -> `INTERMEDIATE_CHOICE`
+  - `RESOLUTION` phase id `18` -> `INTERMEDIATE_CHOICE`
 - Empty flow-step normalizes to `BET_OFFER`.
 - If a flow-step requiring bet id (`BET_SIGNED`, `INTERMEDIATE_CHOICE`, `PUSH_LUCK`) lacks bet id at boundary, normalize to `BET_OFFER`.
 

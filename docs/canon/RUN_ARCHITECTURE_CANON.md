@@ -99,6 +99,8 @@ All changes to systems described here must update this document in the same PR.
 - Consumes environment inputs and phase snapshots only.
 - Must not call `get_tree()` and must not emit `GameEvents`.
 - `RunManager` remains the sole smoke flow authority for timer node ownership, quit gate, and event emission.
+- Runtime smoke validation entrypoint: `scripts/ci/run_headless_smoke.py` (scenarios: `BET_PRESENT`, `FULL_RUN`).
+- CI runtime smoke workflow: `.github/workflows/godot_smoke_runtime.yml` runs both scenarios headlessly and fails on missing milestones or disallowed warnings/errors.
 
 ### Watchdog
 
@@ -216,6 +218,15 @@ All changes to systems described here must update this document in the same PR.
 
 The phase contract is explicit and mandatory:
 
+- RunPhase identity source of truth is `res://scripts/contracts/run_phase_contract.gd`.
+- Consumer mirrors (for example `RunManager` local typed enum) must reference `RunPhaseContract` constants and must not redefine numeric ids.
+- UI render consumers should reference `RunPhaseContract` constants directly; local `RUN_PHASE_*` alias constants are forbidden unless explicitly marked compatibility-only.
+- Runtime/UI/tools diagnostics must resolve phase names via `RunPhaseContract.get_name(...)`; consumer-local phase-name maps/stringification are non-authoritative and forbidden.
+- UI lifecycle consumption is reactive-only: `ui_root.gd` keeps a single primary handler for `run_started` and `run_failed` each; duplicate auxiliary handlers for the same signal are contract drift.
+- UI payload rendering uses one authoritative entrypoint (`apply_run_ui_payload(...)`); local wrapper aliases are non-authoritative.
+- Standard `GameEvents` runtime->UI wiring in `ui_root.gd` must use declarative spec tables and one guarded connect helper; avoid repeated per-signal inline connect branches in `_ready()`.
+- UI outbound `request_*` intent emissions must route through one guarded helper (`_emit_game_event_signal_if_available(...)`) rather than scattered `has_signal + direct emit` branches.
+- UI modal telemetry (`modal_opened` / `modal_closed`) must route through `_emit_modal_telemetry(...)` to keep instrumentation deterministic and non-duplicated.
 - `_set_phase()` is the **only** method allowed to mutate `RunPhase`.
 - Legacy `set_phase(...)` wrapper is non-authoritative and fail-fast: it logs + errors and must never mutate `RunPhase`.
 - Boot must enter `MAIN_MENU` via `_set_phase(...)` before any `request_new_run` handling.
@@ -232,7 +243,8 @@ Canonical Level 3 post-bet sequence (active flow authority):
 3. `INTERMEDIATE_CHOICE` accepts gesture request and starts the resolve ritual overlay (`resolve_ritual_opened/closed`).
 4. After ritual close, RunManager resolves arena outcome and opens `PUSH_YOUR_LUCK`.
 5. `POST_BET_MESSAGES` is legacy/unreachable in active Level 3 flow and must not gate `INTERMEDIATE_CHOICE`; enum slot value `14` remains reserved (`POST_BET_MESSAGES`) while active gesture phase is `INTERMEDIATE_CHOICE=15` for UI contract alignment.
-6. Active Level 3 flow must not depend on `arena_message_queue_completed` callback or fallback timer paths for post-bet progression.
+6. `POST_BET_MESSAGES` must not appear in live UI phase maps or active phase-driven runtime consumer routing (request guards/handlers/audio routing); any retained mention is compatibility-only residue.
+7. Active Level 3 flow must not depend on `arena_message_queue_completed` callback or fallback timer paths for post-bet progression.
 
 ## Module boundaries
 
@@ -287,12 +299,13 @@ Forbidden direction examples:
 
 ## Recipe: add a new phase
 
-1. Add enum value in `RunPhase`.
-2. Implement matching `_enter_*` in `RunManager`.
-3. Build/update `RunUiPayload` for that phase.
-4. Add UI render handling for the new payload/phase.
-5. Add `request_*` handler(s) in `RunManager`.
-6. Hook outcome + catalog usage if the phase needs new data/effects.
+1. Add id/name in `res://scripts/contracts/run_phase_contract.gd` (authoritative source of truth).
+2. Update the `RunManager` `RunPhase` typed mirror to reference the new contract constant.
+3. Implement matching `_enter_*` in `RunManager`.
+4. Build/update `RunUiPayload` for that phase.
+5. Add UI render handling for the new payload/phase.
+6. Add `request_*` handler(s) in `RunManager`.
+7. Hook outcome + catalog usage if the phase needs new data/effects.
 
 ## SOURCE: docs/runtime_architecture_split.md
 
@@ -541,11 +554,18 @@ Boundary-only legacy accepted values (load/continue normalization only):
 - `RESOLUTION`
 - `RUN_FLOW_RESOLUTION`
 - `PHASE_RESOLUTION`
+- `POST_BET_MESSAGES`
+- `RUN_FLOW_POST_BET_MESSAGES`
+- `PHASE_POST_BET_MESSAGES`
+- `"14"`
 - `"18"`
 
 Normalization policy:
 
 - Legacy values above -> `INTERMEDIATE_CHOICE`.
+- Legacy non-mainline phase ids in saved boundary fields are normalized at continue/load boundary:
+  - `run.phase`/`run_state.phase` = `14` (`POST_BET_MESSAGES`) -> `INTERMEDIATE_CHOICE`
+  - `run.phase`/`run_state.phase` = `18` (`RESOLUTION`) -> `INTERMEDIATE_CHOICE`
 - Empty step or step requiring missing bet id -> deterministic fallback `BET_OFFER`.
 - Unknown non-mappable values -> hard reject continue payload (`invalid_run_save_flow_step:*`).
 

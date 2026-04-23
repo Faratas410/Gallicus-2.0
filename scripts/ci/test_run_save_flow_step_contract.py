@@ -32,6 +32,10 @@ def main() -> int:
         "const INTERMEDIATE_CHOICE: StringName = &\"INTERMEDIATE_CHOICE\"",
         "const PUSH_LUCK: StringName = &\"PUSH_LUCK\"",
         "const BET_OFFER: StringName = &\"BET_OFFER\"",
+        "&\"POST_BET_MESSAGES\": INTERMEDIATE_CHOICE",
+        "&\"RUN_FLOW_POST_BET_MESSAGES\": INTERMEDIATE_CHOICE",
+        "&\"PHASE_POST_BET_MESSAGES\": INTERMEDIATE_CHOICE",
+        "&\"14\": INTERMEDIATE_CHOICE",
     ):
         if token not in contract:
             return fail(f"missing canonical constant in contract: {token}")
@@ -41,6 +45,12 @@ def main() -> int:
 
     if "RunSaveFlowStepContractScript.normalize_boundary_value(" not in save_boundary:
         return fail("save_continue_boundary must normalize flow_step via centralized contract helper")
+    if "const LEGACY_POST_BET_MESSAGES_PHASE_VALUE: int = 14" not in save_boundary:
+        return fail("save_continue_boundary must define legacy POST_BET_MESSAGES phase value for boundary normalization")
+    if "run_phase == LEGACY_POST_BET_MESSAGES_PHASE_VALUE" not in save_boundary:
+        return fail("save_continue_boundary must normalize run.phase POST_BET_MESSAGES at boundary")
+    if "run_state_phase == LEGACY_POST_BET_MESSAGES_PHASE_VALUE" not in save_boundary:
+        return fail("save_continue_boundary must normalize run_state.phase POST_BET_MESSAGES at boundary")
 
     if "RunSaveFlowStepContractScript.BET_OFFER" not in save_system:
         return fail("save_system default flow_step must use contract canonical BET_OFFER constant")

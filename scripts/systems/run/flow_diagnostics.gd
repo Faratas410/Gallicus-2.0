@@ -56,5 +56,5 @@ func format_watchdog_stall_error(stall_ms: int, hint: String, snapshot: String) 
 	return "WATCHDOG: stalled for %dms | hint=%s | %s" % [stall_ms, hint, snapshot]
 
 
-func format_phase_debug_line(phase_value: int, reason: String) -> String:
-	return "RunManager flow phase: %d - %s" % [phase_value, reason]
+func format_phase_debug_line(phase_name: String, reason: String) -> String:
+	return "RunManager flow phase: %s - %s" % [phase_name, reason]

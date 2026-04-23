@@ -6,6 +6,7 @@ const RunStateScript := preload("res://scripts/systems/run/run_state.gd")
 const RunSaveFlowStepContractScript := preload("res://scripts/contracts/run_save_flow_step_contract.gd")
 
 const LEVEL3_SCHEMA_VERSION: int = 2
+const LEGACY_POST_BET_MESSAGES_PHASE_VALUE: int = 14
 const LEGACY_RESOLUTION_PHASE_VALUE: int = 18
 
 var _save_system: SaveSystem = SaveSystemScript.new()
@@ -74,19 +75,29 @@ func _normalize_flow_step_at_boundary(run_state: RunState, payload: Dictionary, 
 	# Boundary-only normalization contract:
 	# - Canonical live values are defined by RunSaveFlowStepContract.
 	# - Legacy aliases are accepted only here and mapped to canonical values.
+	# - Legacy non-mainline phase ids (POST_BET_MESSAGES=14, RESOLUTION=18) are accepted
+	#   only here and normalized to canonical resume semantics.
 	# - After this function, run_state.run_save_flow_step must be canonical.
-	var had_legacy_resolution_phase: bool = false
+	var had_legacy_non_mainline_phase: bool = false
 	if run_data.has("phase") and typeof(run_data.get("phase")) == TYPE_INT:
-		had_legacy_resolution_phase = int(run_data.get("phase", -1)) == LEGACY_RESOLUTION_PHASE_VALUE
+		var run_phase: int = int(run_data.get("phase", -1))
+		had_legacy_non_mainline_phase = (
+			run_phase == LEGACY_RESOLUTION_PHASE_VALUE
+			or run_phase == LEGACY_POST_BET_MESSAGES_PHASE_VALUE
+		)
 	var raw_run_state: Dictionary = payload.get("run_state", {}) as Dictionary
 	if raw_run_state.has("phase") and typeof(raw_run_state.get("phase")) == TYPE_INT:
-		had_legacy_resolution_phase = had_legacy_resolution_phase or int(raw_run_state.get("phase", -1)) == LEGACY_RESOLUTION_PHASE_VALUE
+		var run_state_phase: int = int(raw_run_state.get("phase", -1))
+		had_legacy_non_mainline_phase = had_legacy_non_mainline_phase or (
+			run_state_phase == LEGACY_RESOLUTION_PHASE_VALUE
+			or run_state_phase == LEGACY_POST_BET_MESSAGES_PHASE_VALUE
+		)
 
 	var raw_flow_step: StringName = run_state.run_save_flow_step
 	var candidate_bet_id: StringName = _resolve_candidate_bet_id(run_state)
 	var normalized_flow_step: StringName = RunSaveFlowStepContractScript.normalize_boundary_value(
 		raw_flow_step,
-		had_legacy_resolution_phase,
+		had_legacy_non_mainline_phase,
 		candidate_bet_id != &""
 	)
 	if normalized_flow_step == &"":

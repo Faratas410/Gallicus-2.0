@@ -1,0 +1,95 @@
+name: Godot Smoke Runtime
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+env:
+  GODOT_VERSION: "4.6-stable"
+  GODOT_BIN_NAME: "Godot_v4.6-stable_linux.x86_64"
+  GODOT_ZIP_NAME: "Godot_v4.6-stable_linux.x86_64.zip"
+  GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
+
+jobs:
+  smoke_runtime:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [BET_PRESENT, FULL_RUN]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb git-lfs
+
+      - name: Validate smoke log parser (no Godot)
+        run: |
+          python3 scripts/ci/test_headless_smoke_validator.py
+
+      - name: Validate playable-slice contract (static)
+        run: |
+          python3 scripts/ci/test_playable_slice_contract.py
+
+      - name: Cache Godot 4.6 headless binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: tools/godot
+          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}
+
+      - name: Git LFS pull
+        run: |
+          git lfs install
+          git lfs pull
+
+      - name: Download Godot 4.6 headless
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p tools/godot
+          cd tools/godot
+          wget -O "$GODOT_ZIP_NAME" "$GODOT_DOWNLOAD_URL"
+          unzip -o "$GODOT_ZIP_NAME" "$GODOT_BIN_NAME"
+          rm -f "$GODOT_ZIP_NAME"
+          chmod +x "$GODOT_BIN_NAME" || true
+
+      - name: Import project assets (headless editor pass)
+        run: |
+          set -euo pipefail
+          GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
+          xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit > import.log 2>&1
+          tail -n 200 import.log || true
+
+      - name: Run scenario smoke
+        run: |
+          set -euo pipefail
+          GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
+          if [ "${{ matrix.scenario }}" = "BET_PRESENT" ]; then
+            TIMEOUT_SEC=45
+            HARD_TIMEOUT_SEC=60
+          else
+            TIMEOUT_SEC=60
+            HARD_TIMEOUT_SEC=80
+          fi
+          python3 scripts/ci/run_headless_smoke.py \
+            --scenario "${{ matrix.scenario }}" \
+            --project-root "." \
+            --godot-bin "$GODOT_BIN" \
+            --timeout-sec "$TIMEOUT_SEC" \
+            --hard-timeout-sec "$HARD_TIMEOUT_SEC" \
+            --use-xvfb \
+            --log-file "smoke_${{ matrix.scenario }}.log"
+
+      - name: Upload smoke logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke_logs_${{ matrix.scenario }}
+          path: |
+            smoke_${{ matrix.scenario }}.log
+            import.log
+          if-no-files-found: ignore

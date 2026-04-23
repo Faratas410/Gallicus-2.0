@@ -1,0 +1,282 @@
+#!/usr/bin/env python3
+"""Run and validate Gallicus headless smoke scenarios."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import subprocess
+from dataclasses import dataclass
+from pathlib import Path
+
+SCENARIO_BET_PRESENT = "BET_PRESENT"
+SCENARIO_FULL_RUN = "FULL_RUN"
+
+KNOWN_WARNING_ALLOWLIST = (
+    "ObjectDB instances leaked at exit",
+    "core/object/object.cpp",
+)
+
+
+@dataclass(frozen=True)
+class SmokeScenarioSpec:
+    name: str
+    required_substrings: tuple[str, ...]
+    require_single_run_manager_ready: bool
+
+
+SCENARIO_SPECS: dict[str, SmokeScenarioSpec] = {
+    SCENARIO_BET_PRESENT: SmokeScenarioSpec(
+        name=SCENARIO_BET_PRESENT,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:PHASE=MAIN_MENU",
+            "SMOKE:NEW_RUN_REQUESTED",
+            "SMOKE:PHASE=RUN_INIT",
+            "SMOKE:PHASE=BET_PRESENT",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_run_manager_ready=False,
+    ),
+    SCENARIO_FULL_RUN: SmokeScenarioSpec(
+        name=SCENARIO_FULL_RUN,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_FULL_RUN_START",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:MILESTONE=PACT_SEALED_OPENED",
+            "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
+            "SMOKE:MILESTONE=INTERMEDIATE_CHOICE",
+            "SMOKE:MILESTONE=RESOLVE_OPENED",
+            "SMOKE:MILESTONE=RESOLVE_CLOSED",
+            "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:MILESTONE=END_RUN_FINAL ending_key=",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_run_manager_ready=True,
+    ),
+}
+
+
+def _collect_disallowed_errors(lines: list[str]) -> list[str]:
+    findings: list[str] = []
+    for line in lines:
+        if re.search(r"\bERROR\b|\bError\b", line):
+            findings.append(line.rstrip("\n"))
+    return findings
+
+
+def _collect_disallowed_warnings(lines: list[str]) -> list[str]:
+    findings: list[str] = []
+    for line in lines:
+        if not re.search(r"\bWARNING\b|\bWarning\b", line):
+            continue
+        if any(allowed in line for allowed in KNOWN_WARNING_ALLOWLIST):
+            continue
+        findings.append(line.rstrip("\n"))
+    return findings
+
+
+def validate_log_text(log_text: str, scenario: str) -> list[str]:
+    if scenario not in SCENARIO_SPECS:
+        return [f"unknown scenario '{scenario}'"]
+    spec = SCENARIO_SPECS[scenario]
+    failures: list[str] = []
+    lines = log_text.splitlines()
+
+    error_lines = _collect_disallowed_errors(lines)
+    if error_lines:
+        failures.append("disallowed ERROR lines detected")
+        failures.extend(f"  ERROR: {line}" for line in error_lines[:20])
+
+    warning_lines = _collect_disallowed_warnings(lines)
+    if warning_lines:
+        failures.append("disallowed WARNING lines detected")
+        failures.extend(f"  WARNING: {line}" for line in warning_lines[:20])
+
+    for token in spec.required_substrings:
+        if token not in log_text:
+            failures.append(f"missing required token: {token}")
+
+    # Ensure full-run touched intent path segments beyond BET_PRESENT.
+    if scenario == SCENARIO_FULL_RUN:
+        if "SMOKE:REQ=request_mid_choice_select index=0" not in log_text:
+            failures.append("missing full-run request token: request_mid_choice_select index=0")
+        if (
+            "SMOKE:REQ=request_pyl_double" not in log_text
+            and "SMOKE:REQ=request_pyl_cashout" not in log_text
+        ):
+            failures.append("missing full-run request token: request_pyl_double/request_pyl_cashout")
+
+    if spec.require_single_run_manager_ready:
+        run_manager_ready_count = log_text.count("RunManager ready")
+        if run_manager_ready_count != 1:
+            failures.append(
+                f"expected exactly 1 'RunManager ready' marker, found {run_manager_ready_count}"
+            )
+
+    return failures
+
+
+def _build_runtime_command(
+    godot_bin: str,
+    project_root: str,
+    timeout_sec: int,
+    use_xvfb: bool,
+) -> list[str]:
+    command: list[str] = [
+        godot_bin,
+        "--headless",
+        "--path",
+        project_root,
+        "--quit-after",
+        str(timeout_sec),
+    ]
+    if use_xvfb:
+        command = ["xvfb-run", "-a"] + command
+    return command
+
+
+def run_smoke_runtime(
+    scenario: str,
+    godot_bin: str,
+    project_root: str,
+    timeout_sec: int,
+    hard_timeout_sec: int,
+    log_path: Path,
+    use_xvfb: bool,
+) -> tuple[int, str]:
+    env = os.environ.copy()
+    env["GALLICUS_SMOKE"] = "1"
+    env["GALLICUS_SMOKE_SCENARIO"] = scenario
+    env["GALLICUS_SMOKE_TIMEOUT_SEC"] = str(timeout_sec)
+
+    command = _build_runtime_command(
+        godot_bin=godot_bin,
+        project_root=project_root,
+        timeout_sec=timeout_sec,
+        use_xvfb=use_xvfb,
+    )
+    print("[SMOKE] Running:", " ".join(command))
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    try:
+        output, _ = process.communicate(timeout=hard_timeout_sec)
+        exit_code = process.returncode
+    except subprocess.TimeoutExpired:
+        process.kill()
+        output, _ = process.communicate()
+        exit_code = 124
+        output += "\nSMOKE:TIMEOUT_HARD_KILL\n"
+
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_path.write_text(output, encoding="utf-8")
+    return exit_code, output
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Run/validate Gallicus headless smoke scenarios.")
+    parser.add_argument(
+        "--scenario",
+        required=True,
+        choices=sorted(SCENARIO_SPECS.keys()),
+        help="Smoke scenario to validate.",
+    )
+    parser.add_argument(
+        "--project-root",
+        default=".",
+        help="Godot project root (path containing project.godot).",
+    )
+    parser.add_argument(
+        "--godot-bin",
+        default="",
+        help="Path to Godot binary. Required unless --validate-log-only is used.",
+    )
+    parser.add_argument(
+        "--timeout-sec",
+        type=int,
+        default=60,
+        help="Value for --quit-after and GALLICUS_SMOKE_TIMEOUT_SEC.",
+    )
+    parser.add_argument(
+        "--hard-timeout-sec",
+        type=int,
+        default=75,
+        help="External hard timeout for process execution.",
+    )
+    parser.add_argument(
+        "--log-file",
+        default="",
+        help="Path to smoke log file (written on runtime run, read on validate-log-only).",
+    )
+    parser.add_argument(
+        "--use-xvfb",
+        action="store_true",
+        help="Wrap Godot command with xvfb-run -a.",
+    )
+    parser.add_argument(
+        "--validate-log-only",
+        action="store_true",
+        help="Skip runtime execution and validate existing --log-file only.",
+    )
+    return parser
+
+
+def main() -> int:
+    parser = _build_parser()
+    args = parser.parse_args()
+    scenario: str = args.scenario
+    log_file_arg: str = args.log_file.strip()
+    if log_file_arg == "":
+        log_file_arg = f"smoke_{scenario.lower()}.log"
+    log_path = Path(log_file_arg)
+
+    if args.validate_log_only:
+        if not log_path.exists():
+            print(f"[FAIL][SMOKE] log file not found for validate-only mode: {log_path}")
+            return 1
+        log_text = log_path.read_text(encoding="utf-8", errors="replace")
+    else:
+        godot_bin = args.godot_bin.strip()
+        if godot_bin == "":
+            print("[FAIL][SMOKE] --godot-bin is required unless --validate-log-only is used")
+            return 1
+        exit_code, log_text = run_smoke_runtime(
+            scenario=scenario,
+            godot_bin=godot_bin,
+            project_root=args.project_root,
+            timeout_sec=max(int(args.timeout_sec), 1),
+            hard_timeout_sec=max(int(args.hard_timeout_sec), 1),
+            log_path=log_path,
+            use_xvfb=bool(args.use_xvfb),
+        )
+        if exit_code != 0:
+            print(f"[FAIL][SMOKE] runtime command exited with non-zero code: {exit_code}")
+            print(f"[SMOKE] log: {log_path}")
+            return 1
+
+    failures = validate_log_text(log_text, scenario)
+    if failures:
+        print(f"[FAIL][SMOKE] scenario={scenario}")
+        print(f"[SMOKE] log: {log_path}")
+        for failure in failures:
+            print(f"- {failure}")
+        return 1
+
+    print(f"[OK][SMOKE] scenario={scenario} validated")
+    print(f"[SMOKE] log: {log_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

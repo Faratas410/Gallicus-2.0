@@ -68,7 +68,6 @@ const MENU_IDLE_BOB_SPEED: float = 1.25
 const MENU_TITLE_PULSE_SPEED: float = 1.8
 const MENU_BUTTON_HOVER_SCALE: float = 1.02
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
-const RUN_PHASE_MAIN_MENU: int = RunPhaseContractScript.MAIN_MENU
 const L3_EXPECTATION_MICRO_COPY: String = "Loop rituale basato su scommesse. Nessun combat action."
 
 static var _i18n_bootstrap_done: bool = false
@@ -183,7 +182,7 @@ func _hide_menu() -> void:
 	visible = false
 
 func _on_run_phase_changed(next_phase: int) -> void:
-	if next_phase == RUN_PHASE_MAIN_MENU:
+	if next_phase == RunPhaseContractScript.MAIN_MENU:
 		visible = true
 		_menu_next_step_hint = "Nuova run disponibile / Consulta Condanne."
 		_show_menu()

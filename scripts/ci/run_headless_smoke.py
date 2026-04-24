@@ -14,7 +14,10 @@ from pathlib import Path
 
 SCENARIO_BET_PRESENT = "BET_PRESENT"
 SCENARIO_FULL_RUN = "FULL_RUN"
-GODOT_QUIT_AFTER_FRAMES_PER_SECOND = 60
+# Godot's --quit-after counts engine iterations, not wall-clock seconds.
+# Headless Linux can iterate much faster than 60 FPS, so keep this as a
+# generous safety cap and let subprocess hard-timeout enforce wall-clock limits.
+GODOT_QUIT_AFTER_ITERATIONS_PER_SECOND_BUDGET = 600
 
 SMOKE_CLASS_OK = "OK"
 SMOKE_CLASS_NATIVE_CRASH_BEFORE_BOOTSTRAP = "NATIVE_CRASH_BEFORE_BOOTSTRAP"
@@ -213,7 +216,7 @@ def _build_runtime_command(
     timeout_sec: int,
     use_xvfb: bool,
 ) -> list[str]:
-    quit_after_frames = max(timeout_sec * GODOT_QUIT_AFTER_FRAMES_PER_SECOND, 1)
+    quit_after_frames = max(timeout_sec * GODOT_QUIT_AFTER_ITERATIONS_PER_SECOND_BUDGET, 1)
     command: list[str] = [
         godot_bin,
         "--headless",

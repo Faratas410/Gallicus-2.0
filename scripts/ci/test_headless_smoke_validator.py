@@ -84,8 +84,8 @@ def main() -> int:
         return fail(f"expected FULL_RUN sample log to pass, got: {valid_full_run_failures}")
 
     command = _build_runtime_command("godot", ".", 60, False)
-    if command[-2:] != ["--quit-after", "3600"]:
-        return fail(f"expected --quit-after to use frame budget 3600, got: {command[-2:]}")
+    if command[-2:] != ["--quit-after", "36000"]:
+        return fail(f"expected --quit-after to use iteration budget 36000, got: {command[-2:]}")
 
     invalid_full_run_log = _build_full_run_log().replace("SMOKE:MILESTONE=RESOLVE_CLOSED\n", "")
     invalid_failures = validate_log_text(invalid_full_run_log, SCENARIO_FULL_RUN)

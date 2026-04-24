@@ -1,7 +1,9 @@
 # Godot local cache/import state
 .godot/
 .import/
-*.import
+
+# Godot resource import sidecars are source metadata.
+# Commit asset `.import` files; ignore only local import caches above.
 
 # Local smoke/runtime diagnostics
 smoke_*.log

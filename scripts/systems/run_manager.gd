@@ -987,7 +987,8 @@ func _run_smoke_full_run_driver() -> void:
 
 func _drive_smoke_full_run_pyl_request() -> void:
 	var audience_policy: Dictionary = _build_audience_reward_text()
-	var can_cashout: bool = bool(audience_policy.get("cashout_enabled", true)) and _get_cashout_lock_reason() == ""
+	var can_end_with_register_final: bool = _is_register_final()
+	var can_cashout: bool = can_end_with_register_final and bool(audience_policy.get("cashout_enabled", true)) and _get_cashout_lock_reason() == ""
 	if can_cashout:
 		if not _smoke_full_run_pyl_sent:
 			print("SMOKE:REQ=request_pyl_cashout")
@@ -1001,7 +1002,7 @@ func _drive_smoke_full_run_pyl_request() -> void:
 			_smoke_full_run_pyl_sent = true
 		_on_request_pyl_double()
 		return
-	if not _smoke_full_run_pyl_sent:
+	if not can_end_with_register_final and not _smoke_full_run_pyl_sent:
 		print("SMOKE:REQ=request_pyl_double")
 		_smoke_full_run_pyl_sent = true
 		_on_request_pyl_double()

@@ -1572,6 +1572,14 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	_smoke_mark("PACT_SEALED_OPENED")
 	_ritual_advance_pact_requested = false
 	GameEvents.pact_sealed_opened.emit()
+	if _is_smoke_mode():
+		_ritual_advance_pact_requested = true
+		GameEvents.pact_sealed_closed.emit()
+		_smoke_mark("PACT_SEALED_CLOSED")
+		if _run_state.run_is_over or _is_game_over:
+			return
+		_open_intermediate_choice(bet_id)
+		return
 	var elapsed_seconds: float = 0.0
 	while elapsed_seconds < RITUAL_MAX_SECONDS:
 		await get_tree().create_timer(RITUAL_STEP_SECONDS).timeout
@@ -1607,6 +1615,16 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	_smoke_mark("RESOLVE_OPENED")
 	_ritual_advance_resolve_requested = false
 	GameEvents.resolve_ritual_opened.emit(payload)
+	if _is_smoke_mode():
+		_ritual_advance_resolve_requested = true
+		GameEvents.resolve_ritual_closed.emit()
+		_flow_log("resolve_ritual_closed", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
+		_smoke_mark("RESOLVE_CLOSED")
+		_resolving_ritual = false
+		if _run_state.run_is_over or _is_game_over:
+			return
+		_resolve_ritual_outcome(bet_id)
+		return
 	var elapsed_seconds: float = 0.0
 	while elapsed_seconds < RITUAL_MAX_SECONDS:
 		await get_tree().create_timer(RITUAL_STEP_SECONDS).timeout

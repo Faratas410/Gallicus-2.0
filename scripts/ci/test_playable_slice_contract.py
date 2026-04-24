@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -60,6 +61,15 @@ def main() -> int:
     for token in required_run_manager_handlers:
         if token not in run_manager:
             return fail(f"missing playable-slice RunManager handler/phase entry: {token}")
+
+    push_luck_entry = re.search(
+        r"(?ms)^func _enter_push_your_luck\(\) -> void:\n(.*?)(?=^func |\Z)",
+        run_manager,
+    )
+    if push_luck_entry is None:
+        return fail("missing _enter_push_your_luck implementation")
+    if "_build_push_luck_ui_payload" not in push_luck_entry.group(1):
+        return fail("PUSH_YOUR_LUCK entry must emit canonical lock-aware UI payload")
 
     required_smoke_marks = (
         '_smoke_mark("BET_PRESENT")',

@@ -2897,6 +2897,7 @@ func _take_payout() -> void:
 		return
 	var lock_reason: String = _get_cashout_lock_reason()
 	if lock_reason != "":
+		_refresh_push_luck_choice(StringName(_run_state.current_bet_id))
 		return
 	var bet_id_name: StringName = StringName(_run_state.current_bet_id)
 	var bonus_tier: int = _consume_intermediate_choice_bonus()
@@ -2963,6 +2964,7 @@ func _push_your_luck() -> void:
 	print_debug("[FLOW] push_luck_double_received :: arena=%d" % _run_state.arena_index)
 	var lock_reason: String = _get_double_lock_reason()
 	if lock_reason != "":
+		_refresh_push_luck_choice(StringName(_run_state.current_bet_id))
 		return
 	_run_state.refuse_cashout_count_this_run += 1
 	_try_register_refused_closure_scar()
@@ -3220,8 +3222,7 @@ func _open_push_luck_choice(_bet_id: StringName) -> void:
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 
 func _enter_push_your_luck() -> void:
-	var view: Dictionary = _phase_push_your_luck_handler.build_view(_run_state)
-	GameEvents.push_luck_opened.emit(view)
+	_emit_ui(_build_push_luck_ui_payload(StringName(_run_state.current_bet_id), {}))
 
 func _refresh_push_luck_choice(bet_id: StringName) -> void:
 	_emit_ui(_build_push_luck_ui_payload(bet_id, {}))

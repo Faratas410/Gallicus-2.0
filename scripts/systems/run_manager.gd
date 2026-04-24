@@ -975,31 +975,39 @@ func _run_smoke_full_run_driver() -> void:
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step != "PUSH_YOUR_LUCK":
 		_smoke_full_run_step = "PUSH_YOUR_LUCK"
 		_smoke_full_run_pyl_sent = false
-		if _run_state.bets_history.size() < 3:
-			print("SMOKE:REQ=request_pyl_double")
-			_smoke_full_run_pyl_sent = true
-			_on_request_pyl_double()
-		else:
-			print("SMOKE:REQ=request_pyl_cashout")
-			_smoke_full_run_pyl_sent = true
-			_on_request_pyl_cashout()
+		_drive_smoke_full_run_pyl_request()
 		return
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step == "PUSH_YOUR_LUCK":
-		if _run_state.bets_history.size() < 3:
-			if not _smoke_full_run_pyl_sent:
-				print("SMOKE:REQ=request_pyl_double")
-				_smoke_full_run_pyl_sent = true
-			_on_request_pyl_double()
-		else:
-			if not _smoke_full_run_pyl_sent:
-				print("SMOKE:REQ=request_pyl_cashout")
-				_smoke_full_run_pyl_sent = true
-			_on_request_pyl_cashout()
+		_drive_smoke_full_run_pyl_request()
 		return
 	if _phase == RunPhase.GAME_OVER and _is_register_final():
 		print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
 		_stop_smoke_driver()
 		_smoke_quit_gate()
+
+func _drive_smoke_full_run_pyl_request() -> void:
+	var audience_policy: Dictionary = _build_audience_reward_text()
+	var can_cashout: bool = bool(audience_policy.get("cashout_enabled", true)) and _get_cashout_lock_reason() == ""
+	if can_cashout:
+		if not _smoke_full_run_pyl_sent:
+			print("SMOKE:REQ=request_pyl_cashout")
+			_smoke_full_run_pyl_sent = true
+		_on_request_pyl_cashout()
+		return
+	var can_double: bool = _get_double_lock_reason() == ""
+	if can_double:
+		if not _smoke_full_run_pyl_sent:
+			print("SMOKE:REQ=request_pyl_double")
+			_smoke_full_run_pyl_sent = true
+		_on_request_pyl_double()
+		return
+	if not _smoke_full_run_pyl_sent:
+		print("SMOKE:REQ=request_pyl_double")
+		_smoke_full_run_pyl_sent = true
+		_on_request_pyl_double()
+		return
+	print("SMOKE:REQ=request_pyl_condanna")
+	_on_request_pyl_condanna()
 
 func _get_smoke_selected_bet_id() -> String:
 	if _run_state.level3_current_offer.is_empty():

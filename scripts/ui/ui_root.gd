@@ -21,6 +21,8 @@ const FADE_OUT_SEC: float = 0.25
 const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
 const SIGN_LOCK_DARKEN_RGB: float = 0.82
 const SIGN_PREVIEW_SCALE: float = 1.015
+const PUSH_LUCK_DETAILS_MAX_LINES: int = 5
+const PUSH_LUCK_DETAIL_MAX_CHARS: int = 96
 const QUICK_CUT_MAX_SECONDS: float = 1.5
 const VERDICT_REVEAL_STEP_SECONDS: float = 0.2
 const VERDICT_REVEAL_HOLD_SECONDS: float = 0.08
@@ -1982,6 +1984,24 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	ui_payload.choices = ["cashout", "condanna", "double"]
 	apply_run_ui_payload(ui_payload)
 
+func _format_push_luck_detail_text(lines: Array[String]) -> String:
+	if lines.is_empty():
+		return "Nessun dettaglio."
+	var visible_lines: Array[String] = []
+	var visible_count: int = mini(lines.size(), PUSH_LUCK_DETAILS_MAX_LINES)
+	for i: int in range(visible_count):
+		visible_lines.append(_compact_push_luck_detail_line(lines[i]))
+	if lines.size() > PUSH_LUCK_DETAILS_MAX_LINES:
+		var hidden_count: int = lines.size() - PUSH_LUCK_DETAILS_MAX_LINES
+		visible_lines.append("+ %d dettagli nel registro." % hidden_count)
+	return "- " + "\n- ".join(visible_lines)
+
+func _compact_push_luck_detail_line(line: String) -> String:
+	var trimmed: String = line.strip_edges()
+	if trimmed.length() <= PUSH_LUCK_DETAIL_MAX_CHARS:
+		return trimmed
+	return "%s..." % trimmed.substr(0, PUSH_LUCK_DETAIL_MAX_CHARS - 3).strip_edges()
+
 func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:
 		return
@@ -2021,7 +2041,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if cashout_modifier_text != "":
 		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
 	if push_luck_details != null:
-		push_luck_details.text = ("- " + "\n- ".join(lines)) if not lines.is_empty() else "Nessun dettaglio."
+		push_luck_details.text = _format_push_luck_detail_text(lines)
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""

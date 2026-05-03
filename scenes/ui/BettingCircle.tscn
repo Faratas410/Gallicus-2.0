@@ -1,12 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Spellbook & Tabs/Spellbook.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Spellbook & Tabs/Tab01_Bottom_Normal.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_13.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Spellbook & Tabs/PageFold_Left.png" id="5"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Spellbook & Tabs/PageFold_Right.png" id="6"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Spellbook & Tabs/Tab01_Bottom_Selected.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_15.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_14.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_16.png" id="7"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
@@ -70,7 +70,6 @@ mouse_filter = 1
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = ExtResource("5")
 expand_mode = 1
 stretch_mode = 6
 
@@ -155,9 +154,9 @@ anchor_top = 0.82
 anchor_right = 0.7
 anchor_bottom = 0.95
 texture_normal = ExtResource("3")
-texture_hover = ExtResource("7")
-texture_pressed = ExtResource("7")
-texture_disabled = ExtResource("3")
+texture_hover = ExtResource("5")
+texture_pressed = ExtResource("6")
+texture_disabled = ExtResource("7")
 ignore_texture_size = true
 stretch_mode = 0
 
@@ -179,7 +178,6 @@ mouse_filter = 1
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = ExtResource("6")
 expand_mode = 1
 stretch_mode = 6
 
@@ -264,9 +262,9 @@ anchor_top = 0.82
 anchor_right = 0.7
 anchor_bottom = 0.95
 texture_normal = ExtResource("3")
-texture_hover = ExtResource("7")
-texture_pressed = ExtResource("7")
-texture_disabled = ExtResource("3")
+texture_hover = ExtResource("5")
+texture_pressed = ExtResource("6")
+texture_disabled = ExtResource("7")
 ignore_texture_size = true
 stretch_mode = 0
 
@@ -284,9 +282,9 @@ anchor_top = 0.88
 anchor_right = 0.6
 anchor_bottom = 0.98
 texture_normal = ExtResource("3")
-texture_hover = ExtResource("7")
-texture_pressed = ExtResource("7")
-texture_disabled = ExtResource("3")
+texture_hover = ExtResource("5")
+texture_pressed = ExtResource("6")
+texture_disabled = ExtResource("7")
 ignore_texture_size = true
 stretch_mode = 0
 

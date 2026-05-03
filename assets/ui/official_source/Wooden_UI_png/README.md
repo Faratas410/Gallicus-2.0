@@ -12,3 +12,4 @@ Scope:
 Current active mappings:
 - Primary button styleboxes use `plank_13.png`, `plank_15.png`, `plank_14.png`, and `plank_16.png`.
 - Main panel stylebox uses `bg_01_02.png`.
+- `BettingCircle.tscn` uses `book.png` plus the same plank button state textures.

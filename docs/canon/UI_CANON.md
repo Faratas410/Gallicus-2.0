@@ -132,34 +132,37 @@ All changes to systems described here must update this document in the same PR.
   - `meta.register_ending_key: String` (`""` quando l'aggiornamento non è finale)
   - `meta.next_bet_enabled: bool`
 - END_RUN UI map rule (UI-only, reactive):
-  - se `meta.register_final=false` → titolo `AGGIORNAMENTO DEL REGISTRO`, icona nascosta/placeholder, Next Bet governato da `meta.next_bet_enabled`
-  - se `meta.register_final=true` → titolo+icona derivati da `meta.register_ending_key` (mappa UI-only):
-    - `ending_corruption` → `FASCICOLO CHIUSO — COMPROMISSIONE` + `res://assets/ui/icons/icon_ending_corruption.png`
-    - `ending_glory` → `FASCICOLO CHIUSO — ASCESA` + `res://assets/ui/icons/icon_ending_glory.png`
-    - `ending_scars` → `FASCICOLO CHIUSO — CONSUMO` + `res://assets/ui/icons/icon_ending_scars.png`
-    - `ending_pattern` → `FASCICOLO CHIUSO — PATTERN` + `res://assets/ui/icons/icon_ending_pattern.png`
-    - fallback titolo `FASCICOLO CHIUSO`; fallback icona `res://assets/ui/icons/icon_condition.png`
+  - se `meta.register_final=false` -> titolo `AGGIORNAMENTO DEL REGISTRO`, icona nascosta/placeholder, Next Bet governato da `meta.next_bet_enabled`
+  - se `meta.register_final=true` -> titolo derivato da `meta.register_ending_key` (mappa UI-only):
+    - `ending_corruption` -> `FASCICOLO CHIUSO - COMPROMISSIONE`
+    - `ending_glory` -> `FASCICOLO CHIUSO - ASCESA`
+    - `ending_scars` -> `FASCICOLO CHIUSO - CONSUMO`
+    - `ending_pattern` -> `FASCICOLO CHIUSO - PATTERN`
+    - fallback titolo `FASCICOLO CHIUSO`
+  - Ending icons currently use the tracked fallback `res://assets/ui/icons/icon_condition.png`; dedicated ending icons are deferred until real assets exist.
 - UI must derive END_RUN `Next Bet` visibility/enabled state **only** from `meta.next_bet_enabled` (reactive rule, no local gameplay decision).
 - UI must not infer ending category locally: `meta.register_ending_key` is RunManager authority.
-- UI must not unlock achievements or perform meta-save side effects: achievements wiring is a RunManager→meta-system side effect only.
+- UI must not unlock achievements or perform meta-save side effects: achievements wiring is a RunManager -> meta-system side effect only.
 
 ## Non-negotiable visual rules
-1. **Base UI scale**: UI assets are **1x** and must render pixel-crisp at game resolution (baseline: `UI assets (1x)` reference sheet).
+1. **Base UI scale**: active UI theme assets are texture-backed resources selected from the tracked Wooden UI source pack and must render pixel-crisp at game resolution.
 2. **Font rule**: `Italiana-Regular.ttf` is the only official UI font source.
 3. **No mixed style**: legacy and official widgets must not be mixed inside a single finalized screen once replacement patches start.
 
-## Import standard (UI Official PNG)
-Because this repository does not track per-file `.png.import` files, the closest existing authoritative texture import template is:
-- `res://.godot/import_defaults.cfg` (`[importer_defaults] texture=...`).
+## Import standard (UI PNG)
+The active source pack is tracked at:
+- `res://assets/ui/official_source/Wooden_UI_png/`
 
-For UI Official pixel-art UI textures that will be adopted in future replacement patches, preserve these keys from the existing template:
+For UI pixel-art textures that are adopted into runtime resources, keep the generated `.png.import` sidecar versioned with the source `.png`. The `.godot/` import cache remains ignored and must not be used as a contract surface.
+
+For source UI textures adopted in future replacement patches, preserve these import settings:
 - `flags/filter=false` (nearest, no blur)
 - `flags/mipmaps=false` (no mipmaps)
 - `compress/mode=0`
 - `compress/high_quality=false`
 - `compress/lossy_quality=0.7`
 
-Stop-condition note (satisfied): no `.png.import` files are versioned; import defaults above are the canonical tracked template to follow.
+Stop-condition note (active): version `.png.import` sidecars only for tracked source assets that are intended to remain runtime-loadable. Do not keep import sidecars for deleted or archive-only legacy PNGs.
 
 ## Resolution/stretch baseline (UI hardening)
 - Project display baseline keeps the existing canonical 16:9 internal viewport (`1280x720`) with `window/stretch/mode="viewport"` and `window/stretch/aspect="keep"` to prevent cross-screen distortion.
@@ -207,9 +210,11 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 - Notes: _TBD_
 
 ### Gallicus-special widgets (bet/choice UI, etc.)
-- Official assets selected: _TBD_
-- Legacy references to replace: _TBD_
-- Notes: _TBD_
+- Active wooden assets:
+  - `res://assets/ui/official_source/Wooden_UI_png/book.png` for `res://scenes/ui/BettingCircle.tscn`
+  - `res://assets/ui/official_source/Wooden_UI_png/plank_13.png`, `plank_15.png`, `plank_14.png`, and `plank_16.png` for betting-circle sign buttons
+- Legacy references replaced: `Spellbook & Tabs` PNG assets are no longer part of active runtime scenes.
+- Notes: runtime behavior remains UI-presentational; RunManager flow authority is unchanged.
 
 ## Visual binding audit baseline (placeholder policy)
 - Runtime scene audit baseline uses a single known-good placeholder texture resource `res://assets/ui/icons/icon_condition.png` when `TextureRect` bindings are null in active UI scenes.
@@ -220,12 +225,12 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 - `.tscn`: `TextureRect` / `NinePatchRect` texture paths.
 - Scene-local theme overrides inside `.tscn` files.
 - `.tres`: `StyleBoxTexture` / `StyleBoxFlat` and other style resources.
-- Scripts with explicit texture loading (`load("res://...png")`, `preload("res://...png")`).
+- Scripts with explicit texture loading (`load(...)`, `preload(...)`).
 
 ## References used
-- `res://assets/ui/official_source/Reference sheet.png`
 - `res://assets/ui/icons/icon_condition.png`
 - `res://assets/ui/official_source/Italiana-Regular.ttf`
+- `res://assets/ui/official_source/Wooden_UI_png/README.md`
 
 ## SOURCE: docs/ui_audio_map.md
 

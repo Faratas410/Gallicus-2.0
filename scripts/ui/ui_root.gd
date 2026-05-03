@@ -155,6 +155,7 @@ var _sign_feedback_buttons: Array = []
 var _sign_feedback_panel: Control = null
 
 var _pyl_locked: bool = false
+var _pyl_request_sequence_id: int = 0
 var _fast_countdown_active: bool = false
 var _has_seen_controls: bool = false
 var _controls_first_run_active: bool = true
@@ -2210,21 +2211,51 @@ func _on_push_luck_cashout_pressed() -> void:
 		return
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
-	_emit_game_event_signal_if_available(&"request_pyl_cashout")
+	if not _emit_game_event_signal_if_available(&"request_pyl_cashout"):
+		_recover_pyl_request_lock("Stato: richiesta incasso non disponibile.")
+		return
+	_start_pyl_request_watchdog()
 
 func _on_push_luck_condanna_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
-	_emit_game_event_signal_if_available(&"request_pyl_condanna")
+	if not _emit_game_event_signal_if_available(&"request_pyl_condanna"):
+		_recover_pyl_request_lock("Stato: richiesta condanna non disponibile.")
+		return
+	_start_pyl_request_watchdog()
 
 func _on_push_luck_double_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
-	_emit_game_event_signal_if_available(&"request_pyl_double")
+	if not _emit_game_event_signal_if_available(&"request_pyl_double"):
+		_recover_pyl_request_lock("Stato: richiesta rilancio non disponibile.")
+		return
+	_start_pyl_request_watchdog()
+
+func _start_pyl_request_watchdog() -> void:
+	_pyl_request_sequence_id += 1
+	var request_id: int = _pyl_request_sequence_id
+	var timer: SceneTreeTimer = get_tree().create_timer(1.25)
+	timer.timeout.connect(Callable(self, "_recover_pyl_request_if_still_open").bind(request_id), CONNECT_ONE_SHOT)
+
+func _recover_pyl_request_if_still_open(request_id: int) -> void:
+	if request_id != _pyl_request_sequence_id:
+		return
+	if not _pyl_locked:
+		return
+	if push_luck_modal == null or not push_luck_modal.visible:
+		return
+	_recover_pyl_request_lock("Stato: richiesta non accettata. Scegli di nuovo.")
+
+func _recover_pyl_request_lock(message: String) -> void:
+	_reset_pyl_lock_state()
+	if push_luck_audience_reason != null:
+		push_luck_audience_reason.text = message
+		push_luck_audience_reason.visible = true
 
 func _is_pyl_button(button: Button) -> bool:
 	if button == null or push_luck_panel == null:

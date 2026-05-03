@@ -2930,6 +2930,7 @@ func _take_payout() -> void:
 	_resolve_ritual_reward_applied = false
 	_run_state.level3_cashouts += 1
 	_run_state.cashouts += 1
+	_register_run_end("CASH_OUT")
 	if _run_state.refuse_cashout_count_this_run >= 1:
 		_register_condanna(CONDANNA_HO_VISTO_ABBASTANZA)
 	if _run_state.escalation_level >= 4:
@@ -2944,7 +2945,6 @@ func _take_payout() -> void:
 		_emit_escalation_changed()
 		_run_state.current_bet_id = ""
 		_emit_run_debug_state()
-		_register_run_end("CASH_OUT")
 	end_run(&"")
 
 func _handle_push_luck_condanna() -> void:
@@ -2958,6 +2958,7 @@ func _handle_push_luck_condanna() -> void:
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	_resolve_ritual_reward_applied = false
+	_register_run_end("CONDANNA")
 	if _run_state.escalation_level >= 2:
 		_run_state.level3_cashed_after_high_escalation = true
 		_run_state.level3_reward_tier = 1
@@ -2966,7 +2967,6 @@ func _handle_push_luck_condanna() -> void:
 		_emit_escalation_changed()
 		_run_state.current_bet_id = ""
 		_emit_run_debug_state()
-		_register_run_end("CASH_OUT")
 	end_run(&"")
 
 func _push_your_luck() -> void:

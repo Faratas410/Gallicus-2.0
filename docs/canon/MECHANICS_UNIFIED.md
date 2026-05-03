@@ -733,7 +733,7 @@ Se una UI non appare: non è layout.
 
 **Status:** SUPPORTING  
 **Scope:** Design doctrine for bet progression and risk escalation tone.  
-**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:game_flow_v2  
+**Legacy source lineage:** legacy:risk_driven_design_bible, legacy:game_flow_v2  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: legacy:game_flow, legacy:game_flow_v2.
 
@@ -863,7 +863,7 @@ La subisce alla fine.
 
 **Status:** SUPPORTING  
 **Scope:** Meta-progression design boundaries and unlock philosophy.  
-**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:CODEX_GOLDEN_CHECKLIST  
+**Legacy source lineage:** legacy:risk_driven_design_bible, legacy:CODEX_GOLDEN_CHECKLIST  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: legacy:bet_progression, legacy:scar_system.
 
@@ -1023,7 +1023,7 @@ che prima non potevi nemmeno immaginare.
 
 **Status:** SUPPORTING  
 **Scope:** Design and behavior notes for scars as persistent run consequences.  
-**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:run_architecture_ledger  
+**Legacy source lineage:** legacy:risk_driven_design_bible, legacy:run_architecture_ledger  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: legacy:bet_progression, legacy:meta_progression.
 

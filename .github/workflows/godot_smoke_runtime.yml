@@ -35,9 +35,17 @@ jobs:
         run: |
           python3 scripts/ci/check_docs_active_refs.py
 
+      - name: Validate res:// paths (no Godot)
+        run: |
+          python3 tools/ci/verify_res_paths.py
+
       - name: Validate playable-slice contract (static)
         run: |
           python3 scripts/ci/test_playable_slice_contract.py
+
+      - name: Validate era visual template anchors (static)
+        run: |
+          python3 scripts/ci/test_era_visual_template_audit.py
 
       - name: Cache Godot 4.6 headless binary
         id: cache-godot

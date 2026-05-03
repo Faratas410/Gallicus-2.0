@@ -53,9 +53,9 @@
   - `ui/BettingCircle.tscn`
 
 ### Scripts (`scripts/`)
-- Root gameplay nodes:
-  - `Arena.gd`
-  - `arena_tilemap.gd`
+- Scene-bound runtime scripts:
+  - `scenes/arena/arena.gd`
+  - `scenes/arena/arena_tilemap.gd`
 - Systems:
   - `systems/run_manager.gd` (single run flow authority)
   - `systems/game_events.gd` (global event bus authority)
@@ -115,6 +115,7 @@
 - `legacy-runtime/` directory is no longer present in the repository; legacy gameplay artifacts were removed from active storage.
 - No active asset roots remain outside `assets/`.
 - `docs/archive/` is historical only and must not be treated as active canon/support input unless explicitly requested.
+- `legacy:risk_driven_design_bible` is archived at `docs/archive/lineage/00_RISK_DRIVEN_DESIGN_BIBLE.md` and is not an operational source.
 
 ## Documentation governance alignment
 - This file is an **inventory map** and does not redefine gameplay/runtime canon.

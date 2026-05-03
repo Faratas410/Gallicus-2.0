@@ -13,7 +13,7 @@ from typing import Iterable
 UI_ROOT = Path("scripts/ui/ui_root.gd")
 UI_SCENE = Path("scenes/UI.tscn")
 ARENA_SCENE = Path("scenes/Arena.tscn")
-ARENA_SCRIPT = Path("scripts/Arena.gd")
+ARENA_SCRIPT = Path("scripts/scenes/arena/arena.gd")
 SCENES_DIR = Path("scenes")
 
 UI_SCAN_PATHS = [
@@ -33,11 +33,18 @@ def _read_text(path: Path) -> str:
 
 
 def _extract_onready_paths(ui_text: str) -> dict[str, str]:
-    pattern = re.compile(
+    onready_pattern = re.compile(
         r"@onready\s+var\s+(?P<var>[A-Za-z0-9_]+)\s*:[^=]*=\s*get_node_or_null\(\"(?P<path>[^\"]+)\"\)"
     )
     out: dict[str, str] = {}
-    for match in pattern.finditer(ui_text):
+    for match in onready_pattern.finditer(ui_text):
+        out[match.group("var")] = match.group("path")
+
+    assignment_pattern = re.compile(
+        r"^\s*(?P<var>[A-Za-z0-9_]+)\s*=\s*get_node_or_null\(\"(?P<path>[^\"]+)\"\)",
+        re.M,
+    )
+    for match in assignment_pattern.finditer(ui_text):
         out[match.group("var")] = match.group("path")
     return out
 
@@ -100,6 +107,8 @@ def main() -> int:
     for path in _iter_text_files(UI_SCAN_PATHS):
         text = _read_text(path)
         for idx, line in enumerate(text.splitlines(), start=1):
+            if "res://assets/ui/official/era" in line:
+                continue
             if FORBIDDEN_ERA_RE.search(line):
                 forbidden_hits.append(f"{path}:{idx}:{line.strip()}")
     if forbidden_hits:

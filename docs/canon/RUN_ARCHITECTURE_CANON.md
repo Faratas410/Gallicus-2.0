@@ -329,7 +329,7 @@ Runtime L3 includes the active boot and orchestration path used by the game flow
 - `res://scripts/systems/game_events.gd` (Autoload event bus)
 - Active UI scenes/scripts under `res://scenes/ui/` and `res://scripts/ui/`
 - L3 visual core kept in active path:
-  - `res://scripts/Arena.gd`
+  - `res://scripts/scenes/arena/arena.gd`
   - Legacy avatar script removed in Level 3 ritual-board runtime
 
 ## Legacy runtime (non-L3, storico/rimosso)
@@ -401,7 +401,7 @@ These panels must exist and must not be freed while a run is active.
 | `request_pyl_double` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` → `scripts/systems/run_manager.gd::_ready` |
 | `run_debug_state_updated` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_debug_state` (includes `glory`, `scar_double_count`, `scar_pact_count`, `volatility`) → `scripts/ui/ui_root.gd::_on_run_debug_state_updated` |
 | `run_finale_selected` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_finale` → `scripts/ui/ui_root.gd::_ready` |
-| `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` (gameplay failure reasons only; excludes `INFRA_FAILURE`) → `scripts/ui/ui_root.gd::_ready`, `scripts/Arena.gd::_ready` |
+| `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` (gameplay failure reasons only; excludes `INFRA_FAILURE`) → `scripts/ui/ui_root.gd::_ready`, `scripts/scenes/arena/arena.gd::_ready` |
 | `request_show_main_menu` | UI Root | MainMenu UI, RunManager (log-only) | `scripts/ui/ui_root.gd::_on_quit_pressed` → `scripts/ui/main_menu.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
 
 ## SOURCE: legacy:run_ui_phase_paths_and_names

@@ -24,7 +24,7 @@ All changes to systems described here must update this document in the same PR.
 
 **Status:** SUPPORTING  
 **Scope:** Operational freeze policy for patch scope and stop conditions.  
-**Legacy source lineage:** legacy:CODEX_GOLDEN_CHECKLIST, docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md  
+**Legacy source lineage:** legacy:CODEX_GOLDEN_CHECKLIST, legacy:risk_driven_design_bible  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: legacy:CODEX_GOLDEN_CHECKLIST.
 - Candidate for archive after consolidation patch if freeze policy is merged into canon operations docs.
@@ -45,7 +45,7 @@ All changes to systems described here must update this document in the same PR.
 
 ### Vincoli in vigore durante il freeze
 - Valgono integralmente i vincoli di `legacy:CODEX_GOLDEN_CHECKLIST`.
-- Valgono integralmente gli intenti di `docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md`.
+- Valgono integralmente gli intenti di `legacy:risk_driven_design_bible`.
 - Una task = una patch minimale, localizzata, reversibile.
 
 ### Criterio di stop

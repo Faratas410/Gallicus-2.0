@@ -29,7 +29,7 @@ All changes to systems described here must update this document in the same PR.
 
 **Status:** SUPPORTING  
 **Scope:** Diegetic authority definition for the Registro system and classification logic.  
-**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:final_narrative_structure  
+**Legacy source lineage:** legacy:risk_driven_design_bible, legacy:final_narrative_structure  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: legacy:felix_gallicus, legacy:registry_corruption, legacy:registry_silence.
 
@@ -912,7 +912,7 @@ una scusa storica per spingere il sistema oltre se stesso.
 
 **Status:** SUPPORTING  
 **Scope:** Narrative structure reference for run meaning, verdict framing, and diegetic closure.  
-**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:the_register  
+**Legacy source lineage:** legacy:risk_driven_design_bible, legacy:the_register  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: legacy:felix_gallicus, legacy:registry_corruption, legacy:registry_silence.
 

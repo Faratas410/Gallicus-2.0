@@ -13,6 +13,10 @@ RUN_MANAGER = Path("scripts/systems/run_manager.gd")
 BETTING_UI = Path("scripts/ui/betting_circle_ui.gd")
 
 
+def has_bet_catalog_call(source: str, method: str) -> bool:
+    return f"BetCatalog.{method}(" in source or f"BetCatalogScript.{method}(" in source
+
+
 def fail(message: str) -> int:
     print(f"[FAIL][L3_BET_OFFER_CONTRACT] {message}")
     return 1
@@ -47,7 +51,7 @@ def main() -> int:
 
     if '"desired_count": 4' in run_manager:
         return fail("run_manager.gd must not hardcode desired_count=4 in level3 offer path")
-    if "BetCatalog.level3_active_bets()" not in run_manager:
+    if not has_bet_catalog_call(run_manager, "level3_active_bets"):
         return fail("run_manager.gd must build offers from BetCatalog.level3_active_bets()")
 
     ui_required_tokens = ["BetCatalog.level3_active_bet_ids()", "BetCatalog.resolve_bet_identity", "bet_option_3.visible = false"]

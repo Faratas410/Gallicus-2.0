@@ -10,6 +10,10 @@ BETTING_UI = Path("scripts/ui/betting_circle_ui.gd")
 RUN_MANAGER = Path("scripts/systems/run_manager.gd")
 
 
+def has_bet_catalog_call(source: str, method: str) -> bool:
+    return f"BetCatalog.{method}(" in source or f"BetCatalogScript.{method}(" in source
+
+
 def fail(message: str) -> int:
     print(f"[FAIL][IDENTITY_RESOLVER_CONTRACT] {message}")
     return 1
@@ -37,7 +41,7 @@ def main() -> int:
     if '&"CASH_OUT"' in betting_ui or '&"DOUBLE_OR_DIE"' in betting_ui:
         return fail("betting_circle_ui.gd must not hardcode active bet ids")
 
-    if "BetCatalog.get_bet_debug_token" not in run_manager:
+    if not has_bet_catalog_call(run_manager, "get_bet_debug_token"):
         return fail("run_manager.gd logs must use stable identity token")
 
     print("[OK][IDENTITY_RESOLVER_CONTRACT] identity resolver contract passed")

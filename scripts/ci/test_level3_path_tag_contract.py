@@ -11,6 +11,10 @@ RUN_MANAGER = Path("scripts/systems/run_manager.gd")
 ENDING_RULES = Path("data/ending_rules.gd")
 
 
+def has_bet_catalog_call(source: str, method: str) -> bool:
+    return f"BetCatalog.{method}(" in source or f"BetCatalogScript.{method}(" in source
+
+
 def fail(message: str) -> int:
     print(f"[FAIL][L3_PATH_TAG_CONTRACT] {message}")
     return 1
@@ -44,7 +48,7 @@ def main() -> int:
 
     if "build_path_trace_from_bet_history" not in finale_builder:
         return fail("finale_builder.gd must define authoritative path trace builder")
-    if "BetCatalog.get_path_tag_for_bet_id" not in finale_builder:
+    if not has_bet_catalog_call(finale_builder, "get_path_tag_for_bet_id"):
         return fail("finale_builder.gd must derive paths via BetCatalog.get_path_tag_for_bet_id()")
     for token in ["path_prudence_count", "path_hubris_count"]:
         if token not in finale_builder:

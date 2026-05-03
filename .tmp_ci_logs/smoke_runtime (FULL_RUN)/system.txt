@@ -1,8 +1,0 @@
-2026-04-23T21:11:06.5480000Z Requested labels: ubuntu-latest
-2026-04-23T21:11:06.5480000Z Job defined at: Faratas410/Gallicus-2.0/.github/workflows/godot_smoke_runtime.yml@refs/heads/main
-2026-04-23T21:11:06.5480000Z Waiting for a runner to pick up this job...
-2026-04-23T21:11:06.5380000Z Evaluating smoke_runtime.if
-2026-04-23T21:11:06.5380000Z Evaluating: success()
-2026-04-23T21:11:06.5380000Z Result: true
-2026-04-23T21:11:06.9690000Z Job is about to start running on the hosted runner: GitHub Actions 1000000606
-2026-04-23T21:11:06.9690000Z Job is waiting for a hosted runner to come online.

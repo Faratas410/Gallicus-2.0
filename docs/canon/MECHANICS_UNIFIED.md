@@ -4,7 +4,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/game_flow.md, docs/game_flow_v2.md, docs/FLOW_OFFICIAL_EA.md, docs/bet_progression.md, docs/meta_progression.md, docs/scar_system.md
+Last merged from: legacy:game_flow, legacy:game_flow_v2, legacy:FLOW_OFFICIAL_EA, legacy:bet_progression, legacy:meta_progression, legacy:scar_system
 
 ## Canon Contract
 
@@ -21,21 +21,21 @@ All changes to systems described here must update this document in the same PR.
 - [SOURCE: meta progression](#source-docsmetaprogressionmd)
 - [SOURCE: scar system](#source-docsscarsystemmd)
 
-## SOURCE: docs/game_flow.md
+## SOURCE: legacy:game_flow
 
 # Game Flow
 
 **Status:** ARCHIVE-CANDIDATE  
 **Scope:** Legacy game flow write-up retained for traceability while superseded by canonical contracts.  
-**Source of truth:** docs/flow_wiring_contract.md, docs/run_architecture_ledger.md  
+**Legacy source lineage:** legacy:flow_wiring_contract, legacy:run_architecture_ledger  
 **Last updated:** 2026-02-11  
-**Notes:** Superseded in practice by docs/flow_wiring_contract.md and docs/game_flow_v2.md.
+**Notes:** Superseded in practice by legacy:flow_wiring_contract and legacy:game_flow_v2.
 
-Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+Overlaps with: legacy:FLOW_OFFICIAL_EA, legacy:game_flow_v2.
 - Candidate for archive after consolidation patch.
 
 ## Overlap
-- Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+- Overlaps with: legacy:FLOW_OFFICIAL_EA, legacy:game_flow_v2.
 - Candidate for archive after consolidation patch.
 
 GALLICUS · GAME FLOW DIEGETICO
@@ -287,18 +287,18 @@ Registra un comportamento.
 
 La storia verrà letta solo quando sarà troppo tardi per cambiarla.
 
-## SOURCE: docs/game_flow_v2.md
+## SOURCE: legacy:game_flow_v2
 
 # Game Flow V2
 
 **Status:** SUPPORTING  
 **Scope:** Updated flow narrative aligned to current Level 3 run loop.  
-**Source of truth:** docs/flow_wiring_contract.md, docs/run_architecture_ledger.md  
+**Legacy source lineage:** legacy:flow_wiring_contract, legacy:run_architecture_ledger  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow.md.
+**Notes:** Overlaps with: legacy:FLOW_OFFICIAL_EA, legacy:game_flow.
 
 ## Overlap
-- Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow.md.
+- Overlaps with: legacy:FLOW_OFFICIAL_EA, legacy:game_flow.
 
 GALLICUS · GAME FLOW — FASE 2
 
@@ -530,19 +530,19 @@ INCISIONE FINALE
 La perde quando incontra qualcosa
 che non è stato progettato per capire.**
 
-## SOURCE: docs/FLOW_OFFICIAL_EA.md
+## SOURCE: legacy:FLOW_OFFICIAL_EA
 
 # GAL LICUS — Flow Ufficiale EA (Repo-Aligned Contract)
 
 **Status:** SUPPORTING  
 **Scope:** Repository-aligned Level 3 flow narrative and signal sequence reference.  
-**Source of truth:** docs/flow_wiring_contract.md, docs/run_architecture_ledger.md  
+**Legacy source lineage:** legacy:flow_wiring_contract, legacy:run_architecture_ledger  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/game_flow_v2.md, docs/game_flow.md, docs/flow_wiring_contract.md.
+**Notes:** Overlaps with: legacy:game_flow_v2, legacy:game_flow, legacy:flow_wiring_contract.
 - Candidate for archive after consolidation patch if fully subsumed by canonical flow contract.
 
 ## Overlap
-- Overlaps with: docs/game_flow_v2.md, docs/game_flow.md, docs/flow_wiring_contract.md.
+- Overlaps with: legacy:game_flow_v2, legacy:game_flow, legacy:flow_wiring_contract.
 - Candidate for archive after consolidation patch if fully subsumed by canonical flow contract.
 
 ## Scopo
@@ -727,18 +727,18 @@ Registro (provvisorio/finale):
 Se una UI non appare: non è layout.  
 È un open non emesso, un close non emesso o un listener non connesso.
 
-## SOURCE: docs/bet_progression.md
+## SOURCE: legacy:bet_progression
 
 # Bet Progression
 
 **Status:** SUPPORTING  
 **Scope:** Design doctrine for bet progression and risk escalation tone.  
-**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/game_flow_v2.md  
+**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:game_flow_v2  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/game_flow.md, docs/game_flow_v2.md.
+**Notes:** Overlaps with: legacy:game_flow, legacy:game_flow_v2.
 
 ## Overlap
-- Overlaps with: docs/game_flow.md, docs/game_flow_v2.md.
+- Overlaps with: legacy:game_flow, legacy:game_flow_v2.
 
 GALLICUS · PROGRESSIONE DELLE SCOMMESSE
 
@@ -857,18 +857,18 @@ senza mai raccontarla durante la run.
 Il player non legge la storia.
 La subisce alla fine.
 
-## SOURCE: docs/meta_progression.md
+## SOURCE: legacy:meta_progression
 
 # GALLICUS · META PROGRESSIONE
 
 **Status:** SUPPORTING  
 **Scope:** Meta-progression design boundaries and unlock philosophy.  
-**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/CODEX_GOLDEN_CHECKLIST.md  
+**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:CODEX_GOLDEN_CHECKLIST  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/bet_progression.md, docs/scar_system.md.
+**Notes:** Overlaps with: legacy:bet_progression, legacy:scar_system.
 
 ## Overlap
-- Overlaps with: docs/bet_progression.md, docs/scar_system.md.
+- Overlaps with: legacy:bet_progression, legacy:scar_system.
 
 Versione: 1.0 — Persistenza della Conoscenza
 
@@ -1017,18 +1017,18 @@ In Gallicus, la vera progressione
 è rendere possibile una sconfitta  
 che prima non potevi nemmeno immaginare.
 
-## SOURCE: docs/scar_system.md
+## SOURCE: legacy:scar_system
 
 # Scar System
 
 **Status:** SUPPORTING  
 **Scope:** Design and behavior notes for scars as persistent run consequences.  
-**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/run_architecture_ledger.md  
+**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:run_architecture_ledger  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/bet_progression.md, docs/meta_progression.md.
+**Notes:** Overlaps with: legacy:bet_progression, legacy:meta_progression.
 
 ## Overlap
-- Overlaps with: docs/bet_progression.md, docs/meta_progression.md.
+- Overlaps with: legacy:bet_progression, legacy:meta_progression.
 
 GALLICUS · SCAR SYSTEM
 

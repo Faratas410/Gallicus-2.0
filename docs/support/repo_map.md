@@ -32,7 +32,15 @@
 - `data/` — Gameplay data registries (bets, arena themes, verdict lines, condanne).
 - `docs/` — Canon, support, reports, and archive documentation.
 - `tools/` — Developer tooling and CI helper scripts.
-- `.godot/` — Godot editor/import cache metadata.
+- `.github/workflows/godot_smoke_runtime.yml` — canonical Linux CI signoff workflow for import/runtime smoke evidence.
+
+## Ignored local/generated roots
+- `.godot/` — Godot editor/import cache metadata; never source authority.
+- `artifacts/` — local/CI smoke output; never source authority.
+- `.tmp_ci_logs/` — downloaded CI logs; local diagnostics only.
+- `.tmp_smoke/` — local smoke scratch output.
+- `tools/godot/` — downloaded Godot binary cache for tooling.
+- `export_templates/`, `feature_profiles/`, `script_templates/`, `text_editor_themes/` — local Godot editor customization roots; track only if intentionally populated.
 
 ## Active runtime structure (`res://`)
 
@@ -111,6 +119,7 @@
 ## Documentation governance alignment
 - This file is an **inventory map** and does not redefine gameplay/runtime canon.
 - Canon ownership follows `docs/canon/CANON_DEPENDENCY_MATRIX.md`.
+- Active docs must reference existing `docs/...` paths. Retired merged sources use `legacy:<slug>` lineage markers instead of missing file paths.
 - If runtime authority changes, update `docs/canon/RUN_ARCHITECTURE_CANON.md` in the same patch.
 - If gameplay rules change, update `docs/canon/MECHANICS_UNIFIED.md` in the same patch.
 - If UI behavior contracts change, update `docs/canon/UI_CANON.md` in the same patch.

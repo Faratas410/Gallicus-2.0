@@ -81,7 +81,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/ui_official_ledger.md, docs/ui_audio_map.md, docs/audio_paths.md
+Last merged from: legacy:ui_official_ledger, legacy:ui_audio_map, legacy:audio_paths
 
 ## Canon Contract
 
@@ -99,13 +99,13 @@ All changes to systems described here must update this document in the same PR.
 - [Main menu / idle ambience](#main-menu-idle-ambience)
 - [Arena tension](#arena-tension)
 
-## SOURCE: docs/ui_official_ledger.md
+## SOURCE: legacy:ui_official_ledger
 
 # UI Official Ledger (Foundation Patch)
 
 **Status:** CANON  
 **Scope:** Official UI asset and theme ledger, including authority and replacement policy.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/support/repo_map.md  
+**Legacy source lineage:** legacy:CODEX_GOLDEN_CHECKLIST, docs/support/repo_map.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/support/repo_map.md.
 
@@ -232,18 +232,18 @@ Stop-condition note (active): version `.png.import` sidecars only for tracked so
 - `res://assets/ui/official_source/Italiana-Regular.ttf`
 - `res://assets/ui/official_source/Wooden_UI_png/README.md`
 
-## SOURCE: docs/ui_audio_map.md
+## SOURCE: legacy:ui_audio_map
 
 # UI Audio Map
 
 **Status:** SUPPORTING  
 **Scope:** UI-to-audio mood mapping for menu, arena, boss, and ending phases.  
-**Source of truth:** docs/audio_paths.md, docs/ui_official_ledger.md  
+**Legacy source lineage:** legacy:audio_paths, legacy:ui_official_ledger  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/audio_paths.md.
+**Notes:** Overlaps with: legacy:audio_paths.
 
 ## Overlap
-- Overlaps with: docs/audio_paths.md.
+- Overlaps with: legacy:audio_paths.
 
 ## Main menu / idle ambience
 - Ambient2.mp3
@@ -268,18 +268,18 @@ Stop-condition note (active): version `.png.import` sidecars only for tracked so
 - CreditsOrCutscene1.mp3
 - PianoMarch.mp3
 
-## SOURCE: docs/audio_paths.md
+## SOURCE: legacy:audio_paths
 
 # Audio path hygiene
 
 **Status:** SUPPORTING  
 **Scope:** Canonical runtime audio path policy and tracked Music assets.  
-**Source of truth:** docs/support/repo_map.md, docs/ui_audio_map.md  
+**Legacy source lineage:** docs/support/repo_map.md, legacy:ui_audio_map  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/ui_audio_map.md.
+**Notes:** Overlaps with: legacy:ui_audio_map.
 
 ## Overlap
-- Overlaps with: docs/ui_audio_map.md.
+- Overlaps with: legacy:ui_audio_map.
 
 Canonical runtime audio location: `res://assets/audio/`.
 

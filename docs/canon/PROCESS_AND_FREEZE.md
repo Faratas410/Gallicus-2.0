@@ -4,7 +4,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/FASE_10_FREEZE.md, docs/CODEX_GOLDEN_CHECKLIST.md
+Last merged from: legacy:FASE_10_FREEZE, legacy:CODEX_GOLDEN_CHECKLIST
 
 ## Canon Contract
 
@@ -18,19 +18,19 @@ All changes to systems described here must update this document in the same PR.
 - [TASK 10.1 — Freeze di design](#task-101-freeze-di-design)
 - [SOURCE: CODEX_GOLDEN_CHECKLIST](#source-docscodexgoldenchecklistmd)
 
-## SOURCE: docs/FASE_10_FREEZE.md
+## SOURCE: legacy:FASE_10_FREEZE
 
 # FASE 10 — FREEZE
 
 **Status:** SUPPORTING  
 **Scope:** Operational freeze policy for patch scope and stop conditions.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md, docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md  
+**Legacy source lineage:** legacy:CODEX_GOLDEN_CHECKLIST, docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/CODEX_GOLDEN_CHECKLIST.md.
+**Notes:** Overlaps with: legacy:CODEX_GOLDEN_CHECKLIST.
 - Candidate for archive after consolidation patch if freeze policy is merged into canon operations docs.
 
 ## Overlap
-- Overlaps with: docs/CODEX_GOLDEN_CHECKLIST.md.
+- Overlaps with: legacy:CODEX_GOLDEN_CHECKLIST.
 - Candidate for archive after consolidation patch if freeze policy is merged into canon operations docs.
 
 ## TASK 10.1 — Freeze di design
@@ -44,25 +44,25 @@ All changes to systems described here must update this document in the same PR.
 - Segnalare esplicitamente ogni tentazione di "migliorare" oltre il fix richiesto.
 
 ### Vincoli in vigore durante il freeze
-- Valgono integralmente i vincoli di `docs/CODEX_GOLDEN_CHECKLIST.md`.
+- Valgono integralmente i vincoli di `legacy:CODEX_GOLDEN_CHECKLIST`.
 - Valgono integralmente gli intenti di `docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md`.
 - Una task = una patch minimale, localizzata, reversibile.
 
 ### Criterio di stop
 Se la correzione richiede refactor, tocca più sistemi o implica redesign: **STOP e report**, senza applicare cambiamenti strutturali.
 
-## SOURCE: docs/CODEX_GOLDEN_CHECKLIST.md
+## SOURCE: legacy:CODEX_GOLDEN_CHECKLIST
 
 # Codex Golden Checklist
 
 **Status:** CANON  
 **Scope:** Non-negotiable technical, architecture, and patch invariants for Codex operations.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md  
+**Legacy source lineage:** legacy:CODEX_GOLDEN_CHECKLIST  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/FASE_10_FREEZE.md (operational freeze framing).
+**Notes:** Overlaps with: legacy:FASE_10_FREEZE (operational freeze framing).
 
 ## Overlap
-- Overlaps with: docs/FASE_10_FREEZE.md (operational freeze framing).
+- Overlaps with: legacy:FASE_10_FREEZE (operational freeze framing).
 
 🟡 GALlicus — GOLDEN CHECKLIST (Codex Edition · Level 3)
 

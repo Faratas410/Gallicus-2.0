@@ -8,6 +8,12 @@ Documentazione operativa non canonica da usare come supporto ai file owner canon
 - `docs/support/ui/run_ui_phase_paths.md` — riferimento statico a phase-path e node-name UI.
 - `docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md` — support canon storico mantenuto per contesto e lineage.
 
+## Active source rule
+- Active documentation may reference only existing `docs/...` paths.
+- Retired merged sources are represented as `legacy:<slug>` markers.
+- `legacy:<slug>` markers are lineage notes only; they are not operational source files.
+- Guard: `python scripts/ci/check_docs_active_refs.py`.
+
 ## Historical surfaces
 - `docs/reports/INDEX.md` — indice della superficie report corrente.
 - `docs/archive/INDEX.md` — indice del materiale storico archiviato.

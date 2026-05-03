@@ -4,7 +4,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_silence.md, docs/registry_corruption.md, docs/scar_system.md, docs/bet_progression.md, docs/meta_progression.md, canon addendum "Registro, Precedente e Seconda Era"
+Last merged from: legacy:the_register, legacy:felix_gallicus, legacy:registry_silence, legacy:registry_corruption, legacy:scar_system, legacy:bet_progression, legacy:meta_progression, canon addendum "Registro, Precedente e Seconda Era"
 
 ## Canon Contract
 
@@ -175,13 +175,13 @@ Related: Bet, Run, Condemnation
 
 ## SOURCE: Glossary extraction notes
 
-- SOURCE: docs/the_register.md
-- SOURCE: docs/felix_gallicus.md
-- SOURCE: docs/registry_silence.md
-- SOURCE: docs/registry_corruption.md
-- SOURCE: docs/scar_system.md
-- SOURCE: docs/bet_progression.md
-- SOURCE: docs/meta_progression.md
+- SOURCE: legacy:the_register
+- SOURCE: legacy:felix_gallicus
+- SOURCE: legacy:registry_silence
+- SOURCE: legacy:registry_corruption
+- SOURCE: legacy:scar_system
+- SOURCE: legacy:bet_progression
+- SOURCE: legacy:meta_progression
 
 
 ## Registry Precedent State

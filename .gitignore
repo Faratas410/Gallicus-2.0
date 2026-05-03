@@ -9,10 +9,17 @@
 smoke_*.log
 godot_*.log
 artifacts/
+.tmp_ci_logs/
 .tmp_smoke/
 
 # Local tool downloads
 tools/godot/
+
+# Empty/local Godot editor customization roots unless populated intentionally
+export_templates/
+feature_profiles/
+script_templates/
+text_editor_themes/
 
 # Python cache
 __pycache__/

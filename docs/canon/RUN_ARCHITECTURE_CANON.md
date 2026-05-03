@@ -4,7 +4,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/run_architecture_ledger.md, docs/runtime_architecture_split.md, docs/flow_wiring_contract.md, docs/run_ui_phase_paths_and_names.md
+Last merged from: legacy:run_architecture_ledger, legacy:runtime_architecture_split, legacy:flow_wiring_contract, legacy:run_ui_phase_paths_and_names
 
 ## Canon Contract
 
@@ -21,18 +21,18 @@ All changes to systems described here must update this document in the same PR.
 - [GameEvents signals](#gameevents-signals-required-for-level-3-flow)
 - [Runtime L3 (active path)](#runtime-l3-active-path)
 
-## SOURCE: docs/run_architecture_ledger.md
+## SOURCE: legacy:run_architecture_ledger
 
 # Run Architecture Ledger
 
 **Status:** CANON  
 **Scope:** Authoritative run architecture ownership ledger and extension rules.  
-**Source of truth:** docs/CODEX_GOLDEN_CHECKLIST.md  
+**Legacy source lineage:** legacy:CODEX_GOLDEN_CHECKLIST  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/flow_wiring_contract.md, docs/FLOW_OFFICIAL_EA.md.
+**Notes:** Overlaps with: legacy:flow_wiring_contract, legacy:FLOW_OFFICIAL_EA.
 
 ## Overlap
-- Overlaps with: docs/flow_wiring_contract.md, docs/FLOW_OFFICIAL_EA.md.
+- Overlaps with: legacy:flow_wiring_contract, legacy:FLOW_OFFICIAL_EA.
 
 ## Core authority
 
@@ -307,13 +307,13 @@ Forbidden direction examples:
 6. Add `request_*` handler(s) in `RunManager`.
 7. Hook outcome + catalog usage if the phase needs new data/effects.
 
-## SOURCE: docs/runtime_architecture_split.md
+## SOURCE: legacy:runtime_architecture_split
 
 # Runtime Architecture Split (Phase 3)
 
 **Status:** SUPPORTING  
 **Scope:** High-level split between canonical runtime and legacy/non-runtime code surfaces.  
-**Source of truth:** docs/run_architecture_ledger.md, docs/support/repo_map.md  
+**Legacy source lineage:** legacy:run_architecture_ledger, docs/support/repo_map.md  
 **Last updated:** 2026-02-11  
 **Notes:** Overlaps with: docs/support/repo_map.md.
 
@@ -342,18 +342,18 @@ References to `res://legacy-runtime/*` are prohibited in active runtime surfaces
 
 Any reintroduction of legacy artifacts must be documented in canon before wiring and must not create parallel flow authority.
 
-## SOURCE: docs/flow_wiring_contract.md
+## SOURCE: legacy:flow_wiring_contract
 
 # Flow Wiring Contract (Level 3)
 
 **Status:** CANON  
 **Scope:** Official runtime wiring contract for flow events, ownership boundaries, and phase transitions.  
-**Source of truth:** docs/run_architecture_ledger.md, docs/CODEX_GOLDEN_CHECKLIST.md  
+**Legacy source lineage:** legacy:run_architecture_ledger, legacy:CODEX_GOLDEN_CHECKLIST  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+**Notes:** Overlaps with: legacy:FLOW_OFFICIAL_EA, legacy:game_flow_v2.
 
 ## Overlap
-- Overlaps with: docs/FLOW_OFFICIAL_EA.md, docs/game_flow_v2.md.
+- Overlaps with: legacy:FLOW_OFFICIAL_EA, legacy:game_flow_v2.
 
 This document is a repo-only wiring contract for debugging the Level 3 flow without Godot.
 It records the expected UI paths, required GameEvents signals, and connection points that
@@ -404,7 +404,7 @@ These panels must exist and must not be freed while a run is active.
 | `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` (gameplay failure reasons only; excludes `INFRA_FAILURE`) → `scripts/ui/ui_root.gd::_ready`, `scripts/Arena.gd::_ready` |
 | `request_show_main_menu` | UI Root | MainMenu UI, RunManager (log-only) | `scripts/ui/ui_root.gd::_on_quit_pressed` → `scripts/ui/main_menu.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
 
-## SOURCE: docs/run_ui_phase_paths_and_names.md
+## SOURCE: legacy:run_ui_phase_paths_and_names
 
 # Run UI — Phase Paths and Node Names
 

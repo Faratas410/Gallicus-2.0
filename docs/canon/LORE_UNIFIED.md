@@ -4,7 +4,7 @@ Status: Single source of truth
 
 If another doc conflicts, this doc wins.
 
-Last merged from: docs/the_register.md, docs/felix_gallicus.md, docs/registry_silence.md, docs/registry_corruption.md, docs/final_narrative_structure.md, canon addendum "Registro, Precedente e Seconda Era"
+Last merged from: legacy:the_register, legacy:felix_gallicus, legacy:registry_silence, legacy:registry_corruption, legacy:final_narrative_structure, canon addendum "Registro, Precedente e Seconda Era"
 
 ## Canon Contract
 
@@ -23,18 +23,18 @@ All changes to systems described here must update this document in the same PR.
 - [Final narrative structure](#source-docsfinalnarrativestructuremd)
 - [Canon addendum: Registro, Precedente e Seconda Era](#canon-addendum--registro-precedente-e-seconda-era)
 
-## SOURCE: docs/the_register.md
+## SOURCE: legacy:the_register
 
 # The Register
 
 **Status:** SUPPORTING  
 **Scope:** Diegetic authority definition for the Registro system and classification logic.  
-**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/final_narrative_structure.md  
+**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:final_narrative_structure  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+**Notes:** Overlaps with: legacy:felix_gallicus, legacy:registry_corruption, legacy:registry_silence.
 
 ## Overlap
-- Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+- Overlaps with: legacy:felix_gallicus, legacy:registry_corruption, legacy:registry_silence.
 
 GALLICUS · IL REGISTRO
 
@@ -253,18 +253,18 @@ INCISIONE FINALE
 Il Registro non esiste per raccontare la tua storia.
 Esiste per stabilire che la tua storia è finita.
 
-## SOURCE: docs/felix_gallicus.md
+## SOURCE: legacy:felix_gallicus
 
 # Felix Gallicus
 
 **Status:** DRAFT  
 **Scope:** Narrative dossier around Felix Gallicus as a diegetic extreme case.  
-**Source of truth:** docs/final_narrative_structure.md, docs/the_register.md  
+**Legacy source lineage:** legacy:final_narrative_structure, legacy:the_register  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/registry_corruption.md, docs/registry_silence.md.
+**Notes:** Overlaps with: legacy:registry_corruption, legacy:registry_silence.
 
 ## Overlap
-- Overlaps with: docs/registry_corruption.md, docs/registry_silence.md.
+- Overlaps with: legacy:registry_corruption, legacy:registry_silence.
 
 GALLICUS · FELIX GALLICUS
 
@@ -437,19 +437,19 @@ INCISIONE FINALE
 Ha dimostrato che il Registro
 non era stato progettato per comprenderlo.**
 
-## SOURCE: docs/registry_silence.md
+## SOURCE: legacy:registry_silence
 
 # GALLICUS · IL SILENZIO DEL REGISTRO
 
 **Status:** DRAFT  
 **Scope:** Narrative/fiction draft about Registro silence patterns and classification failure.  
-**Source of truth:** docs/the_register.md, docs/final_narrative_structure.md  
+**Legacy source lineage:** legacy:the_register, legacy:final_narrative_structure  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/registry_corruption.md, docs/felix_gallicus.md.
+**Notes:** Overlaps with: legacy:registry_corruption, legacy:felix_gallicus.
 - Candidate for archive after consolidation patch if merged into final narrative canon.
 
 ## Overlap
-- Overlaps with: docs/registry_corruption.md, docs/felix_gallicus.md.
+- Overlaps with: legacy:registry_corruption, legacy:felix_gallicus.
 - Candidate for archive after consolidation patch if merged into final narrative canon.
 
 Versione: 1.0 — Evento Limite
@@ -628,19 +628,19 @@ Ma esiste un punto
 in cui nemmeno l’anomalia  
 può essere archiviata.**
 
-## SOURCE: docs/registry_corruption.md
+## SOURCE: legacy:registry_corruption
 
 # GALLICUS · CORRUZIONE DEL REGISTRO
 
 **Status:** DRAFT  
 **Scope:** Narrative/fiction draft about Registro corruption scenarios and implications.  
-**Source of truth:** docs/the_register.md, docs/final_narrative_structure.md  
+**Legacy source lineage:** legacy:the_register, legacy:final_narrative_structure  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/registry_silence.md, docs/felix_gallicus.md.
+**Notes:** Overlaps with: legacy:registry_silence, legacy:felix_gallicus.
 - Candidate for archive after consolidation patch if merged into final narrative canon.
 
 ## Overlap
-- Overlaps with: docs/registry_silence.md, docs/felix_gallicus.md.
+- Overlaps with: legacy:registry_silence, legacy:felix_gallicus.
 - Candidate for archive after consolidation patch if merged into final narrative canon.
 
 Versione: 1.0 — Degradazione Controllata
@@ -906,18 +906,18 @@ Felix è:
 
 una scusa storica per spingere il sistema oltre se stesso.
 
-## SOURCE: docs/final_narrative_structure.md
+## SOURCE: legacy:final_narrative_structure
 
 # Final Narrative Structure
 
 **Status:** SUPPORTING  
 **Scope:** Narrative structure reference for run meaning, verdict framing, and diegetic closure.  
-**Source of truth:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, docs/the_register.md  
+**Legacy source lineage:** docs/support/00_RISK_DRIVEN_DESIGN_BIBLE.md, legacy:the_register  
 **Last updated:** 2026-02-11  
-**Notes:** Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+**Notes:** Overlaps with: legacy:felix_gallicus, legacy:registry_corruption, legacy:registry_silence.
 
 ## Overlap
-- Overlaps with: docs/felix_gallicus.md, docs/registry_corruption.md, docs/registry_silence.md.
+- Overlaps with: legacy:felix_gallicus, legacy:registry_corruption, legacy:registry_silence.
 
 GALLICUS · STRUTTURA NARRATIVA FINALE
 

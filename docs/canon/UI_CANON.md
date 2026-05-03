@@ -167,29 +167,29 @@ Stop-condition note (satisfied): no `.png.import` files are versioned; import de
 - `res://scenes/UI.tscn` includes an always-on fallback `ColorRect` background at root level to avoid white-screen output when higher UI layers are hidden.
 
 ## Theme assignment point (single authority)
-- Chosen authority: **ProjectSettings → GUI → Theme → Custom** (`project.godot`, `[gui] theme/custom`).
+- Chosen authority: **ProjectSettings -> GUI -> Theme -> Custom** (`project.godot`, `[gui] theme/custom`).
 - Patch decision (active): **assigned** at ProjectSettings level via `project.godot` `[gui] theme/custom="res://assets/ui/theme/official_theme.tres"`.
 - Rationale: establish a single fallback theme authority for controls without altering runtime flow authority; per-scene/per-node overrides remain allowed as localized exceptions during migration.
 - Runtime visual baseline: `res://assets/ui/theme/official_theme.tres` defines non-empty stylebox entries for `Button` states (`normal`, `hover`, `pressed`, `disabled`) and `PanelContainer.panel` using official stylebox resources.
 - Runtime scenes `res://scenes/UI.tscn` and `res://scenes/ui/BettingCircle.tscn` remove local `theme_override_styles/*`, `theme_override_fonts/*`, `theme_override_constants/*`, and `theme_override_colors/*` assignments so controls inherit global theme authority by default.
 - Pilot redundancy trim: in `res://scenes/Main.tscn`, main menu buttons `ContinueButton`, `NewGameButton`, and `LoadGameButton` now inherit global `Button` styleboxes from `project.godot` theme authority instead of duplicating identical local `theme_override_styles/*`.
 
-## Replacement mapping tracker (Patch 1 scaffold)
+## Replacement mapping tracker
 
 ### Buttons (Main Menu pilot)
-- Official assets selected:
-  - `res://assets/ui/official/atlas/at_button_primary_normal.tres` (`Rect2(0, 160, 48, 16)` from `UI assets (1x).png`)
-  - `res://assets/ui/official/atlas/at_button_primary_hover.tres` (`Rect2(48, 160, 48, 16)`)
-  - `res://assets/ui/official/atlas/at_button_primary_pressed.tres` (`Rect2(96, 160, 48, 16)`)
-  - `res://assets/ui/official/atlas/at_button_primary_disabled.tres` (`Rect2(0, 160, 48, 16)`, muted via `modulate_color`)
-- Applied on scene: `res://scenes/Main.tscn` main menu buttons (`ContinueButton`, `NewGameButton`, `LoadGameButton`, `AchievementsButton`, `SettingsButton`, `CreditsButton`) through local `theme_override_styles/*`.
-- Legacy references replaced: removed main-menu dependency on `res://assets/ui/gallicus_ui_theme.tres` for button rendering in this scene.
+- Active wooden assets:
+  - `res://assets/ui/official_source/Wooden_UI_png/plank_13.png` via `res://assets/ui/official/styleboxes/sb_button_primary_normal.tres`
+  - `res://assets/ui/official_source/Wooden_UI_png/plank_15.png` via `res://assets/ui/official/styleboxes/sb_button_primary_hover.tres`
+  - `res://assets/ui/official_source/Wooden_UI_png/plank_14.png` via `res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres`
+  - `res://assets/ui/official_source/Wooden_UI_png/plank_16.png` via `res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres`
+- Applied through global theme/stylebox references, not runtime logic.
+- Legacy references replaced: primary buttons no longer depend on the previous atlas button slices.
 
 ### Panels / Background boxes (Main Menu pilot)
-- Official assets selected:
-  - `res://assets/ui/official/atlas/at_panel_main.tres` (`Rect2(0, 0, 48, 48)` from `UI assets (1x).png`)
-- Applied on scene: `res://scenes/Main.tscn` node `MenuLayer/MainMenu/CenterContainer/MainPanel` via `res://assets/ui/official/styleboxes/sb_panel_main.tres`.
-- Legacy references replaced: no legacy panel texture remained on the visible main menu root container (new `MainPanel` is official atlas-backed).
+- Active wooden asset:
+  - `res://assets/ui/official_source/Wooden_UI_png/bg_01_02.png` via `res://assets/ui/official/styleboxes/sb_panel_main.tres`
+- Applied through the shared panel stylebox so existing scenes inherit the visual pass.
+- Runtime backgrounds are intentionally out of scope for the wooden UI import pass.
 
 ### Banners / Dividers
 - Official assets selected: _TBD_

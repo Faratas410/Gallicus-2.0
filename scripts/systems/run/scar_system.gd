@@ -7,22 +7,22 @@ func compute_modifiers(
 	scar_cracked_bones: StringName
 ) -> Dictionary:
 	var heal_multiplier: float = 1.0
-	var dodge_cooldown_multiplier: float = 1.0
-	var dodge_speed_multiplier: float = 1.0
+	var avoidance_cooldown_multiplier: float = 1.0
+	var avoidance_speed_multiplier: float = 1.0
 	for scar: Dictionary in scars:
 		var scar_id: StringName = StringName(str(scar.get("id", "")))
 		match scar_id:
 			scar_open_wound:
 				heal_multiplier = minf(heal_multiplier, 0.6)
 			scar_cracked_bones:
-				dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 1.4)
-				dodge_speed_multiplier = minf(dodge_speed_multiplier, 0.85)
+				avoidance_cooldown_multiplier = maxf(avoidance_cooldown_multiplier, 1.4)
+				avoidance_speed_multiplier = minf(avoidance_speed_multiplier, 0.85)
 			_:
 				pass
 	return {
 		"heal_multiplier": heal_multiplier,
-		"dodge_cooldown_multiplier": dodge_cooldown_multiplier,
-		"dodge_speed_multiplier": dodge_speed_multiplier,
+		"avoidance_cooldown_multiplier": avoidance_cooldown_multiplier,
+		"avoidance_speed_multiplier": avoidance_speed_multiplier,
 	}
 
 func build_scar_payload(
@@ -51,6 +51,6 @@ func build_scar_payload(
 func project_modifiers_debug(mods: Dictionary) -> Dictionary:
 	return {
 		"mitigation_mod": float(mods.get("heal_multiplier", 1.0)),
-		"avoidance_cooldown_mod": float(mods.get("dodge_cooldown_multiplier", 1.0)),
-		"avoidance_speed_mod": float(mods.get("dodge_speed_multiplier", 1.0)),
+		"avoidance_cooldown_mod": float(mods.get("avoidance_cooldown_multiplier", 1.0)),
+		"avoidance_speed_mod": float(mods.get("avoidance_speed_multiplier", 1.0)),
 	}

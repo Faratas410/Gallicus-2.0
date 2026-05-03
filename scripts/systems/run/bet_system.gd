@@ -11,7 +11,7 @@ func apply_pure_blood_reward(
 	run_data: Dictionary,
 	level3_enabled: bool,
 	scale: int,
-	hp_bonus: int
+	_legacy_reserve_bonus: int
 ) -> Dictionary:
 	var result: Dictionary = run_data.duplicate(true)
 	if level3_enabled:
@@ -19,22 +19,22 @@ func apply_pure_blood_reward(
 		return result
 	var upgrades: Dictionary = result.get("upgrades", {}) as Dictionary
 	var reward_scale: int = get_reward_scale(scale)
-	upgrades["hp_bonus"] = int(upgrades.get("hp_bonus", 0)) + hp_bonus * reward_scale
+	upgrades["reserve_bonus"] = int(upgrades.get("reserve_bonus", 0)) + _legacy_reserve_bonus * reward_scale
 	result["upgrades"] = upgrades
 	return result
 
-func apply_double_or_die_reward(run_data: Dictionary, level3_enabled: bool, scale: int, light_bonus: int, heavy_bonus: int) -> Dictionary:
+func apply_double_or_die_reward(run_data: Dictionary, level3_enabled: bool, scale: int, _legacy_pressure_bonus: int, _legacy_risk_bonus: int) -> Dictionary:
 	var result: Dictionary = run_data.duplicate(true)
 	if level3_enabled:
 		result["upgrades"] = {}
 		return result
-	if light_bonus <= 0 and heavy_bonus <= 0:
+	if _legacy_pressure_bonus <= 0 and _legacy_risk_bonus <= 0:
 		return result
 	var upgrades: Dictionary = result.get("upgrades", {}) as Dictionary
 	var reward_scale: int = get_reward_scale(scale)
 	for _i: int in range(reward_scale):
-		upgrades["light_bonus"] = int(upgrades.get("light_bonus", 0)) + light_bonus
-		upgrades["heavy_bonus"] = int(upgrades.get("heavy_bonus", 0)) + heavy_bonus
+		upgrades["pressure_bonus"] = int(upgrades.get("pressure_bonus", 0)) + _legacy_pressure_bonus
+		upgrades["risk_bonus"] = int(upgrades.get("risk_bonus", 0)) + _legacy_risk_bonus
 	result["upgrades"] = upgrades
 	return result
 
@@ -47,7 +47,7 @@ func build_pact_text(
 	bet_pure_blood_id: String,
 	bet_double_or_die_id: String,
 	bet_coward_glory_reward: int,
-	bet_pure_hp_bonus: int
+	bet_pure_reserve_bonus: int
 ) -> String:
 	if level3_enabled:
 		var tier: int = get_reward_scale(chain_level)
@@ -61,9 +61,9 @@ func build_pact_text(
 		bet_coward_id:
 			return "Ricompensa minore: +%d gloria" % (bet_coward_glory_reward * reward_scale)
 		bet_pure_blood_id:
-			return "Upgrade forte: +%d HP max" % (bet_pure_hp_bonus * reward_scale)
+			return "Riserva rituale: +%d" % (bet_pure_reserve_bonus * reward_scale)
 		bet_double_or_die_id:
-			return "Raddoppio danni per la run x%d" % reward_scale
+			return "Rilancio rituale per la run x%d" % reward_scale
 		_:
 			return bet_id
 
@@ -87,7 +87,7 @@ func build_doom_text(
 			return "Nessuna penalità extra"
 		bet_pure_blood_id:
 			var doom_scale: int = get_doom_scale(chain_level)
-			return "HP massimo -%d permanente per la run" % (10 * doom_scale)
+			return "Esposizione rituale +%d permanente per la run" % (10 * doom_scale)
 		bet_double_or_die_id:
 			return "MORTE IMMEDIATA: run terminata"
 		_:

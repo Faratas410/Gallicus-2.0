@@ -17,16 +17,16 @@ const SCAR_SHAME_MARK: StringName = &"SCAR_SHAME_MARK"
 const SCAR_RUSTED_ARMOR: StringName = &"SCAR_RUSTED_ARMOR"
 const SCAR_ONE_EYE: StringName = &"SCAR_ONE_EYE"
 
-const ENEMY_TRICKSTER: StringName = &"TRICKSTER"
-const ENEMY_EXECUTIONER: StringName = &"EXECUTIONER"
+const RISK_VOLATILE_RECORD: StringName = &"VOLATILE_RECORD"
+const RISK_SEVERE_JUDGMENT: StringName = &"SEVERE_JUDGMENT"
 
 func resolve_level3_arena(
 	rng: RandomNumberGenerator,
 	rng_seed: int,
 	escalation_level: int,
 	active_scar_ids: Array[StringName],
-	enemy_profile: StringName,
-	enemy_profiles: Array[Dictionary]
+	risk_profile: StringName,
+	risk_profiles: Array[Dictionary]
 ) -> Dictionary:
 	var base_win: float = 0.66
 	var base_failure: float = 0.4
@@ -51,15 +51,14 @@ func resolve_level3_arena(
 		base_failure += 0.1
 		base_win -= 0.03
 
-	var profile: Dictionary = _get_enemy_profile_def(enemy_profile, enemy_profiles)
+	var profile: Dictionary = _get_risk_profile_def(risk_profile, risk_profiles)
 	if not profile.is_empty():
 		var win_mod: float = float(profile.get("win_mod", 0.0))
-		# LEGACY NAME: "damage_mod" == adverse/pressure shift in L3 ritual semantics.
-		var adverse_shift: float = float(profile.get("damage_mod", 0.0))
+		var adverse_shift: float = float(profile.get("pressure_mod", 0.0))
 		pressure_mod = adverse_shift
 		base_win += win_mod
 		base_failure += adverse_shift
-		if enemy_profile == ENEMY_TRICKSTER:
+		if risk_profile == RISK_VOLATILE_RECORD:
 			base_win = 0.5 + (base_win - 0.5) * 1.35
 			base_failure = 0.5 + (base_failure - 0.5) * 1.25
 	var win_chance: float = clampf(base_win - escalation_penalty, 0.2, 0.85)
@@ -71,8 +70,8 @@ func resolve_level3_arena(
 	var notes: Array[StringName] = []
 	if condemnation_flag:
 		notes.append(&"CONDEMNATION")
-	if enemy_profile != &"":
-		notes.append(StringName("ENEMY_" + String(enemy_profile)))
+	if risk_profile != &"":
+		notes.append(StringName("RISK_" + String(risk_profile)))
 	var outcome_tier: StringName = &"ADVERSE"
 	if won:
 		outcome_tier = &"FAVORABLE"
@@ -86,7 +85,7 @@ func resolve_level3_arena(
 	# Canon ritual vocabulary (Patch 9A).
 	# Legacy outcome aliases removed in C4.
 	return {
-		"risk_profile": String(enemy_profile),
+		"risk_profile": String(risk_profile),
 		"pressure_mod": pressure_mod,
 		"failure_chance": failure_chance,
 		"condemnation_flag": condemnation_flag,
@@ -96,7 +95,7 @@ func resolve_level3_arena(
 			"base_failure_chance": base_failure,
 			"escalation_mod": escalation_adverse_mod,
 			"scar_mod": base_failure - 0.4 - pressure_mod,
-			"enemy_mod": pressure_mod,
+			"risk_pressure_mod": pressure_mod,
 			"final_failure_chance": failure_chance,
 			"condemnation_flag": condemnation_flag,
 			"outcome_tier": String(outcome_tier),
@@ -108,10 +107,10 @@ func resolve_level3_arena(
 func build_level3_loss_consequence(
 	bet_id: StringName,
 	behavior_id: StringName,
-	enemy_profile: StringName,
+	risk_profile: StringName,
 	provoke_armed: bool,
-	next_loss_hp_penalty: int,
-	_scar_open_wound_hp_penalty: int
+	next_loss_adverse_cost: int,
+	_scar_open_wound_adverse_cost: int
 ) -> Dictionary:
 	if provoke_armed:
 		# Canon ritual vocabulary (Patch 9A).
@@ -122,8 +121,8 @@ func build_level3_loss_consequence(
 			"outcome_reason": "Condanna: Provoca fallita",
 			"corruption_gain": 0,
 			"end_reason": "PROVOCA_FAIL",
-			"apply_next_loss_hp_penalty": false,
-			"clear_next_loss_hp_penalty": true,
+			"apply_next_loss_adverse_cost": false,
+			"clear_next_loss_adverse_cost": true,
 			"scar_id": &"",
 			"scar_origin": "",
 			"cashout_lock_min": -1,
@@ -131,7 +130,7 @@ func build_level3_loss_consequence(
 			"reset_escalation": false,
 		}
 	var executioner_bonus: int = 0
-	if enemy_profile == ENEMY_EXECUTIONER:
+	if risk_profile == RISK_SEVERE_JUDGMENT:
 		executioner_bonus = 10
 	if bet_id == BET_DOUBLE_OR_DIE:
 		# Canon ritual vocabulary (Patch 9A).
@@ -142,15 +141,15 @@ func build_level3_loss_consequence(
 			"outcome_reason": "Condanna: Raddoppia o Muori",
 			"corruption_gain": 0,
 			"end_reason": "THE_FOOL",
-			"apply_next_loss_hp_penalty": false,
-			"clear_next_loss_hp_penalty": false,
+			"apply_next_loss_adverse_cost": false,
+			"clear_next_loss_adverse_cost": false,
 			"scar_id": &"",
 			"scar_origin": "",
 			"cashout_lock_min": -1,
 			"reset_reward_tier": false,
 			"reset_escalation": false,
 		}
-	var hp_loss: int = 0
+	var adverse_cost: int = 0
 	var scar_id: StringName = SCAR_CRACKED_BONES
 	var scar_origin: String = "Sconfitta in arena"
 	var cashout_lock_min: int = -1
@@ -158,7 +157,7 @@ func build_level3_loss_consequence(
 		scar_id = SCAR_DEBT_BRAND
 		scar_origin = "Condanna: Catena di Debito"
 	elif behavior_id == BET_BLOOD_TAX:
-		hp_loss += 25 + executioner_bonus
+		adverse_cost += 25 + executioner_bonus
 		cashout_lock_min = 1
 		scar_id = SCAR_RUSTED_ARMOR
 		scar_origin = "Condanna: Decima di Sangue"
@@ -166,23 +165,23 @@ func build_level3_loss_consequence(
 		scar_id = SCAR_SHAME_MARK
 		scar_origin = "Condanna: Piacere al Pubblico"
 	elif behavior_id == BET_LAST_BREATH:
-		hp_loss += 15 + executioner_bonus
+		adverse_cost += 15 + executioner_bonus
 		scar_id = SCAR_ONE_EYE
 		scar_origin = "Condanna: Ultimo Respiro"
 	else:
-		hp_loss += executioner_bonus
-	if next_loss_hp_penalty > 0:
-		hp_loss += next_loss_hp_penalty
+		adverse_cost += executioner_bonus
+	if next_loss_adverse_cost > 0:
+		adverse_cost += next_loss_adverse_cost
 	# Canon ritual vocabulary (Patch 9A).
 	# Legacy loss aliases removed in C6B.
 	return {
-		"condemnation_flag": hp_loss > 0 or scar_id != &"",
+		"condemnation_flag": adverse_cost > 0 or scar_id != &"",
 		"outcome_tier": "ADVERSE",
 		"outcome_reason": scar_origin,
-		"corruption_gain": maxi(hp_loss * 10, 0),
+		"corruption_gain": maxi(adverse_cost * 10, 0),
 		"end_reason": "",
-		"apply_next_loss_hp_penalty": next_loss_hp_penalty > 0,
-		"clear_next_loss_hp_penalty": true,
+		"apply_next_loss_adverse_cost": next_loss_adverse_cost > 0,
+		"clear_next_loss_adverse_cost": true,
 		"scar_id": scar_id,
 		"scar_origin": scar_origin,
 		"cashout_lock_min": cashout_lock_min,
@@ -232,18 +231,14 @@ func get_escalation_adverse_penalty(escalation_level: int) -> float:
 		penalty += float(escalation_level - 1) * 0.07
 	return penalty
 
-# LEGACY NAME: "damage" == "adverse consequence" in L3 ritual semantics.
-func get_escalation_damage_penalty(escalation_level: int) -> float:
-	return get_escalation_adverse_penalty(escalation_level)
-
 func _contains_scar(active_scar_ids: Array[StringName], scar_id: StringName) -> bool:
 	for value: StringName in active_scar_ids:
 		if value == scar_id:
 			return true
 	return false
 
-func _get_enemy_profile_def(profile_id: StringName, enemy_profiles: Array[Dictionary]) -> Dictionary:
-	for profile_value: Dictionary in enemy_profiles:
+func _get_risk_profile_def(profile_id: StringName, risk_profiles: Array[Dictionary]) -> Dictionary:
+	for profile_value: Dictionary in risk_profiles:
 		var profile: Dictionary = profile_value as Dictionary
 		if StringName(str(profile.get("id", ""))) == profile_id:
 			return profile

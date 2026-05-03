@@ -60,7 +60,6 @@
   - `systems/run_manager.gd` (single run flow authority)
   - `systems/game_events.gd` (global event bus authority)
   - `systems/save_manager.gd`
-  - `systems/constants.gd`
   - `systems/run/`
     - `run_state.gd`
     - `bet_system.gd`

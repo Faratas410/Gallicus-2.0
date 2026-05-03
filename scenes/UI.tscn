@@ -1277,7 +1277,7 @@ visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
 modulate = Color(0.75, 0.72, 0.6, 1)
-text = "Aumenti posta e danno potenziale."
+text = "Aumenti posta e pressione rituale."
 
 [node name="ScarsDetailPanel" type="Panel" parent="UI_RunRoot"]
 visible = false

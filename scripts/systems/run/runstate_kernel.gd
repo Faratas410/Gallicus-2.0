@@ -51,26 +51,26 @@ func reset_scars(run_state: RunState) -> void:
 	run_state.scars_history = []
 	run_state.is_hunted_by_crowd = false
 	run_state.scar_heal_multiplier = 1.0
-	run_state.scar_dodge_cooldown_multiplier = 1.0
-	run_state.scar_dodge_speed_multiplier = 1.0
+	run_state.scar_avoidance_cooldown_multiplier = 1.0
+	run_state.scar_avoidance_speed_multiplier = 1.0
 
 func recompute_scar_modifiers(run_state: RunState) -> void:
 	var heal_multiplier: float = 1.0
-	var dodge_cooldown_multiplier: float = 1.0
-	var dodge_speed_multiplier: float = 1.0
+	var avoidance_cooldown_multiplier: float = 1.0
+	var avoidance_speed_multiplier: float = 1.0
 	for scar: Dictionary in run_state.scars_payload:
 		var scar_value_id: StringName = StringName(str(scar.get("id", "")))
 		match scar_value_id:
 			SCAR_OPEN_WOUND_ID:
 				heal_multiplier = minf(heal_multiplier, 0.6)
 			SCAR_CRACKED_BONES_ID:
-				dodge_cooldown_multiplier = maxf(dodge_cooldown_multiplier, 1.4)
-				dodge_speed_multiplier = minf(dodge_speed_multiplier, 0.85)
+				avoidance_cooldown_multiplier = maxf(avoidance_cooldown_multiplier, 1.4)
+				avoidance_speed_multiplier = minf(avoidance_speed_multiplier, 0.85)
 			_:
 				pass
 	run_state.scar_heal_multiplier = heal_multiplier
-	run_state.scar_dodge_cooldown_multiplier = dodge_cooldown_multiplier
-	run_state.scar_dodge_speed_multiplier = dodge_speed_multiplier
+	run_state.scar_avoidance_cooldown_multiplier = avoidance_cooldown_multiplier
+	run_state.scar_avoidance_speed_multiplier = avoidance_speed_multiplier
 
 func recompute_scar_synergies(run_state: RunState) -> bool:
 	if run_state.is_hunted_by_crowd:

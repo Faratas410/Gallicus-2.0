@@ -126,7 +126,6 @@ var _silence_overlay_active: bool = false
 # Restored UI/state declarations (were dropped, causing wide "identifier not declared" parse failures).
 var _run_manager_port: RunManagerUiPort = null
 var _arena: Node = null
-var _player: Node = null
 var _phase_node_map: Dictionary = {}
 var _last_shown_phase: int = -1
 
@@ -440,11 +439,6 @@ func _ready() -> void:
 	_wire_intro_phase_buttons()
 
 	_refresh_runtime_group_cache(true)
-	var arena: Node = _get_arena()
-	if arena != null and arena.has_signal("player_spawned"):
-		var arena_player_callable: Callable = Callable(self, "_on_player_spawned")
-		if not arena.player_spawned.is_connected(arena_player_callable):
-			arena.player_spawned.connect(arena_player_callable)
 
 	print_debug("UI ready: bet_badge=%s bet_panel=%s debug=%s" % [bet_badge_value_label != null, bet_panel != null, _debug_overlay != null])
 
@@ -2384,15 +2378,6 @@ func _refresh_runtime_group_cache(log_missing: bool) -> void:
 		_arena = _run_manager_port.get_arena()
 	if _arena == null:
 		_arena = get_tree().get_first_node_in_group("arena")
-	_player = get_tree().get_first_node_in_group("player")
-	if _player != null:
-		_bind_player(_player)
-
-func _on_player_spawned(p: Node) -> void:
-	_bind_player(p)
-
-func _bind_player(p: Node) -> void:
-	_player = p
 
 func _build_bet_buttons(bets: Array[Dictionary]) -> void:
 	if bet_buttons_container == null:
@@ -3190,19 +3175,6 @@ func _get_arena_index() -> int:
 	if _run_manager_port != null:
 		return _run_manager_port.get_arena_index()
 	return 0
-
-func _get_enemies_alive() -> int:
-	var arena: Node = _get_arena()
-	if arena and arena.has_method("get_enemies_remaining"):
-		return int(arena.get_enemies_remaining())
-	return 0
-
-
-
-
-
-
-
 
 
 

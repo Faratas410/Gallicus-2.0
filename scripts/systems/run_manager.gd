@@ -12,10 +12,8 @@ extends Node
 # -----------------------------------------------------------------------------
 
 @export var arena_path: NodePath
-@export var player_path: NodePath
-@export var arena_clear_reward: int = GameConstantsScript.ARENA_CLEAR_REWARD
+@export var arena_clear_reward: int = 5
 @export var arena_scene: PackedScene
-@export var player_scene: PackedScene
 
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
 
@@ -79,7 +77,6 @@ const BET_P3_LIE_MERCY: StringName = BetCatalogScript.BET_P3_LIE_MERCY
 const BET_P3_LIE_DEBT: StringName = BetCatalogScript.BET_P3_LIE_DEBT
 const BET_P3_LIE_APPLAUSE: StringName = BetCatalogScript.BET_P3_LIE_APPLAUSE
 const ArenaThemes = preload("res://data/arena_themes.gd")
-const GameConstantsScript = preload("res://scripts/systems/constants.gd")
 const SmokeDriverScript = preload("res://scripts/systems/run/smoke_driver.gd")
 const FlowWatchdogScript = preload("res://scripts/systems/run/flow_watchdog.gd")
 const BetSystemScript = preload("res://scripts/systems/run/bet_system.gd")
@@ -394,11 +391,11 @@ const TAG_BLOOD: StringName = &"BLOOD"
 const TAG_EGO: StringName = &"EGO"
 const TAG_SOCIAL: StringName = &"SOCIAL"
 
-const ENEMY_BRUISER: StringName = &"BRUISER"
-const ENEMY_DUELIST: StringName = &"DUELIST"
-const ENEMY_SWARM: StringName = &"SWARM"
-const ENEMY_EXECUTIONER: StringName = &"EXECUTIONER"
-const ENEMY_TRICKSTER: StringName = &"TRICKSTER"
+const RISK_HEAVY_PRESSURE: StringName = &"HEAVY_PRESSURE"
+const RISK_EDGE_BALANCE: StringName = &"EDGE_BALANCE"
+const RISK_CROWD_PRESSURE: StringName = &"CROWD_PRESSURE"
+const RISK_SEVERE_JUDGMENT: StringName = &"SEVERE_JUDGMENT"
+const RISK_VOLATILE_RECORD: StringName = &"VOLATILE_RECORD"
 const SPECIAL_ARENA_SILENCE: StringName = &"ARENA_OF_SILENCE"
 const SPECIAL_ARENA_ASH: StringName = &"ARENA_OF_ASH"
 const SPECIAL_ARENA_DISPREZZO: StringName = &"ARENA_DISPREZZO"
@@ -480,7 +477,7 @@ const REGISTER_POOL_FINAL_SCARS: Array[String] = [
 	"Integrità fisica compromessa. Il Registro conclude.",
 	"Evidenza prevalente: consumo. Fascicolo definito.",
 	"Segni sufficienti. Non sono richiesti ulteriori dati.",
-	"Profilo stabilizzato su danno. Atto finale registrato.",
+	"Profilo stabilizzato su consumo. Atto finale registrato.",
 ]
 const REGISTER_POOL_FINAL_PATTERN: Array[String] = [
 	"Campione minimo raggiunto. Fascicolo chiuso.",
@@ -671,46 +668,45 @@ const LYING_PACT_REVEALS: Dictionary = {
 	BET_P3_LIE_APPLAUSE: "VERITÀ: L'applauso è una trappola: più ti esaltano, più ti consumano.",
 }
 
-# LEGACY NAME: "damage_mod" profiles ritual adverse pressure in L3 (non-combat).
-const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
+const LEVEL3_RISK_PROFILES: Array[Dictionary] = [
 	{
-		"id": ENEMY_BRUISER,
-		"name": "BRUISER",
-		"desc": "Colpi pesanti e scambi lunghi.",
+		"id": RISK_HEAVY_PRESSURE,
+		"name": "PRESSIONE PESANTE",
+		"desc": "Scambi lunghi e Registro piu severo.",
 		"win_mod": -0.05,
-		"damage_mod": 0.12,
+		"pressure_mod": 0.12,
 		"weight": 3,
 	},
 	{
-		"id": ENEMY_DUELIST,
-		"name": "DUELIST",
-		"desc": "Duello teso: o pulito o disastro.",
+		"id": RISK_EDGE_BALANCE,
+		"name": "EQUILIBRIO TESO",
+		"desc": "Esito piu netto: o pulito o disastroso.",
 		"win_mod": 0.05,
-		"damage_mod": 0.08,
+		"pressure_mod": 0.08,
 		"weight": 3,
 	},
 	{
-		"id": ENEMY_SWARM,
-		"name": "SWARM",
-		"desc": "Troppi nemici per restare intatti.",
+		"id": RISK_CROWD_PRESSURE,
+		"name": "PRESSIONE DELLA FOLLA",
+		"desc": "La folla aumenta l'attrito della sentenza.",
 		"win_mod": -0.02,
-		"damage_mod": 0.16,
+		"pressure_mod": 0.16,
 		"weight": 3,
 	},
 	{
-		"id": ENEMY_EXECUTIONER,
-		"name": "EXECUTIONER",
-		"desc": "Condanne più dure.",
+		"id": RISK_SEVERE_JUDGMENT,
+		"name": "GIUDIZIO SEVERO",
+		"desc": "Condanne piu dure.",
 		"win_mod": -0.08,
-		"damage_mod": 0.1,
+		"pressure_mod": 0.1,
 		"weight": 2,
 	},
 	{
-		"id": ENEMY_TRICKSTER,
-		"name": "TRICKSTER",
-		"desc": "Volatilità estrema.",
+		"id": RISK_VOLATILE_RECORD,
+		"name": "REGISTRO VOLATILE",
+		"desc": "Volatilita estrema.",
 		"win_mod": 0.0,
-		"damage_mod": 0.0,
+		"pressure_mod": 0.0,
 		"weight": 2,
 	},
 ]
@@ -718,12 +714,12 @@ const LEVEL3_ENEMY_PROFILES: Array[Dictionary] = [
 const DEBUG_RUNTIME_LOGS: bool = false
 
 @export var bet_coward_glory_reward: int = 1
-@export var bet_pure_hp_bonus: int = 30
+@export var bet_pure_reserve_bonus: int = 30
 
 const BET_COWARD: String = "COWARD"
 const BET_PURE_BLOOD: String = "PURE_BLOOD"
 const BET_DOUBLE_OR_DIE: String = String(BetCatalogScript.BET_DOUBLE_OR_DIE)
-const SCAR_OPEN_WOUND_HP_PENALTY: int = 20
+const SCAR_OPEN_WOUND_ADVERSE_COST: int = 20
 
 var run: Dictionary = {
 	"arena_index": 0,
@@ -735,7 +731,6 @@ var _arena: Node
 var _waiting_for_bet: bool = false
 var _waiting_for_push_luck: bool = false
 var _waiting_for_intermediate_choice: bool = false
-var _player: Node
 var _run_failed_emitted: bool = false
 var _run_ended_emitted: bool = false
 var _meta_unlock_emitted_this_run: bool = false
@@ -1184,9 +1179,7 @@ func _boot() -> void:
 	if not _validate_boot():
 		return
 	_arena = null
-	_player = null
-	print("Boot: arena=", _arena, " player=", _player)
-	print("Player in tree:", _player != null and _player.is_inside_tree())
+	print("Boot: arena=", _arena)
 	_set_phase(RunPhase.MAIN_MENU, "boot")
 	if _is_smoke_mode():
 		print("SMOKE:BOOT_OK")
@@ -1435,12 +1428,12 @@ func _start_level3_run() -> void:
 	_run_state.forced_ending_id = &""
 	_run_state.forced_next_pact_archetype = &""
 	_run_state.level3_reward_tier = 1
-	_run_state.level3_next_loss_hp_penalty = 0
+	_run_state.level3_next_loss_adverse_cost = 0
 	_run_state.level3_target_arenas = 0
 	_run_state.cashout_lock_remaining = 0
 	_run_state.last_selected_bet_id = &""
 	_run_state.last_bet_offers = []
-	_run_state.last_enemy_profile = &""
+	_run_state.last_risk_profile = &""
 	_run_state.level3_current_offer = []
 	_run_state.special_arena_index = 0
 	_run_state.special_arena_id = &""
@@ -1471,8 +1464,8 @@ func _start_level3_run() -> void:
 	_flow_log("run_started", "arena=%d, bet_id=, save_present=%s" % [_run_state.arena_index, str(_save_system.has_run_save())])
 	_run_state.escalation_level = 0
 	_run_state.active_bet_id = &""
-	_run_state.enemy_profile = &""
-	_run_state.enemy_profiles = []
+	_run_state.risk_profile = &""
+	_run_state.risk_profiles = []
 	_run_state.scars = []
 	_run_state.scars_history = []
 	_run_state.bets_history = []
@@ -1520,9 +1513,9 @@ func start_arena() -> void:
 	run["arena_index"] = _run_state.arena_index
 	_emit_arena_theme_changed()
 	_maybe_activate_special_arena()
-	_select_enemy_profile()
-	if _run_state.enemy_profile != &"":
-		_run_state.enemy_profiles.append(_run_state.enemy_profile)
+	_select_risk_profile()
+	if _run_state.risk_profile != &"":
+		_run_state.risk_profiles.append(_run_state.risk_profile)
 	_emit_run_debug_state()
 	_open_level3_bet_ui()
 
@@ -1947,7 +1940,7 @@ func _compute_level3_seed(bet_id: StringName) -> int:
 	for scar_name: StringName in _run_state.scars_history:
 		scars_hash += String(scar_name).hash() * 3
 	seed_value += scars_hash
-	seed_value += String(_run_state.enemy_profile).hash() * 5
+	seed_value += _risk_profile_seed_hash(_run_state.risk_profile) * 5
 	return seed_value
 
 func _compute_level3_offer_seed() -> int:
@@ -2033,7 +2026,7 @@ func _emit_run_debug_state() -> void:
 	var resolve_debug_payload: Dictionary = {}
 	if OS.is_debug_build():
 		resolve_debug_payload = _last_resolve_debug.duplicate(true)
-	var payload: Dictionary = _flow_diagnostics.build_run_debug_payload(_run_state.run_seed, _run_state.arena_index, _run_state.escalation_level, String(_run_state.active_bet_id), String(_run_state.enemy_profile), scars_copy, String(_run_state.special_arena_id), _run_state.special_arena_active, _run_state.is_hunted_by_crowd, _run_state.glory, int(run.get("corruption", 0)), _run_state.scar_double_count, _run_state.scar_pact_count, _run_state.volatility, resolve_debug_payload)
+	var payload: Dictionary = _flow_diagnostics.build_run_debug_payload(_run_state.run_seed, _run_state.arena_index, _run_state.escalation_level, String(_run_state.active_bet_id), String(_run_state.risk_profile), scars_copy, String(_run_state.special_arena_id), _run_state.special_arena_active, _run_state.is_hunted_by_crowd, _run_state.glory, int(run.get("corruption", 0)), _run_state.scar_double_count, _run_state.scar_pact_count, _run_state.volatility, resolve_debug_payload)
 	GameEvents.run_debug_state_updated.emit(payload)
 
 func _apply_glory_on_success() -> void:
@@ -2374,27 +2367,27 @@ func _pick_special_arena_scar() -> StringName:
 			return scar_id
 	return &""
 
-func _select_enemy_profile() -> void:
-	if LEVEL3_ENEMY_PROFILES.is_empty():
-		_run_state.enemy_profile = &""
+func _select_risk_profile() -> void:
+	if LEVEL3_RISK_PROFILES.is_empty():
+		_run_state.risk_profile = &""
 		return
-	var pool: Array[Dictionary] = LEVEL3_ENEMY_PROFILES.duplicate()
-	if _run_state.last_enemy_profile != &"" and pool.size() > 1:
+	var pool: Array[Dictionary] = LEVEL3_RISK_PROFILES.duplicate()
+	if _run_state.last_risk_profile != &"" and pool.size() > 1:
 		var filtered: Array[Dictionary] = []
 		for profile_value: Dictionary in pool:
 			var profile_id: StringName = StringName(str(profile_value.get("id", "")))
-			if profile_id != _run_state.last_enemy_profile:
+			if profile_id != _run_state.last_risk_profile:
 				filtered.append(profile_value)
 		if filtered.size() > 0:
 			pool = filtered
-	_level3_rng.seed = _compute_level3_enemy_seed()
-	var idx: int = _weighted_pick_enemy_index(pool)
+	_level3_rng.seed = _compute_level3_risk_seed()
+	var idx: int = _weighted_pick_risk_index(pool)
 	var chosen: Dictionary = pool[idx] as Dictionary
 	var chosen_id: StringName = StringName(str(chosen.get("id", "")))
-	_run_state.enemy_profile = chosen_id
-	_run_state.last_enemy_profile = chosen_id
+	_run_state.risk_profile = chosen_id
+	_run_state.last_risk_profile = chosen_id
 
-func _weighted_pick_enemy_index(pool: Array[Dictionary]) -> int:
+func _weighted_pick_risk_index(pool: Array[Dictionary]) -> int:
 	var total_weight: int = 0
 	for profile_value: Dictionary in pool:
 		var weight: int = int(profile_value.get("weight", 1))
@@ -2412,12 +2405,28 @@ func _weighted_pick_enemy_index(pool: Array[Dictionary]) -> int:
 			return idx
 	return maxi(pool.size() - 1, 0)
 
-func _compute_level3_enemy_seed() -> int:
+func _compute_level3_risk_seed() -> int:
 	var seed_value: int = _run_state.run_seed
 	seed_value += _run_state.arena_index * 19
 	seed_value += _run_state.escalation_level * 7
-	seed_value += String(_run_state.last_enemy_profile).hash() * 3
+	seed_value += _risk_profile_seed_hash(_run_state.last_risk_profile) * 3
 	return seed_value
+
+func _risk_profile_seed_hash(profile_id: StringName) -> int:
+	# Preserve pre-cleanup deterministic seeds while keeping live profile ids ritual-named.
+	match profile_id:
+		RISK_HEAVY_PRESSURE:
+			return "BRUISER".hash()
+		RISK_EDGE_BALANCE:
+			return "DUELIST".hash()
+		RISK_CROWD_PRESSURE:
+			return "SWARM".hash()
+		RISK_SEVERE_JUDGMENT:
+			return "EXECUTIONER".hash()
+		RISK_VOLATILE_RECORD:
+			return "TRICKSTER".hash()
+		_:
+			return String(profile_id).hash()
 
 func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
 	var scar_names: Array[String] = []
@@ -2431,8 +2440,8 @@ func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_app
 		_run_state.arena_index,
 		" bet=",
 		bet_token,
-		" enemy=",
-		String(_run_state.enemy_profile),
+		" risk=",
+		String(_run_state.risk_profile),
 		" won=",
 		result.won,
 		" condemnation_flag=",
@@ -2462,8 +2471,8 @@ func _resolve_level3_arena() -> ArenaResult:
 		outcome_seed,
 		adjusted_escalation,
 		_get_active_scar_ids(),
-		_run_state.enemy_profile,
-		LEVEL3_ENEMY_PROFILES
+		_run_state.risk_profile,
+		LEVEL3_RISK_PROFILES
 	)
 	result.won = bool(payload.get("won", false))
 	result.condemnation_flag = bool(payload.get("condemnation_flag", false))
@@ -2488,10 +2497,10 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	var consequence: Dictionary = _outcome_system.build_level3_loss_consequence(
 		bet_id,
 		behavior_id,
-		_run_state.enemy_profile,
+		_run_state.risk_profile,
 		_run_state.provoke_armed,
-		_run_state.level3_next_loss_hp_penalty,
-		SCAR_OPEN_WOUND_HP_PENALTY
+		_run_state.level3_next_loss_adverse_cost,
+		SCAR_OPEN_WOUND_ADVERSE_COST
 	)
 	var end_reason: String = str(consequence.get("end_reason", ""))
 	if end_reason == "PROVOCA_FAIL":
@@ -2514,8 +2523,8 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 		var scar_origin: String = str(consequence.get("scar_origin", ""))
 		_apply_level3_scar(scar_id, scar_origin)
 		scars_applied.append(scar_id)
-	if bool(consequence.get("clear_next_loss_hp_penalty", false)):
-		_run_state.level3_next_loss_hp_penalty = 0
+	if bool(consequence.get("clear_next_loss_adverse_cost", false)):
+		_run_state.level3_next_loss_adverse_cost = 0
 	if bool(consequence.get("reset_reward_tier", false)):
 		_run_state.level3_reward_tier = 1
 	if bool(consequence.get("reset_escalation", false)):
@@ -2558,7 +2567,7 @@ func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
 func _get_scar_def(scar_id: StringName) -> Dictionary:
 	return _scar_catalog.get_scar(scar_id)
 
-func _ensure_arena_and_player() -> void:
+func _ensure_arena_context() -> void:
 	return
 
 func _ensure_input_map() -> void:
@@ -2930,7 +2939,7 @@ func _take_payout() -> void:
 	if _run_state.escalation_level >= 2:
 		_run_state.level3_cashed_after_high_escalation = true
 		_run_state.level3_reward_tier = 1
-		_run_state.level3_next_loss_hp_penalty = 0
+		_run_state.level3_next_loss_adverse_cost = 0
 		_run_state.escalation_level = 0
 		_emit_escalation_changed()
 		_run_state.current_bet_id = ""
@@ -2952,7 +2961,7 @@ func _handle_push_luck_condanna() -> void:
 	if _run_state.escalation_level >= 2:
 		_run_state.level3_cashed_after_high_escalation = true
 		_run_state.level3_reward_tier = 1
-		_run_state.level3_next_loss_hp_penalty = 0
+		_run_state.level3_next_loss_adverse_cost = 0
 		_run_state.escalation_level = 0
 		_emit_escalation_changed()
 		_run_state.current_bet_id = ""
@@ -3004,7 +3013,7 @@ func _push_your_luck() -> void:
 	_emit_escalation_changed()
 	if _run_state.cashout_lock_remaining > 0:
 		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining - 1, 0)
-	_run_state.level3_next_loss_hp_penalty = 30
+	_run_state.level3_next_loss_adverse_cost = 30
 	_emit_run_debug_state()
 	start_arena()
 	_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
@@ -3063,23 +3072,7 @@ func _on_modal_closed(_kind: String) -> void:
 	_apply_modal_lock()
 
 func _apply_modal_lock() -> void:
-	var locked: bool = _modal_lock_count > 0
-	var player: Node = get_tree().get_first_node_in_group("player") as Node
-	if player != null:
-		if player.has_method("set_input_locked"):
-			player.call("set_input_locked", locked)
-		elif "input_locked" in player:
-			player.set("input_locked", locked)
-
-	var enemies: Array = get_tree().get_nodes_in_group("enemies")
-	for enemy: Node in enemies:
-		if enemy == null or not is_instance_valid(enemy):
-			continue
-		if enemy.has_method("set_ai_locked"):
-			enemy.call("set_ai_locked", locked)
-		elif "ai_locked" in enemy:
-			enemy.set("ai_locked", locked)
-	_set_arena_suspended(locked)
+	_set_arena_suspended(_modal_lock_count > 0)
 
 func _set_arena_suspended(suspended: bool) -> void:
 	if _arena == null or not is_instance_valid(_arena):
@@ -3098,26 +3091,6 @@ func _on_bet_placed(_bet_id: String, _stake: int, _odds: float) -> void:
 
 func _on_betting_opened() -> void:
 	pass
-
-func _resolve_player() -> Node:
-	if _player and is_instance_valid(_player) and _player.is_inside_tree():
-		return _player
-	var existing_player: Node = get_tree().get_first_node_in_group("player")
-	if existing_player != null and existing_player.is_inside_tree():
-		_player = existing_player
-		return _player
-	return null
-
-func _connect_player_signals() -> void:
-	_player = _resolve_player()
-	if OS.is_debug_build() and _player != null:
-		var player_script: Script = _player.get_script()
-		var player_script_path: String = ""
-		if player_script != null:
-			player_script_path = player_script.resource_path
-		print("Runtime Player script:", player_script_path)
-	if _player == null:
-		return
 
 func _on_request_fail_run(reason: String = "") -> void:
 	_touch_request_activity("request_fail_run(reason=%s)" % reason)
@@ -3405,8 +3378,8 @@ func _get_sentence_rule(bet_id: StringName) -> String:
 	if not bet_data.is_empty():
 		condition = str(bet_data.get("condition", ""))
 	var condition_lower: String = condition.to_lower()
-	if condition_lower.findn("senza subire danni") >= 0:
-		return "NO HIT"
+	if condition_lower.findn("senza subire condanne") >= 0:
+		return "NESSUNA CONDANNA"
 	return "VINCI"
 
 func _get_sentence_doom(bet_id: StringName) -> String:
@@ -3632,7 +3605,7 @@ func _enter_end_run(reason: String) -> void:
 	if trimmed_reason != "":
 		_run_state.run_end_public_reason = trimmed_reason
 	if trimmed_reason == "death":
-		_register_run_end("PLAYER_DIED")
+		_register_run_end("RUN_TERMINATED")
 	elif trimmed_reason != "":
 		_register_run_end(trimmed_reason)
 	_enter_game_over()
@@ -4453,8 +4426,8 @@ func _try_apply_open_wound_scar(chain_level: int) -> void:
 		origin_text,
 		scar_def,
 		"FERITA APERTA",
-		"Il sangue non si è mai fermato.",
-		"HP massimo ridotto e cure meno efficaci."
+		"Il sangue non si e mai fermato.",
+		"Tenuta rituale ridotta e recupero meno efficace."
 	)
 	_add_scar(scar)
 
@@ -4481,27 +4454,6 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 func _log_runtime_state(tag: String) -> void:
 	if not DEBUG_RUNTIME_LOGS:
 		return
-	var player_node: Node = _resolve_player()
-	var player_exists: bool = player_node != null
-	var player_in_tree: bool = player_exists and player_node.is_inside_tree()
-	var player_physics: bool = player_exists and player_node.is_physics_processing()
-	var player_process_mode: int = -1
-	if player_exists:
-		player_process_mode = player_node.process_mode
-	var player_pos: Vector2 = Vector2.ZERO
-	if player_exists and player_node is Node2D:
-		player_pos = (player_node as Node2D).global_position
-
-	var enemies: Array = get_tree().get_nodes_in_group("enemies")
-	var enemies_count: int = enemies.size()
-	var sample_enemy: Node = null
-	if enemies_count > 0:
-		sample_enemy = enemies[0] as Node
-	var enemy_physics: bool = sample_enemy != null and sample_enemy.is_physics_processing()
-	var enemy_process_mode: int = -1
-	if sample_enemy != null:
-		enemy_process_mode = sample_enemy.process_mode
-
 	var cam: Camera2D = get_viewport().get_camera_2d()
 	var cam_exists: bool = cam != null
 	var cam_current: bool = cam_exists and cam.has_method("is_current") and cam.is_current()
@@ -4510,18 +4462,11 @@ func _log_runtime_state(tag: String) -> void:
 		cam_pos = cam.global_position
 
 	print(
-		"[runtime:%s] paused=%s gameplay_enabled=%s player_in_tree=%s player_physics=%s player_process_mode=%s player_pos=%s enemies=%s enemy_physics=%s enemy_process_mode=%s cam_exists=%s cam_current=%s cam_pos=%s"
+		"[runtime:%s] paused=%s gameplay_enabled=%s cam_exists=%s cam_current=%s cam_pos=%s"
 		% [
 			tag,
 			get_tree().paused,
 			GameEvents.gameplay_enabled,
-			player_in_tree,
-			player_physics,
-			player_process_mode,
-			player_pos,
-			enemies_count,
-			enemy_physics,
-			enemy_process_mode,
 			cam_exists,
 			cam_current,
 			cam_pos,

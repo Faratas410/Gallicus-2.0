@@ -15,9 +15,9 @@ func build_run_summary(run_state: RunState, finale: Dictionary, now_msec: int) -
 	var scars_history: Array[String] = []
 	for scar_id: StringName in run_state.scars_history:
 		scars_history.append(String(scar_id))
-	var enemy_profiles: Array[String] = []
-	for profile_id: StringName in run_state.enemy_profiles:
-		enemy_profiles.append(String(profile_id))
+	var risk_profiles: Array[String] = []
+	for profile_id: StringName in run_state.risk_profiles:
+		risk_profiles.append(String(profile_id))
 	var ending_id: String = str(finale.get("ending_id", ""))
 	return {
 		"seed": run_state.run_seed,
@@ -32,5 +32,5 @@ func build_run_summary(run_state: RunState, finale: Dictionary, now_msec: int) -
 		"ending_id": ending_id,
 		"cashouts": run_state.cashouts,
 		"doubles": run_state.doubles,
-		"enemy_profiles": enemy_profiles,
+		"risk_profiles": risk_profiles,
 	}

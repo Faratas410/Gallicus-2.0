@@ -5,8 +5,8 @@ var run_seed: int = 0
 var arena_index: int = 0
 var escalation_level: int = 0
 var active_bet_id: StringName = &""
-var enemy_profile: StringName = &""
-var enemy_profiles: Array[StringName] = []
+var risk_profile: StringName = &""
+var risk_profiles: Array[StringName] = []
 var scars: Array = []
 var scars_history: Array[StringName] = []
 var bets_history: Array[StringName] = []
@@ -33,13 +33,13 @@ var bet_chain_level: int = 1
 var current_bet_id: String = ""
 var scars_payload: Array[Dictionary] = []
 var level3_reward_tier: int = 1
-var level3_next_loss_hp_penalty: int = 0
+var level3_next_loss_adverse_cost: int = 0
 var level3_target_arenas: int = 0
 var level3_min_cashout_arenas: int = 5
 var cashout_lock_remaining: int = 0
 var last_selected_bet_id: StringName = &""
 var last_bet_offers: Array[StringName] = []
-var last_enemy_profile: StringName = &""
+var last_risk_profile: StringName = &""
 var level3_current_offer: Array[Dictionary] = []
 var special_arena_index: int = 0
 var special_arena_id: StringName = &""
@@ -54,8 +54,8 @@ var level3_cashout_streak: int = 0
 var level3_cashout_streak_max: int = 0
 var level3_cashed_after_high_escalation: bool = false
 var scar_heal_multiplier: float = 1.0
-var scar_dodge_cooldown_multiplier: float = 1.0
-var scar_dodge_speed_multiplier: float = 1.0
+var scar_avoidance_cooldown_multiplier: float = 1.0
+var scar_avoidance_speed_multiplier: float = 1.0
 var push_luck_cashouts: int = 0
 var push_luck_doubles: int = 0
 var max_push_luck_chain: int = 1
@@ -104,8 +104,8 @@ func reset() -> void:
 	arena_index = 0
 	escalation_level = 0
 	active_bet_id = &""
-	enemy_profile = &""
-	enemy_profiles = []
+	risk_profile = &""
+	risk_profiles = []
 	scars = []
 	scars_history = []
 	bets_history = []
@@ -132,13 +132,13 @@ func reset() -> void:
 	current_bet_id = ""
 	scars_payload = []
 	level3_reward_tier = 1
-	level3_next_loss_hp_penalty = 0
+	level3_next_loss_adverse_cost = 0
 	level3_target_arenas = 0
 	level3_min_cashout_arenas = 5
 	cashout_lock_remaining = 0
 	last_selected_bet_id = &""
 	last_bet_offers = []
-	last_enemy_profile = &""
+	last_risk_profile = &""
 	level3_current_offer = []
 	special_arena_index = 0
 	special_arena_id = &""
@@ -153,8 +153,8 @@ func reset() -> void:
 	level3_cashout_streak_max = 0
 	level3_cashed_after_high_escalation = false
 	scar_heal_multiplier = 1.0
-	scar_dodge_cooldown_multiplier = 1.0
-	scar_dodge_speed_multiplier = 1.0
+	scar_avoidance_cooldown_multiplier = 1.0
+	scar_avoidance_speed_multiplier = 1.0
 	push_luck_cashouts = 0
 	push_luck_doubles = 0
 	max_push_luck_chain = 1
@@ -204,8 +204,8 @@ func to_dict() -> Dictionary:
 		"arena_index": arena_index,
 		"escalation_level": escalation_level,
 		"active_bet_id": String(active_bet_id),
-		"enemy_profile": String(enemy_profile),
-		"enemy_profiles": _serialize_stringname_array(enemy_profiles),
+		"risk_profile": String(risk_profile),
+		"risk_profiles": _serialize_stringname_array(risk_profiles),
 		"scars_history": _serialize_stringname_array(scars_history),
 		"bets_history": _serialize_stringname_array(bets_history),
 		"cashouts": cashouts,
@@ -228,13 +228,13 @@ func to_dict() -> Dictionary:
 		"bet_chain_level": bet_chain_level,
 		"current_bet_id": current_bet_id,
 		"level3_reward_tier": level3_reward_tier,
-		"level3_next_loss_hp_penalty": level3_next_loss_hp_penalty,
+		"level3_next_loss_adverse_cost": level3_next_loss_adverse_cost,
 		"level3_target_arenas": level3_target_arenas,
 		"level3_min_cashout_arenas": level3_min_cashout_arenas,
 		"cashout_lock_remaining": cashout_lock_remaining,
 		"last_selected_bet_id": String(last_selected_bet_id),
 		"last_bet_offers": _serialize_stringname_array(last_bet_offers),
-		"last_enemy_profile": String(last_enemy_profile),
+		"last_risk_profile": String(last_risk_profile),
 		"special_arena_index": special_arena_index,
 		"special_arena_id": String(special_arena_id),
 		"special_arena_active": special_arena_active,
@@ -248,8 +248,8 @@ func to_dict() -> Dictionary:
 		"level3_cashout_streak_max": level3_cashout_streak_max,
 		"level3_cashed_after_high_escalation": level3_cashed_after_high_escalation,
 		"scar_heal_multiplier": scar_heal_multiplier,
-		"scar_dodge_cooldown_multiplier": scar_dodge_cooldown_multiplier,
-		"scar_dodge_speed_multiplier": scar_dodge_speed_multiplier,
+		"scar_avoidance_cooldown_multiplier": scar_avoidance_cooldown_multiplier,
+		"scar_avoidance_speed_multiplier": scar_avoidance_speed_multiplier,
 		"push_luck_cashouts": push_luck_cashouts,
 		"push_luck_doubles": push_luck_doubles,
 		"max_push_luck_chain": max_push_luck_chain,
@@ -299,8 +299,8 @@ func from_dict(d: Dictionary) -> void:
 	arena_index = int(d.get("arena_index", 0))
 	escalation_level = int(d.get("escalation_level", 0))
 	active_bet_id = StringName(str(d.get("active_bet_id", "")))
-	enemy_profile = StringName(str(d.get("enemy_profile", "")))
-	enemy_profiles = _parse_stringname_array(d.get("enemy_profiles", []) as Array)
+	risk_profile = _normalize_risk_profile_id(StringName(str(d.get("risk_profile", d.get("enemy_profile", "")))))
+	risk_profiles = _parse_risk_profile_array(d.get("risk_profiles", d.get("enemy_profiles", [])) as Array)
 	scars_history = _parse_stringname_array(d.get("scars_history", []) as Array)
 	bets_history = _parse_stringname_array(d.get("bets_history", []) as Array)
 	cashouts = int(d.get("cashouts", 0))
@@ -323,13 +323,13 @@ func from_dict(d: Dictionary) -> void:
 	bet_chain_level = int(d.get("bet_chain_level", 1))
 	current_bet_id = str(d.get("current_bet_id", ""))
 	level3_reward_tier = int(d.get("level3_reward_tier", 1))
-	level3_next_loss_hp_penalty = int(d.get("level3_next_loss_hp_penalty", 0))
+	level3_next_loss_adverse_cost = int(d.get("level3_next_loss_adverse_cost", d.get("level3_next_loss_hp_penalty", 0)))
 	level3_target_arenas = int(d.get("level3_target_arenas", 0))
 	level3_min_cashout_arenas = int(d.get("level3_min_cashout_arenas", 5))
 	cashout_lock_remaining = int(d.get("cashout_lock_remaining", 0))
 	last_selected_bet_id = StringName(str(d.get("last_selected_bet_id", "")))
 	last_bet_offers = _parse_stringname_array(d.get("last_bet_offers", []) as Array)
-	last_enemy_profile = StringName(str(d.get("last_enemy_profile", "")))
+	last_risk_profile = _normalize_risk_profile_id(StringName(str(d.get("last_risk_profile", d.get("last_enemy_profile", "")))))
 	special_arena_index = int(d.get("special_arena_index", 0))
 	special_arena_id = StringName(str(d.get("special_arena_id", "")))
 	special_arena_active = bool(d.get("special_arena_active", false))
@@ -343,8 +343,8 @@ func from_dict(d: Dictionary) -> void:
 	level3_cashout_streak_max = int(d.get("level3_cashout_streak_max", 0))
 	level3_cashed_after_high_escalation = bool(d.get("level3_cashed_after_high_escalation", false))
 	scar_heal_multiplier = float(d.get("scar_heal_multiplier", 1.0))
-	scar_dodge_cooldown_multiplier = float(d.get("scar_dodge_cooldown_multiplier", 1.0))
-	scar_dodge_speed_multiplier = float(d.get("scar_dodge_speed_multiplier", 1.0))
+	scar_avoidance_cooldown_multiplier = float(d.get("scar_avoidance_cooldown_multiplier", d.get("scar_dodge_cooldown_multiplier", 1.0)))
+	scar_avoidance_speed_multiplier = float(d.get("scar_avoidance_speed_multiplier", d.get("scar_dodge_speed_multiplier", 1.0)))
 	push_luck_cashouts = int(d.get("push_luck_cashouts", 0))
 	push_luck_doubles = int(d.get("push_luck_doubles", 0))
 	max_push_luck_chain = int(d.get("max_push_luck_chain", 1))
@@ -402,6 +402,30 @@ func _parse_stringname_array(items: Array) -> Array[StringName]:
 			continue
 		values.append(StringName(text))
 	return values
+
+func _parse_risk_profile_array(items: Array) -> Array[StringName]:
+	var values: Array[StringName] = []
+	for item: Variant in items:
+		var profile_id: StringName = _normalize_risk_profile_id(StringName(str(item)))
+		if profile_id == &"":
+			continue
+		values.append(profile_id)
+	return values
+
+func _normalize_risk_profile_id(profile_id: StringName) -> StringName:
+	match profile_id:
+		&"BRUISER":
+			return &"HEAVY_PRESSURE"
+		&"DUELIST":
+			return &"EDGE_BALANCE"
+		&"SWARM":
+			return &"CROWD_PRESSURE"
+		&"EXECUTIONER":
+			return &"SEVERE_JUDGMENT"
+		&"TRICKSTER":
+			return &"VOLATILE_RECORD"
+		_:
+			return profile_id
 
 
 

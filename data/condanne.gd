@@ -160,7 +160,7 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_REGISTRO_CONSUMO",
 		"Registro: Consumo.",
 		"Il Registro ha chiuso il fascicolo per consumo (ending_scars).",
-		"L'accumulo di danno e stato ritenuto definitivo.\nIl Registro ha concluso l'atto."
+		"L'accumulo di consumo e stato ritenuto definitivo.\nIl Registro ha concluso l'atto."
 	))
 	entries.append(make(
 		&"CONDANNA_REGISTRO_PATTERN",

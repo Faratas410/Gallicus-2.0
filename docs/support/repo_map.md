@@ -1,4 +1,4 @@
-# Gallicus — Repository Map (Effective)
+﻿# Gallicus - Repository Map (Effective)
 
 **Status:** SUPPORTING (inventory map, not canon owner).  
 **Purpose:** Current repository layout and ownership boundaries aligned with canon.  
@@ -25,22 +25,22 @@
 - Active Level 3 runtime authority excludes combat/health/enemy gameplay systems; arena/player/enemies groups remain reserved labels for visual/passive runtime wiring only.
 
 ## Top-level repository layout
-- `project.godot` — Godot project configuration.
-- `scenes/` — Runtime scenes used by the active game flow.
-- `scripts/` — Runtime gameplay/UI/system scripts.
-- `assets/` — Runtime art/audio/UI assets used by scenes/scripts.
-- `data/` — Gameplay data registries (bets, arena themes, verdict lines, condanne).
-- `docs/` — Canon, support, reports, and archive documentation.
-- `tools/` — Developer tooling and CI helper scripts.
-- `.github/workflows/godot_smoke_runtime.yml` — canonical Linux CI signoff workflow for import/runtime smoke evidence.
+- `project.godot` - Godot project configuration.
+- `scenes/` - Runtime scenes used by the active game flow.
+- `scripts/` - Runtime gameplay/UI/system scripts.
+- `assets/` - Runtime art/audio/UI assets used by scenes/scripts.
+- `data/` - Gameplay data registries (bets, arena themes, verdict lines, condanne).
+- `docs/` - Canon, support, reports, and archive documentation.
+- `tools/` - Developer tooling and CI helper scripts.
+- `.github/workflows/godot_smoke_runtime.yml` - canonical Linux CI signoff workflow for import/runtime smoke evidence.
 
 ## Ignored local/generated roots
-- `.godot/` — Godot editor/import cache metadata; never source authority.
-- `artifacts/` — local/CI smoke output; never source authority.
-- `.tmp_ci_logs/` — downloaded CI logs; local diagnostics only.
-- `.tmp_smoke/` — local smoke scratch output.
-- `tools/godot/` — downloaded Godot binary cache for tooling.
-- `export_templates/`, `feature_profiles/`, `script_templates/`, `text_editor_themes/` — local Godot editor customization roots; track only if intentionally populated.
+- `.godot/` - Godot editor/import cache metadata; never source authority.
+- `artifacts/` - local/CI smoke output; never source authority.
+- `.tmp_ci_logs/` - downloaded CI logs; local diagnostics only.
+- `.tmp_smoke/` - local smoke scratch output.
+- `tools/godot/` - downloaded Godot binary cache for tooling.
+- `export_templates/`, `feature_profiles/`, `script_templates/`, `text_editor_themes/` - local Godot editor customization roots; track only if intentionally populated.
 
 ## Active runtime structure (`res://`)
 
@@ -104,11 +104,11 @@
   - `ui/shaders/menu/`
 
 ## Documentation structure (`docs/`)
-- `canon/` — authoritative ownership docs only.
-- `contracts/` — technical support contracts consumed by tooling.
-- `support/` — maps, operator indexes, and non-canonical support references.
-- `reports/` — current report surface.
-- `archive/` — historical reports and retired support material.
+- `canon/` - authoritative ownership docs only.
+- `contracts/` - technical support contracts consumed by tooling.
+- `support/` - maps, operator indexes, and non-canonical support references.
+- `reports/` - current report surface.
+- `archive/` - historical reports and retired support material.
 
 ## Legacy / non-active runtime areas
 - `legacy-runtime/` directory is no longer present in the repository; legacy gameplay artifacts were removed from active storage.
@@ -119,7 +119,7 @@
 ## Documentation governance alignment
 - This file is an **inventory map** and does not redefine gameplay/runtime canon.
 - Canon ownership follows `docs/canon/CANON_DEPENDENCY_MATRIX.md`.
-- Active docs must reference existing `docs/...` paths. Retired merged sources use `legacy:<slug>` lineage markers instead of missing file paths.
+- Active docs must reference existing paths under `docs/`. Retired merged sources use `legacy:<slug>` lineage markers instead of missing file paths.
 - If runtime authority changes, update `docs/canon/RUN_ARCHITECTURE_CANON.md` in the same patch.
 - If gameplay rules change, update `docs/canon/MECHANICS_UNIFIED.md` in the same patch.
 - If UI behavior contracts change, update `docs/canon/UI_CANON.md` in the same patch.

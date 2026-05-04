@@ -1,6 +1,6 @@
-# Documentation Entry
+﻿# Documentation Entry
 
-La documentazione attiva è organizzata con entrypoint operativo in:
+La documentazione attiva e' organizzata con entrypoint operativo in:
 
 - `docs/support/INDEX.md`
 
@@ -14,15 +14,15 @@ La documentazione attiva è organizzata con entrypoint operativo in:
 
 ## Struttura documentale
 
-- `docs/canon/` — owner canonici e governance.
-- `docs/contracts/` — contratti tecnici di supporto usati anche da tooling/CI.
-- `docs/support/` — mappe, indici e riferimenti operativi non canonici.
-- `docs/reports/` — superficie report attivi (vuota finché non vengono generati nuovi report correnti).
-- `docs/archive/` — materiale storico conservato fuori dai percorsi operativi correnti.
+- `docs/canon/` - owner canonici e governance.
+- `docs/contracts/` - contratti tecnici di supporto usati anche da tooling/CI.
+- `docs/support/` - mappe, indici e riferimenti operativi non canonici.
+- `docs/reports/` - superficie report attivi (vuota finche' non vengono generati nuovi report correnti).
+- `docs/archive/` - materiale storico conservato fuori dai percorsi operativi correnti.
 
 ## Regola di affidabilita'
 
-- I path `docs/...` citati dalla documentazione attiva devono esistere.
+- I path sotto `docs/` citati dalla documentazione attiva devono esistere.
 - Le fonti storiche assorbite nei canon sono indicate come `legacy:<slug>`.
 - `docs/archive/` e i marker `legacy:<slug>` non sono source operative.
 - La verifica e' `python scripts/ci/check_docs_active_refs.py`.

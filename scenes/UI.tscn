@@ -853,6 +853,7 @@ offset_bottom = -22.0
 theme_override_constants/separation = 12
 
 [node name="Lbl_MID_CHOICE_AUDIENCEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
+custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("16")
 
@@ -862,6 +863,7 @@ autowrap_mode = 2
 text = "La folla osserva."
 
 [node name="Lbl_MID_CHOICE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("16")
 
@@ -1160,12 +1162,14 @@ horizontal_alignment = 1
 text = "Il Registro e aperto: incassa ora o aumenta esposizione."
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+custom_minimum_size = Vector2(0, 126)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("16")
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel"]
 horizontal_alignment = 1
 autowrap_mode = 2
+clip_text = true
 text = "La folla registra il costo di ogni rilancio."
 
 [node name="Lbl_PUSH_YOUR_LUCK_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]

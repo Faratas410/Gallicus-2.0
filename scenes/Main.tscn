@@ -273,13 +273,16 @@ alignment = 1
 theme_override_constants/separation = 12
 
 [node name="TitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(360, 108)
 theme_override_styles/panel = ExtResource("7")
 
 [node name="TitleLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/TitlePanel"]
 horizontal_alignment = 1
-text = "GALLICUS"
+vertical_alignment = 1
+autowrap_mode = 2
+text = "GALLICUS\nACTA ARENAE"
 theme_override_colors/font_color = Color(0.95, 0.91, 0.8, 1)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 40
 
 [node name="ContinueButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "CONTINUA"
@@ -576,4 +579,5 @@ theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
+
 

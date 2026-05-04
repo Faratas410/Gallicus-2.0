@@ -170,9 +170,9 @@ func _apply_selection_visual() -> void:
 	left_selection_outline.visible = false
 	right_selection_outline.visible = false
 	if left_page != null:
-		left_page.modulate = Color(1.0, 0.98, 0.95, 1.0) if left_selected else Color(0.87, 0.84, 0.8, 0.9)
+		left_page.modulate = Color(1.0, 0.99, 0.96, 1.0) if left_selected else Color(0.97, 0.95, 0.9, 1.0)
 	if right_page != null:
-		right_page.modulate = Color(1.0, 0.98, 0.95, 1.0) if right_selected else Color(0.87, 0.84, 0.8, 0.9)
+		right_page.modulate = Color(1.0, 0.99, 0.96, 1.0) if right_selected else Color(0.97, 0.95, 0.9, 1.0)
 	if left_sign_button != null:
 		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2.ONE
 	if right_sign_button != null:
@@ -229,13 +229,13 @@ func _update_sigilla_state() -> void:
 	if left_sign_button != null:
 		left_sign_button.disabled = not left_ready
 		if left_ready:
-			left_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == left_id else Color(0.92, 0.9, 0.86, 0.95)
+			left_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == left_id else Color(0.98, 0.96, 0.9, 1.0)
 		else:
 			left_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
 	if right_sign_button != null:
 		right_sign_button.disabled = not right_ready
 		if right_ready:
-			right_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == right_id else Color(0.92, 0.9, 0.86, 0.95)
+			right_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == right_id else Color(0.98, 0.96, 0.9, 1.0)
 		else:
 			right_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
 	if sigilla_button != null:

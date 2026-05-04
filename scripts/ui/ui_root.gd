@@ -21,8 +21,8 @@ const FADE_OUT_SEC: float = 0.25
 const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
 const SIGN_LOCK_DARKEN_RGB: float = 0.82
 const SIGN_PREVIEW_SCALE: float = 1.015
-const PUSH_LUCK_DETAILS_MAX_LINES: int = 5
-const PUSH_LUCK_DETAIL_MAX_CHARS: int = 96
+const PUSH_LUCK_DETAILS_MAX_LINES: int = 3
+const PUSH_LUCK_DETAIL_MAX_CHARS: int = 72
 const QUICK_CUT_MAX_SECONDS: float = 1.5
 const VERDICT_REVEAL_STEP_SECONDS: float = 0.2
 const VERDICT_REVEAL_HOLD_SECONDS: float = 0.08
@@ -2057,7 +2057,8 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_cashout_note.text = _format_lock_note(cashout_reason, "Disponibile dopo l'arena in corso.")
 			push_luck_cashout_note.visible = true
 		else:
-			push_luck_cashout_note.visible = false
+			push_luck_cashout_note.text = "Chiudi la run e apri il registro finale."
+			push_luck_cashout_note.visible = true
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
 		if double_locked and double_reason != "":
@@ -2069,7 +2070,8 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_double_note.text = _format_lock_note(double_reason, "Disponibile dopo l'arena in corso.")
 			push_luck_double_note.visible = true
 		else:
-			push_luck_double_note.visible = false
+			push_luck_double_note.text = "Continua alla prossima arena con posta aumentata."
+			push_luck_double_note.visible = true
 	_set_push_luck_modal(true)
 	var push_luck_read_buttons: Array[Button] = []
 	if push_luck_cashout_button != null:

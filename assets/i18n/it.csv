@@ -1,95 +1,101 @@
 keys,it
-CONTINUA,CONTINUA
-Nessuna partita salvata.,Nessuna partita salvata.
-NUOVA PARTITA,NUOVA PARTITA
-CARICA PARTITA,CARICA PARTITA
-ARCHIVIO,ARCHIVIO
-OPZIONI,OPZIONI
-CREDITI,CREDITI
-ARCHIVIO DELLE CONDANNE,ARCHIVIO DELLE CONDANNE
-Registro consultivo. Nessuna ricompensa.,Registro consultivo. Nessuna ricompensa.
-CONDANNE,CONDANNE
-MUSEO,MUSEO
-PATTI DISPONIBILI (LIVELLO 3),PATTI DISPONIBILI (LIVELLO 3)
-— Nessun patto disponibile.,— Nessun patto disponibile.
-ARENE TEMATICHE,ARENE TEMATICHE
-— Nessuna arena disponibile.,— Nessuna arena disponibile.
-VOCI DEL PUBBLICO,VOCI DEL PUBBLICO
-Voci base: %d,Voci base: %d
-Voci dure: %s,Voci dure: %s
-SBLOCCATE,SBLOCCATE
-BLOCCATE,BLOCCATE
-LUMINOSITÀ,LUMINOSITÀ
-Luminosità: %.2f,Luminosità: %.2f
-LINGUA,LINGUA
-Lingua selezionata: %s,Lingua selezionata: %s
-VOLUME MASTER,VOLUME MASTER
-SCHERMO INTERO,SCHERMO INTERO
-Volume: %d%%,Volume: %d%%
-Italiano,Italiano
-English,English
-GALLICUS,GALLICUS
-Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD),Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)
-Luminosità: 1.00,Luminosità: 1.00
-(Placeholder),(Placeholder)
-Lingua selezionata: Italiano,Lingua selezionata: Italiano
-Volume: 100%,Volume: 100%
-SCOMMESSA,SCOMMESSA
-—,—
-ESCALATION,ESCALATION
-CICATRICE APPLICATA,CICATRICE APPLICATA
-Il patto viene giudicato...,Il patto viene giudicato...
-La folla ti guarda.,La folla ti guarda.
-Registro: atto annotato.,Registro: atto annotato.
-Arena del Sigillo,Arena del Sigillo
-Qui ogni firma pesa.,Qui ogni firma pesa.
-SENTENZA,SENTENZA
-VINCI,VINCI
-SE FALLISCI: LA CICATRICE TI RESTA.,SE FALLISCI: LA CICATRICE TI RESTA.
-Flow debug overlay,Flow debug overlay
-IL PATTO È SIGILLATO.,IL PATTO È SIGILLATO.
-La folla trattiene il fiato.,La folla trattiene il fiato.
-RITO DI GIUDIZIO,RITO DI GIUDIZIO
-Il patto viene giudicato.,Il patto viene giudicato.
-SCEGLI IL GESTO,SCEGLI IL GESTO
-UMILIATI,UMILIATI
-PROVOCA,PROVOCA
-Scommessa Arena,Scommessa Arena
-ARENA SPECIALE,ARENA SPECIALE
-FOCUS: Leggi prima la CONDANNA.,FOCUS: Leggi prima la CONDANNA.
-Seed (opzionale),Seed (opzionale)
-Es. 10331,Es. 10331
-APPLICA,APPLICA
-Stake,Stake
-CONDANNA — RADDOPPI O MUORI,CONDANNA — RADDOPPI O MUORI
-CONDIZIONE — SANGUE INTEGRO,CONDIZIONE — SANGUE INTEGRO
-PATTO — INCASSA E VAI,PATTO — INCASSA E VAI
-Selezione: -,Selezione: -
-SIGILLA,SIGILLA
-BUY TOKEN (100c),BUY TOKEN (100c)
-Disponibile dopo l'arena in corso.,Disponibile dopo l'arena in corso.
-x1,x1
-PUSH YOUR LUCK,PUSH YOUR LUCK
-Incassa ora o raddoppia il rischio,Incassa ora o raddoppia il rischio
-INCASSA ORA,INCASSA ORA
-CONDANNA,CONDANNA
-NESSUN REWARD,NESSUN REWARD
-RADDOPPIA,RADDOPPIA
-DETTAGLIO CICATRICI,DETTAGLIO CICATRICI
-CHIUDI,CHIUDI
-VERDETTO,VERDETTO
-PATTI FIRMATI,PATTI FIRMATI
-ULTIMA VOCE,ULTIMA VOCE
-NUOVA RUN,NUOVA RUN
-NEXT BET,NEXT BET
-TORNA AL MENU,TORNA AL MENU
-FAST: 12s,FAST: 12s
-CICATRICI,CICATRICI
-Nessuna cicatrice.,Nessuna cicatrice.
-CIRCOLO SCOMMESSE,CIRCOLO SCOMMESSE
-INCASSA E VAI,INCASSA E VAI
-❌ CONDANNA: ...,❌ CONDANNA: ...
-⚠️ CONDIZIONE: ...,⚠️ CONDIZIONE: ...
-✅ PATTO: ...,✅ PATTO: ...
-SANGUE INTEGRO,SANGUE INTEGRO
-RADDOPPI O MUORI,RADDOPPI O MUORI
+"CONTINUA","CONTINUA"
+"Nessuna partita salvata.","Nessuna partita salvata."
+"NUOVA PARTITA","NUOVA PARTITA"
+"CARICA PARTITA","CARICA PARTITA"
+"ARCHIVIO","ARCHIVIO"
+"OPZIONI","OPZIONI"
+"CREDITI","CREDITI"
+"ARCHIVIO DELLE CONDANNE","ARCHIVIO DELLE CONDANNE"
+"Registro consultivo. Nessuna ricompensa.","Registro consultivo. Nessuna ricompensa."
+"CONDANNE","CONDANNE"
+"MUSEO","MUSEO"
+"PATTI DISPONIBILI (LIVELLO 3)","PATTI DISPONIBILI (LIVELLO 3)"
+"- Nessun patto disponibile.","- Nessun patto disponibile."
+"ARENE TEMATICHE","ARENE TEMATICHE"
+"- Nessuna arena disponibile.","- Nessuna arena disponibile."
+"VOCI DEL PUBBLICO","VOCI DEL PUBBLICO"
+"Voci base: %d","Voci base: %d"
+"Voci dure: %s","Voci dure: %s"
+"SBLOCCATE","SBLOCCATE"
+"BLOCCATE","BLOCCATE"
+"LUMINOSITA","LUMINOSITA"
+"Luminosita: %.2f","Luminosita: %.2f"
+"LINGUA","LINGUA"
+"Lingua selezionata: %s","Lingua selezionata: %s"
+"VOLUME MASTER","VOLUME MASTER"
+"VOLUME MUSICA","VOLUME MUSICA"
+"SCHERMO INTERO","SCHERMO INTERO"
+"RISOLUZIONE","RISOLUZIONE"
+"Risoluzione: %s","Risoluzione: %s"
+"Volume: %d%%","Volume: %d%%"
+"Musica: %d%%","Musica: %d%%"
+"Italiano","Italiano"
+"English","English"
+"Espanol","Espanol"
+"GALLICUS","GALLICUS"
+"ACTA ARENAE","ACTA ARENAE"
+"Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)","Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)"
+"Luminosita: 1.00","Luminosita: 1.00"
+"(Placeholder)","(Placeholder)"
+"Lingua selezionata: Italiano","Lingua selezionata: Italiano"
+"Volume: 100%","Volume: 100%"
+"SCOMMESSA","SCOMMESSA"
+"-","-"
+"ESCALATION","ESCALATION"
+"CICATRICE APPLICATA","CICATRICE APPLICATA"
+"Il patto viene giudicato...","Il patto viene giudicato..."
+"La folla ti guarda.","La folla ti guarda."
+"Registro: atto annotato.","Registro: atto annotato."
+"Arena del Sigillo","Arena del Sigillo"
+"Qui ogni firma pesa.","Qui ogni firma pesa."
+"SENTENZA","SENTENZA"
+"VINCI","VINCI"
+"SE FALLISCI: LA CICATRICE TI RESTA.","SE FALLISCI: LA CICATRICE TI RESTA."
+"Flow debug overlay","Flow debug overlay"
+"IL PATTO E' SIGILLATO.","IL PATTO E' SIGILLATO."
+"La folla trattiene il fiato.","La folla trattiene il fiato."
+"RITO DI GIUDIZIO","RITO DI GIUDIZIO"
+"Il patto viene giudicato.","Il patto viene giudicato."
+"SCEGLI IL GESTO","SCEGLI IL GESTO"
+"UMILIATI","UMILIATI"
+"PROVOCA","PROVOCA"
+"Scommessa Arena","Scommessa Arena"
+"ARENA SPECIALE","ARENA SPECIALE"
+"FOCUS: Leggi prima la CONDANNA.","FOCUS: Leggi prima la CONDANNA."
+"Seed (opzionale)","Seed (opzionale)"
+"Es. 10331","Es. 10331"
+"APPLICA","APPLICA"
+"Stake","Stake"
+"CONDANNA - RADDOPPI O MUORI","CONDANNA - RADDOPPI O MUORI"
+"CONDIZIONE - SANGUE INTEGRO","CONDIZIONE - SANGUE INTEGRO"
+"PATTO - INCASSA E VAI","PATTO - INCASSA E VAI"
+"Selezione: -","Selezione: -"
+"SIGILLA","SIGILLA"
+"Disponibile dopo l'arena in corso.","Disponibile dopo l'arena in corso."
+"x1","x1"
+"PUSH YOUR LUCK","PUSH YOUR LUCK"
+"Incassa ora o raddoppia il rischio","Incassa ora o raddoppia il rischio"
+"INCASSA ORA","INCASSA ORA"
+"CONDANNA","CONDANNA"
+"NESSUN REWARD","NESSUN REWARD"
+"RADDOPPIA","RADDOPPIA"
+"DETTAGLIO CICATRICI","DETTAGLIO CICATRICI"
+"CHIUDI","CHIUDI"
+"VERDETTO","VERDETTO"
+"PATTI FIRMATI","PATTI FIRMATI"
+"ULTIMA VOCE","ULTIMA VOCE"
+"NUOVA RUN","NUOVA RUN"
+"NEXT BET","NEXT BET"
+"PROSSIMA SCOMMESSA","PROSSIMA SCOMMESSA"
+"TORNA AL MENU","TORNA AL MENU"
+"FAST: 12s","FAST: 12s"
+"CICATRICI","CICATRICI"
+"Nessuna cicatrice.","Nessuna cicatrice."
+"CIRCOLO SCOMMESSE","CIRCOLO SCOMMESSE"
+"INCASSA E VAI","INCASSA E VAI"
+"CONDANNA: ...","CONDANNA: ..."
+"CONDIZIONE: ...","CONDIZIONE: ..."
+"PATTO: ...","PATTO: ..."
+"SANGUE INTEGRO","SANGUE INTEGRO"
+"RADDOPPI O MUORI","RADDOPPI O MUORI"

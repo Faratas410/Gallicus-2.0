@@ -101,8 +101,7 @@ const RunEndPayloadBuilderScript = preload("res://scripts/systems/run/run_end_pa
 const RunArenaThemePolicyScript = preload("res://scripts/systems/run/run_arena_theme_policy.gd")
 const RunUiPayloadFactoryScript = preload("res://scripts/systems/run/run_ui_payload_factory.gd")
 const RunRegisterAnnotationPolicyScript = preload("res://scripts/systems/run/run_register_annotation_policy.gd")
-const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
-const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
+const LanguagesScript = preload("res://assets/i18n/languages.gd")
 
 const CORRUPTION_MAX: int = 100
 const CORRUPTION_DOUBLE: int = 1
@@ -1145,17 +1144,15 @@ func _apply_saved_language() -> void:
 	_apply_language(saved_language)
 
 func _apply_language(locale: String) -> void:
-	var target_locale: String = locale.strip_edges().to_lower()
-	if target_locale != "it" and target_locale != "en":
-		target_locale = "it"
+	var target_locale: String = LanguagesScript.sanitize_locale(locale)
 	TranslationServer.set_locale(_resolve_available_locale(target_locale))
 
 func _resolve_available_locale(target_locale: String) -> String:
-	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH
+	var requested_path: String = LanguagesScript.path_for(target_locale)
 	if FileAccess.file_exists(requested_path):
 		return target_locale
-	var fallback_locale: String = "en" if target_locale == "it" else "it"
-	var fallback_path: String = I18N_IT_PATH if fallback_locale == "it" else I18N_EN_PATH
+	var fallback_locale: String = LanguagesScript.fallback_locale(target_locale)
+	var fallback_path: String = LanguagesScript.path_for(fallback_locale)
 	if FileAccess.file_exists(fallback_path):
 		if not _language_fallback_logged:
 			print("[I18N] Missing translation resource ", requested_path, ". Fallback locale: ", fallback_locale)

@@ -10,6 +10,7 @@ const RUN_PATH: String = "user://run.save"
 const RUN_TMP_PATH: String = "%s.tmp" % RUN_PATH
 const RUN_BAK_PATH: String = "%s.bak" % RUN_PATH
 const RUN_BAK2_PATH: String = "%s.bak2" % RUN_PATH
+const LanguagesScript = preload("res://assets/i18n/languages.gd")
 
 var _profile_loaded: bool = false
 var _profile_dirty: bool = false
@@ -17,7 +18,7 @@ var _unlocked_ids: Array[StringName] = []
 var _settings: Dictionary = {}
 var _meta: Dictionary = {}
 
-const DEFAULT_LANGUAGE: String = "it"
+const DEFAULT_LANGUAGE: String = LanguagesScript.DEFAULT_LOCALE
 const DEFAULT_BRIGHTNESS: float = 1.0
 const DEFAULT_MASTER_VOLUME: float = 0.8
 const DEFAULT_MUSIC_VOLUME: float = 0.75
@@ -345,10 +346,7 @@ func _get_default_meta() -> Dictionary:
 	}
 
 func _sanitize_language(value: String) -> String:
-	var locale: String = value.strip_edges().to_lower()
-	if locale != "it" and locale != "en":
-		return DEFAULT_LANGUAGE
-	return locale
+	return LanguagesScript.sanitize_locale(value)
 
 func _sanitize_brightness(value: float) -> float:
 	return clamp(value, BRIGHTNESS_MIN, BRIGHTNESS_MAX)

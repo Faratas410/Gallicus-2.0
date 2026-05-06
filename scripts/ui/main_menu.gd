@@ -14,8 +14,7 @@ extends Control
 const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
-const I18N_EN_PATH: String = "res://assets/i18n/en.csv"
-const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
+const LanguagesScript = preload("res://assets/i18n/languages.gd")
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var menu_center: CenterContainer = get_node("CenterContainer") as CenterContainer
@@ -151,8 +150,8 @@ func _ready() -> void:
 func _ensure_i18n_loaded() -> void:
 	if _i18n_bootstrap_done:
 		return
-	_load_csv_translation(I18N_IT_PATH, "it")
-	_load_csv_translation(I18N_EN_PATH, "en")
+	for entry: Dictionary in LanguagesScript.all():
+		_load_csv_translation(str(entry.get("path", "")), str(entry.get("locale", "")))
 	_i18n_bootstrap_done = true
 
 func _load_csv_translation(path: String, locale: String) -> void:
@@ -465,11 +464,12 @@ func _on_credits_back_pressed() -> void:
 
 func _setup_language_options() -> void:
 	language_option.clear()
-	language_option.add_item("Italiano")
-	language_option.set_item_metadata(0, "it")
-	language_option.add_item("English")
-	language_option.set_item_metadata(1, "en")
-	language_option.select(0)
+	var index: int = 0
+	for entry: Dictionary in LanguagesScript.all():
+		language_option.add_item(str(entry.get("label", entry.get("locale", ""))))
+		language_option.set_item_metadata(index, str(entry.get("locale", "")))
+		index += 1
+	_select_language(SaveManager.get_language())
 	_update_language_label()
 	_refresh_localized_ui()
 
@@ -510,9 +510,9 @@ func _apply_saved_settings() -> void:
 	_suppress_settings_events = false
 
 func _select_language(locale: String) -> void:
-	var target_locale: String = locale.to_lower()
+	var target_locale: String = LanguagesScript.sanitize_locale(locale)
 	var selected_index: int = 0
-	for index in language_option.item_count:
+	for index: int in range(language_option.item_count):
 		var metadata_value: String = str(language_option.get_item_metadata(index)).to_lower()
 		if metadata_value == target_locale:
 			selected_index = index
@@ -522,7 +522,7 @@ func _select_language(locale: String) -> void:
 	_update_language_label()
 
 func _language_label_from_locale(locale: String) -> String:
-	return tr("English") if locale == "en" else tr("Italiano")
+	return tr(LanguagesScript.label_for(locale))
 
 func _select_resolution(resolution: String) -> void:
 	var target_resolution: String = _sanitize_resolution(resolution)
@@ -651,9 +651,7 @@ func _apply_fullscreen(enabled: bool) -> void:
 		_apply_window_resolution(SaveManager.get_window_resolution())
 
 func _apply_language(locale: String) -> void:
-	var target_locale: String = locale.to_lower()
-	if target_locale != "it" and target_locale != "en":
-		target_locale = "it"
+	var target_locale: String = LanguagesScript.sanitize_locale(locale)
 	var resolved_locale: String = _resolve_available_locale(target_locale)
 	TranslationServer.set_locale(resolved_locale)
 	selected_language = _language_label_from_locale(resolved_locale)
@@ -709,11 +707,11 @@ func _refresh_localized_ui() -> void:
 		_update_resolution_label()
 
 func _resolve_available_locale(target_locale: String) -> String:
-	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH
+	var requested_path: String = LanguagesScript.path_for(target_locale)
 	if FileAccess.file_exists(requested_path):
 		return target_locale
-	var fallback_locale: String = "en" if target_locale == "it" else "it"
-	var fallback_path: String = I18N_IT_PATH if fallback_locale == "it" else I18N_EN_PATH
+	var fallback_locale: String = LanguagesScript.fallback_locale(target_locale)
+	var fallback_path: String = LanguagesScript.path_for(fallback_locale)
 	if FileAccess.file_exists(fallback_path):
 		if not _language_fallback_logged:
 			print("[I18N] Missing translation resource ", requested_path, ". Fallback locale: ", fallback_locale)

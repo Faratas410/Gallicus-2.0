@@ -21,10 +21,18 @@ const DEFAULT_LANGUAGE: String = "it"
 const DEFAULT_BRIGHTNESS: float = 1.0
 const DEFAULT_MASTER_VOLUME: float = 0.8
 const DEFAULT_MUSIC_VOLUME: float = 0.75
+const DEFAULT_FULLSCREEN: bool = false
+const DEFAULT_WINDOW_RESOLUTION: String = "1280x720"
 const BRIGHTNESS_MIN: float = 0.6
 const BRIGHTNESS_MAX: float = 1.4
 const VOLUME_MIN: float = 0.0
 const VOLUME_MAX: float = 1.0
+const ALLOWED_WINDOW_RESOLUTIONS: Array[String] = [
+	"960x540",
+	"1280x720",
+	"1600x900",
+	"1920x1080",
+]
 
 func _ready() -> void:
 	load_profile()
@@ -146,6 +154,16 @@ func get_music_volume() -> float:
 		load_profile()
 	return float(_settings.get("music_volume", DEFAULT_MUSIC_VOLUME))
 
+func get_fullscreen() -> bool:
+	if not _profile_loaded:
+		load_profile()
+	return bool(_settings.get("fullscreen", DEFAULT_FULLSCREEN))
+
+func get_window_resolution() -> String:
+	if not _profile_loaded:
+		load_profile()
+	return str(_settings.get("window_resolution", DEFAULT_WINDOW_RESOLUTION))
+
 func get_registry_pressure() -> float:
 	if not _profile_loaded:
 		load_profile()
@@ -207,6 +225,26 @@ func set_music_volume(value: float) -> void:
 	if is_equal_approx(float(_settings.get("music_volume", DEFAULT_MUSIC_VOLUME)), sanitized):
 		return
 	_settings["music_volume"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func set_fullscreen(value: bool) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var current: bool = bool(_settings.get("fullscreen", DEFAULT_FULLSCREEN))
+	if current == value:
+		return
+	_settings["fullscreen"] = value
+	_profile_dirty = true
+	save_profile()
+
+func set_window_resolution(value: String) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: String = _sanitize_window_resolution(value)
+	if str(_settings.get("window_resolution", DEFAULT_WINDOW_RESOLUTION)) == sanitized:
+		return
+	_settings["window_resolution"] = sanitized
 	_profile_dirty = true
 	save_profile()
 
@@ -296,6 +334,8 @@ func _get_default_settings() -> Dictionary:
 		"brightness": DEFAULT_BRIGHTNESS,
 		"master_volume": DEFAULT_MASTER_VOLUME,
 		"music_volume": DEFAULT_MUSIC_VOLUME,
+		"fullscreen": DEFAULT_FULLSCREEN,
+		"window_resolution": DEFAULT_WINDOW_RESOLUTION,
 	}
 
 func _get_default_meta() -> Dictionary:
@@ -318,6 +358,12 @@ func _sanitize_master_volume(value: float) -> float:
 
 func _sanitize_music_volume(value: float) -> float:
 	return clamp(value, VOLUME_MIN, VOLUME_MAX)
+
+func _sanitize_window_resolution(value: String) -> String:
+	var resolution: String = value.strip_edges().to_lower()
+	if not ALLOWED_WINDOW_RESOLUTIONS.has(resolution):
+		return DEFAULT_WINDOW_RESOLUTION
+	return resolution
 
 func _sanitize_registry_pressure(value: float) -> float:
 	return maxf(value, 0.0)
@@ -352,6 +398,14 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 		sanitized["music_volume"] = _sanitize_music_volume(float(settings_value.get("music_volume", DEFAULT_MUSIC_VOLUME)))
 	else:
 		needs_save = true
+	if settings_value.has("fullscreen"):
+		sanitized["fullscreen"] = bool(settings_value.get("fullscreen", DEFAULT_FULLSCREEN))
+	else:
+		needs_save = true
+	if settings_value.has("window_resolution"):
+		sanitized["window_resolution"] = _sanitize_window_resolution(str(settings_value.get("window_resolution", DEFAULT_WINDOW_RESOLUTION)))
+	else:
+		needs_save = true
 	sanitized["language"] = locale_value
 	if not needs_save:
 		if str(settings_value.get("language", "")) != str(sanitized["language"]):
@@ -361,6 +415,10 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 		if not is_equal_approx(float(settings_value.get("master_volume", DEFAULT_MASTER_VOLUME)), float(sanitized["master_volume"])):
 			needs_save = true
 		if not is_equal_approx(float(settings_value.get("music_volume", DEFAULT_MUSIC_VOLUME)), float(sanitized["music_volume"])):
+			needs_save = true
+		if bool(settings_value.get("fullscreen", DEFAULT_FULLSCREEN)) != bool(sanitized["fullscreen"]):
+			needs_save = true
+		if str(settings_value.get("window_resolution", DEFAULT_WINDOW_RESOLUTION)) != str(sanitized["window_resolution"]):
 			needs_save = true
 	_settings = sanitized
 	if needs_save:

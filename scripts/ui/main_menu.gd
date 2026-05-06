@@ -28,6 +28,7 @@ const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 @onready var language_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/LanguageLabelPanel/LanguageLabel") as Label
 @onready var volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/VolumeLabelPanel/VolumeLabel") as Label
 @onready var music_volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeLabelPanel/MusicVolumeLabel") as Label
+@onready var resolution_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/ResolutionLabelPanel/ResolutionLabel") as Label
 @onready var continue_button: Button = get_node("CenterContainer/MenuVBox/ContinueButton") as Button
 @onready var continue_hint_panel: PanelContainer = get_node("CenterContainer/MenuVBox/ContinueHintPanel") as PanelContainer
 @onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintPanel/ContinueHintLabel") as Label
@@ -55,6 +56,8 @@ const I18N_IT_PATH: String = "res://assets/i18n/it.csv"
 @onready var master_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeValuePanel/MasterVolumeValue") as Label
 @onready var music_volume_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeSlider") as HSlider
 @onready var music_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeValuePanel/MusicVolumeValue") as Label
+@onready var resolution_option: OptionButton = get_node("SettingsPanel/SettingsCenter/SettingsVBox/ResolutionOption") as OptionButton
+@onready var resolution_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/ResolutionValuePanel/ResolutionValue") as Label
 @onready var fullscreen_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SchermoInteroToggle") as CheckBox
 @onready var brightness_modulate: CanvasModulate = get_node_or_null("../../BrightnessModulate") as CanvasModulate
 @onready var brightness_overlay: ColorRect = get_node_or_null("../../BrightnessOverlayLayer/BrightnessOverlay") as ColorRect
@@ -67,6 +70,12 @@ const MENU_IDLE_BOB_AMPLITUDE: float = 2.0
 const MENU_IDLE_BOB_SPEED: float = 1.25
 const MENU_TITLE_PULSE_SPEED: float = 1.8
 const MENU_BUTTON_HOVER_SCALE: float = 1.02
+const SETTINGS_RESOLUTIONS: Array[String] = [
+	"960x540",
+	"1280x720",
+	"1600x900",
+	"1920x1080",
+]
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
 const L3_EXPECTATION_MICRO_COPY: String = "Loop rituale basato su scommesse. Nessun combat action."
 
@@ -92,6 +101,7 @@ func _ready() -> void:
 	_disable_placeholder_buttons()
 	_refresh_continue_button()
 	_setup_language_options()
+	_setup_resolution_options()
 	_setup_initial_values()
 	_refresh_localized_ui()
 	_build_condanne_list()
@@ -111,6 +121,7 @@ func _ready() -> void:
 	settings_back_button.pressed.connect(_on_settings_back_pressed)
 	brightness_slider.value_changed.connect(_on_brightness_changed)
 	language_option.item_selected.connect(_on_language_selected)
+	resolution_option.item_selected.connect(_on_resolution_selected)
 	master_volume_slider.value_changed.connect(_on_master_volume_changed)
 	music_volume_slider.value_changed.connect(_on_music_volume_changed)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
@@ -462,6 +473,15 @@ func _setup_language_options() -> void:
 	_update_language_label()
 	_refresh_localized_ui()
 
+func _setup_resolution_options() -> void:
+	resolution_option.clear()
+	for index: int in range(SETTINGS_RESOLUTIONS.size()):
+		var resolution: String = SETTINGS_RESOLUTIONS[index]
+		resolution_option.add_item(resolution)
+		resolution_option.set_item_metadata(index, resolution)
+	_select_resolution(SaveManager.get_window_resolution())
+	_update_resolution_label()
+
 func _setup_initial_values() -> void:
 	_apply_saved_settings()
 	_update_fullscreen_toggle()
@@ -478,6 +498,12 @@ func _apply_saved_settings() -> void:
 	var saved_music_volume: float = SaveManager.get_music_volume()
 	music_volume_slider.set_value_no_signal(saved_music_volume)
 	_update_music_volume_label(saved_music_volume)
+	var saved_resolution: String = SaveManager.get_window_resolution()
+	_select_resolution(saved_resolution)
+	_apply_window_resolution(saved_resolution)
+	var saved_fullscreen: bool = SaveManager.get_fullscreen()
+	fullscreen_toggle.set_pressed_no_signal(saved_fullscreen)
+	_apply_fullscreen(saved_fullscreen)
 	var saved_language: String = SaveManager.get_language()
 	_select_language(saved_language)
 	_apply_language(saved_language)
@@ -497,6 +523,23 @@ func _select_language(locale: String) -> void:
 
 func _language_label_from_locale(locale: String) -> String:
 	return tr("English") if locale == "en" else tr("Italiano")
+
+func _select_resolution(resolution: String) -> void:
+	var target_resolution: String = _sanitize_resolution(resolution)
+	var selected_index: int = 0
+	for index: int in range(resolution_option.item_count):
+		var metadata_value: String = str(resolution_option.get_item_metadata(index)).to_lower()
+		if metadata_value == target_resolution:
+			selected_index = index
+			break
+	resolution_option.select(selected_index)
+	_update_resolution_label()
+
+func _sanitize_resolution(resolution: String) -> String:
+	var normalized: String = resolution.strip_edges().to_lower()
+	if SETTINGS_RESOLUTIONS.has(normalized):
+		return normalized
+	return "1280x720"
 
 func _on_brightness_changed(value: float) -> void:
 	if _suppress_settings_events:
@@ -532,9 +575,23 @@ func _on_language_selected(index: int) -> void:
 	_apply_language(applied_locale)
 	_emit_settings_changed()
 
+func _on_resolution_selected(index: int) -> void:
+	if _suppress_settings_events:
+		return
+	var resolution: String = str(resolution_option.get_item_metadata(index))
+	SaveManager.set_window_resolution(resolution)
+	var applied_resolution: String = SaveManager.get_window_resolution()
+	_select_resolution(applied_resolution)
+	_apply_window_resolution(applied_resolution)
+	_emit_settings_changed()
+
 func _update_language_label() -> void:
 	if language_value != null:
 		language_value.text = tr("Lingua selezionata: %s") % selected_language
+
+func _update_resolution_label() -> void:
+	if resolution_value != null:
+		resolution_value.text = tr("Risoluzione: %s") % SaveManager.get_window_resolution()
 
 func _on_master_volume_changed(value: float) -> void:
 	if _suppress_settings_events:
@@ -571,6 +628,27 @@ func _apply_master_volume(value: float) -> void:
 	if bus_index >= 0:
 		var db_value: float = -80.0 if value <= 0.001 else linear_to_db(value)
 		AudioServer.set_bus_volume_db(bus_index, db_value)
+
+func _apply_window_resolution(resolution: String) -> void:
+	var normalized: String = _sanitize_resolution(resolution)
+	if SaveManager.get_fullscreen():
+		return
+	var parts: PackedStringArray = normalized.split("x", false)
+	if parts.size() != 2:
+		return
+	var width: int = int(parts[0])
+	var height: int = int(parts[1])
+	if width <= 0 or height <= 0:
+		return
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	DisplayServer.window_set_size(Vector2i(width, height))
+
+func _apply_fullscreen(enabled: bool) -> void:
+	if enabled:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		_apply_window_resolution(SaveManager.get_window_resolution())
 
 func _apply_language(locale: String) -> void:
 	var target_locale: String = locale.to_lower()
@@ -610,6 +688,8 @@ func _refresh_localized_ui() -> void:
 		volume_label.text = tr("VOLUME MASTER")
 	if music_volume_label != null:
 		music_volume_label.text = tr("VOLUME MUSICA")
+	if resolution_label != null:
+		resolution_label.text = tr("RISOLUZIONE")
 	if fullscreen_toggle != null:
 		fullscreen_toggle.text = tr("SCHERMO INTERO")
 	if back_button != null:
@@ -625,6 +705,8 @@ func _refresh_localized_ui() -> void:
 		_update_music_volume_label(music_volume_slider.value)
 	if brightness_slider != null:
 		_apply_brightness(brightness_slider.value)
+	if resolution_value != null:
+		_update_resolution_label()
 
 func _resolve_available_locale(target_locale: String) -> String:
 	var requested_path: String = I18N_IT_PATH if target_locale == "it" else I18N_EN_PATH
@@ -649,17 +731,20 @@ func _emit_settings_changed() -> void:
 			"brightness": SaveManager.get_brightness(),
 			"master_volume": SaveManager.get_master_volume(),
 			"music_volume": SaveManager.get_music_volume(),
+			"fullscreen": SaveManager.get_fullscreen(),
+			"window_resolution": SaveManager.get_window_resolution(),
 		}
 		GameEvents.settings_changed.emit(payload)
 
 func _update_fullscreen_toggle() -> void:
-	fullscreen_toggle.button_pressed = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	fullscreen_toggle.set_pressed_no_signal(SaveManager.get_fullscreen())
 
 func _on_fullscreen_toggled(toggled: bool) -> void:
-	if toggled:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	if _suppress_settings_events:
+		return
+	SaveManager.set_fullscreen(toggled)
+	_apply_fullscreen(SaveManager.get_fullscreen())
+	_emit_settings_changed()
 
 func _on_settings_opened() -> void:
 	_show_settings()

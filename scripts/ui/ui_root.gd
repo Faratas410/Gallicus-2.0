@@ -1073,7 +1073,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	if next_bet_button != null:
 		next_bet_button.visible = _last_next_bet_enabled
 		next_bet_button.disabled = not _last_next_bet_enabled
-		next_bet_button.text = "NEXT BET"
+		next_bet_button.text = "PROSSIMA SCOMMESSA"
 	var pacts_payload: Array = []
 	if payload.has("pacts_signed"):
 		pacts_payload = payload.get("pacts_signed", []) as Array
@@ -1186,8 +1186,12 @@ func _refresh_verdict_panel() -> void:
 	if verdict_outcome != null:
 		if _last_register_final:
 			verdict_outcome.text = "Protocollo di classificazione completato."
+		elif _last_verdict_outcome == &"CASHOUT":
+			verdict_outcome.text = "Incasso registrato."
+		elif _last_verdict_outcome == &"WIN":
+			verdict_outcome.text = "Arena superata."
 		else:
-			verdict_outcome.text = "Chiusura non applicata."
+			verdict_outcome.text = "Condanna registrata."
 	if verdict_icon != null:
 		if _last_register_final:
 			var icon_path: String = _last_ending_icon_path
@@ -1201,13 +1205,20 @@ func _refresh_verdict_panel() -> void:
 			verdict_icon.visible = false
 	if verdict_sentence_label != null:
 		var body_text: String = _last_register_message.strip_edges()
+		if _last_next_bet_enabled:
+			if _last_verdict_outcome == &"CASHOUT":
+				body_text = "Ricompensa applicata. Il registro resta aperto per la prossima scommessa."
+			elif _last_verdict_outcome == &"WIN":
+				body_text = "Esito registrato. Puoi proseguire con la prossima scommessa."
+			else:
+				body_text = "Nessun premio assegnato. Il registro resta consultabile."
 		if body_text == "":
 			body_text = fmt_system_state("nessuna annotazione registrata")
 		verdict_sentence_label.text = body_text
 	if verdict_charge_label != null:
 		var status_text: String = "Stato: chiusura definitiva."
 		if _last_next_bet_enabled:
-			status_text = "Stato: in attesa di prosecuzione."
+			status_text = "Stato: scegli se proseguire o tornare al menu."
 		verdict_charge_label.text = status_text
 	if ending_text != null:
 		ending_text.text = "[center]Registro Arena - Lettura amministrativa[/center]"
@@ -2037,9 +2048,15 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
 	if push_luck_details != null:
 		push_luck_details.text = _format_push_luck_detail_text(lines)
+		var details_panel := push_luck_details.get_parent() as CanvasItem
+		if details_panel != null:
+			details_panel.visible = not lines.is_empty()
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""
+		var audience_panel := push_luck_audience_label.get_parent() as CanvasItem
+		if audience_panel != null:
+			audience_panel.visible = audience_label != ""
 	if push_luck_audience_reason != null:
 		var state_line: String = str(meta.get("state_line", "")).strip_edges()
 		if state_line == "":
@@ -2629,9 +2646,9 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_refresh_game_over_meta()
 	if next_bet_button != null:
 		next_bet_button.visible = can_retry
-		next_bet_button.text = "RETRY BET"
+		next_bet_button.text = "RIPROVA SCOMMESSA"
 	if restart_button != null:
-		restart_button.text = "RESTART RUN"
+		restart_button.text = "NUOVA RUN"
 	_reset_fast_countdown()
 	var bet_failed_read_buttons: Array[Button] = []
 	if restart_button != null:

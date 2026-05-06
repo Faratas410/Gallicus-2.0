@@ -1103,12 +1103,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -470.0
-offset_top = -290.0
-offset_right = 470.0
-offset_bottom = 290.0
+offset_left = -450.0
+offset_top = -270.0
+offset_right = 450.0
+offset_bottom = 270.0
 clip_contents = true
-custom_minimum_size = Vector2(940, 580)
+custom_minimum_size = Vector2(900, 540)
 
 [node name="BackgroundPushLuck" type="TextureRect" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK"]
 visible = false
@@ -1138,10 +1138,10 @@ color = Color(0.02, 0.02, 0.03, 0.6)
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 26.0
-offset_top = 22.0
+offset_top = 18.0
 offset_right = -26.0
-offset_bottom = -22.0
-theme_override_constants/separation = 10
+offset_bottom = -18.0
+theme_override_constants/separation = 8
 
 [node name="Lbl_PUSH_YOUR_LUCK_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 size_flags_horizontal = 3
@@ -1162,7 +1162,7 @@ horizontal_alignment = 1
 text = "Il Registro e aperto: incassa ora o aumenta esposizione."
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-custom_minimum_size = Vector2(0, 126)
+custom_minimum_size = Vector2(0, 92)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("16")
 
@@ -1194,6 +1194,7 @@ clip_text = true
 text = "Scegli un atto. La firma e irrevocabile."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+custom_minimum_size = Vector2(0, 128)
 size_flags_horizontal = 3
 theme_override_constants/separation = 14
 
@@ -1209,7 +1210,7 @@ theme_override_styles/disabled = ExtResource("15")
 theme_override_colors/font_color = Color(0.95, 0.94, 0.91, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.98, 0.94, 1)
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 58)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 autowrap_mode = 2
@@ -1238,7 +1239,7 @@ theme_override_styles/disabled = ExtResource("15")
 theme_override_colors/font_color = Color(1, 0.89, 0.85, 1)
 theme_override_colors/font_hover_color = Color(1, 0.95, 0.92, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.86, 0.8, 1)
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 58)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 autowrap_mode = 2
@@ -1266,7 +1267,7 @@ theme_override_styles/disabled = ExtResource("15")
 theme_override_colors/font_color = Color(0.96, 0.92, 0.86, 1)
 theme_override_colors/font_hover_color = Color(1, 0.98, 0.93, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.89, 0.8, 1)
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 58)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 autowrap_mode = 2
@@ -1361,12 +1362,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -520.0
-offset_top = -300.0
-offset_right = 520.0
-offset_bottom = 300.0
+offset_left = -500.0
+offset_top = -286.0
+offset_right = 500.0
+offset_bottom = 286.0
 clip_contents = true
-custom_minimum_size = Vector2(1040, 600)
+custom_minimum_size = Vector2(1000, 572)
 texture = ExtResource("17")
 expand_mode = 1
 stretch_mode = 6
@@ -1374,10 +1375,11 @@ stretch_mode = 6
 [node name="Box_END_RUN" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
+offset_left = 28.0
+offset_top = 20.0
+offset_right = -28.0
+offset_bottom = -20.0
+theme_override_constants/separation = 8
 
 [node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_type_variation = &"TitleLabel"
@@ -1393,25 +1395,34 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Lbl_END_RUN_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+custom_minimum_size = Vector2(0, 42)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel"]
 horizontal_alignment = 1
+vertical_alignment = 1
 text = ""
 
 [node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+custom_minimum_size = Vector2(0, 54)
 horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 text = ""
 
 [node name="Lbl_END_RUN_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+custom_minimum_size = Vector2(0, 38)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel"]
 horizontal_alignment = 1
+vertical_alignment = 1
 text = ""
 
 [node name="Box_END_RUN_DETAILS" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 4
 
 [node name="Lbl_END_RUN_PACTS_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 size_flags_horizontal = 3
@@ -1420,6 +1431,7 @@ size_flags_horizontal = 3
 text = "PATTI FIRMATI"
 
 [node name="Lbl_END_RUN_PACTS_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel"]
@@ -1436,6 +1448,7 @@ size_flags_horizontal = 3
 text = "CONDANNE"
 
 [node name="Lbl_END_RUN_CONDANNE_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel"]
@@ -1456,6 +1469,7 @@ size_flags_horizontal = 3
 text = "ULTIMA VOCE"
 
 [node name="Lbl_END_RUN_CROWD_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
+custom_minimum_size = Vector2(0, 42)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CROWD_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel"]
@@ -1500,7 +1514,7 @@ theme_override_styles/hover = ExtResource("13")
 theme_override_styles/pressed = ExtResource("14")
 theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 44)
-text = "NEXT BET"
+text = "PROSSIMA SCOMMESSA"
 
 [node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_styles/normal = ExtResource("12")
@@ -1511,6 +1525,7 @@ custom_minimum_size = Vector2(0, 44)
 text = "TORNA AL MENU"
 
 [node name="WaxSeal" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
+visible = false
 z_index = 2
 anchor_left = 1.0
 anchor_top = 1.0

@@ -739,7 +739,12 @@ func _show_boot_fail(missing: Array[String]) -> void:
 		if phase_node != null:
 			phase_node.visible = false
 	if boot_fail_body != null:
-		boot_fail_body.text = "Interfaccia non inizializzata.\nElementi mancanti:\n- %s\n\nTorna al menu e riavvia." % "\n- ".join(missing)
+		boot_fail_body.text = "%s\n%s\n- %s\n\n%s" % [
+			tr("Interfaccia non inizializzata."),
+			tr("Elementi mancanti:"),
+			"\n- ".join(missing),
+			tr("Torna al menu e riavvia."),
+		]
 	if boot_fail_overlay != null:
 		boot_fail_overlay.visible = true
 	push_error("UI BOOT FAIL: missing=%s" % ", ".join(missing))
@@ -780,7 +785,7 @@ func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_story != "":
 		text_lines.append("[i]%s[/i]" % scar_story)
 	if effect_text != "":
-		text_lines.append("[b]Effetto:[/b] %s" % effect_text)
+		text_lines.append(tr("[b]Effetto:[/b] %s") % effect_text)
 	scar_popup.text = "\n".join(text_lines)
 	if scar_popup_panel == null:
 		return
@@ -865,7 +870,7 @@ func _on_run_started() -> void:
 		escalation_bar.visible = true
 	_escalation_level = 0
 	_update_escalation_bar()
-	set_active_bet_text("Nessuna scommessa attiva")
+	set_active_bet_text(tr("Nessuna scommessa attiva"))
 	_set_bet_modal(false)
 	_reset_bet_confirmation()
 	# IMPORTANT: if the player picked FAST, we must keep the FAST timer state into the round.
@@ -891,7 +896,7 @@ func _on_run_started() -> void:
 	if next_bet_button != null:
 		next_bet_button.visible = false
 		next_bet_button.disabled = true
-	_last_finale_title = "RUN FAILED"
+	_last_finale_title = tr("RUN FAILED")
 	_last_finale_text = ""
 	_last_finale_scars = []
 	_last_finale_ending_id = ""
@@ -1037,7 +1042,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	if payload.has("title"):
 		_last_finale_title = str(payload["title"])
 	else:
-		_last_finale_title = "RUN FAILED"
+		_last_finale_title = tr("RUN FAILED")
 	if payload.has("text"):
 		_last_finale_text = str(payload["text"])
 	else:
@@ -1181,17 +1186,17 @@ func _refresh_verdict_panel() -> void:
 	if verdict_header != null:
 		var title_text: String = _last_finale_title.strip_edges()
 		if title_text == "":
-			title_text = "AGGIORNAMENTO DEL REGISTRO"
+			title_text = tr("AGGIORNAMENTO DEL REGISTRO")
 		verdict_header.text = title_text
 	if verdict_outcome != null:
 		if _last_register_final:
-			verdict_outcome.text = "Protocollo di classificazione completato."
+			verdict_outcome.text = tr("Protocollo di classificazione completato.")
 		elif _last_verdict_outcome == &"CASHOUT":
-			verdict_outcome.text = "Incasso registrato."
+			verdict_outcome.text = tr("Incasso registrato.")
 		elif _last_verdict_outcome == &"WIN":
-			verdict_outcome.text = "Arena superata."
+			verdict_outcome.text = tr("Arena superata.")
 		else:
-			verdict_outcome.text = "Condanna registrata."
+			verdict_outcome.text = tr("Condanna registrata.")
 	if verdict_icon != null:
 		if _last_register_final:
 			var icon_path: String = _last_ending_icon_path
@@ -1207,21 +1212,21 @@ func _refresh_verdict_panel() -> void:
 		var body_text: String = _last_register_message.strip_edges()
 		if _last_next_bet_enabled:
 			if _last_verdict_outcome == &"CASHOUT":
-				body_text = "Ricompensa applicata. Il registro resta aperto per la prossima scommessa."
+				body_text = tr("Ricompensa applicata. Il registro resta aperto per la prossima scommessa.")
 			elif _last_verdict_outcome == &"WIN":
-				body_text = "Esito registrato. Puoi proseguire con la prossima scommessa."
+				body_text = tr("Esito registrato. Puoi proseguire con la prossima scommessa.")
 			else:
-				body_text = "Nessun premio assegnato. Il registro resta consultabile."
+				body_text = tr("Nessun premio assegnato. Il registro resta consultabile.")
 		if body_text == "":
-			body_text = fmt_system_state("nessuna annotazione registrata")
+			body_text = fmt_system_state(tr("nessuna annotazione registrata"))
 		verdict_sentence_label.text = body_text
 	if verdict_charge_label != null:
-		var status_text: String = "Stato: chiusura definitiva."
+		var status_text: String = tr("Stato: chiusura definitiva.")
 		if _last_next_bet_enabled:
-			status_text = "Stato: scegli se proseguire o tornare al menu."
+			status_text = tr("Stato: scegli se proseguire o tornare al menu.")
 		verdict_charge_label.text = status_text
 	if ending_text != null:
-		ending_text.text = "[center]Registro Arena - Lettura amministrativa[/center]"
+		ending_text.text = tr("[center]Registro Arena - Lettura amministrativa[/center]")
 	if verdict_pacts_text != null:
 		var pacts_text: String = _format_verdict_pacts_list(_last_verdict_pacts).strip_edges()
 		verdict_pacts_text.text = pacts_text
@@ -1365,11 +1370,11 @@ func _set_verdict_mode(active: bool) -> void:
 func _get_verdict_outcome_text(outcome: StringName) -> String:
 	match outcome:
 		&"CASHOUT":
-			return fmt_system_state("incasso accettato")
+			return fmt_system_state(tr("incasso accettato"))
 		&"WIN":
-			return fmt_system_state("arena continuata")
+			return fmt_system_state(tr("arena continuata"))
 		_:
-			return fmt_system_state("run registrata")
+			return fmt_system_state(tr("run registrata"))
 
 func _build_verdict_summary(payload: Dictionary, pacts_payload: Array, condanne_payload: Array) -> Dictionary:
 	var stats_payload: Dictionary = payload.get("stats", {}) as Dictionary
@@ -1627,7 +1632,7 @@ func _on_bet_selected(bet_id: String) -> void:
 func _on_pact_sealed_opened() -> void:
 	_reset_sign_feedback()
 	if pact_sealed_title != null:
-		pact_sealed_title.text = fmt_system_state("patto registrato")
+		pact_sealed_title.text = fmt_system_state(tr("patto registrato"))
 	if pact_sealed_subtitle != null:
 		pact_sealed_subtitle.text = ""
 	_set_pact_sealed_modal(true)
@@ -1645,12 +1650,12 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_pre_resolve_tension_boost()
 	_last_ritual_outcome_snapshot = _extract_ritual_outcome_snapshot(payload)
 	var doom_short: String = str(payload.get("doom_short", ""))
-	var subtitle: String = fmt_system_state("condanna registrata")
+	var subtitle: String = fmt_system_state(tr("condanna registrata"))
 	if doom_short != "":
-		subtitle = "CONDANNA: %s" % doom_short
+		subtitle = tr("CONDANNA: %s") % doom_short
 	enqueue_post_bet_message({
 		"kind": "resolve_ritual",
-		"title": "RITO DI GIUDIZIO",
+		"title": tr("RITO DI GIUDIZIO"),
 		"subtitle": subtitle,
 	})
 
@@ -1668,15 +1673,15 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 	var kind: String = str(payload.get("kind", ""))
 	if kind == "pact_sealed":
 		if pact_sealed_title != null:
-			pact_sealed_title.text = str(payload.get("title", fmt_system_state("patto registrato")))
+			pact_sealed_title.text = str(payload.get("title", fmt_system_state(tr("patto registrato"))))
 		if pact_sealed_subtitle != null:
 			pact_sealed_subtitle.text = str(payload.get("subtitle", ""))
 		_set_pact_sealed_modal(true)
 	elif kind == "resolve_ritual":
 		if resolve_ritual_title != null:
-			resolve_ritual_title.text = str(payload.get("title", "RITO DI GIUDIZIO"))
+			resolve_ritual_title.text = str(payload.get("title", tr("RITO DI GIUDIZIO")))
 		if resolve_ritual_subtitle != null:
-			resolve_ritual_subtitle.text = str(payload.get("subtitle", fmt_system_state("condanna registrata")))
+			resolve_ritual_subtitle.text = str(payload.get("subtitle", fmt_system_state(tr("condanna registrata"))))
 		_set_resolve_ritual_modal(true)
 	_refresh_modal_dimmer()
 
@@ -1684,9 +1689,9 @@ func _on_intermediate_choice_opened() -> void:
 	_reset_sign_feedback()
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = RunPhaseContract.INTERMEDIATE_CHOICE
-	payload.title = "SELEZIONE GESTO"
+	payload.title = tr("SELEZIONE GESTO")
 	payload.meta = {
-		"audience_message": "La folla osserva la tua scelta.",
+		"audience_message": tr("La folla osserva la tua scelta."),
 	}
 	payload.choices = ["placa", "provoca"]
 	payload.show_mid_choice = true
@@ -1719,7 +1724,7 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		audience_line = str(payload.meta.get("audience_message", "")).strip_edges()
 	var title: String = payload.title.strip_edges()
 	if title == "":
-		title = "SELEZIONE GESTO"
+		title = tr("SELEZIONE GESTO")
 	if title.find("\n") >= 0:
 		var parts: PackedStringArray = title.split("\n")
 		if audience_line == "" and parts.size() > 0:
@@ -1730,7 +1735,7 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		intermediate_choice_audience_label.visible = audience_line != ""
 	if intermediate_choice_label != null:
 		if title == "":
-			title = "SELEZIONE GESTO"
+			title = tr("SELEZIONE GESTO")
 		intermediate_choice_label.text = title
 	_set_intermediate_choice_modal(true)
 	var choice_buttons: Array[Button] = []
@@ -1750,7 +1755,7 @@ func _update_special_arena_ui() -> void:
 	if _special_arena_payload.is_empty():
 		special_arena_label.visible = false
 		return
-	var title: String = str(_special_arena_payload.get("title", "Arena speciale"))
+	var title: String = str(_special_arena_payload.get("title", tr("Arena speciale")))
 	var desc: String = str(_special_arena_payload.get("description", ""))
 	if desc != "":
 		special_arena_label.text = "%s\n%s" % [title, desc]
@@ -1796,17 +1801,17 @@ func _update_bet_focus_telegraph() -> void:
 	if condanna_focus_label == null or not condanna_focus_label.visible:
 		return
 	if _selected_bet_id == "":
-		condanna_focus_label.text = "Firma una via. Il Registro annota il prezzo."
+		condanna_focus_label.text = tr("Firma una via. Il Registro annota il prezzo.")
 		return
 	var bet: Dictionary = _bets_by_id.get(_selected_bet_id, {}) as Dictionary
 	if bet.is_empty():
-		condanna_focus_label.text = "Firma una via. Il Registro annota il prezzo."
+		condanna_focus_label.text = tr("Firma una via. Il Registro annota il prezzo.")
 		return
 	var title_text: String = str(bet.get("display_title", bet.get("name", _selected_bet_id))).strip_edges()
 	var doom_text: String = str(bet.get("doom_short", bet.get("doom", ""))).strip_edges()
 	if doom_text == "":
-		doom_text = "Clausola non esposta."
-	condanna_focus_label.text = "Firma focus: %s | Clausola: %s" % [title_text, doom_text]
+		doom_text = tr("Clausola non esposta.")
+	condanna_focus_label.text = tr("Firma focus: %s | Clausola: %s") % [title_text, doom_text]
 
 func _on_scars_updated(scars: Array) -> void:
 	_refresh_scars_ui(scars)
@@ -1829,7 +1834,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 		scars_panel.custom_minimum_size.y = clamped_height
 		scars_panel.size.y = clamped_height
 	if scars.is_empty():
-		scars_label.text = "Nessuna cicatrice."
+		scars_label.text = tr("Nessuna cicatrice.")
 		scars_label.tooltip_text = ""
 		if scars_panel != null:
 			scars_panel.tooltip_text = ""
@@ -1852,8 +1857,8 @@ func _refresh_scars_ui(scars: Array) -> void:
 			summary_lines.append("- %s" % visual_tag)
 			detail_lines.append("- %s" % visual_tag)
 		else:
-			summary_lines.append("- Cicatrice")
-			detail_lines.append("- Cicatrice")
+			summary_lines.append("- %s" % tr("Cicatrice"))
+			detail_lines.append("- %s" % tr("Cicatrice"))
 		if short_desc != "":
 			summary_lines.append("  %s" % short_desc)
 			detail_lines.append("  %s" % short_desc)
@@ -1863,9 +1868,9 @@ func _refresh_scars_ui(scars: Array) -> void:
 				if line != "":
 					detail_lines.append("  %s" % line)
 		if effect_text != "":
-			detail_lines.append("  Effetto: %s" % effect_text)
+			detail_lines.append(tr("  Effetto: %s") % effect_text)
 		if origin != "":
-			detail_lines.append("  Origine: %s" % origin)
+			detail_lines.append(tr("  Origine: %s") % origin)
 		summary_lines.append("")
 		detail_lines.append("")
 	if summary_lines.size() > 0 and summary_lines[summary_lines.size() - 1] == "":
@@ -1941,10 +1946,10 @@ func _build_ending_scars_section() -> String:
 	if _last_finale_scars.is_empty():
 		return ""
 	var lines: Array[String] = []
-	lines.append("[b]Cicatrici rilevanti:[/b]")
+	lines.append(tr("[b]Cicatrici rilevanti:[/b]"))
 	for scar_value: Dictionary in _last_finale_scars:
 		var scar: Dictionary = scar_value as Dictionary
-		var scar_name: String = "Cicatrice"
+		var scar_name: String = tr("Cicatrice")
 		if scar.has("name"):
 			scar_name = str(scar["name"])
 		lines.append("- %s" % scar_name)
@@ -1953,28 +1958,28 @@ func _build_ending_scars_section() -> String:
 func _build_ending_meta_section() -> String:
 	var lines: Array[String] = []
 	if _last_register_ending_key != "":
-		lines.append("FINAL: %s" % _get_register_ending_title(_last_register_ending_key))
+		lines.append(tr("FINAL: %s") % _get_register_ending_title(_last_register_ending_key))
 	if _last_finale_ending_id != "":
-		lines.append("ENDING ID: %s" % _last_finale_ending_id)
+		lines.append(tr("ENDING ID: %s") % _last_finale_ending_id)
 	if _last_ending_icon_path != "":
-		lines.append("ICONA: %s" % _last_ending_icon_path)
+		lines.append(tr("ICONA: %s") % _last_ending_icon_path)
 	if lines.is_empty():
 		return ""
-	lines.insert(0, "[b]Registro Finale[/b]")
+	lines.insert(0, tr("[b]Registro Finale[/b]"))
 	return "\n".join(lines)
 
 func _get_register_ending_title(ending_key: String) -> String:
 	match ending_key:
 		"ending_corruption":
-			return "Corruzione"
+			return tr("Corruzione")
 		"ending_glory":
-			return "Gloria"
+			return tr("Gloria")
 		"ending_scars":
-			return "Cicatrici"
+			return tr("Cicatrici")
 		"ending_pattern":
-			return "Pattern"
+			return tr("Pattern")
 		_:
-			return "Fascicolo chiuso"
+			return tr("Fascicolo chiuso")
 
 func _on_push_luck_opened(payload: Dictionary) -> void:
 	_reset_sign_feedback()
@@ -1982,24 +1987,24 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	ui_payload.phase = RunPhaseContract.PUSH_YOUR_LUCK
 	ui_payload.show_push_your_luck = true
 	ui_payload.meta = payload
-	ui_payload.title = "PUSH YOUR LUCK"
-	ui_payload.subtitle = str(payload.get("subtitle", "Il registro e aperto."))
-	ui_payload.body = str(payload.get("body", "Incassa ora o aumenta esposizione."))
-	ui_payload.hint = str(payload.get("hint", "La condanna chiude il ciclo senza premio."))
-	ui_payload.footer = str(payload.get("footer", "Scegli un atto. La firma e irrevocabile."))
+	ui_payload.title = tr("PUSH YOUR LUCK")
+	ui_payload.subtitle = str(payload.get("subtitle", tr("Il registro e aperto.")))
+	ui_payload.body = str(payload.get("body", tr("Incassa ora o aumenta esposizione.")))
+	ui_payload.hint = str(payload.get("hint", tr("La condanna chiude il ciclo senza premio.")))
+	ui_payload.footer = str(payload.get("footer", tr("Scegli un atto. La firma e irrevocabile.")))
 	ui_payload.choices = ["cashout", "condanna", "double"]
 	apply_run_ui_payload(ui_payload)
 
 func _format_push_luck_detail_text(lines: Array[String]) -> String:
 	if lines.is_empty():
-		return "Nessun dettaglio."
+		return tr("Nessun dettaglio.")
 	var visible_lines: Array[String] = []
 	var visible_count: int = mini(lines.size(), PUSH_LUCK_DETAILS_MAX_LINES)
 	for i: int in range(visible_count):
 		visible_lines.append(_compact_push_luck_detail_line(lines[i]))
 	if lines.size() > PUSH_LUCK_DETAILS_MAX_LINES:
 		var hidden_count: int = lines.size() - PUSH_LUCK_DETAILS_MAX_LINES
-		visible_lines.append("+ %d dettagli nel registro." % hidden_count)
+		visible_lines.append(tr("+ %d dettagli nel registro.") % hidden_count)
 	return "- " + "\n- ".join(visible_lines)
 
 func _compact_push_luck_detail_line(line: String) -> String:
@@ -2015,9 +2020,9 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	_set_bet_modal(false)
 	var meta: Dictionary = payload.meta
 	if push_luck_title != null:
-		push_luck_title.text = str(payload.title if payload.title != "" else "SPINGI LA SORTE")
+		push_luck_title.text = str(payload.title if payload.title != "" else tr("SPINGI LA SORTE"))
 	if push_luck_info != null:
-		push_luck_info.text = str(payload.body if payload.body != "" else "Incassa ora o aumenta esposizione.")
+		push_luck_info.text = str(payload.body if payload.body != "" else tr("Incassa ora o aumenta esposizione."))
 	var doom_text: String = str(meta.get("next_doom", ""))
 	var condition_text: String = str(meta.get("condition", ""))
 	var pact_text: String = str(meta.get("next_pact", ""))
@@ -2031,21 +2036,21 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	var cashout_modifier_text: String = str(meta.get("cashout_modifier_text", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
-		lines.append("CONDANNA: %s" % doom_text)
+		lines.append(tr("CONDANNA: %s") % doom_text)
 	if condition_text != "":
-		lines.append("CONDIZIONE: %s" % condition_text)
+		lines.append(tr("CONDIZIONE: %s") % condition_text)
 	if pact_text != "":
-		lines.append("PATTO: %s" % pact_text)
+		lines.append(tr("PATTO: %s") % pact_text)
 	if choice_note != "":
-		lines.append("NOTA: %s" % choice_note)
+		lines.append(tr("NOTA: %s") % choice_note)
 	if cashout_locked and cashout_reason != "":
-		lines.append("INCASSO BLOCCATO: %s" % cashout_reason)
+		lines.append(tr("INCASSO BLOCCATO: %s") % cashout_reason)
 	if double_locked and double_reason != "":
-		lines.append("RADDOPPIO BLOCCATO: %s" % double_reason)
+		lines.append(tr("RADDOPPIO BLOCCATO: %s") % double_reason)
 	if audience_reason != "":
-		lines.append("CONTESTO: %s" % audience_reason)
+		lines.append(tr("CONTESTO: %s") % audience_reason)
 	if cashout_modifier_text != "":
-		lines.append("MODIFICA INCASSO: %s" % cashout_modifier_text)
+		lines.append(tr("MODIFICA INCASSO: %s") % cashout_modifier_text)
 	if push_luck_details != null:
 		push_luck_details.text = _format_push_luck_detail_text(lines)
 		var details_panel := push_luck_details.get_parent() as CanvasItem
@@ -2060,7 +2065,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_audience_reason != null:
 		var state_line: String = str(meta.get("state_line", "")).strip_edges()
 		if state_line == "":
-			state_line = "Stato: in attesa di scelta."
+			state_line = tr("Stato: in attesa di scelta.")
 		push_luck_audience_reason.text = state_line
 		push_luck_audience_reason.visible = true
 	if push_luck_cashout_button != null:
@@ -2071,10 +2076,10 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_cashout_button.tooltip_text = ""
 	if push_luck_cashout_note != null:
 		if cashout_locked:
-			push_luck_cashout_note.text = _format_lock_note(cashout_reason, "Disponibile dopo l'arena in corso.")
+			push_luck_cashout_note.text = _format_lock_note(cashout_reason, tr("Disponibile dopo l'arena in corso."))
 			push_luck_cashout_note.visible = true
 		else:
-			push_luck_cashout_note.text = "Chiudi la run e apri il registro finale."
+			push_luck_cashout_note.text = tr("Chiudi la run e apri il registro finale.")
 			push_luck_cashout_note.visible = true
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
@@ -2084,10 +2089,10 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_double_button.tooltip_text = ""
 	if push_luck_double_note != null:
 		if double_locked:
-			push_luck_double_note.text = _format_lock_note(double_reason, "Disponibile dopo l'arena in corso.")
+			push_luck_double_note.text = _format_lock_note(double_reason, tr("Disponibile dopo l'arena in corso."))
 			push_luck_double_note.visible = true
 		else:
-			push_luck_double_note.text = "Continua alla prossima arena con posta aumentata."
+			push_luck_double_note.text = tr("Continua alla prossima arena con posta aumentata.")
 			push_luck_double_note.visible = true
 	_set_push_luck_modal(true)
 	var push_luck_read_buttons: Array[Button] = []
@@ -2231,7 +2236,7 @@ func _on_push_luck_cashout_pressed() -> void:
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if not _emit_game_event_signal_if_available(&"request_pyl_cashout"):
-		_recover_pyl_request_lock("Stato: richiesta incasso non disponibile.")
+		_recover_pyl_request_lock(tr("Stato: richiesta incasso non disponibile."))
 		return
 	_start_pyl_request_watchdog()
 
@@ -2241,7 +2246,7 @@ func _on_push_luck_condanna_pressed() -> void:
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if not _emit_game_event_signal_if_available(&"request_pyl_condanna"):
-		_recover_pyl_request_lock("Stato: richiesta condanna non disponibile.")
+		_recover_pyl_request_lock(tr("Stato: richiesta condanna non disponibile."))
 		return
 	_start_pyl_request_watchdog()
 
@@ -2251,7 +2256,7 @@ func _on_push_luck_double_pressed() -> void:
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if not _emit_game_event_signal_if_available(&"request_pyl_double"):
-		_recover_pyl_request_lock("Stato: richiesta rilancio non disponibile.")
+		_recover_pyl_request_lock(tr("Stato: richiesta rilancio non disponibile."))
 		return
 	_start_pyl_request_watchdog()
 
@@ -2268,7 +2273,7 @@ func _recover_pyl_request_if_still_open(request_id: int) -> void:
 		return
 	if push_luck_modal == null or not push_luck_modal.visible:
 		return
-	_recover_pyl_request_lock("Stato: richiesta non accettata. Scegli di nuovo.")
+	_recover_pyl_request_lock(tr("Stato: richiesta non accettata. Scegli di nuovo."))
 
 func _recover_pyl_request_lock(message: String) -> void:
 	_reset_pyl_lock_state()
@@ -2514,7 +2519,7 @@ func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> 
 
 func _create_signature_button(bet_id: String) -> Button:
 	var button: Button = Button.new()
-	button.text = "FIRMA"
+	button.text = tr("FIRMA")
 	button.flat = false
 	button.focus_mode = Control.FOCUS_NONE
 	button.custom_minimum_size = Vector2(0, 48)
@@ -2548,20 +2553,20 @@ func _format_bet_button_text(bet_id: String, bet: Dictionary, extra_note: String
 	var archetype_label: String = str(bet.get("archetype_label", ""))
 	var lines: Array[String] = []
 	if doom_text != "":
-		lines.append("CONDANNA: %s" % name_text)
+		lines.append(tr("CONDANNA: %s") % name_text)
 		lines.append(doom_text)
 	else:
-		lines.append("CONDANNA: %s" % name_text)
+		lines.append(tr("CONDANNA: %s") % name_text)
 	if archetype_label != "":
 		lines.append(archetype_label)
 	if subtitle_text != "":
 		lines.append(subtitle_text)
 	if condition_text != "":
-		lines.append("CONDIZIONE: %s" % condition_text)
+		lines.append(tr("CONDIZIONE: %s") % condition_text)
 	if pact_text != "":
-		lines.append("PATTO: %s" % pact_text)
+		lines.append(tr("PATTO: %s") % pact_text)
 	if extra_note != "":
-		lines.append("NOTA: %s" % extra_note)
+		lines.append(tr("NOTA: %s") % extra_note)
 	return "\n".join(lines)
 
 func _refresh_bet_selection_visuals() -> void:
@@ -2600,11 +2605,11 @@ func _extract_ritual_outcome_snapshot(payload: Dictionary) -> Dictionary:
 func fmt_register_line(action: String, consequence: String) -> String:
 	var action_text: String = action.strip_edges().to_lower()
 	if action_text == "":
-		action_text = "registrato"
+		action_text = tr("registrato")
 	var consequence_text: String = consequence.strip_edges().to_lower()
 	if consequence_text == "":
-		consequence_text = "continuato"
-	return "Atto registrato: %s. Stato: %s." % [action_text, consequence_text]
+		consequence_text = tr("continuato")
+	return tr("Atto registrato: %s. Stato: %s.") % [action_text, consequence_text]
 
 func fmt_system_state(label: String) -> String:
 	var text: String = label.strip_edges()
@@ -2631,24 +2636,24 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_reset_fast_countdown()
 	_set_game_over_modal(true)
 	_set_verdict_mode(false)
-	_last_finale_title = "RUN FAILED"
+	_last_finale_title = tr("RUN FAILED")
 	if can_retry:
-		_last_finale_title = "BET FAILED"
+		_last_finale_title = tr("BET FAILED")
 	_last_finale_text = ""
 	_last_finale_scars = []
 	_last_finale_ending_id = ""
 	_last_finale_seed = 0
 	_last_finale_stats = {}
-	_last_finale_hint = fmt_system_state("seleziona un'azione")
+	_last_finale_hint = fmt_system_state(tr("seleziona un'azione"))
 	if can_retry:
-		_last_finale_hint = fmt_system_state("scommessa rinunciata")
+		_last_finale_hint = fmt_system_state(tr("scommessa rinunciata"))
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	if next_bet_button != null:
 		next_bet_button.visible = can_retry
-		next_bet_button.text = "RIPROVA SCOMMESSA"
+		next_bet_button.text = tr("RIPROVA SCOMMESSA")
 	if restart_button != null:
-		restart_button.text = "NUOVA RUN"
+		restart_button.text = tr("NUOVA RUN")
 	_reset_fast_countdown()
 	var bet_failed_read_buttons: Array[Button] = []
 	if restart_button != null:
@@ -2693,7 +2698,7 @@ func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: La
 		button.disabled = true
 		button.scale = Vector2.ONE
 	if hint_label != null:
-		hint_label.text = "Stato: scelta acquisita."
+		hint_label.text = tr("Stato: scelta acquisita.")
 		hint_label.visible = true
 	if panel == null:
 		return
@@ -2716,7 +2721,7 @@ func _reset_decision_surface(panel: Control, buttons: Array[Button], hint_label:
 		button.disabled = false
 		button.scale = Vector2.ONE
 	if hint_label != null:
-		hint_label.text = "Stato: in attesa di scelta."
+		hint_label.text = tr("Stato: in attesa di scelta.")
 		hint_label.visible = true
 	if panel != null:
 		var panel_color: Color = panel.modulate
@@ -3040,7 +3045,7 @@ func _reset_bet_confirmation() -> void:
 	_pending_confirm_bet_id = ""
 	_reset_sign_feedback()
 	if bet_confirm_label != null:
-		bet_confirm_label.text = "Selezione: -"
+		bet_confirm_label.text = tr("Selezione: -")
 	if bet_confirm_row != null:
 		bet_confirm_row.visible = false
 	if bet_confirm_button != null:

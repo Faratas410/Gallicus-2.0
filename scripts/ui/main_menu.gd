@@ -194,7 +194,7 @@ func _hide_menu() -> void:
 func _on_run_phase_changed(next_phase: int) -> void:
 	if next_phase == RunPhaseContractScript.MAIN_MENU:
 		visible = true
-		_menu_next_step_hint = "Nuova run disponibile / Consulta Condanne."
+		_menu_next_step_hint = tr("Nuova run disponibile / Consulta Condanne.")
 		_show_menu()
 
 func _show_achievements() -> void:
@@ -226,7 +226,7 @@ func _show_settings() -> void:
 
 func _disable_placeholder_buttons() -> void:
 	load_game_button.disabled = true
-	load_game_button.tooltip_text = "Funzione disattiva in L3."
+	load_game_button.tooltip_text = tr("Funzione disattiva in L3.")
 
 func _build_condanne_list() -> void:
 	if condanne_populated:
@@ -267,16 +267,16 @@ func _build_museo_list() -> void:
 		harsh_count = _run_manager_port.get_crowd_line_count_harsh()
 	var base_total: int = base_count if base_count > 0 else 60
 	var harsh_total: int = harsh_count if harsh_count > 0 else 15
-	_add_museo_header("PATTI DISPONIBILI (LIVELLO 3)")
+	_add_museo_header(tr("PATTI DISPONIBILI (LIVELLO 3)"))
 	if pact_ids.is_empty():
-		_add_museo_item("- Nessun patto disponibile.")
+		_add_museo_item(tr("- Nessun patto disponibile."))
 	else:
 		for pact_id in pact_ids:
 			var pact_title: String = _get_pact_display_name(pact_id)
 			_add_museo_item("- %s" % pact_title)
-	_add_museo_header("ARENE TEMATICHE")
+	_add_museo_header(tr("ARENE TEMATICHE"))
 	if arena_themes.is_empty():
-		_add_museo_item("- Nessuna arena disponibile.")
+		_add_museo_item(tr("- Nessuna arena disponibile."))
 	else:
 		for theme_id in arena_themes:
 			var theme_data: Dictionary = _arena_themes.get_theme(theme_id)
@@ -284,12 +284,12 @@ func _build_museo_list() -> void:
 			if theme_title == "":
 				theme_title = str(theme_id)
 			_add_museo_item("- %s" % theme_title)
-	_add_museo_header("VOCI DEL PUBBLICO")
-	_add_museo_item("Voci base: %d" % base_total)
-	var harsh_status: String = "SBLOCCATE" if harsh_unlocked else "BLOCCATE"
-	_add_museo_item("Voci dure: %s" % harsh_status)
+	_add_museo_header(tr("VOCI DEL PUBBLICO"))
+	_add_museo_item(tr("Voci base: %d") % base_total)
+	var harsh_status: String = tr("SBLOCCATE") if harsh_unlocked else tr("BLOCCATE")
+	_add_museo_item(tr("Voci dure: %s") % harsh_status)
 	if harsh_unlocked:
-		_add_museo_item("Voci dure: +%d" % harsh_total)
+		_add_museo_item(tr("Voci dure: +%d") % harsh_total)
 
 func _add_museo_header(text: String) -> void:
 	var entry_panel: PanelContainer = _create_museo_entry_panel(text)
@@ -347,8 +347,9 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 		_apply_condanna_style(condanna_id, entry_label)
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
-	var tooltip_label_text: String = "%s\\n\\nCome e stata ottenuta:\\n%s\\n\\n%s" % [
+	var tooltip_label_text: String = "%s\n\n%s\n%s\n\n%s" % [
 		condanna.title,
+		tr("Come e stata ottenuta:"),
 		condanna.condition_text,
 		condanna.lore_text
 	]
@@ -367,34 +368,34 @@ func _refresh_continue_button() -> void:
 	continue_hint_panel.visible = not has_run_save or has_menu_hint
 	continue_hint_label.visible = not has_run_save or has_menu_hint
 	if has_menu_hint:
-		continue_hint_label.text = "%s\n%s" % [_menu_next_step_hint, L3_EXPECTATION_MICRO_COPY]
+		continue_hint_label.text = "%s\n%s" % [_menu_next_step_hint, tr(L3_EXPECTATION_MICRO_COPY)]
 		_menu_next_step_hint = ""
 		return
 	if not has_run_save:
-		continue_hint_label.text = "%s\n%s" % ["Accetta una scommessa per procedere.", L3_EXPECTATION_MICRO_COPY]
+		continue_hint_label.text = "%s\n%s" % [tr("Accetta una scommessa per procedere."), tr(L3_EXPECTATION_MICRO_COPY)]
 
 func _format_continue_reject_reason(reason: String) -> String:
 	if reason == "missing_or_invalid_schema_version":
-		return "Salvataggio non valido: schema del file mancante o corrotto."
+		return tr("Salvataggio non valido: schema del file mancante o corrotto.")
 	if reason == "unsupported_save_wrapper_schema":
-		return "Salvataggio non compatibile con questa versione."
+		return tr("Salvataggio non compatibile con questa versione.")
 	if reason == "missing_run_payload":
-		return "Salvataggio incompleto: dati run mancanti."
+		return tr("Salvataggio incompleto: dati run mancanti.")
 	if reason == "missing_level3_schema":
-		return "Salvataggio non valido: schema Level 3 mancante."
+		return tr("Salvataggio non valido: schema Level 3 mancante.")
 	if reason == "unsupported_level3_schema":
-		return "Salvataggio non compatibile: schema Level 3 differente."
+		return tr("Salvataggio non compatibile: schema Level 3 differente.")
 	if reason.begins_with("legacy_run_key:"):
-		return "Salvataggio legacy non supportato in L3."
+		return tr("Salvataggio legacy non supportato in L3.")
 	if reason == "missing_run_state":
-		return "Salvataggio incompleto: stato run mancante."
+		return tr("Salvataggio incompleto: stato run mancante.")
 	if reason == "missing_or_invalid_scars_array":
-		return "Salvataggio non valido: dati Condanne non leggibili."
+		return tr("Salvataggio non valido: dati Condanne non leggibili.")
 	if reason == "invalid_scar_item_type":
-		return "Salvataggio non valido: formato Condanne non supportato."
+		return tr("Salvataggio non valido: formato Condanne non supportato.")
 	if reason == "":
-		return "Salvataggio non valido."
-	return "Salvataggio non valido: %s." % reason
+		return tr("Salvataggio non valido.")
+	return tr("Salvataggio non valido: %s.") % reason
 
 func _on_continue_rejected(reason: String) -> void:
 	_refresh_continue_button()
@@ -407,14 +408,14 @@ func _on_continue_pressed() -> void:
 		return
 	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("request_continue_run"):
 		if _run_manager_port == null or not _run_manager_port.has_manager():
-			continue_hint_label.text = "In arrivo."
+			continue_hint_label.text = tr("In arrivo.")
 			continue_hint_panel.visible = true
 			continue_hint_label.visible = true
 			return
 		GameEvents.request_continue_run.emit()
 		_hide_menu()
 	else:
-		continue_hint_label.text = "In arrivo."
+		continue_hint_label.text = tr("In arrivo.")
 		continue_hint_panel.visible = true
 		continue_hint_label.visible = true
 
@@ -428,7 +429,7 @@ func _on_new_game_pressed() -> void:
 		GameEvents.request_new_run.emit()
 		_hide_menu()
 	else:
-		continue_hint_label.text = "In arrivo."
+		continue_hint_label.text = tr("In arrivo.")
 		continue_hint_panel.visible = true
 		continue_hint_label.visible = true
 

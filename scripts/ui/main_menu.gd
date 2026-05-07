@@ -76,7 +76,8 @@ const SETTINGS_RESOLUTIONS: Array[String] = [
 	"1920x1080",
 ]
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
-const L3_EXPECTATION_MICRO_COPY: String = "Loop rituale basato su scommesse. Nessun combat action."
+const MENU_EMPTY_RUN_HINT: String = "Nessun patto aperto. Entra nell'arena e firma la prima scommessa."
+const MENU_RETURNED_RUN_HINT: String = "Registro aggiornato. Puoi tornare nell'arena quando vuoi."
 
 static var _i18n_bootstrap_done: bool = false
 var _language_fallback_logged: bool = false
@@ -194,7 +195,7 @@ func _hide_menu() -> void:
 func _on_run_phase_changed(next_phase: int) -> void:
 	if next_phase == RunPhaseContractScript.MAIN_MENU:
 		visible = true
-		_menu_next_step_hint = tr("Nuova run disponibile / Consulta Condanne.")
+		_menu_next_step_hint = tr(MENU_RETURNED_RUN_HINT)
 		_show_menu()
 
 func _show_achievements() -> void:
@@ -368,11 +369,11 @@ func _refresh_continue_button() -> void:
 	continue_hint_panel.visible = not has_run_save or has_menu_hint
 	continue_hint_label.visible = not has_run_save or has_menu_hint
 	if has_menu_hint:
-		continue_hint_label.text = "%s\n%s" % [_menu_next_step_hint, tr(L3_EXPECTATION_MICRO_COPY)]
+		continue_hint_label.text = _menu_next_step_hint
 		_menu_next_step_hint = ""
 		return
 	if not has_run_save:
-		continue_hint_label.text = "%s\n%s" % [tr("Accetta una scommessa per procedere."), tr(L3_EXPECTATION_MICRO_COPY)]
+		continue_hint_label.text = tr(MENU_EMPTY_RUN_HINT)
 
 func _format_continue_reject_reason(reason: String) -> String:
 	if reason == "missing_or_invalid_schema_version":
@@ -668,7 +669,7 @@ func _refresh_localized_ui() -> void:
 	if continue_button != null:
 		continue_button.text = tr("CONTINUA")
 	if new_game_button != null:
-		new_game_button.text = tr("NUOVA PARTITA")
+		new_game_button.text = tr("ENTRA NELL'ARENA")
 	if load_game_button != null:
 		load_game_button.text = tr("CARICA PARTITA")
 	if achievements_button != null:

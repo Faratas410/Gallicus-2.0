@@ -365,6 +365,7 @@ func _on_condanna_mouse_exited() -> void:
 func _refresh_continue_button() -> void:
 	var has_run_save: bool = SaveManager.has_run_save()
 	continue_button.disabled = not has_run_save
+	continue_button.visible = has_run_save
 	var has_menu_hint: bool = _menu_next_step_hint != ""
 	continue_hint_panel.visible = not has_run_save or has_menu_hint
 	continue_hint_label.visible = not has_run_save or has_menu_hint

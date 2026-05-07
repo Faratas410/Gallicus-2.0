@@ -3,6 +3,8 @@ class_name BettingCircleUI
 
 const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
+const SCREEN_TITLE: String = "SCEGLI LA VIA"
+const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const BOOK_IDLE_BOB_SPEED: float = 1.6
 const BOOK_IDLE_BOB_AMPLITUDE: float = 3.5
 const BOOK_TITLE_PULSE_SPEED: float = 1.9
@@ -12,6 +14,9 @@ const BOOK_TITLE_PULSE_SPEED: float = 1.9
 @onready var left_sign_button: TextureButton = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left as TextureButton
 @onready var right_sign_button: TextureButton = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right as TextureButton
 @onready var sigilla_button: TextureButton = $CenterContainer/BookFrame/Btn_Sigilla_Stamp as TextureButton
+@onready var left_sign_label: Label = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left/Lbl_Sign_Left as Label
+@onready var right_sign_label: Label = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right/Lbl_Sign_Right as Label
+@onready var sigilla_label: Label = $CenterContainer/BookFrame/Btn_Sigilla_Stamp/Lbl_Sigilla as Label
 @onready var left_page: Control = $CenterContainer/BookFrame/LeftPage as Control
 @onready var right_page: Control = $CenterContainer/BookFrame/RightPage as Control
 @onready var left_title_label: Label = $CenterContainer/BookFrame/LeftPage/Content/VBox/Lbl_Left_Title as Label
@@ -35,8 +40,7 @@ var _book_base_scale: Vector2 = Vector2.ONE
 
 func _ready() -> void:
 	visible = false
-	if header_label != null:
-		header_label.visible = false
+	_refresh_localized_text()
 	left_select_button.pressed.connect(_on_select_left_pressed)
 	right_select_button.pressed.connect(_on_select_right_pressed)
 	left_sign_button.pressed.connect(_on_sign_left_pressed)
@@ -55,6 +59,22 @@ func _ready() -> void:
 		_right_page_base_position = right_page.position
 	if book_frame != null:
 		_book_base_scale = book_frame.scale
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_refresh_localized_text()
+		_render_pages()
+
+func _refresh_localized_text() -> void:
+	if header_label != null:
+		header_label.visible = true
+		header_label.text = "%s\n%s" % [tr(SCREEN_TITLE), tr(SCREEN_SUBTITLE)]
+	if left_sign_label != null:
+		left_sign_label.text = tr("FIRMA")
+	if right_sign_label != null:
+		right_sign_label.text = tr("FIRMA")
+	if sigilla_label != null:
+		sigilla_label.text = tr("FIRMA")
 
 func _process(delta: float) -> void:
 	if not visible:
@@ -170,9 +190,9 @@ func _apply_selection_visual() -> void:
 	left_selection_outline.visible = false
 	right_selection_outline.visible = false
 	if left_page != null:
-		left_page.modulate = Color(1.0, 0.99, 0.96, 1.0) if left_selected else Color(0.97, 0.95, 0.9, 1.0)
+		left_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if left_selected else Color(0.99, 0.98, 0.94, 1.0)
 	if right_page != null:
-		right_page.modulate = Color(1.0, 0.99, 0.96, 1.0) if right_selected else Color(0.97, 0.95, 0.9, 1.0)
+		right_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if right_selected else Color(0.99, 0.98, 0.94, 1.0)
 	if left_sign_button != null:
 		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2.ONE
 	if right_sign_button != null:
@@ -270,22 +290,17 @@ func _refresh_from_catalog_if_empty() -> void:
 func _map_offer_for_display(source_offer: Dictionary) -> Dictionary:
 	var bet_id: StringName = StringName(str(source_offer.get("id", source_offer.get("bet_id", ""))))
 	var title: String = str(source_offer.get("display_title", source_offer.get("name", "")))
+	var subtitle: String = str(source_offer.get("display_subtitle", ""))
 	var doom_text: String = str(source_offer.get("doom", ""))
 	var condition_text: String = str(source_offer.get("condition", ""))
 	var pact_text: String = str(source_offer.get("pact", ""))
 	if title == "" and bet_id != &"":
 		title = BetCatalog.get_level3_display_title(bet_id)
-	var bet_copy: String = doom_text if doom_text != "" else EMPTY_PAGE_BODY
-	var explain_lines: PackedStringArray = PackedStringArray()
-	if condition_text != "":
-		explain_lines.append("CONDIZIONE: %s" % condition_text)
-	if pact_text != "":
-		explain_lines.append("PATTO: %s" % pact_text)
 	return {
 		"id": bet_id,
 		"name": title if title != "" else EMPTY_PAGE_TITLE,
-		"bet": bet_copy,
-		"explain": "\n".join(explain_lines),
+		"bet": _format_bet_body(subtitle, doom_text),
+		"explain": _format_explain_body(condition_text, pact_text),
 	}
 
 func _rebuild_options_from_catalog() -> void:
@@ -301,8 +316,8 @@ func _rebuild_options_from_catalog() -> void:
 		_betting_circle_options.append({
 			"id": bet_id,
 			"name": str(identity.get("display_title", str(bet_data.get("name", String(bet_id))))),
-			"bet": str(bet_data.get("doom", EMPTY_PAGE_BODY)),
-			"explain": "CONDIZIONE: %s\nPATTO: %s" % [str(bet_data.get("condition", "")), str(bet_data.get("pact", ""))],
+			"bet": _format_bet_body(str(identity.get("display_subtitle", "")), str(bet_data.get("doom", ""))),
+			"explain": _format_explain_body(str(bet_data.get("condition", "")), str(bet_data.get("pact", ""))),
 		})
 
 func _find_bet_data(bet_id: StringName) -> Dictionary:
@@ -311,4 +326,35 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 		if StringName(str(bet_data.get("id", ""))) == bet_id:
 			return bet_data
 	return {}
+
+func _format_bet_body(subtitle: String, doom_text: String) -> String:
+	var lines: Array[String] = []
+	var subtitle_text: String = subtitle.strip_edges()
+	if subtitle_text != "":
+		lines.append("[i]%s[/i]" % _escape_bbcode(subtitle_text))
+	var doom_lines: PackedStringArray = doom_text.strip_edges().split("\n", false)
+	for raw_line: String in doom_lines:
+		var line: String = raw_line.strip_edges()
+		if line == "":
+			continue
+		if line.begins_with("Effetto:"):
+			lines.append("[b]%s[/b]" % _escape_bbcode(line))
+		else:
+			lines.append(_escape_bbcode(line))
+	if lines.is_empty():
+		return EMPTY_PAGE_BODY
+	return "\n".join(lines)
+
+func _format_explain_body(condition_text: String, pact_text: String) -> String:
+	var lines: Array[String] = []
+	var condition: String = condition_text.strip_edges()
+	if condition != "":
+		lines.append("[b]%s[/b]\n%s" % [tr("CONDIZIONE"), _escape_bbcode(condition)])
+	var pact: String = pact_text.strip_edges()
+	if pact != "":
+		lines.append("[b]%s[/b]\n%s" % [tr("PATTO"), _escape_bbcode(pact)])
+	return "\n\n".join(lines)
+
+func _escape_bbcode(value: String) -> String:
+	return value.escape_bbcode()
 

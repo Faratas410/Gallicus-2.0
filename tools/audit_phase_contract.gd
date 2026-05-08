@@ -2,7 +2,7 @@ extends SceneTree
 
 # Audit-only script: parses source files to verify RunPhaseContract identity + UI references + Phase_* nodes.
 # Run with:
-#   Godot_v4.6-stable_* --headless --path <PROJECT_ROOT> --script res://tools/audit_phase_contract.gd
+#   Godot_v4.6.x-stable_* --headless --path <PROJECT_ROOT> --script res://tools/audit_phase_contract.gd
 #
 # Output uses AUDIT:* markers for easy log scanning.
 

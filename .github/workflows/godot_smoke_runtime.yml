@@ -6,10 +6,10 @@ on:
     branches: [ main, master ]
 
 env:
-  GODOT_VERSION: "4.6-stable"
-  GODOT_BIN_NAME: "Godot_v4.6-stable_linux.x86_64"
-  GODOT_ZIP_NAME: "Godot_v4.6-stable_linux.x86_64.zip"
-  GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.6-stable/Godot_v4.6-stable_linux.x86_64.zip"
+  GODOT_VERSION: "4.6.2-stable"
+  GODOT_BIN_NAME: "Godot_v4.6.2-stable_linux.x86_64"
+  GODOT_ZIP_NAME: "Godot_v4.6.2-stable_linux.x86_64.zip"
+  GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip"
 
 jobs:
   smoke_runtime:
@@ -47,7 +47,7 @@ jobs:
         run: |
           python3 scripts/ci/test_era_visual_template_audit.py
 
-      - name: Cache Godot 4.6 headless binary
+      - name: Cache Godot 4.6.2 headless binary
         id: cache-godot
         uses: actions/cache@v4
         with:
@@ -59,7 +59,7 @@ jobs:
           git lfs install
           git lfs pull
 
-      - name: Download Godot 4.6 headless
+      - name: Download Godot 4.6.2 headless
         if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
           mkdir -p tools/godot

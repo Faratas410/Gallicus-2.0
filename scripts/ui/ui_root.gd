@@ -208,6 +208,7 @@ var _push_luck_modal_fade_tween: Tween = null
 var _game_over_modal_fade_tween: Tween = null
 var _verdict_reveal_tween: Tween = null
 var _verdict_reveal_sequence_id: int = 0
+var _pressure_pulse_tween: Tween = null
 
 var _betting_overlay_hud_visibility_cached: bool = false
 var _betting_overlay_hud_visible_before: bool = true
@@ -227,7 +228,11 @@ var run_safe_margin: Control = null
 
 var glory_value_label: Label = null
 var bet_badge_value_label: Label = null
+var escalation_row: Control = null
+var escalation_label: Label = null
 var escalation_bar: Range = null
+var pressure_state_label: Label = null
+var _pressure_fill_style: StyleBoxFlat = null
 var special_arena_label: Label = null
 var condanna_focus_label: Label = null
 var audience_context_panel: Control = null
@@ -521,7 +526,10 @@ func _bind_scene_nodes() -> void:
 	bet_badge_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
 	glory_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
 	hud_top_left_stats_box = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn") as Control
+	escalation_row = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow") as Control
+	escalation_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel/EscalationLabel") as Label
 	escalation_bar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as Range
+	pressure_state_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/PressureStateLabelPanel/PressureStateLabel") as Label
 	scars_panel = get_node_or_null("HUD/ScarsPanel") as Control
 	scars_label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
 	audience_context_panel = get_node_or_null("HUD/AudienceContextLabelPanel") as Control
@@ -697,6 +705,8 @@ func _validate_ui_boot() -> bool:
 		"UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK",
 		"UI_RunRoot/Phase_END_RUN",
 		"UI_RunRoot/Phase_END_RUN/Panel_END_RUN",
+		"HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel/EscalationLabel",
+		"HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/PressureStateLabelPanel/PressureStateLabel",
 		"UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons",
 	]
 	for node_path: String in required_nodes:
@@ -866,6 +876,8 @@ func show_countdown(seconds: int = 3) -> void:
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
 func _on_run_started() -> void:
 	_refresh_runtime_group_cache(false)
+	if escalation_row != null:
+		escalation_row.visible = true
 	if escalation_bar != null:
 		escalation_bar.visible = true
 	_escalation_level = 0
@@ -1099,6 +1111,8 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 
 func _on_run_failed() -> void:
 	_set_bet_modal(false)
+	if escalation_row != null:
+		escalation_row.visible = false
 	if escalation_bar != null:
 		escalation_bar.visible = false
 	if special_arena_label != null:
@@ -1418,16 +1432,72 @@ func _on_run_debug_state_updated(payload: Dictionary) -> void:
 		_refresh_debug_overlay()
 
 func _on_escalation_changed(level: int, max_value: int) -> void:
+	var previous_level: int = _escalation_level
 	_escalation_level = level
 	_escalation_max = max_value
 	_update_escalation_bar()
+	_pulse_pressure_indicator(previous_level, _escalation_level)
 
 func _update_escalation_bar() -> void:
+	var safe_max: int = _get_pressure_max(_escalation_max)
+	var clamped_level: int = clampi(_escalation_level, 0, safe_max)
+	if escalation_label != null:
+		escalation_label.text = _format_pressure_label(clamped_level, safe_max)
+	if pressure_state_label != null:
+		pressure_state_label.text = _get_pressure_state_text(clamped_level)
+	if escalation_bar != null:
+		escalation_bar.max_value = float(safe_max)
+		escalation_bar.value = float(clamped_level)
+		_apply_pressure_bar_color(_get_pressure_color(clamped_level))
+
+func _get_pressure_max(max_value: int) -> int:
+	return maxi(max_value, 10)
+
+func _format_pressure_label(level: int, max_value: int) -> String:
+	var safe_max: int = _get_pressure_max(max_value)
+	return tr("PRESSIONE %d/%d") % [clampi(level, 0, safe_max), safe_max]
+
+func _get_pressure_state_text(level: int) -> String:
+	if level <= 2:
+		return tr("Sotto controllo")
+	if level <= 5:
+		return tr("La folla si scalda")
+	if level <= 8:
+		return tr("Rischio alto")
+	return tr("Fuori controllo")
+
+func _get_pressure_color(level: int) -> Color:
+	if level <= 2:
+		return Color(0.72, 0.55, 0.22, 1.0)
+	if level <= 5:
+		return Color(0.82, 0.43, 0.12, 1.0)
+	if level <= 8:
+		return Color(0.64, 0.16, 0.08, 1.0)
+	return Color(0.35, 0.03, 0.02, 1.0)
+
+func _apply_pressure_bar_color(color: Color) -> void:
 	if escalation_bar == null:
 		return
-	var safe_max: float = float(maxi(_escalation_max, 1))
-	escalation_bar.max_value = safe_max
-	escalation_bar.value = clampf(float(_escalation_level), 0.0, safe_max)
+	if _pressure_fill_style == null:
+		_pressure_fill_style = StyleBoxFlat.new()
+		_pressure_fill_style.corner_radius_top_left = 3
+		_pressure_fill_style.corner_radius_top_right = 3
+		_pressure_fill_style.corner_radius_bottom_left = 3
+		_pressure_fill_style.corner_radius_bottom_right = 3
+		escalation_bar.add_theme_stylebox_override("fill", _pressure_fill_style)
+	_pressure_fill_style.bg_color = color
+
+func _pulse_pressure_indicator(previous: int, next: int) -> void:
+	if previous == next or escalation_row == null:
+		return
+	if _pressure_pulse_tween != null and _pressure_pulse_tween.is_valid():
+		_pressure_pulse_tween.kill()
+	escalation_row.pivot_offset = escalation_row.size * 0.5
+	escalation_row.scale = Vector2(1.035, 1.035)
+	_pressure_pulse_tween = create_tween()
+	_pressure_pulse_tween.set_trans(Tween.TRANS_QUAD)
+	_pressure_pulse_tween.set_ease(Tween.EASE_OUT)
+	_pressure_pulse_tween.tween_property(escalation_row, "scale", Vector2.ONE, 0.18)
 
 func _on_run_log_ready(log_text: String) -> void:
 	_debug_run_log = log_text
@@ -1959,6 +2029,12 @@ func _build_ending_meta_section() -> String:
 	var lines: Array[String] = []
 	if _last_register_ending_key != "":
 		lines.append(tr("FINAL: %s") % _get_register_ending_title(_last_register_ending_key))
+	var max_pressure: int = _resolve_final_pressure_max()
+	lines.append(tr("Pressione massima: %d/%d") % [max_pressure, _get_pressure_max(_escalation_max)])
+	if max_pressure >= 6:
+		lines.append(tr("La folla ha spinto la run oltre il margine."))
+	elif max_pressure <= 2:
+		lines.append(tr("La pressione e rimasta sotto controllo."))
 	if _last_finale_ending_id != "":
 		lines.append(tr("ENDING ID: %s") % _last_finale_ending_id)
 	if _last_ending_icon_path != "":
@@ -1967,6 +2043,11 @@ func _build_ending_meta_section() -> String:
 		return ""
 	lines.insert(0, tr("[b]Registro Finale[/b]"))
 	return "\n".join(lines)
+
+func _resolve_final_pressure_max() -> int:
+	var safe_max: int = _get_pressure_max(_escalation_max)
+	var raw_value: Variant = _last_finale_stats.get("max_escalation", _escalation_level)
+	return clampi(int(raw_value), 0, safe_max)
 
 func _get_register_ending_title(ending_key: String) -> String:
 	match ending_key:
@@ -2066,7 +2147,11 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 		var state_line: String = str(meta.get("state_line", "")).strip_edges()
 		if state_line == "":
 			state_line = tr("Stato: in attesa di scelta.")
-		push_luck_audience_reason.text = state_line
+		var pressure_line: String = "%s - %s" % [
+			_format_pressure_label(_escalation_level, _escalation_max),
+			_get_pressure_state_text(_escalation_level),
+		]
+		push_luck_audience_reason.text = "%s\n%s" % [pressure_line, state_line]
 		push_luck_audience_reason.visible = true
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
@@ -2079,7 +2164,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_cashout_note.text = _format_lock_note(cashout_reason, tr("Disponibile dopo l'arena in corso."))
 			push_luck_cashout_note.visible = true
 		else:
-			push_luck_cashout_note.text = tr("Chiudi la run e apri il registro finale.")
+			push_luck_cashout_note.text = tr("Chiudi la run e registra il risultato finale.")
 			push_luck_cashout_note.visible = true
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
@@ -2092,7 +2177,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_double_note.text = _format_lock_note(double_reason, tr("Disponibile dopo l'arena in corso."))
 			push_luck_double_note.visible = true
 		else:
-			push_luck_double_note.text = tr("Continua alla prossima arena con posta aumentata.")
+			push_luck_double_note.text = tr("Pressione +1. Continua alla prossima arena con posta aumentata.")
 			push_luck_double_note.visible = true
 	_set_push_luck_modal(true)
 	var push_luck_read_buttons: Array[Button] = []

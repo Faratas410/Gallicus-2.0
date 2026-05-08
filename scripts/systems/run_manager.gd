@@ -3343,11 +3343,15 @@ func _build_push_luck_choice_note() -> String:
 func _build_push_luck_state_line() -> String:
 	var pressure: int = clampi(_run_state.audience_pressure, 0, AUDIENCE_PRESSURE_MAX)
 	var corruption_value: int = clampi(int(run.get("corruption", _run_state.corruption)), 0, CORRUPTION_MAX)
-	return "Stato run: Gloria %d | Corruzione %d | Pressione %d/%d" % [
+	var crowd_state: String = tr("La folla osserva.")
+	if pressure >= AUDIENCE_PRESSURE_PENALTY_THRESHOLD:
+		crowd_state = tr("La folla pretende un altro rilancio.")
+	elif pressure > 0:
+		crowd_state = tr("La folla resta in ascolto.")
+	return tr("Stato run: Gloria %d | Corruzione %d | %s") % [
 		_run_state.glory,
 		corruption_value,
-		pressure,
-		AUDIENCE_PRESSURE_MAX,
+		crowd_state,
 	]
 
 func _emit_sentence_banner_for_bet(bet_id: StringName) -> void:
@@ -3503,8 +3507,12 @@ func _build_audience_reward_text() -> Dictionary:
 		var pressure_penalty: float = clampf(1.0 - float(pressure - AUDIENCE_PRESSURE_PENALTY_THRESHOLD + 1) * AUDIENCE_PRESSURE_PENALTY_STEP, 0.7, 1.0)
 		var pressure_modifier: float = base_modifier * pressure_penalty
 		fragments["cashout_modifier"] = pressure_modifier
-		fragments["cashout_modifier_text"] = "Incasso sotto pressione: x%.2f" % pressure_modifier
-	var pressure_line: String = "Pressione folla: %d/%d" % [pressure, AUDIENCE_PRESSURE_MAX]
+		fragments["cashout_modifier_text"] = tr("Incasso sotto richiesta della folla: x%.2f") % pressure_modifier
+	var pressure_line: String = tr("La folla osserva.")
+	if pressure >= AUDIENCE_PRESSURE_PENALTY_THRESHOLD:
+		pressure_line = tr("La folla pretende un altro rilancio.")
+	elif pressure > 0:
+		pressure_line = tr("La folla resta in ascolto.")
 	var reason_text: String = str(fragments.get("audience_reason", ""))
 	if reason_text == "":
 		reason_text = pressure_line

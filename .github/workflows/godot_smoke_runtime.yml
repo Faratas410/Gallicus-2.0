@@ -47,6 +47,10 @@ jobs:
         run: |
           python3 scripts/ci/test_era_visual_template_audit.py
 
+      - name: Validate pressure presentation contract (static)
+        run: |
+          python3 scripts/ci/test_pressure_presentation_contract.py
+
       - name: Cache Godot 4.6.2 headless binary
         id: cache-godot
         uses: actions/cache@v4

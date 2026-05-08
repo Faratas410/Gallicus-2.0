@@ -156,13 +156,20 @@ size_flags_horizontal = 3
 [node name="EscalationLabelPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
 
 [node name="EscalationLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel"]
-text = "ESCALATION"
+text = "PRESSIONE 0/10"
 
 [node name="EscalationBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
 size_flags_horizontal = 3
 max_value = 10.0
 value = 0.0
 show_percentage = false
+
+[node name="PressureStateLabelPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
+size_flags_horizontal = 3
+
+[node name="PressureStateLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/PressureStateLabelPanel"]
+horizontal_alignment = 1
+text = "Sotto controllo"
 
 [node name="RightColumn" type="VBoxContainer" parent="HUD/SafeMargin/TopRow"]
 custom_minimum_size = Vector2(280, 0)
@@ -890,7 +897,7 @@ custom_minimum_size = Vector2(0, 184)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 autowrap_mode = 2
-text = "UMILIATI\nRiduci escalation di 1.\nAtto registrato: contenimento."
+text = "UMILIATI\nPressione -1.\nAtto registrato: contenimento."
 
 [node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
 theme_override_styles/normal = ExtResource("12")
@@ -904,7 +911,7 @@ custom_minimum_size = Vector2(0, 184)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 autowrap_mode = 2
-text = "PROVOCA\nAumenta escalation di 1.\nAtto registrato: esposizione."
+text = "PROVOCA\nPressione +1.\nAtto registrato: esposizione."
 [node name="BetBlocker" type="ColorRect" parent="UI_RunRoot/Phase_INTRO"]
 mouse_filter = 2
 anchor_right = 1.0
@@ -1282,7 +1289,7 @@ visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
 modulate = Color(0.75, 0.72, 0.6, 1)
-text = "Aumenti posta e pressione rituale."
+text = "Pressione +1. Aumenti posta e rischio."
 
 [node name="ScarsDetailPanel" type="Panel" parent="UI_RunRoot"]
 visible = false

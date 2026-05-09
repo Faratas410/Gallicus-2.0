@@ -356,5 +356,7 @@ func _format_explain_body(condition_text: String, pact_text: String) -> String:
 	return "\n\n".join(lines)
 
 func _escape_bbcode(value: String) -> String:
-	return value.escape_bbcode()
+	# Godot 4.6 does not expose String.escape_bbcode(); escaping the opening
+	# bracket is the supported way to prevent user/content text from becoming tags.
+	return value.replace("[", "[lb]")
 

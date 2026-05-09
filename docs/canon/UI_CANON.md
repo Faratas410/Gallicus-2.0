@@ -331,10 +331,16 @@ Current MP3 files under `res://assets/audio/`:
 - Pressure presentation thresholds are UI-only labels: `0-2` under control, `3-5` warming crowd, `6-8` high risk, `9-10` out of control. These labels do not define gameplay rules.
 - Push Your Luck must show current `PRESSIONE X/10` plus the threshold label and must describe `RADDOPPIA` as `Pressione +1`; `INCASSA` must state that it closes/records the result.
 - END_RUN must show peak pressure as `Pressione massima: X/10`, derived from run stats `max_escalation` when available.
+- Motion Contract:
+  - UI motion is presentational-only; it must not emit `GameEvents`, mutate run state, or create phase authority.
+  - Motion helpers in `res://scripts/ui/ui_root.gd` are local UI helpers and must not block outbound gameplay intents.
+  - Button intent handlers must not `await` animation before emitting `request_*` signals.
+  - Standard modal motion kinds are `standard`, `ritual`, and `ending`; ritual motion is reserved for pact, resolve, intermediate choice, Push Your Luck, and END_RUN surfaces.
+  - Shake/glitch/flash remain bounded to existing ritual or quick-cut feedback surfaces, not generic hover states.
 - `Phase_INTRO` Level 3 contract excludes upgrade-token shop controls: no BUY TOKEN button/panel, no token-cost lookup, and no token purchase request emission from `res://scripts/ui/ui_root.gd`.
 - `Phase_INTRO` bet selection contract (L3 active): exactly 2 buttons (`Btn_INTRO_SELECT_WIN`, `Btn_INTRO_SELECT_FAST`) in `BetButtons` with centered HBox layout; UI emits `request_place_bet(bet_id, 0)` using `BetCatalog.level3_bet_ids()` slots `[0]` and `[1]` (no `Btn_INTRO_SELECT_NO_HIT`/third-option wiring).
 - Active Level 3 HUD contract excludes legacy XP/level-up/token-progression reactive wiring and related level-up SFX/popup handling.
-- Active Level 3 UI↔RunManager contract uses `res://scripts/ui/run_manager_ui_port.gd` as a typed adapter for read-only UI queries, avoiding direct UI-side `has_method` branching while keeping RunManager authority unchanged.
+- Active Level 3 UI<->RunManager contract uses `res://scripts/ui/run_manager_ui_port.gd` as a typed adapter for read-only UI queries, avoiding direct UI-side `has_method` branching while keeping RunManager authority unchanged.
 - `res://scripts/ui/ui_root.gd` keeps a small runtime group-ref cache (`run_manager` via adapter, `arena`, `player`) with explicit refresh on `_ready` and run-start handlers; missing refs must still surface as `push_error` (no silent masking).
 - During pre-`BET_COMMITTED` phases (`BET_PRESENT` and earlier), missing `arena`/`player` group refs are non-invariant and must not emit ERROR logs; from later phases where those refs are required by runtime wiring, missing refs remain ERROR-level.
 
@@ -359,6 +365,6 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Scope guard: this baseline is visual-only and does not change `RunManager`, `GameEvents`, bet payload content, or flow authority.
 
 ## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)
-- `Phase_FIRST_REACTION` (`IL PATTO È SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
+- `Phase_FIRST_REACTION` (`IL PATTO E' SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
 - Resolve ritual overlay container `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.
 - Scope guard: this contract removes only legacy post-bet copy selection (`POST_BET_TEXTS`) and does not alter phase/event sequencing authority.

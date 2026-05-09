@@ -16,11 +16,18 @@ const FAST_SELECTION_SECONDS: int = 12
 const MIN_MODAL_READ_TIME_SEC: float = 1.25
 const SENTENCE_BANNER_SECONDS: float = 1.2
 const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
-const FADE_IN_SEC: float = 0.25
-const FADE_OUT_SEC: float = 0.25
+const FADE_IN_SEC: float = 0.22
+const FADE_OUT_SEC: float = 0.18
+const ENDING_FADE_IN_SEC: float = 0.28
+const ENDING_FADE_OUT_SEC: float = 0.22
 const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
 const SIGN_LOCK_DARKEN_RGB: float = 0.82
 const SIGN_PREVIEW_SCALE: float = 1.015
+const MID_CHOICE_HOVER_SCALE: float = 1.025
+const MOTION_KIND_STANDARD: String = "standard"
+const MOTION_KIND_RITUAL: String = "ritual"
+const MOTION_KIND_ENDING: String = "ending"
+const MOTION_BASE_POSITION_META: StringName = &"motion_base_position"
 const PUSH_LUCK_DETAILS_MAX_LINES: int = 3
 const PUSH_LUCK_DETAIL_MAX_CHARS: int = 72
 const QUICK_CUT_MAX_SECONDS: float = 1.5
@@ -1492,12 +1499,24 @@ func _pulse_pressure_indicator(previous: int, next: int) -> void:
 		return
 	if _pressure_pulse_tween != null and _pressure_pulse_tween.is_valid():
 		_pressure_pulse_tween.kill()
+	var increasing: bool = next > previous
+	var pulse_color: Color = Color(0.88, 0.26, 0.12, 1.0) if increasing else Color(0.92, 0.68, 0.28, 1.0)
+	var pulse_scale: Vector2 = Vector2(1.045, 1.045) if increasing else Vector2(1.025, 1.025)
+	var pulse_seconds: float = 0.18 if increasing else 0.22
 	escalation_row.pivot_offset = escalation_row.size * 0.5
-	escalation_row.scale = Vector2(1.035, 1.035)
+	escalation_row.scale = pulse_scale
+	if escalation_label != null:
+		escalation_label.modulate = pulse_color
+	if pressure_state_label != null:
+		pressure_state_label.modulate = pulse_color
 	_pressure_pulse_tween = create_tween()
 	_pressure_pulse_tween.set_trans(Tween.TRANS_QUAD)
 	_pressure_pulse_tween.set_ease(Tween.EASE_OUT)
-	_pressure_pulse_tween.tween_property(escalation_row, "scale", Vector2.ONE, 0.18)
+	_pressure_pulse_tween.tween_property(escalation_row, "scale", Vector2.ONE, pulse_seconds)
+	if escalation_label != null:
+		_pressure_pulse_tween.parallel().tween_property(escalation_label, "modulate", Color.WHITE, pulse_seconds)
+	if pressure_state_label != null:
+		_pressure_pulse_tween.parallel().tween_property(pressure_state_label, "modulate", Color.WHITE, pulse_seconds)
 
 func _on_run_log_ready(log_text: String) -> void:
 	_debug_run_log = log_text
@@ -2254,16 +2273,20 @@ func _on_mid_choice_emphasis(button: Button, active: bool) -> void:
 	if button == null or button.disabled:
 		return
 	var target_alpha: float = 1.0 if active else 0.93
+	var target_scale: Vector2 = Vector2(MID_CHOICE_HOVER_SCALE, MID_CHOICE_HOVER_SCALE) if active else Vector2.ONE
+	button.pivot_offset = button.size * 0.5
 	var tween: Tween = create_tween()
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "modulate", Color(1, 1, 1, target_alpha), 0.08)
+	tween.parallel().tween_property(button, "scale", target_scale, 0.12)
 
 func _on_intermediate_choice_placa_pressed() -> void:
 	_apply_decision_lock(
 		intermediate_choice_panel,
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
-		intermediate_choice_label
+		intermediate_choice_label,
+		intermediate_choice_placa_button
 	)
 	_emit_game_event_signal_if_available(&"request_mid_choice_select", [0])
 
@@ -2271,7 +2294,8 @@ func _on_intermediate_choice_provoca_pressed() -> void:
 	_apply_decision_lock(
 		intermediate_choice_panel,
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
-		intermediate_choice_label
+		intermediate_choice_label,
+		intermediate_choice_provoca_button
 	)
 	_emit_game_event_signal_if_available(&"request_mid_choice_select", [1])
 
@@ -2319,7 +2343,8 @@ func _on_push_luck_cashout_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
-	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
+	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_cashout_button)
+	_pulse_pyl_panel(Color(0.72, 0.55, 0.22, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_cashout"):
 		_recover_pyl_request_lock(tr("Stato: richiesta incasso non disponibile."))
 		return
@@ -2329,7 +2354,8 @@ func _on_push_luck_condanna_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
-	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
+	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_condanna_button)
+	_pulse_pyl_panel(Color(0.62, 0.16, 0.12, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_condanna"):
 		_recover_pyl_request_lock(tr("Stato: richiesta condanna non disponibile."))
 		return
@@ -2339,7 +2365,8 @@ func _on_push_luck_double_pressed() -> void:
 	if _pyl_locked:
 		return
 	_pyl_locked = true
-	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
+	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_double_button)
+	_pulse_pyl_panel(Color(0.88, 0.26, 0.12, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_double"):
 		_recover_pyl_request_lock(tr("Stato: richiesta rilancio non disponibile."))
 		return
@@ -2398,15 +2425,15 @@ func _set_pyl_buttons_enabled(enabled: bool) -> void:
 		button.disabled = true
 		_pyl_locked_buttons.append(button)
 
-func _pulse_pyl_panel() -> void:
+func _pulse_pyl_panel(pulse_color: Color = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, 1.0)) -> void:
 	if push_luck_panel == null:
 		return
 	if _pyl_lock_feedback_tween != null and _pyl_lock_feedback_tween.is_valid():
 		_pyl_lock_feedback_tween.kill()
 	var panel_color: Color = push_luck_panel.modulate
-	push_luck_panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
+	push_luck_panel.modulate = Color(pulse_color.r, pulse_color.g, pulse_color.b, panel_color.a)
 	_pyl_lock_feedback_tween = create_tween()
-	_pyl_lock_feedback_tween.set_trans(Tween.TRANS_LINEAR)
+	_pyl_lock_feedback_tween.set_trans(Tween.TRANS_QUAD)
 	_pyl_lock_feedback_tween.set_ease(Tween.EASE_OUT)
 	_pyl_lock_feedback_tween.tween_property(push_luck_panel, "modulate:r", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
 	_pyl_lock_feedback_tween.parallel().tween_property(push_luck_panel, "modulate:g", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
@@ -2776,12 +2803,16 @@ func _place_bet(bet_id: String) -> void:
 	_apply_decision_lock(_resolve_bet_sign_panel() as Control, sign_buttons, condanna_focus_label)
 	_emit_game_event_signal_if_available(&"request_place_bet", [bet_id, 0])
 
-func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label) -> void:
+func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label, selected_button: Button = null) -> void:
 	for button: Button in buttons:
 		if button == null or not button.visible or button.disabled:
 			continue
 		button.disabled = true
-		button.scale = Vector2.ONE
+		if selected_button != null:
+			button.modulate = Color(1.0, 1.0, 1.0, 1.0) if button == selected_button else Color(1.0, 1.0, 1.0, 0.45)
+			button.scale = Vector2(1.025, 1.025) if button == selected_button else Vector2.ONE
+		else:
+			button.scale = Vector2.ONE
 	if hint_label != null:
 		hint_label.text = tr("Stato: scelta acquisita.")
 		hint_label.visible = true
@@ -2792,7 +2823,7 @@ func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: La
 	var panel_color: Color = panel.modulate
 	panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
 	_sign_feedback_tween = create_tween()
-	_sign_feedback_tween.set_trans(Tween.TRANS_LINEAR)
+	_sign_feedback_tween.set_trans(Tween.TRANS_QUAD)
 	_sign_feedback_tween.set_ease(Tween.EASE_OUT)
 	_sign_feedback_tween.tween_property(panel, "modulate:r", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
 	_sign_feedback_tween.parallel().tween_property(panel, "modulate:g", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
@@ -2805,6 +2836,7 @@ func _reset_decision_surface(panel: Control, buttons: Array[Button], hint_label:
 			continue
 		button.disabled = false
 		button.scale = Vector2.ONE
+		button.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	if hint_label != null:
 		hint_label.text = tr("Stato: in attesa di scelta.")
 		hint_label.visible = true
@@ -2870,7 +2902,7 @@ func begin_sign_feedback(buttons: Array[Button], panel: CanvasItem) -> void:
 		var panel_color: Color = _sign_feedback_panel.modulate
 		_sign_feedback_panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
 		_sign_feedback_tween = create_tween()
-		_sign_feedback_tween.set_trans(Tween.TRANS_LINEAR)
+		_sign_feedback_tween.set_trans(Tween.TRANS_QUAD)
 		_sign_feedback_tween.set_ease(Tween.EASE_OUT)
 		_sign_feedback_tween.tween_property(_sign_feedback_panel, "modulate:r", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
 		_sign_feedback_tween.parallel().tween_property(_sign_feedback_panel, "modulate:g", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
@@ -2894,6 +2926,7 @@ func _reset_sign_feedback() -> void:
 			continue
 		button.disabled = false
 		button.scale = Vector2.ONE
+		button.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	_sign_feedback_buttons.clear()
 	_sign_feedback_panel = null
 	_is_signing = false
@@ -2923,7 +2956,7 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 			should_disable = true
 		button.disabled = should_disable
 
-func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) -> Tween:
+func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween, kind: String = MOTION_KIND_STANDARD) -> Tween:
 	if panel == null or modal == null:
 		if modal != null:
 			modal.visible = active
@@ -2937,17 +2970,19 @@ func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween) 
 		panel.visible = true
 		panel.modulate.a = 0.0
 		tween = create_tween()
-		tween.set_trans(Tween.TRANS_LINEAR)
-		tween.set_ease(Tween.EASE_IN_OUT)
-		tween.tween_property(panel, "modulate:a", 1.0, FADE_IN_SEC)
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_OUT)
+		var fade_in_seconds: float = ENDING_FADE_IN_SEC if kind == MOTION_KIND_ENDING else FADE_IN_SEC
+		tween.tween_property(panel, "modulate:a", 1.0, fade_in_seconds)
 	else:
 		if not panel.visible:
 			modal.visible = false
 			return tween
 		tween = create_tween()
-		tween.set_trans(Tween.TRANS_LINEAR)
-		tween.set_ease(Tween.EASE_IN_OUT)
-		tween.tween_property(panel, "modulate:a", 0.0, FADE_OUT_SEC)
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_IN)
+		var fade_out_seconds: float = ENDING_FADE_OUT_SEC if kind == MOTION_KIND_ENDING else FADE_OUT_SEC
+		tween.tween_property(panel, "modulate:a", 0.0, fade_out_seconds)
 		tween.tween_callback(Callable(self, "_on_modal_fade_out_complete").bind(panel, modal))
 	return tween
 
@@ -3008,6 +3043,7 @@ func show_modal(modal: Control) -> void:
 
 func _on_modal_fade_out_complete(panel: CanvasItem, modal: Control) -> void:
 	if panel != null:
+		_restore_panel_motion_base(panel)
 		panel.visible = false
 		panel.modulate.a = 1.0
 	if modal != null:
@@ -3016,24 +3052,55 @@ func _on_modal_fade_out_complete(panel: CanvasItem, modal: Control) -> void:
 			_current_modal = null
 	_refresh_modal_dimmer()
 
-func _play_modal_pop(panel: CanvasItem) -> void:
+func _get_panel_motion_base_position(control: Control) -> Vector2:
+	if control == null:
+		return Vector2.ZERO
+	if not control.has_meta(MOTION_BASE_POSITION_META):
+		control.set_meta(MOTION_BASE_POSITION_META, control.position)
+	return control.get_meta(MOTION_BASE_POSITION_META) as Vector2
+
+func _restore_panel_motion_base(panel: CanvasItem) -> void:
+	var control: Control = panel as Control
+	if control == null:
+		return
+	control.position = _get_panel_motion_base_position(control)
+	control.scale = Vector2.ONE
+
+func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -> void:
 	if panel == null:
 		return
 	var control: Control = panel as Control
 	if control == null:
 		return
-	control.scale = Vector2(0.985, 0.985)
+	var base_position: Vector2 = _get_panel_motion_base_position(control)
+	var start_scale: Vector2 = Vector2(0.985, 0.985)
+	var start_position: Vector2 = base_position
+	var seconds: float = 0.18
+	match kind:
+		MOTION_KIND_RITUAL:
+			start_scale = Vector2(0.965, 0.965)
+			start_position = base_position + Vector2(0.0, 12.0)
+			seconds = 0.22
+		MOTION_KIND_ENDING:
+			start_scale = Vector2(0.975, 0.975)
+			seconds = 0.24
+		_:
+			pass
+	control.pivot_offset = control.size * 0.5
+	control.position = start_position
+	control.scale = start_scale
 	var tween: Tween = create_tween()
-	tween.set_trans(Tween.TRANS_QUART)
+	tween.set_trans(Tween.TRANS_QUAD)
 	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(control, "scale", Vector2.ONE, 0.16)
+	tween.tween_property(control, "scale", Vector2.ONE, seconds)
+	tween.parallel().tween_property(control, "position", base_position, seconds)
 
 func _set_bet_modal(active: bool) -> void:
 	if active:
 		show_modal(bet_modal)
-	_bet_modal_fade_tween = _fade_modal(bet_panel, bet_modal, active, _bet_modal_fade_tween)
+	_bet_modal_fade_tween = _fade_modal(bet_panel, bet_modal, active, _bet_modal_fade_tween, MOTION_KIND_STANDARD)
 	if active:
-		_play_modal_pop(bet_panel)
+		_play_panel_enter(bet_panel, MOTION_KIND_STANDARD)
 	_emit_modal_telemetry("bet", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
@@ -3041,9 +3108,9 @@ func _set_bet_modal(active: bool) -> void:
 func _set_pact_sealed_modal(active: bool) -> void:
 	if active:
 		show_modal(pact_sealed_modal)
-	_pact_sealed_modal_fade_tween = _fade_modal(pact_sealed_panel, pact_sealed_modal, active, _pact_sealed_modal_fade_tween)
+	_pact_sealed_modal_fade_tween = _fade_modal(pact_sealed_panel, pact_sealed_modal, active, _pact_sealed_modal_fade_tween, MOTION_KIND_RITUAL)
 	if active:
-		_play_modal_pop(pact_sealed_panel)
+		_play_panel_enter(pact_sealed_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("pact_sealed", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
@@ -3051,9 +3118,9 @@ func _set_pact_sealed_modal(active: bool) -> void:
 func _set_resolve_ritual_modal(active: bool) -> void:
 	if active:
 		show_modal(resolve_ritual_modal)
-	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween)
+	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween, MOTION_KIND_RITUAL)
 	if active:
-		_play_modal_pop(resolve_ritual_panel)
+		_play_panel_enter(resolve_ritual_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("resolve_ritual", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
@@ -3065,10 +3132,11 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 		intermediate_choice_panel,
 		intermediate_choice_modal,
 		active,
-		_intermediate_choice_modal_fade_tween
+		_intermediate_choice_modal_fade_tween,
+		MOTION_KIND_RITUAL
 	)
 	if active:
-		_play_modal_pop(intermediate_choice_panel)
+		_play_panel_enter(intermediate_choice_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("intermediate_choice", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
@@ -3076,9 +3144,9 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 func _set_push_luck_modal(active: bool) -> void:
 	if active:
 		show_modal(push_luck_modal)
-	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween)
+	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween, MOTION_KIND_RITUAL)
 	if active:
-		_play_modal_pop(push_luck_panel)
+		_play_panel_enter(push_luck_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("push_luck", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
@@ -3086,9 +3154,9 @@ func _set_push_luck_modal(active: bool) -> void:
 func _set_game_over_modal(active: bool) -> void:
 	if active:
 		show_modal(game_over_modal)
-	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween)
+	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween, MOTION_KIND_ENDING)
 	if active:
-		_play_modal_pop(game_over_panel)
+		_play_panel_enter(game_over_panel, MOTION_KIND_ENDING)
 		enter_ending_mode()
 		_emit_modal_telemetry("ending", true)
 	else:

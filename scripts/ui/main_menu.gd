@@ -68,6 +68,8 @@ const CONDANNA_LOCKED_ALPHA: float = 0.35
 const MENU_IDLE_BOB_AMPLITUDE: float = 2.0
 const MENU_IDLE_BOB_SPEED: float = 1.25
 const MENU_TITLE_PULSE_SPEED: float = 1.8
+const MENU_TITLE_PULSE_BASE: float = 0.95
+const MENU_TITLE_PULSE_AMPLITUDE: float = 0.05
 const MENU_BUTTON_HOVER_SCALE: float = 1.02
 const SETTINGS_RESOLUTIONS: Array[String] = [
 	"960x540",
@@ -91,6 +93,7 @@ var _run_manager_port: RunManagerUiPort = null
 var _menu_next_step_hint: String = ""
 var _menu_idle_time: float = 0.0
 var _menu_buttons: Array[Button] = []
+var _menu_button_tweens: Dictionary = {}
 var _menu_center_base_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
@@ -757,7 +760,7 @@ func _on_settings_closed() -> void:
 func _process(delta: float) -> void:
 	_menu_idle_time += delta
 	if title_label != null:
-		var pulse: float = 0.92 + (sin(_menu_idle_time * MENU_TITLE_PULSE_SPEED) * 0.08)
+		var pulse: float = MENU_TITLE_PULSE_BASE + (sin(_menu_idle_time * MENU_TITLE_PULSE_SPEED) * MENU_TITLE_PULSE_AMPLITUDE)
 		title_label.modulate = Color(pulse, pulse, pulse, 1.0)
 	if menu_center != null and menu_vbox != null and menu_vbox.visible:
 		var bob_y: float = sin(_menu_idle_time * MENU_IDLE_BOB_SPEED) * MENU_IDLE_BOB_AMPLITUDE
@@ -800,8 +803,13 @@ func _on_menu_button_hover(button: Button, active: bool) -> void:
 		return
 	button.pivot_offset = button.size * 0.5
 	var target_scale: Vector2 = Vector2(MENU_BUTTON_HOVER_SCALE, MENU_BUTTON_HOVER_SCALE) if active else Vector2.ONE
+	var tween_key: int = button.get_instance_id()
+	var existing_tween: Tween = _menu_button_tweens.get(tween_key, null) as Tween
+	if existing_tween != null and existing_tween.is_valid():
+		existing_tween.kill()
 	var tween: Tween = create_tween()
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "scale", target_scale, 0.12)
+	_menu_button_tweens[tween_key] = tween
 

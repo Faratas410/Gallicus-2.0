@@ -142,7 +142,7 @@ func _play_open_animation() -> void:
 	book_frame.scale = _book_base_scale * 0.975
 	modulate = Color(1.0, 1.0, 1.0, 0.0)
 	var tween: Tween = create_tween()
-	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_trans(Tween.TRANS_QUAD)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(book_frame, "scale", _book_base_scale, 0.2)
 	tween.parallel().tween_property(self, "modulate:a", 1.0, 0.2)
@@ -190,13 +190,13 @@ func _apply_selection_visual() -> void:
 	left_selection_outline.visible = false
 	right_selection_outline.visible = false
 	if left_page != null:
-		left_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if left_selected else Color(0.99, 0.98, 0.94, 1.0)
+		left_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if left_selected else Color(0.9, 0.86, 0.76, 0.92)
 	if right_page != null:
-		right_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if right_selected else Color(0.99, 0.98, 0.94, 1.0)
+		right_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if right_selected else Color(0.9, 0.86, 0.76, 0.92)
 	if left_sign_button != null:
-		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2.ONE
+		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2(0.99, 0.99)
 	if right_sign_button != null:
-		right_sign_button.scale = Vector2(1.04, 1.04) if right_selected else Vector2.ONE
+		right_sign_button.scale = Vector2(1.04, 1.04) if right_selected else Vector2(0.99, 0.99)
 
 func _offer_id_at(index: int) -> StringName:
 	if index < 0 or index >= _betting_circle_options.size():
@@ -238,7 +238,10 @@ func _play_stamp_feedback(button: TextureButton) -> void:
 	if button == null:
 		return
 	var tween: Tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "scale", Vector2(1.06, 1.06), 0.06)
+	tween.set_ease(Tween.EASE_IN)
 	tween.tween_property(button, "scale", Vector2.ONE, 0.08)
 
 func _update_sigilla_state() -> void:

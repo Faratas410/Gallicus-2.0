@@ -37,8 +37,10 @@ var _idle_time: float = 0.0
 var _left_page_base_position: Vector2 = Vector2.ZERO
 var _right_page_base_position: Vector2 = Vector2.ZERO
 var _book_base_scale: Vector2 = Vector2.ONE
+var _nodes_ready: bool = false
 
 func _ready() -> void:
+	_nodes_ready = true
 	visible = false
 	_refresh_localized_text()
 	left_select_button.pressed.connect(_on_select_left_pressed)
@@ -62,6 +64,8 @@ func _ready() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		if not _nodes_ready:
+			return
 		_refresh_localized_text()
 		_render_pages()
 
@@ -281,9 +285,12 @@ func _offer_or_empty(index: int) -> Dictionary:
 	return _betting_circle_options[index]
 
 func _apply_page(offer: Dictionary, title_label: Label, bet_label: RichTextLabel, explain_label: RichTextLabel) -> void:
-	title_label.text = str(offer.get("name", EMPTY_PAGE_TITLE))
-	bet_label.text = str(offer.get("bet", EMPTY_PAGE_BODY))
-	explain_label.text = str(offer.get("explain", ""))
+	if title_label != null:
+		title_label.text = str(offer.get("name", EMPTY_PAGE_TITLE))
+	if bet_label != null:
+		bet_label.text = str(offer.get("bet", EMPTY_PAGE_BODY))
+	if explain_label != null:
+		explain_label.text = str(offer.get("explain", ""))
 
 func _refresh_from_catalog_if_empty() -> void:
 	if not _betting_circle_options.is_empty():

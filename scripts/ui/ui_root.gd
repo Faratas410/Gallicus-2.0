@@ -219,6 +219,8 @@ var _pressure_pulse_tween: Tween = null
 
 var _betting_overlay_hud_visibility_cached: bool = false
 var _betting_overlay_hud_visible_before: bool = true
+var _betting_overlay_bet_badge_visible_before: bool = true
+var _betting_overlay_glory_visible_before: bool = true
 var _betting_overlay_theme_visibility_cached: bool = false
 var _betting_overlay_theme_title_visible_before: bool = true
 var _betting_overlay_theme_subtitle_visible_before: bool = true
@@ -240,6 +242,7 @@ var escalation_label: Label = null
 var escalation_bar: Range = null
 var pressure_state_label: Label = null
 var _pressure_fill_style: StyleBoxFlat = null
+var _pressure_background_style: StyleBoxFlat = null
 var special_arena_label: Label = null
 var condanna_focus_label: Label = null
 var audience_context_panel: Control = null
@@ -1485,6 +1488,14 @@ func _get_pressure_color(level: int) -> Color:
 func _apply_pressure_bar_color(color: Color) -> void:
 	if escalation_bar == null:
 		return
+	if _pressure_background_style == null:
+		_pressure_background_style = StyleBoxFlat.new()
+		_pressure_background_style.bg_color = Color(0.10, 0.055, 0.035, 0.92)
+		_pressure_background_style.corner_radius_top_left = 3
+		_pressure_background_style.corner_radius_top_right = 3
+		_pressure_background_style.corner_radius_bottom_left = 3
+		_pressure_background_style.corner_radius_bottom_right = 3
+		escalation_bar.add_theme_stylebox_override("background", _pressure_background_style)
 	if _pressure_fill_style == null:
 		_pressure_fill_style = StyleBoxFlat.new()
 		_pressure_fill_style.corner_radius_top_left = 3
@@ -3258,7 +3269,17 @@ func _apply_betting_overlay_visual_suppression() -> void:
 	if hud_top_left_stats_box != null:
 		_betting_overlay_hud_visible_before = hud_top_left_stats_box.visible
 		_betting_overlay_hud_visibility_cached = true
-		hud_top_left_stats_box.visible = false
+		hud_top_left_stats_box.visible = true
+		var bet_badge_panel := hud_top_left_stats_box.get_node_or_null("BetBadge") as CanvasItem
+		var glory_panel := hud_top_left_stats_box.get_node_or_null("GloryPanel") as CanvasItem
+		if bet_badge_panel != null:
+			_betting_overlay_bet_badge_visible_before = bet_badge_panel.visible
+			bet_badge_panel.visible = false
+		if glory_panel != null:
+			_betting_overlay_glory_visible_before = glory_panel.visible
+			glory_panel.visible = false
+		if escalation_row != null:
+			escalation_row.visible = true
 	if arena_theme_title_panel != null:
 		_betting_overlay_theme_title_visible_before = arena_theme_title_panel.visible
 	if arena_theme_subtitle_panel != null:
@@ -3272,6 +3293,12 @@ func _apply_betting_overlay_visual_suppression() -> void:
 
 func _restore_betting_overlay_visual_suppression() -> void:
 	if hud_top_left_stats_box != null and _betting_overlay_hud_visibility_cached:
+		var bet_badge_panel := hud_top_left_stats_box.get_node_or_null("BetBadge") as CanvasItem
+		var glory_panel := hud_top_left_stats_box.get_node_or_null("GloryPanel") as CanvasItem
+		if bet_badge_panel != null:
+			bet_badge_panel.visible = _betting_overlay_bet_badge_visible_before
+		if glory_panel != null:
+			glory_panel.visible = _betting_overlay_glory_visible_before
 		hud_top_left_stats_box.visible = _betting_overlay_hud_visible_before
 	_betting_overlay_hud_visibility_cached = false
 	if _betting_overlay_theme_visibility_cached:

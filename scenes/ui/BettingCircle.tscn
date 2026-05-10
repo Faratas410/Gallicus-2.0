@@ -117,11 +117,11 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.78
 offset_left = 30.0
 offset_top = 26.0
 offset_right = -30.0
-offset_bottom = -26.0
+clip_contents = true
 mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/LeftPage/Content"]
@@ -139,9 +139,9 @@ autowrap_mode = 3
 
 [node name="Rtl_Left_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
-custom_minimum_size = Vector2(0, 178)
+custom_minimum_size = Vector2(0, 142)
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
@@ -151,7 +151,7 @@ autowrap_mode = 3
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
@@ -232,11 +232,11 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.78
 offset_left = 30.0
 offset_top = 26.0
 offset_right = -30.0
-offset_bottom = -26.0
+clip_contents = true
 mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/RightPage/Content"]
@@ -254,9 +254,9 @@ autowrap_mode = 3
 
 [node name="Rtl_Right_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
-custom_minimum_size = Vector2(0, 178)
+custom_minimum_size = Vector2(0, 142)
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
@@ -266,7 +266,7 @@ autowrap_mode = 3
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
 fit_content = true
 scroll_active = false

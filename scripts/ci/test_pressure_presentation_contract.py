@@ -49,7 +49,7 @@ def test_player_facing_pressure_contract() -> None:
 
     _assert_contains(ui_root, "PressureStateLabel", "ui_root.gd")
     _assert_contains(ui_root, "Pressione massima: %d/%d", "ui_root.gd")
-    _assert_contains(ui_root, "Chiudi la run e registra il risultato finale.", "ui_root.gd")
+    _assert_contains(ui_root, "Chiudi il percorso e registra il risultato finale.", "ui_root.gd")
 
     _assert_absent(run_manager, "Pressione folla: %d/%d", "run_manager.gd")
     _assert_absent(run_manager, "Pressione %d/%d", "run_manager.gd")

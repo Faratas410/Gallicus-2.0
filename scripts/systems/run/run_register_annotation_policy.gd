@@ -45,14 +45,14 @@ func _format_run_end(context: Dictionary) -> String:
 	var felix_precedent_emitted: bool = bool(context.get("felix_precedent_emitted", false))
 	match flow_phase:
 		&"ATTRITO":
-			return "Registrato: chiusura run (%s). Parametri estesi in attrito; tracce attive: %d." % [emit_reason, scar_count]
+			return "Registrato: chiusura percorso (%s). Parametri estesi in attrito; tracce attive: %d." % [emit_reason, scar_count]
 		&"DERIVA":
-			return "Registrato: chiusura run (%s). Profilo coerente, ma non conclusivo." % [emit_reason]
+			return "Registrato: chiusura percorso (%s). Profilo coerente, ma non conclusivo." % [emit_reason]
 		&"MEMORIA":
 			if not felix_precedent_emitted:
-				return "Registrato: chiusura run (%s). Precedente rilevato (Felix Gallicus). Applicabilità non determinabile." % [emit_reason]
-			return "Registrato: chiusura run (%s). Precedente rilevato; applicabilità non determinabile." % [emit_reason]
+				return "Registrato: chiusura percorso (%s). Precedente rilevato (Felix Gallicus). Applicabilità non determinabile." % [emit_reason]
+			return "Registrato: chiusura percorso (%s). Precedente rilevato; applicabilità non determinabile." % [emit_reason]
 		&"SOSPENSIONE":
-			return "Registrato: stato run (%s). Chiusura non applicabile." % [emit_reason]
+			return "Registrato: stato percorso (%s). Chiusura non applicabile." % [emit_reason]
 		_:
-			return "Registrato: chiusura run (%s). Tracce attive: %d." % [emit_reason, scar_count]
+			return "Registrato: chiusura percorso (%s). Tracce attive: %d." % [emit_reason, scar_count]

@@ -16,7 +16,7 @@ const LANGUAGES: Array[Dictionary] = [
 	},
 	{
 		"locale": "es",
-		"label": "Espanol",
+		"label": "Español",
 		"path": "res://assets/i18n/es.csv",
 	},
 ]

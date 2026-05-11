@@ -504,7 +504,7 @@ text = "OPZIONI"
 theme_override_styles/panel = ExtResource("7")
 
 [node name="BrightnessLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/BrightnessLabelPanel"]
-text = "LUMINOSITA"
+text = "LUMINOSITÀ"
 
 [node name="BrightnessSlider" type="HSlider" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 min_value = 0.6
@@ -517,7 +517,7 @@ theme_override_styles/panel = ExtResource("7")
 
 [node name="BrightnessValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/BrightnessValuePanel"]
 horizontal_alignment = 1
-text = "Luminosita: 1.00"
+text = "Luminosità: 1.00"
 
 [node name="LanguageLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 theme_override_styles/panel = ExtResource("7")

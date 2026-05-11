@@ -3239,7 +3239,7 @@ func _build_push_luck_state_line() -> String:
 		crowd_state = tr("La folla pretende un altro rilancio.")
 	elif pressure > 0:
 		crowd_state = tr("La folla resta in ascolto.")
-	return tr("Stato run: Gloria %d | Corruzione %d | %s") % [
+	return tr("Stato del percorso: Gloria %d | Corruzione %d | %s") % [
 		_run_state.glory,
 		corruption_value,
 		crowd_state,
@@ -3260,8 +3260,8 @@ func _build_sentence_payload(bet_id: StringName) -> Dictionary:
 		doom = "SE FALLISCI: LA CICATRICE TI RESTA."
 	elif not doom.begins_with("SE FALLISCI:"):
 		doom = "SE FALLISCI: %s" % doom
-	if _run_state.escalation_level >= 7 and doom.findn("ESCALATION") < 0:
-		doom = "%s\nESCALATION: NON HAI PIU MARGINE." % doom
+	if _run_state.escalation_level >= 7 and doom.findn("PRESSIONE") < 0:
+		doom = "%s\nPRESSIONE: NON HAI PIÙ MARGINE." % doom
 	return _ui_payload_factory.build_sentence_payload("SENTENZA", rule, doom, bet_id)
 
 func _get_sentence_rule(bet_id: StringName) -> String:

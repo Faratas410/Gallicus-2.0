@@ -866,7 +866,7 @@ func _on_run_started() -> void:
 	if next_bet_button != null:
 		next_bet_button.visible = false
 		next_bet_button.disabled = true
-	_last_finale_title = tr("RUN FAILED")
+	_last_finale_title = tr("PERCORSO FALLITO")
 	_last_finale_text = ""
 	_last_finale_scars = []
 	_last_finale_ending_id = ""
@@ -1010,7 +1010,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	if payload.has("title"):
 		_last_finale_title = str(payload["title"])
 	else:
-		_last_finale_title = tr("RUN FAILED")
+		_last_finale_title = tr("PERCORSO FALLITO")
 	if payload.has("text"):
 		_last_finale_text = str(payload["text"])
 	else:
@@ -1083,7 +1083,7 @@ func _on_run_failed() -> void:
 		next_bet_button.visible = _last_next_bet_enabled
 		next_bet_button.disabled = not _last_next_bet_enabled
 	if restart_button != null:
-		restart_button.text = "NUOVA RUN"
+		restart_button.text = "NUOVO PERCORSO"
 	if quit_button != null:
 		quit_button.text = "MENU"
 	_last_finale_hint = ""
@@ -1344,7 +1344,7 @@ func _get_verdict_outcome_text(outcome: StringName) -> String:
 		&"WIN":
 			return fmt_system_state(tr("arena continuata"))
 		_:
-			return fmt_system_state(tr("run registrata"))
+			return fmt_system_state(tr("percorso registrato"))
 
 func _build_verdict_summary(payload: Dictionary, pacts_payload: Array, condanne_payload: Array) -> Dictionary:
 	var stats_payload: Dictionary = payload.get("stats", {}) as Dictionary
@@ -1983,9 +1983,9 @@ func _build_ending_meta_section() -> String:
 	var max_pressure: int = _resolve_final_pressure_max()
 	lines.append(tr("Pressione massima: %d/%d") % [max_pressure, _get_pressure_max(_escalation_max)])
 	if max_pressure >= 6:
-		lines.append(tr("La folla ha spinto la run oltre il margine."))
+		lines.append(tr("La folla ha spinto il percorso oltre il margine."))
 	elif max_pressure <= 2:
-		lines.append(tr("La pressione e rimasta sotto controllo."))
+		lines.append(tr("La pressione è rimasta sotto controllo."))
 	if _last_finale_ending_id != "":
 		lines.append(tr("ENDING ID: %s") % _last_finale_ending_id)
 	if _last_ending_icon_path != "":
@@ -2019,11 +2019,11 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	ui_payload.phase = RunPhaseContract.PUSH_YOUR_LUCK
 	ui_payload.show_push_your_luck = true
 	ui_payload.meta = payload
-	ui_payload.title = tr("PUSH YOUR LUCK")
-	ui_payload.subtitle = str(payload.get("subtitle", tr("Il registro e aperto.")))
+	ui_payload.title = tr("SPINGI LA SORTE")
+	ui_payload.subtitle = str(payload.get("subtitle", tr("Il registro è aperto.")))
 	ui_payload.body = str(payload.get("body", tr("Incassa ora o aumenta esposizione.")))
 	ui_payload.hint = str(payload.get("hint", tr("La condanna chiude il ciclo senza premio.")))
-	ui_payload.footer = str(payload.get("footer", tr("Scegli un atto. La firma e irrevocabile.")))
+	ui_payload.footer = str(payload.get("footer", tr("Scegli un atto. La firma è irrevocabile.")))
 	ui_payload.choices = ["cashout", "condanna", "double"]
 	apply_run_ui_payload(ui_payload)
 
@@ -2115,7 +2115,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_cashout_note.text = _format_lock_note(cashout_reason, tr("Disponibile dopo l'arena in corso."))
 			push_luck_cashout_note.visible = true
 		else:
-			push_luck_cashout_note.text = tr("Chiudi la run e registra il risultato finale.")
+			push_luck_cashout_note.text = tr("Chiudi il percorso e registra il risultato finale.")
 			push_luck_cashout_note.visible = true
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
@@ -2640,9 +2640,9 @@ func _on_bet_failed(can_retry: bool) -> void:
 	_reset_fast_countdown()
 	_set_game_over_modal(true)
 	_set_verdict_mode(false)
-	_last_finale_title = tr("RUN FAILED")
+	_last_finale_title = tr("PERCORSO FALLITO")
 	if can_retry:
-		_last_finale_title = tr("BET FAILED")
+		_last_finale_title = tr("PATTO FALLITO")
 	_last_finale_text = ""
 	_last_finale_scars = []
 	_last_finale_ending_id = ""
@@ -2657,7 +2657,7 @@ func _on_bet_failed(can_retry: bool) -> void:
 		next_bet_button.visible = can_retry
 		next_bet_button.text = tr("RIPROVA SCOMMESSA")
 	if restart_button != null:
-		restart_button.text = tr("NUOVA RUN")
+		restart_button.text = tr("NUOVO PERCORSO")
 	_reset_fast_countdown()
 	var bet_failed_read_buttons: Array[Button] = []
 	if restart_button != null:

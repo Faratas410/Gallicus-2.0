@@ -81,7 +81,7 @@ func get_special_arena_title(arena_id: StringName) -> String:
 func get_special_arena_description(arena_id: StringName) -> String:
 	match arena_id:
 		SPECIAL_ARENA_SILENCE:
-			return "L'escalation sale subito. Il rischio cresce, le ricompense restano."
+			return "La pressione sale subito. Il rischio cresce, le ricompense restano."
 		SPECIAL_ARENA_ASH:
 			return "Ricompensa extra, ma una cicatrice è garantita."
 		SPECIAL_ARENA_DISPREZZO:

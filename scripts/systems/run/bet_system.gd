@@ -63,7 +63,7 @@ func build_pact_text(
 		bet_pure_blood_id:
 			return "Riserva rituale: +%d" % (bet_pure_reserve_bonus * reward_scale)
 		bet_double_or_die_id:
-			return "Rilancio rituale per la run x%d" % reward_scale
+			return "Rilancio rituale per il percorso x%d" % reward_scale
 		_:
 			return bet_id
 
@@ -87,8 +87,8 @@ func build_doom_text(
 			return "Nessuna penalità extra"
 		bet_pure_blood_id:
 			var doom_scale: int = get_doom_scale(chain_level)
-			return "Esposizione rituale +%d permanente per la run" % (10 * doom_scale)
+			return "Esposizione rituale +%d permanente per il percorso" % (10 * doom_scale)
 		bet_double_or_die_id:
-			return "MORTE IMMEDIATA: run terminata"
+			return "MORTE IMMEDIATA: percorso terminato"
 		_:
 			return ""

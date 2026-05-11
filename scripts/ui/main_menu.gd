@@ -353,7 +353,7 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
 	var tooltip_label_text: String = "%s\n\n%s\n%s\n\n%s" % [
 		condanna.title,
-		tr("Come e stata ottenuta:"),
+		tr("Come è stata ottenuta:"),
 		condanna.condition_text,
 		condanna.lore_text
 	]
@@ -385,7 +385,7 @@ func _format_continue_reject_reason(reason: String) -> String:
 	if reason == "unsupported_save_wrapper_schema":
 		return tr("Salvataggio non compatibile con questa versione.")
 	if reason == "missing_run_payload":
-		return tr("Salvataggio incompleto: dati run mancanti.")
+		return tr("Salvataggio incompleto: dati del percorso mancanti.")
 	if reason == "missing_level3_schema":
 		return tr("Salvataggio non valido: schema Level 3 mancante.")
 	if reason == "unsupported_level3_schema":
@@ -393,7 +393,7 @@ func _format_continue_reject_reason(reason: String) -> String:
 	if reason.begins_with("legacy_run_key:"):
 		return tr("Salvataggio legacy non supportato in L3.")
 	if reason == "missing_run_state":
-		return tr("Salvataggio incompleto: stato run mancante.")
+		return tr("Salvataggio incompleto: stato del percorso mancante.")
 	if reason == "missing_or_invalid_scars_array":
 		return tr("Salvataggio non valido: dati Condanne non leggibili.")
 	if reason == "invalid_scar_item_type":
@@ -567,7 +567,7 @@ func _apply_brightness(value: float) -> void:
 			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
 		brightness_overlay.color = overlay_color
 	if brightness_value != null:
-		brightness_value.text = tr("Luminosita: %.2f") % value
+		brightness_value.text = tr("Luminosità: %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -685,7 +685,7 @@ func _refresh_localized_ui() -> void:
 	if settings_title != null:
 		settings_title.text = tr("OPZIONI")
 	if brightness_label != null:
-		brightness_label.text = tr("LUMINOSITA")
+		brightness_label.text = tr("LUMINOSITÀ")
 	if language_label != null:
 		language_label.text = tr("LINGUA")
 	if volume_label != null:

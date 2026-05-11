@@ -49,9 +49,9 @@ const SCARS: Array[Dictionary] = [
 	{
 		"id": &"DEBT_BRAND",
 		"name": "MARCHIO DEL DEBITO",
-		"short_desc": "Escalation più severa.",
-		"effect": "Le escalation pesano di piu.",
-		"effect_text": "Le escalation pesano di piu.",
+		"short_desc": "Pressione più severa.",
+		"effect": "La pressione pesa di più.",
+		"effect_text": "La pressione pesa di più.",
 		"story": "Ogni vittoria ha un prezzo.",
 		"narrative_text": "Il debito ti stringe come catena sacra.\nLa folla esige il prezzo della promessa.\nIl destino pesa su ogni patto.",
 		"visual_tag": "⛓️",

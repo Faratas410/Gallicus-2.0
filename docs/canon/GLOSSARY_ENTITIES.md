@@ -12,6 +12,17 @@ This document is authoritative for its category.
 No other file may redefine these concepts.
 All changes to systems described here must update this document in the same PR.
 
+## Player-Facing Language Contract
+
+- Primary player-facing voice: ritual, clear, and operational.
+- `run` is a technical/runtime term. UI copy should prefer `percorso`, `ciclo`, or `registro` unless the text is explicitly diagnostic or schema-facing.
+- `escalation` is technical. UI copy must present it as `pressione`.
+- `cashout` is technical. UI copy uses `incassa` / `incasso`.
+- `double` is technical. UI copy uses `rilancia` in description and `RADDOPPIA` only for the action button.
+- `patto` means signed promise/contract of risk.
+- `scommessa` means the wager/posted act that opens the path.
+- `condanna` means a ritual adverse outcome, not a generic error or ordinary defeat.
+
 
 ## Index
 

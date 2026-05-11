@@ -26,7 +26,7 @@ func build_intermediate_choice_payload(run_state: RunState, choice_0_text: Strin
 
 func build_push_luck_payload(run_state: RunState, cashout_text: String, double_text: String, condanna_text: String) -> Dictionary:
 	return {
-		"title": "PUSH YOUR LUCK",
+		"title": "SPINGI LA SORTE",
 		"cashout_text": cashout_text,
 		"double_text": double_text,
 		"condanna_text": condanna_text,

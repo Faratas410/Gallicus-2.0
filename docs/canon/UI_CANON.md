@@ -328,6 +328,7 @@ Current MP3 files under `res://assets/audio/`:
 - HUD includes a sprite-backed `GloryPanel` with numeric `GloryValueLabel` at `HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/...`; UI updates it reactively from RunManager-emitted state payloads without adding gameplay authority to UI.
 - Player-facing pressure contract: the only numeric pressure meter shown to players is `PRESSIONE X/10`, sourced from RunManager `RunState.escalation_level` via `GameEvents.escalation_changed(level, max_value)`.
 - `RunState.audience_pressure` remains runtime-internal push-your-luck policy state. It must not be presented as numeric `Pressione` in HUD, Push Your Luck, or END_RUN surfaces.
+- Player-facing text follows `docs/canon/GLOSSARY_ENTITIES.md`: `run`, `escalation`, `cashout`, and `double` remain technical terms; visible UI copy should use `percorso`, `pressione`, `incassa/incasso`, and `rilancia`/button `RADDOPPIA`.
 - Pressure presentation thresholds are UI-only labels: `0-2` under control, `3-5` warming crowd, `6-8` high risk, `9-10` out of control. These labels do not define gameplay rules.
 - Push Your Luck must show current `PRESSIONE X/10` plus the threshold label and must describe `RADDOPPIA` as `Pressione +1`; `INCASSA` must state that it closes/records the result.
 - END_RUN must show peak pressure as `Pressione massima: X/10`, derived from run stats `max_escalation` when available.

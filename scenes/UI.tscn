@@ -1105,7 +1105,7 @@ theme_override_styles/panel = ExtResource("16")
 [node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel"]
 autowrap_mode = 2
 horizontal_alignment = 1
-text = "Il Registro e aperto: incassa ora o aumenta esposizione."
+text = "Il Registro è aperto: incassa ora o aumenta esposizione."
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 custom_minimum_size = Vector2(0, 92)
@@ -1137,7 +1137,7 @@ horizontal_alignment = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = true
-text = "Scegli un atto. La firma e irrevocabile."
+text = "Scegli un atto. La firma è irrevocabile."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
 custom_minimum_size = Vector2(0, 128)
@@ -1451,7 +1451,7 @@ theme_override_styles/hover = ExtResource("13")
 theme_override_styles/pressed = ExtResource("14")
 theme_override_styles/disabled = ExtResource("15")
 custom_minimum_size = Vector2(0, 44)
-text = "NUOVA RUN"
+text = "NUOVO PERCORSO"
 
 [node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false

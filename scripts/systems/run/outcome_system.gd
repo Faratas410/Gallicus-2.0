@@ -91,15 +91,6 @@ func resolve_level3_arena(
 		"condemnation_flag": condemnation_flag,
 		"outcome_tier": String(outcome_tier),
 		"outcome_reason": outcome_reason,
-		"resolve_debug": {
-			"base_failure_chance": base_failure,
-			"escalation_mod": escalation_adverse_mod,
-			"scar_mod": base_failure - 0.4 - pressure_mod,
-			"risk_pressure_mod": pressure_mod,
-			"final_failure_chance": failure_chance,
-			"condemnation_flag": condemnation_flag,
-			"outcome_tier": String(outcome_tier),
-		},
 		"won": won,
 		"notes": notes,
 	}

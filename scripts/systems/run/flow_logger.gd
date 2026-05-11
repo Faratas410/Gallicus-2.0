@@ -44,7 +44,6 @@ func log(tag: String, message: String = "") -> void:
 	if include_timestamp:
 		line = "[FLOW][%s] %s" % [_ts(), log_details]
 	_append(line)
-	print_debug(line)
 
 func log_phase(phase_name: String, note: String = "") -> void:
 	var message: String = phase_name
@@ -63,11 +62,6 @@ func log_ui(action: String, note: String = "") -> void:
 	if not note.is_empty():
 		message = "%s :: %s" % [action, note]
 	self.log("UI", message)
-
-func log_resolve_debug(entry: Dictionary) -> void:
-	if level < Level.VERBOSE:
-		return
-	self.log("resolve_breakdown", JSON.stringify(entry))
 
 func dump_last(n: int = 50) -> String:
 	var safe_n: int = maxi(0, n)

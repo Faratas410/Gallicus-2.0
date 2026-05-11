@@ -6,7 +6,7 @@ extends Node
 # - This script must NOT: own UI rendering or menu navigation decisions.
 #
 # FLOW CONTRACT (high level)
-# - Inputs (signals/events it listens to): GameEvents.request_* intents from UI/debug.
+# - Inputs (signals/events it listens to): GameEvents.request_* intents from UI and smoke tooling.
 # - Outputs (signals/events it emits): GameEvents.run_started/run_failed/etc. for UI/systems.
 # - Critical invariants: single RunManager in group "run_manager"; RunManager is authority.
 # -----------------------------------------------------------------------------
@@ -710,8 +710,6 @@ const LEVEL3_RISK_PROFILES: Array[Dictionary] = [
 	},
 ]
 
-const DEBUG_RUNTIME_LOGS: bool = false
-
 @export var bet_coward_glory_reward: int = 1
 @export var bet_pure_reserve_bonus: int = 30
 
@@ -773,7 +771,6 @@ var _request_router: RequestRouter = RequestRouterScript.new()
 var _run_end_payload_builder: RunEndPayloadBuilder = RunEndPayloadBuilderScript.new()
 var _scar_policy: ScarPolicy = ScarPolicyScript.new()
 var _flow_logger: FlowLogger = FlowLogger.new()
-var _last_resolve_debug: Dictionary = {}
 var _phase_run_init_handler: PhaseRunInitHandler = PhaseRunInitHandler.new()
 var _phase_bet_present_handler: PhaseBetPresentHandler = PhaseBetPresentHandler.new()
 var _phase_intermediate_choice_handler: PhaseIntermediateChoiceHandler = PhaseIntermediateChoiceHandler.new()
@@ -1030,7 +1027,6 @@ func _smoke_tick(now_msec: int) -> void:
 	_on_smoke_driver_tick()
 
 func _ready() -> void:
-	print_debug("RunManager ready")
 	_arena_themes = ArenaThemes.new()
 	_session_id = str(Time.get_unix_time_from_system())
 	if _flow_logger != null:
@@ -1078,7 +1074,6 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"betting_opened", &"_on_betting_opened", false],
 		[&"request_new_run", &"_on_request_new_run", true],
 		[&"request_ritual_advance", &"_on_request_ritual_advance", true],
-		[&"request_intro_apply_seed", &"_on_request_intro_apply_seed", true],
 		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
 		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
 		[&"request_mid_choice_select", &"_on_request_mid_choice_select", true],
@@ -1093,9 +1088,6 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"request_continue_run", &"_on_request_continue_run", true],
 		[&"request_show_main_menu", &"_on_request_show_main_menu", true],
 		[&"request_fail_run", &"_on_request_fail_run", true],
-		[&"request_set_run_seed", &"_on_request_set_run_seed", true],
-		[&"request_clear_run_seed", &"_on_request_clear_run_seed", true],
-		[&"request_skip_arena_resolution", &"_on_request_skip_arena_resolution", true],
 		[&"modal_opened", &"_on_modal_opened", true],
 		[&"modal_closed", &"_on_modal_closed", true],
 		[&"settings_changed", &"_on_settings_changed", true],
@@ -1187,8 +1179,6 @@ func _boot() -> void:
 			print("SMOKE:NEW_RUN_REQUESTED")
 			print("SMOKE:REQ=request_new_run")
 			_on_request_new_run()
-	_log_runtime_state("boot_complete")
-
 func _validate_game_events_signals() -> bool:
 	var errors: Array[String] = []
 	var ge: Node = get_node_or_null("/root/GameEvents") as Node
@@ -1498,7 +1488,6 @@ func _start_level3_run() -> void:
 	GameEvents.run_started.emit()
 	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
-	_emit_run_debug_state()
 	start_arena()
 	if not _waiting_for_bet:
 		_open_level3_bet_ui()
@@ -1513,7 +1502,6 @@ func start_arena() -> void:
 	_select_risk_profile()
 	if _run_state.risk_profile != &"":
 		_run_state.risk_profiles.append(_run_state.risk_profile)
-	_emit_run_debug_state()
 	_open_level3_bet_ui()
 
 func select_bet(bet_id: StringName) -> void:
@@ -1553,7 +1541,6 @@ func _confirm_pact_with_bet_id(bet_id: StringName) -> void:
 		_run_state.level3_cashout_streak_max = maxi(_run_state.level3_cashout_streak_max, _run_state.level3_cashout_streak)
 	else:
 		_run_state.level3_cashout_streak = 0
-	_emit_run_debug_state()
 	GameEvents.bet_placed.emit(String(bet_id), 0, 1.0)
 	GameEvents.bet_ui_closed.emit()
 	GameEvents.bet_closed.emit()
@@ -1678,7 +1665,6 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_run_state.active_bet_id = &""
 	_resolving_arena = false
 	_update_arena_visual_only()
-	_emit_run_debug_state()
 	await _maybe_play_micro_interpretive_quick_cut()
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -1924,8 +1910,6 @@ func _is_level3_bet_allowed(bet: Dictionary) -> bool:
 	return true
 
 func _get_run_seed_value() -> int:
-	if _run_state.debug_seed_override_active:
-		return _run_state.debug_seed_override
 	return int(Time.get_unix_time_from_system())
 
 func _compute_level3_seed(bet_id: StringName) -> int:
@@ -2015,16 +1999,6 @@ func _compute_volatility_shift() -> int:
 	var direction: int = 1 if _scar_roll(0.5) else -1
 	var amplitude: int = mini(_run_state.volatility, SCAR_VOLATILITY_SHIFT_CAP)
 	return direction * amplitude
-
-func _emit_run_debug_state() -> void:
-	if not GameEvents.has_signal("run_debug_state_updated"):
-		return
-	var scars_copy: Array[String] = _serialize_stringname_array(_run_state.scars_history)
-	var resolve_debug_payload: Dictionary = {}
-	if OS.is_debug_build():
-		resolve_debug_payload = _last_resolve_debug.duplicate(true)
-	var payload: Dictionary = _flow_diagnostics.build_run_debug_payload(_run_state.run_seed, _run_state.arena_index, _run_state.escalation_level, String(_run_state.active_bet_id), String(_run_state.risk_profile), scars_copy, String(_run_state.special_arena_id), _run_state.special_arena_active, _run_state.is_hunted_by_crowd, _run_state.glory, int(run.get("corruption", 0)), _run_state.scar_double_count, _run_state.scar_pact_count, _run_state.volatility, resolve_debug_payload)
-	GameEvents.run_debug_state_updated.emit(payload)
 
 func _apply_glory_on_success() -> void:
 	_runstate_kernel.apply_success(_run_state, {
@@ -2126,7 +2100,6 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 	GameEvents.set_gameplay_enabled(true)
 	
 	_emit_escalation_changed()
-	_emit_run_debug_state()
 	_update_arena_visual_only()
 	return true
 
@@ -2331,7 +2304,6 @@ func _apply_special_arena_pre_resolution() -> void:
 		_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 		_run_state.special_arena_effect_applied = true
 		_emit_escalation_changed()
-		_emit_run_debug_state()
 
 func _apply_special_arena_post_resolution(result: ArenaResult, failed: bool) -> void:
 	if not _run_state.special_arena_active:
@@ -2344,7 +2316,6 @@ func _apply_special_arena_post_resolution(result: ArenaResult, failed: bool) -> 
 		_run_state.audience_score = clampi(_run_state.audience_score - 1, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
 	_run_state.special_arena_active = false
 	_run_state.special_arena_effect_applied = false
-	_emit_run_debug_state()
 
 func _apply_special_arena_ash_reward(result: ArenaResult, failed: bool) -> void:
 	if _run_state.special_arena_effect_applied:
@@ -2427,7 +2398,7 @@ func _risk_profile_seed_hash(profile_id: StringName) -> int:
 
 func _log_level3_arena_result(bet_id: StringName, result: ArenaResult, scars_applied: Array[StringName]) -> void:
 	var scar_names: Array[String] = []
-	var bet_token: String = BetCatalogScript.get_bet_debug_token(bet_id)
+	var bet_token: String = BetCatalogScript.get_bet_identity_token(bet_id)
 	for scar_name: StringName in scars_applied:
 		scar_names.append(String(scar_name))
 	print(
@@ -2473,8 +2444,6 @@ func _resolve_level3_arena() -> ArenaResult:
 	)
 	result.won = bool(payload.get("won", false))
 	result.condemnation_flag = bool(payload.get("condemnation_flag", false))
-	_last_resolve_debug = payload.get("resolve_debug", {}) as Dictionary
-	_flow_logger.log_resolve_debug(_last_resolve_debug)
 	var notes_payload: Array = payload.get("notes", []) as Array
 	result.notes.clear()
 	for note_value: Variant in notes_payload:
@@ -2528,7 +2497,6 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 		_run_state.escalation_level = 0
 	_emit_escalation_changed()
 	_resolve_ritual_reward_applied = true
-	_emit_run_debug_state()
 	return scars_applied
 
 func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
@@ -2613,7 +2581,6 @@ func _mut_betp_place_bet(step: Dictionary) -> void:
 		_report_mutation_executor_error("BETP_PLACE_BET missing bet_id")
 		return
 	var bet_id: String = str(step.get("bet_id", ""))
-	_debug_bet_choice_received(bet_id)
 	select_bet(StringName(bet_id))
 
 func _mut_intro_select_bet(step: Dictionary) -> void:
@@ -2645,7 +2612,6 @@ func _mut_mainmenu_continue_run(_step: Dictionary) -> void:
 	request_load_continue()
 
 func _mut_mainmenu_show_menu(_step: Dictionary) -> void:
-	_debug_show_main_menu_received()
 	request_quit_to_menu()
 
 func _apply_state_mutation(mutation_name: String) -> void:
@@ -2671,12 +2637,6 @@ func _clear_run_from_executor() -> void:
 
 func _report_mutation_executor_error(message: String) -> void:
 	push_error(message)
-
-func _debug_bet_choice_received(bet_id: String) -> void:
-	print_debug("[FLOW] bet_choice_received :: arena=%d, bet_id=%s" % [_run_state.arena_index, bet_id])
-
-func _debug_show_main_menu_received() -> void:
-	print_debug("[FLOW] request_show_main_menu_received")
 
 func _end_run_from_pyl(reason: String) -> void:
 	if reason != "":
@@ -2751,23 +2711,6 @@ func _on_request_show_main_menu() -> void:
 	var allowed_phases: Array[RunPhase] = [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET]
 	_route_guarded_phase_request("request_show_main_menu", allowed_phases, _phase_main_menu_handler, {})
 	return
-
-func _on_request_intro_apply_seed(seed_text: String) -> void:
-	_touch_request_activity("request_intro_apply_seed(seed_text=%s)" % seed_text)
-	if not _guard_request_phase("request_intro_apply_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
-		return
-	var normalized_text: String = seed_text.strip_edges()
-	if normalized_text == "":
-		_on_request_clear_run_seed()
-		return
-	if not normalized_text.is_valid_int():
-		push_error("RunManager: request_intro_apply_seed invalid seed '%s'" % seed_text)
-		return
-	_on_request_set_run_seed(int(normalized_text))
-	if _phase == RunPhase.RUN_INIT:
-		_enter_intro()
-	else:
-		_enter_bet_present()
 
 func _on_request_intro_select_bet(bet_id: String) -> void:
 	_touch_request_activity("request_intro_select_bet(bet_id=%s)" % bet_id)
@@ -2854,7 +2797,6 @@ func _on_request_ritual_advance(kind: String) -> void:
 		return
 
 func _apply_intermediate_choice(choice_id: String) -> void:
-	print_debug("[FLOW] intermediate_choice_received :: arena=%d, choice=%s" % [_run_state.arena_index, choice_id])
 	_waiting_for_intermediate_choice = false
 	_run_state.intermediate_double_disabled_once = false
 	_run_state.intermediate_bonus_tier = 0
@@ -2889,14 +2831,12 @@ func _apply_intermediate_choice(choice_id: String) -> void:
 		if next_level != previous_level:
 			_apply_escalation_threshold_events(previous_level, next_level)
 			_emit_escalation_changed()
-			_emit_run_debug_state()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_GESTURE_CHOSEN)
 	_run_state.intermediate_pending_bet_id = &""
 	_start_resolve_ritual(bet_id)
 	_autosave_run_checkpoint(RunSaveFlowStepContractScript.PUSH_LUCK, bet_id)
 
 func _take_payout() -> void:
-	print_debug("[FLOW] push_luck_cashout_received :: arena=%d" % _run_state.arena_index)
 	var audience_policy: Dictionary = _build_audience_reward_text()
 	if not bool(audience_policy.get("cashout_enabled", true)):
 		_refresh_push_luck_choice(StringName(_run_state.current_bet_id))
@@ -2941,7 +2881,6 @@ func _take_payout() -> void:
 		_run_state.escalation_level = 0
 		_emit_escalation_changed()
 		_run_state.current_bet_id = ""
-		_emit_run_debug_state()
 	end_run(&"")
 
 func _handle_push_luck_condanna() -> void:
@@ -2963,11 +2902,9 @@ func _handle_push_luck_condanna() -> void:
 		_run_state.escalation_level = 0
 		_emit_escalation_changed()
 		_run_state.current_bet_id = ""
-		_emit_run_debug_state()
 	end_run(&"")
 
 func _push_your_luck() -> void:
-	print_debug("[FLOW] push_luck_double_received :: arena=%d" % _run_state.arena_index)
 	var lock_reason: String = _get_double_lock_reason()
 	if lock_reason != "":
 		_refresh_push_luck_choice(StringName(_run_state.current_bet_id))
@@ -3011,54 +2948,8 @@ func _push_your_luck() -> void:
 	if _run_state.cashout_lock_remaining > 0:
 		_run_state.cashout_lock_remaining = maxi(_run_state.cashout_lock_remaining - 1, 0)
 	_run_state.level3_next_loss_adverse_cost = 30
-	_emit_run_debug_state()
 	start_arena()
 	_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
-
-func _on_request_set_run_seed(run_seed: int) -> void:
-	_touch_request_activity("request_set_run_seed(run_seed=%d)" % run_seed)
-	if not _guard_request_phase("request_set_run_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
-		return
-	_run_state.debug_seed_override_active = true
-	_run_state.debug_seed_override = run_seed
-	print("Debug seed override set:", run_seed)
-	if _has_started_run:
-		start_new_run()
-
-func _on_request_clear_run_seed() -> void:
-	_touch_request_activity("request_clear_run_seed()")
-	if not _guard_request_phase("request_clear_run_seed", [RunPhase.RUN_INIT, RunPhase.BET_PRESENT]):
-		return
-	_run_state.debug_seed_override_active = false
-	_run_state.debug_seed_override = 0
-	print("Debug seed override cleared")
-	if _has_started_run:
-		start_new_run()
-
-func _on_request_skip_arena_resolution() -> void:
-	_touch_request_activity("request_skip_arena_resolution()")
-	if not _guard_request_phase("request_skip_arena_resolution", [RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK]):
-		return
-	if _run_state.run_is_over or _is_game_over:
-		return
-	if not OS.is_debug_build():
-		return
-	_debug_skip_level3_step()
-
-func _debug_skip_level3_step() -> void:
-	if _waiting_for_bet:
-		var bet_id: StringName = _get_debug_default_bet()
-		if bet_id != &"":
-			select_bet(bet_id)
-		return
-	if _waiting_for_push_luck:
-		_on_request_pyl_double()
-
-func _get_debug_default_bet() -> StringName:
-	if _run_state.level3_current_offer.is_empty():
-		return &""
-	var bet_data: Dictionary = _run_state.level3_current_offer[0] as Dictionary
-	return StringName(str(bet_data.get("id", "")))
 
 func _on_modal_opened(_kind: String) -> void:
 	_modal_lock_count += 1
@@ -3629,7 +3520,6 @@ func _enter_game_over() -> void:
 		reason_label = "cashout"
 	elif _run_state.run_end_reason != "":
 		reason_label = "failed"
-	print_debug("[FLOW] ending_entered :: reason=%s, arena=%d" % [reason_label, _run_state.arena_index])
 	_save_system.clear_run()
 	_is_game_over = true
 	_run_state.provoke_armed = false
@@ -3722,11 +3612,9 @@ func _emit_run_finale() -> void:
 	if bool(finale.get("classified_terminal", false)) and not _registry_has_precedent:
 		SaveManager.set_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 		_registry_has_precedent = true
-	_log_balance_terminal_metrics(finale)
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
 	GameEvents.run_finale_selected.emit(finale)
-	_emit_run_log(finale)
 	_export_run_summary(finale)
 
 func _update_registry_meta_from_run() -> void:
@@ -3738,23 +3626,6 @@ func _update_registry_meta_from_run() -> void:
 	_registry_pressure = maxf(_registry_pressure + pressure_delta, 0.0)
 	# Era progression remains silence-driven by canon contract; no pressure->era remap here.
 	SaveManager.set_registry_state(_registry_pressure, _registry_era)
-
-func _log_balance_terminal_metrics(finale: Dictionary) -> void:
-	if not OS.is_debug_build():
-		return
-	var terminal_classification: String = str(finale.get("ending_id", ""))
-	print(
-		"[BALANCE] doubles=%d escalation=%d glory=%d corruption=%d finale=%s precedent=%s"
-		% [
-			_run_state.level3_doubles,
-			_run_state.level3_max_escalation,
-			_run_state.glory,
-
-			_run_state.corruption,
-			terminal_classification,
-			str(_registry_has_precedent),
-		]
-	)
 
 func _should_emit_registry_silence() -> bool:
 	if _run_state.registry_silence_evaluated:
@@ -3771,35 +3642,6 @@ func _should_emit_registry_silence() -> bool:
 	var final_chance: float = minf(base_chance + pressure_bonus, REGISTRY_SILENCE_CHANCE_CAP)
 	_run_state.registry_silence_active = _level3_rng.randf() < final_chance
 	return _run_state.registry_silence_active
-
-func _emit_run_log(finale: Dictionary) -> void:
-	if not GameEvents.has_signal("run_log_ready"):
-		return
-	var log_text: String = _build_run_log(finale)
-	GameEvents.run_log_ready.emit(log_text)
-
-func _build_run_log(finale: Dictionary) -> String:
-	var ending_id: String = str(finale.get("ending_id", ""))
-	var title: String = str(finale.get("title", ""))
-	var arena_count: int = _run_state.arena_index
-	var cashouts: int = _run_state.level3_cashouts
-	var doubles: int = _run_state.level3_doubles
-	var max_escalation: int = _run_state.level3_max_escalation
-	var scar_count: int = _run_state.scars_history.size()
-	var special_arena: String = ""
-	if _run_state.special_arena_id != &"":
-		special_arena = _get_special_arena_title(_run_state.special_arena_id)
-	var lines: Array[String] = []
-	lines.append("Seed: %d" % _run_state.run_seed)
-	if title != "":
-		lines.append("Ending: %s (%s)" % [title, ending_id])
-	else:
-		lines.append("Ending: %s" % ending_id)
-	lines.append("Arene: %d | Cashout: %d | Double: %d | Escalation max: %d" % [arena_count, cashouts, doubles, max_escalation])
-	lines.append("Cicatrici: %d" % scar_count)
-	if special_arena != "":
-		lines.append("Arena speciale: %s" % special_arena)
-	return "\n".join(lines)
 
 func _export_run_summary(finale: Dictionary) -> void:
 	var summary: Dictionary = _build_run_summary(finale)
@@ -4109,18 +3951,6 @@ func is_level3_mode() -> bool:
 func is_visual_only() -> bool:
 	return true
 
-func get_debug_phase_name() -> String:
-	return _phase_to_name(_phase)
-
-func get_debug_last_request() -> String:
-	return _last_request
-
-func get_debug_last_ui_render_ms() -> int:
-	return _last_ui_render_ms
-
-func get_debug_flow_tail(lines: int = 10) -> String:
-	return _flow_logger.dump_last(lines)
-
 func _set_phase(next: RunPhase, reason: String) -> void:
 	if _phase == next:
 		return
@@ -4138,8 +3968,6 @@ func _set_phase(next: RunPhase, reason: String) -> void:
 		return
 	if _is_smoke_mode():
 		print("SMOKE:PHASE=%s" % _phase_to_name(next))
-	if OS.is_debug_build() and reason != "":
-		print_debug(_flow_diagnostics.format_phase_debug_line(_phase_to_name(next), reason))
 
 func _touch_request_activity(request_name: String) -> void:
 	_last_request = request_name
@@ -4316,7 +4144,6 @@ func _add_scar(scar: Dictionary) -> void:
 	if hunted_changed:
 		_check_audience_condanne()
 	_emit_scars_updated()
-	_emit_run_debug_state()
 	if GameEvents.has_signal("scar_applied"):
 		GameEvents.scar_applied.emit(scar)
 
@@ -4455,29 +4282,5 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 		"Movimento rallentato e blocco meno efficace."
 	)
 	_add_scar(scar)
-
-func _log_runtime_state(tag: String) -> void:
-	if not DEBUG_RUNTIME_LOGS:
-		return
-	var cam: Camera2D = get_viewport().get_camera_2d()
-	var cam_exists: bool = cam != null
-	var cam_current: bool = cam_exists and cam.has_method("is_current") and cam.is_current()
-	var cam_pos: Vector2 = Vector2.ZERO
-	if cam_exists:
-		cam_pos = cam.global_position
-
-	print(
-		"[runtime:%s] paused=%s gameplay_enabled=%s cam_exists=%s cam_current=%s cam_pos=%s"
-		% [
-			tag,
-			get_tree().paused,
-			GameEvents.gameplay_enabled,
-			cam_exists,
-			cam_current,
-			cam_pos,
-		]
-	)
-
-
 
 

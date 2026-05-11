@@ -519,54 +519,6 @@ visible = false
 custom_minimum_size = Vector2(0, 28)
 size_flags_horizontal = 3
 
-[node name="DebugOverlay" type="Control" parent="UI_RunRoot"]
-unique_name_in_owner = true
-visible = false
-z_index = 200
-mouse_filter = 2
-anchor_left = 1.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-offset_left = -420.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = 220.0
-
-[node name="Panel" type="PanelContainer" parent="UI_RunRoot/DebugOverlay"]
-mouse_filter = 2
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="Margin" type="MarginContainer" parent="UI_RunRoot/DebugOverlay/Panel"]
-mouse_filter = 2
-
-[node name="Lbl_DebugOverlayPanel" type="PanelContainer" parent="UI_RunRoot/DebugOverlay"]
-mouse_filter = 2
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = -10.0
-offset_bottom = -8.0
-
-[node name="Lbl_DebugOverlay" type="RichTextLabel" parent="UI_RunRoot/DebugOverlay/Lbl_DebugOverlayPanel"]
-unique_name_in_owner = true
-mouse_filter = 2
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = -10.0
-offset_bottom = -8.0
-fit_content = true
-bbcode_enabled = false
-scroll_active = false
-autowrap_mode = 2
-text = "Flow debug overlay"
-
 [node name="ModalDimmer" type="ColorRect" parent="UI_RunRoot"]
 visible = false
 z_index = 0
@@ -1000,22 +952,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_text = true
 text = "La condanna precede la firma."
-
-[node name="SeedRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
-
-[node name="Lbl_INTRO_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
-size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
-
-[node name="Lbl_INTRO_BODY" type="Label" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODYPanel"]
-text = "Seed (opzionale)"
-
-[node name="SeedInput" type="LineEdit" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
-size_flags_horizontal = 3
-placeholder_text = "Es. 10331"
-
-[node name="Btn_INTRO_APPLY_SEED" type="Button" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow"]
-text = "APPLICA"
 
 [node name="StakeRow" type="HBoxContainer" parent="UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO"]
 

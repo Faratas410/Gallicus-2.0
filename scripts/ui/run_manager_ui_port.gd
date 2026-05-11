@@ -24,30 +24,6 @@ func is_visual_only() -> bool:
 		return false
 	return bool(manager.is_visual_only())
 
-func get_debug_phase_name() -> String:
-	var manager: Node = _get_manager()
-	if manager == null:
-		return "-"
-	return str(manager.get_debug_phase_name())
-
-func get_debug_last_request() -> String:
-	var manager: Node = _get_manager()
-	if manager == null:
-		return "-"
-	return str(manager.get_debug_last_request())
-
-func get_debug_last_ui_render_ms() -> int:
-	var manager: Node = _get_manager()
-	if manager == null:
-		return -1
-	return int(manager.get_debug_last_ui_render_ms())
-
-func get_debug_flow_tail(lines: int = 10) -> String:
-	var manager: Node = _get_manager()
-	if manager == null:
-		return "-"
-	return str(manager.get_debug_flow_tail(lines))
-
 func get_arena() -> Node:
 	var manager: Node = _get_manager()
 	if manager == null:

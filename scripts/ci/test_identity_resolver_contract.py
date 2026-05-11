@@ -41,7 +41,7 @@ def main() -> int:
     if '&"CASH_OUT"' in betting_ui or '&"DOUBLE_OR_DIE"' in betting_ui:
         return fail("betting_circle_ui.gd must not hardcode active bet ids")
 
-    if not has_bet_catalog_call(run_manager, "get_bet_debug_token"):
+    if not has_bet_catalog_call(run_manager, "get_bet_identity_token"):
         return fail("run_manager.gd logs must use stable identity token")
 
     print("[OK][IDENTITY_RESOLVER_CONTRACT] identity resolver contract passed")

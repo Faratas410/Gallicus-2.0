@@ -95,13 +95,11 @@ const _GAME_EVENT_WIRING_REQUIRED: Array[Dictionary] = [
 const _GAME_EVENT_WIRING_GUARDED: Array[Dictionary] = [
 	{"signal": &"run_ended", "handler": &"_on_run_ended"},
 	{"signal": &"run_finale_selected", "handler": &"_on_run_finale_selected"},
-	{"signal": &"run_debug_state_updated", "handler": &"_on_run_debug_state_updated"},
 	{"signal": &"sentence_banner_requested", "handler": &"_on_sentence_banner_requested"},
 	{"signal": &"audience_context_line_emitted", "handler": &"_on_audience_context_line_emitted"},
 	{"signal": &"register_annotation", "handler": &"_on_register_annotation"},
 	{"signal": &"micro_interpretive_quick_cut_requested", "handler": &"_on_micro_interpretive_quick_cut_requested"},
 	{"signal": &"escalation_changed", "handler": &"_on_escalation_changed"},
-	{"signal": &"run_log_ready", "handler": &"_on_run_log_ready"},
 	{"signal": &"special_arena_started", "handler": &"_on_special_arena_started"},
 	{"signal": &"arena_theme_changed", "handler": &"_on_arena_theme_changed"},
 	{"signal": &"bet_selected", "handler": &"_on_bet_selected"},
@@ -167,14 +165,6 @@ var _fast_countdown_active: bool = false
 var _has_seen_controls: bool = false
 var _controls_first_run_active: bool = true
 var _sentence_banner_sequence_id: int = 0
-
-var _debug_seed: int = 0
-var _debug_arena_index: int = 0
-var _debug_escalation: int = 0
-var _debug_active_bet: String = ""
-var _debug_special_arena: String = ""
-var _debug_scars: Array = []
-var _debug_run_log: String = ""
 
 var _special_arena_payload: Dictionary = {}
 var _arena_theme_payload: Dictionary = {}
@@ -282,8 +272,6 @@ var bet_panel: Control = null
 var bet_modal: Control = null
 var stake_row: Control = null
 var stake_input: SpinBox = null
-var seed_input: LineEdit = null
-var seed_apply_button: Button = null
 var bet_buttons_container: Control = null
 var bet_confirm_row: Control = null
 var bet_confirm_label: Label = null
@@ -351,15 +339,6 @@ var _lbl_intro_body: Label = null
 var _lbl_intro_body_stake: Label = null
 var _lbl_intro_footer: Label = null
 
-var debug_tools_panel: Control = null
-var debug_seed_input: LineEdit = null
-var debug_seed_button: Button = null
-var debug_restart_button: Button = null
-var debug_skip_button: Button = null
-var debug_copy_log_button: Button = null
-var _debug_overlay: Control = null
-var _debug_label: Label = null
-
 var scar_popup_panel: Control = null
 var scar_popup: Label = null
 
@@ -406,13 +385,7 @@ func _ready() -> void:
 				var confirm_callable: Callable = Callable(self, "_on_bet_confirm_pressed")
 				if not bet_confirm_button.pressed.is_connected(confirm_callable):
 					bet_confirm_button.pressed.connect(confirm_callable)
-			_wire_seed_input()
 
-	if _debug_overlay != null:
-		_debug_overlay.visible = false
-	if debug_tools_panel != null:
-		debug_tools_panel.visible = OS.is_debug_build()
-		_wire_debug_tools()
 	if scar_popup_panel != null:
 		scar_popup_panel.visible = false
 	if arena_resolution_label != null:
@@ -455,8 +428,6 @@ func _ready() -> void:
 	_wire_intro_phase_buttons()
 
 	_refresh_runtime_group_cache(true)
-
-	print_debug("UI ready: bet_badge=%s bet_panel=%s debug=%s" % [bet_badge_value_label != null, bet_panel != null, _debug_overlay != null])
 
 func _wire_standard_game_event_signals() -> void:
 	for required_spec: Dictionary in _GAME_EVENT_WIRING_REQUIRED:
@@ -525,8 +496,6 @@ func _bind_scene_nodes() -> void:
 	boot_fail_overlay = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay") as Control
 	boot_fail_body = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Lbl_BootFail_Body") as Label
 	boot_fail_button = get_node_or_null("UI_RunRoot/Overlays/BootFailOverlay/Center/Panel/VBox/Btn_BootFail_BackToMenu") as Button
-	_debug_overlay = get_node_or_null("UI_RunRoot/DebugOverlay") as Control
-	_debug_label = get_node_or_null("UI_RunRoot/DebugOverlay/Lbl_DebugOverlayPanel/Lbl_DebugOverlay") as Label
 	silence_overlay = get_node_or_null("UI_RunRoot/Overlays/SilenceOverlay/SilenceRect") as ColorRect
 	torch_flicker_overlay = get_node_or_null("UI_RunRoot/TorchFlickerOverlay") as ColorRect
 	torch_flicker_player = get_node_or_null("UI_RunRoot/TorchFlickerPlayer") as AnimationPlayer
@@ -567,8 +536,6 @@ func _bind_scene_nodes() -> void:
 	bet_buttons_container = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons") as Control
 	stake_row = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow") as Control
 	stake_input = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/StakeInput") as SpinBox
-	seed_input = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedInput") as LineEdit
-	seed_apply_button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/SeedApplyButton") as Button
 	bet_confirm_row = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow") as Control
 	bet_confirm_label = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTERPanel/Lbl_INTRO_FOOTER") as Label
 	bet_confirm_button = get_node_or_null("UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Btn_INTRO_CONFIRM") as Button
@@ -659,11 +626,6 @@ func show_phase(phase: int) -> void:
 	if _phase_node_map.is_empty():
 		push_error("UI: missing phase mapping for %s" % RunPhaseContract.get_phase_name(phase))
 		return
-	print_debug("[FLOW][UI] show_phase input=%d mid_choice_contract=%d map_keys=%s" % [
-		phase,
-		RunPhaseContract.INTERMEDIATE_CHOICE,
-		str(_phase_node_map.keys()),
-	])
 	for mapped_phase_key: Variant in _phase_node_map.keys():
 		var mapped_phase: int = int(mapped_phase_key)
 		var phase_node: Control = _phase_node_map.get(mapped_phase, null) as Control
@@ -676,7 +638,6 @@ func show_phase(phase: int) -> void:
 		return
 	target.visible = true
 	_current_modal = target
-	print_debug("[FLOW][UI] show_phase=%d node=%s" % [phase, String(target.name)])
 	_reset_sign_feedback()
 	_reset_pyl_lock_state()
 	if phase == RunPhaseContract.BET_PRESENT or phase == RunPhaseContract.NEXT_BET:
@@ -772,13 +733,6 @@ func _show_boot_fail(missing: Array[String]) -> void:
 func _on_boot_fail_back_to_menu() -> void:
 	_emit_game_event_signal_if_available(&"request_show_main_menu")
 
-func _wire_seed_input() -> void:
-	if seed_apply_button == null:
-		return
-	var seed_callable: Callable = Callable(self, "_on_seed_apply_pressed")
-	if not seed_apply_button.pressed.is_connected(seed_callable):
-		seed_apply_button.pressed.connect(seed_callable)
-
 func _wire_intro_phase_buttons() -> void:
 	if intro_select_win_button != null:
 		var win_callable: Callable = Callable(self, "_on_bet_win_pressed")
@@ -860,12 +814,6 @@ func _hide_arena_resolution_overlay() -> void:
 	if arena_resolution_panel != null:
 		arena_resolution_panel.visible = false
 
-func _on_seed_apply_pressed() -> void:
-	if seed_input == null:
-		return
-	var text_value: String = seed_input.text.strip_edges()
-	_emit_game_event_signal_if_available(&"request_intro_apply_seed", [text_value])
-
 func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:
 		return
@@ -930,8 +878,6 @@ func _on_run_started() -> void:
 	_last_verdict_crowd_line = ""
 	_last_verdict_outcome = &"LOSS"
 	_special_arena_payload = {}
-	_debug_run_log = ""
-	_debug_special_arena = ""
 	if special_arena_label != null:
 		special_arena_label.visible = false
 	if condanna_focus_label != null:
@@ -1427,20 +1373,6 @@ func _payload_has_lying_pact(pacts_payload: Array) -> bool:
 			return true
 	return false
 
-func _on_run_debug_state_updated(payload: Dictionary) -> void:
-	_debug_seed = int(payload.get("seed", 0))
-	_debug_arena_index = int(payload.get("arena_index", 0))
-	_debug_escalation = int(payload.get("escalation_level", 0))
-	_debug_active_bet = str(payload.get("active_bet_id", ""))
-	_debug_special_arena = str(payload.get("special_arena_id", ""))
-	_set_glory_value(int(payload.get("glory", 0)))
-	var scars_value: Array = payload.get("scars", []) as Array
-	_debug_scars = []
-	for scar_value in scars_value:
-		_debug_scars.append(str(scar_value))
-	if _debug_overlay != null and _debug_overlay.visible:
-		_refresh_debug_overlay()
-
 func _on_escalation_changed(level: int, max_value: int) -> void:
 	var previous_level: int = _escalation_level
 	_escalation_level = level
@@ -1529,9 +1461,6 @@ func _pulse_pressure_indicator(previous: int, next: int) -> void:
 	if pressure_state_label != null:
 		_pressure_pulse_tween.parallel().tween_property(pressure_state_label, "modulate", Color.WHITE, pulse_seconds)
 
-func _on_run_log_ready(log_text: String) -> void:
-	_debug_run_log = log_text
-
 func _on_special_arena_started(payload: Dictionary) -> void:
 	_special_arena_payload = payload.duplicate(true)
 	if bet_panel != null and bet_panel.visible:
@@ -1549,8 +1478,6 @@ func _on_arena_theme_changed(payload: Dictionary) -> void:
 func _extract_theme_id(payload: Dictionary) -> StringName:
 	if payload.has("theme_id"):
 		return StringName(payload.get("theme_id", &""))
-	if debug_tools_panel != null:
-		print_debug("[UI] visual tier discriminator missing in arena theme payload")
 	return &""
 
 func _resolve_visual_tier_from_theme(theme_id: StringName) -> int:
@@ -1802,13 +1729,7 @@ func apply_run_ui_payload(payload: RunUiPayload) -> void:
 		return
 	var target_phase: int = payload.phase
 	if payload.show_mid_choice and target_phase != RunPhaseContract.INTERMEDIATE_CHOICE:
-		print_debug("[FLOW][UI] normalize phase for mid_choice payload=%d -> %d" % [target_phase, RunPhaseContract.INTERMEDIATE_CHOICE])
 		target_phase = RunPhaseContract.INTERMEDIATE_CHOICE
-	print_debug("[FLOW][UI] apply_run_ui_payload phase=%d show_mid_choice=%s show_push_your_luck=%s" % [
-		payload.phase,
-		str(payload.show_mid_choice),
-		str(payload.show_push_your_luck),
-	])
 	show_phase(target_phase)
 	if payload.show_mid_choice:
 		_apply_intermediate_choice_payload(payload)
@@ -2309,46 +2230,6 @@ func _on_intermediate_choice_provoca_pressed() -> void:
 		intermediate_choice_provoca_button
 	)
 	_emit_game_event_signal_if_available(&"request_mid_choice_select", [1])
-
-func _wire_debug_tools() -> void:
-	if not OS.is_debug_build():
-		return
-	if debug_seed_button != null:
-		var seed_callable: Callable = Callable(self, "_on_debug_seed_pressed")
-		if not debug_seed_button.pressed.is_connected(seed_callable):
-			debug_seed_button.pressed.connect(seed_callable)
-	if debug_restart_button != null:
-		var restart_callable: Callable = Callable(self, "_on_debug_restart_pressed")
-		if not debug_restart_button.pressed.is_connected(restart_callable):
-			debug_restart_button.pressed.connect(restart_callable)
-	if debug_skip_button != null:
-		var skip_callable: Callable = Callable(self, "_on_debug_skip_pressed")
-		if not debug_skip_button.pressed.is_connected(skip_callable):
-			debug_skip_button.pressed.connect(skip_callable)
-	if debug_copy_log_button != null:
-		var copy_callable: Callable = Callable(self, "_on_debug_copy_log_pressed")
-		if not debug_copy_log_button.pressed.is_connected(copy_callable):
-			debug_copy_log_button.pressed.connect(copy_callable)
-
-func _on_debug_seed_pressed() -> void:
-	if debug_seed_input == null:
-		return
-	var text_value: String = debug_seed_input.text.strip_edges()
-	if not text_value.is_valid_int():
-		return
-	var seed_value: int = int(text_value)
-	_emit_game_event_signal_if_available(&"request_set_run_seed", [seed_value])
-
-func _on_debug_restart_pressed() -> void:
-	_emit_game_event_signal_if_available(&"request_reset_run")
-
-func _on_debug_skip_pressed() -> void:
-	_emit_game_event_signal_if_available(&"request_skip_arena_resolution")
-
-func _on_debug_copy_log_pressed() -> void:
-	if _debug_run_log == "":
-		return
-	DisplayServer.clipboard_set(_debug_run_log)
 
 func _on_push_luck_cashout_pressed() -> void:
 	if _pyl_locked:
@@ -3334,33 +3215,6 @@ func _reset_fast_countdown() -> void:
 		if fast_countdown_panel != null:
 			fast_countdown_panel.visible = false
 
-func _update_debug_overlay(text: String) -> void:
-	if _debug_label == null:
-		return
-	_debug_label.text = text
-
-func _refresh_debug_overlay() -> void:
-	if _debug_overlay == null:
-		return
-	if _run_manager_port == null or not _run_manager_port.has_manager():
-		_update_debug_overlay("Phase: -\nLast request: -\nLast UI render ms: -\nFlow tail:\nRunManager not found")
-		return
-	var phase_name: String = _run_manager_port.get_debug_phase_name()
-	var last_request: String = _run_manager_port.get_debug_last_request()
-	var last_ui_render_ms: int = _run_manager_port.get_debug_last_ui_render_ms()
-	var flow_tail: String = _run_manager_port.get_debug_flow_tail(10)
-	_update_debug_overlay("Phase: %s\nLast request: %s\nLast UI render ms: %d\nFlow tail:\n%s" % [
-		phase_name,
-		last_request,
-		last_ui_render_ms,
-		flow_tail,
-	])
-
-func _process(_delta: float) -> void:
-	if _debug_overlay == null or not _debug_overlay.visible:
-		return
-	_refresh_debug_overlay()
-
 func _unhandled_input(event: InputEvent) -> void:
 	if _controls_first_run_active and (not _has_seen_controls) and controls_hint_panel != null and controls_hint_panel.visible:
 		var should_dismiss: bool = false
@@ -3374,24 +3228,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_has_seen_controls = true
 			_controls_first_run_active = false
 			controls_hint_panel.visible = false
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_F3:
-			if _debug_overlay != null:
-				_debug_overlay.visible = not _debug_overlay.visible
-				if _debug_overlay.visible:
-					_refresh_debug_overlay()
-		if OS.is_debug_build():
-			if event.keycode == KEY_F2:
-				DisplayServer.clipboard_set(str(_debug_seed))
-			if event.keycode == KEY_F4:
-				var clipboard_text: String = DisplayServer.clipboard_get()
-				if clipboard_text.is_valid_int():
-					_emit_game_event_signal_if_available(&"request_set_run_seed", [int(clipboard_text)])
-			if event.keycode == KEY_F5:
-				_emit_game_event_signal_if_available(&"request_reset_run")
-			if event.keycode == KEY_F6:
-				_emit_game_event_signal_if_available(&"request_skip_arena_resolution")
-
 func _req(path: String) -> Node:
 	var n: Node = get_node_or_null(path)
 	if n == null:

@@ -31,7 +31,6 @@ Source alignment: `docs/canon/RUN_ARCHITECTURE_CANON.md` (GameEvents required fo
 | `push_luck_opened` | 1 | RunManager -> UI |
 | `request_pyl_cashout` | 0 | UI -> RunManager intent |
 | `request_pyl_double` | 0 | UI -> RunManager intent |
-| `run_debug_state_updated` | 1 | RunManager -> UI debug |
 | `run_finale_selected` | 1 | RunManager -> UI |
 | `run_failed` | 0 | RunManager -> UI/Arena |
 | `request_show_main_menu` | 0 | UI -> MainMenu/RunManager |

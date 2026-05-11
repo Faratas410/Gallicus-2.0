@@ -582,13 +582,13 @@ static func resolve_bet_identity(bet_id: StringName) -> Dictionary:
 	return {
 		"id": bet_id,
 		"token": "BET_UNKNOWN",
-		"display_title": "—",
+		"display_title": "-",
 		"display_subtitle": "",
 		"path_tag": PATH_UNKNOWN,
 		"behavior": &"UNKNOWN",
 	}
 
-static func get_bet_debug_token(bet_id: StringName) -> String:
+static func get_bet_identity_token(bet_id: StringName) -> String:
 	var identity: Dictionary = resolve_bet_identity(bet_id)
 	return str(identity.get("token", "BET_UNKNOWN"))
 

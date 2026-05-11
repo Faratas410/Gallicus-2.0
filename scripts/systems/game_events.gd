@@ -10,8 +10,6 @@ signal run_finale_selected(payload: Dictionary)
 signal meta_progress_unlocked(ending_key: String)
 signal achievement_unlocked(achievement_id: String)
 signal archive_entry_unlocked(entry_id: String)
-signal run_debug_state_updated(payload: Dictionary)
-signal run_log_ready(log_text: String)
 signal special_arena_started(payload: Dictionary)
 signal arena_theme_changed(payload: Dictionary)
 signal sentence_banner_requested(payload: Dictionary)
@@ -54,7 +52,6 @@ signal request_reset_run
 signal request_retry_run
 signal request_continue_run
 signal continue_rejected(reason: String)
-signal request_intro_apply_seed(seed_text: String)
 signal request_intro_select_bet(bet_id: String)
 signal request_intro_confirm
 signal request_mid_choice_select(index: int)
@@ -64,9 +61,6 @@ signal request_pyl_double
 signal request_end_run_restart
 signal request_end_run_next_bet
 signal request_end_run_quit
-signal request_set_run_seed(seed: int)
-signal request_clear_run_seed
-signal request_skip_arena_resolution
 signal request_show_main_menu
 signal request_fail_run(reason: String)
 @warning_ignore_restore("unused_signal")

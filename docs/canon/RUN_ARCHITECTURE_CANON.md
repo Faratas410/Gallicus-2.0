@@ -113,9 +113,9 @@ All changes to systems described here must update this document in the same PR.
 
 ### FlowDiagnostics
 
-- `RefCounted` helper at `res://scripts/systems/run/flow_diagnostics.gd` encapsulates diagnostics formatting/composition (debug payload dictionary and error/log string composition).
+- `RefCounted` helper at `res://scripts/systems/run/flow_diagnostics.gd` encapsulates diagnostics formatting/composition for fail-fast runtime errors and flow-watchdog messages.
 - Helper is pure formatting: no phase mutation, no `GameEvents` emission, no scene-tree access.
-- `RunManager` keeps overlay wiring and emission authority (`run_debug_state_updated`).
+- Runtime/UI debug overlay wiring has been removed; diagnostics remain internal and non-player-facing.
 
 ### FinaleBuilder
 
@@ -202,15 +202,11 @@ All changes to systems described here must update this document in the same PR.
 - Helper must remain pure: no `RunState` mutation, no `GameEvents` emission, no `_set_phase(...)`, no scene-tree access.
 - `RunManager` remains sole authority for trigger sequencing (`_try_register_*` / `_try_apply_*`), scar application via kernel, phase control, and event emission.
 
-### Debug Overlay
+### Removed Debug Overlay
 
-- Toggle path: `F3`.
-- Read-only inspection of:
-  - current phase,
-  - last request,
-  - last UI render,
-  - flow tail.
-- Diagnostic-only surface: no authority and no flow mutation rights.
+- Removed from live UI.
+- Flow inspection remains in internal diagnostics, CI smoke logs, and fail-fast error messages only.
+- No player-facing debug overlay, debug hotkey, manual seed control, or skip-control surface is active.
 
 ## Phase Contract
 
@@ -399,7 +395,6 @@ These panels must exist and must not be freed while a run is active.
 | `push_luck_opened` | RunManager | UI Root | `scripts/systems/run_manager.gd::_open_push_luck_choice` → `scripts/ui/ui_root.gd::_ready` |
 | `request_pyl_cashout` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` → `scripts/systems/run_manager.gd::_ready` |
 | `request_pyl_double` | UI Root | RunManager | `scripts/ui/ui_root.gd::_on_phase_push_luck_action` → `scripts/systems/run_manager.gd::_ready` |
-| `run_debug_state_updated` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_debug_state` (includes `glory`, `scar_double_count`, `scar_pact_count`, `volatility`) → `scripts/ui/ui_root.gd::_on_run_debug_state_updated` |
 | `run_finale_selected` | RunManager | UI Root | `scripts/systems/run_manager.gd::_emit_run_finale` → `scripts/ui/ui_root.gd::_ready` |
 | `run_failed` | RunManager | UI Root, Arena | `scripts/systems/run_manager.gd::_emit_run_failed` (gameplay failure reasons only; excludes `INFRA_FAILURE`) → `scripts/ui/ui_root.gd::_ready`, `scripts/scenes/arena/arena.gd::_ready` |
 | `request_show_main_menu` | UI Root | MainMenu UI, RunManager (log-only) | `scripts/ui/ui_root.gd::_on_quit_pressed` → `scripts/ui/main_menu.gd::_ready`, `scripts/systems/run_manager.gd::_ready` |
@@ -433,10 +428,8 @@ Scene: `res://scenes/UI.tscn`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_TITLE`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_SUBTITLE`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/Lbl_INTRO_HINT`
-- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Lbl_INTRO_BODY`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/StakeRow/Lbl_INTRO_BODY_STAKE`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetConfirmRow/Lbl_INTRO_FOOTER`
-- `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/SeedRow/Btn_INTRO_APPLY_SEED`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_WIN`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_NO_HIT`
 - `UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons/Btn_INTRO_SELECT_FAST`

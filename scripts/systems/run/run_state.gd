@@ -81,8 +81,6 @@ var forced_ending_id: StringName = &""
 var forced_next_pact_archetype: StringName = &""
 var special_arena_cashout_lock_reason: String = ""
 var seen_by_crowd_before_run: bool = false
-var debug_seed_override_active: bool = false
-var debug_seed_override: int = 0
 var run_start_time_msec: int = 0
 var run_save_flow_step: StringName = &""
 var run_save_flow_bet_id: StringName = &""
@@ -180,8 +178,6 @@ func reset() -> void:
 	forced_next_pact_archetype = &""
 	special_arena_cashout_lock_reason = ""
 	seen_by_crowd_before_run = false
-	debug_seed_override_active = false
-	debug_seed_override = 0
 	run_start_time_msec = 0
 	run_save_flow_step = &""
 	run_save_flow_bet_id = &""
@@ -275,8 +271,6 @@ func to_dict() -> Dictionary:
 		"forced_next_pact_archetype": String(forced_next_pact_archetype),
 		"special_arena_cashout_lock_reason": special_arena_cashout_lock_reason,
 		"seen_by_crowd_before_run": seen_by_crowd_before_run,
-		"debug_seed_override_active": debug_seed_override_active,
-		"debug_seed_override": debug_seed_override,
 		"run_start_time_msec": run_start_time_msec,
 		"run_save_flow_step": String(run_save_flow_step),
 		"run_save_flow_bet_id": String(run_save_flow_bet_id),
@@ -370,8 +364,6 @@ func from_dict(d: Dictionary) -> void:
 	forced_next_pact_archetype = StringName(str(d.get("forced_next_pact_archetype", "")))
 	special_arena_cashout_lock_reason = str(d.get("special_arena_cashout_lock_reason", ""))
 	seen_by_crowd_before_run = bool(d.get("seen_by_crowd_before_run", false))
-	debug_seed_override_active = bool(d.get("debug_seed_override_active", false))
-	debug_seed_override = int(d.get("debug_seed_override", 0))
 	run_start_time_msec = int(d.get("run_start_time_msec", 0))
 	run_save_flow_step = StringName(str(d.get("run_save_flow_step", "")))
 	run_save_flow_bet_id = StringName(str(d.get("run_save_flow_bet_id", "")))

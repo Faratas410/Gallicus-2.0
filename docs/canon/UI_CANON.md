@@ -212,6 +212,7 @@ Stop-condition note (active): version `.png.import` sidecars only for tracked so
 ### Gallicus-special widgets (bet/choice UI, etc.)
 - Active wooden assets:
   - `res://assets/ui/official_source/Wooden_UI_png/book.png` for `res://scenes/ui/BettingCircle.tscn`
+  - `res://assets/ui/official_source/Wooden_UI_png/book_closed_cover.png` for the player-confirmed betting-circle intro state
   - `res://assets/ui/official_source/Wooden_UI_png/plank_13.png`, `plank_15.png`, `plank_14.png`, and `plank_16.png` for betting-circle sign buttons
 - Legacy references replaced: `Spellbook & Tabs` PNG assets are no longer part of active runtime scenes.
 - Notes: runtime behavior remains UI-presentational; RunManager flow authority is unchanged.

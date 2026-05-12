@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_14.png" id="6"]
 [ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_16.png" id="7"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book_closed.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book_closed_cover.png" id="9"]
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
 [node name="BettingCircle" type="Control"]
@@ -40,16 +40,16 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -310.0
-offset_top = -189.0
-offset_right = 310.0
+offset_left = -345.0
+offset_top = -242.0
+offset_right = 345.0
 offset_bottom = 277.0
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_minimum_size = Vector2(620, 466)
+custom_minimum_size = Vector2(690, 519)
 mouse_filter = 1
 
 [node name="SpellbookBg" type="TextureRect" parent="CenterContainer/BookFrame"]
@@ -76,12 +76,12 @@ anchor_bottom = 1.0
 mouse_filter = 2
 
 [node name="IntroText" type="Label" parent="CenterContainer/BookFrame/ClosedIntro"]
-anchor_left = 0.16
-anchor_top = 0.18
-anchor_right = 0.84
-anchor_bottom = 0.34
+anchor_left = 0.26
+anchor_top = 0.285
+anchor_right = 0.74
+anchor_bottom = 0.365
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "Il registro è chiuso. Aprilo per scegliere la via."
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -89,9 +89,9 @@ autowrap_mode = 3
 
 [node name="Btn_Open_Book" type="TextureButton" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.34
-anchor_top = 0.64
+anchor_top = 0.61
 anchor_right = 0.66
-anchor_bottom = 0.78
+anchor_bottom = 0.72
 texture_normal = ExtResource("3")
 texture_hover = ExtResource("5")
 texture_pressed = ExtResource("6")
@@ -102,7 +102,7 @@ stretch_mode = 0
 [node name="Lbl_Open_Book" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 18
 text = "APRI"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -115,7 +115,7 @@ anchor_right = 0.80
 anchor_bottom = 0.125
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
 theme_override_constants/line_spacing = -2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "SCEGLI LA VIA\nOgni firma apre una promessa e una condanna."
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -193,14 +193,14 @@ mouse_filter = 2
 [node name="Lbl_Left_Title" type="Label" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
 text = "VIA SINISTRA"
 theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 autowrap_mode = 3
 
 [node name="Rtl_Left_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 106)
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 10
+theme_override_font_sizes/normal_font_size = 11
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3
@@ -210,7 +210,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 96)
 size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 10
+theme_override_font_sizes/normal_font_size = 11
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3
@@ -230,7 +230,7 @@ stretch_mode = 0
 [node name="Lbl_Sign_Left" type="Label" parent="CenterContainer/BookFrame/LeftPage/Btn_Sign_Left"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 18
 text = "FIRMA"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -308,14 +308,14 @@ mouse_filter = 2
 [node name="Lbl_Right_Title" type="Label" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
 text = "VIA DESTRA"
 theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 autowrap_mode = 3
 
 [node name="Rtl_Right_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 106)
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 10
+theme_override_font_sizes/normal_font_size = 11
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3
@@ -325,7 +325,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 96)
 size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 10
+theme_override_font_sizes/normal_font_size = 11
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3
@@ -345,7 +345,7 @@ stretch_mode = 0
 [node name="Lbl_Sign_Right" type="Label" parent="CenterContainer/BookFrame/RightPage/Btn_Sign_Right"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 18
 text = "FIRMA"
 horizontal_alignment = 1
 vertical_alignment = 1

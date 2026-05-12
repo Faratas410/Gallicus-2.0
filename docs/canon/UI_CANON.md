@@ -327,6 +327,7 @@ Current MP3 files under `res://assets/audio/`:
 - Binding contract: `res://scripts/ui/ui_root.gd` remains the only authority for toggling these nodes; when a wrapped label visibility changes, the matching wrapper panel visibility must change in the same branch.
 - HUD includes a sprite-backed `GloryPanel` with numeric `GloryValueLabel` at `HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/...`; UI updates it reactively from RunManager-emitted state payloads without adding gameplay authority to UI.
 - Player-facing pressure contract: the only numeric pressure meter shown to players is `PRESSIONE X/10`, sourced from RunManager `RunState.escalation_level` via `GameEvents.escalation_changed(level, max_value)`.
+- Pressure HUD placement is the bottom `HUD/PressureRail`, not the top-left stat stack; the meter should read as ritual risk feedback, not debug telemetry.
 - `RunState.audience_pressure` remains runtime-internal push-your-luck policy state. It must not be presented as numeric `Pressione` in HUD, Push Your Luck, or END_RUN surfaces.
 - Player-facing text follows `docs/canon/GLOSSARY_ENTITIES.md`: `run`, `escalation`, `cashout`, and `double` remain technical terms; visible UI copy should use `percorso`, `pressione`, `incassa/incasso`, and `rilancia`/button `RADDOPPIA`.
 - Pressure presentation thresholds are UI-only labels: `0-2` under control, `3-5` warming crowd, `6-8` high risk, `9-10` out of control. These labels do not define gameplay rules.

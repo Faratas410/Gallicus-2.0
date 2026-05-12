@@ -29,12 +29,14 @@ def test_player_facing_pressure_contract() -> None:
     canon = _read(UI_CANON)
 
     _assert_contains(scene, 'text = "PRESSIONE 0/10"', "UI.tscn")
+    _assert_contains(scene, 'node name="PressureRail"', "UI.tscn")
     _assert_contains(scene, 'node name="PressureStateLabel"', "UI.tscn")
     _assert_contains(scene, "Pressione -1.", "UI.tscn")
     _assert_contains(scene, "Pressione +1.", "UI.tscn")
     _assert_contains(scene, "Pressione +1. Aumenti posta e rischio.", "UI.tscn")
 
     _assert_absent(scene, 'text = "ESCALATION"', "UI.tscn")
+    _assert_absent(scene, 'parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"', "UI.tscn")
     _assert_absent(scene, "Riduci escalation", "UI.tscn")
     _assert_absent(scene, "Aumenta escalation", "UI.tscn")
 

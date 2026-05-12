@@ -151,29 +151,6 @@ size_flags_horizontal = 3
 [node name="GloryValueLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel"]
 text = "0"
 
-[node name="EscalationRow" type="VBoxContainer" parent="HUD/SafeMargin/TopRow/LeftColumn"]
-custom_minimum_size = Vector2(360, 0)
-size_flags_horizontal = 3
-
-[node name="EscalationLabelPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
-
-[node name="EscalationLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel"]
-text = "PRESSIONE 0/10"
-
-[node name="EscalationBar" type="ProgressBar" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
-custom_minimum_size = Vector2(360, 18)
-size_flags_horizontal = 3
-max_value = 10.0
-value = 0.0
-show_percentage = false
-
-[node name="PressureStateLabelPanel" type="PanelContainer" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow"]
-size_flags_horizontal = 3
-
-[node name="PressureStateLabel" type="Label" parent="HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/PressureStateLabelPanel"]
-horizontal_alignment = 1
-text = "Sotto controllo"
-
 [node name="RightColumn" type="VBoxContainer" parent="HUD/SafeMargin/TopRow"]
 custom_minimum_size = Vector2(280, 0)
 size_flags_horizontal = 0
@@ -1522,6 +1499,59 @@ text = "FAST: 12s"
 wait_time = 0.25
 one_shot = false
 autostart = false
+
+[node name="PressureRail" type="PanelContainer" parent="HUD"]
+z_index = 84
+theme_override_styles/panel = ExtResource("16")
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -112.0
+offset_right = 340.0
+offset_bottom = -22.0
+mouse_filter = 2
+custom_minimum_size = Vector2(680, 90)
+
+[node name="PressureRailMargin" type="MarginContainer" parent="HUD/PressureRail"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 26.0
+offset_top = 12.0
+offset_right = -26.0
+offset_bottom = -12.0
+
+[node name="EscalationRow" type="VBoxContainer" parent="HUD/PressureRail/PressureRailMargin"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="EscalationLabelPanel" type="PanelContainer" parent="HUD/PressureRail/PressureRailMargin/EscalationRow"]
+size_flags_horizontal = 3
+
+[node name="EscalationLabel" type="Label" parent="HUD/PressureRail/PressureRailMargin/EscalationRow/EscalationLabelPanel"]
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+text = "PRESSIONE 0/10"
+
+[node name="EscalationBar" type="ProgressBar" parent="HUD/PressureRail/PressureRailMargin/EscalationRow"]
+custom_minimum_size = Vector2(620, 18)
+size_flags_horizontal = 3
+max_value = 10.0
+value = 0.0
+show_percentage = false
+
+[node name="PressureStateLabelPanel" type="PanelContainer" parent="HUD/PressureRail/PressureRailMargin/EscalationRow"]
+size_flags_horizontal = 3
+
+[node name="PressureStateLabel" type="Label" parent="HUD/PressureRail/PressureRailMargin/EscalationRow/PressureStateLabelPanel"]
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+text = "Sotto controllo"
 
 [node name="ScarsPanel" type="Panel" parent="HUD"]
 mouse_filter = 1

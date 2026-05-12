@@ -507,10 +507,10 @@ func _bind_scene_nodes() -> void:
 	bet_badge_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/BetBadge/BetBadgeMargin/BetBadgeContent/BetBadgeValuePanel/BetBadgeValue") as Label
 	glory_value_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/GloryMargin/GloryContent/GloryValuePanel/GloryValueLabel") as Label
 	hud_top_left_stats_box = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn") as Control
-	escalation_row = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow") as Control
-	escalation_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel/EscalationLabel") as Label
-	escalation_bar = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationBar") as Range
-	pressure_state_label = get_node_or_null("HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/PressureStateLabelPanel/PressureStateLabel") as Label
+	escalation_row = get_node_or_null("HUD/PressureRail") as Control
+	escalation_label = get_node_or_null("HUD/PressureRail/PressureRailMargin/EscalationRow/EscalationLabelPanel/EscalationLabel") as Label
+	escalation_bar = get_node_or_null("HUD/PressureRail/PressureRailMargin/EscalationRow/EscalationBar") as Range
+	pressure_state_label = get_node_or_null("HUD/PressureRail/PressureRailMargin/EscalationRow/PressureStateLabelPanel/PressureStateLabel") as Label
 	scars_panel = get_node_or_null("HUD/ScarsPanel") as Control
 	scars_label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
 	audience_context_panel = get_node_or_null("HUD/AudienceContextLabelPanel") as Control
@@ -678,8 +678,8 @@ func _validate_ui_boot() -> bool:
 		"UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK",
 		"UI_RunRoot/Phase_END_RUN",
 		"UI_RunRoot/Phase_END_RUN/Panel_END_RUN",
-		"HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/EscalationLabelPanel/EscalationLabel",
-		"HUD/SafeMargin/TopRow/LeftColumn/EscalationRow/PressureStateLabelPanel/PressureStateLabel",
+		"HUD/PressureRail/PressureRailMargin/EscalationRow/EscalationLabelPanel/EscalationLabel",
+		"HUD/PressureRail/PressureRailMargin/EscalationRow/PressureStateLabelPanel/PressureStateLabel",
 		"UI_RunRoot/Phase_INTRO/Panel_INTRO/BetMargin/BetScroll/Box_INTRO/BetButtons",
 	]
 	for node_path: String in required_nodes:

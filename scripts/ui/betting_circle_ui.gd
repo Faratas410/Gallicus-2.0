@@ -102,7 +102,7 @@ func _refresh_localized_text() -> void:
 	if sigilla_label != null:
 		sigilla_label.text = tr("FIRMA")
 	if intro_text != null:
-		intro_text.text = tr("Il registro è chiuso. Aprilo per scegliere la via.")
+		intro_text.text = tr("Apri il registro.")
 	if open_book_label != null:
 		open_book_label.text = tr("APRI")
 

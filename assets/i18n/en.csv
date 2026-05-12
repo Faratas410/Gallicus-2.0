@@ -196,6 +196,7 @@ keys,en
 "Stato: richiesta non accettata. Scegli di nuovo.","Status: request not accepted. Choose again."
 "FIRMA","SIGN"
 "APRI","OPEN"
+"Apri il registro.","Open the registry."
 "Il registro è chiuso. Aprilo per scegliere la via.","The registry is closed. Open it to choose the path."
 "SCEGLI LA VIA","CHOOSE THE PATH"
 "Ogni firma apre una promessa e una condanna.","Every signature opens a promise and a sentence."

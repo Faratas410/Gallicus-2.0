@@ -79,19 +79,19 @@ mouse_filter = 2
 anchor_left = 0.26
 anchor_top = 0.285
 anchor_right = 0.74
-anchor_bottom = 0.365
+anchor_bottom = 0.34
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
 theme_override_font_sizes/font_size = 14
-text = "Il registro è chiuso. Aprilo per scegliere la via."
+text = "Apri il registro."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="Btn_Open_Book" type="TextureButton" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.34
-anchor_top = 0.61
+anchor_top = 0.615
 anchor_right = 0.66
-anchor_bottom = 0.72
+anchor_bottom = 0.715
 texture_normal = ExtResource("3")
 texture_hover = ExtResource("5")
 texture_pressed = ExtResource("6")

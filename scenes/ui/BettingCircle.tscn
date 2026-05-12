@@ -37,12 +37,12 @@ color = Color(0, 0, 0, 0.62)
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 anchor_right = 1.0
-anchor_top = 0.28
-anchor_bottom = 0.90
+anchor_top = 0.16
+anchor_bottom = 0.88
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
-custom_minimum_size = Vector2(780, 400)
+custom_minimum_size = Vector2(620, 466)
 mouse_filter = 1
 
 [node name="SpellbookBg" type="TextureRect" parent="CenterContainer/BookFrame"]
@@ -61,21 +61,21 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Title" type="Label" parent="CenterContainer/BookFrame"]
-anchor_left = 0.24
+anchor_left = 0.20
 anchor_top = 0.035
-anchor_right = 0.76
+anchor_right = 0.80
 anchor_bottom = 0.125
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
 theme_override_constants/line_spacing = -2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 13
 text = "SCEGLI LA VIA\nOgni firma apre una promessa e una condanna."
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="LeftPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.11
+anchor_left = 0.08
 anchor_top = 0.17
-anchor_right = 0.45
+anchor_right = 0.47
 anchor_bottom = 0.87
 mouse_filter = 1
 
@@ -129,7 +129,7 @@ modulate = Color(1, 1, 1, 0)
 anchor_right = 1.0
 anchor_bottom = 0.76
 offset_left = 18.0
-offset_top = 14.0
+offset_top = 12.0
 offset_right = -18.0
 offset_bottom = -10.0
 clip_contents = true
@@ -145,14 +145,14 @@ mouse_filter = 2
 [node name="Lbl_Left_Title" type="Label" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
 text = "VIA SINISTRA"
 theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 12
 autowrap_mode = 3
 
 [node name="Rtl_Left_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 106)
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3
@@ -162,7 +162,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 96)
 size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3
@@ -188,9 +188,9 @@ horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
 [node name="RightPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.55
+anchor_left = 0.53
 anchor_top = 0.17
-anchor_right = 0.89
+anchor_right = 0.92
 anchor_bottom = 0.87
 mouse_filter = 1
 
@@ -244,7 +244,7 @@ modulate = Color(1, 1, 1, 0)
 anchor_right = 1.0
 anchor_bottom = 0.76
 offset_left = 18.0
-offset_top = 14.0
+offset_top = 12.0
 offset_right = -18.0
 offset_bottom = -10.0
 clip_contents = true
@@ -260,14 +260,14 @@ mouse_filter = 2
 [node name="Lbl_Right_Title" type="Label" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
 text = "VIA DESTRA"
 theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 12
 autowrap_mode = 3
 
 [node name="Rtl_Right_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 106)
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3
@@ -277,7 +277,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 custom_minimum_size = Vector2(0, 96)
 size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
 scroll_active = true
 autowrap_mode = 3

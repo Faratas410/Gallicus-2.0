@@ -35,13 +35,20 @@ anchor_bottom = 1.0
 mouse_filter = 1
 color = Color(0, 0, 0, 0.62)
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-anchor_right = 1.0
-anchor_top = 0.16
-anchor_bottom = 0.88
+[node name="CenterContainer" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -265.0
+offset_right = 310.0
+offset_bottom = 201.0
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 custom_minimum_size = Vector2(620, 466)
 mouse_filter = 1
 

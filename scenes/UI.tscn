@@ -1526,16 +1526,17 @@ autostart = false
 [node name="ScarsPanel" type="Panel" parent="HUD"]
 mouse_filter = 1
 z_index = 80
+theme_override_styles/panel = ExtResource("16")
 anchor_left = 1.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_left = -384.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = 244.0
+offset_left = -360.0
+offset_top = 32.0
+offset_right = -28.0
+offset_bottom = 236.0
 clip_contents = true
-custom_minimum_size = Vector2(360, 220)
+custom_minimum_size = Vector2(332, 204)
 
 [node name="ScarsVBox" type="VBoxContainer" parent="HUD/ScarsPanel"]
 anchor_right = 1.0
@@ -1548,8 +1549,11 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ScarsTitlePanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox"]
+theme_override_styles/panel = ExtResource("16")
 
 [node name="ScarsTitle" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsTitlePanel"]
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
 text = "CICATRICI"
 
@@ -1565,9 +1569,12 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 
 [node name="ScarsLabelPanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries"]
+theme_override_styles/panel = ExtResource("16")
 
 [node name="ScarsLabel" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel"]
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 text = "Nessuna cicatrice."
 

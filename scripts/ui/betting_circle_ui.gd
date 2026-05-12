@@ -194,9 +194,9 @@ func _apply_selection_visual() -> void:
 	left_selection_outline.visible = false
 	right_selection_outline.visible = false
 	if left_page != null:
-		left_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if left_selected else Color(0.9, 0.86, 0.76, 0.92)
+		left_page.modulate = Color(1.0, 0.99, 0.94, 1.0) if left_selected else Color(0.98, 0.95, 0.86, 0.98)
 	if right_page != null:
-		right_page.modulate = Color(1.0, 1.0, 0.98, 1.0) if right_selected else Color(0.9, 0.86, 0.76, 0.92)
+		right_page.modulate = Color(1.0, 0.99, 0.94, 1.0) if right_selected else Color(0.98, 0.95, 0.86, 0.98)
 	if left_sign_button != null:
 		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2(0.99, 0.99)
 	if right_sign_button != null:

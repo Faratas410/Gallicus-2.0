@@ -211,6 +211,8 @@ var _betting_overlay_hud_visibility_cached: bool = false
 var _betting_overlay_hud_visible_before: bool = true
 var _betting_overlay_bet_badge_visible_before: bool = true
 var _betting_overlay_glory_visible_before: bool = true
+var _betting_overlay_scars_visible_before: bool = true
+var _betting_overlay_scars_visibility_cached: bool = false
 var _betting_overlay_theme_visibility_cached: bool = false
 var _betting_overlay_theme_title_visible_before: bool = true
 var _betting_overlay_theme_subtitle_visible_before: bool = true
@@ -1843,17 +1845,19 @@ func _on_scar_applied(scar: Dictionary) -> void:
 func _refresh_scars_ui(scars: Array) -> void:
 	if scars_label == null:
 		return
+	var suppress_for_betting: bool = betting_circle != null and betting_circle.visible
 	if scars_panel != null:
 		if _ending_mode_active:
 			scars_panel.visible = false
 			return
-		scars_panel.visible = true
-		var scar_count: int = scars.size()
-		var clamped_count: int = maxi(scar_count, 1)
-		var desired_height: float = SCARS_PANEL_BASE_HEIGHT + (SCARS_PANEL_ROW_HEIGHT * float(clamped_count))
-		var clamped_height: float = clampf(desired_height, SCARS_PANEL_MIN_HEIGHT, SCARS_PANEL_MAX_HEIGHT)
-		scars_panel.custom_minimum_size.y = clamped_height
-		scars_panel.size.y = clamped_height
+		scars_panel.visible = not suppress_for_betting
+		if not suppress_for_betting:
+			var scar_count: int = scars.size()
+			var clamped_count: int = maxi(scar_count, 1)
+			var desired_height: float = SCARS_PANEL_BASE_HEIGHT + (SCARS_PANEL_ROW_HEIGHT * float(clamped_count))
+			var clamped_height: float = clampf(desired_height, SCARS_PANEL_MIN_HEIGHT, SCARS_PANEL_MAX_HEIGHT)
+			scars_panel.custom_minimum_size.y = clamped_height
+			scars_panel.size.y = clamped_height
 	if scars.is_empty():
 		scars_label.text = tr("Nessuna cicatrice.")
 		scars_label.tooltip_text = ""
@@ -3136,8 +3140,6 @@ func _refresh_modal_dimmer() -> void:
 	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
 	if hud_top_left_stats_box != null:
 		var hide_left_hud: bool = false
-		if betting_circle != null and betting_circle.visible:
-			hide_left_hud = true
 		if intermediate_choice_modal != null and intermediate_choice_modal.visible:
 			hide_left_hud = true
 		if push_luck_modal != null and push_luck_modal.visible:
@@ -3147,6 +3149,7 @@ func _refresh_modal_dimmer() -> void:
 		hud_top_left_stats_box.visible = not hide_left_hud
 
 func _apply_betting_overlay_visual_suppression() -> void:
+	_clear_betting_transient_overlays()
 	if hud_top_left_stats_box != null:
 		_betting_overlay_hud_visible_before = hud_top_left_stats_box.visible
 		_betting_overlay_hud_visibility_cached = true
@@ -3161,6 +3164,12 @@ func _apply_betting_overlay_visual_suppression() -> void:
 			glory_panel.visible = false
 		if escalation_row != null:
 			escalation_row.visible = true
+	if scars_panel != null:
+		_betting_overlay_scars_visible_before = scars_panel.visible
+		_betting_overlay_scars_visibility_cached = true
+		scars_panel.visible = false
+	if scars_detail_panel != null:
+		scars_detail_panel.visible = false
 	if arena_theme_title_panel != null:
 		_betting_overlay_theme_title_visible_before = arena_theme_title_panel.visible
 	if arena_theme_subtitle_panel != null:
@@ -3182,12 +3191,38 @@ func _restore_betting_overlay_visual_suppression() -> void:
 			glory_panel.visible = _betting_overlay_glory_visible_before
 		hud_top_left_stats_box.visible = _betting_overlay_hud_visible_before
 	_betting_overlay_hud_visibility_cached = false
+	if scars_panel != null and _betting_overlay_scars_visibility_cached:
+		scars_panel.visible = _betting_overlay_scars_visible_before and not _ending_mode_active
+	_betting_overlay_scars_visibility_cached = false
 	if _betting_overlay_theme_visibility_cached:
 		if arena_theme_title_panel != null:
 			arena_theme_title_panel.visible = _betting_overlay_theme_title_visible_before
 		if arena_theme_subtitle_panel != null:
 			arena_theme_subtitle_panel.visible = _betting_overlay_theme_subtitle_visible_before
 	_betting_overlay_theme_visibility_cached = false
+
+func _clear_betting_transient_overlays() -> void:
+	_sentence_banner_sequence_id += 1
+	if sentence_banner != null:
+		sentence_banner.visible = false
+	if audience_context_label != null:
+		audience_context_label.text = ""
+		audience_context_label.visible = false
+	if audience_context_panel != null:
+		audience_context_panel.visible = false
+	if _register_annotation_tween != null and _register_annotation_tween.is_valid():
+		_register_annotation_tween.kill()
+	if register_blocker != null:
+		register_blocker.visible = false
+	if _quick_cut_tween != null and _quick_cut_tween.is_valid():
+		_quick_cut_tween.kill()
+	if quick_cut_blocker != null:
+		quick_cut_blocker.visible = false
+		quick_cut_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if _scar_popup_tween != null and _scar_popup_tween.is_valid():
+		_scar_popup_tween.kill()
+	if scar_popup_panel != null:
+		scar_popup_panel.visible = false
 
 func open_bet_circle(bets: Array[Dictionary]) -> void:
 	_current_bet_offer = []

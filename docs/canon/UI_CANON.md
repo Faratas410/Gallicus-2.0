@@ -338,6 +338,7 @@ Current MP3 files under `res://assets/audio/`:
   - Motion helpers in `res://scripts/ui/ui_root.gd` are local UI helpers and must not block outbound gameplay intents.
   - Button intent handlers must not `await` animation before emitting `request_*` signals.
   - Standard modal motion kinds are `standard`, `ritual`, and `ending`; ritual motion is reserved for pact, resolve, intermediate choice, Push Your Luck, and END_RUN surfaces.
+  - Betting-circle book reveal is player-confirmed: the closed-book intro exposes only `APRI`, and the open animation remains presentational-only with no `GameEvents` emission.
   - Shake/glitch/flash remain bounded to existing ritual or quick-cut feedback surfaces, not generic hover states.
 - `Phase_INTRO` Level 3 contract excludes upgrade-token shop controls: no BUY TOKEN button/panel, no token-cost lookup, and no token purchase request emission from `res://scripts/ui/ui_root.gd`.
 - `Phase_INTRO` bet selection contract (L3 active): exactly 2 buttons (`Btn_INTRO_SELECT_WIN`, `Btn_INTRO_SELECT_FAST`) in `BetButtons` with centered HBox layout; UI emits `request_place_bet(bet_id, 0)` using `BetCatalog.level3_bet_ids()` slots `[0]` and `[1]` (no `Btn_INTRO_SELECT_NO_HIT`/third-option wiring).

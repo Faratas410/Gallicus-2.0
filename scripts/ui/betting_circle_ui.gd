@@ -8,8 +8,8 @@ const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const BOOK_IDLE_BOB_SPEED: float = 1.6
 const BOOK_IDLE_BOB_AMPLITUDE: float = 3.5
 const BOOK_TITLE_PULSE_SPEED: float = 1.9
-const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -120.0)
-const BOOK_DROP_SECONDS: float = 0.32
+const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
+const BOOK_DROP_SECONDS: float = 0.42
 const BOOK_OPEN_SQUASH_SECONDS: float = 0.12
 const BOOK_OPEN_SECONDS: float = 0.26
 const BOOK_SETTLE_SECONDS: float = 0.10
@@ -37,6 +37,10 @@ const BOOK_CONTENT_REVEAL_SECONDS: float = 0.20
 @onready var book_frame: Control = $CenterContainer/BookFrame as Control
 @onready var open_book_bg: TextureRect = $CenterContainer/BookFrame/SpellbookBg as TextureRect
 @onready var closed_book_bg: TextureRect = $CenterContainer/BookFrame/ClosedBookBg as TextureRect
+@onready var closed_intro: Control = $CenterContainer/BookFrame/ClosedIntro as Control
+@onready var intro_text: Label = $CenterContainer/BookFrame/ClosedIntro/IntroText as Label
+@onready var open_book_button: TextureButton = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book as TextureButton
+@onready var open_book_label: Label = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book/Lbl_Open_Book as Label
 
 var selected_bet_id: StringName = &""
 var _betting_circle_options: Array[Dictionary] = []
@@ -51,6 +55,7 @@ var _nodes_ready: bool = false
 var _open_tween: Tween = null
 var _book_content_nodes: Array[CanvasItem] = []
 var _book_content_target_modulates: Dictionary = {}
+var _awaiting_open_request: bool = false
 
 func _ready() -> void:
 	_nodes_ready = true
@@ -60,6 +65,8 @@ func _ready() -> void:
 	right_select_button.pressed.connect(_on_select_right_pressed)
 	left_sign_button.pressed.connect(_on_sign_left_pressed)
 	right_sign_button.pressed.connect(_on_sign_right_pressed)
+	if open_book_button != null:
+		open_book_button.pressed.connect(_on_open_book_pressed)
 	if sigilla_button != null:
 		sigilla_button.visible = false
 		sigilla_button.disabled = true
@@ -94,6 +101,10 @@ func _refresh_localized_text() -> void:
 		right_sign_label.text = tr("FIRMA")
 	if sigilla_label != null:
 		sigilla_label.text = tr("FIRMA")
+	if intro_text != null:
+		intro_text.text = tr("Il registro è chiuso. Aprilo per scegliere la via.")
+	if open_book_label != null:
+		open_book_label.text = tr("APRI")
 
 func _process(delta: float) -> void:
 	if not visible:
@@ -132,14 +143,16 @@ func set_offers(bets: Array[Dictionary]) -> void:
 func open() -> void:
 	reset()
 	visible = true
-	_play_open_animation()
+	_show_closed_intro()
 	if GameEvents.has_signal("modal_opened"):
 		GameEvents.modal_opened.emit("betting_circle")
 
 func close() -> void:
 	if _open_tween != null and _open_tween.is_valid():
 		_open_tween.kill()
+	_awaiting_open_request = false
 	_opening_locked = false
+	_hide_closed_intro()
 	_set_book_input_enabled(true)
 	_show_book_open_state()
 	_show_book_content_immediate()
@@ -170,18 +183,19 @@ func _play_open_animation() -> void:
 	_book_base_position = book_frame.position
 	_opening_locked = true
 	_set_book_input_enabled(false)
-	_hide_book_content_for_opening()
+	if _book_content_target_modulates.is_empty():
+		_hide_book_content_for_opening()
+	_hide_closed_intro()
 	_show_book_closed_state()
-	modulate = Color(1.0, 1.0, 1.0, 0.0)
+	modulate = Color(1.0, 1.0, 1.0, 1.0)
 	book_frame.pivot_offset = book_frame.size * 0.5
 	book_frame.position = _book_base_position + BOOK_DROP_OFFSET
-	book_frame.scale = _book_base_scale * Vector2(0.72, 0.72)
+	book_frame.scale = _book_base_scale * Vector2(0.92, 0.92)
 	_open_tween = create_tween()
 	_open_tween.set_trans(Tween.TRANS_QUAD)
 	_open_tween.set_ease(Tween.EASE_OUT)
 	_open_tween.tween_property(book_frame, "position", _book_base_position, BOOK_DROP_SECONDS)
-	_open_tween.parallel().tween_property(book_frame, "scale", _book_base_scale * Vector2(0.82, 0.82), BOOK_DROP_SECONDS)
-	_open_tween.parallel().tween_property(self, "modulate:a", 1.0, BOOK_DROP_SECONDS)
+	_open_tween.parallel().tween_property(book_frame, "scale", _book_base_scale * Vector2(0.98, 0.98), BOOK_DROP_SECONDS)
 	_open_tween.tween_callback(Callable(self, "_begin_book_open_swap"))
 	_open_tween.tween_property(book_frame, "scale", _book_base_scale * Vector2(0.94, 0.52), BOOK_OPEN_SQUASH_SECONDS)
 	_open_tween.tween_callback(Callable(self, "_show_book_open_shell"))
@@ -197,6 +211,37 @@ func _play_open_animation() -> void:
 		var target_modulate: Color = _book_content_target_modulates.get(node, Color(1.0, 1.0, 1.0, 1.0)) as Color
 		_open_tween.parallel().tween_property(node, "modulate", target_modulate, BOOK_CONTENT_REVEAL_SECONDS)
 	_open_tween.tween_callback(Callable(self, "_finish_open_animation"))
+
+func _show_closed_intro() -> void:
+	if _open_tween != null and _open_tween.is_valid():
+		_open_tween.kill()
+	_awaiting_open_request = true
+	_opening_locked = true
+	_hide_book_content_for_opening()
+	_show_book_closed_state()
+	modulate = Color(1.0, 1.0, 1.0, 1.0)
+	if book_frame != null:
+		book_frame.pivot_offset = book_frame.size * 0.5
+		book_frame.position = _book_base_position
+		book_frame.scale = _book_base_scale
+	if closed_intro != null:
+		closed_intro.visible = true
+		closed_intro.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	if open_book_button != null:
+		open_book_button.disabled = false
+	_set_book_input_enabled(false)
+
+func _hide_closed_intro() -> void:
+	if closed_intro != null:
+		closed_intro.visible = false
+	if open_book_button != null:
+		open_book_button.disabled = true
+
+func _on_open_book_pressed() -> void:
+	if not _awaiting_open_request:
+		return
+	_awaiting_open_request = false
+	_play_open_animation()
 
 func _build_book_content_node_list() -> void:
 	_book_content_nodes = [] as Array[CanvasItem]

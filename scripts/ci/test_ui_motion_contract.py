@@ -91,7 +91,10 @@ def test_ui_motion_contract() -> None:
         raise AssertionError("betting_circle_ui.gd must use governed QUAD motion for open/stamp feedback")
     for token in [
         "_opening_locked",
+        "_awaiting_open_request",
         "_show_book_closed_state",
+        "_show_closed_intro",
+        "_on_open_book_pressed",
         "_reveal_book_content",
         "BOOK_DROP_SECONDS",
     ]:
@@ -102,6 +105,8 @@ def test_ui_motion_contract() -> None:
     for token in [
         "book_closed.png",
         "ClosedBookBg",
+        "ClosedIntro",
+        "Btn_Open_Book",
     ]:
         if token not in betting_scene:
             raise AssertionError(f"BettingCircle.tscn missing closed-book animation token: {token}")

@@ -41,9 +41,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -310.0
-offset_top = -265.0
+offset_top = -189.0
 offset_right = 310.0
-offset_bottom = 201.0
+offset_bottom = 277.0
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
@@ -66,6 +66,47 @@ anchor_bottom = 1.0
 texture = ExtResource("9")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="ClosedIntro" type="Control" parent="CenterContainer/BookFrame"]
+visible = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="IntroText" type="Label" parent="CenterContainer/BookFrame/ClosedIntro"]
+anchor_left = 0.16
+anchor_top = 0.18
+anchor_right = 0.84
+anchor_bottom = 0.34
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+text = "Il registro è chiuso. Aprilo per scegliere la via."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Btn_Open_Book" type="TextureButton" parent="CenterContainer/BookFrame/ClosedIntro"]
+anchor_left = 0.34
+anchor_top = 0.64
+anchor_right = 0.66
+anchor_bottom = 0.78
+texture_normal = ExtResource("3")
+texture_hover = ExtResource("5")
+texture_pressed = ExtResource("6")
+texture_disabled = ExtResource("7")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Lbl_Open_Book" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 17
+text = "APRI"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
 
 [node name="Title" type="Label" parent="CenterContainer/BookFrame"]
 anchor_left = 0.20

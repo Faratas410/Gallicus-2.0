@@ -195,6 +195,8 @@ keys,it
 "Stato: richiesta rilancio non disponibile.","Stato: richiesta rilancio non disponibile."
 "Stato: richiesta non accettata. Scegli di nuovo.","Stato: richiesta non accettata. Scegli di nuovo."
 "FIRMA","FIRMA"
+"APRI","APRI"
+"Il registro è chiuso. Aprilo per scegliere la via.","Il registro è chiuso. Aprilo per scegliere la via."
 "SCEGLI LA VIA","SCEGLI LA VIA"
 "Ogni firma apre una promessa e una condanna.","Ogni firma apre una promessa e una condanna."
 "CONDIZIONE","CONDIZIONE"

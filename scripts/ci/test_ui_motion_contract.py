@@ -89,6 +89,22 @@ def test_ui_motion_contract() -> None:
         raise AssertionError("main_menu.gd must guard hover tweens against accumulation")
     if "Tween.TRANS_QUAD" not in betting_circle:
         raise AssertionError("betting_circle_ui.gd must use governed QUAD motion for open/stamp feedback")
+    for token in [
+        "_opening_locked",
+        "_show_book_closed_state",
+        "_reveal_book_content",
+        "BOOK_DROP_SECONDS",
+    ]:
+        if token not in betting_circle:
+            raise AssertionError(f"betting_circle_ui.gd missing book-open animation token: {token}")
+
+    betting_scene = (ROOT / "scenes" / "ui" / "BettingCircle.tscn").read_text(encoding="utf-8")
+    for token in [
+        "book_closed.png",
+        "ClosedBookBg",
+    ]:
+        if token not in betting_scene:
+            raise AssertionError(f"BettingCircle.tscn missing closed-book animation token: {token}")
 
     for token in [
         "Motion Contract",

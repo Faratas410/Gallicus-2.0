@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_14.png" id="6"]
 [ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_16.png" id="7"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
+[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book_closed.png" id="9"]
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
 [node name="BettingCircle" type="Control"]
@@ -49,6 +50,14 @@ anchor_bottom = 1.0
 texture = ExtResource("2")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="ClosedBookBg" type="TextureRect" parent="CenterContainer/BookFrame"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("9")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="CenterContainer/BookFrame"]
 anchor_left = 0.24

@@ -8,6 +8,12 @@ const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const BOOK_IDLE_BOB_SPEED: float = 1.6
 const BOOK_IDLE_BOB_AMPLITUDE: float = 3.5
 const BOOK_TITLE_PULSE_SPEED: float = 1.9
+const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -150.0)
+const BOOK_DROP_SECONDS: float = 0.22
+const BOOK_OPEN_SQUASH_SECONDS: float = 0.08
+const BOOK_OPEN_SECONDS: float = 0.18
+const BOOK_SETTLE_SECONDS: float = 0.08
+const BOOK_CONTENT_REVEAL_SECONDS: float = 0.16
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
@@ -29,15 +35,22 @@ const BOOK_TITLE_PULSE_SPEED: float = 1.9
 @onready var right_selection_outline: Control = $CenterContainer/BookFrame/RightPage/RightSelectionOutline as Control
 @onready var header_label: Label = get_node_or_null("CenterContainer/BookFrame/Title") as Label
 @onready var book_frame: Control = $CenterContainer/BookFrame as Control
+@onready var open_book_bg: TextureRect = $CenterContainer/BookFrame/SpellbookBg as TextureRect
+@onready var closed_book_bg: TextureRect = $CenterContainer/BookFrame/ClosedBookBg as TextureRect
 
 var selected_bet_id: StringName = &""
 var _betting_circle_options: Array[Dictionary] = []
 var _submit_locked: bool = false
+var _opening_locked: bool = false
 var _idle_time: float = 0.0
 var _left_page_base_position: Vector2 = Vector2.ZERO
 var _right_page_base_position: Vector2 = Vector2.ZERO
 var _book_base_scale: Vector2 = Vector2.ONE
+var _book_base_position: Vector2 = Vector2.ZERO
 var _nodes_ready: bool = false
+var _open_tween: Tween = null
+var _book_content_nodes: Array[CanvasItem] = []
+var _book_content_target_modulates: Dictionary = {}
 
 func _ready() -> void:
 	_nodes_ready = true
@@ -61,6 +74,8 @@ func _ready() -> void:
 		_right_page_base_position = right_page.position
 	if book_frame != null:
 		_book_base_scale = book_frame.scale
+		_book_base_position = book_frame.position
+	_build_book_content_node_list()
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
@@ -122,6 +137,12 @@ func open() -> void:
 		GameEvents.modal_opened.emit("betting_circle")
 
 func close() -> void:
+	if _open_tween != null and _open_tween.is_valid():
+		_open_tween.kill()
+	_opening_locked = false
+	_set_book_input_enabled(true)
+	_show_book_open_state()
+	_show_book_content_immediate()
 	visible = false
 	if left_page != null:
 		left_page.position = _left_page_base_position
@@ -129,6 +150,7 @@ func close() -> void:
 		right_page.position = _right_page_base_position
 	if book_frame != null:
 		book_frame.scale = _book_base_scale
+		book_frame.position = _book_base_position
 	_reset_interaction_lock()
 	if GameEvents.has_signal("modal_closed"):
 		GameEvents.modal_closed.emit("betting_circle")
@@ -143,13 +165,102 @@ func reset() -> void:
 func _play_open_animation() -> void:
 	if book_frame == null:
 		return
-	book_frame.scale = _book_base_scale * 0.975
+	if _open_tween != null and _open_tween.is_valid():
+		_open_tween.kill()
+	_book_base_position = book_frame.position
+	_opening_locked = true
+	_set_book_input_enabled(false)
+	_hide_book_content_for_opening()
+	_show_book_closed_state()
 	modulate = Color(1.0, 1.0, 1.0, 0.0)
-	var tween: Tween = create_tween()
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(book_frame, "scale", _book_base_scale, 0.2)
-	tween.parallel().tween_property(self, "modulate:a", 1.0, 0.2)
+	book_frame.pivot_offset = book_frame.size * 0.5
+	book_frame.position = _book_base_position + BOOK_DROP_OFFSET
+	book_frame.scale = _book_base_scale * Vector2(0.72, 0.72)
+	_open_tween = create_tween()
+	_open_tween.set_trans(Tween.TRANS_QUAD)
+	_open_tween.set_ease(Tween.EASE_OUT)
+	_open_tween.tween_property(book_frame, "position", _book_base_position, BOOK_DROP_SECONDS)
+	_open_tween.parallel().tween_property(book_frame, "scale", _book_base_scale * Vector2(0.82, 0.82), BOOK_DROP_SECONDS)
+	_open_tween.parallel().tween_property(self, "modulate:a", 1.0, BOOK_DROP_SECONDS)
+	_open_tween.tween_callback(Callable(self, "_begin_book_open_swap"))
+	_open_tween.tween_property(book_frame, "scale", _book_base_scale * Vector2(0.94, 0.52), BOOK_OPEN_SQUASH_SECONDS)
+	_open_tween.tween_callback(Callable(self, "_show_book_open_shell"))
+	_open_tween.set_ease(Tween.EASE_OUT)
+	_open_tween.tween_property(book_frame, "scale", _book_base_scale, BOOK_OPEN_SECONDS)
+	_open_tween.parallel().tween_property(open_book_bg, "modulate:a", 1.0, BOOK_OPEN_SECONDS)
+	_open_tween.parallel().tween_property(closed_book_bg, "modulate:a", 0.0, BOOK_OPEN_SECONDS)
+	_open_tween.tween_property(book_frame, "scale", _book_base_scale * Vector2(1.018, 0.992), BOOK_SETTLE_SECONDS)
+	_open_tween.set_ease(Tween.EASE_IN_OUT)
+	_open_tween.tween_property(book_frame, "scale", _book_base_scale, BOOK_SETTLE_SECONDS)
+	_open_tween.tween_callback(Callable(self, "_reveal_book_content"))
+	for node: CanvasItem in _book_content_nodes:
+		var target_modulate: Color = _book_content_target_modulates.get(node, Color(1.0, 1.0, 1.0, 1.0)) as Color
+		_open_tween.parallel().tween_property(node, "modulate", target_modulate, BOOK_CONTENT_REVEAL_SECONDS)
+	_open_tween.tween_callback(Callable(self, "_finish_open_animation"))
+
+func _build_book_content_node_list() -> void:
+	_book_content_nodes = [] as Array[CanvasItem]
+	for node: CanvasItem in [header_label, left_page, right_page]:
+		if node != null:
+			_book_content_nodes.append(node)
+
+func _hide_book_content_for_opening() -> void:
+	_book_content_target_modulates.clear()
+	for node: CanvasItem in _book_content_nodes:
+		_book_content_target_modulates[node] = node.modulate
+		node.visible = false
+		var hidden_modulate: Color = node.modulate
+		hidden_modulate.a = 0.0
+		node.modulate = hidden_modulate
+
+func _reveal_book_content() -> void:
+	for node: CanvasItem in _book_content_nodes:
+		node.visible = true
+
+func _show_book_content_immediate() -> void:
+	for node: CanvasItem in _book_content_nodes:
+		node.visible = true
+		if _book_content_target_modulates.has(node):
+			node.modulate = _book_content_target_modulates[node] as Color
+	_book_content_target_modulates.clear()
+
+func _show_book_closed_state() -> void:
+	if open_book_bg != null:
+		open_book_bg.visible = false
+		open_book_bg.modulate.a = 0.0
+	if closed_book_bg != null:
+		closed_book_bg.visible = true
+		closed_book_bg.modulate.a = 1.0
+
+func _begin_book_open_swap() -> void:
+	if open_book_bg != null:
+		open_book_bg.visible = true
+		open_book_bg.modulate.a = 0.0
+
+func _show_book_open_shell() -> void:
+	if open_book_bg != null:
+		open_book_bg.visible = true
+	if closed_book_bg != null:
+		closed_book_bg.visible = true
+
+func _show_book_open_state() -> void:
+	if open_book_bg != null:
+		open_book_bg.visible = true
+		open_book_bg.modulate.a = 1.0
+	if closed_book_bg != null:
+		closed_book_bg.visible = false
+		closed_book_bg.modulate.a = 0.0
+
+func _finish_open_animation() -> void:
+	_opening_locked = false
+	_show_book_open_state()
+	_show_book_content_immediate()
+	if book_frame != null:
+		book_frame.position = _book_base_position
+		book_frame.scale = _book_base_scale
+	_apply_selection_visual()
+	_update_sigilla_state()
+	_set_book_input_enabled(true)
 
 func _reset_interaction_lock() -> void:
 	selected_bet_id = &""
@@ -166,9 +277,13 @@ func _apply_default_selection() -> void:
 	selected_bet_id = _offer_id_at(0)
 
 func _on_select_left_pressed() -> void:
+	if _opening_locked:
+		return
 	_select_offer_index(0)
 
 func _on_select_right_pressed() -> void:
+	if _opening_locked:
+		return
 	_select_offer_index(1)
 
 func _select_offer_index(index: int) -> void:
@@ -180,8 +295,8 @@ func _select_offer_index(index: int) -> void:
 	_update_sigilla_state()
 
 func _reset_button_state() -> void:
-	left_select_button.disabled = _betting_circle_options.size() < 1
-	right_select_button.disabled = _betting_circle_options.size() < 2
+	left_select_button.disabled = _opening_locked or _betting_circle_options.size() < 1
+	right_select_button.disabled = _opening_locked or _betting_circle_options.size() < 2
 	_apply_selection_visual()
 	_update_sigilla_state()
 
@@ -209,14 +324,18 @@ func _offer_id_at(index: int) -> StringName:
 
 func _on_sigilla_pressed() -> void:
 	# Hidden legacy button fallback.
-	if _submit_locked or selected_bet_id == &"":
+	if _opening_locked or _submit_locked or selected_bet_id == &"":
 		return
 	_submit_selected_offer(sigilla_button)
 
 func _on_sign_left_pressed() -> void:
+	if _opening_locked:
+		return
 	_submit_offer_index(0, left_sign_button)
 
 func _on_sign_right_pressed() -> void:
+	if _opening_locked:
+		return
 	_submit_offer_index(1, right_sign_button)
 
 func _submit_offer_index(index: int, button: TextureButton) -> void:
@@ -229,7 +348,7 @@ func _submit_offer_index(index: int, button: TextureButton) -> void:
 	_submit_selected_offer(button)
 
 func _submit_selected_offer(button: TextureButton) -> void:
-	if _submit_locked or selected_bet_id == &"":
+	if _opening_locked or _submit_locked or selected_bet_id == &"":
 		return
 	_submit_locked = true
 	_update_sigilla_state()
@@ -251,8 +370,8 @@ func _play_stamp_feedback(button: TextureButton) -> void:
 func _update_sigilla_state() -> void:
 	var left_id: StringName = _offer_id_at(0)
 	var right_id: StringName = _offer_id_at(1)
-	var left_ready: bool = left_id != &"" and not _submit_locked
-	var right_ready: bool = right_id != &"" and not _submit_locked
+	var left_ready: bool = left_id != &"" and not _submit_locked and not _opening_locked
+	var right_ready: bool = right_id != &"" and not _submit_locked and not _opening_locked
 	if left_sign_button != null:
 		left_sign_button.disabled = not left_ready
 		if left_ready:
@@ -267,6 +386,13 @@ func _update_sigilla_state() -> void:
 			right_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
 	if sigilla_button != null:
 		sigilla_button.disabled = true
+
+func _set_book_input_enabled(enabled: bool) -> void:
+	if left_select_button != null:
+		left_select_button.disabled = (not enabled) or _betting_circle_options.size() < 1
+	if right_select_button != null:
+		right_select_button.disabled = (not enabled) or _betting_circle_options.size() < 2
+	_update_sigilla_state()
 
 func _render_pages() -> void:
 	var left_offer: Dictionary = _offer_or_empty(0)

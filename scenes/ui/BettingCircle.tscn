@@ -41,7 +41,7 @@ anchor_bottom = 1.0
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
-custom_minimum_size = Vector2(1160, 660)
+custom_minimum_size = Vector2(1080, 540)
 mouse_filter = 1
 
 [node name="SpellbookBg" type="TextureRect" parent="CenterContainer/BookFrame"]

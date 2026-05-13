@@ -5,8 +5,6 @@ const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
-const BOOK_IDLE_BOB_SPEED: float = 1.6
-const BOOK_IDLE_BOB_AMPLITUDE: float = 3.5
 const BOOK_TITLE_PULSE_SPEED: float = 1.9
 const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
 const BOOK_DROP_SECONDS: float = 0.42
@@ -14,6 +12,7 @@ const BOOK_OPEN_SQUASH_SECONDS: float = 0.12
 const BOOK_OPEN_SECONDS: float = 0.26
 const BOOK_SETTLE_SECONDS: float = 0.10
 const BOOK_CONTENT_REVEAL_SECONDS: float = 0.20
+const CONTRACT_WRITE_SECONDS: float = 0.82
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
@@ -49,6 +48,7 @@ var _book_base_scale: Vector2 = Vector2.ONE
 var _book_base_position: Vector2 = Vector2.ZERO
 var _nodes_ready: bool = false
 var _open_tween: Tween = null
+var _contract_write_tween: Tween = null
 var _book_content_nodes: Array[CanvasItem] = []
 var _book_content_target_modulates: Dictionary = {}
 var _awaiting_open_request: bool = false
@@ -106,13 +106,6 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 	_idle_time += delta
-	var bob: float = sin(_idle_time * BOOK_IDLE_BOB_SPEED) * BOOK_IDLE_BOB_AMPLITUDE
-	var left_selected: bool = selected_bet_id == _offer_id_at(0)
-	var right_selected: bool = selected_bet_id == _offer_id_at(1)
-	if left_page != null:
-		left_page.position = _left_page_base_position + Vector2(0.0, bob if left_selected else bob * 0.35)
-	if right_page != null:
-		right_page.position = _right_page_base_position + Vector2(0.0, bob if right_selected else bob * 0.35)
 	if header_label != null:
 		var pulse: float = 0.9 + (sin(_idle_time * BOOK_TITLE_PULSE_SPEED) * 0.1)
 		header_label.modulate = Color(pulse, pulse, pulse, 1.0)
@@ -146,12 +139,15 @@ func open() -> void:
 func close() -> void:
 	if _open_tween != null and _open_tween.is_valid():
 		_open_tween.kill()
+	if _contract_write_tween != null and _contract_write_tween.is_valid():
+		_contract_write_tween.kill()
 	_awaiting_open_request = false
 	_opening_locked = false
 	_hide_closed_intro()
 	_set_book_input_enabled(true)
 	_show_book_open_state()
 	_show_book_content_immediate()
+	_show_contract_text_immediate()
 	visible = false
 	if left_page != null:
 		left_page.position = _left_page_base_position
@@ -206,14 +202,17 @@ func _play_open_animation() -> void:
 	for node: CanvasItem in _book_content_nodes:
 		var target_modulate: Color = _book_content_target_modulates.get(node, Color(1.0, 1.0, 1.0, 1.0)) as Color
 		_open_tween.parallel().tween_property(node, "modulate", target_modulate, BOOK_CONTENT_REVEAL_SECONDS)
-	_open_tween.tween_callback(Callable(self, "_finish_open_animation"))
+	_open_tween.tween_callback(Callable(self, "_start_contract_write_animation"))
 
 func _show_closed_intro() -> void:
 	if _open_tween != null and _open_tween.is_valid():
 		_open_tween.kill()
+	if _contract_write_tween != null and _contract_write_tween.is_valid():
+		_contract_write_tween.kill()
 	_awaiting_open_request = true
 	_opening_locked = true
 	_hide_book_content_for_opening()
+	_prepare_contract_text_for_writing()
 	_show_book_closed_state()
 	modulate = Color(1.0, 1.0, 1.0, 1.0)
 	if book_frame != null:
@@ -265,6 +264,35 @@ func _show_book_content_immediate() -> void:
 			node.modulate = _book_content_target_modulates[node] as Color
 	_book_content_target_modulates.clear()
 
+func _prepare_contract_text_for_writing() -> void:
+	for contract_label: RichTextLabel in [left_contract_label, right_contract_label]:
+		if contract_label != null:
+			contract_label.visible_characters = 0
+
+func _show_contract_text_immediate() -> void:
+	for contract_label: RichTextLabel in [left_contract_label, right_contract_label]:
+		if contract_label != null:
+			contract_label.visible_characters = -1
+
+func _start_contract_write_animation() -> void:
+	if _contract_write_tween != null and _contract_write_tween.is_valid():
+		_contract_write_tween.kill()
+	_contract_write_tween = create_tween()
+	_contract_write_tween.set_trans(Tween.TRANS_LINEAR)
+	_contract_write_tween.set_ease(Tween.EASE_IN_OUT)
+	var has_contracts: bool = false
+	for contract_label: RichTextLabel in [left_contract_label, right_contract_label]:
+		if contract_label == null:
+			continue
+		contract_label.visible_characters = 0
+		var total_characters: int = max(contract_label.get_total_character_count(), 1)
+		_contract_write_tween.parallel().tween_property(contract_label, "visible_characters", total_characters, CONTRACT_WRITE_SECONDS)
+		has_contracts = true
+	if has_contracts:
+		_contract_write_tween.tween_callback(Callable(self, "_finish_open_animation"))
+	else:
+		_finish_open_animation()
+
 func _show_book_closed_state() -> void:
 	if open_book_bg != null:
 		open_book_bg.visible = false
@@ -296,6 +324,7 @@ func _finish_open_animation() -> void:
 	_opening_locked = false
 	_show_book_open_state()
 	_show_book_content_immediate()
+	_show_contract_text_immediate()
 	if book_frame != null:
 		book_frame.position = _book_base_position
 		book_frame.scale = _book_base_scale

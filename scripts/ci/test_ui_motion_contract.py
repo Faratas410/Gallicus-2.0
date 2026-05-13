@@ -96,10 +96,18 @@ def test_ui_motion_contract() -> None:
         "_show_closed_intro",
         "_on_open_book_pressed",
         "_reveal_book_content",
+        "_start_contract_write_animation",
+        "CONTRACT_WRITE_SECONDS",
         "BOOK_DROP_SECONDS",
     ]:
         if token not in betting_circle:
             raise AssertionError(f"betting_circle_ui.gd missing book-open animation token: {token}")
+    for stale_token in [
+        "BOOK_IDLE_BOB_SPEED",
+        "BOOK_IDLE_BOB_AMPLITUDE",
+    ]:
+        if stale_token in betting_circle:
+            raise AssertionError(f"betting_circle_ui.gd must not keep idle page-bob token: {stale_token}")
 
     betting_scene = (ROOT / "scenes" / "ui" / "BettingCircle.tscn").read_text(encoding="utf-8")
     for token in [

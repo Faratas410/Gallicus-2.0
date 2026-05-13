@@ -336,13 +336,16 @@ Current MP3 files under `res://assets/audio/`:
 - Player-facing text follows `docs/canon/GLOSSARY_ENTITIES.md`: `run`, `escalation`, `cashout`, and `double` remain technical terms; visible UI copy should use `percorso`, `pressione`, `incassa/incasso`, and `rilancia`/button `RADDOPPIA`.
 - Pressure presentation thresholds are UI-only labels: `0-2` under control, `3-5` warming crowd, `6-8` high risk, `9-10` out of control. These labels do not define gameplay rules.
 - Push Your Luck must show current `PRESSIONE X/10` plus the threshold label and must describe `RADDOPPIA` as `Pressione +1`; `INCASSA` must state that it closes/records the result.
+- Push Your Luck must expose a compact receipt for `Posta`, `Gloria`, and `Corruzione`. `Posta` is player-facing calculated value, not persisted state; it represents the Glory currently collectable from the active wager.
+- UI resta reattiva per la ricevuta Push Your Luck: `res://scripts/ui/ui_root.gd` consumes RunManager payload fields such as `stake_glory`, `cashout_glory_delta`, and `double_next_stake_glory`; it must not recompute reward tiers, cashout modifiers, or corruption relief.
 - END_RUN must show peak pressure as `Pressione massima: X/10`, derived from run stats `max_escalation` when available.
 - Motion Contract:
   - UI motion is presentational-only; it must not emit `GameEvents`, mutate run state, or create phase authority.
   - Motion helpers in `res://scripts/ui/ui_root.gd` are local UI helpers and must not block outbound gameplay intents.
   - Button intent handlers must not `await` animation before emitting `request_*` signals.
   - Standard modal motion kinds are `standard`, `ritual`, and `ending`; ritual motion is reserved for pact, resolve, intermediate choice, Push Your Luck, and END_RUN surfaces.
-  - Betting-circle book reveal is player-confirmed: the closed-book intro exposes only `APRI`, and the open animation remains presentational-only with no `GameEvents` emission.
+- Betting-circle book reveal is player-confirmed: the closed-book intro exposes only `APRI`, and the open animation remains presentational-only with no `GameEvents` emission.
+- Betting-circle open pages do not use idle bob/page drift. Pact text reveal is handled as a presentational writing animation (`visible_characters`) after the book opens; sign buttons remain disabled until the writing reveal completes.
   - Shake/glitch/flash remain bounded to existing ritual or quick-cut feedback surfaces, not generic hover states.
 - `Phase_INTRO` Level 3 contract excludes upgrade-token shop controls: no BUY TOKEN button/panel, no token-cost lookup, and no token purchase request emission from `res://scripts/ui/ui_root.gd`.
 - `Phase_INTRO` bet selection contract (L3 active): exactly 2 buttons (`Btn_INTRO_SELECT_WIN`, `Btn_INTRO_SELECT_FAST`) in `BetButtons` with centered HBox layout; UI emits `request_place_bet(bet_id, 0)` using `BetCatalog.level3_bet_ids()` slots `[0]` and `[1]` (no `Btn_INTRO_SELECT_NO_HIT`/third-option wiring).

@@ -7,7 +7,8 @@ class_name BettingPayloadFactory
 #   ["bet_id", "bet_name", "current_level", "next_level", "condition", "next_pact", "next_doom",
 #    "cashout_locked", "cashout_lock_reason", "double_locked", "double_lock_reason", "choice_note",
 #    "arena_index", "arena_target", "audience_label", "audience_reason", "cashout_modifier", "cashout_modifier_text",
-#    "bet_subtitle", "path_tag"]
+#    "bet_subtitle", "path_tag", "current_glory", "current_corruption", "stake_glory", "cashout_glory_delta",
+#    "cashout_corruption_delta", "double_next_stake_glory", "double_pressure_delta"]
 # - No optional keys in factory output: every key above is always emitted with explicit defaults.
 
 func build_bet_offer_payload(inputs: Dictionary) -> Dictionary:
@@ -59,6 +60,13 @@ func build_pyl_offer_payload(inputs: Dictionary) -> Dictionary:
 		"cashout_modifier_text": str(inputs.get("cashout_modifier_text", "")),
 		"bet_subtitle": bet_subtitle,
 		"path_tag": path_tag,
+		"current_glory": int(inputs.get("current_glory", 0)),
+		"current_corruption": int(inputs.get("current_corruption", 0)),
+		"stake_glory": int(inputs.get("stake_glory", 0)),
+		"cashout_glory_delta": int(inputs.get("cashout_glory_delta", 0)),
+		"cashout_corruption_delta": int(inputs.get("cashout_corruption_delta", 0)),
+		"double_next_stake_glory": int(inputs.get("double_next_stake_glory", 0)),
+		"double_pressure_delta": int(inputs.get("double_pressure_delta", 1)),
 	}
 
 func build_audience_payload_fragments(inputs: Dictionary) -> Dictionary:

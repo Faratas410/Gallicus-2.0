@@ -677,6 +677,11 @@ Regole canoniche L3 nel segmento PUSH_YOUR_LUCK:
 - Audience Pressure: valore run-scoped che cresce sui rilanci e su esiti avversi, cala su cashout/chiusura, e modula il cashout modifier nel payload UI.
 - Deferred Signature Echo: scelta gesto `provoca` su patto ad alto rischio arma un bonus differito consumato al primo double successivo.
 - Escalation Threshold Events: superamento soglie escalation (3/5/7) attiva eventi one-shot run-scoped (condanne + incremento corruzione) sotto sola autorita RunManager.
+- Player-facing pressure balance: la fascia media deve restare giocabile. La pressione aumenta il rischio in modo progressivo, ma non deve trasformare automaticamente `3-6/10` in una condanna quasi certa.
+- Push Your Luck preview: il rischio mostrato per il prossimo rilancio deve usare lo stesso delta del runtime (`+1`, oppure `+1` piu echo da `provoca` se presente), non una stima pessimistica separata.
+- Posta = Gloria incassabile dalla scommessa corrente. E un valore calcolato da RunManager per il payload Push Your Luck e non viene salvato come nuova economia.
+- Incassa converte la Posta in Gloria, applica eventuale riduzione di Corruzione derivata dalle regole runtime esistenti, e chiude il Registro.
+- Raddoppia aumenta la Posta futura, mantiene la Posta corrente a rischio, e incrementa la Pressione secondo il delta runtime esposto nel payload.
 
 Checkpoint:
 - Double → AUTOSAVE RUN_FLOW_BET_OFFER e ritorno a ARENA_SETUP

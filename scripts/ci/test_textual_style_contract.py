@@ -63,7 +63,7 @@ REQUIRED_COPY_TOKENS = {
     ],
     ROOT / "scripts" / "ui" / "ui_root.gd": [
         'tr("SPINGI LA SORTE")',
-        "Chiudi il percorso e registra il risultato finale.",
+        "chiudi il registro",
         "PERCORSO FALLITO",
         "PATTO FALLITO",
     ],

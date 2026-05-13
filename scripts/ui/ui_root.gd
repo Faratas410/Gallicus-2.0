@@ -308,6 +308,7 @@ var push_luck_audience_reason: Label = null
 var push_luck_cashout_button: Button = null
 var push_luck_cashout_note: Label = null
 var push_luck_condanna_button: Button = null
+var push_luck_condanna_note: Label = null
 var push_luck_double_button: Button = null
 var push_luck_double_note: Label = null
 
@@ -574,6 +575,7 @@ func _bind_scene_nodes() -> void:
 	push_luck_cashout_button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Btn_PUSH_YOUR_LUCK_CASHOUT") as Button
 	push_luck_cashout_note = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_0") as Label
 	push_luck_condanna_button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA") as Button
+	push_luck_condanna_note = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_1") as Label
 	push_luck_double_button = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE") as Button
 	push_luck_double_note = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
 
@@ -2049,6 +2051,35 @@ func _compact_push_luck_detail_line(line: String) -> String:
 		return trimmed
 	return "%s..." % trimmed.substr(0, PUSH_LUCK_DETAIL_MAX_CHARS - 3).strip_edges()
 
+func _format_push_luck_receipt_text(meta: Dictionary) -> String:
+	var stake_glory: int = maxi(int(meta.get("stake_glory", 0)), 0)
+	var current_glory: int = maxi(int(meta.get("current_glory", _glory)), 0)
+	var current_corruption: int = maxi(int(meta.get("current_corruption", 0)), 0)
+	var lines: Array[String] = [
+		tr("POSTA VIVA: +%d Gloria") % stake_glory,
+		tr("GLORIA: %d") % current_glory,
+		tr("CORRUZIONE: %d") % current_corruption,
+		_format_pressure_label(_escalation_level, _escalation_max),
+	]
+	return "\n".join(lines)
+
+func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: int) -> String:
+	var parts: Array[String] = []
+	parts.append(tr("Ottieni +%d Gloria") % maxi(cashout_glory_delta, 0))
+	if cashout_corruption_delta > 0:
+		parts.append(tr("Corruzione -%d") % cashout_corruption_delta)
+	parts.append(tr("chiudi il registro"))
+	return " | ".join(parts)
+
+func _format_double_note(double_next_stake_glory: int, double_pressure_delta: int) -> String:
+	return tr("Prossima posta +%d Gloria | Pressione +%d") % [
+		maxi(double_next_stake_glory, 0),
+		maxi(double_pressure_delta, 1),
+	]
+
+func _format_condanna_note(stake_glory: int) -> String:
+	return tr("Perdi la posta +%d Gloria | il Registro chiude il percorso") % maxi(stake_glory, 0)
+
 func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:
 		return
@@ -2070,6 +2101,11 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	var audience_label: String = str(meta.get("audience_label", ""))
 	var audience_reason: String = str(meta.get("audience_reason", ""))
 	var cashout_modifier_text: String = str(meta.get("cashout_modifier_text", ""))
+	var stake_glory: int = maxi(int(meta.get("stake_glory", 0)), 0)
+	var cashout_glory_delta: int = maxi(int(meta.get("cashout_glory_delta", 0)), 0)
+	var cashout_corruption_delta: int = maxi(int(meta.get("cashout_corruption_delta", 0)), 0)
+	var double_next_stake_glory: int = maxi(int(meta.get("double_next_stake_glory", 0)), 0)
+	var double_pressure_delta: int = maxi(int(meta.get("double_pressure_delta", 1)), 1)
 	var lines: Array[String] = []
 	if doom_text != "":
 		lines.append(tr("CONDANNA: %s") % doom_text)
@@ -2088,10 +2124,11 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if cashout_modifier_text != "":
 		lines.append(tr("MODIFICA INCASSO: %s") % cashout_modifier_text)
 	if push_luck_details != null:
-		push_luck_details.text = _format_push_luck_detail_text(lines)
+		push_luck_details.text = _format_push_luck_receipt_text(meta)
+		push_luck_details.tooltip_text = _format_push_luck_detail_text(lines)
 		var details_panel := push_luck_details.get_parent() as CanvasItem
 		if details_panel != null:
-			details_panel.visible = not lines.is_empty()
+			details_panel.visible = true
 	if push_luck_audience_label != null:
 		push_luck_audience_label.text = audience_label
 		push_luck_audience_label.visible = audience_label != ""
@@ -2102,11 +2139,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 		var state_line: String = str(meta.get("state_line", "")).strip_edges()
 		if state_line == "":
 			state_line = tr("Stato: in attesa di scelta.")
-		var pressure_line: String = "%s - %s" % [
-			_format_pressure_label(_escalation_level, _escalation_max),
-			_get_pressure_state_text(_escalation_level),
-		]
-		push_luck_audience_reason.text = "%s\n%s" % [pressure_line, state_line]
+		push_luck_audience_reason.text = "%s\n%s" % [_get_pressure_state_text(_escalation_level), state_line]
 		push_luck_audience_reason.visible = true
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
@@ -2119,8 +2152,11 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_cashout_note.text = _format_lock_note(cashout_reason, tr("Disponibile dopo l'arena in corso."))
 			push_luck_cashout_note.visible = true
 		else:
-			push_luck_cashout_note.text = tr("Chiudi il percorso e registra il risultato finale.")
+			push_luck_cashout_note.text = _format_cashout_note(cashout_glory_delta, cashout_corruption_delta)
 			push_luck_cashout_note.visible = true
+	if push_luck_condanna_note != null:
+		push_luck_condanna_note.text = _format_condanna_note(stake_glory)
+		push_luck_condanna_note.visible = true
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
 		if double_locked and double_reason != "":
@@ -2132,7 +2168,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_double_note.text = _format_lock_note(double_reason, tr("Disponibile dopo l'arena in corso."))
 			push_luck_double_note.visible = true
 		else:
-			push_luck_double_note.text = tr("Pressione +1. Continua alla prossima arena con posta aumentata.")
+			push_luck_double_note.text = _format_double_note(double_next_stake_glory, double_pressure_delta)
 			push_luck_double_note.visible = true
 	_set_push_luck_modal(true)
 	var push_luck_read_buttons: Array[Button] = []

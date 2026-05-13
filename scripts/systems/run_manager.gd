@@ -1650,11 +1650,9 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss_ritual(bet_id, result)
 	else:
-		_apply_glory_on_success()
 		_run_state.last_action_was_rilancio = false
 		_run_state.risky_choice_made_recently = false
-		_apply_level3_reward(bet_id, _run_state.level3_reward_tier)
-		_resolve_ritual_reward_applied = true
+		_resolve_ritual_reward_applied = false
 		var bet_data: Dictionary = _get_bet_data(String(bet_id))
 		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
 		if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
@@ -2500,14 +2498,25 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	return scars_applied
 
 func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
-	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
-	var reward_glory: int = _outcome_system.compute_level3_reward_glory(
-		behavior_id,
-		reward_tier,
-		_get_audience_cashout_modifier()
-	)
+	var reward_glory: int = _compute_level3_reward_glory_preview(bet_id, reward_tier, _get_audience_cashout_modifier())
 	if reward_glory > 0:
 		_run_state.glory = maxi(_run_state.glory + reward_glory, 0)
+
+func _compute_level3_reward_glory_preview(bet_id: StringName, reward_tier: int, cashout_modifier: float) -> int:
+	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
+	return _outcome_system.compute_level3_reward_glory(behavior_id, reward_tier, cashout_modifier)
+
+func _compute_success_glory_preview_for_double_count(double_count: int) -> int:
+	var safe_count: int = maxi(double_count, 0)
+	var idx: int = mini(safe_count, GLORY_MULT_STEPS.size() - 1)
+	return GLORY_PER_SUCCESS * int(GLORY_MULT_STEPS[idx])
+
+func _compute_pending_stake_glory(bet_id: StringName, reward_tier: int, cashout_modifier: float, double_count: int) -> int:
+	if bet_id == &"" or _resolve_ritual_reward_applied:
+		return 0
+	var success_glory: int = _compute_success_glory_preview_for_double_count(double_count)
+	var pact_glory: int = _compute_level3_reward_glory_preview(bet_id, reward_tier, cashout_modifier)
+	return maxi(success_glory + pact_glory, 0)
 
 func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
 	var scar_def: Dictionary = _get_scar_def(scar_id)
@@ -2856,6 +2865,7 @@ func _take_payout() -> void:
 	GameEvents.push_luck_closed.emit()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_CASH_OUT)
 	if bet_id_name != &"" and not _resolve_ritual_reward_applied:
+		_apply_glory_on_success()
 		_apply_level3_reward(bet_id_name, _run_state.level3_reward_tier + bonus_tier)
 	var cashout_bonus: Dictionary = _compute_cashout_reward_bonus()
 	var corruption_relief: int = int(cashout_bonus.get("corruption_relief", 0))
@@ -3154,11 +3164,21 @@ func _build_phase_ui_payload(target_phase: RunPhase, title: String = "", body: S
 
 func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	var bet_data: Dictionary = _get_bet_data(String(bet_id))
-	var next_level: int = maxi(_run_state.escalation_level + 1, 1) + 1
+	var pending_echo_bonus: int = maxi(_run_state.signature_echo_bonus_pending, 0)
+	var next_level: int = clampi(_run_state.escalation_level + 1 + pending_echo_bonus, 1, ESCALATION_MAX)
 	var next_reward_tier: int = maxi(_run_state.level3_reward_tier + 1, 1)
 	var cashout_lock_reason: String = _get_cashout_lock_reason()
 	var double_lock_reason: String = _get_double_lock_reason()
 	var reward_text: Dictionary = _build_audience_reward_text()
+	var cashout_modifier: float = float(reward_text.get("cashout_modifier", 1.0))
+	var current_corruption: int = clampi(int(run.get("corruption", _run_state.corruption)), 0, CORRUPTION_MAX)
+	var cashout_bonus: Dictionary = _compute_cashout_reward_bonus()
+	var cashout_corruption_delta: int = int(cashout_bonus.get("corruption_relief", 0))
+	var cashout_bonus_glory: int = int(cashout_bonus.get("glory_bonus", 0))
+	var cashout_reward_tier: int = maxi(_run_state.level3_reward_tier + _run_state.intermediate_bonus_tier, 1)
+	var stake_glory: int = _compute_pending_stake_glory(bet_id, cashout_reward_tier, cashout_modifier, _run_state.level3_doubles)
+	var double_next_stake_glory: int = _compute_pending_stake_glory(bet_id, next_reward_tier, cashout_modifier, _run_state.level3_doubles + 1)
+	var double_pressure_delta: int = 1 + pending_echo_bonus
 	return _betting_payload_factory.build_pyl_offer_payload({
 		"bet_id": String(bet_id),
 		"bet_data": bet_data,
@@ -3176,9 +3196,16 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 		"arena_target": _run_state.level3_target_arenas,
 		"audience_label": str(reward_text.get("audience_label", "")),
 		"audience_reason": str(reward_text.get("audience_reason", "")),
-		"cashout_modifier": float(reward_text.get("cashout_modifier", 1.0)),
+		"cashout_modifier": cashout_modifier,
 		"cashout_modifier_text": _build_cashout_reward_text(str(reward_text.get("cashout_modifier_text", ""))),
 		"state_line": _build_push_luck_state_line(),
+		"current_glory": _run_state.glory,
+		"current_corruption": current_corruption,
+		"stake_glory": stake_glory,
+		"cashout_glory_delta": stake_glory + cashout_bonus_glory,
+		"cashout_corruption_delta": cashout_corruption_delta,
+		"double_next_stake_glory": double_next_stake_glory,
+		"double_pressure_delta": double_pressure_delta,
 	})
 
 func _compute_cashout_reward_bonus() -> Dictionary:

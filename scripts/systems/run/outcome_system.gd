@@ -20,6 +20,11 @@ const SCAR_ONE_EYE: StringName = &"SCAR_ONE_EYE"
 const RISK_VOLATILE_RECORD: StringName = &"VOLATILE_RECORD"
 const RISK_SEVERE_JUDGMENT: StringName = &"SEVERE_JUDGMENT"
 
+const ESCALATION_WIN_INITIAL_PENALTY: float = 0.03
+const ESCALATION_WIN_STEP_PENALTY: float = 0.055
+const ESCALATION_ADVERSE_INITIAL_PENALTY: float = 0.02
+const ESCALATION_ADVERSE_STEP_PENALTY: float = 0.045
+
 func resolve_level3_arena(
 	rng: RandomNumberGenerator,
 	rng_seed: int,
@@ -209,17 +214,17 @@ func compute_level3_reward_glory(
 func get_escalation_win_penalty(escalation_level: int) -> float:
 	var penalty: float = 0.0
 	if escalation_level >= 1:
-		penalty += 0.04
+		penalty += ESCALATION_WIN_INITIAL_PENALTY
 	if escalation_level >= 2:
-		penalty += float(escalation_level - 1) * 0.09
+		penalty += float(escalation_level - 1) * ESCALATION_WIN_STEP_PENALTY
 	return penalty
 
 func get_escalation_adverse_penalty(escalation_level: int) -> float:
 	var penalty: float = 0.0
 	if escalation_level >= 1:
-		penalty += 0.03
+		penalty += ESCALATION_ADVERSE_INITIAL_PENALTY
 	if escalation_level >= 2:
-		penalty += float(escalation_level - 1) * 0.07
+		penalty += float(escalation_level - 1) * ESCALATION_ADVERSE_STEP_PENALTY
 	return penalty
 
 func _contains_scar(active_scar_ids: Array[StringName], scar_id: StringName) -> bool:

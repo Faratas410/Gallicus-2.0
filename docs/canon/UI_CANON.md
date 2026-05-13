@@ -116,6 +116,7 @@ All changes to systems described here must update this document in the same PR.
 - Patch type: Foundation only (no scene-wide texture replacement in this patch).
 - Source-of-truth UI asset folder for adopted runtime main-menu atlas source: `res://assets/MainMenu/`.
 - `res://assets/ui/official_source/` remains the raw external reference pack.
+- `res://assets/ui/third_party/rpg_ui_pack/` contains purchased RPG UI Pack candidate/reference material; it is not authoritative runtime UI until a later explicit wiring patch adopts specific assets.
 - Authoritative theme resource: `res://assets/ui/theme/official_theme.tres`.
 - Authoritative UI font wrapper: `res://assets/ui/fonts/italiana_regular_font.tres`.
 
@@ -152,6 +153,7 @@ All changes to systems described here must update this document in the same PR.
 ## Import standard (UI PNG)
 The active source pack is tracked at:
 - `res://assets/ui/official_source/Wooden_UI_png/`
+- `res://assets/ui/third_party/rpg_ui_pack/` is staged third-party source/reference material only. Keep imports versioned for tracked PNG/TTF files, but do not treat examples as runtime scene authority.
 
 For UI pixel-art textures that are adopted into runtime resources, keep the generated `.png.import` sidecar versioned with the source `.png`. The `.godot/` import cache remains ignored and must not be used as a contract surface.
 

@@ -101,6 +101,7 @@
   - `ui/theme/official_theme.tres`
   - `ui/official/` (runtime theme/stylebox/material resources)
   - `ui/official_source/` (raw UI source pack textures/fonts used by runtime resources)
+  - `ui/third_party/rpg_ui_pack/` (purchased RPG UI Pack staged as reference/candidate source material; not runtime-authoritative by default)
   - `ui/shaders/menu/`
 
 ## Documentation structure (`docs/`)

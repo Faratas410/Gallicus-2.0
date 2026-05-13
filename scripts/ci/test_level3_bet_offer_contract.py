@@ -11,6 +11,7 @@ BET_CATALOG = Path("scripts/content/bet_catalog.gd")
 BETS_DATA = Path("data/bets.gd")
 RUN_MANAGER = Path("scripts/systems/run_manager.gd")
 BETTING_UI = Path("scripts/ui/betting_circle_ui.gd")
+BETTING_SCENE = Path("scenes/ui/BettingCircle.tscn")
 
 
 def has_bet_catalog_call(source: str, method: str) -> bool:
@@ -23,7 +24,7 @@ def fail(message: str) -> int:
 
 
 def main() -> int:
-    for path in [BET_CATALOG, BETS_DATA, RUN_MANAGER, BETTING_UI]:
+    for path in [BET_CATALOG, BETS_DATA, RUN_MANAGER, BETTING_UI, BETTING_SCENE]:
         if not path.exists():
             return fail(f"missing file: {path}")
 
@@ -31,6 +32,7 @@ def main() -> int:
     bets_data = BETS_DATA.read_text(encoding="utf-8")
     run_manager = RUN_MANAGER.read_text(encoding="utf-8")
     betting_ui = BETTING_UI.read_text(encoding="utf-8")
+    betting_scene = BETTING_SCENE.read_text(encoding="utf-8")
 
     helper_decl = re.search(r"static\s+func\s+level3_active_bet_ids\s*\(\)\s*->\s*Array\[StringName\]", catalog)
     if helper_decl is None:
@@ -60,6 +62,24 @@ def main() -> int:
         return fail("betting_circle_ui.gd missing resolver-driven 2-option contract token(s): " + ", ".join(missing_ui_tokens))
     if '&"CASH_OUT"' in betting_ui or '&"DOUBLE_OR_DIE"' in betting_ui:
         return fail("betting_circle_ui.gd must not hardcode active bet ids")
+
+    required_contract_tokens = ["Rtl_Left_Contract", "Rtl_Right_Contract"]
+    missing_contract_tokens = [token for token in required_contract_tokens if token not in betting_scene]
+    if missing_contract_tokens:
+        return fail("BettingCircle.tscn missing unified page contract label(s): " + ", ".join(missing_contract_tokens))
+    stale_fragment_tokens = [
+        "Lbl_Left_Title",
+        "Rtl_Left_Bet",
+        "Rtl_Left_Explain",
+        "Lbl_Right_Title",
+        "Rtl_Right_Bet",
+        "Rtl_Right_Explain",
+        "_format_bet_body",
+        "_format_explain_body",
+    ]
+    stale_hits = [token for token in stale_fragment_tokens if token in betting_scene or token in betting_ui]
+    if stale_hits:
+        return fail("BettingCircle must render each page through one contract block, stale fragment token(s): " + ", ".join(stale_hits))
 
     print("[OK][L3_BET_OFFER_CONTRACT] static two-offer contract guard passed")
     return 0

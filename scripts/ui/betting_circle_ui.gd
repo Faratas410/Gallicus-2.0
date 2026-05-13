@@ -25,12 +25,8 @@ const BOOK_CONTENT_REVEAL_SECONDS: float = 0.20
 @onready var sigilla_label: Label = $CenterContainer/BookFrame/Btn_Sigilla_Stamp/Lbl_Sigilla as Label
 @onready var left_page: Control = $CenterContainer/BookFrame/LeftPage as Control
 @onready var right_page: Control = $CenterContainer/BookFrame/RightPage as Control
-@onready var left_title_label: Label = $CenterContainer/BookFrame/LeftPage/Content/VBox/Lbl_Left_Title as Label
-@onready var left_bet_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/VBox/Rtl_Left_Bet as RichTextLabel
-@onready var left_explain_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/VBox/Rtl_Left_Explain as RichTextLabel
-@onready var right_title_label: Label = $CenterContainer/BookFrame/RightPage/Content/VBox/Lbl_Right_Title as Label
-@onready var right_bet_label: RichTextLabel = $CenterContainer/BookFrame/RightPage/Content/VBox/Rtl_Right_Bet as RichTextLabel
-@onready var right_explain_label: RichTextLabel = $CenterContainer/BookFrame/RightPage/Content/VBox/Rtl_Right_Explain as RichTextLabel
+@onready var left_contract_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/Rtl_Left_Contract as RichTextLabel
+@onready var right_contract_label: RichTextLabel = $CenterContainer/BookFrame/RightPage/Content/Rtl_Right_Contract as RichTextLabel
 @onready var left_selection_outline: Control = $CenterContainer/BookFrame/LeftPage/LeftSelectionOutline as Control
 @onready var right_selection_outline: Control = $CenterContainer/BookFrame/RightPage/RightSelectionOutline as Control
 @onready var header_label: Label = get_node_or_null("CenterContainer/BookFrame/Title") as Label
@@ -442,26 +438,21 @@ func _set_book_input_enabled(enabled: bool) -> void:
 func _render_pages() -> void:
 	var left_offer: Dictionary = _offer_or_empty(0)
 	var right_offer: Dictionary = _offer_or_empty(1)
-	_apply_page(left_offer, left_title_label, left_bet_label, left_explain_label)
-	_apply_page(right_offer, right_title_label, right_bet_label, right_explain_label)
+	_apply_page(left_offer, left_contract_label)
+	_apply_page(right_offer, right_contract_label)
 
 func _offer_or_empty(index: int) -> Dictionary:
 	if index < 0 or index >= _betting_circle_options.size():
 		return {
 			"id": &"",
 			"name": EMPTY_PAGE_TITLE,
-			"bet": EMPTY_PAGE_BODY,
-			"explain": "",
+			"contract": EMPTY_PAGE_BODY,
 		}
 	return _betting_circle_options[index]
 
-func _apply_page(offer: Dictionary, title_label: Label, bet_label: RichTextLabel, explain_label: RichTextLabel) -> void:
-	if title_label != null:
-		title_label.text = str(offer.get("name", EMPTY_PAGE_TITLE))
-	if bet_label != null:
-		bet_label.text = str(offer.get("bet", EMPTY_PAGE_BODY))
-	if explain_label != null:
-		explain_label.text = str(offer.get("explain", ""))
+func _apply_page(offer: Dictionary, contract_label: RichTextLabel) -> void:
+	if contract_label != null:
+		contract_label.text = str(offer.get("contract", EMPTY_PAGE_BODY))
 
 func _refresh_from_catalog_if_empty() -> void:
 	if not _betting_circle_options.is_empty():
@@ -480,8 +471,7 @@ func _map_offer_for_display(source_offer: Dictionary) -> Dictionary:
 	return {
 		"id": bet_id,
 		"name": title if title != "" else EMPTY_PAGE_TITLE,
-		"bet": _format_bet_body(subtitle, doom_text),
-		"explain": _format_explain_body(condition_text, pact_text),
+		"contract": _format_contract_body(title if title != "" else EMPTY_PAGE_TITLE, subtitle, doom_text, condition_text, pact_text),
 	}
 
 func _rebuild_options_from_catalog() -> void:
@@ -497,8 +487,13 @@ func _rebuild_options_from_catalog() -> void:
 		_betting_circle_options.append({
 			"id": bet_id,
 			"name": str(identity.get("display_title", str(bet_data.get("name", String(bet_id))))),
-			"bet": _format_bet_body(str(identity.get("display_subtitle", "")), str(bet_data.get("doom", ""))),
-			"explain": _format_explain_body(str(bet_data.get("condition", "")), str(bet_data.get("pact", ""))),
+			"contract": _format_contract_body(
+				str(identity.get("display_title", str(bet_data.get("name", String(bet_id))))),
+				str(identity.get("display_subtitle", "")),
+				str(bet_data.get("doom", "")),
+				str(bet_data.get("condition", "")),
+				str(bet_data.get("pact", ""))
+			),
 		})
 
 func _find_bet_data(bet_id: StringName) -> Dictionary:
@@ -508,33 +503,36 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 			return bet_data
 	return {}
 
-func _format_bet_body(subtitle: String, doom_text: String) -> String:
+func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String) -> String:
 	var lines: Array[String] = []
+	var title_text: String = title.strip_edges()
+	if title_text != "":
+		lines.append("[center][b]%s[/b][/center]" % _escape_bbcode(title_text))
 	var subtitle_text: String = subtitle.strip_edges()
 	if subtitle_text != "":
-		lines.append("[i]%s[/i]" % _escape_bbcode(subtitle_text))
-	var doom_lines: PackedStringArray = doom_text.strip_edges().split("\n", false)
-	for raw_line: String in doom_lines:
+		lines.append("[center][i]%s[/i][/center]" % _escape_bbcode(subtitle_text))
+	_append_contract_section(lines, tr("CONDANNA"), doom_text, true)
+	_append_contract_section(lines, tr("CONDIZIONE"), condition_text, false)
+	_append_contract_section(lines, tr("PATTO"), pact_text, false)
+	if lines.is_empty():
+		return EMPTY_PAGE_BODY
+	return "\n\n".join(lines)
+
+func _append_contract_section(lines: Array[String], section_title: String, body_text: String, emphasize_effect: bool) -> void:
+	var body: String = body_text.strip_edges()
+	if body == "":
+		return
+	var section_lines: Array[String] = ["[b]%s[/b]" % _escape_bbcode(section_title)]
+	var body_lines: PackedStringArray = body.split("\n", false)
+	for raw_line: String in body_lines:
 		var line: String = raw_line.strip_edges()
 		if line == "":
 			continue
-		if line.begins_with("Effetto:"):
-			lines.append("[b]%s[/b]" % _escape_bbcode(line))
+		if emphasize_effect and line.begins_with("Effetto:"):
+			section_lines.append("[b]%s[/b]" % _escape_bbcode(line))
 		else:
-			lines.append(_escape_bbcode(line))
-	if lines.is_empty():
-		return EMPTY_PAGE_BODY
-	return "\n".join(lines)
-
-func _format_explain_body(condition_text: String, pact_text: String) -> String:
-	var lines: Array[String] = []
-	var condition: String = condition_text.strip_edges()
-	if condition != "":
-		lines.append("[b]%s[/b]\n%s" % [tr("CONDIZIONE"), _escape_bbcode(condition)])
-	var pact: String = pact_text.strip_edges()
-	if pact != "":
-		lines.append("[b]%s[/b]\n%s" % [tr("PATTO"), _escape_bbcode(pact)])
-	return "\n\n".join(lines)
+			section_lines.append(_escape_bbcode(line))
+	lines.append("\n".join(section_lines))
 
 func _escape_bbcode(value: String) -> String:
 	# Godot 4.6 does not expose String.escape_bbcode(); escaping the opening

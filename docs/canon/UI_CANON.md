@@ -371,6 +371,14 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - `CondannaIcon` remains present but non-dominant (`custom_minimum_size = Vector2(0, 32)`, non-expanding stretch mode), so iconography does not displace label readability.
 - Scope guard: this baseline is visual-only and does not change `RunManager`, `GameEvents`, bet payload content, or flow authority.
 
+## BettingCircle page contract model (Patch: book readability)
+- Runtime scene: `res://scenes/ui/BettingCircle.tscn`.
+- The open book remains the active pact-selection metaphor. It must not be replaced by generic modal cards unless the asset direction is explicitly retired.
+- Each page renders one unified `RichTextLabel` contract block (`Rtl_Left_Contract`, `Rtl_Right_Contract`) containing title, subtitle, condanna, condition, and pact copy.
+- Local fragmented render paths (`Lbl_*_Title`, `Rtl_*_Bet`, `Rtl_*_Explain`) are retired because they create scrollbars, duplicated spacing, and overlay-like text drift.
+- Contract text is styled as dark ink on parchment. White overlay text is reserved for global labels/buttons, not pact body copy.
+- Scope guard: this is presentation-only. BettingCircle still consumes prepared offer payloads and does not own bet selection authority beyond emitting the existing sign intent.
+
 ## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)
 - `Phase_FIRST_REACTION` (`IL PATTO E' SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
 - Resolve ritual overlay container `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.

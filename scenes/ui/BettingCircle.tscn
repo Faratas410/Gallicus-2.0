@@ -175,44 +175,25 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
-anchor_bottom = 0.76
-offset_left = 18.0
-offset_top = 12.0
-offset_right = -18.0
-offset_bottom = -10.0
+anchor_bottom = 0.79
+offset_left = 26.0
+offset_top = 16.0
+offset_right = -22.0
+offset_bottom = -8.0
 clip_contents = true
 mouse_filter = 2
 
-[node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/LeftPage/Content"]
+[node name="Rtl_Left_Contract" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content"]
+theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-mouse_filter = 2
-
-[node name="Lbl_Left_Title" type="Label" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
-text = "VIA SINISTRA"
-theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
-theme_override_font_sizes/font_size = 13
-autowrap_mode = 3
-
-[node name="Rtl_Left_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
-theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
-custom_minimum_size = Vector2(0, 106)
-theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 11
+theme_override_colors/default_color = Color(0.27, 0.17, 0.085, 0.96)
+theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
-scroll_active = true
-autowrap_mode = 3
-
-[node name="Rtl_Left_Explain" type="RichTextLabel" parent="CenterContainer/BookFrame/LeftPage/Content/VBox"]
-theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
-custom_minimum_size = Vector2(0, 96)
-size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 11
-bbcode_enabled = true
-scroll_active = true
+text = "[center][b]VIA SINISTRA[/b][/center]"
+scroll_active = false
 autowrap_mode = 3
 
 [node name="Btn_Sign_Left" type="TextureButton" parent="CenterContainer/BookFrame/LeftPage"]
@@ -290,44 +271,25 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
-anchor_bottom = 0.76
-offset_left = 18.0
-offset_top = 12.0
-offset_right = -18.0
-offset_bottom = -10.0
+anchor_bottom = 0.79
+offset_left = 22.0
+offset_top = 16.0
+offset_right = -26.0
+offset_bottom = -8.0
 clip_contents = true
 mouse_filter = 2
 
-[node name="VBox" type="VBoxContainer" parent="CenterContainer/BookFrame/RightPage/Content"]
+[node name="Rtl_Right_Contract" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content"]
+theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-mouse_filter = 2
-
-[node name="Lbl_Right_Title" type="Label" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
-text = "VIA DESTRA"
-theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
-theme_override_font_sizes/font_size = 13
-autowrap_mode = 3
-
-[node name="Rtl_Right_Bet" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
-theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
-custom_minimum_size = Vector2(0, 106)
-theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 11
+theme_override_colors/default_color = Color(0.27, 0.17, 0.085, 0.96)
+theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
-scroll_active = true
-autowrap_mode = 3
-
-[node name="Rtl_Right_Explain" type="RichTextLabel" parent="CenterContainer/BookFrame/RightPage/Content/VBox"]
-theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
-custom_minimum_size = Vector2(0, 96)
-size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/normal_font_size = 11
-bbcode_enabled = true
-scroll_active = true
+text = "[center][b]VIA DESTRA[/b][/center]"
+scroll_active = false
 autowrap_mode = 3
 
 [node name="Btn_Sign_Right" type="TextureButton" parent="CenterContainer/BookFrame/RightPage"]

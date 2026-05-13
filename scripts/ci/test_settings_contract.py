@@ -48,6 +48,10 @@ def main() -> int:
         'node name="ResolutionOption"',
         'node name="ResolutionValuePanel"',
         'node name="SchermoInteroToggle"',
+        "settings_slider_track.tres",
+        "settings_slider_fill.tres",
+        "settings_slider_grabber.png",
+        "theme_override_styles/grabber_area",
     ]:
         require(main_scene, token, "Main settings scene nodes")
 

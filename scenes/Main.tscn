@@ -17,6 +17,9 @@
 [ext_resource type="Texture2D" path="res://assets/MainMenu/menu_fog_overlay.png" id="15_menu_fog"]
 [ext_resource type="Texture2D" path="res://assets/MainMenu/menu_banner_owl_layer.png" id="17_menu_banner"]
 [ext_resource type="Script" path="res://scripts/audio/music_director.gd" id="18_music_director"]
+[ext_resource type="StyleBox" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_track.tres" id="19_settings_slider_track"]
+[ext_resource type="StyleBox" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_fill.tres" id="20_settings_slider_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_grabber.png" id="21_settings_slider_grabber"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
 texture = null
@@ -507,10 +510,17 @@ theme_override_styles/panel = ExtResource("7")
 text = "LUMINOSITÀ"
 
 [node name="BrightnessSlider" type="HSlider" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+custom_minimum_size = Vector2(0, 28)
 min_value = 0.6
 max_value = 1.4
 step = 0.05
 value = 1.0
+theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
+theme_override_styles/slider = ExtResource("19_settings_slider_track")
+theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
+theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
 
 [node name="BrightnessValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 theme_override_styles/panel = ExtResource("7")
@@ -541,10 +551,17 @@ theme_override_styles/panel = ExtResource("7")
 text = "VOLUME MASTER"
 
 [node name="MasterVolumeSlider" type="HSlider" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+custom_minimum_size = Vector2(0, 28)
 min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 1.0
+theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
+theme_override_styles/slider = ExtResource("19_settings_slider_track")
+theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
+theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
 
 [node name="MasterVolumeValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 theme_override_styles/panel = ExtResource("7")
@@ -560,10 +577,17 @@ theme_override_styles/panel = ExtResource("7")
 text = "VOLUME MUSICA"
 
 [node name="MusicVolumeSlider" type="HSlider" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+custom_minimum_size = Vector2(0, 28)
 min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 0.75
+theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
+theme_override_styles/slider = ExtResource("19_settings_slider_track")
+theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
+theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
 
 [node name="MusicVolumeValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 theme_override_styles/panel = ExtResource("7")

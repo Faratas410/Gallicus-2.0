@@ -154,6 +154,7 @@ All changes to systems described here must update this document in the same PR.
 The active source pack is tracked at:
 - `res://assets/ui/official_source/Wooden_UI_png/`
 - `res://assets/ui/third_party/rpg_ui_pack/` is staged third-party source/reference material only. Keep imports versioned for tracked PNG/TTF files, but do not treat examples as runtime scene authority.
+- Runtime adoption exception: settings sliders may use extracted, isolated derivatives under `res://assets/ui/third_party/rpg_ui_pack/extracted/settings/`; these are visual-only controls and do not redefine the global UI theme.
 
 For UI pixel-art textures that are adopted into runtime resources, keep the generated `.png.import` sidecar versioned with the source `.png`. The `.godot/` import cache remains ignored and must not be used as a contract surface.
 

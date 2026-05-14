@@ -24,6 +24,7 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_row.tres" id="23_settings_row"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_field_normal.tres" id="24_settings_field_normal"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_field_hover.tres" id="25_settings_field_hover"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_menu_title_stone.tres" id="26_menu_title_stone"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
 texture = null
@@ -274,17 +275,19 @@ alignment = 1
 theme_override_constants/separation = 10
 
 [node name="TitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(420, 86)
-theme_override_styles/panel = ExtResource("7")
+custom_minimum_size = Vector2(456, 72)
+theme_override_styles/panel = ExtResource("26_menu_title_stone")
 
 [node name="TitleLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/TitlePanel"]
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
-text = "GALLICUS\nACTA ARENAE"
-theme_override_colors/font_color = Color(0.95, 0.91, 0.8, 1)
-theme_override_constants/line_spacing = -8
-theme_override_font_sizes/font_size = 34
+text = "GALLICUS"
+theme_override_colors/font_color = Color(0.74, 0.68, 0.57, 1)
+theme_override_colors/font_outline_color = Color(0.0352941, 0.0313726, 0.027451, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 42
 
 [node name="ContinueButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 text = "CONTINUA"

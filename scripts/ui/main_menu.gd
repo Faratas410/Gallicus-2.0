@@ -669,7 +669,7 @@ func _notification(what: int) -> void:
 
 func _refresh_localized_ui() -> void:
 	if title_label != null:
-		title_label.text = "%s\n%s" % [tr("GALLICUS"), tr("ACTA ARENAE")]
+		title_label.text = tr("GALLICUS")
 	if continue_button != null:
 		continue_button.text = tr("CONTINUA")
 	if new_game_button != null:

@@ -43,7 +43,7 @@ KNOWN_ERROR_ALLOWLIST = (
 class SmokeScenarioSpec:
     name: str
     required_substrings: tuple[str, ...]
-    require_single_run_manager_ready: bool
+    require_single_boot_marker: bool
 
 
 SCENARIO_SPECS: dict[str, SmokeScenarioSpec] = {
@@ -58,7 +58,7 @@ SCENARIO_SPECS: dict[str, SmokeScenarioSpec] = {
             "SMOKE:MILESTONE=BET_PRESENT",
             "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
         ),
-        require_single_run_manager_ready=False,
+        require_single_boot_marker=False,
     ),
     SCENARIO_FULL_RUN: SmokeScenarioSpec(
         name=SCENARIO_FULL_RUN,
@@ -76,7 +76,7 @@ SCENARIO_SPECS: dict[str, SmokeScenarioSpec] = {
             "SMOKE:MILESTONE=END_RUN_FINAL ending_key=",
             "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
         ),
-        require_single_run_manager_ready=True,
+        require_single_boot_marker=True,
     ),
 }
 
@@ -200,11 +200,11 @@ def validate_log_text(log_text: str, scenario: str) -> list[str]:
         ):
             failures.append("missing full-run request token: request_pyl_double/request_pyl_cashout")
 
-    if spec.require_single_run_manager_ready:
-        run_manager_ready_count = log_text.count("RunManager ready")
-        if run_manager_ready_count != 1:
+    if spec.require_single_boot_marker:
+        boot_marker_count = log_text.count("SMOKE:BOOT_OK")
+        if boot_marker_count != 1:
             failures.append(
-                f"expected exactly 1 'RunManager ready' marker, found {run_manager_ready_count}"
+                f"expected exactly 1 'SMOKE:BOOT_OK' marker, found {boot_marker_count}"
             )
 
     return failures

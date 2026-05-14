@@ -24,7 +24,6 @@ def fail(message: str) -> int:
 def _build_bet_present_log() -> str:
     return "\n".join(
         [
-            "RunManager ready",
             "SMOKE:BOOT_OK",
             "SMOKE:PHASE=MAIN_MENU",
             "SMOKE:STEP=REQUEST_NEW_RUN",
@@ -41,7 +40,6 @@ def _build_bet_present_log() -> str:
 def _build_full_run_log() -> str:
     return "\n".join(
         [
-            "RunManager ready",
             "SMOKE:BOOT_OK",
             "SMOKE:STEP=SCENARIO_FULL_RUN_START",
             "SMOKE:MILESTONE=BET_PRESENT",

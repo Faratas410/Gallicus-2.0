@@ -10,7 +10,6 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_panel_main.tres" id="16"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="17"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="18"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book.png" id="19"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_banner.tres" id="20_verdict_banner"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_detail.tres" id="21_verdict_detail"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_body.tres" id="22_verdict_body"]
@@ -25,6 +24,7 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_mid_choice_button_disabled.tres" id="31_mid_choice_button_disabled"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_scars_dossier.tres" id="32_scars_dossier"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_scars_inner.tres" id="33_scars_inner"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_slab.tres" id="34_register_slab"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -1340,7 +1340,7 @@ anchor_bottom = 1.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0.48)
 
-[node name="Panel_END_RUN" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN"]
+[node name="Panel_END_RUN" type="Panel" parent="UI_RunRoot/Phase_END_RUN"]
 visible = false
 z_index = 1
 anchor_left = 0.5
@@ -1353,9 +1353,7 @@ offset_right = 560.0
 offset_bottom = 320.0
 clip_contents = true
 custom_minimum_size = Vector2(1120, 640)
-texture = ExtResource("19")
-expand_mode = 1
-stretch_mode = 6
+theme_override_styles/panel = ExtResource("34_register_slab")
 
 [node name="Box_END_RUN" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
 anchor_right = 1.0
@@ -1398,7 +1396,7 @@ text = ""
 custom_minimum_size = Vector2(0, 148)
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.22, 0.12, 0.045, 1)
+theme_override_colors/font_color = Color(0.82, 0.74, 0.6, 0.98)
 theme_override_font_sizes/font_size = 22
 autowrap_mode = 2
 text = ""

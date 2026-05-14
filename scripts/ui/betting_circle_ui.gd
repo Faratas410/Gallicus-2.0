@@ -8,7 +8,6 @@ const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const BOOK_TITLE_PULSE_SPEED: float = 1.15
 const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
 const BOOK_DROP_SECONDS: float = 0.62
-const BOOK_OPEN_SQUASH_SECONDS: float = 0.20
 const BOOK_OPEN_SECONDS: float = 0.48
 const BOOK_SETTLE_SECONDS: float = 0.18
 const BOOK_CONTENT_REVEAL_SECONDS: float = 0.36
@@ -16,8 +15,8 @@ const CONTRACT_WRITE_SECONDS: float = 2.25
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
-@onready var left_sign_button: TextureButton = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left as TextureButton
-@onready var right_sign_button: TextureButton = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right as TextureButton
+@onready var left_sign_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left as Button
+@onready var right_sign_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right as Button
 @onready var left_sign_label: Label = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left/Lbl_Sign_Left as Label
 @onready var right_sign_label: Label = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right/Lbl_Sign_Right as Label
 @onready var left_page: Control = $CenterContainer/BookFrame/LeftPage as Control
@@ -28,11 +27,11 @@ const CONTRACT_WRITE_SECONDS: float = 2.25
 @onready var right_selection_outline: Control = $CenterContainer/BookFrame/RightPage/RightSelectionOutline as Control
 @onready var header_label: Label = get_node_or_null("CenterContainer/BookFrame/Title") as Label
 @onready var book_frame: Control = $CenterContainer/BookFrame as Control
-@onready var open_book_bg: TextureRect = $CenterContainer/BookFrame/SpellbookBg as TextureRect
-@onready var closed_book_bg: TextureRect = $CenterContainer/BookFrame/ClosedBookBg as TextureRect
+@onready var open_book_bg: Control = $CenterContainer/BookFrame/SpellbookBg as Control
+@onready var closed_book_bg: Control = $CenterContainer/BookFrame/ClosedBookBg as Control
 @onready var closed_intro: Control = $CenterContainer/BookFrame/ClosedIntro as Control
 @onready var intro_text: Label = $CenterContainer/BookFrame/ClosedIntro/IntroText as Label
-@onready var open_book_button: TextureButton = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book as TextureButton
+@onready var open_book_button: Button = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book as Button
 @onready var open_book_label: Label = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book/Lbl_Open_Book as Label
 
 var selected_bet_id: StringName = &""
@@ -181,13 +180,11 @@ func _play_open_animation() -> void:
 	_open_tween.tween_property(book_frame, "position", _book_base_position, BOOK_DROP_SECONDS)
 	_open_tween.parallel().tween_property(book_frame, "scale", _book_base_scale * Vector2(0.98, 0.98), BOOK_DROP_SECONDS)
 	_open_tween.tween_callback(Callable(self, "_begin_book_open_swap"))
-	_open_tween.tween_property(book_frame, "scale", _book_base_scale * Vector2(0.94, 0.52), BOOK_OPEN_SQUASH_SECONDS)
 	_open_tween.tween_callback(Callable(self, "_show_book_open_shell"))
 	_open_tween.set_ease(Tween.EASE_OUT)
-	_open_tween.tween_property(book_frame, "scale", _book_base_scale, BOOK_OPEN_SECONDS)
+	_open_tween.tween_property(book_frame, "scale", _book_base_scale * Vector2(1.012, 1.012), BOOK_OPEN_SECONDS)
 	_open_tween.parallel().tween_property(open_book_bg, "modulate:a", 1.0, BOOK_OPEN_SECONDS)
 	_open_tween.parallel().tween_property(closed_book_bg, "modulate:a", 0.0, BOOK_OPEN_SECONDS)
-	_open_tween.tween_property(book_frame, "scale", _book_base_scale * Vector2(1.018, 0.992), BOOK_SETTLE_SECONDS)
 	_open_tween.set_ease(Tween.EASE_IN_OUT)
 	_open_tween.tween_property(book_frame, "scale", _book_base_scale, BOOK_SETTLE_SECONDS)
 	_open_tween.tween_callback(Callable(self, "_reveal_book_content"))
@@ -371,9 +368,9 @@ func _apply_selection_visual() -> void:
 	left_selection_outline.visible = false
 	right_selection_outline.visible = false
 	if left_page != null:
-		left_page.modulate = Color(1.0, 0.99, 0.94, 1.0) if left_selected else Color(0.98, 0.95, 0.86, 0.98)
+		left_page.modulate = Color(1.0, 0.98, 0.9, 1.0) if left_selected else Color(0.86, 0.84, 0.78, 0.96)
 	if right_page != null:
-		right_page.modulate = Color(1.0, 0.99, 0.94, 1.0) if right_selected else Color(0.98, 0.95, 0.86, 0.98)
+		right_page.modulate = Color(1.0, 0.98, 0.9, 1.0) if right_selected else Color(0.86, 0.84, 0.78, 0.96)
 	if left_sign_button != null:
 		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2(0.99, 0.99)
 	if right_sign_button != null:
@@ -394,7 +391,7 @@ func _on_sign_right_pressed() -> void:
 		return
 	_submit_offer_index(1, right_sign_button)
 
-func _submit_offer_index(index: int, button: TextureButton) -> void:
+func _submit_offer_index(index: int, button: Button) -> void:
 	var offer_id: StringName = _offer_id_at(index)
 	if offer_id == &"":
 		return
@@ -403,7 +400,7 @@ func _submit_offer_index(index: int, button: TextureButton) -> void:
 	_update_sigilla_state()
 	_submit_selected_offer(button)
 
-func _submit_selected_offer(button: TextureButton) -> void:
+func _submit_selected_offer(button: Button) -> void:
 	if _opening_locked or _submit_locked or selected_bet_id == &"":
 		return
 	_submit_locked = true
@@ -413,7 +410,7 @@ func _submit_selected_offer(button: TextureButton) -> void:
 		GameEvents.request_place_bet.emit(String(selected_bet_id), 0)
 	close()
 
-func _play_stamp_feedback(button: TextureButton) -> void:
+func _play_stamp_feedback(button: Button) -> void:
 	if button == null:
 		return
 	var tween: Tween = create_tween()

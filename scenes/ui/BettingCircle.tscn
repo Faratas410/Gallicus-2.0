@@ -1,16 +1,17 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_13.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_15.png" id="5"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_14.png" id="6"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/plank_16.png" id="7"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
-[ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book_closed_cover.png" id="9"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_betting_title.tres" id="10"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/italiana_regular_font.tres" id="11_book_font"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_slab.tres" id="12_register_slab"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_slab_closed.tres" id="13_register_slab_closed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_tablet.tres" id="14_register_tablet"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_normal.tres" id="15_button_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_hover.tres" id="16_button_hover"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres" id="17_button_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres" id="18_button_disabled"]
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
 [node name="BettingCircle" type="Control"]
@@ -54,20 +55,16 @@ anchor_bottom = 1.0
 custom_minimum_size = Vector2(820, 538)
 mouse_filter = 1
 
-[node name="SpellbookBg" type="TextureRect" parent="CenterContainer/BookFrame"]
+[node name="SpellbookBg" type="PanelContainer" parent="CenterContainer/BookFrame"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = ExtResource("2")
-expand_mode = 1
-stretch_mode = 5
+theme_override_styles/panel = ExtResource("12_register_slab")
 
-[node name="ClosedBookBg" type="TextureRect" parent="CenterContainer/BookFrame"]
+[node name="ClosedBookBg" type="PanelContainer" parent="CenterContainer/BookFrame"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = ExtResource("9")
-expand_mode = 1
-stretch_mode = 5
+theme_override_styles/panel = ExtResource("13_register_slab_closed")
 
 [node name="ClosedIntro" type="Control" parent="CenterContainer/BookFrame"]
 visible = false
@@ -89,17 +86,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="Btn_Open_Book" type="TextureButton" parent="CenterContainer/BookFrame/ClosedIntro"]
+[node name="Btn_Open_Book" type="Button" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.34
 anchor_top = 0.615
 anchor_right = 0.66
 anchor_bottom = 0.715
-texture_normal = ExtResource("3")
-texture_hover = ExtResource("5")
-texture_pressed = ExtResource("6")
-texture_disabled = ExtResource("7")
-ignore_texture_size = true
-stretch_mode = 0
+theme_override_styles/normal = ExtResource("15_button_normal")
+theme_override_styles/hover = ExtResource("16_button_hover")
+theme_override_styles/pressed = ExtResource("17_button_pressed")
+theme_override_styles/disabled = ExtResource("18_button_disabled")
+text = ""
 
 [node name="Lbl_Open_Book" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book"]
 anchor_right = 1.0
@@ -138,12 +134,10 @@ anchor_right = 0.475
 anchor_bottom = 0.89
 mouse_filter = 1
 
-[node name="LeftPaper" type="TextureRect" parent="CenterContainer/BookFrame/LeftPage"]
-visible = false
+[node name="LeftPaper" type="PanelContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-expand_mode = 1
-stretch_mode = 6
+theme_override_styles/panel = ExtResource("14_register_tablet")
 
 [node name="LeftSelectionOutline" type="Control" parent="CenterContainer/BookFrame/LeftPage"]
 visible = false
@@ -200,7 +194,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.27, 0.17, 0.085, 0.96)
+theme_override_colors/default_color = Color(0.82, 0.74, 0.6, 0.98)
 theme_override_fonts/normal_font = ExtResource("11_book_font")
 theme_override_fonts/bold_font = ExtResource("11_book_font")
 theme_override_font_sizes/normal_font_size = 13
@@ -210,17 +204,16 @@ text = "[center][b]VIA SINISTRA[/b][/center]"
 scroll_active = false
 autowrap_mode = 3
 
-[node name="Btn_Sign_Left" type="TextureButton" parent="CenterContainer/BookFrame/LeftPage"]
+[node name="Btn_Sign_Left" type="Button" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_left = 0.25
 anchor_top = 0.835
 anchor_right = 0.75
 anchor_bottom = 0.955
-texture_normal = ExtResource("3")
-texture_hover = ExtResource("5")
-texture_pressed = ExtResource("6")
-texture_disabled = ExtResource("7")
-ignore_texture_size = true
-stretch_mode = 0
+theme_override_styles/normal = ExtResource("15_button_normal")
+theme_override_styles/hover = ExtResource("16_button_hover")
+theme_override_styles/pressed = ExtResource("17_button_pressed")
+theme_override_styles/disabled = ExtResource("18_button_disabled")
+text = ""
 
 [node name="Lbl_Sign_Left" type="Label" parent="CenterContainer/BookFrame/LeftPage/Btn_Sign_Left"]
 anchor_right = 1.0
@@ -237,12 +230,10 @@ anchor_right = 0.925
 anchor_bottom = 0.89
 mouse_filter = 1
 
-[node name="RightPaper" type="TextureRect" parent="CenterContainer/BookFrame/RightPage"]
-visible = false
+[node name="RightPaper" type="PanelContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-expand_mode = 1
-stretch_mode = 6
+theme_override_styles/panel = ExtResource("14_register_tablet")
 
 [node name="RightSelectionOutline" type="Control" parent="CenterContainer/BookFrame/RightPage"]
 visible = false
@@ -299,7 +290,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.27, 0.17, 0.085, 0.96)
+theme_override_colors/default_color = Color(0.82, 0.74, 0.6, 0.98)
 theme_override_fonts/normal_font = ExtResource("11_book_font")
 theme_override_fonts/bold_font = ExtResource("11_book_font")
 theme_override_font_sizes/normal_font_size = 13
@@ -309,17 +300,16 @@ text = "[center][b]VIA DESTRA[/b][/center]"
 scroll_active = false
 autowrap_mode = 3
 
-[node name="Btn_Sign_Right" type="TextureButton" parent="CenterContainer/BookFrame/RightPage"]
+[node name="Btn_Sign_Right" type="Button" parent="CenterContainer/BookFrame/RightPage"]
 anchor_left = 0.25
 anchor_top = 0.835
 anchor_right = 0.75
 anchor_bottom = 0.955
-texture_normal = ExtResource("3")
-texture_hover = ExtResource("5")
-texture_pressed = ExtResource("6")
-texture_disabled = ExtResource("7")
-ignore_texture_size = true
-stretch_mode = 0
+theme_override_styles/normal = ExtResource("15_button_normal")
+theme_override_styles/hover = ExtResource("16_button_hover")
+theme_override_styles/pressed = ExtResource("17_button_pressed")
+theme_override_styles/disabled = ExtResource("18_button_disabled")
+text = ""
 
 [node name="Lbl_Sign_Right" type="Label" parent="CenterContainer/BookFrame/RightPage/Btn_Sign_Right"]
 anchor_right = 1.0

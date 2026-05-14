@@ -33,12 +33,12 @@ def _rgba(hex_value: str, alpha: int = 255) -> tuple[int, int, int, int]:
     )
 
 
-STONE = _rgba("#15130f")
-STONE_LIGHT = _rgba("#2b261d")
-STONE_DARK = _rgba("#080705")
-BRONZE = _rgba("#8a683c")
-BRONZE_DARK = _rgba("#3f2d19")
-GROOVE = _rgba("#050403")
+STONE = _rgba("#3b352b")
+STONE_LIGHT = _rgba("#635946")
+STONE_DARK = _rgba("#211d18")
+BRONZE = _rgba("#8f6b3f")
+BRONZE_DARK = _rgba("#4a361f")
+GROOVE = _rgba("#16130f")
 
 
 def _noise_layer(size: tuple[int, int], opacity: int, seed: int) -> Image.Image:
@@ -56,24 +56,67 @@ def _noise_layer(size: tuple[int, int], opacity: int, seed: int) -> Image.Image:
 
 def _carved_rect(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], radius: int) -> None:
     x1, y1, x2, y2 = box
-    draw.rounded_rectangle(box, radius=radius, fill=STONE, outline=BRONZE_DARK, width=4)
-    draw.rounded_rectangle((x1 + 5, y1 + 5, x2 - 5, y2 - 5), radius=max(1, radius - 4), outline=BRONZE, width=2)
-    draw.rounded_rectangle((x1 + 15, y1 + 15, x2 - 15, y2 - 15), radius=max(1, radius - 8), outline=(255, 210, 130, 34), width=1)
-    draw.line((x1 + 10, y2 - 12, x2 - 10, y2 - 12), fill=(0, 0, 0, 90), width=2)
-    draw.line((x1 + 10, y1 + 10, x2 - 10, y1 + 10), fill=(255, 220, 150, 36), width=1)
+    draw.rounded_rectangle(box, radius=radius, fill=None, outline=STONE_DARK, width=5)
+    draw.rounded_rectangle((x1 + 5, y1 + 5, x2 - 5, y2 - 5), radius=max(1, radius - 4), outline=BRONZE_DARK, width=2)
+    draw.rounded_rectangle((x1 + 12, y1 + 12, x2 - 12, y2 - 12), radius=max(1, radius - 8), outline=(217, 194, 145, 42), width=1)
+    draw.line((x1 + 10, y2 - 12, x2 - 10, y2 - 12), fill=(0, 0, 0, 72), width=2)
+    draw.line((x1 + 10, y1 + 10, x2 - 10, y1 + 10), fill=(255, 236, 190, 48), width=2)
 
 
 def _stone_base(size: tuple[int, int], seed: int) -> Image.Image:
-    img = Image.new("RGBA", size, STONE)
-    img.alpha_composite(_noise_layer(size, 22, seed))
-    draw = ImageDraw.Draw(img, "RGBA")
+    rng = random.Random(seed)
     w, h = size
+    img = Image.new("RGBA", size, STONE)
+    px = img.load()
+    for y in range(h):
+        shade = int((y / max(1, h - 1)) * -22)
+        for x in range(w):
+            ripple = int(math.sin((x + seed) * 0.035) * 4)
+            r = max(0, min(255, STONE[0] + shade + ripple))
+            g = max(0, min(255, STONE[1] + shade + ripple))
+            b = max(0, min(255, STONE[2] + shade + ripple))
+            px[x, y] = (r, g, b, 255)
+    img.alpha_composite(_noise_layer(size, 58, seed))
+    draw = ImageDraw.Draw(img, "RGBA")
+    for i in range(26):
+        x = rng.randint(0, max(0, w - 12))
+        y = rng.randint(0, max(0, h - 12))
+        rx = rng.randint(14, 74)
+        ry = rng.randint(4, 18)
+        color = STONE_LIGHT if i % 3 != 0 else _rgba("#2f2a22")
+        alpha = rng.randint(10, 26)
+        draw.ellipse((x, y, min(w, x + rx), min(h, y + ry)), fill=(color[0], color[1], color[2], alpha))
     for i in range(22):
-        x = int((i * 53 + seed * 19) % w)
-        y = int((i * 31 + seed * 13) % h)
-        ln = 20 + ((i * 17) % 90)
-        draw.line((x, y, min(w, x + ln), y + int(math.sin(i) * 5)), fill=(255, 230, 170, 18), width=1)
-    return img
+        x = rng.randint(0, w)
+        y = rng.randint(0, h)
+        ln = rng.randint(18, 120)
+        lift = rng.randint(-8, 8)
+        draw.line((x, y, min(w, x + ln), max(0, min(h, y + lift))), fill=(232, 218, 184, rng.randint(22, 48)), width=1)
+        if i % 3 == 0:
+            draw.line((x + 1, y + 2, min(w, x + ln + 1), max(0, min(h, y + lift + 2))), fill=(0, 0, 0, 24), width=1)
+    for i in range(8):
+        x = rng.randint(8, max(8, w - 8))
+        y = rng.randint(8, max(8, h - 8))
+        draw.polygon(
+            [
+                (x, y),
+                (x + rng.randint(4, 16), y + rng.randint(-3, 6)),
+                (x + rng.randint(1, 10), y + rng.randint(5, 16)),
+            ],
+            fill=(238, 224, 188, rng.randint(22, 46)),
+        )
+    for i in range(6):
+        x = rng.randint(0, w)
+        y = rng.randint(0, h)
+        points = [(x, y)]
+        for _ in range(rng.randint(2, 4)):
+            x = max(0, min(w, x + rng.randint(20, 70)))
+            y = max(0, min(h, y + rng.randint(-18, 18)))
+            points.append((x, y))
+        draw.line(points, fill=(0, 0, 0, rng.randint(22, 42)), width=1)
+    opaque = Image.new("RGBA", size, STONE)
+    opaque.alpha_composite(img)
+    return opaque
 
 
 def register_slab_large(path: Path) -> None:
@@ -90,7 +133,7 @@ def register_slab_large(path: Path) -> None:
     _carved_rect(sd, (512, 66, 918, 348), 10)
     sd.rectangle((488, 42, 496, 386), fill=(0, 0, 0, 92))
     sd.rectangle((498, 42, 502, 386), fill=(160, 124, 72, 90))
-    sd.rounded_rectangle((142, 382, 818, 410), radius=5, fill=GROOVE, outline=BRONZE_DARK, width=2)
+    sd.rounded_rectangle((142, 382, 818, 410), radius=5, fill=GROOVE, outline=STONE_DARK, width=2)
     img.alpha_composite(slab, (32, 24))
     img.save(path)
 
@@ -110,13 +153,13 @@ def button_tablet_states(path: Path) -> None:
     img = Image.new("RGBA", SIZES[path.name], (0, 0, 0, 0))
     labels = [
         (STONE, BRONZE_DARK, 0),
-        (_rgba("#221a11"), BRONZE, 1),
-        (_rgba("#0d0b08"), _rgba("#b48145"), 2),
+        (_rgba("#4b402e"), BRONZE, 1),
+        (_rgba("#29231a"), _rgba("#b48145"), 2),
     ]
     for row, (fill, outline, seed) in enumerate(labels):
         y = row * 64 + 6
-        button = Image.new("RGBA", (488, 52), fill)
-        button.alpha_composite(_noise_layer((488, 52), 18, 80 + seed))
+        button = _stone_base((488, 52), 80 + seed)
+        button.alpha_composite(Image.new("RGBA", (488, 52), (fill[0], fill[1], fill[2], min(fill[3], 96))))
         bd = ImageDraw.Draw(button, "RGBA")
         bd.rounded_rectangle((0, 0, 487, 51), radius=6, outline=outline, width=3)
         bd.rounded_rectangle((8, 8, 479, 43), radius=4, outline=(255, 220, 150, 28), width=1)
@@ -128,8 +171,8 @@ def button_tablet_states(path: Path) -> None:
 
 def _button_state(path: Path, fill: tuple[int, int, int, int], outline: tuple[int, int, int, int], seed: int, inset: bool = False) -> None:
     img = Image.new("RGBA", SIZES[path.name], (0, 0, 0, 0))
-    button = Image.new("RGBA", (488, 52), fill)
-    button.alpha_composite(_noise_layer((488, 52), 18, 120 + seed))
+    button = _stone_base((488, 52), 120 + seed)
+    button.alpha_composite(Image.new("RGBA", (488, 52), (fill[0], fill[1], fill[2], min(fill[3], 96))))
     bd = ImageDraw.Draw(button, "RGBA")
     bd.rounded_rectangle((0, 0, 487, 51), radius=6, outline=outline, width=3)
     bd.rounded_rectangle((8, 8, 479, 43), radius=4, outline=(255, 220, 150, 28), width=1)
@@ -144,11 +187,11 @@ def button_tablet_normal(path: Path) -> None:
 
 
 def button_tablet_hover(path: Path) -> None:
-    _button_state(path, _rgba("#221a11"), BRONZE, 2)
+    _button_state(path, _rgba("#4b402e", 90), BRONZE, 2)
 
 
 def button_tablet_pressed(path: Path) -> None:
-    _button_state(path, _rgba("#0d0b08"), _rgba("#b48145"), 3, True)
+    _button_state(path, _rgba("#29231a", 120), _rgba("#b48145"), 3, True)
 
 
 def button_tablet_disabled(path: Path) -> None:

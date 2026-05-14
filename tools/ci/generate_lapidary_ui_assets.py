@@ -54,6 +54,62 @@ def _noise_layer(size: tuple[int, int], opacity: int, seed: int) -> Image.Image:
     return img.filter(ImageFilter.GaussianBlur(0.6))
 
 
+def _jittered_edge_path(
+    start: tuple[int, int],
+    end: tuple[int, int],
+    seed: int,
+    steps: int,
+    amplitude: int,
+) -> list[tuple[int, int]]:
+    rng = random.Random(seed)
+    x1, y1 = start
+    x2, y2 = end
+    points: list[tuple[int, int]] = []
+    horizontal = abs(x2 - x1) >= abs(y2 - y1)
+    for i in range(steps + 1):
+        t = i / max(1, steps)
+        x = round(x1 + (x2 - x1) * t)
+        y = round(y1 + (y2 - y1) * t)
+        if i not in (0, steps):
+            if horizontal:
+                y += rng.randint(-amplitude, amplitude)
+            else:
+                x += rng.randint(-amplitude, amplitude)
+        points.append((x, y))
+    return points
+
+
+def _roughen_outer_edge(
+    img: Image.Image,
+    box: tuple[int, int, int, int],
+    seed: int,
+    amplitude: int = 3,
+    notches: int = 18,
+) -> None:
+    rng = random.Random(seed)
+    draw = ImageDraw.Draw(img, "RGBA")
+    x1, y1, x2, y2 = box
+    top = _jittered_edge_path((x1, y1), (x2, y1), seed + 1, 28, amplitude)
+    right = _jittered_edge_path((x2, y1), (x2, y2), seed + 2, 18, amplitude)
+    bottom = _jittered_edge_path((x2, y2), (x1, y2), seed + 3, 28, amplitude)
+    left = _jittered_edge_path((x1, y2), (x1, y1), seed + 4, 18, amplitude)
+    for path in (top, right, bottom, left):
+        draw.line(path, fill=(12, 10, 8, 120), width=3, joint="curve")
+        draw.line([(x, y - 1) for x, y in path], fill=(232, 218, 184, 32), width=1)
+    for _ in range(notches):
+        side = rng.choice(("top", "right", "bottom", "left"))
+        if side in ("top", "bottom"):
+            x = rng.randint(x1 + 12, x2 - 12)
+            y = y1 if side == "top" else y2
+            notch = [(x, y), (x + rng.randint(4, 14), y + (rng.randint(3, 8) if side == "top" else -rng.randint(3, 8))), (x + rng.randint(12, 26), y)]
+        else:
+            x = x1 if side == "left" else x2
+            y = rng.randint(y1 + 12, y2 - 12)
+            notch = [(x, y), (x + (rng.randint(3, 8) if side == "left" else -rng.randint(3, 8)), y + rng.randint(4, 14)), (x, y + rng.randint(12, 26))]
+        draw.polygon(notch, fill=(18, 15, 12, rng.randint(70, 115)))
+        draw.line(notch, fill=(232, 218, 184, rng.randint(20, 38)), width=1)
+
+
 def _carved_rect(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], radius: int) -> None:
     x1, y1, x2, y2 = box
     draw.rounded_rectangle(box, radius=radius, fill=None, outline=STONE_DARK, width=5)
@@ -129,8 +185,11 @@ def register_slab_large(path: Path) -> None:
     slab = _stone_base((960, 448), 11)
     sd = ImageDraw.Draw(slab, "RGBA")
     _carved_rect(sd, (0, 0, 959, 447), 16)
+    _roughen_outer_edge(slab, (2, 2, 957, 445), 301, 4)
     _carved_rect(sd, (42, 66, 448, 348), 10)
+    _roughen_outer_edge(slab, (43, 67, 447, 347), 302, 2)
     _carved_rect(sd, (512, 66, 918, 348), 10)
+    _roughen_outer_edge(slab, (513, 67, 917, 347), 303, 2)
     sd.rectangle((488, 42, 496, 386), fill=(0, 0, 0, 92))
     sd.rectangle((498, 42, 502, 386), fill=(160, 124, 72, 90))
     sd.rounded_rectangle((142, 382, 818, 410), radius=5, fill=GROOVE, outline=STONE_DARK, width=2)
@@ -143,6 +202,7 @@ def register_tablet(path: Path) -> None:
     tablet = _stone_base((416, 328), 23)
     draw = ImageDraw.Draw(tablet, "RGBA")
     _carved_rect(draw, (0, 0, 415, 327), 12)
+    _roughen_outer_edge(tablet, (2, 2, 413, 325), 401, 3)
     for y in (78, 140, 202, 264):
         draw.line((44, y, 372, y), fill=(255, 220, 150, 22), width=1)
     img.alpha_composite(tablet, (16, 16))
@@ -162,6 +222,7 @@ def button_tablet_states(path: Path) -> None:
         button.alpha_composite(Image.new("RGBA", (488, 52), (fill[0], fill[1], fill[2], min(fill[3], 96))))
         bd = ImageDraw.Draw(button, "RGBA")
         bd.rounded_rectangle((0, 0, 487, 51), radius=6, outline=outline, width=3)
+        _roughen_outer_edge(button, (2, 2, 485, 49), 501 + seed, 1, 6)
         bd.rounded_rectangle((8, 8, 479, 43), radius=4, outline=(255, 220, 150, 28), width=1)
         if row == 2:
             bd.rectangle((8, 8, 479, 14), fill=(0, 0, 0, 40))
@@ -175,6 +236,7 @@ def _button_state(path: Path, fill: tuple[int, int, int, int], outline: tuple[in
     button.alpha_composite(Image.new("RGBA", (488, 52), (fill[0], fill[1], fill[2], min(fill[3], 96))))
     bd = ImageDraw.Draw(button, "RGBA")
     bd.rounded_rectangle((0, 0, 487, 51), radius=6, outline=outline, width=3)
+    _roughen_outer_edge(button, (2, 2, 485, 49), 601 + seed, 1, 6)
     bd.rounded_rectangle((8, 8, 479, 43), radius=4, outline=(255, 220, 150, 28), width=1)
     if inset:
         bd.rectangle((8, 8, 479, 15), fill=(0, 0, 0, 48))
@@ -203,6 +265,7 @@ def title_plaque(path: Path) -> None:
     plaque = _stone_base((608, 88), 41)
     draw = ImageDraw.Draw(plaque, "RGBA")
     _carved_rect(draw, (0, 0, 607, 87), 10)
+    _roughen_outer_edge(plaque, (2, 2, 605, 85), 701, 1, 8)
     draw.line((66, 44, 542, 44), fill=(255, 220, 150, 28), width=1)
     img.alpha_composite(plaque, (16, 20))
     img.save(path)
@@ -213,6 +276,7 @@ def pressure_groove(path: Path) -> None:
     rail = _stone_base((736, 64), 52)
     draw = ImageDraw.Draw(rail, "RGBA")
     _carved_rect(draw, (0, 0, 735, 63), 8)
+    _roughen_outer_edge(rail, (2, 2, 733, 61), 801, 1, 6)
     draw.rounded_rectangle((40, 22, 696, 42), radius=4, fill=GROOVE, outline=BRONZE_DARK, width=2)
     draw.line((44, 23, 692, 23), fill=(255, 220, 150, 20), width=1)
     img.alpha_composite(rail, (16, 16))

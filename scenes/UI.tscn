@@ -847,7 +847,7 @@ custom_minimum_size = Vector2(0, 126)
 size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
-text = "ABBASSA LO SGUARDO\nPressione -1\nIl Registro annota misura."
+text = "ABBASSA LO SGUARDO\nPressione -1.\nIl Registro annota misura."
 
 [node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
 theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
@@ -862,7 +862,7 @@ custom_minimum_size = Vector2(0, 126)
 size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
-text = "SFIDA LA GRADINATA\nPressione +1\nIl Registro annota esposizione."
+text = "SFIDA LA GRADINATA\nPressione +1.\nIl Registro annota esposizione."
 [node name="BetBlocker" type="ColorRect" parent="UI_RunRoot/Phase_INTRO"]
 mouse_filter = 2
 anchor_right = 1.0
@@ -1395,27 +1395,28 @@ theme_override_font_sizes/font_size = 18
 text = ""
 
 [node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-custom_minimum_size = Vector2(0, 68)
+custom_minimum_size = Vector2(0, 148)
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.22, 0.12, 0.045, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 autowrap_mode = 2
 text = ""
 
 [node name="Lbl_END_RUN_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_styles/panel = ExtResource("21_verdict_detail")
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 58)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel"]
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.91, 0.81, 0.63, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 17
 text = ""
 
 [node name="Box_END_RUN_DETAILS" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+visible = false
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 5
@@ -1602,19 +1603,19 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -340.0
-offset_top = -104.0
+offset_top = -84.0
 offset_right = 340.0
-offset_bottom = -18.0
+offset_bottom = -8.0
 mouse_filter = 2
-custom_minimum_size = Vector2(680, 86)
+custom_minimum_size = Vector2(680, 76)
 
 [node name="PressureRailMargin" type="MarginContainer" parent="HUD/PressureRail"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 26.0
-offset_top = 12.0
+offset_top = 8.0
 offset_right = -26.0
-offset_bottom = -12.0
+offset_bottom = -8.0
 
 [node name="EscalationRow" type="VBoxContainer" parent="HUD/PressureRail/PressureRailMargin"]
 anchor_right = 1.0

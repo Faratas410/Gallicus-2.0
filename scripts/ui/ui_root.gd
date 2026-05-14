@@ -18,8 +18,8 @@ const SENTENCE_BANNER_SECONDS: float = 1.2
 const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.22
 const FADE_OUT_SEC: float = 0.18
-const ENDING_FADE_IN_SEC: float = 0.28
-const ENDING_FADE_OUT_SEC: float = 0.22
+const ENDING_FADE_IN_SEC: float = 0.46
+const ENDING_FADE_OUT_SEC: float = 0.34
 const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
 const SIGN_LOCK_DARKEN_RGB: float = 0.82
 const SIGN_PREVIEW_SCALE: float = 1.015
@@ -31,12 +31,12 @@ const MOTION_BASE_POSITION_META: StringName = &"motion_base_position"
 const PUSH_LUCK_DETAILS_MAX_LINES: int = 3
 const PUSH_LUCK_DETAIL_MAX_CHARS: int = 72
 const QUICK_CUT_MAX_SECONDS: float = 1.5
-const VERDICT_REVEAL_STEP_SECONDS: float = 0.2
-const VERDICT_REVEAL_HOLD_SECONDS: float = 0.08
-const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.25
-const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.30
-const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.30
-const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.20
+const VERDICT_REVEAL_STEP_SECONDS: float = 0.34
+const VERDICT_REVEAL_HOLD_SECONDS: float = 0.12
+const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.38
+const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.44
+const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.36
+const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.30
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres"
@@ -1147,6 +1147,27 @@ func _format_verdict_pacts_list(values: Array[String]) -> String:
 		return fmt_register_line("rinunciato", "continuato")
 	return fmt_register_line("accettato", "%d condizioni registrate" % values.size())
 
+func _build_smart_register_summary() -> String:
+	var pact_count: int = _last_verdict_pacts.size()
+	var condanna_count: int = _last_verdict_condanne.size()
+	var pressure_peak: int = _resolve_final_pressure_max()
+	var outcome_line: String = tr("Il Registro conserva la traccia del percorso.")
+	if _last_register_final:
+		outcome_line = tr("Il Registro chiude il fascicolo e classifica l'esito.")
+	elif _last_verdict_outcome == &"CASHOUT":
+		outcome_line = tr("Hai lasciato l'arena con la posta riconosciuta.")
+	elif _last_verdict_outcome == &"WIN":
+		outcome_line = tr("Il patto regge: il percorso puo proseguire.")
+	else:
+		outcome_line = tr("La condanna viene accettata e il percorso resta segnato.")
+	var pressure_line: String = tr("Pressione massima: %d/%d.") % [pressure_peak, _get_pressure_max(_escalation_max)]
+	var unlock_line: String = tr("Patti e sblocchi sono stati aggiornati nell'Archivio.")
+	if condanna_count > 0:
+		unlock_line = tr("%d condanne archiviate; il dettaglio resta nell'Archivio.") % condanna_count
+	if pact_count > 0:
+		return "%s\n%s %s" % [outcome_line, pressure_line, unlock_line]
+	return "%s\n%s %s" % [outcome_line, pressure_line, tr("Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.")]
+
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
 		return []
@@ -1190,21 +1211,11 @@ func _refresh_verdict_panel() -> void:
 			verdict_icon.texture = null
 			verdict_icon.visible = false
 	if verdict_sentence_label != null:
-		var body_text: String = _last_register_message.strip_edges()
-		if _last_next_bet_enabled:
-			if _last_verdict_outcome == &"CASHOUT":
-				body_text = tr("Ricompensa applicata. Il registro resta aperto per la prossima scommessa.")
-			elif _last_verdict_outcome == &"WIN":
-				body_text = tr("Esito registrato. Puoi proseguire con la prossima scommessa.")
-			else:
-				body_text = tr("Nessun premio assegnato. Il registro resta consultabile.")
-		if body_text == "":
-			body_text = fmt_system_state(tr("nessuna annotazione registrata"))
-		verdict_sentence_label.text = body_text
+		verdict_sentence_label.text = _build_smart_register_summary()
 	if verdict_charge_label != null:
-		var status_text: String = tr("Il Registro ha inciso la chiusura.")
+		var status_text: String = tr("Il dettaglio degli sblocchi resta consultabile nell'Archivio.")
 		if _last_next_bet_enabled:
-			status_text = tr("Il Registro resta aperto: prosegui o lascia l'arena.")
+			status_text = tr("Il Registro resta aperto: scegli se proseguire o lasciare l'arena.")
 		verdict_charge_label.text = status_text
 	if ending_text != null:
 		ending_text.text = tr("[center][i]Sigillo del Registro - la folla arretra, il verbale resta.[/i][/center]")
@@ -1232,6 +1243,12 @@ func _refresh_verdict_panel() -> void:
 		verdict_crowd_section.visible = crowd_line != ""
 	if verdict_crowd_text != null:
 		verdict_crowd_text.text = crowd_line
+	if verdict_sections != null:
+		verdict_sections.visible = false
+	if game_over_scroll != null:
+		game_over_scroll.visible = false
+	if ending_text != null:
+		ending_text.visible = false
 
 func _set_verdict_canvas_alpha(alpha: float) -> void:
 	var targets: Array[CanvasItem] = []
@@ -1340,13 +1357,13 @@ func _set_verdict_mode(active: bool) -> void:
 	if verdict_charge_label != null:
 		verdict_charge_label.visible = active
 	if verdict_sections != null:
-		verdict_sections.visible = active
+		verdict_sections.visible = false
 	if verdict_crowd_section != null and active:
 		verdict_crowd_section.visible = _last_verdict_crowd_line.strip_edges() != ""
 	if game_over_scroll != null:
-		game_over_scroll.visible = active
+		game_over_scroll.visible = false
 	if ending_text != null:
-		ending_text.visible = active
+		ending_text.visible = false
 
 func _get_verdict_outcome_text(outcome: StringName) -> String:
 	match outcome:

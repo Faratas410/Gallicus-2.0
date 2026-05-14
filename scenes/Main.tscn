@@ -20,6 +20,10 @@
 [ext_resource type="StyleBox" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_track.tres" id="19_settings_slider_track"]
 [ext_resource type="StyleBox" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_fill.tres" id="20_settings_slider_fill"]
 [ext_resource type="Texture2D" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_grabber.png" id="21_settings_slider_grabber"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_header.tres" id="22_settings_header"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_row.tres" id="23_settings_row"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_field_normal.tres" id="24_settings_field_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_field_hover.tres" id="25_settings_field_hover"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
 texture = null
@@ -263,12 +267,6 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MainPanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer"]
-visible = false
-custom_minimum_size = Vector2(500, 400)
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("7")
-
 [node name="MenuVBox" type="VBoxContainer" parent="MenuLayer/MainMenu/CenterContainer"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -472,7 +470,7 @@ theme_override_styles/panel = ExtResource("7")
 [node name="CreditsBody" type="Label" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox/CreditsBodyPanel"]
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)"
+text = "Gallicus: Acta Arenae\nPrototipo giocabile in sviluppo\nGrazie per il playtest"
 
 [node name="CreditsBackButton" type="Button" parent="MenuLayer/MainMenu/CreditsPanel/CreditsCenter/CreditsVBox"]
 text = "TORNA AL MENU"
@@ -497,14 +495,14 @@ alignment = 1
 theme_override_constants/separation = 10
 
 [node name="SettingsTitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("22_settings_header")
 
 [node name="SettingsTitle" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsTitlePanel"]
 horizontal_alignment = 1
 text = "OPZIONI"
 
 [node name="BrightnessLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="BrightnessLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/BrightnessLabelPanel"]
 text = "LUMINOSITÀ"
@@ -523,29 +521,36 @@ theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
 theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
 
 [node name="BrightnessValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="BrightnessValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/BrightnessValuePanel"]
 horizontal_alignment = 1
 text = "Luminosità: 1.00"
 
 [node name="LanguageLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="LanguageLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/LanguageLabelPanel"]
 text = "LINGUA"
 
 [node name="LanguageOption" type="OptionButton" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
+custom_minimum_size = Vector2(0, 34)
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.78, 1)
+theme_override_styles/normal = ExtResource("24_settings_field_normal")
+theme_override_styles/hover = ExtResource("25_settings_field_hover")
+theme_override_styles/pressed = ExtResource("25_settings_field_hover")
+theme_override_styles/focus = ExtResource("25_settings_field_hover")
 
 [node name="LanguageValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="LanguageValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/LanguageValuePanel"]
 horizontal_alignment = 1
 text = "Lingua selezionata: Italiano"
 
 [node name="VolumeLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="VolumeLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/VolumeLabelPanel"]
 text = "VOLUME MASTER"
@@ -564,14 +569,14 @@ theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
 theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
 
 [node name="MasterVolumeValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="MasterVolumeValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/MasterVolumeValuePanel"]
 horizontal_alignment = 1
 text = "Volume: 100%"
 
 [node name="MusicVolumeLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="MusicVolumeLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeLabelPanel"]
 text = "VOLUME MUSICA"
@@ -590,26 +595,30 @@ theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
 theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
 
 [node name="MusicVolumeValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="MusicVolumeValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/MusicVolumeValuePanel"]
 horizontal_alignment = 1
 text = "Musica: 75%"
 
 [node name="ResolutionLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="ResolutionLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/ResolutionLabelPanel"]
 text = "RISOLUZIONE"
 
 [node name="ResolutionOption" type="OptionButton" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/normal = ExtResource("8")
-theme_override_styles/hover = ExtResource("9")
-theme_override_styles/pressed = ExtResource("10")
-theme_override_styles/disabled = ExtResource("11")
+custom_minimum_size = Vector2(0, 34)
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.78, 1)
+theme_override_styles/normal = ExtResource("24_settings_field_normal")
+theme_override_styles/hover = ExtResource("25_settings_field_hover")
+theme_override_styles/pressed = ExtResource("25_settings_field_hover")
+theme_override_styles/disabled = ExtResource("24_settings_field_normal")
+theme_override_styles/focus = ExtResource("25_settings_field_hover")
 
 [node name="ResolutionValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
-theme_override_styles/panel = ExtResource("7")
+theme_override_styles/panel = ExtResource("23_settings_row")
 
 [node name="ResolutionValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/ResolutionValuePanel"]
 horizontal_alignment = 1

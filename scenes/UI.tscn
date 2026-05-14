@@ -11,6 +11,9 @@
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="17"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="18"]
 [ext_resource type="Texture2D" path="res://assets/ui/official_source/Wooden_UI_png/book.png" id="19"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_banner.tres" id="20_verdict_banner"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_detail.tres" id="21_verdict_detail"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_body.tres" id="22_verdict_body"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -1276,7 +1279,28 @@ stretch_mode = 5
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.01, 0.01, 0.02, 0.74)
+color = Color(0.005, 0.003, 0.006, 0.82)
+
+[node name="EndRunHorizonGlow" type="ColorRect" parent="UI_RunRoot/Phase_END_RUN"]
+anchor_left = 0.0
+anchor_top = 0.12
+anchor_right = 1.0
+anchor_bottom = 0.88
+mouse_filter = 2
+color = Color(0.36, 0.13, 0.035, 0.12)
+
+[node name="EndRunTopVignette" type="ColorRect" parent="UI_RunRoot/Phase_END_RUN"]
+anchor_right = 1.0
+anchor_bottom = 0.18
+mouse_filter = 2
+color = Color(0, 0, 0, 0.42)
+
+[node name="EndRunBottomVignette" type="ColorRect" parent="UI_RunRoot/Phase_END_RUN"]
+anchor_top = 0.78
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.48)
 
 [node name="Panel_END_RUN" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN"]
 visible = false
@@ -1285,12 +1309,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -520.0
-offset_top = -300.0
-offset_right = 520.0
-offset_bottom = 300.0
+offset_left = -560.0
+offset_top = -320.0
+offset_right = 560.0
+offset_bottom = 320.0
 clip_contents = true
-custom_minimum_size = Vector2(1040, 600)
+custom_minimum_size = Vector2(1120, 640)
 texture = ExtResource("19")
 expand_mode = 1
 stretch_mode = 6
@@ -1298,84 +1322,107 @@ stretch_mode = 6
 [node name="Box_END_RUN" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = 20.0
-offset_right = -28.0
-offset_bottom = -20.0
-theme_override_constants/separation = 8
+offset_left = 76.0
+offset_top = 52.0
+offset_right = -76.0
+offset_bottom = -44.0
+theme_override_constants/separation = 6
 
 [node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.98, 0.9, 0.69, 1)
+theme_override_font_sizes/font_size = 34
 text = "LETTURA DEL REGISTRO"
 
 [node name="EndingIcon" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(72, 72)
 size_flags_horizontal = 4
 size_flags_vertical = 4
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Lbl_END_RUN_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-custom_minimum_size = Vector2(0, 42)
+theme_override_styles/panel = ExtResource("20_verdict_banner")
+custom_minimum_size = Vector2(0, 46)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel"]
 horizontal_alignment = 1
 vertical_alignment = 1
+theme_override_colors/font_color = Color(0.96, 0.84, 0.58, 1)
+theme_override_font_sizes/font_size = 18
 text = ""
 
 [node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 68)
 horizontal_alignment = 1
 vertical_alignment = 1
+theme_override_colors/font_color = Color(0.22, 0.12, 0.045, 1)
+theme_override_font_sizes/font_size = 20
 autowrap_mode = 2
 text = ""
 
 [node name="Lbl_END_RUN_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-custom_minimum_size = Vector2(0, 38)
+theme_override_styles/panel = ExtResource("21_verdict_detail")
+custom_minimum_size = Vector2(0, 42)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel"]
 horizontal_alignment = 1
 vertical_alignment = 1
+theme_override_colors/font_color = Color(0.91, 0.81, 0.63, 1)
+theme_override_font_sizes/font_size = 16
 text = ""
 
 [node name="Box_END_RUN_DETAILS" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 4
+theme_override_constants/separation = 5
 
 [node name="Lbl_END_RUN_PACTS_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+theme_override_styles/panel = ExtResource("21_verdict_detail")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_PACTS_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_TITLEPanel"]
+theme_override_colors/font_color = Color(0.95, 0.83, 0.56, 1)
+theme_override_font_sizes/font_size = 15
 text = "PATTI FIRMATI"
 
 [node name="Lbl_END_RUN_PACTS_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
-custom_minimum_size = Vector2(0, 44)
+theme_override_styles/panel = ExtResource("22_verdict_body")
+custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel"]
 size_flags_horizontal = 3
+theme_override_colors/default_color = Color(0.88, 0.79, 0.64, 1)
+theme_override_font_sizes/normal_font_size = 15
 bbcode_enabled = false
 fit_content = false
 autowrap_mode = 2
 text = ""
 
 [node name="Lbl_END_RUN_CONDANNE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+theme_override_styles/panel = ExtResource("21_verdict_detail")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CONDANNE_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_TITLEPanel"]
+theme_override_colors/font_color = Color(0.95, 0.83, 0.56, 1)
+theme_override_font_sizes/font_size = 15
 text = "CONDANNE"
 
 [node name="Lbl_END_RUN_CONDANNE_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
-custom_minimum_size = Vector2(0, 44)
+theme_override_styles/panel = ExtResource("22_verdict_body")
+custom_minimum_size = Vector2(0, 54)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel"]
 size_flags_horizontal = 3
+theme_override_colors/default_color = Color(0.88, 0.79, 0.64, 1)
+theme_override_font_sizes/normal_font_size = 15
 bbcode_enabled = false
 fit_content = false
 autowrap_mode = 2
@@ -1386,17 +1433,23 @@ visible = false
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CROWD_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
+theme_override_styles/panel = ExtResource("21_verdict_detail")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CROWD_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel"]
+theme_override_colors/font_color = Color(0.95, 0.83, 0.56, 1)
+theme_override_font_sizes/font_size = 15
 text = "ULTIMA VOCE"
 
 [node name="Lbl_END_RUN_CROWD_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
-custom_minimum_size = Vector2(0, 42)
+theme_override_styles/panel = ExtResource("22_verdict_body")
+custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CROWD_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel"]
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.88, 0.79, 0.64, 1)
+theme_override_font_sizes/font_size = 15
 autowrap_mode = 2
 clip_text = true
 text = ""
@@ -1411,11 +1464,14 @@ horizontal_scroll_mode = 0
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN"]
+theme_override_styles/panel = ExtResource("22_verdict_body")
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_FOOTER" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.86, 0.76, 0.58, 1)
+theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = true
 fit_content = false
 horizontal_alignment = 1

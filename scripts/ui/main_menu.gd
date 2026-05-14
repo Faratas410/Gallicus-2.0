@@ -101,7 +101,7 @@ func _ready() -> void:
 	_arena_themes = ArenaThemes.new()
 	_run_manager_port = RunManagerUiPort.new(get_tree())
 	_show_menu()
-	_disable_placeholder_buttons()
+	_disable_unavailable_buttons()
 	_refresh_continue_button()
 	_setup_language_options()
 	_setup_resolution_options()
@@ -228,7 +228,7 @@ func _show_settings() -> void:
 	credits_panel.visible = false
 	settings_panel.visible = true
 
-func _disable_placeholder_buttons() -> void:
+func _disable_unavailable_buttons() -> void:
 	load_game_button.disabled = true
 	load_game_button.tooltip_text = tr("Funzione disattiva in L3.")
 

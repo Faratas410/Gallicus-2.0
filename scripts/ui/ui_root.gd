@@ -48,7 +48,7 @@ const SCARS_PANEL_BASE_HEIGHT: float = 140.0
 const SCARS_PANEL_ROW_HEIGHT: float = 28.0
 const SCARS_PANEL_MIN_HEIGHT: float = 180.0
 const SCARS_PANEL_MAX_HEIGHT: float = 360.0
-const ENDING_ICON_PLACEHOLDER_PATH: String = "res://assets/ui/icons/icon_sentence.png"
+const ENDING_ICON_FALLBACK_PATH: String = "res://assets/ui/icons/icon_sentence.png"
 const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 	{"label": "Modals/BetModal", "fallback": "UI_RunRoot/Phase_INTRO"},
 	{"label": "Modals/PactSealedModal", "fallback": "UI_RunRoot/Phase_FIRST_REACTION"},
@@ -177,7 +177,7 @@ var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
 var _last_finale_stats: Dictionary = {}
 var _last_finale_hint: String = ""
-var _last_ending_icon_path: String = ENDING_ICON_PLACEHOLDER_PATH
+var _last_ending_icon_path: String = ENDING_ICON_FALLBACK_PATH
 var _last_next_bet_enabled: bool = false
 var _last_register_message: String = ""
 var _last_register_final: bool = false
@@ -1042,7 +1042,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	if _last_register_final:
 		var ending_ui_data: Dictionary = ENDING_UI_MAP.get(_last_register_ending_key, {}) as Dictionary
 		_last_finale_title = str(ending_ui_data.get("title", "FASCICOLO CHIUSO"))
-		_last_ending_icon_path = str(ending_ui_data.get("icon", ENDING_ICON_PLACEHOLDER_PATH))
+		_last_ending_icon_path = str(ending_ui_data.get("icon", ENDING_ICON_FALLBACK_PATH))
 	else:
 		_last_finale_title = "AGGIORNAMENTO DEL REGISTRO"
 		_last_ending_icon_path = ""
@@ -1175,7 +1175,7 @@ func _refresh_verdict_panel() -> void:
 		if _last_register_final:
 			var icon_path: String = _last_ending_icon_path
 			if icon_path == "" or not ResourceLoader.exists(icon_path, "Texture2D"):
-				icon_path = ENDING_ICON_PLACEHOLDER_PATH
+				icon_path = ENDING_ICON_FALLBACK_PATH
 			var icon_texture: Texture2D = ResourceLoader.load(icon_path, "Texture2D") as Texture2D
 			verdict_icon.texture = icon_texture
 			verdict_icon.visible = icon_texture != null
@@ -1195,12 +1195,12 @@ func _refresh_verdict_panel() -> void:
 			body_text = fmt_system_state(tr("nessuna annotazione registrata"))
 		verdict_sentence_label.text = body_text
 	if verdict_charge_label != null:
-		var status_text: String = tr("Stato: chiusura definitiva.")
+		var status_text: String = tr("Il Registro ha inciso la chiusura.")
 		if _last_next_bet_enabled:
-			status_text = tr("Stato: scegli se proseguire o tornare al menu.")
+			status_text = tr("Il Registro resta aperto: prosegui o lascia l'arena.")
 		verdict_charge_label.text = status_text
 	if ending_text != null:
-		ending_text.text = tr("[center]Registro Arena - Lettura amministrativa[/center]")
+		ending_text.text = tr("[center][i]Sigillo del Registro - la folla arretra, il verbale resta.[/i][/center]")
 	if verdict_pacts_text != null:
 		var pacts_text: String = _format_verdict_pacts_list(_last_verdict_pacts).strip_edges()
 		verdict_pacts_text.text = pacts_text

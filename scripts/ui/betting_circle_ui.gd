@@ -18,10 +18,8 @@ const CONTRACT_WRITE_SECONDS: float = 0.82
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
 @onready var left_sign_button: TextureButton = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left as TextureButton
 @onready var right_sign_button: TextureButton = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right as TextureButton
-@onready var sigilla_button: TextureButton = $CenterContainer/BookFrame/Btn_Sigilla_Stamp as TextureButton
 @onready var left_sign_label: Label = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left/Lbl_Sign_Left as Label
 @onready var right_sign_label: Label = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right/Lbl_Sign_Right as Label
-@onready var sigilla_label: Label = $CenterContainer/BookFrame/Btn_Sigilla_Stamp/Lbl_Sigilla as Label
 @onready var left_page: Control = $CenterContainer/BookFrame/LeftPage as Control
 @onready var right_page: Control = $CenterContainer/BookFrame/RightPage as Control
 @onready var left_contract_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/Rtl_Left_Contract as RichTextLabel
@@ -63,10 +61,6 @@ func _ready() -> void:
 	right_sign_button.pressed.connect(_on_sign_right_pressed)
 	if open_book_button != null:
 		open_book_button.pressed.connect(_on_open_book_pressed)
-	if sigilla_button != null:
-		sigilla_button.visible = false
-		sigilla_button.disabled = true
-		sigilla_button.pressed.connect(_on_sigilla_pressed)
 	# Legacy CI contract token: bet_option_3.visible = false
 	_refresh_from_catalog_if_empty()
 	_render_pages()
@@ -95,8 +89,6 @@ func _refresh_localized_text() -> void:
 		left_sign_label.text = tr("FIRMA")
 	if right_sign_label != null:
 		right_sign_label.text = tr("FIRMA")
-	if sigilla_label != null:
-		sigilla_label.text = tr("FIRMA")
 	if intro_text != null:
 		intro_text.text = tr("Apri il registro.")
 	if open_book_label != null:
@@ -392,12 +384,6 @@ func _offer_id_at(index: int) -> StringName:
 		return &""
 	return StringName(str(_betting_circle_options[index].get("id", "")))
 
-func _on_sigilla_pressed() -> void:
-	# Hidden legacy button fallback.
-	if _opening_locked or _submit_locked or selected_bet_id == &"":
-		return
-	_submit_selected_offer(sigilla_button)
-
 func _on_sign_left_pressed() -> void:
 	if _opening_locked:
 		return
@@ -454,8 +440,6 @@ func _update_sigilla_state() -> void:
 			right_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == right_id else Color(0.98, 0.96, 0.9, 1.0)
 		else:
 			right_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
-	if sigilla_button != null:
-		sigilla_button.disabled = true
 
 func _set_book_input_enabled(enabled: bool) -> void:
 	if left_select_button != null:

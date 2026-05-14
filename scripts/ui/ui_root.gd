@@ -44,10 +44,10 @@ const BUTTON_STYLE_PRIMARY_DISABLED_PATH: String = "res://assets/ui/official/sty
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
-const SCARS_PANEL_BASE_HEIGHT: float = 140.0
-const SCARS_PANEL_ROW_HEIGHT: float = 28.0
-const SCARS_PANEL_MIN_HEIGHT: float = 180.0
-const SCARS_PANEL_MAX_HEIGHT: float = 360.0
+const SCARS_PANEL_BASE_HEIGHT: float = 72.0
+const SCARS_PANEL_ROW_HEIGHT: float = 24.0
+const SCARS_PANEL_MIN_HEIGHT: float = 102.0
+const SCARS_PANEL_MAX_HEIGHT: float = 168.0
 const ENDING_ICON_FALLBACK_PATH: String = "res://assets/ui/icons/icon_sentence.png"
 const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 	{"label": "Modals/BetModal", "fallback": "UI_RunRoot/Phase_INTRO"},
@@ -923,6 +923,13 @@ func _on_audience_context_line_emitted(text: String) -> void:
 	if audience_context_panel != null:
 		audience_context_panel.visible = text != ""
 
+func _clear_audience_context_overlay() -> void:
+	if audience_context_label != null:
+		audience_context_label.text = ""
+		audience_context_label.visible = false
+	if audience_context_panel != null:
+		audience_context_panel.visible = false
+
 
 
 func _on_register_annotation(payload: Dictionary) -> void:
@@ -1720,9 +1727,9 @@ func _on_intermediate_choice_opened() -> void:
 	_reset_sign_feedback()
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = RunPhaseContract.INTERMEDIATE_CHOICE
-	payload.title = tr("SELEZIONE GESTO")
+	payload.title = tr("ATTO DAVANTI ALLA GRADINATA")
 	payload.meta = {
-		"audience_message": tr("La folla osserva la tua scelta."),
+		"audience_message": tr("La gradinata pesa il tuo respiro."),
 	}
 	payload.choices = ["placa", "provoca"]
 	payload.show_mid_choice = true
@@ -1749,7 +1756,7 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		audience_line = str(payload.meta.get("audience_message", "")).strip_edges()
 	var title: String = payload.title.strip_edges()
 	if title == "":
-		title = tr("SELEZIONE GESTO")
+		title = tr("ATTO DAVANTI ALLA GRADINATA")
 	if title.find("\n") >= 0:
 		var parts: PackedStringArray = title.split("\n")
 		if audience_line == "" and parts.size() > 0:
@@ -1760,7 +1767,7 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		intermediate_choice_audience_label.visible = audience_line != ""
 	if intermediate_choice_label != null:
 		if title == "":
-			title = tr("SELEZIONE GESTO")
+			title = tr("ATTO DAVANTI ALLA GRADINATA")
 		intermediate_choice_label.text = title
 	_set_intermediate_choice_modal(true)
 	var choice_buttons: Array[Button] = []
@@ -1861,7 +1868,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 			scars_panel.custom_minimum_size.y = clamped_height
 			scars_panel.size.y = clamped_height
 	if scars.is_empty():
-		scars_label.text = tr("Nessuna cicatrice.")
+		scars_label.text = tr("Nessun segno inciso.")
 		scars_label.tooltip_text = ""
 		if scars_panel != null:
 			scars_panel.tooltip_text = ""
@@ -2084,6 +2091,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:
 		return
 	_reset_pyl_lock_state()
+	_clear_audience_context_overlay()
 	_set_bet_modal(false)
 	var meta: Dictionary = payload.meta
 	if push_luck_title != null:
@@ -3241,11 +3249,7 @@ func _clear_betting_transient_overlays() -> void:
 	_sentence_banner_sequence_id += 1
 	if sentence_banner != null:
 		sentence_banner.visible = false
-	if audience_context_label != null:
-		audience_context_label.text = ""
-		audience_context_label.visible = false
-	if audience_context_panel != null:
-		audience_context_panel.visible = false
+	_clear_audience_context_overlay()
 	if _register_annotation_tween != null and _register_annotation_tween.is_valid():
 		_register_annotation_tween.kill()
 	if register_blocker != null:

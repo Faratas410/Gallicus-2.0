@@ -12,7 +12,7 @@ const BOOK_OPEN_SQUASH_SECONDS: float = 0.12
 const BOOK_OPEN_SECONDS: float = 0.26
 const BOOK_SETTLE_SECONDS: float = 0.10
 const BOOK_CONTENT_REVEAL_SECONDS: float = 0.20
-const CONTRACT_WRITE_SECONDS: float = 0.82
+const CONTRACT_WRITE_SECONDS: float = 1.08
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button

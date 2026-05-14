@@ -157,40 +157,40 @@ const AUDIENCE_MOOD_FURY: StringName = &"FURY"
 const AUDIENCE_MOOD_COLD: StringName = &"COLD"
 const AUDIENCE_MOOD_DELIRIUM: StringName = &"DELIRIUM"
 const AUDIENCE_POOL_SAFE: Array[String] = [
-	"Guarda come trema. Vuole vivere un altro giorno.",
-	"Non e un leone. E un topo con un casco.",
-	"Cosi si sopravvive... ma non si diventa leggenda.",
+	"La gradinata si quieta: il Registro vede prudenza.",
+	"Trattieni il gesto. L'arena concede ancora margine.",
+	"Non cercano vanto: aspettano se saprai durare.",
 ]
 const AUDIENCE_POOL_MID: Array[String] = [
-	"Non troppo audace... non troppo vile.",
-	"E ambizione... o e paura mascherata?",
+	"La folla resta sospesa tra misura e sfida.",
+	"Ogni sguardo chiede se terrai il passo.",
 ]
 const AUDIENCE_POOL_HIGH: Array[String] = [
-	"Sfida la sorte... o la provoca?",
-	"Se cade, fara rumore.",
-	"O sara leggenda... o sara cenere.",
+	"La gradinata batte ferro: vuole vederti oltre.",
+	"Il rischio sale e il Registro non distoglie gli occhi.",
+	"Se cedi ora, il silenzio pesera piu della ferita.",
 ]
 
 const AUDIENCE_PHRASES: Dictionary = {
 	"FURY": [
-		"Ti vogliono a terra, non al sicuro.",
-		"Ogni tuo respiro è un insulto.",
-		"Fischi e sputi, nessuna pietà.",
-		"Non ti credono degno di incassare.",
-		"Vogliono vederti spezzato.",
-		"Qui non c'è perdono per i timidi.",
-		"Il tuo sangue è l'unico applauso.",
-		"Se esiti, ti divorano.",
-		"Sei debito, non eroe.",
-		"La folla in furia pretende il tuo crollo.",
+		"La gradinata rifiuta la tua uscita.",
+		"Ogni passo indietro diventa accusa.",
+		"Il brusio non concede riparo.",
+		"Non ti credono degno di chiudere il patto.",
+		"Vogliono vedere il conto saldato in arena.",
+		"Qui la cautela viene letta come debito.",
+		"Il Registro sente una folla senza indulgenza.",
+		"Se esiti, la pressione ti stringe.",
+		"Per loro sei garanzia, non campione.",
+		"La folla in furia pretende una caduta registrata.",
 	],
 	"COLD": [
 		"Ti osservano e aspettano l'errore.",
-		"Il silenzio pesa più dell'acciaio.",
+		"Il silenzio pesa piu dell'acciaio.",
 		"Non applaudono, registrano.",
 		"Nessun calore, solo misura.",
-		"Ti seguono senza pietà né favore.",
-		"Ogni mossa è un conto aperto.",
+		"Ti seguono senza pieta ne favore.",
+		"Ogni mossa apre un conto.",
 		"Nessun grido, solo occhi fissi.",
 		"Ti concedono spazio, non rispetto.",
 		"Il pubblico calcola, non parteggia.",
@@ -198,14 +198,14 @@ const AUDIENCE_PHRASES: Dictionary = {
 	],
 	"DELIRIUM": [
 		"Ti vogliono oltre il limite, senza ritorno.",
-		"Ogni colpo chiede di più.",
-		"Non cercano vittoria: cercano rovina.",
-		"Ti spingono al gesto che ti spezza.",
+		"Ogni colpo chiede di piu.",
+		"Non cercano vittoria: cercano il prezzo.",
+		"Ti spingono al gesto che lascia segno.",
 		"Se rallenti, ti strappano la gloria.",
 		"Il delirio ti brucia addosso.",
 		"Vogliono che tu rischi tutto, ora.",
-		"La folla urla sangue, non prudenza.",
-		"Ti alzano in alto solo per vederti cadere.",
+		"La folla chiama sangue, non prudenza.",
+		"Ti alzano in alto per pesare la caduta.",
 		"Il tuo nome urla, ma il prezzo sale.",
 	],
 }
@@ -3093,6 +3093,7 @@ func _open_push_luck_choice(_bet_id: StringName) -> void:
 	_set_phase(RunPhase.PUSH_YOUR_LUCK, "open_push_luck_choice")
 
 func _enter_push_your_luck() -> void:
+	_close_audience_context_line()
 	_emit_ui(_build_push_luck_ui_payload(StringName(_run_state.current_bet_id), {}))
 
 func _refresh_push_luck_choice(bet_id: StringName) -> void:

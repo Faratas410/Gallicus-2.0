@@ -4,8 +4,8 @@ class_name PhasePushYourLuckHandler
 func build_choice_copy(_run_state: RunState, inputs: Dictionary = {}) -> Dictionary:
 	var bet_name: String = str(inputs.get("bet_name", ""))
 	return {
-		"title": "SPINGI LA SORTE — %s" % bet_name,
-		"body": "La folla vuole di più. Puoi incassare... o rilanciare.",
+		"title": "SPINGI LA SORTE - %s" % bet_name,
+		"body": "Il Registro resta aperto: incassa, accetta la condanna o rilancia.",
 		"choices": ["cashout", "condanna", "double"],
 	}
 

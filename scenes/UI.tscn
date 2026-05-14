@@ -14,6 +14,17 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_banner.tres" id="20_verdict_banner"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_detail.tres" id="21_verdict_detail"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_body.tres" id="22_verdict_body"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_pressure_rail.tres" id="23_pressure_rail"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_pressure_bar_bg.tres" id="24_pressure_bar_bg"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_pressure_bar_fill.tres" id="25_pressure_bar_fill"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_mid_choice_panel.tres" id="26_mid_choice_panel"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_mid_choice_button_normal.tres" id="27_mid_choice_button_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_mid_choice_button_hover.tres" id="28_mid_choice_button_hover"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_mid_choice_button_pressed.tres" id="29_mid_choice_button_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_mid_choice_plate.tres" id="30_mid_choice_plate"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_mid_choice_button_disabled.tres" id="31_mid_choice_button_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_scars_dossier.tres" id="32_scars_dossier"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_scars_inner.tres" id="33_scars_inner"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -749,17 +760,17 @@ color = Color(0.02, 0.02, 0.03, 0.62)
 visible = false
 z_index = 1
 focus_mode = 0
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("26_mid_choice_panel")
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -430.0
-offset_top = -250.0
-offset_right = 430.0
-offset_bottom = 250.0
+offset_left = -382.0
+offset_top = -178.0
+offset_right = 382.0
+offset_bottom = 178.0
 clip_contents = true
-custom_minimum_size = Vector2(860, 500)
+custom_minimum_size = Vector2(764, 356)
 
 [node name="BackgroundMidChoice" type="TextureRect" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
 visible = false
@@ -788,65 +799,70 @@ color = Color(0.03, 0.03, 0.04, 0.54)
 [node name="Box_MID_CHOICE" type="VBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = 22.0
-offset_right = -28.0
-offset_bottom = -22.0
-theme_override_constants/separation = 12
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
 
 [node name="Lbl_MID_CHOICE_AUDIENCEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_MID_CHOICE_AUDIENCE" type="Label" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_AUDIENCEPanel"]
+theme_override_colors/font_color = Color(0.92, 0.88, 0.78, 1)
+theme_override_font_sizes/font_size = 17
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "La folla osserva."
 
 [node name="Lbl_MID_CHOICE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 46)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_MID_CHOICE_TITLE" type="Label" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Lbl_MID_CHOICE_TITLEPanel"]
 theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "SELEZIONE GESTO"
+text = "ATTO DAVANTI ALLA GRADINATA"
 
 [node name="Box_MID_CHOICE_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 
 [node name="Btn_MID_CHOICE_SELECT_0" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
+theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
+theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
+theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
+theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
 theme_override_colors/font_color = Color(0.95, 0.94, 0.92, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.98, 0.94, 1)
-custom_minimum_size = Vector2(0, 184)
+theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(0, 126)
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_vertical = 0
 autowrap_mode = 2
-text = "UMILIATI\nPressione -1.\nAtto registrato: contenimento."
+text = "ABBASSA LO SGUARDO\nPressione -1\nIl Registro annota misura."
 
 [node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
+theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
+theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
+theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
+theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
 theme_override_colors/font_color = Color(1, 0.9, 0.86, 1)
 theme_override_colors/font_hover_color = Color(1, 0.95, 0.92, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.87, 0.82, 1)
-custom_minimum_size = Vector2(0, 184)
+theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(0, 126)
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_vertical = 0
 autowrap_mode = 2
-text = "PROVOCA\nPressione +1.\nAtto registrato: esposizione."
+text = "SFIDA LA GRADINATA\nPressione +1\nIl Registro annota esposizione."
 [node name="BetBlocker" type="ColorRect" parent="UI_RunRoot/Phase_INTRO"]
 mouse_filter = 2
 anchor_right = 1.0
@@ -1024,17 +1040,17 @@ color = Color(0.02, 0.02, 0.03, 0.64)
 visible = false
 z_index = 1
 focus_mode = 0
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("26_mid_choice_panel")
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -450.0
-offset_top = -270.0
-offset_right = 450.0
-offset_bottom = 270.0
+offset_left = -430.0
+offset_top = -246.0
+offset_right = 430.0
+offset_bottom = 236.0
 clip_contents = true
-custom_minimum_size = Vector2(900, 540)
+custom_minimum_size = Vector2(860, 482)
 
 [node name="BackgroundPushLuck" type="TextureRect" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK"]
 visible = false
@@ -1064,54 +1080,67 @@ color = Color(0.02, 0.02, 0.03, 0.6)
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 26.0
-offset_top = 18.0
+offset_top = 20.0
 offset_right = -26.0
-offset_bottom = -18.0
-theme_override_constants/separation = 8
+offset_bottom = -20.0
+theme_override_constants/separation = 7
 
 [node name="Lbl_PUSH_YOUR_LUCK_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_TITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_TITLEPanel"]
 theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 text = "RILANCIO DEL PATTO"
 
 [node name="Lbl_PUSH_YOUR_LUCK_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+custom_minimum_size = Vector2(0, 46)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_BODY" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_BODYPanel"]
+theme_override_colors/font_color = Color(0.92, 0.88, 0.78, 1)
+theme_override_font_sizes/font_size = 17
 autowrap_mode = 2
 horizontal_alignment = 1
 text = "Il Registro è aperto: incassa ora o aumenta esposizione."
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-custom_minimum_size = Vector2(0, 92)
+custom_minimum_size = Vector2(0, 74)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel"]
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1
 autowrap_mode = 2
 clip_text = true
 text = "La folla registra il costo di ogni rilancio."
 
 [node name="Lbl_PUSH_YOUR_LUCK_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+custom_minimum_size = Vector2(0, 42)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_HINT" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_HINTPanel"]
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 horizontal_alignment = 1
 text = "Condanna chiude il ciclo senza premio."
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
+custom_minimum_size = Vector2(0, 54)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Lbl_PUSH_YOUR_LUCK_FOOTERPanel"]
+theme_override_colors/font_color = Color(0.91, 0.86, 0.76, 1)
+theme_override_font_sizes/font_size = 15
 autowrap_mode = 2
 horizontal_alignment = 1
 size_flags_horizontal = 3
@@ -1120,34 +1149,37 @@ clip_text = true
 text = "Scegli un atto. La firma è irrevocabile."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-custom_minimum_size = Vector2(0, 128)
+custom_minimum_size = Vector2(0, 132)
 size_flags_horizontal = 3
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICE_0" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Btn_PUSH_YOUR_LUCK_CASHOUT" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
+theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
+theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
+theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
+theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
 theme_override_colors/font_color = Color(0.95, 0.94, 0.91, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.98, 0.94, 1)
-custom_minimum_size = Vector2(0, 58)
+theme_override_font_sizes/font_size = 17
+custom_minimum_size = Vector2(0, 54)
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_vertical = 0
 autowrap_mode = 2
 text = "INCASSA ORA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel"]
 visible = false
+theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 autowrap_mode = 2
 modulate = Color(0.75, 0.72, 0.6, 1)
@@ -1158,24 +1190,27 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Btn_PUSH_YOUR_LUCK_CONDANNA" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
+theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
+theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
+theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
+theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
 theme_override_colors/font_color = Color(1, 0.89, 0.85, 1)
 theme_override_colors/font_hover_color = Color(1, 0.95, 0.92, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.86, 0.8, 1)
-custom_minimum_size = Vector2(0, 58)
+theme_override_font_sizes/font_size = 17
+custom_minimum_size = Vector2(0, 54)
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_vertical = 0
 autowrap_mode = 2
-text = "CONDANNA"
+text = "ACCETTA CONDANNA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1"]
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel"]
+theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 autowrap_mode = 2
 modulate = Color(0.75, 0.72, 0.6, 1)
@@ -1186,25 +1221,28 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Btn_PUSH_YOUR_LUCK_DOUBLE" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
+theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
+theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
+theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
+theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
 theme_override_colors/font_color = Color(0.96, 0.92, 0.86, 1)
 theme_override_colors/font_hover_color = Color(1, 0.98, 0.93, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.89, 0.8, 1)
-custom_minimum_size = Vector2(0, 58)
+theme_override_font_sizes/font_size = 17
+custom_minimum_size = Vector2(0, 54)
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_vertical = 0
 autowrap_mode = 2
-text = "RADDOPPIA"
+text = "RILANCIA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel"]
 visible = false
+theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 autowrap_mode = 2
 modulate = Color(0.75, 0.72, 0.6, 1)
@@ -1558,7 +1596,7 @@ autostart = false
 
 [node name="PressureRail" type="PanelContainer" parent="HUD"]
 z_index = 84
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("23_pressure_rail")
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -1596,6 +1634,8 @@ text = "PRESSIONE 0/10"
 [node name="EscalationBar" type="ProgressBar" parent="HUD/PressureRail/PressureRailMargin/EscalationRow"]
 custom_minimum_size = Vector2(620, 18)
 size_flags_horizontal = 3
+theme_override_styles/background = ExtResource("24_pressure_bar_bg")
+theme_override_styles/fill = ExtResource("25_pressure_bar_fill")
 max_value = 10.0
 value = 0.0
 show_percentage = false
@@ -1612,36 +1652,36 @@ text = "Sotto controllo"
 [node name="ScarsPanel" type="Panel" parent="HUD"]
 mouse_filter = 1
 z_index = 80
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("32_scars_dossier")
 anchor_left = 1.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_left = -360.0
-offset_top = 32.0
-offset_right = -28.0
-offset_bottom = 236.0
+offset_left = -306.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 126.0
 clip_contents = true
-custom_minimum_size = Vector2(332, 204)
+custom_minimum_size = Vector2(282, 102)
 
 [node name="ScarsVBox" type="VBoxContainer" parent="HUD/ScarsPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = 10.0
+offset_top = 8.0
 offset_right = -10.0
-offset_bottom = -10.0
+offset_bottom = -8.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ScarsTitlePanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox"]
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("33_scars_inner")
 
 [node name="ScarsTitle" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsTitlePanel"]
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 15
 autowrap_mode = 2
-text = "CICATRICI"
+text = "SEGNI"
 
 [node name="ScarsScroll" type="ScrollContainer" parent="HUD/ScarsPanel/ScarsVBox"]
 size_flags_horizontal = 3
@@ -1655,14 +1695,14 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 
 [node name="ScarsLabelPanel" type="PanelContainer" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries"]
-theme_override_styles/panel = ExtResource("16")
+theme_override_styles/panel = ExtResource("33_scars_inner")
 
 [node name="ScarsLabel" type="Label" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel"]
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.91, 0.86, 0.76, 1)
+theme_override_font_sizes/font_size = 14
 autowrap_mode = 2
-text = "Nessuna cicatrice."
+text = "Nessun segno inciso."
 
 
 

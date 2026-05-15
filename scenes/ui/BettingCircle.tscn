@@ -108,17 +108,17 @@ mouse_filter = 2
 
 [node name="TitleBacking" type="PanelContainer" parent="CenterContainer/BookFrame"]
 anchor_left = 0.17
-anchor_top = -0.12
+anchor_top = -0.085
 anchor_right = 0.83
-anchor_bottom = -0.005
+anchor_bottom = 0.035
 mouse_filter = 2
 theme_override_styles/panel = ExtResource("10")
 
 [node name="Title" type="Label" parent="CenterContainer/BookFrame"]
 anchor_left = 0.19
-anchor_top = -0.108
+anchor_top = -0.073
 anchor_right = 0.81
-anchor_bottom = -0.014
+anchor_bottom = 0.026
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
 theme_override_constants/line_spacing = 0
 theme_override_font_sizes/font_size = 16

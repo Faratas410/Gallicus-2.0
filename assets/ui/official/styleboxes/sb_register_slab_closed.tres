@@ -1,19 +1,15 @@
-[gd_resource type="StyleBoxFlat" format=3]
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/third_party/gowl_stonepixel/frame_panel.png" id="1_frame"]
 
 [resource]
-bg_color = Color(0.0745098, 0.0666667, 0.0588235, 0.94)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.478431, 0.356863, 0.211765, 0.98)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-shadow_color = Color(0, 0, 0, 0.62)
-shadow_size = 8
+texture = ExtResource("1_frame")
+texture_margin_left = 42.0
+texture_margin_top = 42.0
+texture_margin_right = 42.0
+texture_margin_bottom = 42.0
 content_margin_left = 34.0
 content_margin_top = 28.0
 content_margin_right = 34.0
 content_margin_bottom = 28.0
+modulate_color = Color(0.72, 0.72, 0.72, 0.95)

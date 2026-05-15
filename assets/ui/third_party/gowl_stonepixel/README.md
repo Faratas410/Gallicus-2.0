@@ -14,6 +14,9 @@ Imported runtime candidates:
 - `title_plate.png`
 - `button_normal.png`
 - `button_hover.png`
+- `bar_dark.png`
+- `bar_stone.png`
+- `bar_knob.png`
 - `dialogue_box.png`
 
 The full purchased source remains outside the repository unless explicitly imported.

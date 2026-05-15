@@ -14,6 +14,8 @@ Imported runtime candidates:
 - `title_plate.png`
 - `button_normal.png`
 - `button_hover.png`
+- `button_bordered_normal.png`
+- `button_bordered_hover.png`
 - `bar_dark.png`
 - `bar_stone.png`
 - `bar_knob.png`

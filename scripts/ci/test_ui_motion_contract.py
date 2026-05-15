@@ -19,6 +19,8 @@ ALLOWED_UI_ROOT_TWEEN_FUNCS = {
     "_pulse_pyl_panel",
     "_apply_decision_lock",
     "_pre_resolve_tension_boost",
+    "_start_resolution_ritual_pulse",
+    "_apply_resolution_ritual_strike_feedback",
     "begin_sign_feedback",
     "_fade_modal",
     "_play_panel_enter",

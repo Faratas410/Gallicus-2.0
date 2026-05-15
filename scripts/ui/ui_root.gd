@@ -37,6 +37,9 @@ const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.38
 const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.44
 const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.36
 const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.30
+const RESOLUTION_RITUAL_STRIKES_REQUIRED: int = 3
+const RESOLUTION_RITUAL_BEAT_SECONDS: float = 0.9
+const RESOLUTION_RITUAL_HIT_WINDOW_SECONDS: float = 0.18
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres"
@@ -269,6 +272,8 @@ var arena_theme_subtitle_panel: Control = null
 var arena_theme_subtitle_label: Label = null
 var arena_resolution_panel: Control = null
 var arena_resolution_label: Label = null
+var _pending_resolution_context_line: String = ""
+var _resolve_ritual_base_body: String = ""
 
 var bet_panel: Control = null
 var bet_modal: Control = null
@@ -288,8 +293,15 @@ var resolve_ritual_modal: Control = null
 var resolve_ritual_panel: Control = null
 var resolve_ritual_title: Label = null
 var resolve_ritual_subtitle: Label = null
+var resolve_ritual_prompt: Label = null
+var resolve_ritual_strike_button: Button = null
+var resolve_ritual_strike_marks: Array[Label] = []
 var pact_sealed_advance_button: Button = null
 var resolve_ritual_advance_button: Button = null
+var _resolve_ritual_strike_count: int = 0
+var _resolve_ritual_started_msec: int = 0
+var _resolve_ritual_pulse_tween: Tween = null
+var _resolve_ritual_hit_tween: Tween = null
 
 var intermediate_choice_modal: Control = null
 var intermediate_choice_panel: Control = null
@@ -554,6 +566,13 @@ func _bind_scene_nodes() -> void:
 	resolve_ritual_panel = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION") as Control
 	resolve_ritual_title = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_TITLEPanel/Lbl_RESOLUTION_TITLE") as Label
 	resolve_ritual_subtitle = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
+	resolve_ritual_prompt = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_RITUAL_PROMPTPanel/Lbl_RESOLUTION_RITUAL_PROMPT") as Label
+	resolve_ritual_strike_button = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE") as Button
+	resolve_ritual_strike_marks = [
+		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark1") as Label,
+		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark2") as Label,
+		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark3") as Label,
+	]
 	resolve_ritual_advance_button = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_NEXT") as Button
 
 	# Mid choice
@@ -797,6 +816,8 @@ func _should_show_arena_resolution_overlay() -> bool:
 func _show_arena_resolution_overlay() -> void:
 	if arena_resolution_label == null:
 		return
+	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
+		return
 	arena_resolution_label.visible = true
 	if arena_resolution_panel != null:
 		arena_resolution_panel.visible = true
@@ -817,6 +838,25 @@ func _hide_arena_resolution_overlay() -> void:
 		arena_resolution_label.visible = false
 	if arena_resolution_panel != null:
 		arena_resolution_panel.visible = false
+
+func _build_resolution_body(primary_text: String) -> String:
+	var body: String = primary_text.strip_edges()
+	var context_line: String = _pending_resolution_context_line.strip_edges()
+	if context_line == "":
+		return body
+	if body == "" or body == context_line:
+		return context_line
+	return "%s\n%s" % [context_line, body]
+
+func _set_resolve_ritual_body(primary_text: String) -> void:
+	if resolve_ritual_subtitle == null:
+		return
+	resolve_ritual_subtitle.text = _build_resolution_body(primary_text)
+	if audience_context_label != null:
+		audience_context_label.visible = false
+	if audience_context_panel != null:
+		audience_context_panel.visible = false
+	_hide_arena_resolution_overlay()
 
 func show_countdown(seconds: int = 3) -> void:
 	if countdown_label == null:
@@ -918,12 +958,17 @@ func _on_sentence_banner_requested(payload: Dictionary) -> void:
 func _on_audience_context_line_emitted(text: String) -> void:
 	if audience_context_label == null:
 		return
+	_pending_resolution_context_line = text.strip_edges()
+	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
+		_set_resolve_ritual_body(_resolve_ritual_base_body)
+		return
 	audience_context_label.text = text
 	audience_context_label.visible = text != ""
 	if audience_context_panel != null:
 		audience_context_panel.visible = text != ""
 
 func _clear_audience_context_overlay() -> void:
+	_pending_resolution_context_line = ""
 	if audience_context_label != null:
 		audience_context_label.text = ""
 		audience_context_label.visible = false
@@ -1716,10 +1761,111 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 
 func _on_resolve_ritual_closed() -> void:
 	_set_resolve_ritual_modal(false)
+	_pending_resolution_context_line = ""
+	_resolve_ritual_base_body = ""
 	_refresh_modal_dimmer()
 
 func _on_resolve_ritual_next_pressed() -> void:
+	if resolve_ritual_modal != null and resolve_ritual_modal.visible and _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED:
+		_on_resolve_ritual_strike_pressed()
+		return
 	_emit_game_event_signal_if_available(&"request_ritual_advance", ["resolve"])
+
+func _on_resolve_ritual_strike_pressed() -> void:
+	if resolve_ritual_modal == null or not resolve_ritual_modal.visible:
+		return
+	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
+		return
+	var on_beat: bool = _is_resolution_ritual_on_beat()
+	_resolve_ritual_strike_count += 1
+	_apply_resolution_ritual_strike_feedback(on_beat)
+	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
+		_complete_resolution_ritual_interaction()
+
+func _reset_resolution_ritual_interaction() -> void:
+	_resolve_ritual_strike_count = 0
+	_resolve_ritual_started_msec = Time.get_ticks_msec()
+	if resolve_ritual_prompt != null:
+		resolve_ritual_prompt.text = tr("COLPISCI IL SIGILLO A TEMPO")
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.visible = true
+		resolve_ritual_strike_button.disabled = false
+		resolve_ritual_strike_button.text = tr("COLPISCI")
+		resolve_ritual_strike_button.scale = Vector2.ONE
+	if resolve_ritual_advance_button != null:
+		resolve_ritual_advance_button.visible = false
+		resolve_ritual_advance_button.disabled = true
+	for mark: Label in resolve_ritual_strike_marks:
+		if mark == null:
+			continue
+		mark.modulate = Color(0.34, 0.33, 0.31, 1.0)
+		mark.scale = Vector2.ONE
+	_start_resolution_ritual_pulse()
+
+func _stop_resolution_ritual_interaction() -> void:
+	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
+		_resolve_ritual_pulse_tween.kill()
+	if _resolve_ritual_hit_tween != null and _resolve_ritual_hit_tween.is_valid():
+		_resolve_ritual_hit_tween.kill()
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.scale = Vector2.ONE
+
+func _start_resolution_ritual_pulse() -> void:
+	if resolve_ritual_strike_button == null:
+		return
+	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
+		_resolve_ritual_pulse_tween.kill()
+	resolve_ritual_strike_button.pivot_offset = resolve_ritual_strike_button.size * 0.5
+	_resolve_ritual_pulse_tween = create_tween()
+	_resolve_ritual_pulse_tween.set_loops()
+	_resolve_ritual_pulse_tween.set_trans(Tween.TRANS_SINE)
+	_resolve_ritual_pulse_tween.set_ease(Tween.EASE_IN_OUT)
+	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "scale", Vector2(1.055, 1.055), 0.42)
+	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "scale", Vector2.ONE, 0.48)
+
+func _is_resolution_ritual_on_beat() -> bool:
+	if _resolve_ritual_started_msec <= 0:
+		return false
+	var elapsed: float = float(Time.get_ticks_msec() - _resolve_ritual_started_msec) / 1000.0
+	var beat_position: float = fmod(elapsed, RESOLUTION_RITUAL_BEAT_SECONDS)
+	var beat_distance: float = minf(beat_position, RESOLUTION_RITUAL_BEAT_SECONDS - beat_position)
+	return beat_distance <= RESOLUTION_RITUAL_HIT_WINDOW_SECONDS
+
+func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
+	var mark_index: int = _resolve_ritual_strike_count - 1
+	if mark_index >= 0 and mark_index < resolve_ritual_strike_marks.size():
+		var mark: Label = resolve_ritual_strike_marks[mark_index]
+		if mark != null:
+			mark.modulate = Color(0.98, 0.82, 0.46, 1.0) if on_beat else Color(0.76, 0.68, 0.5, 1.0)
+			mark.scale = Vector2(1.18, 1.18) if on_beat else Vector2(1.08, 1.08)
+	if resolve_ritual_prompt != null:
+		var prompts: Array[String] = [
+			tr("PRIMO COLPO - VERDETTO INCISO"),
+			tr("SECONDO COLPO - CONDANNA INCISA"),
+			tr("TERZO COLPO - SIGILLO CHIUSO"),
+		]
+		resolve_ritual_prompt.text = prompts[mini(_resolve_ritual_strike_count - 1, prompts.size() - 1)]
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.text = tr("COLPISCI ANCORA") if _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED else tr("SIGILLATO")
+		if _resolve_ritual_hit_tween != null and _resolve_ritual_hit_tween.is_valid():
+			_resolve_ritual_hit_tween.kill()
+		var peak_scale: Vector2 = Vector2(1.12, 1.12) if on_beat else Vector2(1.06, 1.06)
+		resolve_ritual_strike_button.scale = peak_scale
+		_resolve_ritual_hit_tween = create_tween()
+		_resolve_ritual_hit_tween.set_trans(Tween.TRANS_QUAD)
+		_resolve_ritual_hit_tween.set_ease(Tween.EASE_OUT)
+		_resolve_ritual_hit_tween.tween_property(resolve_ritual_strike_button, "scale", Vector2.ONE, 0.18)
+
+func _complete_resolution_ritual_interaction() -> void:
+	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
+		_resolve_ritual_pulse_tween.kill()
+	if resolve_ritual_prompt != null:
+		resolve_ritual_prompt.text = tr("VERBALE INCISO - IL REGISTRO PUO AVANZARE")
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.disabled = true
+	if resolve_ritual_advance_button != null:
+		resolve_ritual_advance_button.visible = true
+		resolve_ritual_advance_button.disabled = false
 
 func enqueue_post_bet_message(payload: Dictionary) -> void:
 	_show_post_bet_payload(payload)
@@ -1735,8 +1881,8 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 	elif kind == "resolve_ritual":
 		if resolve_ritual_title != null:
 			resolve_ritual_title.text = str(payload.get("title", tr("RITO DI GIUDIZIO")))
-		if resolve_ritual_subtitle != null:
-			resolve_ritual_subtitle.text = str(payload.get("subtitle", fmt_system_state(tr("condanna registrata"))))
+		_resolve_ritual_base_body = str(payload.get("subtitle", fmt_system_state(tr("condanna registrata"))))
+		_set_resolve_ritual_body(_resolve_ritual_base_body)
 		_set_resolve_ritual_modal(true)
 	_refresh_modal_dimmer()
 
@@ -2235,6 +2381,10 @@ func _wire_ritual_advance_buttons() -> void:
 		var resolve_callable: Callable = Callable(self, "_on_resolve_ritual_next_pressed")
 		if not resolve_ritual_advance_button.pressed.is_connected(resolve_callable):
 			resolve_ritual_advance_button.pressed.connect(resolve_callable)
+	if resolve_ritual_strike_button != null:
+		var strike_callable: Callable = Callable(self, "_on_resolve_ritual_strike_pressed")
+		if not resolve_ritual_strike_button.pressed.is_connected(strike_callable):
+			resolve_ritual_strike_button.pressed.connect(strike_callable)
 
 func _wire_intermediate_choice_buttons() -> void:
 	if intermediate_choice_placa_button != null:
@@ -2930,6 +3080,8 @@ func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween, 
 		tween.set_trans(Tween.TRANS_QUAD)
 		tween.set_ease(Tween.EASE_OUT)
 		var fade_in_seconds: float = ENDING_FADE_IN_SEC if kind == MOTION_KIND_ENDING else FADE_IN_SEC
+		if kind == MOTION_KIND_RITUAL:
+			fade_in_seconds = 0.32
 		tween.tween_property(panel, "modulate:a", 1.0, fade_in_seconds)
 	else:
 		if not panel.visible:
@@ -2939,6 +3091,8 @@ func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween, 
 		tween.set_trans(Tween.TRANS_QUAD)
 		tween.set_ease(Tween.EASE_IN)
 		var fade_out_seconds: float = ENDING_FADE_OUT_SEC if kind == MOTION_KIND_ENDING else FADE_OUT_SEC
+		if kind == MOTION_KIND_RITUAL:
+			fade_out_seconds = 0.24
 		tween.tween_property(panel, "modulate:a", 0.0, fade_out_seconds)
 		tween.tween_callback(Callable(self, "_on_modal_fade_out_complete").bind(panel, modal))
 	return tween
@@ -2968,6 +3122,7 @@ func hide_all_modals() -> void:
 		resolve_ritual_panel.visible = false
 	if resolve_ritual_modal != null:
 		resolve_ritual_modal.visible = false
+	_stop_resolution_ritual_interaction()
 	if intermediate_choice_panel != null:
 		intermediate_choice_panel.visible = false
 	if intermediate_choice_modal != null:
@@ -3036,8 +3191,8 @@ func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -
 	match kind:
 		MOTION_KIND_RITUAL:
 			start_scale = Vector2(0.965, 0.965)
-			start_position = base_position + Vector2(0.0, 12.0)
-			seconds = 0.22
+			start_position = base_position + Vector2(0.0, 18.0)
+			seconds = 0.34
 		MOTION_KIND_ENDING:
 			start_scale = Vector2(0.975, 0.975)
 			seconds = 0.24
@@ -3075,6 +3230,9 @@ func _set_pact_sealed_modal(active: bool) -> void:
 func _set_resolve_ritual_modal(active: bool) -> void:
 	if active:
 		show_modal(resolve_ritual_modal)
+		_reset_resolution_ritual_interaction()
+	else:
+		_stop_resolution_ritual_interaction()
 	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween, MOTION_KIND_RITUAL)
 	if active:
 		_play_panel_enter(resolve_ritual_panel, MOTION_KIND_RITUAL)
@@ -3201,6 +3359,10 @@ func _refresh_modal_dimmer() -> void:
 	modal_dimmer.mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
 	if hud_top_left_stats_box != null:
 		var hide_left_hud: bool = false
+		if pact_sealed_modal != null and pact_sealed_modal.visible:
+			hide_left_hud = true
+		if resolve_ritual_modal != null and resolve_ritual_modal.visible:
+			hide_left_hud = true
 		if intermediate_choice_modal != null and intermediate_choice_modal.visible:
 			hide_left_hud = true
 		if push_luck_modal != null and push_luck_modal.visible:
@@ -3320,6 +3482,30 @@ func _unhandled_input(event: InputEvent) -> void:
 			_has_seen_controls = true
 			_controls_first_run_active = false
 			controls_hint_panel.visible = false
+	if _handle_resolution_ritual_input(event):
+		get_viewport().set_input_as_handled()
+
+func _handle_resolution_ritual_input(event: InputEvent) -> bool:
+	if resolve_ritual_modal == null or not resolve_ritual_modal.visible:
+		return false
+	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
+		return false
+	var should_strike: bool = false
+	if event is InputEventKey:
+		var key_event: InputEventKey = event as InputEventKey
+		should_strike = key_event.pressed and not key_event.echo and (
+			key_event.keycode == KEY_SPACE or key_event.keycode == KEY_ENTER or key_event.keycode == KEY_KP_ENTER
+		)
+	elif event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = event as InputEventMouseButton
+		should_strike = mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT
+	elif event is InputEventJoypadButton:
+		var joy_event: InputEventJoypadButton = event as InputEventJoypadButton
+		should_strike = joy_event.pressed
+	if not should_strike:
+		return false
+	_on_resolve_ritual_strike_pressed()
+	return true
 func _req(path: String) -> Node:
 	var n: Node = get_node_or_null(path)
 	if n == null:

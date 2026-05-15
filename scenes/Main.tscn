@@ -275,7 +275,7 @@ alignment = 1
 theme_override_constants/separation = 10
 
 [node name="TitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(456, 72)
+custom_minimum_size = Vector2(500, 82)
 theme_override_styles/panel = ExtResource("26_menu_title_stone")
 
 [node name="TitleLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/TitlePanel"]
@@ -283,13 +283,14 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 text = "GALLICUS"
-theme_override_colors/font_color = Color(0.74, 0.68, 0.57, 1)
+theme_override_colors/font_color = Color(0.86, 0.81, 0.69, 1)
 theme_override_colors/font_outline_color = Color(0.0352941, 0.0313726, 0.027451, 1)
 theme_override_constants/letter_spacing = 2
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 42
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 40
 
 [node name="ContinueButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 48)
 text = "CONTINUA"
 theme_override_colors/font_disabled_color = Color(0.66, 0.61, 0.52, 0.72)
 theme_override_styles/normal = ExtResource("8")
@@ -319,6 +320,7 @@ theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
 [node name="LoadGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 48)
 text = "CARICA PARTITA"
 theme_override_colors/font_disabled_color = Color(0.66, 0.61, 0.52, 0.66)
 theme_override_styles/normal = ExtResource("8")
@@ -327,6 +329,7 @@ theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
 [node name="AchievementsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 48)
 text = "ARCHIVIO"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
@@ -334,6 +337,7 @@ theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
 [node name="SettingsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 48)
 text = "OPZIONI"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
@@ -341,6 +345,7 @@ theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
 [node name="CreditsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 48)
 text = "CREDITI"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")

@@ -1,13 +1,13 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/lapidary/register_slab_large.png" id="1_slab"]
+[ext_resource type="Texture2D" path="res://assets/ui/third_party/gowl_stonepixel/frame_panel.png" id="1_slab"]
 
 [resource]
 texture = ExtResource("1_slab")
-texture_margin_left = 96.0
-texture_margin_top = 96.0
-texture_margin_right = 96.0
-texture_margin_bottom = 96.0
+texture_margin_left = 42.0
+texture_margin_top = 42.0
+texture_margin_right = 42.0
+texture_margin_bottom = 42.0
 content_margin_left = 34.0
 content_margin_top = 28.0
 content_margin_right = 34.0

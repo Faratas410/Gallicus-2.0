@@ -10,6 +10,7 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_panel_main.tres" id="16"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="17"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="18"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_registry_ritual.png" id="19_registry_ritual"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_banner.tres" id="20_verdict_banner"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_detail.tres" id="21_verdict_detail"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_body.tres" id="22_verdict_body"]
@@ -586,7 +587,7 @@ color = Color(0, 0, 0, 0)
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-texture = ExtResource("17")
+texture = ExtResource("19_registry_ritual")
 texture_filter = 0
 expand_mode = 1
 stretch_mode = 5
@@ -595,7 +596,7 @@ stretch_mode = 5
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.02, 0.02, 0.03, 0.64)
+color = Color(0.02, 0.02, 0.03, 0.38)
 
 [node name="Panel_FIRST_REACTION" type="Panel" parent="UI_RunRoot/Phase_FIRST_REACTION"]
 z_index = 1
@@ -677,7 +678,7 @@ color = Color(0, 0, 0, 0)
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-texture = ExtResource("17")
+texture = ExtResource("19_registry_ritual")
 texture_filter = 0
 expand_mode = 1
 stretch_mode = 5
@@ -686,7 +687,7 @@ stretch_mode = 5
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.02, 0.02, 0.03, 0.64)
+color = Color(0.02, 0.02, 0.03, 0.42)
 
 [node name="Panel_RESOLUTION" type="Panel" parent="UI_RunRoot/Phase_RESOLUTION"]
 z_index = 1
@@ -1380,7 +1381,7 @@ color = Color(0, 0, 0, 0)
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-texture = ExtResource("17")
+texture = ExtResource("19_registry_ritual")
 texture_filter = 0
 expand_mode = 1
 stretch_mode = 5
@@ -1389,7 +1390,7 @@ stretch_mode = 5
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.005, 0.003, 0.006, 0.82)
+color = Color(0.005, 0.003, 0.006, 0.56)
 
 [node name="EndRunHorizonGlow" type="ColorRect" parent="UI_RunRoot/Phase_END_RUN"]
 anchor_left = 0.0

@@ -7,6 +7,7 @@ const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
 const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
+const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/backgrounds/bg_registry_ritual.png")
 const BOOK_TITLE_PULSE_SPEED: float = 1.15
 const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
 const BOOK_DROP_SECONDS: float = 0.62
@@ -21,6 +22,7 @@ const CONTRACT_WRITE_SECONDS: float = 2.25
 @onready var right_sign_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right as Button
 @onready var left_sign_label: Label = $CenterContainer/BookFrame/LeftPage/Btn_Sign_Left/Lbl_Sign_Left as Label
 @onready var right_sign_label: Label = $CenterContainer/BookFrame/RightPage/Btn_Sign_Right/Lbl_Sign_Right as Label
+@onready var arena_background: TextureRect = $BettingArenaBackground as TextureRect
 @onready var left_page: Control = $CenterContainer/BookFrame/LeftPage as Control
 @onready var right_page: Control = $CenterContainer/BookFrame/RightPage as Control
 @onready var left_contract_label: RichTextLabel = $CenterContainer/BookFrame/LeftPage/Content/Rtl_Left_Contract as RichTextLabel
@@ -53,6 +55,7 @@ var _contract_write_tween: Tween = null
 var _book_content_nodes: Array[CanvasItem] = []
 var _book_content_target_modulates: Dictionary = {}
 var _awaiting_open_request: bool = false
+var _arena_background_default_texture: Texture2D = null
 
 func _ready() -> void:
 	_nodes_ready = true
@@ -75,6 +78,8 @@ func _ready() -> void:
 	if book_frame != null:
 		_book_base_scale = book_frame.scale
 		_book_base_position = book_frame.position
+	if arena_background != null:
+		_arena_background_default_texture = arena_background.texture
 	_build_book_content_node_list()
 
 func _notification(what: int) -> void:
@@ -145,6 +150,7 @@ func close() -> void:
 	_hide_closed_intro()
 	_set_book_input_enabled(true)
 	_show_book_open_state()
+	_set_registry_background_active(false)
 	_show_book_content_immediate()
 	_show_contract_text_immediate()
 	visible = false
@@ -216,6 +222,7 @@ func _show_closed_intro() -> void:
 		header_label.visible = true
 		header_label.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		header_label.text = "%s\n%s" % [tr(CLOSED_SCREEN_TITLE), tr(CLOSED_SCREEN_SUBTITLE)]
+	_set_registry_background_active(true)
 	if book_frame != null:
 		book_frame.pivot_offset = book_frame.size * 0.5
 		book_frame.position = _book_base_position
@@ -257,12 +264,14 @@ func _hide_book_content_for_opening() -> void:
 func _reveal_book_content() -> void:
 	if header_label != null:
 		header_label.text = "%s\n%s" % [tr(SCREEN_TITLE), tr(SCREEN_SUBTITLE)]
+	_set_registry_background_active(false)
 	for node: CanvasItem in _book_content_nodes:
 		node.visible = true
 
 func _show_book_content_immediate() -> void:
 	if header_label != null:
 		header_label.text = "%s\n%s" % [tr(SCREEN_TITLE), tr(SCREEN_SUBTITLE)]
+	_set_registry_background_active(false)
 	for node: CanvasItem in _book_content_nodes:
 		node.visible = true
 		if _book_content_target_modulates.has(node):
@@ -305,6 +314,14 @@ func _show_book_closed_state() -> void:
 	if closed_book_bg != null:
 		closed_book_bg.visible = true
 		closed_book_bg.modulate.a = 1.0
+
+func _set_registry_background_active(active: bool) -> void:
+	if arena_background == null:
+		return
+	if active:
+		arena_background.texture = REGISTRY_RITUAL_BACKGROUND
+	elif _arena_background_default_texture != null:
+		arena_background.texture = _arena_background_default_texture
 
 func _begin_book_open_swap() -> void:
 	if open_book_bg != null:

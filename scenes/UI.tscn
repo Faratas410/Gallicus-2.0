@@ -574,7 +574,7 @@ anchor_bottom = 1.0
 mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.12)
+color = Color(0, 0, 0, 0.0)
 
 [node name="PactSealedBlocker" type="ColorRect" parent="UI_RunRoot/Phase_FIRST_REACTION"]
 mouse_filter = 2
@@ -605,50 +605,58 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -120.0
-offset_right = 260.0
-offset_bottom = 120.0
-custom_minimum_size = Vector2(520, 240)
+offset_left = -330.0
+offset_top = -165.0
+offset_right = 330.0
+offset_bottom = 165.0
+custom_minimum_size = Vector2(660, 330)
 
 [node name="Box_FIRST_REACTION" type="VBoxContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = 36.0
+offset_top = 34.0
 offset_right = -24.0
-offset_bottom = -36.0
+offset_bottom = -34.0
+theme_override_constants/separation = 10
 
 [node name="Lbl_FIRST_REACTION_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
+custom_minimum_size = Vector2(0, 46)
 size_flags_horizontal = 3
+theme_override_styles/panel = ExtResource("20_verdict_banner")
 
 [node name="Lbl_FIRST_REACTION_TITLE" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel"]
 theme_type_variation = &"TitleLabel"
 theme_override_constants/letter_spacing = 3
 theme_override_constants/outline_size = 0
-theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.96, 0.91, 0.78, 1)
+theme_override_font_sizes/font_size = 21
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "IL PATTO E' SIGILLATO."
+text = "PATTO SIGILLATO"
 
 [node name="Lbl_FIRST_REACTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
-visible = false
+custom_minimum_size = Vector2(0, 112)
 size_flags_horizontal = 3
+theme_override_styles/panel = ExtResource("22_verdict_body")
 
 [node name="Lbl_FIRST_REACTION_BODY" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_BODYPanel"]
 horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.87, 0.8, 0.67, 1)
+theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
 clip_text = true
-text = "La folla trattiene il respiro."
+text = "La pietra ha preso la firma.\nLa gradinata attende il gesto."
 
 [node name="Btn_FIRST_REACTION_NEXT" type="Button" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 theme_override_styles/normal = ExtResource("12")
 theme_override_styles/hover = ExtResource("13")
 theme_override_styles/pressed = ExtResource("14")
 theme_override_styles/disabled = ExtResource("15")
-custom_minimum_size = Vector2(170, 54)
+custom_minimum_size = Vector2(240, 54)
 size_flags_horizontal = 4
-text = "AVANTI"
+text = "MOSTRA IL PATTO"
 
 [node name="Phase_RESOLUTION" type="Control" parent="UI_RunRoot"]
 visible = false

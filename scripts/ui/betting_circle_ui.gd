@@ -5,6 +5,8 @@ const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
+const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
+const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
 const BOOK_TITLE_PULSE_SPEED: float = 1.15
 const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
 const BOOK_DROP_SECONDS: float = 0.62
@@ -31,6 +33,8 @@ const CONTRACT_WRITE_SECONDS: float = 2.25
 @onready var closed_book_bg: Control = $CenterContainer/BookFrame/ClosedBookBg as Control
 @onready var closed_intro: Control = $CenterContainer/BookFrame/ClosedIntro as Control
 @onready var intro_text: Label = $CenterContainer/BookFrame/ClosedIntro/IntroText as Label
+@onready var intro_body: Label = $CenterContainer/BookFrame/ClosedIntro/IntroBodyPanel/IntroBody as Label
+@onready var intro_seal: Label = $CenterContainer/BookFrame/ClosedIntro/IntroSealPanel/IntroSeal as Label
 @onready var open_book_button: Button = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book as Button
 @onready var open_book_label: Label = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book/Lbl_Open_Book as Label
 
@@ -89,9 +93,13 @@ func _refresh_localized_text() -> void:
 	if right_sign_label != null:
 		right_sign_label.text = tr("FIRMA")
 	if intro_text != null:
-		intro_text.text = tr("Apri il registro.")
+		intro_text.text = tr("IL REGISTRO E' CHIUSO")
+	if intro_body != null:
+		intro_body.text = tr("La pietra attende una firma.\nOgni patto lascia un segno.")
+	if intro_seal != null:
+		intro_seal.text = tr("I    II    III")
 	if open_book_label != null:
-		open_book_label.text = tr("APRI")
+		open_book_label.text = tr("APRI IL REGISTRO")
 
 func _process(delta: float) -> void:
 	if not visible:
@@ -204,6 +212,10 @@ func _show_closed_intro() -> void:
 	_prepare_contract_text_for_writing()
 	_show_book_closed_state()
 	modulate = Color(1.0, 1.0, 1.0, 1.0)
+	if header_label != null:
+		header_label.visible = true
+		header_label.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		header_label.text = "%s\n%s" % [tr(CLOSED_SCREEN_TITLE), tr(CLOSED_SCREEN_SUBTITLE)]
 	if book_frame != null:
 		book_frame.pivot_offset = book_frame.size * 0.5
 		book_frame.position = _book_base_position
@@ -243,10 +255,14 @@ func _hide_book_content_for_opening() -> void:
 		node.modulate = hidden_modulate
 
 func _reveal_book_content() -> void:
+	if header_label != null:
+		header_label.text = "%s\n%s" % [tr(SCREEN_TITLE), tr(SCREEN_SUBTITLE)]
 	for node: CanvasItem in _book_content_nodes:
 		node.visible = true
 
 func _show_book_content_immediate() -> void:
+	if header_label != null:
+		header_label.text = "%s\n%s" % [tr(SCREEN_TITLE), tr(SCREEN_SUBTITLE)]
 	for node: CanvasItem in _book_content_nodes:
 		node.visible = true
 		if _book_content_target_modulates.has(node):

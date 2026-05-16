@@ -39,10 +39,10 @@ enum RunPhase {
 	RESOLUTION = RunPhaseContractScript.RESOLUTION, # LEGACY COMPAT SLOT (non-mainline in active L3 flow)
 }
 
-const PACT_SEALED_SECONDS: float = 0.7
-const RESOLVE_RITUAL_SECONDS: float = 0.9
+const PACT_SEALED_SECONDS: float = 1.1
+const RESOLVE_RITUAL_SECONDS: float = 1.2
 const RITUAL_STEP_SECONDS: float = 0.05
-const RITUAL_MAX_SECONDS: float = 7.0
+const RITUAL_MAX_SECONDS: float = 30.0
 const QUICK_CUT_RESOLVE_BUFFER_SECONDS: float = 0.08
 const QUICK_CUT_DURATION_MIN_SECONDS: float = 0.8
 const QUICK_CUT_DURATION_MAX_SECONDS: float = 1.2
@@ -1574,8 +1574,6 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 		elapsed_seconds += RITUAL_STEP_SECONDS
 		if elapsed_seconds >= PACT_SEALED_SECONDS and _ritual_advance_pact_requested:
 			break
-		if elapsed_seconds >= PACT_SEALED_SECONDS * 2.0:
-			break
 	if sequence_id != _pact_sealed_sequence_id:
 		return
 	GameEvents.pact_sealed_closed.emit()
@@ -1618,8 +1616,6 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 			return
 		elapsed_seconds += RITUAL_STEP_SECONDS
 		if elapsed_seconds >= RESOLVE_RITUAL_SECONDS and _ritual_advance_resolve_requested:
-			break
-		if elapsed_seconds >= RESOLVE_RITUAL_SECONDS * 2.0:
 			break
 	if sequence_id != _resolve_ritual_sequence_id:
 		return

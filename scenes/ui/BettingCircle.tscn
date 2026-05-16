@@ -75,22 +75,59 @@ anchor_bottom = 1.0
 mouse_filter = 2
 
 [node name="IntroText" type="Label" parent="CenterContainer/BookFrame/ClosedIntro"]
-anchor_left = 0.26
-anchor_top = 0.285
-anchor_right = 0.74
-anchor_bottom = 0.34
+anchor_left = 0.22
+anchor_top = 0.27
+anchor_right = 0.78
+anchor_bottom = 0.39
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_font_sizes/font_size = 14
-text = "Apri il registro."
+theme_override_font_sizes/font_size = 19
+text = "IL REGISTRO E' CHIUSO"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
+[node name="IntroBodyPanel" type="PanelContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
+anchor_left = 0.26
+anchor_top = 0.405
+anchor_right = 0.74
+anchor_bottom = 0.51
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("14_register_tablet")
+
+[node name="IntroBody" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/IntroBodyPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.8, 0.74, 0.61, 1)
+theme_override_font_sizes/font_size = 14
+text = "La pietra attende una firma.\nOgni patto lascia un segno."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="IntroSealPanel" type="PanelContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
+anchor_left = 0.38
+anchor_top = 0.535
+anchor_right = 0.62
+anchor_bottom = 0.595
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("14_register_tablet")
+
+[node name="IntroSeal" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/IntroSealPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.94, 0.8, 0.45, 1)
+theme_override_font_sizes/font_size = 16
+text = "I    II    III"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
 [node name="Btn_Open_Book" type="Button" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.34
-anchor_top = 0.615
+anchor_top = 0.645
 anchor_right = 0.66
-anchor_bottom = 0.715
+anchor_bottom = 0.745
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
 theme_override_styles/pressed = ExtResource("17_button_pressed")
@@ -101,7 +138,7 @@ text = ""
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_font_sizes/font_size = 18
-text = "APRI"
+text = "APRI IL REGISTRO"
 horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2

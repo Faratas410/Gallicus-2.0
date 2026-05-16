@@ -1731,10 +1731,13 @@ func _on_bet_selected(bet_id: String) -> void:
 
 func _on_pact_sealed_opened() -> void:
 	_reset_sign_feedback()
+	_clear_betting_transient_overlays()
 	if pact_sealed_title != null:
-		pact_sealed_title.text = fmt_system_state(tr("patto registrato"))
+		pact_sealed_title.text = tr("PATTO SIGILLATO")
 	if pact_sealed_subtitle != null:
-		pact_sealed_subtitle.text = ""
+		pact_sealed_subtitle.text = tr("La pietra ha preso la firma.\nLa gradinata attende il gesto.")
+	if pact_sealed_advance_button != null:
+		pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
 	_set_pact_sealed_modal(true)
 	_refresh_modal_dimmer()
 
@@ -1874,9 +1877,11 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 	var kind: String = str(payload.get("kind", ""))
 	if kind == "pact_sealed":
 		if pact_sealed_title != null:
-			pact_sealed_title.text = str(payload.get("title", fmt_system_state(tr("patto registrato"))))
+			pact_sealed_title.text = str(payload.get("title", tr("PATTO SIGILLATO")))
 		if pact_sealed_subtitle != null:
-			pact_sealed_subtitle.text = str(payload.get("subtitle", ""))
+			pact_sealed_subtitle.text = str(payload.get("subtitle", tr("La pietra ha preso la firma.\nLa gradinata attende il gesto.")))
+		if pact_sealed_advance_button != null:
+			pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
 		_set_pact_sealed_modal(true)
 	elif kind == "resolve_ritual":
 		if resolve_ritual_title != null:

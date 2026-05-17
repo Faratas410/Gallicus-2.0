@@ -1598,6 +1598,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_smoke_mark("RESOLVE_OPENED")
 	_ritual_advance_resolve_requested = false
+	_touch_request_activity("resolve_ritual_opened")
 	GameEvents.resolve_ritual_opened.emit(payload)
 	if _is_smoke_mode():
 		_ritual_advance_resolve_requested = true
@@ -4015,6 +4016,8 @@ func _watchdog_tick() -> void:
 	if _phase == RunPhase.BET_PRESENT and _waiting_for_bet:
 		return
 	if _phase == RunPhase.INTERMEDIATE_CHOICE and _waiting_for_intermediate_choice:
+		return
+	if _phase == RunPhase.INTERMEDIATE_CHOICE and _resolving_ritual:
 		return
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _waiting_for_push_luck:
 		return

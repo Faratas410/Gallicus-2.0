@@ -115,7 +115,9 @@ All changes to systems described here must update this document in the same PR.
 ## Scope
 - Patch type: Foundation only (no scene-wide texture replacement in this patch).
 - Source-of-truth UI asset folder for adopted runtime main-menu atlas source: `res://assets/MainMenu/`.
-- `res://assets/ui/official_source/` remains the raw external reference pack.
+- `res://assets/ui/third_party/gowl_stonepixel/` is the primary runtime UI source pack for overhaul work. It is the tracked, runtime-safe subset imported from StonePixel 1.2.
+- Preserve existing StonePixel slices in `res://assets/ui/third_party/gowl_stonepixel/`; do not reslice the full source pack unless an explicit asset task requires it.
+- `res://assets/ui/official_source/` remains a legacy/raw external reference pack for already-adopted assets; it is not the default source for new overhaul surfaces.
 - `res://assets/ui/third_party/rpg_ui_pack/` contains purchased RPG UI Pack candidate/reference material; it is not authoritative runtime UI until a later explicit wiring patch adopts specific assets.
 - Authoritative theme resource: `res://assets/ui/theme/official_theme.tres`.
 - Authoritative UI font wrapper: `res://assets/ui/fonts/italiana_regular_font.tres`.
@@ -146,15 +148,17 @@ All changes to systems described here must update this document in the same PR.
 - UI must not unlock achievements or perform meta-save side effects: achievements wiring is a RunManager -> meta-system side effect only.
 
 ## Non-negotiable visual rules
-1. **Base UI scale**: active UI theme assets are texture-backed resources selected from the tracked Wooden UI source pack and must render pixel-crisp at game resolution.
+1. **Base UI scale**: active UI theme assets are texture-backed resources selected from the tracked StonePixel runtime subset and must render pixel-crisp at game resolution.
 2. **Font rule**: `Italiana-Regular.ttf` is the only official UI font source.
 3. **No mixed style**: legacy and official widgets must not be mixed inside a single finalized screen once replacement patches start.
 
 ## Import standard (UI PNG)
 The active source pack is tracked at:
-- `res://assets/ui/official_source/Wooden_UI_png/`
+- `res://assets/ui/third_party/gowl_stonepixel/` for adopted StonePixel 1.2 runtime slices.
+- `res://assets/ui/official_source/Wooden_UI_png/` for legacy/raw reference material and assets already adopted before the StonePixel-first policy.
 - `res://assets/ui/third_party/rpg_ui_pack/` is staged third-party source/reference material only. Keep imports versioned for tracked PNG/TTF files, but do not treat examples as runtime scene authority.
 - Runtime adoption exception: settings sliders may use extracted, isolated derivatives under `res://assets/ui/third_party/rpg_ui_pack/extracted/settings/`; these are visual-only controls and do not redefine the global UI theme.
+- StonePixel adoption rule: prefer the tracked `gowl_stonepixel` PNGs as-is. If a missing state requires returning to the full StonePixel 1.2 source, import the smallest needed PNG and document the source mapping instead of hand-slicing by eye.
 
 For UI pixel-art textures that are adopted into runtime resources, keep the generated `.png.import` sidecar versioned with the source `.png`. The `.godot/` import cache remains ignored and must not be used as a contract surface.
 
@@ -183,19 +187,19 @@ Stop-condition note (active): version `.png.import` sidecars only for tracked so
 ## Replacement mapping tracker
 
 ### Buttons (Main Menu pilot)
-- Active wooden assets:
-  - `res://assets/ui/official_source/Wooden_UI_png/plank_13.png` via `res://assets/ui/official/styleboxes/sb_button_primary_normal.tres`
-  - `res://assets/ui/official_source/Wooden_UI_png/plank_15.png` via `res://assets/ui/official/styleboxes/sb_button_primary_hover.tres`
-  - `res://assets/ui/official_source/Wooden_UI_png/plank_14.png` via `res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres`
-  - `res://assets/ui/official_source/Wooden_UI_png/plank_16.png` via `res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres`
+- Active StonePixel assets:
+  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_normal.png` via `res://assets/ui/official/styleboxes/sb_button_primary_normal.tres`
+  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_hover.png` via `res://assets/ui/official/styleboxes/sb_button_primary_hover.tres`
+  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_hover.png` via `res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres`
+  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_normal.png` via `res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres`
 - Applied through global theme/stylebox references, not runtime logic.
 - Legacy references replaced: primary buttons no longer depend on the previous atlas button slices.
 
 ### Panels / Background boxes (Main Menu pilot)
-- Active wooden asset:
-  - `res://assets/ui/official_source/Wooden_UI_png/bg_01_02.png` via `res://assets/ui/official/styleboxes/sb_panel_main.tres`
+- Active StonePixel asset:
+  - `res://assets/ui/third_party/gowl_stonepixel/panel_plain.png` via `res://assets/ui/official/styleboxes/sb_panel_main.tres`
 - Applied through the shared panel stylebox so existing scenes inherit the visual pass.
-- Runtime backgrounds are intentionally out of scope for the wooden UI import pass.
+- Runtime backgrounds are intentionally out of scope for the StonePixel source-pack policy.
 
 ### Banners / Dividers
 - Official assets selected: _TBD_
@@ -213,10 +217,13 @@ Stop-condition note (active): version `.png.import` sidecars only for tracked so
 - Notes: _TBD_
 
 ### Gallicus-special widgets (bet/choice UI, etc.)
-- Active wooden assets:
-  - `res://assets/ui/official_source/Wooden_UI_png/book.png` for `res://scenes/ui/BettingCircle.tscn`
-  - `res://assets/ui/official_source/Wooden_UI_png/book_closed_cover.png` for the player-confirmed betting-circle intro state
-  - `res://assets/ui/official_source/Wooden_UI_png/plank_13.png`, `plank_15.png`, `plank_14.png`, and `plank_16.png` for betting-circle sign buttons
+- Active StonePixel assets:
+  - `res://assets/ui/third_party/gowl_stonepixel/frame_panel.png` for register slab and ritual panels.
+  - `res://assets/ui/third_party/gowl_stonepixel/panel_plain.png` for register tablets, scars bodies, verdict bodies, and small plates.
+  - `res://assets/ui/third_party/gowl_stonepixel/title_plate.png` for title/banners where a compact stone title surface is needed.
+  - `res://assets/ui/third_party/gowl_stonepixel/bar_stone.png`, `bar_dark.png`, and `bar_knob.png` for pressure and slider-style surfaces.
+- Legacy/residue naming still present during migration:
+  - `res://scenes/ui/BettingCircle.tscn` still contains book-era node names such as `BookFrame`, `SpellbookBg`, and `ClosedBookBg`, but those nodes are PanelContainers styled through StonePixel-backed registry styleboxes.
 - Legacy references replaced: `Spellbook & Tabs` PNG assets are no longer part of active runtime scenes.
 - Notes: runtime behavior remains UI-presentational; RunManager flow authority is unchanged.
 

@@ -10,13 +10,17 @@ Do not make fantasy parchment, wooden planks, floating scrolls, decorative paper
 
 ## Runtime Kit
 
+- Primary pack: StonePixel 1.2 via the tracked runtime-safe subset at `assets/ui/third_party/gowl_stonepixel/`.
+- Use existing StonePixel slices as-is wherever possible. Generate or reslice only for missing roles that cannot be represented by the tracked pack.
 - Shared panels: dark stone slabs with narrow bronze rims.
 - Primary buttons: small bronze-inlaid stone tablets, compact and readable.
 - Betting surface: two carved register tablets inside one large slab.
 - Final screen: the same register slab, used for a smart written verdict instead of a list.
 - Pressure rail: an engraved groove at the foot of the register.
 
-## Menu Assets To Generate
+## Gap Assets To Generate
+
+Generate only when StonePixel does not provide a safe existing slice for the role.
 
 ### `menu_base_lapidary_1280x720.png`
 

@@ -101,13 +101,14 @@
   - `ui/theme/official_theme.tres`
   - `ui/official/` (runtime theme/stylebox/material resources)
   - `ui/official_source/` (raw UI source pack textures/fonts used by runtime resources)
+  - `ui/third_party/gowl_stonepixel/` (primary StonePixel 1.2 runtime-safe UI source subset)
   - `ui/third_party/rpg_ui_pack/` (purchased RPG UI Pack staged as reference/candidate source material; not runtime-authoritative by default)
   - `ui/shaders/menu/`
 
 ## Documentation structure (`docs/`)
 - `canon/` - authoritative ownership docs only.
-- `contracts/` - technical support contracts consumed by tooling.
-- `support/` - maps, operator indexes, and non-canonical support references.
+- `contracts/` - technical/support contracts consumed by tooling or production workflows.
+- `support/` - maps, operator indexes, UI production pipelines, and non-canonical support references.
 - `reports/` - current report surface.
 - `archive/` - historical reports and retired support material.
 

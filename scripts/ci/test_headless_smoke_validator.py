@@ -133,6 +133,23 @@ def main() -> int:
             f"got: {class_timeout}"
         )
 
+    class_timeout_after_native_crash, _, _ = _classify_runtime_failure(
+        124,
+        "\n".join(
+            [
+                "SMOKE:RUNNER_START scenario=BET_PRESENT",
+                "CrashHandlerException: Program crashed with signal 11",
+                "-- END OF C++ BACKTRACE --",
+                "SMOKE:TIMEOUT_HARD_KILL",
+            ]
+        ),
+    )
+    if class_timeout_after_native_crash != SMOKE_CLASS_NATIVE_CRASH_BEFORE_BOOTSTRAP:
+        return fail(
+            "expected timeout-wrapped native crash before bootstrap classification, "
+            f"got: {class_timeout_after_native_crash}"
+        )
+
     print("[OK][HEADLESS_SMOKE_VALIDATOR] smoke validator checks passed")
     return 0
 

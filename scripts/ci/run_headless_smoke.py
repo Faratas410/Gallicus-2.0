@@ -99,9 +99,57 @@ def _extract_milestones(log_text: str) -> list[str]:
     return milestones
 
 
+def _has_native_crash_marker(log_text: str) -> bool:
+    crash_markers = (
+        "CrashHandlerException",
+        "Program crashed with signal",
+        "-- END OF C++ BACKTRACE --",
+    )
+    return any(marker in log_text for marker in crash_markers)
+
+
 def _classify_runtime_failure(exit_code: int, log_text: str) -> tuple[str, str, str]:
     milestones = _extract_milestones(log_text)
     last_milestone = milestones[-1] if milestones else ""
+
+    has_bootstrap = "SMOKE:BOOT_OK" in log_text
+    if not has_bootstrap:
+        if _has_native_crash_marker(log_text):
+            return (
+                SMOKE_CLASS_NATIVE_CRASH_BEFORE_BOOTSTRAP,
+                "native crash marker detected before SMOKE:BOOT_OK",
+                last_milestone,
+            )
+        if exit_code == 124 or "SMOKE:TIMEOUT_HARD_KILL" in log_text:
+            return (
+                SMOKE_CLASS_STALL_OR_WATCHDOG,
+                "runtime timed out or watchdog-equivalent timeout marker reached",
+                last_milestone,
+            )
+        if "watchdog" in log_text.lower():
+            return (
+                SMOKE_CLASS_STALL_OR_WATCHDOG,
+                "watchdog marker detected in runtime output",
+                last_milestone,
+            )
+        return (
+            SMOKE_CLASS_NATIVE_CRASH_BEFORE_BOOTSTRAP,
+            "runtime exited non-zero before SMOKE:BOOT_OK",
+            last_milestone,
+        )
+
+    if _has_native_crash_marker(log_text):
+        if not milestones:
+            return (
+                SMOKE_CLASS_NATIVE_CRASH_AFTER_BOOTSTRAP,
+                "native crash marker detected after bootstrap but before first milestone",
+                last_milestone,
+            )
+        return (
+            SMOKE_CLASS_NATIVE_CRASH_AFTER_MILESTONE,
+            f"native crash marker detected after last milestone {last_milestone}",
+            last_milestone,
+        )
 
     if exit_code == 124 or "SMOKE:TIMEOUT_HARD_KILL" in log_text:
         return (
@@ -114,14 +162,6 @@ def _classify_runtime_failure(exit_code: int, log_text: str) -> tuple[str, str, 
         return (
             SMOKE_CLASS_STALL_OR_WATCHDOG,
             "watchdog marker detected in runtime output",
-            last_milestone,
-        )
-
-    has_bootstrap = "SMOKE:BOOT_OK" in log_text
-    if not has_bootstrap:
-        return (
-            SMOKE_CLASS_NATIVE_CRASH_BEFORE_BOOTSTRAP,
-            "runtime exited non-zero before SMOKE:BOOT_OK",
             last_milestone,
         )
 

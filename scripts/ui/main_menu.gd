@@ -78,7 +78,7 @@ const SETTINGS_RESOLUTIONS: Array[String] = [
 	"1920x1080",
 ]
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
-const MENU_EMPTY_RUN_HINT: String = "Nessun patto aperto. Entra nell'arena e firma la prima scommessa."
+const MENU_EMPTY_RUN_HINT: String = "Obiettivo: firma un patto, supera i riti del Registro, poi incassa o rischia fino al fascicolo finale."
 const MENU_RETURNED_RUN_HINT: String = "Registro aggiornato. Puoi tornare nell'arena quando vuoi."
 
 static var _i18n_bootstrap_done: bool = false
@@ -110,6 +110,7 @@ func _ready() -> void:
 	_build_condanne_list()
 	_cache_menu_buttons()
 	_wire_menu_button_animations()
+	_wire_menu_button_sfx()
 	if menu_center != null:
 		_menu_center_base_position = menu_center.position
 	continue_button.pressed.connect(_on_continue_pressed)
@@ -353,7 +354,7 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
 	var tooltip_label_text: String = "%s\n\n%s\n%s\n\n%s" % [
 		condanna.title,
-		tr("Come è stata ottenuta:"),
+		tr("Come e' stata ottenuta:"),
 		condanna.condition_text,
 		condanna.lore_text
 	]
@@ -567,7 +568,7 @@ func _apply_brightness(value: float) -> void:
 			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
 		brightness_overlay.color = overlay_color
 	if brightness_value != null:
-		brightness_value.text = tr("Luminosità: %.2f") % value
+		brightness_value.text = tr("Luminosita': %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -685,7 +686,7 @@ func _refresh_localized_ui() -> void:
 	if settings_title != null:
 		settings_title.text = tr("OPZIONI")
 	if brightness_label != null:
-		brightness_label.text = tr("LUMINOSITÀ")
+		brightness_label.text = tr("LUMINOSITA'")
 	if language_label != null:
 		language_label.text = tr("LINGUA")
 	if volume_label != null:
@@ -798,9 +799,19 @@ func _wire_menu_button_animations() -> void:
 		if not button.focus_exited.is_connected(focus_exited_callable):
 			button.focus_exited.connect(focus_exited_callable)
 
+func _wire_menu_button_sfx() -> void:
+	for button: Button in _menu_buttons:
+		if button == null:
+			continue
+		var pressed_callable: Callable = Callable(self, "_on_menu_button_pressed").bind(button)
+		if not button.pressed.is_connected(pressed_callable):
+			button.pressed.connect(pressed_callable)
+
 func _on_menu_button_hover(button: Button, active: bool) -> void:
 	if button == null:
 		return
+	if active and not button.disabled:
+		_play_sfx(&"button_hover")
 	button.pivot_offset = button.size * 0.5
 	var target_scale: Vector2 = Vector2(MENU_BUTTON_HOVER_SCALE, MENU_BUTTON_HOVER_SCALE) if active else Vector2.ONE
 	var tween_key: int = button.get_instance_id()
@@ -812,4 +823,15 @@ func _on_menu_button_hover(button: Button, active: bool) -> void:
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "scale", target_scale, 0.12)
 	_menu_button_tweens[tween_key] = tween
+
+func _on_menu_button_pressed(button: Button) -> void:
+	if button == null or button.disabled:
+		return
+	_play_sfx(&"button_click")
+
+func _play_sfx(cue: StringName) -> void:
+	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
+	if sfx_bus == null or not sfx_bus.has_method("play_cue"):
+		return
+	sfx_bus.call("play_cue", cue)
 

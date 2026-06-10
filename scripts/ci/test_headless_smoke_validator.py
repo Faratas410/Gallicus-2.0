@@ -4,6 +4,10 @@
 from __future__ import annotations
 
 from run_headless_smoke import (
+    SCENARIO_BETA_CASHOUT,
+    SCENARIO_BETA_CONDANNA,
+    SCENARIO_BETA_DOUBLE,
+    SCENARIO_BETA_REGISTER_FINAL,
     SCENARIO_BET_PRESENT,
     SCENARIO_FULL_RUN,
     SMOKE_CLASS_NATIVE_CRASH_AFTER_BOOTSTRAP,
@@ -38,7 +42,7 @@ def _build_bet_present_log() -> str:
 
 
 def _build_full_run_log() -> str:
-    return "\n".join(
+	return "\n".join(
         [
             "SMOKE:BOOT_OK",
             "SMOKE:STEP=SCENARIO_FULL_RUN_START",
@@ -56,6 +60,27 @@ def _build_full_run_log() -> str:
             "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
         ]
     )
+
+
+def _build_beta_log(scenario: str, pyl_request: str, register_final: bool = False) -> str:
+    lines = [
+        "SMOKE:BOOT_OK",
+        f"SMOKE:STEP=SCENARIO_{scenario}_START",
+        "SMOKE:MILESTONE=BET_PRESENT",
+        "SMOKE:MILESTONE=PACT_SEALED_OPENED",
+        "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
+        "SMOKE:MILESTONE=INTERMEDIATE_CHOICE",
+        "SMOKE:MILESTONE=RESOLVE_OPENED",
+        "SMOKE:MILESTONE=RESOLVE_CLOSED",
+        "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
+        "SMOKE:REQ=request_mid_choice_select index=0",
+        f"SMOKE:REQ={pyl_request}",
+        "SMOKE:MILESTONE=END_RUN",
+    ]
+    if register_final:
+        lines.append("SMOKE:MILESTONE=END_RUN_FINAL ending_key=ending_glory")
+    lines.append("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
+    return "\n".join(lines)
 
 
 def main() -> int:
@@ -80,6 +105,21 @@ def main() -> int:
     valid_full_run_failures = validate_log_text(_build_full_run_log(), SCENARIO_FULL_RUN)
     if valid_full_run_failures:
         return fail(f"expected FULL_RUN sample log to pass, got: {valid_full_run_failures}")
+
+    beta_cases = {
+        SCENARIO_BETA_CASHOUT: ("request_pyl_cashout", False),
+        SCENARIO_BETA_DOUBLE: ("request_pyl_double", False),
+        SCENARIO_BETA_CONDANNA: ("request_pyl_condanna", False),
+        SCENARIO_BETA_REGISTER_FINAL: ("request_pyl_cashout", True),
+    }
+    for beta_scenario, beta_spec in beta_cases.items():
+        beta_request, register_final = beta_spec
+        beta_failures = validate_log_text(
+            _build_beta_log(beta_scenario, beta_request, register_final),
+            beta_scenario,
+        )
+        if beta_failures:
+            return fail(f"expected {beta_scenario} sample log to pass, got: {beta_failures}")
 
     command = _build_runtime_command("godot", ".", 60, False)
     if command[-2:] != ["--quit-after", "36000"]:

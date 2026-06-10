@@ -24,6 +24,7 @@ ALLOWED_UI_ROOT_TWEEN_FUNCS = {
     "begin_sign_feedback",
     "_fade_modal",
     "_play_panel_enter",
+    "_play_backdrop_enter",
 }
 
 
@@ -60,6 +61,7 @@ def test_ui_motion_contract() -> None:
         'const MOTION_KIND_RITUAL: String = "ritual"',
         'const MOTION_KIND_ENDING: String = "ending"',
         "func _play_panel_enter",
+        "func _play_backdrop_enter",
         "func _fade_modal",
     ]:
         if token not in ui_root:

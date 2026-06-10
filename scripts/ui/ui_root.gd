@@ -21,13 +21,15 @@ const FADE_OUT_SEC: float = 0.18
 const ENDING_FADE_IN_SEC: float = 0.46
 const ENDING_FADE_OUT_SEC: float = 0.34
 const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
-const SIGN_LOCK_DARKEN_RGB: float = 0.82
+const SIGN_LOCK_DARKEN_RGB: float = 0.76
 const SIGN_PREVIEW_SCALE: float = 1.015
 const MID_CHOICE_HOVER_SCALE: float = 1.025
 const MOTION_KIND_STANDARD: String = "standard"
 const MOTION_KIND_RITUAL: String = "ritual"
 const MOTION_KIND_ENDING: String = "ending"
 const MOTION_BASE_POSITION_META: StringName = &"motion_base_position"
+const BACKDROP_BASE_SCALE_META: StringName = &"backdrop_base_scale"
+const BACKDROP_SHADE_ALPHA_META: StringName = &"backdrop_shade_alpha"
 const PUSH_LUCK_DETAILS_MAX_LINES: int = 3
 const PUSH_LUCK_DETAIL_MAX_CHARS: int = 72
 const QUICK_CUT_MAX_SECONDS: float = 1.5
@@ -400,6 +402,7 @@ func _ready() -> void:
 				var confirm_callable: Callable = Callable(self, "_on_bet_confirm_pressed")
 				if not bet_confirm_button.pressed.is_connected(confirm_callable):
 					bet_confirm_button.pressed.connect(confirm_callable)
+				_wire_sign_preview(bet_confirm_button)
 
 	if scar_popup_panel != null:
 		scar_popup_panel.visible = false
@@ -416,12 +419,15 @@ func _ready() -> void:
 	if restart_button != null:
 		if not restart_button.pressed.is_connected(Callable(self, "_on_restart_pressed")):
 			restart_button.pressed.connect(Callable(self, "_on_restart_pressed"))
+		_wire_sign_preview(restart_button)
 	if next_bet_button != null:
 		if not next_bet_button.pressed.is_connected(Callable(self, "_on_retry_pressed")):
 			next_bet_button.pressed.connect(Callable(self, "_on_retry_pressed"))
+		_wire_sign_preview(next_bet_button)
 	if quit_button != null:
 		if not quit_button.pressed.is_connected(Callable(self, "_on_quit_pressed")):
 			quit_button.pressed.connect(Callable(self, "_on_quit_pressed"))
+		_wire_sign_preview(quit_button)
 	if push_luck_panel != null:
 		_set_push_luck_modal(false)
 	if modal_dimmer != null:
@@ -437,6 +443,7 @@ func _ready() -> void:
 			var close_callable: Callable = Callable(self, "_on_scars_detail_closed")
 			if not scars_detail_close.pressed.is_connected(close_callable):
 				scars_detail_close.pressed.connect(close_callable)
+			_wire_sign_preview(scars_detail_close)
 	_wire_intermediate_choice_buttons()
 	_wire_push_luck_buttons()
 	_wire_ritual_advance_buttons()
@@ -754,6 +761,7 @@ func _show_boot_fail(missing: Array[String]) -> void:
 	push_error("UI BOOT FAIL: missing=%s" % ", ".join(missing))
 
 func _on_boot_fail_back_to_menu() -> void:
+	_play_sfx(&"button_click")
 	_emit_game_event_signal_if_available(&"request_show_main_menu")
 
 func _wire_intro_phase_buttons() -> void:
@@ -761,10 +769,12 @@ func _wire_intro_phase_buttons() -> void:
 		var win_callable: Callable = Callable(self, "_on_bet_win_pressed")
 		if not intro_select_win_button.pressed.is_connected(win_callable):
 			intro_select_win_button.pressed.connect(win_callable)
+		_wire_sign_preview(intro_select_win_button)
 	if intro_select_fast_button != null:
 		var fast_callable: Callable = Callable(self, "_on_bet_fast_pressed")
 		if not intro_select_fast_button.pressed.is_connected(fast_callable):
 			intro_select_fast_button.pressed.connect(fast_callable)
+		_wire_sign_preview(intro_select_fast_button)
 
 func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_popup == null:
@@ -1746,6 +1756,7 @@ func _on_pact_sealed_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_pact_ritual_next_pressed() -> void:
+	_play_sfx(&"cursor_select")
 	_emit_game_event_signal_if_available(&"request_ritual_advance", ["pact"])
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
@@ -1772,6 +1783,7 @@ func _on_resolve_ritual_next_pressed() -> void:
 	if resolve_ritual_modal != null and resolve_ritual_modal.visible and _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED:
 		_on_resolve_ritual_strike_pressed()
 		return
+	_play_sfx(&"cursor_select")
 	_emit_game_event_signal_if_available(&"request_ritual_advance", ["resolve"])
 
 func _on_resolve_ritual_strike_pressed() -> void:
@@ -1781,6 +1793,7 @@ func _on_resolve_ritual_strike_pressed() -> void:
 		return
 	var on_beat: bool = _is_resolution_ritual_on_beat()
 	_resolve_ritual_strike_count += 1
+	_play_sfx(&"enemy_hit")
 	_apply_resolution_ritual_strike_feedback(on_beat)
 	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
 		_complete_resolution_ritual_interaction()
@@ -2017,6 +2030,7 @@ func _on_scars_updated(scars: Array) -> void:
 	_refresh_scars_ui(scars)
 
 func _on_scar_applied(scar: Dictionary) -> void:
+	_play_sfx(&"player_damage")
 	_show_scar_popup(scar)
 
 func _refresh_scars_ui(scars: Array) -> void:
@@ -2113,6 +2127,7 @@ func _hide_scars_detail() -> void:
 	_set_scars_detail_modal(false)
 
 func _on_scars_detail_closed() -> void:
+	_play_sfx(&"button_click")
 	_hide_scars_detail()
 
 func _set_scars_detail_modal(active: bool) -> void:
@@ -2382,14 +2397,17 @@ func _wire_ritual_advance_buttons() -> void:
 		var pact_callable: Callable = Callable(self, "_on_pact_ritual_next_pressed")
 		if not pact_sealed_advance_button.pressed.is_connected(pact_callable):
 			pact_sealed_advance_button.pressed.connect(pact_callable)
+		_wire_sign_preview(pact_sealed_advance_button)
 	if resolve_ritual_advance_button != null:
 		var resolve_callable: Callable = Callable(self, "_on_resolve_ritual_next_pressed")
 		if not resolve_ritual_advance_button.pressed.is_connected(resolve_callable):
 			resolve_ritual_advance_button.pressed.connect(resolve_callable)
+		_wire_sign_preview(resolve_ritual_advance_button)
 	if resolve_ritual_strike_button != null:
 		var strike_callable: Callable = Callable(self, "_on_resolve_ritual_strike_pressed")
 		if not resolve_ritual_strike_button.pressed.is_connected(strike_callable):
 			resolve_ritual_strike_button.pressed.connect(strike_callable)
+		_wire_sign_preview(resolve_ritual_strike_button)
 
 func _wire_intermediate_choice_buttons() -> void:
 	if intermediate_choice_placa_button != null:
@@ -2434,6 +2452,7 @@ func _on_mid_choice_emphasis(button: Button, active: bool) -> void:
 	tween.parallel().tween_property(button, "scale", target_scale, 0.12)
 
 func _on_intermediate_choice_placa_pressed() -> void:
+	_play_sfx(&"cursor_select")
 	_apply_decision_lock(
 		intermediate_choice_panel,
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
@@ -2443,6 +2462,7 @@ func _on_intermediate_choice_placa_pressed() -> void:
 	_emit_game_event_signal_if_available(&"request_mid_choice_select", [0])
 
 func _on_intermediate_choice_provoca_pressed() -> void:
+	_play_sfx(&"cursor_select")
 	_apply_decision_lock(
 		intermediate_choice_panel,
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
@@ -2454,9 +2474,10 @@ func _on_intermediate_choice_provoca_pressed() -> void:
 func _on_push_luck_cashout_pressed() -> void:
 	if _pyl_locked:
 		return
+	_play_sfx(&"stage_complete")
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_cashout_button)
-	_pulse_pyl_panel(Color(0.72, 0.55, 0.22, 1.0))
+	_pulse_pyl_panel(Color(0.55, 0.46, 0.28, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_cashout"):
 		_recover_pyl_request_lock(tr("Stato: richiesta incasso non disponibile."))
 		return
@@ -2465,9 +2486,10 @@ func _on_push_luck_cashout_pressed() -> void:
 func _on_push_luck_condanna_pressed() -> void:
 	if _pyl_locked:
 		return
+	_play_sfx(&"player_damage")
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_condanna_button)
-	_pulse_pyl_panel(Color(0.62, 0.16, 0.12, 1.0))
+	_pulse_pyl_panel(Color(0.43, 0.13, 0.11, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_condanna"):
 		_recover_pyl_request_lock(tr("Stato: richiesta condanna non disponibile."))
 		return
@@ -2476,9 +2498,10 @@ func _on_push_luck_condanna_pressed() -> void:
 func _on_push_luck_double_pressed() -> void:
 	if _pyl_locked:
 		return
+	_play_sfx(&"level_up")
 	_pyl_locked = true
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_double_button)
-	_pulse_pyl_panel(Color(0.88, 0.26, 0.12, 1.0))
+	_pulse_pyl_panel(Color(0.66, 0.25, 0.12, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_double"):
 		_recover_pyl_request_lock(tr("Stato: richiesta rilancio non disponibile."))
 		return
@@ -2561,9 +2584,11 @@ func _reset_pyl_lock_state() -> void:
 	_set_pyl_buttons_enabled(true)
 
 func _on_bet_win_pressed() -> void:
+	_play_sfx(&"cursor_select")
 	_emit_intro_bet_request(0)
 
 func _on_bet_fast_pressed() -> void:
+	_play_sfx(&"cursor_select")
 	_emit_intro_bet_request(1)
 
 func _emit_intro_bet_request(slot_index: int) -> void:
@@ -2580,9 +2605,11 @@ func _emit_intro_bet_request(slot_index: int) -> void:
 	_emit_game_event_signal_if_available(&"request_place_bet", [bet_id, 0])
 
 func _on_restart_pressed() -> void:
+	_play_sfx(&"button_click")
 	_emit_game_event_signal_if_available(&"request_end_run_restart")
 
 func _on_retry_pressed() -> void:
+	_play_sfx(&"button_click")
 	_emit_game_event_signal_if_available(&"request_end_run_next_bet")
 
 func _request_reset() -> void:
@@ -2603,6 +2630,7 @@ func _request_retry() -> void:
 	_refresh_modal_dimmer()
 
 func _on_quit_pressed() -> void:
+	_play_sfx(&"button_click")
 	_emit_game_event_signal_if_available(&"request_end_run_quit")
 
 func _handle_fast_countdown(seconds: int) -> void:
@@ -2891,6 +2919,7 @@ func _on_bet_failed(can_retry: bool) -> void:
 func _on_bet_choice_pressed(bet_id: String) -> void:
 	if bet_id == "":
 		return
+	_play_sfx(&"cursor_move")
 	_selected_bet_id = bet_id
 	_refresh_bet_selection_visuals()
 	_update_bet_focus_telegraph()
@@ -2899,11 +2928,13 @@ func _on_bet_choice_pressed(bet_id: String) -> void:
 func _on_bet_signature_pressed(bet_id: String) -> void:
 	if bet_id == "":
 		return
+	_play_sfx(&"cursor_select")
 	_selected_bet_id = bet_id
 	_refresh_bet_selection_visuals()
 	_place_bet(bet_id)
 
 func _on_bet_confirm_pressed() -> void:
+	_play_sfx(&"cursor_select")
 	_emit_game_event_signal_if_available(&"request_intro_confirm")
 
 func _place_bet(bet_id: String) -> void:
@@ -2988,6 +3019,7 @@ func _wire_sign_preview(button: Button) -> void:
 func _on_sign_preview_entered(button: Button) -> void:
 	if button == null or button.disabled or _is_signing:
 		return
+	_play_sfx(&"button_hover")
 	button.pivot_offset = button.size * 0.5
 	button.scale = Vector2(SIGN_PREVIEW_SCALE, SIGN_PREVIEW_SCALE)
 
@@ -3022,10 +3054,13 @@ func begin_sign_feedback(buttons: Array[Button], panel: CanvasItem) -> void:
 	_play_sign_feedback_sfx_if_available()
 
 func _play_sign_feedback_sfx_if_available() -> void:
-	var lockin_sfx: AudioStreamPlayer = get_node_or_null("UI_RunRoot/SFX_LockIn") as AudioStreamPlayer
-	if lockin_sfx == null:
+	_play_sfx(&"cursor_select")
+
+func _play_sfx(cue: StringName) -> void:
+	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
+	if sfx_bus == null or not sfx_bus.has_method("play_cue"):
 		return
-	lockin_sfx.play()
+	sfx_bus.call("play_cue", cue)
 
 func _reset_sign_feedback() -> void:
 	if _sign_feedback_tween != null and _sign_feedback_tween.is_valid():
@@ -3212,6 +3247,53 @@ func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -
 	tween.tween_property(control, "scale", Vector2.ONE, seconds)
 	tween.parallel().tween_property(control, "position", base_position, seconds)
 
+func _play_backdrop_enter(modal: Control, kind: String = MOTION_KIND_STANDARD) -> void:
+	if modal == null:
+		return
+	var texture_backdrop: TextureRect = _find_modal_texture_backdrop(modal)
+	if texture_backdrop != null:
+		if not texture_backdrop.has_meta(BACKDROP_BASE_SCALE_META):
+			texture_backdrop.set_meta(BACKDROP_BASE_SCALE_META, texture_backdrop.scale)
+		var base_scale: Vector2 = texture_backdrop.get_meta(BACKDROP_BASE_SCALE_META) as Vector2
+		texture_backdrop.pivot_offset = texture_backdrop.size * 0.5
+		var start_scale: Vector2 = base_scale * (Vector2(1.018, 1.018) if kind == MOTION_KIND_ENDING else Vector2(1.012, 1.012))
+		texture_backdrop.scale = start_scale
+		var backdrop_tween: Tween = create_tween()
+		backdrop_tween.set_trans(Tween.TRANS_SINE)
+		backdrop_tween.set_ease(Tween.EASE_OUT)
+		backdrop_tween.tween_property(texture_backdrop, "scale", base_scale, 1.15 if kind == MOTION_KIND_ENDING else 0.7)
+	var shade: ColorRect = _find_modal_shade(modal)
+	if shade == null:
+		return
+	if not shade.has_meta(BACKDROP_SHADE_ALPHA_META):
+		shade.set_meta(BACKDROP_SHADE_ALPHA_META, shade.color.a)
+	var base_alpha: float = float(shade.get_meta(BACKDROP_SHADE_ALPHA_META))
+	var color: Color = shade.color
+	color.a = clamp(base_alpha + (0.12 if kind == MOTION_KIND_ENDING else 0.08), 0.0, 0.86)
+	shade.color = color
+	var shade_tween: Tween = create_tween()
+	shade_tween.set_trans(Tween.TRANS_SINE)
+	shade_tween.set_ease(Tween.EASE_OUT)
+	shade_tween.tween_property(shade, "color:a", base_alpha, 0.9 if kind == MOTION_KIND_ENDING else 0.55)
+
+func _find_modal_texture_backdrop(modal: Control) -> TextureRect:
+	var backdrops: Array[Node] = modal.find_children("*Backdrop*", "TextureRect", true, false)
+	if backdrops.is_empty():
+		backdrops = modal.find_children("*Background*", "TextureRect", true, false)
+	for node: Node in backdrops:
+		var texture_rect: TextureRect = node as TextureRect
+		if texture_rect != null and texture_rect.visible:
+			return texture_rect
+	return null
+
+func _find_modal_shade(modal: Control) -> ColorRect:
+	var shades: Array[Node] = modal.find_children("*Shade*", "ColorRect", true, false)
+	for node: Node in shades:
+		var shade: ColorRect = node as ColorRect
+		if shade != null and shade.visible:
+			return shade
+	return null
+
 func _set_bet_modal(active: bool) -> void:
 	if active:
 		show_modal(bet_modal)
@@ -3227,6 +3309,8 @@ func _set_pact_sealed_modal(active: bool) -> void:
 		show_modal(pact_sealed_modal)
 	_pact_sealed_modal_fade_tween = _fade_modal(pact_sealed_panel, pact_sealed_modal, active, _pact_sealed_modal_fade_tween, MOTION_KIND_RITUAL)
 	if active:
+		_play_backdrop_enter(pact_sealed_modal, MOTION_KIND_RITUAL)
+		_play_sfx(&"pickup")
 		_play_panel_enter(pact_sealed_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("pact_sealed", active)
 	_refresh_modal_dimmer()
@@ -3240,6 +3324,8 @@ func _set_resolve_ritual_modal(active: bool) -> void:
 		_stop_resolution_ritual_interaction()
 	_resolve_ritual_modal_fade_tween = _fade_modal(resolve_ritual_panel, resolve_ritual_modal, active, _resolve_ritual_modal_fade_tween, MOTION_KIND_RITUAL)
 	if active:
+		_play_backdrop_enter(resolve_ritual_modal, MOTION_KIND_RITUAL)
+		_play_sfx(&"cursor_move")
 		_play_panel_enter(resolve_ritual_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("resolve_ritual", active)
 	_refresh_modal_dimmer()
@@ -3256,6 +3342,8 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 		MOTION_KIND_RITUAL
 	)
 	if active:
+		_play_backdrop_enter(intermediate_choice_modal, MOTION_KIND_RITUAL)
+		_play_sfx(&"cursor_move")
 		_play_panel_enter(intermediate_choice_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("intermediate_choice", active)
 	_refresh_modal_dimmer()
@@ -3266,6 +3354,8 @@ func _set_push_luck_modal(active: bool) -> void:
 		show_modal(push_luck_modal)
 	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween, MOTION_KIND_RITUAL)
 	if active:
+		_play_backdrop_enter(push_luck_modal, MOTION_KIND_RITUAL)
+		_play_sfx(&"level_up")
 		_play_panel_enter(push_luck_panel, MOTION_KIND_RITUAL)
 	_emit_modal_telemetry("push_luck", active)
 	_refresh_modal_dimmer()
@@ -3276,6 +3366,11 @@ func _set_game_over_modal(active: bool) -> void:
 		show_modal(game_over_modal)
 	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween, MOTION_KIND_ENDING)
 	if active:
+		_play_backdrop_enter(game_over_modal, MOTION_KIND_ENDING)
+		if _last_register_final or _last_verdict_outcome != &"LOSS":
+			_play_sfx(&"stage_complete")
+		else:
+			_play_sfx(&"game_over")
 		_play_panel_enter(game_over_panel, MOTION_KIND_ENDING)
 		enter_ending_mode()
 		_emit_modal_telemetry("ending", true)

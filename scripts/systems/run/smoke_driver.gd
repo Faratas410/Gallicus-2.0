@@ -4,6 +4,10 @@ extends RefCounted
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
 const SCENARIO_BET_PRESENT: String = "BET_PRESENT"
 const SCENARIO_FULL_RUN: String = "FULL_RUN"
+const SCENARIO_BETA_CASHOUT: String = "BETA_CASHOUT"
+const SCENARIO_BETA_DOUBLE: String = "BETA_DOUBLE"
+const SCENARIO_BETA_CONDANNA: String = "BETA_CONDANNA"
+const SCENARIO_BETA_REGISTER_FINAL: String = "BETA_REGISTER_FINAL"
 var _phase_name_main_menu: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.MAIN_MENU)
 var _phase_name_run_init: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.RUN_INIT)
 var _phase_name_bet_present: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.BET_PRESENT)
@@ -32,15 +36,23 @@ func should_start_driver_scenario() -> bool:
 	if not is_smoke_mode():
 		return false
 	var scenario: String = get_scenario()
-	return scenario == SCENARIO_BET_PRESENT or scenario == SCENARIO_FULL_RUN
+	return scenario in [
+		SCENARIO_BET_PRESENT,
+		SCENARIO_FULL_RUN,
+		SCENARIO_BETA_CASHOUT,
+		SCENARIO_BETA_DOUBLE,
+		SCENARIO_BETA_CONDANNA,
+		SCENARIO_BETA_REGISTER_FINAL,
+	]
 
 
 func begin_scenario() -> PackedStringArray:
 	_new_run_requested = false
 	_step_logged_run_init = false
 	_gate_quit_requested = false
-	if get_scenario() == SCENARIO_FULL_RUN:
-		return PackedStringArray(["SMOKE:STEP=SCENARIO_FULL_RUN_START"])
+	var scenario: String = get_scenario()
+	if scenario != SCENARIO_BET_PRESENT:
+		return PackedStringArray(["SMOKE:STEP=SCENARIO_%s_START" % scenario])
 	return PackedStringArray(["SMOKE:STEP=SCENARIO_BET_PRESENT_START"])
 
 

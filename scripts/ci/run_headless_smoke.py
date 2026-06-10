@@ -14,6 +14,10 @@ from pathlib import Path
 
 SCENARIO_BET_PRESENT = "BET_PRESENT"
 SCENARIO_FULL_RUN = "FULL_RUN"
+SCENARIO_BETA_CASHOUT = "BETA_CASHOUT"
+SCENARIO_BETA_DOUBLE = "BETA_DOUBLE"
+SCENARIO_BETA_CONDANNA = "BETA_CONDANNA"
+SCENARIO_BETA_REGISTER_FINAL = "BETA_REGISTER_FINAL"
 # Godot's --quit-after counts engine iterations, not wall-clock seconds.
 # Headless Linux can iterate much faster than 60 FPS, so keep this as a
 # generous safety cap and let subprocess hard-timeout enforce wall-clock limits.
@@ -65,6 +69,78 @@ SCENARIO_SPECS: dict[str, SmokeScenarioSpec] = {
         required_substrings=(
             "SMOKE:BOOT_OK",
             "SMOKE:STEP=SCENARIO_FULL_RUN_START",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:MILESTONE=PACT_SEALED_OPENED",
+            "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
+            "SMOKE:MILESTONE=INTERMEDIATE_CHOICE",
+            "SMOKE:MILESTONE=RESOLVE_OPENED",
+            "SMOKE:MILESTONE=RESOLVE_CLOSED",
+            "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:MILESTONE=END_RUN_FINAL ending_key=",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_boot_marker=True,
+    ),
+    SCENARIO_BETA_CASHOUT: SmokeScenarioSpec(
+        name=SCENARIO_BETA_CASHOUT,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_BETA_CASHOUT_START",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:MILESTONE=PACT_SEALED_OPENED",
+            "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
+            "SMOKE:MILESTONE=INTERMEDIATE_CHOICE",
+            "SMOKE:MILESTONE=RESOLVE_OPENED",
+            "SMOKE:MILESTONE=RESOLVE_CLOSED",
+            "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
+            "SMOKE:REQ=request_pyl_cashout",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_boot_marker=True,
+    ),
+    SCENARIO_BETA_DOUBLE: SmokeScenarioSpec(
+        name=SCENARIO_BETA_DOUBLE,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_BETA_DOUBLE_START",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:MILESTONE=PACT_SEALED_OPENED",
+            "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
+            "SMOKE:MILESTONE=INTERMEDIATE_CHOICE",
+            "SMOKE:MILESTONE=RESOLVE_OPENED",
+            "SMOKE:MILESTONE=RESOLVE_CLOSED",
+            "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
+            "SMOKE:REQ=request_pyl_double",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_boot_marker=True,
+    ),
+    SCENARIO_BETA_CONDANNA: SmokeScenarioSpec(
+        name=SCENARIO_BETA_CONDANNA,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_BETA_CONDANNA_START",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:MILESTONE=PACT_SEALED_OPENED",
+            "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
+            "SMOKE:MILESTONE=INTERMEDIATE_CHOICE",
+            "SMOKE:MILESTONE=RESOLVE_OPENED",
+            "SMOKE:MILESTONE=RESOLVE_CLOSED",
+            "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
+            "SMOKE:REQ=request_pyl_condanna",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_boot_marker=True,
+    ),
+    SCENARIO_BETA_REGISTER_FINAL: SmokeScenarioSpec(
+        name=SCENARIO_BETA_REGISTER_FINAL,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_BETA_REGISTER_FINAL_START",
             "SMOKE:MILESTONE=BET_PRESENT",
             "SMOKE:MILESTONE=PACT_SEALED_OPENED",
             "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
@@ -231,10 +307,25 @@ def validate_log_text(log_text: str, scenario: str) -> list[str]:
             failures.append(f"missing required token: {token}")
 
     # Ensure full-run touched intent path segments beyond BET_PRESENT.
-    if scenario == SCENARIO_FULL_RUN:
+    if scenario in {
+        SCENARIO_FULL_RUN,
+        SCENARIO_BETA_CASHOUT,
+        SCENARIO_BETA_DOUBLE,
+        SCENARIO_BETA_CONDANNA,
+        SCENARIO_BETA_REGISTER_FINAL,
+    }:
         if "SMOKE:REQ=request_mid_choice_select index=0" not in log_text:
             failures.append("missing full-run request token: request_mid_choice_select index=0")
-        if (
+        if scenario == SCENARIO_BETA_CONDANNA:
+            if "SMOKE:REQ=request_pyl_condanna" not in log_text:
+                failures.append("missing beta request token: request_pyl_condanna")
+        elif scenario == SCENARIO_BETA_DOUBLE:
+            if "SMOKE:REQ=request_pyl_double" not in log_text:
+                failures.append("missing beta request token: request_pyl_double")
+        elif scenario == SCENARIO_BETA_CASHOUT:
+            if "SMOKE:REQ=request_pyl_cashout" not in log_text:
+                failures.append("missing beta request token: request_pyl_cashout")
+        elif (
             "SMOKE:REQ=request_pyl_double" not in log_text
             and "SMOKE:REQ=request_pyl_cashout" not in log_text
         ):

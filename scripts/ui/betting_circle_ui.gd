@@ -15,6 +15,7 @@ const BOOK_OPEN_SECONDS: float = 0.48
 const BOOK_SETTLE_SECONDS: float = 0.18
 const BOOK_CONTENT_REVEAL_SECONDS: float = 0.36
 const CONTRACT_WRITE_SECONDS: float = 2.25
+const PAGE_IDLE_DRIFT_PIXELS: float = 1.4
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
 @onready var right_select_button: Button = $CenterContainer/BookFrame/RightPage/Btn_Select_Right as Button
@@ -67,6 +68,7 @@ func _ready() -> void:
 	right_sign_button.pressed.connect(_on_sign_right_pressed)
 	if open_book_button != null:
 		open_book_button.pressed.connect(_on_open_book_pressed)
+	_wire_button_feedback_sfx()
 	# Legacy CI contract token: bet_option_3.visible = false
 	_refresh_from_catalog_if_empty()
 	_render_pages()
@@ -113,6 +115,7 @@ func _process(delta: float) -> void:
 	if header_label != null:
 		var pulse: float = 0.9 + (sin(_idle_time * BOOK_TITLE_PULSE_SPEED) * 0.1)
 		header_label.modulate = Color(pulse, pulse, pulse, 1.0)
+	_update_page_idle_motion()
 
 func set_offers(bets: Array[Dictionary]) -> void:
 	_betting_circle_options = []
@@ -243,6 +246,7 @@ func _hide_closed_intro() -> void:
 func _on_open_book_pressed() -> void:
 	if not _awaiting_open_request:
 		return
+	_play_sfx(&"button_click")
 	_awaiting_open_request = false
 	_play_open_animation()
 
@@ -354,6 +358,14 @@ func _finish_open_animation() -> void:
 	_update_sigilla_state()
 	_set_book_input_enabled(true)
 
+func _update_page_idle_motion() -> void:
+	if _opening_locked or _awaiting_open_request or _submit_locked:
+		return
+	if left_page != null:
+		left_page.position = _left_page_base_position + Vector2(0.0, sin(_idle_time * 0.72) * PAGE_IDLE_DRIFT_PIXELS)
+	if right_page != null:
+		right_page.position = _right_page_base_position + Vector2(0.0, sin(_idle_time * 0.68 + 0.8) * PAGE_IDLE_DRIFT_PIXELS)
+
 func _reset_interaction_lock() -> void:
 	selected_bet_id = &""
 	_submit_locked = false
@@ -383,6 +395,7 @@ func _select_offer_index(index: int) -> void:
 		selected_bet_id = &""
 	else:
 		selected_bet_id = StringName(str(_betting_circle_options[index].get("id", "")))
+	_play_sfx(&"cursor_move")
 	_apply_selection_visual()
 	_update_sigilla_state()
 
@@ -438,6 +451,7 @@ func _submit_selected_offer(button: Button) -> void:
 		return
 	_submit_locked = true
 	_update_sigilla_state()
+	_play_sfx(&"cursor_select")
 	_play_stamp_feedback(button)
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(String(selected_bet_id), 0)
@@ -452,6 +466,28 @@ func _play_stamp_feedback(button: Button) -> void:
 	tween.tween_property(button, "scale", Vector2(1.06, 1.06), 0.06)
 	tween.set_ease(Tween.EASE_IN)
 	tween.tween_property(button, "scale", Vector2.ONE, 0.08)
+
+func _wire_button_feedback_sfx() -> void:
+	for button: Button in [open_book_button, left_select_button, right_select_button, left_sign_button, right_sign_button]:
+		if button == null:
+			continue
+		var hover_callable: Callable = Callable(self, "_on_feedback_button_hover").bind(button)
+		if not button.mouse_entered.is_connected(hover_callable):
+			button.mouse_entered.connect(hover_callable)
+		var focus_callable: Callable = Callable(self, "_on_feedback_button_hover").bind(button)
+		if not button.focus_entered.is_connected(focus_callable):
+			button.focus_entered.connect(focus_callable)
+
+func _on_feedback_button_hover(button: Button) -> void:
+	if button == null or button.disabled:
+		return
+	_play_sfx(&"button_hover")
+
+func _play_sfx(cue: StringName) -> void:
+	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
+	if sfx_bus == null or not sfx_bus.has_method("play_cue"):
+		return
+	sfx_bus.call("play_cue", cue)
 
 func _update_sigilla_state() -> void:
 	var left_id: StringName = _offer_id_at(0)

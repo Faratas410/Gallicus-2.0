@@ -100,7 +100,8 @@ def main() -> int:
             return fail(f"missing smoke runner playable-slice token: {token}")
 
     required_workflow_tokens = (
-        "scenario: [BET_PRESENT, FULL_RUN]",
+        "BET_PRESENT",
+        "FULL_RUN",
         "python3 scripts/ci/run_headless_smoke.py",
     )
     for token in required_workflow_tokens:

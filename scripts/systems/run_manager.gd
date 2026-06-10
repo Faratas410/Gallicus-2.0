@@ -855,13 +855,9 @@ func _smoke_start_scenario() -> void:
 	_smoke_full_run_pyl_sent = false
 	_smoke_full_run_pact_advance_sent = false
 	_smoke_full_run_resolve_advance_sent = false
-	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
-	if scenario == "FULL_RUN":
-		print("SMOKE:STEP=SCENARIO_FULL_RUN_START")
-	else:
-		var start_logs: PackedStringArray = _smoke.begin_scenario()
-		for line: String in start_logs:
-			print(line)
+	var start_logs: PackedStringArray = _smoke.begin_scenario()
+	for line: String in start_logs:
+		print(line)
 	_smoke_driver_active = true
 	_smoke_driver_next_tick_msec = Time.get_ticks_msec()
 
@@ -870,7 +866,7 @@ func _stop_smoke_driver() -> void:
 	_smoke_driver_next_tick_msec = -1
 
 func _on_smoke_driver_tick() -> void:
-	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "FULL_RUN":
+	if _is_smoke_full_run_like_scenario():
 		_run_smoke_full_run_driver()
 		return
 	_smoke_init_if_needed()
@@ -971,12 +967,41 @@ func _run_smoke_full_run_driver() -> void:
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step == "PUSH_YOUR_LUCK":
 		_drive_smoke_full_run_pyl_request()
 		return
-	if _phase == RunPhase.GAME_OVER and _is_register_final():
+	if _phase == RunPhase.GAME_OVER and (_is_register_final() or not _smoke_requires_register_final()):
 		print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
 		_stop_smoke_driver()
 		_smoke_quit_gate()
 
+func _is_smoke_full_run_like_scenario() -> bool:
+	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
+	return scenario in [
+		"FULL_RUN",
+		"BETA_CASHOUT",
+		"BETA_DOUBLE",
+		"BETA_CONDANNA",
+		"BETA_REGISTER_FINAL",
+	]
+
+func _smoke_requires_register_final() -> bool:
+	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
+	return scenario == "FULL_RUN" or scenario == "BETA_REGISTER_FINAL" or scenario == "BETA_CASHOUT"
+
 func _drive_smoke_full_run_pyl_request() -> void:
+	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
+	if scenario == "BETA_CONDANNA":
+		if not _smoke_full_run_pyl_sent:
+			print("SMOKE:REQ=request_pyl_condanna")
+			_smoke_full_run_pyl_sent = true
+		_on_request_pyl_condanna()
+		return
+	if scenario == "BETA_DOUBLE":
+		var beta_double_lock_reason: String = _get_double_lock_reason()
+		if beta_double_lock_reason == "":
+			if not _smoke_full_run_pyl_sent:
+				print("SMOKE:REQ=request_pyl_double")
+				_smoke_full_run_pyl_sent = true
+			_on_request_pyl_double()
+			return
 	var audience_policy: Dictionary = _build_audience_reward_text()
 	var can_end_with_register_final: bool = _is_register_final()
 	var can_cashout: bool = can_end_with_register_final and bool(audience_policy.get("cashout_enabled", true)) and _get_cashout_lock_reason() == ""

@@ -121,7 +121,6 @@ func set_offers(bets: Array[Dictionary]) -> void:
 	_betting_circle_options = []
 	for bet in bets:
 		if _betting_circle_options.size() >= 2:
-			push_warning("BettingCircleUI: received more than two offers, ignoring extras")
 			break
 		var mapped: Dictionary = _map_offer_for_display(bet)
 		if mapped.is_empty():
@@ -617,4 +616,3 @@ func _escape_bbcode(value: String) -> String:
 	# Godot 4.6 does not expose String.escape_bbcode(); escaping the opening
 	# bracket is the supported way to prevent user/content text from becoming tags.
 	return value.replace("[", "[lb]")
-

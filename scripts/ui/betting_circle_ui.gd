@@ -616,4 +616,3 @@ func _escape_bbcode(value: String) -> String:
 	# Godot 4.6 does not expose String.escape_bbcode(); escaping the opening
 	# bracket is the supported way to prevent user/content text from becoming tags.
 	return value.replace("[", "[lb]")
-

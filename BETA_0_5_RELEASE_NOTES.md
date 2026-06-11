@@ -18,6 +18,7 @@ This is an internal beta target, not a public demo target. The automated CI/Linu
 
 ## Known Issues
 - Local Windows headless runtime smoke remains diagnostic-only if it crashes before `SMOKE:BOOT_OK`.
+- Local Windows smoke mode can crash natively before bootstrap even without `--headless`; use CI/Linux smoke as the runtime authority.
 - Manual QA has not yet been completed from `BETA_PLAYTEST_CHECKLIST.md`.
 - This beta does not include action combat or public-demo packaging.
 

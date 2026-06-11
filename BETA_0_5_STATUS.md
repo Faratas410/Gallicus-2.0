@@ -35,6 +35,7 @@ The canonical CI/Linux smoke matrix is green for the beta runtime gate. Full v0.
 - Mojibake scan is clean locally.
 - Timed non-headless launch exits without fatal error locally.
 - Windows headless smoke remains diagnostic-only and currently fails before `SMOKE:BOOT_OK` with `NATIVE_CRASH_BEFORE_BOOTSTRAP`.
+- Windows non-headless smoke mode also fails before `SMOKE:BOOT_OK` with a native Godot `CrashHandlerException`; normal non-smoke launch still passes.
 
 ## Remaining Manual QA Gate
 - Complete 3 consecutive runs in one executable session.

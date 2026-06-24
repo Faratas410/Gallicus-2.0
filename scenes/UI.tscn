@@ -221,7 +221,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "Il patto è sottoposto a giudizio..."
+text = "Il Registro pesa il patto..."
 
 [node name="AudienceContextLabelPanel" type="PanelContainer" parent="HUD"]
 visible = false
@@ -737,7 +737,7 @@ theme_override_colors/font_color = Color(0.87, 0.8, 0.67, 1)
 theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
 clip_text = true
-text = "Il patto è sottoposto a giudizio."
+text = "Il Registro pesa il patto. Colpisci tre volte il sigillo."
 
 [node name="Lbl_RESOLUTION_RITUAL_PROMPTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
 custom_minimum_size = Vector2(0, 34)
@@ -1774,7 +1774,7 @@ size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.91, 0.86, 0.76, 1)
 theme_override_font_sizes/font_size = 14
 autowrap_mode = 2
-text = "Nessun segno inciso."
+text = "Registro pulito: nessun segno inciso."
 
 
 

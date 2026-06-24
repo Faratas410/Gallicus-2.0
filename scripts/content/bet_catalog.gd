@@ -127,7 +127,7 @@ const L3_ACTIVE_BET_IDENTITIES: Dictionary[StringName, Dictionary] = {
 	BET_P3_CHAIN_OATH: {
 		"token": "BET_P3_CHAIN_OATH",
 		"display_title": "GIURAMENTO A CATENA",
-		"display_subtitle": "Prometti continuita': meno caos, piu' debito.",
+		"display_subtitle": "Patto stabile: meno caos, piu' debito.",
 		"path_tag": PATH_PRUDENCE,
 		"behavior": BET_DEBT_CHAIN,
 	},

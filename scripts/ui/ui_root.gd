@@ -39,6 +39,7 @@ const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.38
 const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.44
 const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.36
 const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.30
+const END_RUN_BUTTON_READY_SCALE: Vector2 = Vector2(1.012, 1.012)
 const RESOLUTION_RITUAL_STRIKES_REQUIRED: int = 3
 const RESOLUTION_RITUAL_BEAT_SECONDS: float = 0.9
 const RESOLUTION_RITUAL_HIT_WINDOW_SECONDS: float = 0.18
@@ -1160,14 +1161,7 @@ func _on_run_failed() -> void:
 	_refresh_verdict_panel()
 	await _play_verdict_reveal_sequence()
 	_reset_fast_countdown()
-	var ending_read_buttons: Array[Button] = []
-	if restart_button != null:
-		ending_read_buttons.append(restart_button)
-	if next_bet_button != null and next_bet_button.visible:
-		ending_read_buttons.append(next_bet_button)
-	if quit_button != null:
-		ending_read_buttons.append(quit_button)
-	_apply_modal_read_delay(ending_read_buttons)
+	_refresh_end_run_button_visuals()
 	_refresh_modal_dimmer()
 	_hide_scars_detail()
 	if controls_hint_panel != null and _has_seen_controls:
@@ -1399,6 +1393,20 @@ func _set_end_run_buttons_enabled(enabled: bool) -> void:
 	if next_bet_button != null:
 		next_bet_button.visible = _last_next_bet_enabled
 		next_bet_button.disabled = (not enabled) or (not _last_next_bet_enabled)
+	_refresh_end_run_button_visuals()
+
+func _refresh_end_run_button_visuals() -> void:
+	_apply_end_run_button_visual(restart_button, true)
+	_apply_end_run_button_visual(quit_button, true)
+	_apply_end_run_button_visual(next_bet_button, _last_next_bet_enabled)
+
+func _apply_end_run_button_visual(button: Button, can_be_active: bool) -> void:
+	if button == null:
+		return
+	var active: bool = button.visible and can_be_active and not button.disabled
+	button.modulate = Color(1.0, 0.96, 0.84, 1.0) if active else Color(1.0, 1.0, 1.0, 0.58)
+	button.scale = END_RUN_BUTTON_READY_SCALE if active else Vector2.ONE
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
 
 func _set_verdict_mode(active: bool) -> void:
 	if verdict_header != null:
@@ -1764,9 +1772,9 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_pre_resolve_tension_boost()
 	_last_ritual_outcome_snapshot = _extract_ritual_outcome_snapshot(payload)
 	var doom_short: String = str(payload.get("doom_short", ""))
-	var subtitle: String = fmt_system_state(tr("condanna registrata"))
+	var subtitle: String = tr("Il Registro pesa il patto.\nColpisci tre volte il sigillo quando pulsa.")
 	if doom_short != "":
-		subtitle = tr("CONDANNA: %s") % doom_short
+		subtitle = tr("CONDANNA: %s\nTre colpi chiudono il verbale.") % doom_short
 	enqueue_post_bet_message({
 		"kind": "resolve_ritual",
 		"title": tr("RITO DI GIUDIZIO"),
@@ -2050,7 +2058,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 			scars_panel.custom_minimum_size.y = clamped_height
 			scars_panel.size.y = clamped_height
 	if scars.is_empty():
-		scars_label.text = tr("Nessun segno inciso.")
+		scars_label.text = tr("Registro pulito: nessun segno inciso.")
 		scars_label.tooltip_text = ""
 		if scars_panel != null:
 			scars_panel.tooltip_text = ""

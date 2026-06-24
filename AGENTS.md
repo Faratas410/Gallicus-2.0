@@ -2,6 +2,30 @@
 
 These rules apply to all coding agents working in this repository.
 
+## Project Operating Contract
+
+- Official project: Gallicus 2.0.
+- Stack: Godot 4.6.2, GDScript, Python CI helpers.
+- Active game target: internal beta of the ritual run loop, not an action-combat prototype.
+- Current gameplay authority must not move: `RunManager` owns flow, `GameEvents` is the event bus, UI is reactive.
+- Core gameplay, phase ownership, save flow, signal contracts, and canon rules may not be changed during documentation-only work.
+
+## Documentation Operating System
+
+- Start from `docs/README.md` before changing project docs.
+- Use `docs/development_plan.md` for current roadmap and next operational step.
+- Use `docs/testing.md` for local/CI/manual acceptance gates.
+- Use `docs/code_quality.md` before touching runtime code.
+- Use the domain document that matches the change: design, content, data, layout, asset, art direction, release, or playtest.
+- Canon files remain authoritative. Operating docs guide work but must not redefine canon.
+- Any feature patch must update the relevant operating doc or canon owner when it changes a rule, workflow, data shape, UI behavior, asset path, or release criterion.
+
+## Documentation-Only Patch Rule
+
+- Documentation-only work may edit `AGENTS.md`, `docs/**`, and root status/checklist markdown.
+- It must not edit `scripts/**`, `scenes/**`, `assets/**`, `data/**`, `.github/**`, or `project.godot`.
+- It must finish with docs reference validation and mojibake scan.
+
 ## Mojibake Policy (Non-Negotiable)
 
 - Mojibake characters/sequences are forbidden in source and docs.

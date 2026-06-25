@@ -1,0 +1,204 @@
+#!/usr/bin/env python3
+"""Run the Gallicus testing playbook in the HR-style sequence.
+
+The runner keeps the order explicit:
+1. static/data checks;
+2. optional Godot import;
+3. one or more runtime smoke scenarios through the existing smoke runner.
+
+Local Windows runtime smoke is diagnostic only. Canonical signoff remains the
+Linux CI workflow.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_OUTPUT_DIR = ROOT / "artifacts" / "testing_playbook"
+DEFAULT_SCENARIOS = ("FULL_RUN",)
+
+
+@dataclass(frozen=True)
+class StepResult:
+    label: str
+    command: list[str]
+    exit_code: int
+    log_path: Path
+
+    @property
+    def ok(self) -> bool:
+        return self.exit_code == 0
+
+    def to_json(self) -> dict[str, object]:
+        return {
+            "label": self.label,
+            "command": self.command,
+            "exit_code": self.exit_code,
+            "ok": self.ok,
+            "log_path": str(self.log_path.relative_to(ROOT)),
+        }
+
+
+def _python_script(script_path: str) -> list[str]:
+    return [sys.executable, script_path]
+
+
+STATIC_STEPS: tuple[tuple[str, list[str]], ...] = (
+    ("smoke_validator", _python_script("scripts/ci/test_headless_smoke_validator.py")),
+    ("docs_refs", _python_script("scripts/ci/check_docs_active_refs.py")),
+    ("res_paths", _python_script("tools/ci/verify_res_paths.py")),
+    ("playable_slice_contract", _python_script("scripts/ci/test_playable_slice_contract.py")),
+    ("era_visual_template", _python_script("scripts/ci/test_era_visual_template_audit.py")),
+    ("pressure_presentation", _python_script("scripts/ci/test_pressure_presentation_contract.py")),
+    ("ui_motion", _python_script("scripts/ci/test_ui_motion_contract.py")),
+    ("beta_content", _python_script("scripts/ci/test_beta_content_contract.py")),
+    ("no_mojibake", _python_script("scripts/ci/test_no_mojibake.py")),
+)
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the Gallicus testing playbook.")
+    parser.add_argument(
+        "--godot-bin",
+        default="",
+        help="Optional Godot console binary. When omitted, runtime smoke is skipped.",
+    )
+    parser.add_argument(
+        "--scenario",
+        action="append",
+        default=[],
+        help="Smoke scenario to run. May be passed multiple times. Defaults to FULL_RUN.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_OUTPUT_DIR),
+        help="Directory for logs and playbook summary.",
+    )
+    parser.add_argument(
+        "--skip-static",
+        action="store_true",
+        help="Skip static/data checks.",
+    )
+    parser.add_argument(
+        "--skip-import",
+        action="store_true",
+        help="Skip Godot headless editor import before smoke.",
+    )
+    parser.add_argument(
+        "--timeout-sec",
+        type=int,
+        default=60,
+        help="Scenario timeout passed to run_headless_smoke.py.",
+    )
+    parser.add_argument(
+        "--hard-timeout-sec",
+        type=int,
+        default=80,
+        help="Subprocess hard timeout passed to run_headless_smoke.py.",
+    )
+    return parser.parse_args()
+
+
+def _run_step(label: str, command: list[str], output_dir: Path) -> StepResult:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    log_path = output_dir / f"{label}.log"
+    proc = subprocess.run(
+        command,
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    log_path.write_text(proc.stdout, encoding="utf-8")
+    return StepResult(label=label, command=command, exit_code=proc.returncode, log_path=log_path)
+
+
+def _godot_import_step(godot_bin: str) -> list[str]:
+    return [godot_bin, "--headless", "--editor", "--path", str(ROOT), "--quit"]
+
+
+def _smoke_step(godot_bin: str, scenario: str, output_dir: Path, timeout_sec: int, hard_timeout_sec: int) -> list[str]:
+    scenario_dir = output_dir / scenario
+    scenario_dir.mkdir(parents=True, exist_ok=True)
+    return [
+        sys.executable,
+        "scripts/ci/run_headless_smoke.py",
+        "--scenario",
+        scenario,
+        "--project-root",
+        str(ROOT),
+        "--godot-bin",
+        godot_bin,
+        "--timeout-sec",
+        str(timeout_sec),
+        "--hard-timeout-sec",
+        str(hard_timeout_sec),
+        "--log-file",
+        str(scenario_dir / "smoke.log"),
+        "--summary-file",
+        str(scenario_dir / "smoke_summary.json"),
+    ]
+
+
+def _write_summary(output_dir: Path, results: list[StepResult], runtime_requested: bool) -> Path:
+    failed = [result for result in results if not result.ok]
+    payload: dict[str, object] = {
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "runtime_requested": runtime_requested,
+        "canonical_signoff": False,
+        "canonical_signoff_reason": "local playbook run is diagnostic; Linux CI remains canonical",
+        "ok": not failed,
+        "failed_steps": [result.label for result in failed],
+        "steps": [result.to_json() for result in results],
+    }
+    summary_path = output_dir / "testing_playbook_summary.json"
+    summary_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    return summary_path
+
+
+def main() -> int:
+    args = _parse_args()
+    output_dir = Path(args.output_dir).resolve()
+    scenarios = tuple(args.scenario) if args.scenario else DEFAULT_SCENARIOS
+    results: list[StepResult] = []
+
+    if not args.skip_static:
+        for label, command in STATIC_STEPS:
+            results.append(_run_step(label, command, output_dir))
+
+    runtime_requested = bool(args.godot_bin)
+    if runtime_requested:
+        godot_bin = str(Path(args.godot_bin).resolve())
+        if not args.skip_import:
+            results.append(_run_step("godot_import_headless", _godot_import_step(godot_bin), output_dir))
+        for scenario in scenarios:
+            results.append(
+                _run_step(
+                    f"smoke_{scenario.lower()}",
+                    _smoke_step(godot_bin, scenario, output_dir, args.timeout_sec, args.hard_timeout_sec),
+                    output_dir,
+                )
+            )
+    else:
+        print("[PLAYBOOK] --godot-bin not provided; runtime smoke skipped")
+
+    summary_path = _write_summary(output_dir, results, runtime_requested)
+    for result in results:
+        status = "OK" if result.ok else "FAIL"
+        print(f"[{status}] {result.label} -> {result.log_path.relative_to(ROOT)}")
+    print(f"[PLAYBOOK] summary -> {summary_path.relative_to(ROOT)}")
+
+    return 0 if all(result.ok for result in results) else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

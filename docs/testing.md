@@ -1,5 +1,24 @@
 # Gallicus Testing
 
+## Metodo playbook
+
+Gallicus adotta il metodo importato da HR Simulator con adattamento al ritual loop:
+
+1. validare dati, contratti e path prima di Godot;
+2. importare il progetto in Godot headless quando la patch tocca runtime, UI, scene o asset;
+3. attraversare almeno una run con smoke automatico;
+4. catturare screenshot dalla viewport/finestra Godot quando cambia UI o asset;
+5. guardare gli screenshot e dichiarare problemi osservati;
+6. eseguire build/export solo dopo validatori, smoke e QA visuale.
+
+Runner locale:
+
+```powershell
+python scripts/ci/run_testing_playbook.py --godot-bin "C:\Users\dovig\Desktop\Godot_v4.6.2-stable_win64.exe\Godot_v4.6.2-stable_win64_console.exe" --scenario FULL_RUN
+```
+
+Il runner scrive log e summary in `artifacts/testing_playbook/`. Su Windows resta diagnostico; il signoff automatico valido richiede CI/Linux.
+
 ## Static suite base
 
 Usare Python disponibile nell'ambiente. In Codex desktop puo' essere necessario il runtime bundled.
@@ -71,6 +90,8 @@ Accettazione minima:
 
 Obbligatoria se cambia UI, asset visuale o copy in schermata critica.
 
+Regola: non usare screenshot del desktop intero come prova standard. La prova visuale deve venire dalla viewport/finestra Godot, per esempio con uno script Godot che salva `get_root().get_texture().get_image()` in `work/screenshots/`.
+
 Punti minimi:
 - menu;
 - registro chiuso;
@@ -82,3 +103,13 @@ Punti minimi:
 - END_RUN.
 
 Se l'utente chiede esplicitamente di non eseguire screenshot, registrare la mancata validazione nel final.
+
+## Riepilogo finale richiesto
+
+Ogni uso del playbook deve dichiarare:
+- validatori eseguiti;
+- smoke test eseguiti;
+- screenshot generati o motivo per cui non sono stati generati;
+- screenshot ispezionati e problemi osservati;
+- build/export eseguito o non eseguito;
+- rischi residui.

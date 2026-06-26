@@ -15,6 +15,7 @@ La priorita' e' playtest, non polish pubblico.
 - I bottoni attivi devono distinguersi dai disabilitati.
 - Ogni modale deve avere titolo, stato e prossima azione.
 - Le CTA devono essere cliccabili nel corpo del bottone, non solo su label.
+- Le CTA player-facing devono essere progettate come interazione con un oggetto diegetico quando possibile; il bottone resta input tecnico, non concept primario.
 
 ## Schermate critiche
 
@@ -25,6 +26,15 @@ La priorita' e' playtest, non polish pubblico.
 - Rito: istruzione e feedback colpi.
 - Push-your-luck: incassa, condanna, rilancia leggibili.
 - END_RUN: esito e route restart/next/menu.
+
+## Object-first layout
+
+Per le patch UI successive, usare `docs/object_grammar.md` prima del layout:
+
+- ogni comando importante deve avere un oggetto visivo o testuale riconoscibile;
+- ogni oggetto deve mostrare stato, rischio o conseguenza;
+- le label non devono essere l'unica fonte di comprensione;
+- se la metafora riduce leggibilita', semplificare la metafora e mantenere il testo chiaro.
 
 ## Motion
 

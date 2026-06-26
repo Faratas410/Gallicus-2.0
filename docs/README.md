@@ -10,8 +10,9 @@ I documenti in `docs/canon/` restano autoritativi. I documenti operativi qui sot
 2. `docs/development_plan.md` - roadmap corrente e prossimo passo.
 3. `docs/testing.md` - comandi e criteri di chiusura.
 4. `docs/code_quality.md` - regole prima di toccare codice.
-5. Documento di dominio pertinente: UI, asset, contenuto, schema dati, release o playtest.
-6. Canon owner pertinente in `docs/canon/` se la patch cambia una regola o un contratto.
+5. `docs/object_grammar.md` - grammatica oggetto-prima-del-pulsante per feature player-facing.
+6. Documento di dominio pertinente: UI, asset, contenuto, schema dati, release o playtest.
+7. Canon owner pertinente in `docs/canon/` se la patch cambia una regola o un contratto.
 
 ## Documenti operativi
 
@@ -22,6 +23,7 @@ I documenti in `docs/canon/` restano autoritativi. I documenti operativi qui sot
 | `docs/code_quality.md` | Regole di modifica, ownership, refactor ammessi e vietati. |
 | `docs/testing.md` | Static suite, Godot, CI smoke, manual QA e criteri di accettazione. |
 | `docs/game_design.md` | Loop rituale, sistemi attivi, progressione e fuori scope. |
+| `docs/object_grammar.md` | Grammatica object-first: intento, oggetto, gesto, feedback e registrazione. |
 | `docs/content_bible.md` | Tono, grammatica di copy, lore runtime e contenuti vietati. |
 | `docs/data_schema.md` | Cataloghi, payload, save/runtime fields e validazione. |
 | `docs/layout_rules.md` | Regole UI, leggibilita', motion e screenshot QA. |
@@ -47,6 +49,7 @@ I documenti in `docs/canon/` restano autoritativi. I documenti operativi qui sot
 - Ogni feature che cambia UI aggiorna `docs/canon/UI_CANON.md` se cambia contratto, altrimenti `docs/layout_rules.md`.
 - Ogni feature che cambia asset aggiorna `docs/asset_pipeline.md` e, se cambia mood, `docs/art_direction.md`.
 - Ogni feature che cambia copy, lore o contenuti aggiorna `docs/content_bible.md`.
+- Ogni feature player-facing deve passare dalla formula `intento -> oggetto -> gesto -> feedback -> registrazione` in `docs/object_grammar.md`.
 - Ogni modifica a dati runtime aggiorna `docs/data_schema.md`.
 - Ogni patch che avvicina una build aggiorna `docs/development_plan.md`, `docs/release_checklist.md` o il log playtest.
 

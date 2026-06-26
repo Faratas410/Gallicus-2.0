@@ -30,6 +30,15 @@ Gallicus usa tono rituale, amministrativo e tagliente. Il Registro non parla com
 - Push-your-luck: tre conseguenze confrontabili.
 - END_RUN: esito + stato + uscita.
 
+## Regola object-first per la copy
+
+La copy deve sostenere la grammatica `intento -> oggetto -> gesto -> feedback -> registrazione` descritta in `docs/object_grammar.md`.
+
+- Preferire verbi fisici e amministrativi: apri, firma, incidi, colpisci, chiudi, registra, accetta.
+- Evitare copy che suona come UI generica: continua, conferma, scegli opzione, procedi.
+- Un bottone puo' avere testo breve, ma il pannello deve chiarire quale oggetto viene usato.
+- Il Registro deve annotare l'atto, non spiegare la strategia.
+
 ## Contenuti runtime
 
 Ogni nuova bet deve avere:
@@ -51,4 +60,5 @@ Ogni nuova condanna deve avere:
 - Leggere la schermata a 1280x720.
 - Nessuna riga deve spezzare una parola in modo brutto.
 - Nessun testo deve contenere mojibake.
+- Ogni nuovo comando visibile deve avere un oggetto e un gesto riconoscibili.
 - Aggiornare `docs/data_schema.md` se cambia shape dei dati.

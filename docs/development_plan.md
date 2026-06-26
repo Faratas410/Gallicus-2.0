@@ -2,7 +2,7 @@
 
 ## Stato
 
-Gallicus e' una v0.5 internal beta candidate. La CI/Linux beta smoke matrix risulta verde nella documentazione di stato corrente, ma la firma finale richiede manual QA completa.
+Gallicus e' una v0.5 internal beta candidate. La CI/Linux beta smoke matrix risulta verde nella documentazione di stato corrente e la visual QA locale e' verde, ma la firma finale e' bloccata finche' non viene completata una manual QA interattiva.
 
 ## Storico breve
 
@@ -40,6 +40,16 @@ Criteri:
 - Stato v0.5 firmato solo dopo CI verde e manual QA verde.
 - Known issues classificati come non bloccanti.
 
+## Guardrail concept - Object-First Grammar
+
+Obiettivo: evitare che le prossime feature nascano come pulsanti astratti invece che come gesti rituali.
+
+Criteri:
+- Ogni feature player-facing usa `docs/object_grammar.md`.
+- Ogni nuova azione dichiara intento, oggetto, gesto, feedback e registrazione.
+- Le patch UI future partono dalla manipolazione di oggetti diegetici, mantenendo leggibilita' e flow invariati.
+- Primo candidato dopo QA lock: Push-your-luck object pass su incassa, condanna e rilancia.
+
 ## Post v0.5
 
 - Maggiore varieta' contenuti, solo se non rompe il loop.
@@ -49,4 +59,4 @@ Criteri:
 
 ## Prossimo step operativo
 
-Completare manual QA v0.5 usando `docs/playtest_guide.md` e `BETA_PLAYTEST_CHECKLIST.md`, poi aggiornare `BETA_0_5_STATUS.md`, `BETA_0_5_RELEASE_NOTES.md` e `docs/playtest_feedback_log.md`.
+Eseguire una sessione tester interattiva v0.5 usando `docs/playtest_guide.md` e `BETA_PLAYTEST_CHECKLIST.md`. La sessione deve coprire 3 run consecutive, cashout, double, condanna, restart/next/menu/settings e audio; solo dopo una sessione verde aggiornare lo stato a `SIGNED OFF FOR v0.5 INTERNAL BETA`.

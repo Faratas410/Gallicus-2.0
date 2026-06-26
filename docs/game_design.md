@@ -26,6 +26,19 @@ Il gioco attivo e' il ritual loop:
 - Ogni stato deve indicare prossima azione.
 - Il rischio deve essere leggibile prima della scelta.
 - Il finale deve chiarire se il percorso e' chiuso, registrato o proseguibile.
+- Ogni nuova azione player-facing deve partire dalla grammatica object-first in `docs/object_grammar.md`.
+
+## Grammatica object-first
+
+Prima di progettare pulsanti, CTA o layout, definire l'atto fisico del soggetto nell'arena:
+
+```text
+intento -> oggetto -> gesto -> feedback -> registrazione
+```
+
+Il player non deve percepire "premi un comando", ma "apri una tavola", "incidi un patto", "colpisci il sigillo", "prendi una quietanza", "accetti un marchio". I bottoni possono restare l'implementazione tecnica dell'input, ma la schermata deve far capire quale oggetto viene manipolato e cosa il Registro puo' annotare.
+
+La mappa operativa vive in `docs/object_grammar.md`.
 
 ## Fuori scope
 
@@ -40,3 +53,4 @@ Il gioco attivo e' il ritual loop:
 - I cambi di loop richiedono aggiornamento a `docs/canon/MECHANICS_UNIFIED.md`.
 - I cambi di flow richiedono aggiornamento a `docs/canon/RUN_ARCHITECTURE_CANON.md`.
 - I cambi di UI player-facing richiedono screenshot QA.
+- Le nuove feature player-facing richiedono checklist object-first compilata.

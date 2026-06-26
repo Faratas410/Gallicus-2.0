@@ -863,6 +863,24 @@ func _set_resolve_ritual_body(primary_text: String) -> void:
 	if resolve_ritual_subtitle == null:
 		return
 	resolve_ritual_subtitle.text = _build_resolution_body(primary_text)
+	_force_label_readable(resolve_ritual_subtitle)
+
+func _force_label_readable(label: Label) -> void:
+	if label == null:
+		return
+	label.visible = true
+	label.modulate.a = 1.0
+	label.clip_text = false
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	label.offset_left = 0.0
+	label.offset_top = 0.0
+	label.offset_right = 0.0
+	label.offset_bottom = 0.0
+	label.custom_minimum_size = Vector2(0.0, 72.0)
+	var parent_canvas := label.get_parent() as CanvasItem
+	if parent_canvas != null:
+		parent_canvas.visible = true
+		parent_canvas.modulate.a = 1.0
 	if audience_context_label != null:
 		audience_context_label.visible = false
 	if audience_context_panel != null:
@@ -1267,26 +1285,28 @@ func _refresh_verdict_panel() -> void:
 			status_text = tr("Il Registro resta aperto: scegli se proseguire o lasciare l'arena.")
 		verdict_charge_label.text = status_text
 	if ending_text != null:
-		ending_text.text = tr("[center][i]Sigillo del Registro - la folla arretra, il verbale resta.[/i][/center]")
+		_refresh_ending_text()
+		if ending_text.text.strip_edges() == "":
+			ending_text.text = tr("[center][i]Sigillo del Registro - la folla arretra, il verbale resta.[/i][/center]")
 	if verdict_pacts_text != null:
 		var pacts_text: String = _format_verdict_pacts_list(_last_verdict_pacts).strip_edges()
 		verdict_pacts_text.text = pacts_text
 		var pacts_panel := verdict_pacts_text.get_parent() as CanvasItem
 		if pacts_panel != null:
-			pacts_panel.visible = pacts_text != ""
+			pacts_panel.visible = true
 			var pacts_title_panel := pacts_panel.get_parent().get_node_or_null("Lbl_END_RUN_PACTS_TITLEPanel") as CanvasItem
 			if pacts_title_panel != null:
-				pacts_title_panel.visible = pacts_text != ""
+				pacts_title_panel.visible = true
 	if verdict_condanne_text != null:
 		var condanne_titles: Array[String] = _resolve_condanna_titles(_last_verdict_condanne)
 		var condanne_text: String = _format_verdict_list(condanne_titles).strip_edges()
 		verdict_condanne_text.text = condanne_text
 		var condanne_panel := verdict_condanne_text.get_parent() as CanvasItem
 		if condanne_panel != null:
-			condanne_panel.visible = condanne_text != ""
+			condanne_panel.visible = true
 			var condanne_title_panel := condanne_panel.get_parent().get_node_or_null("Lbl_END_RUN_CONDANNE_TITLEPanel") as CanvasItem
 			if condanne_title_panel != null:
-				condanne_title_panel.visible = condanne_text != ""
+				condanne_title_panel.visible = true
 	var crowd_line: String = _last_verdict_crowd_line.strip_edges()
 	if verdict_crowd_section != null:
 		verdict_crowd_section.visible = crowd_line != ""
@@ -1341,40 +1361,7 @@ func _reveal_verdict_group(group: Array[CanvasItem], sequence_id: int) -> bool:
 
 func _play_verdict_reveal_sequence() -> void:
 	_verdict_reveal_sequence_id += 1
-	var sequence_id: int = _verdict_reveal_sequence_id
-	_set_end_run_buttons_enabled(false)
-	_set_verdict_canvas_alpha(0.0)
-	if verdict_header != null:
-		verdict_header.modulate.a = 1.0
-	var stage_subtitle: Array[CanvasItem] = []
-	if verdict_outcome != null:
-		stage_subtitle.append(verdict_outcome)
-	if verdict_icon != null and verdict_icon.visible:
-		stage_subtitle.append(verdict_icon)
-	var stage_body: Array[CanvasItem] = []
-	if verdict_sentence_label != null:
-		stage_body.append(verdict_sentence_label)
-	var stage_details: Array[CanvasItem] = []
-	if verdict_charge_label != null:
-		stage_details.append(verdict_charge_label)
-	if verdict_sections != null:
-		stage_details.append(verdict_sections)
-	if ending_text != null:
-		stage_details.append(ending_text)
-	if not await _wait_verdict_delay(VERDICT_STAGE_SUBTITLE_DELAY_SECONDS, sequence_id):
-		return
-	if not await _reveal_verdict_group(stage_subtitle, sequence_id):
-		return
-	if not await _wait_verdict_delay(VERDICT_STAGE_BODY_DELAY_SECONDS, sequence_id):
-		return
-	if not await _reveal_verdict_group(stage_body, sequence_id):
-		return
-	if not await _wait_verdict_delay(VERDICT_STAGE_DETAILS_DELAY_SECONDS, sequence_id):
-		return
-	if not await _reveal_verdict_group(stage_details, sequence_id):
-		return
-	if not await _wait_verdict_delay(VERDICT_STAGE_BUTTONS_DELAY_SECONDS, sequence_id):
-		return
+	_set_verdict_canvas_alpha(1.0)
 	_set_end_run_buttons_enabled(true)
 
 func _wait_verdict_delay(seconds: float, sequence_id: int) -> bool:
@@ -1404,9 +1391,12 @@ func _apply_end_run_button_visual(button: Button, can_be_active: bool) -> void:
 	if button == null:
 		return
 	var active: bool = button.visible and can_be_active and not button.disabled
-	button.modulate = Color(1.0, 0.96, 0.84, 1.0) if active else Color(1.0, 1.0, 1.0, 0.58)
+	button.modulate = Color(1.0, 0.98, 0.84, 1.0) if active else Color(0.86, 0.82, 0.74, 0.62)
 	button.scale = END_RUN_BUTTON_READY_SCALE if active else Vector2.ONE
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
+	button.add_theme_color_override("font_color", Color(0.98, 0.92, 0.74, 1.0) if active else Color(0.56, 0.54, 0.5, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
+	button.add_theme_color_override("font_disabled_color", Color(0.54, 0.52, 0.48, 1.0))
 
 func _set_verdict_mode(active: bool) -> void:
 	if verdict_header != null:
@@ -1420,13 +1410,13 @@ func _set_verdict_mode(active: bool) -> void:
 	if verdict_charge_label != null:
 		verdict_charge_label.visible = active
 	if verdict_sections != null:
-		verdict_sections.visible = false
+		verdict_sections.visible = active
 	if verdict_crowd_section != null and active:
 		verdict_crowd_section.visible = _last_verdict_crowd_line.strip_edges() != ""
 	if game_over_scroll != null:
 		game_over_scroll.visible = false
 	if ending_text != null:
-		ending_text.visible = false
+		ending_text.visible = active
 
 func _get_verdict_outcome_text(outcome: StringName) -> String:
 	match outcome:
@@ -1754,6 +1744,7 @@ func _on_pact_sealed_opened() -> void:
 		pact_sealed_title.text = tr("PATTO SIGILLATO")
 	if pact_sealed_subtitle != null:
 		pact_sealed_subtitle.text = tr("La pietra ha preso la firma.\nLa gradinata attende il gesto.")
+		_force_label_readable(pact_sealed_subtitle)
 	if pact_sealed_advance_button != null:
 		pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
 	_set_pact_sealed_modal(true)
@@ -1901,6 +1892,7 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 			pact_sealed_title.text = str(payload.get("title", tr("PATTO SIGILLATO")))
 		if pact_sealed_subtitle != null:
 			pact_sealed_subtitle.text = str(payload.get("subtitle", tr("La pietra ha preso la firma.\nLa gradinata attende il gesto.")))
+			_force_label_readable(pact_sealed_subtitle)
 		if pact_sealed_advance_button != null:
 			pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
 		_set_pact_sealed_modal(true)
@@ -1909,6 +1901,7 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 			resolve_ritual_title.text = str(payload.get("title", tr("RITO DI GIUDIZIO")))
 		_resolve_ritual_base_body = str(payload.get("subtitle", fmt_system_state(tr("condanna registrata"))))
 		_set_resolve_ritual_body(_resolve_ritual_base_body)
+		_force_label_readable(resolve_ritual_subtitle)
 		_set_resolve_ritual_modal(true)
 	_refresh_modal_dimmer()
 
@@ -2370,14 +2363,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_double_note.text = _format_double_note(double_next_stake_glory, double_pressure_delta)
 			push_luck_double_note.visible = true
 	_set_push_luck_modal(true)
-	var push_luck_read_buttons: Array[Button] = []
-	if push_luck_cashout_button != null:
-		push_luck_read_buttons.append(push_luck_cashout_button)
-	if push_luck_condanna_button != null:
-		push_luck_read_buttons.append(push_luck_condanna_button)
-	if push_luck_double_button != null:
-		push_luck_read_buttons.append(push_luck_double_button)
-	_apply_modal_read_delay(push_luck_read_buttons)
+	_refresh_push_luck_button_visuals()
 
 func _on_push_luck_closed() -> void:
 	_reset_pyl_lock_state()
@@ -3103,6 +3089,7 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 		var button: Button = buttons[index]
 		initial_states[index] = button.disabled
 		button.disabled = true
+		button.modulate = Color(0.92, 0.88, 0.78, 0.72)
 	await get_tree().create_timer(MIN_MODAL_READ_TIME_SEC).timeout
 	for index: int in range(buttons.size()):
 		var button: Button = buttons[index]
@@ -3110,6 +3097,24 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 		if _pyl_locked and _is_pyl_button(button):
 			should_disable = true
 		button.disabled = should_disable
+		button.modulate = Color(1.0, 0.98, 0.86, 1.0) if not should_disable else Color(0.86, 0.82, 0.74, 0.62)
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if not should_disable else Control.CURSOR_ARROW
+		if _is_pyl_button(button):
+			_apply_push_luck_button_visual(button)
+
+func _refresh_push_luck_button_visuals() -> void:
+	for button: Button in [push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button]:
+		_apply_push_luck_button_visual(button)
+
+func _apply_push_luck_button_visual(button: Button) -> void:
+	if button == null:
+		return
+	var active: bool = button.visible and not button.disabled
+	button.modulate = Color(1.0, 0.98, 0.86, 1.0) if active else Color(0.82, 0.78, 0.7, 0.62)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
+	button.add_theme_color_override("font_color", Color(0.98, 0.9, 0.66, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
+	button.add_theme_color_override("font_disabled_color", Color(0.54, 0.52, 0.48, 1.0))
 
 func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween, kind: String = MOTION_KIND_STANDARD) -> Tween:
 	if panel == null or modal == null:

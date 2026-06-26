@@ -90,7 +90,16 @@ Accettazione minima:
 
 Obbligatoria se cambia UI, asset visuale o copy in schermata critica.
 
-Regola: non usare screenshot del desktop intero come prova standard. La prova visuale deve venire dalla viewport/finestra Godot, per esempio con uno script Godot che salva `get_root().get_texture().get_image()` in `work/screenshots/`.
+Regola: non usare screenshot del desktop intero come prova standard. La prova visuale deve venire dalla viewport/finestra Godot.
+
+Comando diagnostico Windows:
+
+```powershell
+Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn
+```
+
+Lo script salva PNG in `artifacts/visual_qa/` e attraversa il loop canonico via `GameEvents`, senza spostare autorita' da `RunManager`.
+Il warning `entry scene is res://tools/visual_qa_capture.tscn` e' accettabile per questo harness solo se il log non contiene `SANITY FAIL`.
 
 Punti minimi:
 - menu;

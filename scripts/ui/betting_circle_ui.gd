@@ -278,8 +278,13 @@ func _show_book_content_immediate() -> void:
 	for node: CanvasItem in _book_content_nodes:
 		node.visible = true
 		if _book_content_target_modulates.has(node):
-			node.modulate = _book_content_target_modulates[node] as Color
+			var target_modulate: Color = _book_content_target_modulates[node] as Color
+			target_modulate.a = maxf(target_modulate.a, 1.0)
+			node.modulate = target_modulate
+		else:
+			node.modulate.a = 1.0
 	_book_content_target_modulates.clear()
+	_force_contract_text_readable()
 
 func _prepare_contract_text_for_writing() -> void:
 	for contract_label: RichTextLabel in [left_contract_label, right_contract_label]:
@@ -289,7 +294,16 @@ func _prepare_contract_text_for_writing() -> void:
 func _show_contract_text_immediate() -> void:
 	for contract_label: RichTextLabel in [left_contract_label, right_contract_label]:
 		if contract_label != null:
+			contract_label.visible = true
+			contract_label.modulate.a = 1.0
 			contract_label.visible_characters = -1
+
+func _force_contract_text_readable() -> void:
+	for page: Control in [left_page, right_page]:
+		if page != null:
+			page.visible = true
+			page.modulate.a = 1.0
+	_show_contract_text_immediate()
 
 func _start_contract_write_animation() -> void:
 	if _contract_write_tween != null and _contract_write_tween.is_valid():

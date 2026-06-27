@@ -55,11 +55,11 @@ STATIC_STEPS: tuple[tuple[str, list[str]], ...] = (
     ("smoke_validator", _python_script("scripts/ci/test_headless_smoke_validator.py")),
     ("docs_refs", _python_script("scripts/ci/check_docs_active_refs.py")),
     ("res_paths", _python_script("tools/ci/verify_res_paths.py")),
-    ("playable_slice_contract", _python_script("scripts/ci/test_playable_slice_contract.py")),
+    ("ritual_loop_contract", _python_script("scripts/ci/test_ritual_loop_contract.py")),
     ("era_visual_template", _python_script("scripts/ci/test_era_visual_template_audit.py")),
     ("pressure_presentation", _python_script("scripts/ci/test_pressure_presentation_contract.py")),
     ("ui_motion", _python_script("scripts/ci/test_ui_motion_contract.py")),
-    ("beta_content", _python_script("scripts/ci/test_beta_content_contract.py")),
+    ("release_content", _python_script("scripts/ci/test_release_content_contract.py")),
     ("no_mojibake", _python_script("scripts/ci/test_no_mojibake.py")),
 )
 

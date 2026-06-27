@@ -1,29 +1,27 @@
 # Gallicus Playtest Feedback Log
 
+## Stato
+
+Nessuna campagna completa 1.0 e' ancora registrata. Le osservazioni delle
+milestone precedenti non sono gate attivi; i problemi ancora riproducibili
+devono essere registrati nuovamente contro la build corrente.
+
 ## Regola
 
-Ogni feedback deve diventare una decisione: accettare, rimandare, respingere o richiedere riproduzione. Non lasciare note vaghe.
+Ogni osservazione diventa una decisione. Non lasciare note senza owner o stato.
 
-## Stato corrente
+## Schema
 
-Nessuna sessione manual QA v0.5 completa registrata in questo log.
+| Data | Build | Sessione | Area | Severita' | Osservazione | Decisione | Owner | Stato |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
-## Schema entry
+## Sessioni
 
-Usare questo formato per nuove righe:
-
-| Data | Build | Area | Severita' | Osservazione | Decisione | Stato |
-| --- | --- | --- | --- | --- | --- | --- |
-
-## Feedback registrati
-
-| Data | Build | Area | Severita' | Osservazione | Decisione | Stato |
-| --- | --- | --- | --- | --- | --- | --- |
-| 2026-06-24 | local visual QA | UI bet | Important | Una bet lunga puo' spezzare male il testo nella card Registro. | Accettare: accorciare copy o adattare label. | Fixed in local patch pending full visual QA. |
-| 2026-06-24 | local visual QA | END_RUN | Important | I bottoni finali possono sembrare disabilitati durante o dopo il reveal. | Accettare: rendere lo stato attivo piu' chiaro. | Fixed in local patch pending full visual QA. |
-| 2026-06-24 | local visual QA | Rito | Important | Il pannello centrale del rito puo' sembrare vuoto o poco istruttivo. | Accettare: copy istruttivo breve. | Fixed in local patch pending full visual QA. |
-| 2026-06-26 | local visual QA `2cacd70` | v0.5 signoff | Critical | Visual QA automatica verde, ma manca una sessione manuale interattiva con verifica audio e 3 run consecutive. | Needs Repro: serve tester umano o sessione interattiva registrata. | BLOCKED for final v0.5 signoff. |
+| Data | Build | Sessione | Area | Severita' | Osservazione | Decisione | Owner | Stato |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Chiusura
 
-Quando una voce diventa `Fixed`, verificare con il test indicato in `docs/testing.md` prima di marcarla non bloccante.
+Una voce `Fixed` richiede il test pertinente da `docs/testing.md`. Una voce
+`Defer` deve indicare lo stage della roadmap che la possiede. Critical e
+Important aperti bloccano Release Lock.

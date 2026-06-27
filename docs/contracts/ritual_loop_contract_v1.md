@@ -1,11 +1,11 @@
-# Playable Slice Contract v1
+# Ritual Loop Contract v1
 
-Status: Active  
-Scope: Minimum internally playable Gallicus slice based on stabilized runtime/UI flow.
+Status: Active
+Scope: Canonical Gallicus ritual-loop baseline based on stabilized runtime/UI flow.
 
-## Slice Scope
+## Loop Scope
 
-This slice is the smallest coherent run loop that is understandable, testable, and repeatable:
+This is the smallest coherent run loop that must remain understandable, testable, and repeatable throughout development toward Gallicus 1.0:
 
 1. Start run from main menu.
 2. Reach BET_PRESENT and select/sign one bet.
@@ -15,11 +15,11 @@ This slice is the smallest coherent run loop that is understandable, testable, a
 6. Reach PUSH_YOUR_LUCK and make a decision.
 7. Reach deterministic GAME_OVER/finale output with explicit end markers.
 
-No new mechanics are introduced in this slice.
+This contract protects the existing loop. It does not define the complete 1.0 campaign.
 
-## Slice End State
+## Loop Gate
 
-Slice is complete when all of the following are true:
+The baseline is healthy when all of the following are true:
 
 - Runtime smoke BET_PRESENT scenario passes headlessly on canonical CI/Linux surface.
 - Runtime smoke FULL_RUN scenario passes headlessly on canonical CI/Linux surface and includes:
@@ -33,7 +33,7 @@ Slice is complete when all of the following are true:
 - RunManager remains sole authority for request handling and phase progression.
 - Local Windows headless smoke runs are diagnostic-only and non-signoff.
 
-## Required Systems (Slice-Critical)
+## Required Systems
 
 - RunManager phase/request orchestration.
 - GameEvents runtime bus with request + runtime signals.
@@ -42,16 +42,16 @@ Slice is complete when all of the following are true:
 - Headless smoke runtime validator (`scripts/ci/run_headless_smoke.py`).
 - CI smoke workflow (`.github/workflows/godot_smoke_runtime.yml`).
 
-## Deferred / Out Of Scope
+## Outside This Baseline
 
 - New content, new mechanics, or progression layers.
 - UX polish and visual tuning not required for loop readability.
 - Balance tuning beyond what is needed for deterministic completion.
 - Broad UI rewrite or additional architecture refactor.
 
-## Allowed Residue
+## Allowed Compatibility Residue
 
-The following residue is acceptable for this slice:
+The following residue is acceptable while it remains explicit and tested:
 
 - Compatibility phase/container naming tombstones (e.g. legacy container names).
 - Contract-level compatibility ids normalized at load/continue boundary.
@@ -59,4 +59,4 @@ The following residue is acceptable for this slice:
 
 ## Regression Guard Rule
 
-Any change that removes the minimum loop smoke milestones or request-signal surfaces is a playable-slice regression and must fail CI/static guards.
+Any change that removes the minimum loop smoke milestones or request-signal surfaces is a ritual-loop regression and must fail CI/static guards.

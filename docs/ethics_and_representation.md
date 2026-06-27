@@ -2,30 +2,53 @@
 
 ## Tema
 
-Gallicus usa immaginario di condanna, folla, rituale, debito, gloria e corruzione. Il tono puo' essere duro, ma non deve diventare glorificazione gratuita di violenza reale o propaganda.
+Gallicus usa condanna, debito, folla, rischio e classificazione come linguaggio
+simbolico. Il tono puo' essere severo, ma non deve diventare propaganda,
+glorificazione della violenza reale o caricatura di persone esistenti.
 
 ## Regole
 
-- Tenere la violenza su piano simbolico, rituale o amministrativo.
-- Evitare riferimenti diretti a gruppi reali come bersagli.
-- Non usare iconografia politica moderna come scorciatoia estetica.
-- Non trasformare condanna, debito o corruzione in stereotipi su persone reali.
-- Non usare audio/immagini copyrighted.
+- Violenza su piano rituale, simbolico o amministrativo.
+- Nessun gruppo reale usato come bersaglio.
+- Nessuna iconografia politica moderna come scorciatoia romana.
+- Debito, corruzione e condanna non descrivono etnie, disabilita' o classi reali.
+- Nessun asset audio/visuale senza diritto d'uso.
+- I Gufi restano apparato fittizio, non allegoria diretta dichiarata.
 
 ## Player trust
 
-- Le conseguenze devono essere leggibili prima della scelta.
-- Il gioco puo' essere severo, non ingannevole.
-- Se una scelta e' bloccata, deve esserci motivo o stato comprensibile.
+- Costo e conseguenza sono leggibili prima dell'atto.
+- Il sistema puo' interpretare il player, non mentire sulle regole.
+- Le Ere non alterano probabilita' di nascosto.
+- Un blocco mostra una causa comprensibile.
+- La fine terminale deve essere preparata dalla campagna, non usata come
+  cancellazione sorpresa del progresso.
 
-## Playtest feedback
+## Object-First
 
-Annotare in `docs/playtest_feedback_log.md` se un tester segnala:
-- tono troppo confuso;
-- immaginario percepito come offensivo;
-- conseguenze non chiare;
-- feedback audio/visuale troppo aggressivo.
+Gli oggetti devono comunicare responsabilita' senza fetish di sofferenza:
 
-## Verifica
+- un marchio rappresenta una conseguenza, non spettacolo gore;
+- una catena rappresenta vincolo, non un gruppo storico reale;
+- sangue e ossa restano simboli controllati;
+- l'Assenza e' sottrazione, non annientamento celebrato.
 
-Ogni nuova content pass deve leggere `docs/content_bible.md` e questo documento prima di chiudere.
+## Accessibilita'
+
+- Nessun tema severo giustifica testo illeggibile o audio aggressivo.
+- Reduced motion non puo' rimuovere informazione.
+- Informazioni critiche hanno piu' di un canale.
+- Localizzazione e glossario evitano significati offensivi involontari.
+
+## Playtest
+
+Registrare se una persona segnala:
+
+- conseguenza percepita come ingannevole;
+- immaginario offensivo o troppo esplicito;
+- tono confuso con approvazione morale;
+- audio o VFX fisicamente sgradevoli;
+- finale terminale percepito come perdita tecnica del save.
+
+Ogni segnalazione riceve decisione e stato in
+`docs/playtest_feedback_log.md`.

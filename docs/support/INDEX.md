@@ -1,38 +1,37 @@
-﻿# Support Documentation Index
+# Support Documentation Index
 
-Documentazione operativa non canonica da usare come supporto ai file owner canonici.
+Questa cartella contiene inventari e procedure subordinate agli owner
+operativi e canonici.
 
-## Primary support docs
-- `docs/README.md` - operating-system entrypoint and reading order.
-- `docs/development_plan.md` - current roadmap and next operational step.
-- `docs/testing.md` - static, CI, Godot and manual QA gates.
-- `docs/code_quality.md` - code ownership and patch discipline.
-- `docs/support/repo_map.md` - inventory/ownership map allineata alla struttura reale.
-- `docs/contracts/gameevents_signal_contract_v1.md` - contratto tecnico usato dalla validazione CI.
-- `docs/contracts/ui_art_direction_contract_v1.md` - contratto artistico di supporto per l'overhaul UI.
-- `docs/support/ui/ui_overhaul_production_pipeline.md` - pipeline operativa per brief, asset, wiring e verifica UI.
-- `docs/support/ui/run_ui_phase_paths.md` - riferimento statico a phase-path e node-name UI.
+## Entry operative
 
-## Domain operating docs
-- `docs/design_skeleton.md` - progetto corrente, loop e limiti.
-- `docs/game_design.md` - gameplay loop e sistemi attivi.
-- `docs/content_bible.md` - tono, grammatica e copy runtime.
-- `docs/data_schema.md` - cataloghi e payload dati.
-- `docs/layout_rules.md` - regole UI e screenshot QA.
-- `docs/asset_pipeline.md` - asset runtime, naming e verifica.
-- `docs/art_direction.md` - mood, palette e divieti visuali.
-- `docs/ethics_and_representation.md` - rischi di tono, temi e rappresentazione.
-- `docs/release_checklist.md` - criteri beta/release.
-- `docs/playtest_guide.md` - guida tester.
-- `docs/playtest_feedback_log.md` - feedback normalizzato.
+- `docs/README.md` - documentation OS.
+- `docs/development_plan.md` - roadmap 1.0.
+- `docs/testing.md` - gate statici, runtime e manuali.
+- `docs/code_quality.md` - ownership e patch discipline.
+- `docs/support/repo_map.md` - inventario del repository.
 
-## Active source rule
-- Active documentation may reference only existing paths under `docs/`.
-- Retired merged sources are represented as `legacy:<slug>` markers.
-- `legacy:<slug>` markers are lineage notes only; they are not operational source files.
-- Guard: `python scripts/ci/check_docs_active_refs.py`.
+## Contratti
 
-## Historical surfaces
-- `docs/reports/INDEX.md` - indice della superficie report corrente.
-- `docs/archive/INDEX.md` - indice del materiale storico archiviato.
-- `legacy:risk_driven_design_bible` - lineage storica archiviata, non fonte operativa.
+- `docs/contracts/gameevents_signal_contract_v1.md`
+- `docs/contracts/run_phase_identity_contract_v1.md`
+- `docs/contracts/run_save_flow_step_contract_v1.md`
+- `docs/contracts/ritual_loop_contract_v1.md`
+- `docs/contracts/ui_art_direction_contract_v1.md`
+
+## UI e asset
+
+- `docs/support/ui/object_first_ui_pipeline.md` - produzione UI da intento a verifica.
+- `docs/support/ui/object_asset_brief.md` - famiglie oggetto e gap asset.
+- `docs/support/ui/run_ui_phase_paths.md` - riferimento tecnico a path e nodi.
+
+## Regola
+
+- Il supporto non ridefinisce gameplay o canon.
+- I path citati devono esistere.
+- Materiale ritirato non resta come guida attiva.
+- Verifica: `python scripts/ci/check_docs_active_refs.py`.
+
+## Storico
+
+La sola lineage conservata vive in `docs/archive/`. Non e' una fonte operativa.

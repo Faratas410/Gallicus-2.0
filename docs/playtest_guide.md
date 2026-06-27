@@ -1,48 +1,92 @@
 # Gallicus Playtest Guide
 
-## Obiettivo sessione
+## Tipi di sessione
 
-Verificare se un tester capisce e completa il ritual loop senza spiegazione live.
+### Run usability
 
-Durata target: 20-30 minuti.
+Durata: 20-30 minuti.
 
-## Setup tester
+Verifica comprensione del ritual loop, oggetti, feedback e route.
+
+### Campaign
+
+Durata target: 2-4 ore, con pause e resume consentiti.
+
+Verifica convergenza, Ere, Silenzi, contenuto e finale terminale.
+
+### Release
+
+Usa export Windows su installazione pulita e copre checklist completa.
+
+## Setup
 
 Annotare:
-- build o commit;
-- piattaforma;
-- risoluzione;
-- input;
-- audio on/off;
-- durata sessione.
 
-## Percorso richiesto
+- build/commit;
+- tipo sessione;
+- piattaforma e risoluzione;
+- lingua;
+- input;
+- reduced motion;
+- audio;
+- profilo pulito o save esistente;
+- ora inizio/fine.
+
+## Regola moderatore
+
+Non spiegare il gioco durante il primo tentativo. Se la persona si blocca:
+
+1. annotare punto e durata;
+2. chiedere cosa si aspettava;
+3. offrire il minimo aiuto;
+4. marcare l'intervento nel log.
+
+## Percorso run
 
 1. Avviare il gioco.
-2. Leggere il menu e iniziare una nuova run.
+2. Individuare la soglia e iniziare.
 3. Aprire il Registro.
-4. Firmare una bet.
-5. Avanzare patto, scelta intermedia e rito.
-6. Arrivare a push-your-luck.
-7. Completare una run.
-8. Ripetere fino a coprire cashout, double e condanna.
-9. Provare menu/settings e vie di uscita finale.
+4. Leggere e firmare una promessa.
+5. Attraversare patto, gesto e rito.
+6. Arrivare a quietanza/marchio/incisione.
+7. Completare il fascicolo.
+8. Ripetere per coprire le tre route.
+9. Verificare continue, settings, Archivio e menu.
 
-## Domande feedback
+## Percorso campagna
 
-- Quando hai capito l'obiettivo?
-- Quale scelta era piu' chiara?
-- Quale scelta era piu' confusa?
-- Il Registro sembrava registrare il percorso?
-- Audio e VFX aiutavano o distraevano?
-- Hai mai pensato di essere bloccato?
+1. Iniziare da profilo pulito.
+2. Giocare senza conoscere le condizioni delle Ere.
+3. Annotare quando cambia la percezione del Registro.
+4. Interrompere e riprendere almeno una volta.
+5. Raggiungere Silenzi e finale.
+6. Verificare lo stato dopo l'Assenza.
+
+## Domande
+
+- Quando hai capito chi eri nell'arena?
+- Quale oggetto stavi usando in ogni scelta?
+- Hai distinto gesto, rischio e conseguenza?
+- Quando hai percepito che il Registro ricordava?
+- Hai notato cambiamenti senza vedere un'etichetta di Era?
+- Quale momento sembrava ancora un normale bottone?
+- Audio e motion chiarivano causa ed effetto?
+- Hai mai creduto che il gioco fosse bloccato?
+- Il finale sembrava intenzionale o un problema tecnico?
 
 ## Severita'
 
-- Critical: blocca progresso, crash, testo corrotto, impossibile uscire.
-- Important: conseguenza o stato non chiaro, feedback mancante, route ambigua.
-- Optional: polish, ritmo, desideri contenuto, preferenze estetiche.
+- `Critical`: crash, blocco, save corrotto, campagna non completabile.
+- `Important`: rischio, oggetto, stato o route non comprensibile.
+- `Optional`: polish, preferenza estetica, desiderio di varieta'.
 
-## Output
+## Decisioni
 
-Trascrivere i risultati in `docs/playtest_feedback_log.md` con decisione e stato.
+Ogni feedback riceve:
+
+- `Accept`;
+- `Defer`;
+- `Reject`;
+- `Needs Repro`.
+
+Trascrivere tutto in `docs/playtest_feedback_log.md`.

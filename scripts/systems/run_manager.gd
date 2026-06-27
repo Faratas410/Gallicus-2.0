@@ -976,27 +976,27 @@ func _is_smoke_full_run_like_scenario() -> bool:
 	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
 	return scenario in [
 		"FULL_RUN",
-		"BETA_CASHOUT",
-		"BETA_DOUBLE",
-		"BETA_CONDANNA",
-		"BETA_REGISTER_FINAL",
+		"ROUTE_CASHOUT",
+		"ROUTE_DOUBLE",
+		"ROUTE_CONDANNA",
+		"ROUTE_REGISTER_FINAL",
 	]
 
 func _smoke_requires_register_final() -> bool:
 	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
-	return scenario == "FULL_RUN" or scenario == "BETA_REGISTER_FINAL" or scenario == "BETA_CASHOUT"
+	return scenario == "FULL_RUN" or scenario == "ROUTE_REGISTER_FINAL" or scenario == "ROUTE_CASHOUT"
 
 func _drive_smoke_full_run_pyl_request() -> void:
 	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
-	if scenario == "BETA_CONDANNA":
+	if scenario == "ROUTE_CONDANNA":
 		if not _smoke_full_run_pyl_sent:
 			print("SMOKE:REQ=request_pyl_condanna")
 			_smoke_full_run_pyl_sent = true
 		_on_request_pyl_condanna()
 		return
-	if scenario == "BETA_DOUBLE":
-		var beta_double_lock_reason: String = _get_double_lock_reason()
-		if beta_double_lock_reason == "":
+	if scenario == "ROUTE_DOUBLE":
+		var route_double_lock_reason: String = _get_double_lock_reason()
+		if route_double_lock_reason == "":
 			if not _smoke_full_run_pyl_sent:
 				print("SMOKE:REQ=request_pyl_double")
 				_smoke_full_run_pyl_sent = true

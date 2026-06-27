@@ -1,61 +1,80 @@
 # Gallicus Documentation Operating System
 
-Questo e' l'entrypoint operativo per lavorare su Gallicus senza ricostruire il progetto dalla chat.
+Questo e' l'entrypoint operativo del progetto. Gallicus ha un solo target di
+prodotto: **Gallicus 1.0**, una campagna rituale finita e pubblicabile.
 
-I documenti in `docs/canon/` restano autoritativi. I documenti operativi qui sotto spiegano come lavorare, verificare e preparare playtest/release senza cambiare il core di gioco.
+La documentazione attiva non usa versioni intermedie per descrivere il
+progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Ordine di lettura
 
-1. `docs/design_skeleton.md` - stato sintetico del progetto e confini.
-2. `docs/development_plan.md` - roadmap corrente e prossimo passo.
-3. `docs/testing.md` - comandi e criteri di chiusura.
-4. `docs/code_quality.md` - regole prima di toccare codice.
-5. `docs/object_grammar.md` - grammatica oggetto-prima-del-pulsante per feature player-facing.
-6. Documento di dominio pertinente: UI, asset, contenuto, schema dati, release o playtest.
-7. Canon owner pertinente in `docs/canon/` se la patch cambia una regola o un contratto.
+1. `docs/design_skeleton.md` - promessa di prodotto, stato reale e Definition of Done.
+2. `docs/development_plan.md` - roadmap sequenziale verso 1.0 e prossimo step.
+3. `docs/game_design.md` - esperienza, loop e campagna completa.
+4. `docs/object_grammar.md` - grammatica obbligatoria per le azioni gameplay.
+5. `docs/testing.md` - verifiche statiche, runtime, visuali e manuali.
+6. `docs/code_quality.md` - ownership e disciplina prima di cambiare runtime.
+7. Documento di dominio pertinente.
+8. Canon owner pertinente, se la patch cambia una regola o un contratto.
 
-## Documenti operativi
+## Owner documentali
 
-| File | Uso |
+| Domanda | Owner |
 | --- | --- |
-| `docs/design_skeleton.md` | Sintesi verificabile del progetto, loop, stato e limiti. |
-| `docs/development_plan.md` | Roadmap viva verso v0.5 internal beta e oltre. |
-| `docs/code_quality.md` | Regole di modifica, ownership, refactor ammessi e vietati. |
-| `docs/testing.md` | Static suite, Godot, CI smoke, manual QA e criteri di accettazione. |
-| `docs/game_design.md` | Loop rituale, sistemi attivi, progressione e fuori scope. |
-| `docs/object_grammar.md` | Grammatica object-first: intento, oggetto, gesto, feedback e registrazione. |
-| `docs/content_bible.md` | Tono, grammatica di copy, lore runtime e contenuti vietati. |
-| `docs/data_schema.md` | Cataloghi, payload, save/runtime fields e validazione. |
-| `docs/layout_rules.md` | Regole UI, leggibilita', motion e screenshot QA. |
-| `docs/asset_pipeline.md` | Naming, path, import, audio, fallback e verifica asset. |
-| `docs/art_direction.md` | Mood visivo, palette, materiali e divieti di stile. |
-| `docs/ethics_and_representation.md` | Rischi di tema, pubblico, rappresentazione e copy. |
-| `docs/release_checklist.md` | Checklist per beta, release candidate e signoff. |
-| `docs/playtest_guide.md` | Istruzioni tester e sessione target. |
-| `docs/playtest_feedback_log.md` | Log normalizzato feedback -> decisione -> stato. |
+| Che gioco stiamo finendo? | `docs/design_skeleton.md` |
+| Qual e' il prossimo blocco implementabile? | `docs/development_plan.md` |
+| Come funziona l'esperienza? | `docs/game_design.md` |
+| Quale oggetto rende reale un'azione? | `docs/object_grammar.md` |
+| Come appare? | `docs/art_direction.md` e `docs/layout_rules.md` |
+| Come suona? | `docs/audio_direction.md` |
+| Quando usa una sequenza cinematica? | `docs/cinematic_direction.md` |
+| Come parla e quali contenuti contiene? | `docs/content_bible.md` |
+| Come sono strutturati dati e save? | `docs/data_schema.md` |
+| Come si producono asset runtime? | `docs/asset_pipeline.md` |
+| Come si verifica? | `docs/testing.md` |
+| Cosa blocca la release? | `docs/release_checklist.md` |
+| Come si conduce un playtest? | `docs/playtest_guide.md` |
+| Quali requisiti hanno accessibilita' e lingue? | `docs/accessibility_localization.md` |
+| Quali rischi di tono vanno controllati? | `docs/ethics_and_representation.md` |
 
-## Canon e supporto
+## Autorita'
 
-- `docs/canon/` - owner canonici e governance.
-- `docs/contracts/` - contratti tecnici usati anche da tooling/CI.
-- `docs/support/` - mappe, indici e riferimenti operativi non canonici.
-- `docs/reports/` - report correnti.
-- `docs/archive/` - materiale storico non operativo.
+- `docs/canon/` contiene le regole canoniche e prevale sui documenti operativi.
+- `docs/contracts/` contiene superfici tecniche controllate anche dalla CI.
+- `docs/support/` contiene inventari e procedure subordinate agli owner.
+- `docs/archive/` contiene sola lineage storica non operativa.
+- `RunManager` resta l'unica autorita' del flow.
+- `GameEvents` resta il bus eventi.
+- La UI emette intenti e reagisce a payload; non decide outcome.
 
 ## Regole di aggiornamento
 
-- Ogni feature che cambia runtime authority aggiorna `docs/canon/RUN_ARCHITECTURE_CANON.md`.
-- Ogni feature che cambia regole di gioco aggiorna `docs/canon/MECHANICS_UNIFIED.md` e `docs/game_design.md`.
-- Ogni feature che cambia UI aggiorna `docs/canon/UI_CANON.md` se cambia contratto, altrimenti `docs/layout_rules.md`.
-- Ogni feature che cambia asset aggiorna `docs/asset_pipeline.md` e, se cambia mood, `docs/art_direction.md`.
-- Ogni feature che cambia copy, lore o contenuti aggiorna `docs/content_bible.md`.
-- Ogni feature player-facing deve passare dalla formula `intento -> oggetto -> gesto -> feedback -> registrazione` in `docs/object_grammar.md`.
-- Ogni modifica a dati runtime aggiorna `docs/data_schema.md`.
-- Ogni patch che avvicina una build aggiorna `docs/development_plan.md`, `docs/release_checklist.md` o il log playtest.
+- Una feature player-facing parte da
+  `intento -> oggetto -> gesto -> feedback -> registrazione`.
+- Un cambio di flow aggiorna `docs/canon/RUN_ARCHITECTURE_CANON.md`.
+- Un cambio di regola aggiorna `docs/canon/MECHANICS_UNIFIED.md`.
+- Un cambio di contratto UI aggiorna `docs/canon/UI_CANON.md`.
+- Un cambio a dati o save aggiorna `docs/data_schema.md` e i contratti.
+- Un cambio visuale aggiorna art direction, layout o asset pipeline.
+- Un cambio audio aggiorna `docs/audio_direction.md`.
+- Un cambio di copy o contenuto aggiorna `docs/content_bible.md`.
+- Ogni blocco concluso aggiorna `docs/development_plan.md`.
 
-## Regola di affidabilita'
+## Affidabilita'
 
-- I path sotto `docs/` citati dalla documentazione attiva devono esistere.
-- Le fonti storiche assorbite nei canon sono indicate come `legacy:<slug>`.
-- `docs/archive/` e i marker `legacy:<slug>` non sono source operative.
-- La verifica e' `python scripts/ci/check_docs_active_refs.py`.
+- I path citati dalla documentazione attiva devono esistere.
+- I documenti non possono dichiarare completato un gate senza prova.
+- I nomi tecnici legacy non definiscono lo stato del prodotto.
+- Nessun documento attivo puo' reintrodurre milestone di versione superate.
+- Verifica riferimenti:
+
+```powershell
+python scripts/ci/check_docs_active_refs.py
+```
+
+- Verifica encoding:
+
+```powershell
+python scripts/ci/test_no_mojibake.py
+rg -n -P "\x{00C3}|\x{00C2}|\x{FFFD}" .
+```

@@ -16,6 +16,32 @@ Diventa la fonte primaria di:
 
 ---
 
+## Product Direction Amendment — Gallicus 1.0
+
+Gallicus 1.0 e' una campagna rituale finita:
+
+- il soggetto attraversa il ciclo del Registro per piu' run;
+- la firma comportamentale converge senza essere esposta come statistica;
+- i Silenzi fanno avanzare le Ere in modo monotono;
+- l'Assenza del Registro chiude definitivamente la campagna;
+- nessun New Game+ o postgame riattiva il Registro.
+
+La prima campagna completa ha target operativo di 2-4 ore. Windows x64 e'
+la superficie di release; italiano, inglese e spagnolo sono lingue di
+prodotto. Questi vincoli guidano produzione e QA senza cambiare ownership,
+determinismo o regole meccaniche canoniche.
+
+Le azioni gameplay player-facing seguono la grammatica:
+
+```text
+intento -> oggetto -> gesto -> feedback -> registrazione
+```
+
+La grammatica e' presentazionale: non autorizza flow, manager o meccaniche
+parallele. Utility, impostazioni e accessibilita' usano controlli convenzionali.
+
+---
+
 # INDEX
 
 1. Visione Fondativa

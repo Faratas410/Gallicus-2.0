@@ -1,101 +1,127 @@
 # UI Art Direction Contract v1
 
-Status: Active support contract  
-Scope: Visual target and acceptance rules for the Gallicus UI overhaul.
+Status: Active
+Scope: Object-first visual and interaction contract for Gallicus 1.0.
 
-## Authority Boundary
+## Authority
 
-This contract is subordinate to `docs/canon/UI_CANON.md`.
+Questo contratto e' subordinato a `docs/canon/UI_CANON.md`. Non cambia:
 
-It defines the art direction for new UI-overhaul work. It does not change:
-
-- RunManager authority.
-- GameEvents signals.
-- payload schemas.
-- phase routing.
-- gameplay rules.
-
-If this document conflicts with `docs/canon/UI_CANON.md`, `docs/canon/UI_CANON.md` wins until the canon owner is explicitly amended.
+- autorita' di `RunManager`;
+- segnali `GameEvents`;
+- payload;
+- routing delle fasi;
+- regole di gameplay.
 
 ## North Star
 
-The UI must feel like the Registry made physical: a severe ritual office where every bet is a signed legal act, every production step is a stamped procedure, and every outcome leaves a mark.
+La UI e' il Registro reso fisico. Ogni azione gameplay deve apparire come uso
+di un oggetto amministrativo o rituale, non come pressione di un comando
+astratto.
 
-The target is not generic fantasy UI. It is a Roman infernal registry: basalt slabs, bronze rims, wax seals, carved grooves, official stamps, witness marks, pressure rails, and compact legal surfaces.
+Formula:
 
-## Primary Pack Rule
+```text
+intento -> oggetto -> gesto -> feedback -> registrazione
+```
 
-StonePixel 1.2 is the primary UI pack for overhaul work. The tracked runtime-safe subset is `assets/ui/third_party/gowl_stonepixel/`.
+## Contratto delle superfici
 
-Use the existing tracked slices as-is whenever possible. Do not hand-reslice the full source pack for routine UI work; bad slices create visual drift and can break the playable-slice readability baseline.
+1. Il testo e' leggibile prima della decorazione.
+2. L'oggetto attivo porta scelta, stato o memoria.
+3. Il gesto produce una trasformazione visibile dell'oggetto.
+4. La registrazione conferma la conseguenza.
+5. La geometria degli stati interattivi resta stabile.
+6. Le utility usano controlli convenzionali e accessibili.
 
-## Visual Promises
+## Materiali
 
-1. Contract surfaces are readable first.
-   - New pact and bet-selection surfaces must prioritize dark ink on pale or warm stone, or light text on controlled dark slabs.
-   - Text must be rendered by Godot. Do not bake labels into images.
+- basalto e pietra: autorita';
+- cera: consenso e firma;
+- bronzo: valore e procedura;
+- carta/fascicolo: memoria;
+- ferro e marchi: condanna;
+- sabbia: esposizione;
+- vuoto: Assenza.
 
-2. The Registry is the organizing metaphor.
-   - Use slabs, tablets, seals, dossiers, ledgers, grooves, and official marks.
-   - A UI screen should read as a physical registry instrument, not a floating card layout.
+## Famiglie runtime
 
-3. Production pipeline UI is diegetic.
-   - Pipeline status should look like stamped procedure: intake, draft, review, sealed, imported, verified.
-   - Progress markers should be stamps, punched tabs, wax marks, carved ticks, or thin bronze rails.
+- `arena_threshold`
+- `registry_slab`
+- `contract_tablet`
+- `wax_seal`
+- `judgement_stone`
+- `receipt`
+- `condemnation_mark`
+- `second_incision`
+- `dossier`
+- `archive_fixture`
+- `pressure_groove`
+- `witness_mark`
 
-4. Controls stay compact and deliberate.
-   - Buttons are tablets or stamped strips.
-   - Sliders and meters are grooves.
-   - Icons are small legal/ritual marks, not decorative filler.
+Ogni nuova famiglia aggiorna art direction e asset pipeline.
 
-5. Asset language must stay coherent inside one screen.
-   - Do not mix wooden planks, parchment scrolls, spellbook pages, and stone registry slabs in a finalized screen.
-   - Existing book/wood UI may remain as migration residue until the matching registry asset exists, but new overhaul work targets the registry language.
+## Stati
 
-6. Palette must have functional contrast.
-   - Core materials: dark basalt, charred stone, aged bronze, hot wax red, bone ink, ash gray.
-   - Accent materials: muted jade, tarnished gold, cold iron blue.
-   - Avoid single-hue screens. Use accents to separate hierarchy and state.
+Gli oggetti interattivi supportano, quando pertinenti:
 
-## Forbidden Patterns
+- normal;
+- hover/focus;
+- pressed;
+- disabled;
+- sealed/registered;
+- consumed.
 
-- Baked UI text inside generated images.
-- Decorative panels that do not map to a readable UI role.
-- Generic ornate RPG frames without registry purpose.
-- Parchment, scroll, floating spellbook, or wooden plank language for new overhaul targets.
-- Soft stock-art backgrounds that obscure actual UI readability.
-- Mixed asset packs inside one finalized screen.
-- Large ornamental symbols that compete with contract text.
+Focus tastiera e hover mouse devono essere equivalenti. Disabled non puo'
+sembrare attivo e deve comunicare la causa quando rilevante.
 
-## Runtime Asset Families
+## Ere
 
-New UI-overhaul assets should fit one of these families:
+- Nessuna superficie mostra il numero o il nome dell'Era.
+- La deriva e' graduale lungo tre run.
+- Era 2 e 3 possono introdurre asimmetria controllata.
+- La leggibilita' non viene degradata.
+- Era 4 rimuove le normali superfici classificatorie.
 
-- `registry_slab`: large modal/finale/panel surface.
-- `contract_tablet`: pact, bet, and choice text surface.
-- `pipeline_stamp`: production status marker.
-- `wax_seal`: confirmation, locked, or sealed state.
-- `pressure_groove`: risk/pressure meter surface.
-- `dossier_tab`: compact navigation or grouped evidence marker.
-- `witness_mark`: small icon for condition, payout, pact, sentence, or corruption.
+## Asset source
 
-## Acceptance Checklist
+StonePixel resta una fonte utilizzabile per ruoli compatibili, non una lingua
+obbligatoria. Un asset viene adottato solo se:
 
-An overhaul asset or UI patch is acceptable only if:
+- corrisponde a una famiglia oggetto;
+- non introduce wood/parchment fantasy incoerente;
+- ha licenza tracciata;
+- e' importato e verificato;
+- non contiene testo baked.
 
-- It keeps all gameplay authority outside UI.
-- It has no baked text unless the asset is purely decorative and textless by contract.
-- It is readable at the canonical 1280x720 viewport.
-- It uses crisp import settings for pixel-art styled UI textures.
-- It has a clear runtime destination or remains explicitly staged as source/reference.
-- It does not introduce mojibake or malformed encoding in source/docs.
-- It updates support documentation when a new asset family, naming rule, or production lane is introduced.
+## Divieti
 
-## Migration Priority
+- card decorative senza oggetto;
+- generic fantasy frames;
+- bottoni disegnati prima dell'atto;
+- testo baked;
+- mix incoerente di asset pack;
+- simboli ornamentali senza funzione;
+- colore come unico stato;
+- motion senza fallback reduced-motion.
 
-1. Pact/bet contract selection surface.
-2. Pact sealed and resolve ritual modals.
-3. Push-your-luck decision panel.
-4. END_RUN register/finale surface.
-5. HUD pressure and scars surfaces.
-6. Main menu support surfaces after runtime contract screens are coherent.
+## Accettazione
+
+- leggibile a 1280x720 e 1920x1080;
+- object-first sheet compilata;
+- nessun cambio di authority;
+- import e path validi;
+- screenshot viewport-only;
+- focus tastiera verificato;
+- stringhe IT/EN/ES controllate;
+- nessun mojibake.
+
+## Priorita' di produzione
+
+1. quietanza, marchio e seconda incisione;
+2. firma e patto;
+3. rito di giudizio;
+4. fascicolo finale;
+5. soglia/menu;
+6. Archivio;
+7. variazioni graduali delle Ere.

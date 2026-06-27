@@ -2,55 +2,91 @@
 
 ## Baseline
 
-La UI deve essere leggibile almeno a:
+La UI deve essere funzionale almeno a:
+
 - 1280x720;
 - 1920x1080.
 
-La priorita' e' playtest, non polish pubblico.
+Il layout deve tollerare italiano, inglese e spagnolo senza font scalato con la
+larghezza viewport.
 
-## Regole generali
+## Struttura
 
-- Nessun testo importante deve uscire dal contenitore.
-- Nessuna parola deve spezzarsi in modo antiestetico su card o bottoni.
-- I bottoni attivi devono distinguersi dai disabilitati.
-- Ogni modale deve avere titolo, stato e prossima azione.
-- Le CTA devono essere cliccabili nel corpo del bottone, non solo su label.
-- Le CTA player-facing devono essere progettate come interazione con un oggetto diegetico quando possibile; il bottone resta input tecnico, non concept primario.
+- L'oggetto attivo occupa il centro funzionale.
+- Titolo, conseguenza e gesto appartengono alla stessa superficie.
+- Pannelli di pagina non devono sembrare card flottanti.
+- Vietate card dentro card.
+- Dimensioni e aspect ratio degli oggetti critici sono stabili.
+- Hover, focus, label e stato non devono ridimensionare il layout.
 
-## Schermate critiche
+## Gerarchia
 
-- Menu: obiettivo leggibile.
-- Registro: due offerte leggibili.
-- Patto: conferma e avanzamento chiari.
-- Scelta intermedia: due opzioni confrontabili.
-- Rito: istruzione e feedback colpi.
-- Push-your-luck: incassa, condanna, rilancia leggibili.
-- END_RUN: esito e route restart/next/menu.
+Ogni schermata gameplay mostra:
 
-## Object-first layout
+1. cosa e' davanti al soggetto;
+2. quale stato porta;
+3. quale gesto e' disponibile;
+4. quale conseguenza produce;
+5. cosa ha registrato il sistema dopo l'atto.
 
-Per le patch UI successive, usare `docs/object_grammar.md` prima del layout:
+Il testo secondario non deve competere con il gesto principale.
 
-- ogni comando importante deve avere un oggetto visivo o testuale riconoscibile;
-- ogni oggetto deve mostrare stato, rischio o conseguenza;
-- le label non devono essere l'unica fonte di comprensione;
-- se la metafora riduce leggibilita', semplificare la metafora e mantenere il testo chiaro.
+## Schermate
+
+- **Menu:** Gallicus e soglia dell'arena nel primo viewport.
+- **Registro:** due offerte confrontabili senza wrapping distruttivo.
+- **Firma:** promessa, costo e sigillo sulla stessa tavola.
+- **Patto:** vincolo leggibile e corpo non vuoto.
+- **Gesto pubblico:** opzioni confrontabili e reazione della folla.
+- **Rito:** oggetto centrale, conteggio colpi e responso.
+- **Push-your-luck:** quietanza, marchio e incisione chiaramente distinte.
+- **END_RUN:** fascicolo, esito, memoria e route disponibili.
+- **Archivio:** consultazione, non griglia di achievement generica.
+- **Assenza:** nessun residuo del normale HUD.
+
+## Utility
+
+Settings, lingua, volume, risoluzione, back e quit usano controlli familiari:
+
+- slider per valori continui;
+- checkbox/toggle per stati binari;
+- option menu per insiemi;
+- icone note con tooltip;
+- focus order prevedibile.
+
+Non forzare metafore diegetiche sulle utility.
+
+## Testo
+
+- Nessuna parola importante si spezza in modo illeggibile.
+- Bottoni e oggetti interattivi supportano la stringa piu' lunga prevista.
+- Font decorativo solo su titoli brevi.
+- Corpo e conseguenze usano font ad alta leggibilita'.
+- Non usare letter spacing negativo.
+- Informazioni critiche non dipendono dal solo colore o da un'icona.
+
+## Stati
+
+- normal, hover/focus, pressed, disabled e registered devono essere distinti;
+- disabled mostra causa quando rilevante;
+- un elemento cliccabile non deve sembrare spento;
+- focus da tastiera deve essere visibile quanto hover da mouse;
+- route finali non possono essere ambigue.
 
 ## Motion
 
-- Motion ammessa se aiuta feedback o mood.
-- Motion vietata se sposta target cliccabili in modo frustrante.
-- Pulse e flash devono essere brevi e non coprire testo.
+- Pulse, flash e transizioni confermano causa/effetto.
+- I target cliccabili non si spostano.
+- Il testo non viene coperto.
+- Reduced motion sostituisce movimento con cambio di stato breve.
+- Nessun effetto indispensabile dura solo un frame.
 
-## Screenshot QA
+## QA
 
-Se una patch cambia UI o copy visibile, catturare le schermate critiche indicate in `docs/testing.md`, salvo richiesta contraria dell'utente.
+Una patch visibile richiede:
 
-## Verifica
-
-Eseguire:
-
-```powershell
-python scripts/ci/test_ui_motion_contract.py
-python scripts/ci/test_pressure_presentation_contract.py
-```
+- screenshot viewport-only alle due risoluzioni;
+- almeno una cattura nella lingua con stringa piu' lunga;
+- controllo focus tastiera;
+- controllo reduced motion se tocca animazioni;
+- static test UI pertinenti.

@@ -2,42 +2,73 @@
 
 ## Regola primaria
 
-Non cambiare il core di gioco per migliorare la documentazione, la leggibilita' o il polish. Ogni patch deve dichiarare se tocca Core Authority, Flexible Domain o Tooling.
+Finire il prodotto senza spostare autorita' o riscrivere sistemi funzionanti.
+Ogni patch dichiara obiettivo, zona, owner e prova di chiusura.
 
 ## Ownership
 
-- `RunManager` possiede flow, transizioni e decisioni di run.
-- `GameEvents` possiede il bus eventi.
-- UI legge payload/stato ed emette intenti, non decide outcome.
-- Cataloghi e dati definiscono contenuto, non autorita' di flow.
-- CI e script validano contratti, non introducono runtime dependency.
+- `RunManager`: flow, transizioni e decisioni di run.
+- `GameEvents`: bus di intenti ed eventi.
+- UI: rendering reattivo e invio intenti.
+- Cataloghi: contenuto e configurazione.
+- Save boundary: validazione, serializzazione e migrazione.
+- Tooling/CI: verifica, mai dipendenza runtime.
+
+## Zone
+
+- **Core Authority:** cambi minimi, canon e test obbligatori.
+- **Flexible Domain:** UI, contenuto, audio e asset entro i contratti.
+- **Tooling:** liberta' maggiore, senza introdurre logica runtime.
+
+La classificazione dettagliata resta in `docs/canon/PROCESS_AND_FREEZE.md`.
+
+## Patch feature
+
+Prima di implementare:
+
+1. identificare stage della roadmap;
+2. leggere owner documentale e canon;
+3. compilare la scheda object-first se player-facing;
+4. identificare API, payload e save coinvolti;
+5. definire test e screenshot prima dell'edit.
+
+Durante:
+
+- preferire pattern e helper esistenti;
+- non aggiungere un manager per comodita';
+- non duplicare dati o segnali;
+- mantenere il cambiamento nel dominio previsto;
+- aggiornare docs e test insieme al comportamento.
 
 ## Refactor ammessi
 
-- Locali, meccanici e dentro un solo dominio.
-- Necessari a correggere un bug concreto.
-- Coperti da test statico, smoke o checklist.
-- Senza cambiare shape pubblica se non richiesto da un blocker reale.
+- necessari a un deliverable concreto;
+- locali e coperti;
+- senza cambio pubblico accidentale;
+- con migrazione esplicita se toccano save o contract.
 
 ## Refactor vietati
 
-- Spostare authority da `RunManager`.
-- Duplicare segnali o payload fuori da `GameEvents`.
-- Aggiungere flow paralleli o fallback nascosti.
-- Rinominare path/nodi senza aggiornare contratti e test.
-- Aggiungere feature per "pulire" una patch di bugfix.
+- spostare flow fuori da `RunManager`;
+- far decidere outcome alla UI;
+- bus paralleli o segnali duplicati;
+- fallback nascosti che saltano fasi;
+- parsing fragile di copy per ottenere dati;
+- rinomina massiva non richiesta dal deliverable;
+- feature estranee inserite in un bugfix.
 
-## Dati e configurazioni
+## Dati e asset
 
-- Usare cataloghi strutturati quando esistono.
-- Evitare parsing testuale fragile per contenuti runtime.
-- Ogni nuovo campo dati deve avere default, consumer chiaro e test/checklist.
-- Ogni nuovo path `res://` deve passare `tools/ci/verify_res_paths.py`.
+- Nuovo campo: default, owner, consumer, test.
+- Nuovo `res://`: path validation.
+- Nuovo asset: uso, licenza, import e prova visuale/audio.
+- Nuova stringa: chiavi IT/EN/ES e controllo layout.
 
-## Chiusura patch
+## Chiusura
 
-Prima del final:
-- Eseguire i test pertinenti in `docs/testing.md`.
-- Eseguire scan mojibake.
-- Segnalare test non eseguiti.
-- Non dichiarare v0.5 signed senza CI/Linux e manual QA.
+- test pertinenti da `docs/testing.md`;
+- docs refs e mojibake;
+- `git diff --check`;
+- test non eseguiti dichiarati;
+- nessun gate segnato completo senza evidenza;
+- roadmap aggiornata quando uno stage cambia stato.

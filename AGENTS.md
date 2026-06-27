@@ -6,7 +6,9 @@ These rules apply to all coding agents working in this repository.
 
 - Official project: Gallicus 2.0.
 - Stack: Godot 4.6.2, GDScript, Python CI helpers.
-- Active game target: internal beta of the ritual run loop, not an action-combat prototype.
+- Active game target: Gallicus 1.0, a finite ritual campaign ending in the Absence of Register.
+- Release surface: Windows x64 in Italian, English, and Spanish; Linux is the canonical CI surface.
+- Development progress is tracked through named roadmap stages, not intermediate product versions.
 - Current gameplay authority must not move: `RunManager` owns flow, `GameEvents` is the event bus, UI is reactive.
 - Core gameplay, phase ownership, save flow, signal contracts, and canon rules may not be changed during documentation-only work.
 
@@ -18,6 +20,7 @@ These rules apply to all coding agents working in this repository.
 - Use `docs/code_quality.md` before touching runtime code.
 - Use the domain document that matches the change: design, content, data, layout, asset, art direction, release, or playtest.
 - Canon files remain authoritative. Operating docs guide work but must not redefine canon.
+- Player-facing gameplay features must use `docs/object_grammar.md` before layout or CTA design.
 - Any feature patch must update the relevant operating doc or canon owner when it changes a rule, workflow, data shape, UI behavior, asset path, or release criterion.
 
 ## Documentation-Only Patch Rule

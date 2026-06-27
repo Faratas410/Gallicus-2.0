@@ -4,10 +4,10 @@
 from __future__ import annotations
 
 from run_headless_smoke import (
-    SCENARIO_BETA_CASHOUT,
-    SCENARIO_BETA_CONDANNA,
-    SCENARIO_BETA_DOUBLE,
-    SCENARIO_BETA_REGISTER_FINAL,
+    SCENARIO_ROUTE_CASHOUT,
+    SCENARIO_ROUTE_CONDANNA,
+    SCENARIO_ROUTE_DOUBLE,
+    SCENARIO_ROUTE_REGISTER_FINAL,
     SCENARIO_BET_PRESENT,
     SCENARIO_FULL_RUN,
     SMOKE_CLASS_NATIVE_CRASH_AFTER_BOOTSTRAP,
@@ -62,7 +62,7 @@ def _build_full_run_log() -> str:
     )
 
 
-def _build_beta_log(scenario: str, pyl_request: str, register_final: bool = False) -> str:
+def _build_route_log(scenario: str, pyl_request: str, register_final: bool = False) -> str:
     lines = [
         "SMOKE:BOOT_OK",
         f"SMOKE:STEP=SCENARIO_{scenario}_START",
@@ -106,20 +106,20 @@ def main() -> int:
     if valid_full_run_failures:
         return fail(f"expected FULL_RUN sample log to pass, got: {valid_full_run_failures}")
 
-    beta_cases = {
-        SCENARIO_BETA_CASHOUT: ("request_pyl_cashout", False),
-        SCENARIO_BETA_DOUBLE: ("request_pyl_double", False),
-        SCENARIO_BETA_CONDANNA: ("request_pyl_condanna", False),
-        SCENARIO_BETA_REGISTER_FINAL: ("request_pyl_cashout", True),
+    route_cases = {
+        SCENARIO_ROUTE_CASHOUT: ("request_pyl_cashout", False),
+        SCENARIO_ROUTE_DOUBLE: ("request_pyl_double", False),
+        SCENARIO_ROUTE_CONDANNA: ("request_pyl_condanna", False),
+        SCENARIO_ROUTE_REGISTER_FINAL: ("request_pyl_cashout", True),
     }
-    for beta_scenario, beta_spec in beta_cases.items():
-        beta_request, register_final = beta_spec
-        beta_failures = validate_log_text(
-            _build_beta_log(beta_scenario, beta_request, register_final),
-            beta_scenario,
+    for route_scenario, route_spec in route_cases.items():
+        route_request, register_final = route_spec
+        route_failures = validate_log_text(
+            _build_route_log(route_scenario, route_request, register_final),
+            route_scenario,
         )
-        if beta_failures:
-            return fail(f"expected {beta_scenario} sample log to pass, got: {beta_failures}")
+        if route_failures:
+            return fail(f"expected {route_scenario} sample log to pass, got: {route_failures}")
 
     command = _build_runtime_command("godot", ".", 60, False)
     if command[-2:] != ["--quit-after", "36000"]:

@@ -92,12 +92,41 @@ All changes to systems described here must update this document in the same PR.
 
 ## Index
 
+- [Object-First Player-Facing Contract](#object-first-player-facing-contract)
 - [Scope](#scope)
 - [Run flow payload contract (INTERMEDIATE_CHOICE)](#run-flow-payload-contract-intermediate_choice)
 - [Non-negotiable visual rules](#non-negotiable-visual-rules)
 - [Theme assignment point](#theme-assignment-point-single-authority)
 - [Main menu / idle ambience](#main-menu-idle-ambience)
 - [Arena tension](#arena-tension)
+
+## Object-First Player-Facing Contract
+
+Le azioni gameplay devono essere progettate secondo:
+
+```text
+intento -> oggetto -> gesto -> feedback -> registrazione
+```
+
+Regole canoniche:
+
+- il bottone puo' essere l'input tecnico, ma non il concept primario;
+- l'oggetto deve portare scelta, stato, rischio o memoria;
+- il gesto deve produrre un feedback visivo, audio e testuale;
+- la UI emette solo l'intento e reagisce al payload autoritativo;
+- l'oggetto non puo' introdurre una meccanica non posseduta da RunManager;
+- focus, disabled, attivato e registrato devono essere distinguibili;
+- la diegesi non puo' ridurre leggibilita' o accessibilita';
+- settings, lingua, volume, risoluzione, back e quit possono usare controlli
+  convenzionali senza metafora rituale.
+
+Le Ere non sono nominate o numerate nella UI. La loro deriva si manifesta
+gradualmente attraverso materiale, copy, suono e composizione. L'Assenza del
+Registro rimuove le normali superfici classificatorie e non presenta una nuova
+modalita' UI.
+
+Il contratto operativo e' dettagliato in `docs/object_grammar.md`; in caso di
+conflitto questo canon prevale.
 
 ## SOURCE: legacy:ui_official_ledger
 

@@ -2,41 +2,112 @@
 
 ## Principio
 
-Gli asset devono essere runtime-ready. Concept art e riferimenti non devono entrare nei path runtime se non sono usati o verificati.
+Nel runtime entrano solo asset con ruolo, path, licenza e verifica definiti.
+Concept art e riferimenti restano fuori dalle cartelle runtime.
 
-## Path principali
+Ogni asset gameplay deve sostenere un oggetto, un gesto, uno stato o un luogo.
 
-- `assets/backgrounds/` - fondali runtime.
-- `assets/MainMenu/` - menu ambience.
-- `assets/ui/` - font, icone, stylebox, materiali e sorgenti UI.
-- `assets/audio/` - audio runtime.
-- `assets/i18n/` - traduzioni.
+## Struttura
+
+- `assets/backgrounds/` - luoghi e variazioni arena.
+- `assets/MainMenu/` - soglia e atmosfera del menu.
+- `assets/ui/official/` - risorse adottate e runtime-ready.
+- `assets/ui/official_source/` - sorgenti tracciate.
+- `assets/ui/third_party/` - pacchetti con provenienza documentata.
+- `assets/audio/` - musica e ambience.
+- `assets/audio/sfx/` - effetti brevi.
+- `assets/i18n/` - cataloghi di traduzione.
+
+## Scheda asset
+
+Prima della produzione dichiarare:
+
+```text
+Nome:
+Famiglia:
+Oggetto/luogo:
+Uso runtime:
+Stati richiesti:
+Risoluzione/durata:
+Trasparenza/loop:
+Path destinazione:
+Fonte o licenza:
+Scene consumer:
+Verifica richiesta:
+```
+
+## Visual
+
+- Preferire asset esistenti se rispettano art direction e funzione.
+- Generare immagini solo per gap runtime chiari.
+- PNG per raster UI e layer.
+- Nessun testo baked salvo marchi puramente simbolici.
+- Gli stati interattivi devono condividere geometria.
+- Background e overlay restano separati quando devono animarsi.
+- Asset generati richiedono ispezione a risoluzione nativa.
+
+## Audio
+
+Seguire `docs/audio_direction.md`.
+
+- WAV per SFX brevi.
+- Loop verificati senza click.
+- Volume coerente nella famiglia.
+- Naming basato sul gesto o oggetto, non su sistemi action assenti.
+- Asset temporanei devono essere marcati come tali e sostituiti prima del lock.
 
 ## Naming
 
-- Usare nomi descrittivi e stabili.
-- Preferire snake_case per nuovi file.
-- Non rinominare asset referenziati senza aggiornare scene, script e `res://` validation.
+- snake_case per nuovi file;
+- prefisso di famiglia quando utile;
+- suffix di stato: `_normal`, `_hover`, `_pressed`, `_disabled`, `_sealed`;
+- niente nomi generici come `final2`, `new`, `temp`;
+- non rinominare path referenziati senza migrazione atomica.
 
-## Visual asset policy
+## Import
 
-- Usare asset esistenti se bastano al playtest.
-- Generare immagini solo se una texture mancante blocca la build o la comprensione.
-- Ogni immagine generata deve avere risoluzione, path e uso runtime chiari.
-- PNG per raster UI/sprite; materiali Godot per style/runtime effects.
+- Impostazioni Godot coerenti con il tipo di asset.
+- Texture UI nitide e senza filtering incompatibile con lo stile.
+- Nessun sidecar mancante dopo import.
+- Materiali e shader hanno fallback leggibile.
+- La scena non dipende da path assoluti.
 
-## Audio policy
+## Provenienza
 
-- SFX brevi, coerenti, senza materiale copyrighted.
-- Ogni azione importante deve avere feedback audio o una ragione documentata.
-- Placeholder WAV procedurali sono ammessi per beta interna.
+- Ogni pacchetto third-party conserva README/licenza.
+- Nessun asset copyrighted senza diritto d'uso.
+- Crediti e obblighi confluiscono nel pacchetto release.
+- Asset non attribuibile non puo' entrare nella build finale.
 
-## Import e verifica
+## Audit verso 1.0
 
-Se cambia un asset:
+Classificare gli asset attuali come:
+
+- `KEEP`: coerente e finalizzabile;
+- `REWORK`: funzione corretta, resa insufficiente;
+- `REPLACE`: fuori grammatica o fuori mood;
+- `REMOVE`: non usato o relativo a sistemi assenti.
+
+Priorita' di audit:
+
+1. oggetti push-your-luck;
+2. Registro e rituali;
+3. fascicolo finale;
+4. soglia/menu;
+5. variazioni delle Ere;
+6. audio con naming o mood action/combat.
+
+## Verifica
 
 ```powershell
 python tools/ci/verify_res_paths.py
 ```
 
-Se cambia import Godot, eseguire import headless. Se cambia UI/visual, fare screenshot QA.
+Se cambia un asset runtime:
+
+- import Godot;
+- smoke pertinente;
+- screenshot o ascolto manuale;
+- controllo path mancanti;
+- controllo licenza;
+- aggiornamento del documento di dominio.

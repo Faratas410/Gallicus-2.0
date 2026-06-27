@@ -1,64 +1,136 @@
 # Gallicus Content Bible
 
-## Tono
+## Voce
 
-Gallicus usa tono rituale, amministrativo e tagliente. Il Registro non parla come tutorial moderno: annota, pesa, classifica e condanna.
+Gallicus parla con tono rituale, amministrativo e preciso. Il Registro non e'
+un narratore moderno: annota, pesa, confronta, convalida e conclude.
 
-## Lessico preferito
+La durezza nasce dalla procedura e dall'irreversibilita', non da gore o insulti.
 
-- Usare `percorso` per la run percepita.
-- Usare `pressione` per escalation/rischio.
-- Usare `incassa`, `rilancia`, `condanna`, `segno`, `Registro`, `fascicolo`.
-- Usare frasi brevi nelle UI.
-- Usare frasi piu' dense solo in lore o verdetto.
+## Lessico player-facing
 
-## Lessico da evitare in UI
+- `percorso`, `ciclo`, `fascicolo` al posto del termine tecnico `run`;
+- `pressione` al posto di `escalation`;
+- `incassa`, `rilancia`, `condanna`, `segno`, `patto`, `Registro`;
+- `apri`, `firma`, `incidi`, `colpisci`, `prendi`, `accetta`, `chiudi`;
+- frasi brevi nelle superfici interattive;
+- frasi dense solo nei verdetti e nell'Archivio.
 
-- Gergo tecnico non necessario.
-- Battute fuori mood.
-- Spiegazioni lunghe dentro bottoni.
-- Copy che promette sistemi non presenti.
-- Termini action/combat se la schermata e' rituale.
+## Da evitare
 
-## Grammatica delle schermate
+- gergo tecnico o percentuali interne;
+- `continua`, `conferma`, `opzione` quando esiste un gesto specifico;
+- tono ironico o battute fuori mood;
+- linguaggio action/combat;
+- promesse di meccaniche non presenti;
+- Registro personificato come villain, guida o coscienza morale;
+- spiegazioni strategiche messe in bocca al Registro.
 
-- Menu: obiettivo in una riga.
-- Bet: promessa + prezzo.
-- Patto: conferma rituale.
-- Scelta intermedia: gesto + effetto sulla pressione.
-- Rito: azione fisica semplice + stato del verbale.
+## Formula della copy
+
+La copy sostiene:
+
+```text
+intento -> oggetto -> gesto -> feedback -> registrazione
+```
+
+Esempio:
+
+```text
+Vuoi chiudere il dovuto -> quietanza -> prendila
+-> il conto si chiude -> il fascicolo registra l'incasso
+```
+
+La label dell'azione resta breve. Rischio e conseguenza vivono sulla superficie
+dell'oggetto, non dentro un bottone troppo lungo.
+
+## Struttura delle schermate
+
+- Soglia: cosa significa entrare.
+- Bet: promessa, costo e vincolo.
+- Patto: cosa e' stato firmato.
+- Gesto pubblico: atto e variazione percepibile della pressione.
+- Rito: oggetto, colpo richiesto e stato del verbale.
 - Push-your-luck: tre conseguenze confrontabili.
-- END_RUN: esito + stato + uscita.
+- Fascicolo: esito, evidenza raccolta e route disponibile.
+- Silenzio: assenza di responso, non spiegazione dell'Era.
+- Assenza: nessuna frase classificatoria finale.
 
-## Regola object-first per la copy
+## Contenuti di campagna
 
-La copy deve sostenere la grammatica `intento -> oggetto -> gesto -> feedback -> registrazione` descritta in `docs/object_grammar.md`.
+Il contenuto deve coprire una matrice, non soltanto raggiungere un numero:
 
-- Preferire verbi fisici e amministrativi: apri, firma, incidi, colpisci, chiudi, registra, accetta.
-- Evitare copy che suona come UI generica: continua, conferma, scegli opzione, procedi.
-- Un bottone puo' avere testo breve, ma il pannello deve chiarire quale oggetto viene usato.
-- Il Registro deve annotare l'atto, non spiegare la strategia.
+- tutti i path canonici;
+- le condizioni rilevanti delle quattro Ere;
+- cashout, condanna e double;
+- scars e condanne principali;
+- firma liquida e firma fissata;
+- Silenzi e finale terminale;
+- ending dichiarati nei cataloghi.
 
-## Contenuti runtime
+Una variazione e' valida solo se cambia interpretazione, rischio percepito o
+memoria. Riscrivere lo stesso testo con sinonimi non conta.
 
-Ogni nuova bet deve avere:
+## Bet
+
+Ogni bet richiede:
+
+- id stabile;
 - titolo breve;
-- subtitle leggibile;
+- promessa;
+- condizione;
+- conseguenza;
 - path tag;
-- comportamento esistente o nuovo comportamento documentato;
-- conseguenza coerente con tono e sistema.
+- behavior esistente o documentato;
+- oggetto e gesto di firma;
+- varianti linguistiche previste;
+- stato di eleggibilita' testabile.
 
-Ogni nuova condanna deve avere:
+## Scars e condanne
+
+Ogni voce richiede:
+
 - id stabile;
 - titolo leggibile;
-- testo narrativo breve;
-- effetto comprensibile;
-- origine tracciabile.
+- origine tracciabile;
+- effetto comprensibile prima dell'accettazione;
+- segno fisico o amministrativo;
+- frase registrabile;
+- relazione con firma e finale.
 
-## Verifica
+Una condanna non e' un messaggio di errore. Una scar non e' equipaggiamento.
 
-- Leggere la schermata a 1280x720.
-- Nessuna riga deve spezzare una parola in modo brutto.
-- Nessun testo deve contenere mojibake.
-- Ogni nuovo comando visibile deve avere un oggetto e un gesto riconoscibili.
-- Aggiornare `docs/data_schema.md` se cambia shape dei dati.
+## Ending e Silenzio
+
+- Gli ending classificano evidenza realmente prodotta.
+- La priorita' tra ending deve essere deterministica.
+- Il Silenzio non e' un premio raro da collezionare.
+- L'Assenza non usa una classificazione conclusiva.
+- Nessuna route finale deve contraddire lo stato persistito.
+
+## Ere
+
+- Era 0: voce completa e ancora interpretativa.
+- Era 1: frasi piu' rigide e assertive.
+- Era 2: asimmetrie controllate, non testo corrotto.
+- Era 3: compressione e rarefazione.
+- Era 4: nessuna nuova voce del Registro.
+
+Le Ere non vengono nominate nella UI e le transizioni restano graduali.
+
+## Localizzazione
+
+- L'italiano e' sorgente editoriale.
+- Inglese e spagnolo preservano funzione e tono.
+- Titoli e CTA devono reggere il layout piu' stretto.
+- Nessuna chiave mancante o fallback player-facing in release.
+- Il glossario canonico guida la terminologia.
+
+## Accettazione
+
+- nessun placeholder o fallback generico;
+- nessun mojibake;
+- ogni comando gameplay ha oggetto e gesto;
+- ogni ending e contenuto dichiarato e' raggiungibile;
+- la matrice contenuti e' coperta da test o playtest;
+- il testo e' leggibile nelle tre lingue alle risoluzioni target.

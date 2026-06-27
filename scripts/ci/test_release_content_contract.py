@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static guard for Gallicus v0.5 internal-beta content coverage."""
+"""Static guard for the Gallicus release-content baseline."""
 
 from __future__ import annotations
 
@@ -14,16 +14,16 @@ ENDING_RULES = ROOT / "data" / "ending_rules.gd"
 SMOKE_WORKFLOW = ROOT / ".github" / "workflows" / "godot_smoke_runtime.yml"
 
 
-REQUIRED_BETA_SCENARIOS = {
-    "BETA_CASHOUT",
-    "BETA_DOUBLE",
-    "BETA_CONDANNA",
-    "BETA_REGISTER_FINAL",
+REQUIRED_ROUTE_SCENARIOS = {
+    "ROUTE_CASHOUT",
+    "ROUTE_DOUBLE",
+    "ROUTE_CONDANNA",
+    "ROUTE_REGISTER_FINAL",
 }
 
 
 def fail(message: str) -> int:
-    print(f"[FAIL][BETA_CONTENT_CONTRACT] {message}")
+    print(f"[FAIL][RELEASE_CONTENT_CONTRACT] {message}")
     return 1
 
 
@@ -56,7 +56,7 @@ def _extract_level3_bet_ids(source: str) -> set[str]:
     return set(re.findall(r'"id":\s*"([^"]+)"', block))
 
 
-def test_beta_content_contract() -> int:
+def test_release_content_contract() -> int:
     bet_catalog = _read(BET_CATALOG)
     arena_themes = _read(ARENA_THEMES)
     ending_rules = _read(ENDING_RULES)
@@ -65,7 +65,7 @@ def test_beta_content_contract() -> int:
     active_block = _extract_const_block(bet_catalog, "L3_ACTIVE_BET_IDENTITIES")
     active_entries = _extract_active_bet_entries(active_block)
     if len(active_entries) < 8:
-        return fail(f"expected at least 8 active beta bet identities, found {len(active_entries)}")
+        return fail(f"expected at least 8 active bet identities, found {len(active_entries)}")
 
     level3_ids = _extract_level3_bet_ids(bet_catalog)
     path_tags: set[str] = set()
@@ -100,17 +100,21 @@ def test_beta_content_contract() -> int:
     if len(ending_keys) < 6:
         return fail(f"expected at least 6 reachable ending keys, found {sorted(ending_keys)}")
 
-    for scenario in REQUIRED_BETA_SCENARIOS:
+    for scenario in REQUIRED_ROUTE_SCENARIOS:
         if scenario not in smoke_workflow:
-            return fail(f"smoke workflow missing beta scenario {scenario}")
+            return fail(f"smoke workflow missing route scenario {scenario}")
 
-    for beta_doc in ["BETA_0_5_PLAN.md", "BETA_PLAYTEST_CHECKLIST.md", "BETA_0_5_RELEASE_NOTES.md"]:
-        if not (ROOT / beta_doc).exists():
-            return fail(f"missing beta document {beta_doc}")
+    for active_doc in [
+        "docs/development_plan.md",
+        "docs/object_grammar.md",
+        "docs/release_checklist.md",
+    ]:
+        if not (ROOT / active_doc).exists():
+            return fail(f"missing active release document {active_doc}")
 
-    print("[OK][BETA_CONTENT_CONTRACT] beta content contract guard passed")
+    print("[OK][RELEASE_CONTENT_CONTRACT] release content baseline passed")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(test_beta_content_contract())
+    raise SystemExit(test_release_content_contract())

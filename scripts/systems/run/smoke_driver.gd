@@ -4,10 +4,10 @@ extends RefCounted
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
 const SCENARIO_BET_PRESENT: String = "BET_PRESENT"
 const SCENARIO_FULL_RUN: String = "FULL_RUN"
-const SCENARIO_BETA_CASHOUT: String = "BETA_CASHOUT"
-const SCENARIO_BETA_DOUBLE: String = "BETA_DOUBLE"
-const SCENARIO_BETA_CONDANNA: String = "BETA_CONDANNA"
-const SCENARIO_BETA_REGISTER_FINAL: String = "BETA_REGISTER_FINAL"
+const SCENARIO_ROUTE_CASHOUT: String = "ROUTE_CASHOUT"
+const SCENARIO_ROUTE_DOUBLE: String = "ROUTE_DOUBLE"
+const SCENARIO_ROUTE_CONDANNA: String = "ROUTE_CONDANNA"
+const SCENARIO_ROUTE_REGISTER_FINAL: String = "ROUTE_REGISTER_FINAL"
 var _phase_name_main_menu: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.MAIN_MENU)
 var _phase_name_run_init: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.RUN_INIT)
 var _phase_name_bet_present: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.BET_PRESENT)
@@ -39,10 +39,10 @@ func should_start_driver_scenario() -> bool:
 	return scenario in [
 		SCENARIO_BET_PRESENT,
 		SCENARIO_FULL_RUN,
-		SCENARIO_BETA_CASHOUT,
-		SCENARIO_BETA_DOUBLE,
-		SCENARIO_BETA_CONDANNA,
-		SCENARIO_BETA_REGISTER_FINAL,
+		SCENARIO_ROUTE_CASHOUT,
+		SCENARIO_ROUTE_DOUBLE,
+		SCENARIO_ROUTE_CONDANNA,
+		SCENARIO_ROUTE_REGISTER_FINAL,
 	]
 
 

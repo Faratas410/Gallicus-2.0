@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static guard for minimum playable-slice contract surfaces."""
+"""Static guard for the canonical ritual-loop contract surfaces."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 def fail(message: str) -> int:
-    print(f"[FAIL][PLAYABLE_SLICE_CONTRACT] {message}")
+    print(f"[FAIL][RITUAL_LOOP_CONTRACT] {message}")
     return 1
 
 
@@ -17,7 +17,7 @@ def main() -> int:
     run_manager_path = Path("scripts/systems/run_manager.gd")
     smoke_runner_path = Path("scripts/ci/run_headless_smoke.py")
     smoke_workflow_path = Path(".github/workflows/godot_smoke_runtime.yml")
-    contract_doc_path = Path("docs/contracts/playable_slice_contract_v1.md")
+    contract_doc_path = Path("docs/contracts/ritual_loop_contract_v1.md")
 
     for required_path in (
         game_events_path,
@@ -46,7 +46,7 @@ def main() -> int:
     )
     for token in required_gameevents_signals:
         if token not in game_events:
-            return fail(f"missing playable-slice GameEvents signal: {token}")
+            return fail(f"missing ritual-loop GameEvents signal: {token}")
 
     required_run_manager_handlers = (
         "func _on_request_new_run() -> void:",
@@ -60,7 +60,7 @@ def main() -> int:
     )
     for token in required_run_manager_handlers:
         if token not in run_manager:
-            return fail(f"missing playable-slice RunManager handler/phase entry: {token}")
+            return fail(f"missing ritual-loop RunManager handler/phase entry: {token}")
 
     push_luck_entry = re.search(
         r"(?ms)^func _enter_push_your_luck\(\) -> void:\n(.*?)(?=^func |\Z)",
@@ -97,7 +97,7 @@ def main() -> int:
     )
     for token in required_smoke_runner_tokens:
         if token not in smoke_runner:
-            return fail(f"missing smoke runner playable-slice token: {token}")
+            return fail(f"missing smoke runner ritual-loop token: {token}")
 
     required_workflow_tokens = (
         "BET_PRESENT",
@@ -106,19 +106,19 @@ def main() -> int:
     )
     for token in required_workflow_tokens:
         if token not in smoke_workflow:
-            return fail(f"missing smoke workflow playable-slice coverage token: {token}")
+            return fail(f"missing smoke workflow ritual-loop coverage token: {token}")
 
     required_contract_doc_tokens = (
-        "# Playable Slice Contract v1",
+        "# Ritual Loop Contract v1",
         "BET_PRESENT",
         "FULL_RUN",
         "RunManager remains sole authority",
     )
     for token in required_contract_doc_tokens:
         if token not in contract_doc:
-            return fail(f"missing playable-slice contract doc token: {token}")
+            return fail(f"missing ritual-loop contract doc token: {token}")
 
-    print("[OK][PLAYABLE_SLICE_CONTRACT] playable slice contract guard passed")
+    print("[OK][RITUAL_LOOP_CONTRACT] ritual loop contract guard passed")
     return 0
 
 

@@ -1,124 +1,136 @@
 # Gallicus Object-First Grammar
 
-## Scopo
-
-Questa grammatica trasforma le azioni player-facing di Gallicus da comandi astratti a gesti rituali leggibili.
-
-Domanda guida:
+## Domanda guida
 
 ```text
-Se fossi davvero il soggetto nell'arena, quale oggetto userei per fare questa cosa?
+Se fossi davvero il soggetto nell'arena, quale oggetto userei per farlo?
 ```
 
-La risposta deve arrivare prima di layout, CTA, icone o microcopy. Il bottone puo' restare la forma tecnica dell'input, ma il player deve percepire un oggetto, un gesto e una conseguenza registrata.
+La risposta arriva prima di layout, CTA, icone o microcopy.
 
-## Confini
+## Ambito
 
-- Non cambia il core loop.
-- Non introduce nuove meccaniche.
-- Non cambia ownership: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
-- Non rende Felix avatar o guida.
-- Non trasforma i Gufi in interfaccia primaria.
-- Non sostituisce i canon; se una feature cambia regole, flow, UI contract o lore canonica, aggiorna il canon owner pertinente.
+La grammatica e' obbligatoria per:
 
-## Formula obbligatoria
+- scelte che cambiano la run;
+- rituali e conferme narrative;
+- consultazione di prove e conseguenze;
+- route che aprono, proseguono o chiudono un percorso.
 
-Ogni nuova azione visibile deve dichiarare:
+Non e' obbligatoria per utility:
+
+- impostazioni;
+- volume, lingua e risoluzione;
+- accessibilita';
+- back, quit e finestre di sistema.
+
+Queste superfici usano controlli convenzionali e focus prevedibile.
+
+## Formula
 
 ```text
 intento -> oggetto -> gesto -> feedback -> registrazione
 ```
 
-Definizioni:
+- `intento`: cosa vuole fare il soggetto.
+- `oggetto`: superficie fisica o amministrativa credibile.
+- `gesto`: atto breve e leggibile.
+- `feedback`: risposta visiva, audio e testuale.
+- `registrazione`: traccia che il Registro puo' conservare.
 
-- `intento`: cosa vuole fare il soggetto, non cosa clicca il player.
-- `oggetto`: superficie fisica o amministrativa credibile nel mondo.
-- `gesto`: atto breve, leggibile e ripetibile.
-- `feedback`: risposta visiva/audio/UI che conferma l'atto.
-- `registrazione`: cosa il Registro puo' annotare senza diventare narratore.
-
-Se un comando non puo' compilare questa formula, non e' pronto per entrare come feature player-facing.
+Se manca uno dei cinque elementi, l'azione non e' pronta.
 
 ## Principi
 
-- Oggetto prima del pulsante: non progettare "un bottone per X", progettare "l'oggetto con cui il soggetto compie X".
-- Il gesto deve essere piccolo: firma, colpo, incisione, apertura, chiusura, presa, consegna.
-- Il Registro annota atti, non intenzioni. La UI deve far vedere l'atto accettato.
-- Gli oggetti non sono decorazione: devono portare stato, rischio, scelta o memoria.
-- Le label restano ammesse per leggibilita', ma non devono essere l'unica cosa che rende comprensibile l'azione.
-- Nessun oggetto deve promettere sistemi non presenti.
-- A 1280x720 la leggibilita' vince sul feticismo diegetico.
+- L'oggetto deve portare stato, rischio, scelta o memoria.
+- Il gesto resta piccolo: aprire, firmare, incidere, colpire, prendere, esporre.
+- La label chiarisce l'atto, ma non deve essere l'unico indizio.
+- Il Registro annota atti; non legge intenzioni e non fa tutorial.
+- L'input puo' restare click, tastiera o focus activation.
+- La diegesi non giustifica controlli opachi.
+- A 1280x720 leggibilita' e accessibilita' prevalgono sulla decorazione.
 
-## Loop object map
+## Materiali come significato
 
-| Segmento | Intento | Oggetto | Gesto | Feedback | Registrazione | Stato v0.5 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Menu / nuova run | Entrare nel percorso | Soglia o porta dell'arena | Oltrepassare / aprire | Luce, pietra, audio di ingresso | Accesso aperto | Parziale: ancora molto CTA |
-| Registro chiuso | Consultare le offerte | Tavola del Registro | Aprire la tavola | Pagina/pietra che si scopre | Offerte esposte | Buono |
-| Scelta bet | Indicare una promessa | Tavola contrattuale | Porre un segno sull'offerta | Evidenza su pagina scelta | Promessa selezionata | Buono, da tenere leggibile |
-| Firma bet | Vincolarsi | Stilo, cera, sangue o sigillo | Incidere / premere | Colpo secco, sigillo, pulse | Patto firmato | Buono |
-| Patto sigillato | Riconoscere il vincolo | Tavoletta sigillata | Attendere / osservare | Cera chiusa, testo breve | Patto convalidato | Parziale |
-| Scelta intermedia | Esporsi alla gradinata | Mano, gettone, sabbia, tessera | Mostrare / lasciare cadere | Reazione della folla, pressione | Gesto accettato | Parziale |
-| Rito di giudizio | Forzare il responso | Sigillo su pietra | Colpire tre volte | Impatto, crepa, riverbero | Giudizio pesato | Buono ma migliorabile |
-| Incassa | Chiudere cio' che e' dovuto | Borsa, quietanza, corda contabile | Prendere / marcare ricevuta | Suono secco, chiusura registro | Percorso chiuso | Debole: oggi e' soprattutto bottone |
-| Accetta condanna | Subire l'iscrizione | Marchio, catena, timbro avverso | Esporre il segno / accettare il timbro | Bruciatura, colpo grave | Condanna iscritta | Debole: priorita' futura |
-| Rilancia | Rifiutare la chiusura | Seconda incisione o nuovo sigillo | Premere ancora | Pressione, eco, cera che si riapre | Continuita' firmata | Debole: priorita' futura |
-| END_RUN | Archiviare il percorso | Fascicolo | Chiudere o aggiornare | Timbro finale, fascicolo riposto | Fascicolo chiuso/aggiornato | Parziale |
-| Restart / next / menu | Scegliere uscita operativa | Nuova tavola, prossima pagina, porta | Prendere / voltare / uscire | Stato route chiaro | Nuovo percorso o ritorno | Parziale |
+| Materiale | Significato |
+| --- | --- |
+| Pietra | autorita', permanenza, procedura |
+| Cera | consenso, firma, stato ancora modificabile |
+| Bronzo | valore, debito, ufficialita' |
+| Carta/fascicolo | memoria, prova, archiviazione |
+| Ferro/catena | vincolo e condanna |
+| Marchio | conseguenza iscritta sul soggetto |
+| Sabbia | esposizione pubblica e transitorieta' |
+| Vuoto | cessazione della classificazione |
 
-## Micro-audit v0.5
+## Mappa della run
 
-Gia' object-first:
+| Momento | Intento | Oggetto | Gesto | Feedback | Registrazione |
+| --- | --- | --- | --- | --- | --- |
+| Entrata | accettare l'esposizione | soglia dell'arena | oltrepassare | luce, porta, ambiente | accesso aperto |
+| Registro | consultare offerte | tavola del Registro | aprire | pietra che si scopre | offerte esposte |
+| Bet | indicare una promessa | tavola contrattuale | porre un segno | evidenza e suono secco | promessa selezionata |
+| Firma | vincolarsi | stilo, cera, sigillo | incidere/premere | cera, colpo, pulse | patto firmato |
+| Patto | riconoscere il vincolo | tavoletta sigillata | osservare/accettare | sigillo chiuso | patto convalidato |
+| Gesto | esporsi alla folla | tessera, sabbia o mano | mostrare/lasciare | reazione e pressione | gesto accettato |
+| Rito | forzare il responso | sigillo su pietra | colpire | impatto, crepa, riverbero | giudizio pesato |
+| Incasso | chiudere il dovuto | quietanza o borsa | prendere/marcare | chiusura netta | percorso chiuso |
+| Condanna | accettare il costo | marchio o timbro avverso | esporsi/ricevere | bruciatura e colpo grave | condanna iscritta |
+| Rilancio | rifiutare la chiusura | seconda incisione | incidere di nuovo | cera riaperta e pressione | continuita' firmata |
+| Finale | archiviare il percorso | fascicolo | chiudere/aggiornare | timbro finale | esito registrato |
+| Proseguire | aprire altro rischio | nuova tavola | voltare/prendere | nuovo spazio leggibile | nuovo percorso |
+| Assenza | cessare la classificazione | nessun oggetto | nessun gesto | vuoto e battito | nessuna voce |
 
-- Registro, firma bet e sigillo hanno una metafora fisica forte.
-- Il rito di giudizio ha un gesto semplice e coerente: colpire il sigillo.
-- Il fascicolo finale e' coerente con la grammatica amministrativa.
+## Stati di interazione
 
-Ancora troppo astratto:
+Ogni oggetto interattivo deve mostrare:
 
-- Menu e route finali comunicano funzione piu' che oggetto.
-- Push-your-luck e' leggibile, ma `INCASSA`, `ACCETTA CONDANNA` e `RADDOPPIA` sono ancora percepiti come pulsanti di scelta.
-- Scelta intermedia puo' diventare piu' forte se il gesto davanti alla gradinata viene associato a un oggetto o una postura chiara.
+- disponibile;
+- focus/hover;
+- attivato;
+- bloccato con causa;
+- consumato o registrato, quando pertinente.
 
-Prossima patch UI consigliata dopo QA lock:
+La geometria non deve cambiare tra stati. Motion e luce confermano il gesto,
+ma non spostano il target.
 
-- Push-your-luck object pass.
-- Tenere gli stessi tre intenti e gli stessi segnali.
-- Presentare le tre scelte come tre oggetti comparabili: quietanza, marchio, seconda incisione.
-- Aggiungere feedback minimo su selezione/attivazione senza cambiare flow.
-
-## Checklist per nuove feature
-
-Prima di implementare una feature player-facing, compilare:
+## Scheda feature
 
 ```text
 Intento del soggetto:
-Oggetto usato:
-Gesto compiuto:
+Oggetto:
+Materiale:
+Gesto:
+Stato prima:
+Stato dopo:
 Feedback visivo:
 Feedback audio:
-Feedback UI/testuale:
-Frase registrabile dal Registro:
-Segnale GameEvents esistente o nuovo:
+Feedback testuale:
+Registrazione prodotta:
 Owner dati/flow:
-Schermata QA richiesta:
+Segnale GameEvents:
+Fallback accessibile:
+Schermata o scenario QA:
 ```
-
-Regole:
-
-- Preferire segnali esistenti quando la feature e' presentazionale.
-- Se serve un nuovo segnale, aggiornare contract statici e test.
-- Se cambia una regola di gioco, aggiornare `docs/canon/MECHANICS_UNIFIED.md`.
-- Se cambia il flow, aggiornare `docs/canon/RUN_ARCHITECTURE_CANON.md`.
-- Se cambia il contratto UI, aggiornare `docs/canon/UI_CANON.md`.
-- Se cambia solo presentazione/copy, aggiornare `docs/layout_rules.md` o `docs/content_bible.md`.
 
 ## Stop conditions
 
 Fermare la progettazione se:
 
-- L'oggetto e' solo decorazione e non aiuta a capire stato o conseguenza.
-- Il gesto sembra una nuova meccanica ma non ha ownership documentata.
-- La UI diventa meno leggibile per essere piu' diegetica.
-- Il Registro viene umanizzato o trasformato in tutorial.
-- Felix diventa una guida, un obiettivo o una presenza da imitare.
+- l'oggetto e' decorazione senza funzione;
+- il gesto nasconde la conseguenza;
+- la soluzione richiede una nuova meccanica non prevista;
+- la UI diventa meno leggibile per sembrare diegetica;
+- il Registro diventa personaggio, tutorial o giudice morale;
+- Felix viene trasformato in avatar o guida;
+- un effetto non ha equivalente con reduced motion.
+
+## Priorita' corrente
+
+Il primo blocco runtime e' push-your-luck:
+
+- incasso come quietanza;
+- condanna come marchio;
+- rilancio come seconda incisione.
+
+Gli intenti, i segnali e il flow restano invariati.

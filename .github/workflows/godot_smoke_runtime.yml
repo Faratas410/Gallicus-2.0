@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scenario: [BET_PRESENT, FULL_RUN, BETA_CASHOUT, BETA_DOUBLE, BETA_CONDANNA, BETA_REGISTER_FINAL]
+        scenario: [BET_PRESENT, FULL_RUN, ROUTE_CASHOUT, ROUTE_DOUBLE, ROUTE_CONDANNA, ROUTE_REGISTER_FINAL]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,9 +40,9 @@ jobs:
         run: |
           python3 tools/ci/verify_res_paths.py
 
-      - name: Validate playable-slice contract (static)
+      - name: Validate ritual-loop contract (static)
         run: |
-          python3 scripts/ci/test_playable_slice_contract.py
+          python3 scripts/ci/test_ritual_loop_contract.py
 
       - name: Validate era visual template anchors (static)
         run: |
@@ -56,9 +56,9 @@ jobs:
         run: |
           python3 scripts/ci/test_ui_motion_contract.py
 
-      - name: Validate beta content contract (static)
+      - name: Validate release content baseline (static)
         run: |
-          python3 scripts/ci/test_beta_content_contract.py
+          python3 scripts/ci/test_release_content_contract.py
 
       - name: Validate no mojibake markers (static)
         run: |

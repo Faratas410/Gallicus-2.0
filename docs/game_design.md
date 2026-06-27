@@ -1,56 +1,98 @@
 # Gallicus Game Design
 
-## Loop giocabile
+## Fantasia centrale
 
-Il gioco attivo e' il ritual loop:
+Il giocatore non interpreta Felix e non combatte nell'arena. E' il soggetto
+esposto a un apparato che trasforma ogni promessa in prova amministrativa.
+Giocare significa scegliere quale atto rendere registrabile e quale costo
+accettare per rimandare o forzare una definizione.
 
-1. Il giocatore entra dall'arena/menu.
-2. Firma una scommessa nel Registro.
-3. Attraversa un patto rituale.
-4. Sceglie un gesto intermedio davanti alla gradinata.
-5. Risolve il rito di giudizio.
-6. Decide se incassare, accettare condanna o rilanciare.
-7. Raggiunge END_RUN o prosegue una nuova scommessa.
+## Loop di run
 
-## Sistemi attivi
+1. Oltrepassare la soglia dell'arena.
+2. Aprire il Registro e leggere due offerte.
+3. Indicare e firmare una promessa.
+4. Riconoscere il patto sigillato.
+5. Compiere un gesto davanti alla gradinata.
+6. Colpire il sigillo e ottenere un responso.
+7. Prendere una quietanza, accettare un marchio o incidere un rilancio.
+8. Chiudere, aggiornare o proseguire il fascicolo.
 
-- Bet catalog: proposte e identita' di scommessa.
-- Condanne/scars: conseguenze e tracce.
-- Pressione: rischio leggibile e presentazione UI.
-- Ending rules: fascicolo finale e classificazione.
-- Registro: grammatica narrativa e meta-struttura.
+## Loop di campagna
 
-## Regole di design
+```text
+run -> evidenza -> firma comportamentale -> convergenza
+-> Silenzio -> mutazione del Registro -> nuova run
+```
 
-- Ogni scelta deve dichiarare conseguenza percepibile.
-- Ogni stato deve indicare prossima azione.
-- Il rischio deve essere leggibile prima della scelta.
-- Il finale deve chiarire se il percorso e' chiuso, registrato o proseguibile.
-- Ogni nuova azione player-facing deve partire dalla grammatica object-first in `docs/object_grammar.md`.
+La campagna termina quando il Silenzio dell'ultima Era produce l'Assenza del
+Registro. Questa fine non e' vittoria, sconfitta o liberazione dichiarata:
+cessa la classificazione.
 
-## Grammatica object-first
+## Sistemi
 
-Prima di progettare pulsanti, CTA o layout, definire l'atto fisico del soggetto nell'arena:
+- **Bet:** promessa esplicita con rischio e conseguenza.
+- **Patto:** vincolo firmato che rende l'atto irreversibile.
+- **Pressione:** presentazione leggibile dell'escalation corrente.
+- **Scars:** memoria persistente di un costo accettato.
+- **Condanne:** registrazioni avverse, non errori generici.
+- **Path:** famiglie interpretative derivate dalle scelte.
+- **Firma comportamentale:** profilo interno e multidimensionale.
+- **Registro:** apparato impersonale che osserva e conclude.
+- **Ere e Silenzi:** struttura finita della campagna.
+- **Archivio:** superficie di consultazione della conoscenza ottenuta.
+
+## Regole di scelta
+
+- Il costo deve essere leggibile prima dell'atto.
+- Il player puo' essere incerto sull'interpretazione, non sul comando.
+- Una scelta bloccata mostra la causa senza esporre formule interne.
+- Nessuna scelta e' falsa per ottenere sorpresa.
+- Il rischio non viene alterato di nascosto dalle Ere.
+- Ripetere una condotta produce memoria, non power scaling.
+
+## Object-First
+
+Le azioni gameplay seguono `docs/object_grammar.md`:
 
 ```text
 intento -> oggetto -> gesto -> feedback -> registrazione
 ```
 
-Il player non deve percepire "premi un comando", ma "apri una tavola", "incidi un patto", "colpisci il sigillo", "prendi una quietanza", "accetti un marchio". I bottoni possono restare l'implementazione tecnica dell'input, ma la schermata deve far capire quale oggetto viene manipolato e cosa il Registro puo' annotare.
+Il bottone puo' essere l'input tecnico, ma non deve essere il concept. Utility
+come volume, lingua, risoluzione, back e quit usano convenzioni accessibili.
 
-La mappa operativa vive in `docs/object_grammar.md`.
+## Progressione
 
-## Fuori scope
+La progressione persistente riguarda conoscenza e classificazione:
 
-- Combattimento action.
-- Nemici real-time.
-- Skill tree action.
-- Nuove risorse economiche non gia' canoniche.
-- Nuove ere o sistemi narrativi senza canon amendment.
+- nuove offerte o letture diventano possibili;
+- scars e condanne cambiano l'evidenza disponibile;
+- il Registro modifica gradualmente tono e struttura;
+- l'Archivio conserva cio' che e' stato definito;
+- il giocatore non accumula statistiche di potere.
+
+## Durata e ritmo
+
+- Prima campagna target: 2-4 ore.
+- Una run deve essere abbastanza breve da invitare una nuova promessa.
+- Ogni run deve produrre almeno una conseguenza o informazione memorabile.
+- Le transizioni tra Ere non devono sembrare capitoli dichiarati.
+- La ripetizione e' ammessa solo quando il contesto ne cambia il significato.
+
+## Non obiettivi
+
+- combat, nemici o controlli avatar real-time;
+- build, equipaggiamento o skill tree;
+- economia espandibile;
+- missioni giornaliere o loop infinito;
+- personificazione morale del Registro;
+- Felix come guida, boss o modello da imitare.
 
 ## Verifica
 
-- I cambi di loop richiedono aggiornamento a `docs/canon/MECHANICS_UNIFIED.md`.
-- I cambi di flow richiedono aggiornamento a `docs/canon/RUN_ARCHITECTURE_CANON.md`.
-- I cambi di UI player-facing richiedono screenshot QA.
-- Le nuove feature player-facing richiedono checklist object-first compilata.
+- I cambi di regola aggiornano `docs/canon/MECHANICS_UNIFIED.md`.
+- I cambi di flow aggiornano `docs/canon/RUN_ARCHITECTURE_CANON.md`.
+- I cambi player-facing compilano la scheda object-first.
+- I cambi UI visibili richiedono QA visuale.
+- I cambi alla campagna richiedono save, determinismo e playtest completo.

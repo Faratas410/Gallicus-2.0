@@ -18,6 +18,9 @@ SCENARIO_ROUTE_CASHOUT = "ROUTE_CASHOUT"
 SCENARIO_ROUTE_DOUBLE = "ROUTE_DOUBLE"
 SCENARIO_ROUTE_CONDANNA = "ROUTE_CONDANNA"
 SCENARIO_ROUTE_REGISTER_FINAL = "ROUTE_REGISTER_FINAL"
+# Stable fixture from a previously green six-scenario Linux matrix. Runtime
+# smoke must never derive gameplay coverage from the wall clock.
+CANONICAL_SMOKE_SEED = 1782373819
 # Godot's --quit-after counts engine iterations, not wall-clock seconds.
 # Headless Linux can iterate much faster than 60 FPS, so keep this as a
 # generous safety cap and let subprocess hard-timeout enforce wall-clock limits.
@@ -164,6 +167,21 @@ def _detect_signoff_surface() -> str:
     if is_linux and is_ci:
         return SIGNOFF_SURFACE_CANONICAL_CI_LINUX
     return SIGNOFF_SURFACE_LOCAL_DIAGNOSTIC
+
+
+def _resolve_smoke_seed(signoff_surface: str, raw_override: str = "") -> int:
+    if signoff_surface == SIGNOFF_SURFACE_CANONICAL_CI_LINUX:
+        return CANONICAL_SMOKE_SEED
+    override = raw_override.strip()
+    if override == "":
+        return CANONICAL_SMOKE_SEED
+    try:
+        seed = int(override)
+    except ValueError as exc:
+        raise ValueError("GALLICUS_SMOKE_SEED must be an integer") from exc
+    if seed <= 0:
+        raise ValueError("GALLICUS_SMOKE_SEED must be positive")
+    return seed
 
 
 def _extract_milestones(log_text: str) -> list[str]:
@@ -375,6 +393,11 @@ def run_smoke_runtime(
     env["GALLICUS_SMOKE"] = "1"
     env["GALLICUS_SMOKE_SCENARIO"] = scenario
     env["GALLICUS_SMOKE_TIMEOUT_SEC"] = str(timeout_sec)
+    smoke_seed = _resolve_smoke_seed(
+        signoff_surface,
+        env.get("GALLICUS_SMOKE_SEED", ""),
+    )
+    env["GALLICUS_SMOKE_SEED"] = str(smoke_seed)
 
     command = _build_runtime_command(
         godot_bin=godot_bin,
@@ -389,6 +412,7 @@ def run_smoke_runtime(
         f"SMOKE:RUNNER_START scenario={scenario}",
         f"SMOKE:SIGNOFF_SURFACE={signoff_surface}",
         f"SMOKE:HOST_OS={platform.system()}",
+        f"SMOKE:RUNNER_SEED={env['GALLICUS_SMOKE_SEED']}",
         f"SMOKE:RUNTIME_CMD={command_text}",
     ]
 

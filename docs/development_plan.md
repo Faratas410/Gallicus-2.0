@@ -8,7 +8,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
-- Stage attivo: **Foundation Reset - CI verification**.
+- Stage attivo: **Foundation Reset - deterministic CI verification**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
 - Prossimo stage: **Object-First Interaction Pass**.
@@ -16,6 +16,50 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
   bootstrap; la chiusura richiede la matrice CI Linux sul commit risultante.
+
+## Protocollo di consegna compatto
+
+Il lavoro procede in pacchetti verticali da uno a tre giorni. I pacchetti non
+sono versioni di prodotto e non sostituiscono i gate degli stage.
+
+Regole:
+
+- un solo pacchetto runtime puo' essere attivo;
+- una CI rossa blocca il pacchetto successivo;
+- ogni pacchetto dichiara stage, comportamento, owner, contratti, test ed
+  evidenze;
+- UI, copy IT/EN/ES, feedback, focus, reduced motion e documentazione entrano
+  nello stesso pacchetto quando pertinenti;
+- asset e contenuti possono essere preparati in parallelo solo senza cambiare
+  flow, dati o superfici runtime non ancora aperte;
+- un helper condiviso nasce solo con almeno due consumer immediati;
+- nessun gate e' chiuso senza prova Linux, visuale, audio o manuale richiesta.
+
+Ordine dei pacchetti:
+
+| ID | Stage | Deliverable |
+| --- | --- | --- |
+| `FR-01` | Foundation Reset | smoke deterministici e matrice Linux verde |
+| `OF-01..03` | Object-First | quietanza, marchio, seconda incisione |
+| `OF-04..11` | Object-First | soglia, Registro, promessa, firma, patto, gesto, sigillo, fascicolo |
+| `RF-01..02` | Readability | leggibilita' della run e affidabilita' multi-run |
+| `RM-01..04` | Registry Memory | contratto, evidenza, convergenza, persistenza |
+| `ES-01..04` | Eras And Silences | Silenzio, ramp, mutazioni, Assenza |
+| `CC-01..06` | Content | validatore matrice e completamento per Era |
+| `AV-01..05` | Audiovisual | oggetti, VFX, SFX, musica, sequenze |
+| `RL-01..03` | Release Lock | accessibilita', export, campagne candidate |
+
+### Pacchetto attivo: FR-01
+
+- Comportamento: rendere ripetibili i sei smoke senza derivare il seed
+  dall'orologio.
+- Owner: tooling CI; `RunManager` conserva flow e outcome authority.
+- Contratti: ritual loop e validatore smoke.
+- Implementazione: seed canonico iniettato dal runner, consumato solo in smoke
+  mode e registrato nel log.
+- Prove locali: validator, ritual-loop contract, runtime invariants, phase
+  ownership, import Godot e mojibake verdi.
+- Evidenza mancante: sei scenari verdi nella CI Linux sul commit risultante.
 
 ## 1. Foundation Reset
 
@@ -208,7 +252,6 @@ Gate:
 
 ## Prossimo step operativo
 
-Eseguire la matrice CI Linux sul commit del reset. Se i sei scenari sono verdi,
-marcare Foundation Reset completo e aprire una patch separata per il primo
-blocco Object-First: le tre scelte push-your-luck come quietanza, marchio e
-seconda incisione.
+Eseguire la matrice CI Linux con il seed smoke canonico. Se i sei scenari sono
+verdi, marcare Foundation Reset completo e aprire `OF-01`: incasso come
+quietanza, mantenendo invariati intento `request_pyl_cashout`, flow e outcome.

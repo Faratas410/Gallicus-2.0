@@ -21,6 +21,47 @@ Uso: route cashout.
 - Il gesto e' prendere o marcare la quietanza.
 - Deve comunicare chiusura prudente, non premio ricco.
 
+### Scheda OF-01
+
+```text
+Intento del soggetto: chiudere il percorso e prendere quanto registrato.
+Oggetto: quietanza contabile con legaccio e sigillo di chiusura.
+Materiale: carta sporca, bronzo pallido, corda scura.
+Gesto: prendere la quietanza e tirare il legaccio.
+Stato prima: importo e conseguenza leggibili; quietanza disponibile o bloccata.
+Stato dopo: quietanza ritirata, legaccio chiuso, fascicolo pronto.
+Feedback visivo: breve presa verticale e chiusura del legaccio.
+Feedback audio: carta asciutta seguita da un colpo breve di bronzo.
+Feedback testuale: valore incassato e corruzione rimossa.
+Registrazione prodotta: run end reason CASH_OUT.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_pyl_cashout, invariato.
+Fallback accessibile: focus netto; stato registered immediato senza movimento.
+Schermata o scenario QA: Phase_PUSH_YOUR_LUCK e ROUTE_CASHOUT.
+```
+
+Asset previsto:
+
+- sorgente trasparente senza testo, rapporto `5:2`;
+- safe area centrale libera per copy renderizzato da Godot;
+- stati con geometria identica: normal, focus, taken, disabled;
+- destinazione `assets/ui/official/objects/receipt/`;
+- consumer:
+  `Btn_PUSH_YOUR_LUCK_CASHOUT` dentro `res://scenes/UI.tscn`;
+- nessuna modifica a payout, eleggibilita', payload o transizione;
+- il movimento non sposta il target e dura al massimo 180 ms;
+- reduced motion sostituisce la presa con lo stato taken e un cambio di
+  contrasto breve.
+
+Accettazione OF-01:
+
+- oggetto riconoscibile senza leggere la label;
+- valore e conseguenza restano leggibili in IT/EN/ES;
+- disabled mostra la causa gia' fornita dal payload;
+- mouse, tastiera e focus emettono lo stesso intento;
+- screenshot viewport-only a 1280x720 e 1920x1080;
+- `ROUTE_CASHOUT` e ritual-loop contract verdi.
+
 ## Marchio
 
 Uso: route condanna.

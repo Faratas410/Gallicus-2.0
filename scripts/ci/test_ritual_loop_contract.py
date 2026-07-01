@@ -83,6 +83,9 @@ def main() -> int:
             return fail(f"missing required smoke milestone marker in RunManager: {token}")
 
     required_smoke_runner_tokens = (
+        "CANONICAL_SMOKE_SEED = 1782373819",
+        "def _resolve_smoke_seed(",
+        'env["GALLICUS_SMOKE_SEED"] = str(smoke_seed)',
         'SCENARIO_BET_PRESENT = "BET_PRESENT"',
         'SCENARIO_FULL_RUN = "FULL_RUN"',
         '"SMOKE:MILESTONE=BET_PRESENT"',
@@ -98,6 +101,14 @@ def main() -> int:
     for token in required_smoke_runner_tokens:
         if token not in smoke_runner:
             return fail(f"missing smoke runner ritual-loop token: {token}")
+
+    required_deterministic_seed_tokens = (
+        'OS.get_environment("GALLICUS_SMOKE_SEED")',
+        'print("SMOKE:RUN_SEED=%d" % _run_state.run_seed)',
+    )
+    for token in required_deterministic_seed_tokens:
+        if token not in run_manager:
+            return fail(f"missing deterministic smoke seed contract in RunManager: {token}")
 
     required_workflow_tokens = (
         "BET_PRESENT",

@@ -110,6 +110,12 @@ python scripts/ci/run_headless_smoke.py --scenario ROUTE_CASHOUT --godot-bin ".\
 
 Workflow canonico: `.github/workflows/godot_smoke_runtime.yml`.
 
+Il runner inietta un seed smoke canonico e lo registra come
+`SMOKE:RUNNER_SEED` e `SMOKE:RUN_SEED`. La matrice di signoff non usa
+l'orologio come seed. `GALLICUS_SMOKE_SEED` puo' essere sovrascritto solo per
+riprodurre un caso diagnostico; il risultato con seed diverso non sostituisce
+la matrice canonica.
+
 ## QA visuale
 
 Richiesta per cambi UI, copy visibile, asset o motion.

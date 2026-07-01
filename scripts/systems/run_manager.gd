@@ -1468,6 +1468,8 @@ func _start_level3_run() -> void:
 	_run_state.reset()
 	_glory_multiplier = GLORY_MULT_BASE
 	_run_state.run_seed = _get_run_seed_value()
+	if _is_smoke_mode():
+		print("SMOKE:RUN_SEED=%d" % _run_state.run_seed)
 	_initialize_scar_rng_state()
 	_run_state.scar_double_count = 0
 	_run_state.scar_pact_count = 0
@@ -1930,6 +1932,10 @@ func _is_level3_bet_allowed(bet: Dictionary) -> bool:
 	return true
 
 func _get_run_seed_value() -> int:
+	if _is_smoke_mode():
+		var smoke_seed_text: String = OS.get_environment("GALLICUS_SMOKE_SEED").strip_edges()
+		if smoke_seed_text.is_valid_int():
+			return smoke_seed_text.to_int()
 	return int(Time.get_unix_time_from_system())
 
 func _compute_level3_seed(bet_id: StringName) -> int:

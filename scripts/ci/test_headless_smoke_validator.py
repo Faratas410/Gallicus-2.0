@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from run_headless_smoke import (
+    CANONICAL_SMOKE_SEED,
     SCENARIO_ROUTE_CASHOUT,
     SCENARIO_ROUTE_CONDANNA,
     SCENARIO_ROUTE_DOUBLE,
@@ -16,6 +17,9 @@ from run_headless_smoke import (
     SMOKE_CLASS_STALL_OR_WATCHDOG,
     _classify_runtime_failure,
     _build_runtime_command,
+    _resolve_smoke_seed,
+    SIGNOFF_SURFACE_CANONICAL_CI_LINUX,
+    SIGNOFF_SURFACE_LOCAL_DIAGNOSTIC,
     validate_log_text,
 )
 
@@ -33,6 +37,7 @@ def _build_bet_present_log() -> str:
             "SMOKE:STEP=REQUEST_NEW_RUN",
             "SMOKE:NEW_RUN_REQUESTED",
             "SMOKE:REQ=request_new_run",
+            f"SMOKE:RUN_SEED={CANONICAL_SMOKE_SEED}",
             "SMOKE:PHASE=RUN_INIT",
             "SMOKE:PHASE=BET_PRESENT",
             "SMOKE:MILESTONE=BET_PRESENT",
@@ -46,6 +51,7 @@ def _build_full_run_log() -> str:
         [
             "SMOKE:BOOT_OK",
             "SMOKE:STEP=SCENARIO_FULL_RUN_START",
+            f"SMOKE:RUN_SEED={CANONICAL_SMOKE_SEED}",
             "SMOKE:MILESTONE=BET_PRESENT",
             "SMOKE:MILESTONE=PACT_SEALED_OPENED",
             "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
@@ -66,6 +72,7 @@ def _build_route_log(scenario: str, pyl_request: str, register_final: bool = Fal
     lines = [
         "SMOKE:BOOT_OK",
         f"SMOKE:STEP=SCENARIO_{scenario}_START",
+        f"SMOKE:RUN_SEED={CANONICAL_SMOKE_SEED}",
         "SMOKE:MILESTONE=BET_PRESENT",
         "SMOKE:MILESTONE=PACT_SEALED_OPENED",
         "SMOKE:MILESTONE=PACT_SEALED_CLOSED",
@@ -84,6 +91,13 @@ def _build_route_log(scenario: str, pyl_request: str, register_final: bool = Fal
 
 
 def main() -> int:
+    if CANONICAL_SMOKE_SEED <= 0:
+        return fail(f"expected a positive canonical smoke seed, got: {CANONICAL_SMOKE_SEED}")
+    if _resolve_smoke_seed(SIGNOFF_SURFACE_CANONICAL_CI_LINUX, "999") != CANONICAL_SMOKE_SEED:
+        return fail("canonical Linux CI must ignore diagnostic seed overrides")
+    if _resolve_smoke_seed(SIGNOFF_SURFACE_LOCAL_DIAGNOSTIC, "999") != 999:
+        return fail("local diagnostic surface must accept an explicit positive seed")
+
     valid_bet_failures = validate_log_text(_build_bet_present_log(), SCENARIO_BET_PRESENT)
     if valid_bet_failures:
         return fail(f"expected BET_PRESENT sample log to pass, got: {valid_bet_failures}")

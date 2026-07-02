@@ -1,5 +1,40 @@
 # Gallicus Object-First Grammar
 
+## Design Doctrine
+
+Gallicus deve sembrare un ruolo abitato, non un software operato. La direzione
+di progetto parte sempre dal mondo e arriva all'interfaccia:
+
+```text
+fantasia -> ruolo -> intento -> strumento -> meccanica -> interfaccia
+```
+
+In Gallicus il ruolo del giocatore e' il soggetto esposto nell'arena. Gli
+strumenti che rendono possibili i suoi atti non devono appartenergli: possono
+essere proprieta', concessione o imposizione del Registro.
+
+Ogni azione gameplay ha un oggetto primario riconoscibile. Non e' una
+corrispondenza rigidamente uno-a-uno: lo stesso oggetto puo' sostenere gesti e
+stati coerenti, e una meccanica puo' coinvolgere superfici di prova o
+registrazione secondarie. Deve comunque essere inequivocabile quale oggetto
+riceve il gesto principale.
+
+La metafora software deve scomparire; l'affordance no. Focus, disponibilita',
+blocco e conseguenza devono restare leggibili anche quando la superficie e'
+interamente diegetica.
+
+Ordine di priorita':
+
+1. chiarezza del gameplay;
+2. leggibilita';
+3. fantasia;
+4. decorazione.
+
+Un oggetto in primo piano deve avere funzione gameplay o informativa. Gli
+elementi puramente ambientali possono costruire il mondo, ma non competono con
+gli oggetti interattivi. Utility, impostazioni e accessibilita' restano
+convenzionali quando questo rende il controllo piu' prevedibile.
+
 ## Domanda guida
 
 ```text
@@ -101,6 +136,7 @@ Intento del soggetto:
 Oggetto:
 Materiale:
 Gesto:
+Conseguenza leggibile prima del gesto:
 Stato prima:
 Stato dopo:
 Feedback visivo:

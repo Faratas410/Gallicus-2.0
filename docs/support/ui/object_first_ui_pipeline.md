@@ -6,11 +6,37 @@ Authority: subordinate to UI canon and active art-direction contract.
 ## Catena
 
 ```text
+fantasia -> ruolo -> intento -> strumento -> meccanica -> interfaccia
+```
+
+La completezza di ogni azione resta definita dalla formula canonica:
+
+```text
+intento -> oggetto -> gesto -> feedback -> registrazione
+```
+
+La produzione traduce poi la formula in risorse verificabili:
+
+```text
 intento -> oggetto -> gesto -> brief -> asset/resource
 -> binding reattivo -> feedback -> verifica
 ```
 
-Non iniziare da una scena o da un bottone.
+Non iniziare da una scena, da un bottone o da un widget HUD.
+
+## Gate prima dell'interfaccia
+
+Prima di produrre UI:
+
+1. definire la fantasia vissuta;
+2. definire il ruolo del soggetto;
+3. elencare gli strumenti fisici o amministrativi credibili;
+4. assegnare all'azione un oggetto primario;
+5. rendere la conseguenza leggibile prima del gesto.
+
+In Gallicus lo strumento puo' appartenere al Registro anziche' al soggetto.
+Se non esiste un oggetto primario credibile, fermare la UI e riesaminare la
+meccanica.
 
 ## Input
 
@@ -24,11 +50,13 @@ Non iniziare da una scena o da un bottone.
 ## Workflow
 
 1. **Scegliere un solo gesto**
-   - Definire intento, conseguenza e owner.
+   - Confermare fantasia, ruolo, intento, oggetto primario e owner.
+   - Definire la conseguenza leggibile prima del gesto.
    - Confermare che non richieda una nuova meccanica.
 
 2. **Compilare la scheda object-first**
    - Oggetto, materiale, stati, feedback, registrazione.
+   - Verificare che la metafora software sparisca senza nascondere l'affordance.
    - Definire fallback accessibile.
 
 3. **Classificare il lavoro**

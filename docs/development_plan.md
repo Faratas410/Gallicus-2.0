@@ -8,14 +8,16 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
-- Stage attivo: **Foundation Reset - deterministic CI verification**.
+- Stage completato: **Foundation Reset**.
+- Stage attivo dopo l'integrazione di questa chiusura:
+  **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Prossimo stage: **Object-First Interaction Pass**.
+- Pacchetto successivo: **OF-01 - quietanza**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
-  bootstrap; la chiusura richiede la matrice CI Linux sul commit risultante.
+  bootstrap; le matrici Linux canoniche sono verdi.
 
 ## Protocollo di consegna compatto
 
@@ -49,7 +51,7 @@ Ordine dei pacchetti:
 | `AV-01..05` | Audiovisual | oggetti, VFX, SFX, musica, sequenze |
 | `RL-01..03` | Release Lock | accessibilita', export, campagne candidate |
 
-### Pacchetto attivo: FR-01
+### Pacchetto chiuso: FR-01
 
 - Comportamento: rendere ripetibili i sei smoke senza derivare il seed
   dall'orologio.
@@ -59,9 +61,25 @@ Ordine dei pacchetti:
   mode e registrato nel log.
 - Prove locali: validator, ritual-loop contract, runtime invariants, phase
   ownership, import Godot e mojibake verdi.
-- Evidenza mancante: sei scenari verdi nella CI Linux sul commit risultante.
+- Evidenza Linux 1: commit `92b97a1`, sei scenari verdi nella
+  [matrice main](https://github.com/Faratas410/Gallicus-2.0/actions/runs/28535038016).
+- Evidenza Linux 2: commit `ea03757`, sei scenari verdi nella
+  [matrice PR](https://github.com/Faratas410/Gallicus-2.0/actions/runs/28617462882).
+- Gate chiuso: 2026-07-02, due matrici canoniche consecutive verdi.
+
+### Pacchetto successivo: OF-01
+
+- Comportamento: rappresentare l'incasso con la quietanza object-first.
+- Owner: `RunManager` per flow e outcome; UI reattiva per presentazione e
+  invio dell'intento `request_pyl_cashout`.
+- Contratti: ritual loop, object grammar e brief quietanza esistenti.
+- Vincoli: nessun nuovo manager, phase enum, payload o calcolo UI.
+- Apertura: creare la branch runtime dal `main` che contiene la chiusura
+  FR-01.
 
 ## 1. Foundation Reset
+
+Status: **COMPLETE**.
 
 Obiettivo: sostituire il framing di milestone intermedie con un sistema
 documentale e tecnico orientato alla release finale.
@@ -252,6 +270,8 @@ Gate:
 
 ## Prossimo step operativo
 
-Eseguire la matrice CI Linux con il seed smoke canonico. Se i sei scenari sono
-verdi, marcare Foundation Reset completo e aprire `OF-01`: incasso come
-quietanza, mantenendo invariati intento `request_pyl_cashout`, flow e outcome.
+Dal `main` contenente la chiusura FR-01, creare `codex/of-01-quietanza` e
+implementare l'incasso come quietanza. Mantenere invariati intento
+`request_pyl_cashout`, flow, payload e outcome; completare asset, copy
+IT/EN/ES, feedback, accessibilita', test e prove visuali nello stesso
+pacchetto.

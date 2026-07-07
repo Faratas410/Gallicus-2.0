@@ -56,6 +56,14 @@ jobs:
         run: |
           python3 scripts/ci/test_ui_motion_contract.py
 
+      - name: Validate localization contract (static)
+        run: |
+          python3 scripts/ci/test_i18n_contract.py
+
+      - name: Validate OF-01 receipt object contract (static)
+        run: |
+          python3 scripts/ci/test_receipt_object_contract.py
+
       - name: Validate release content baseline (static)
         run: |
           python3 scripts/ci/test_release_content_contract.py
@@ -126,3 +134,60 @@ jobs:
           path: |
             artifacts/${{ matrix.scenario }}
           if-no-files-found: ignore
+
+  visual_qa_receipt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb git-lfs
+
+      - name: Cache Godot 4.6.2 headless binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: tools/godot
+          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}
+
+      - name: Git LFS pull
+        run: |
+          git lfs install
+          git lfs pull
+
+      - name: Download Godot 4.6.2 headless
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p tools/godot
+          cd tools/godot
+          wget -O "$GODOT_ZIP_NAME" "$GODOT_DOWNLOAD_URL"
+          unzip -o "$GODOT_ZIP_NAME" "$GODOT_BIN_NAME"
+          rm -f "$GODOT_ZIP_NAME"
+          chmod +x "$GODOT_BIN_NAME" || true
+
+      - name: Import project assets
+        run: |
+          set -euo pipefail
+          GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
+          xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit
+
+      - name: Capture OF-01 receipt visual matrix
+        run: |
+          set -euo pipefail
+          GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
+          timeout 120s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
+          RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
+          test "$RECEIPT_COUNT" -eq 18
+
+      - name: Upload OF-01 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: of_01_receipt_visual_qa
+          path: |
+            artifacts/visual_qa/07_receipt_*.png
+            artifacts/visual_qa/07_push_your_luck.png
+          if-no-files-found: error

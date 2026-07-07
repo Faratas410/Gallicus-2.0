@@ -47,6 +47,8 @@ python scripts/ci/test_release_content_contract.py
 python scripts/ci/test_era_visual_template_audit.py
 python scripts/ci/test_pressure_presentation_contract.py
 python scripts/ci/test_ui_motion_contract.py
+python scripts/ci/test_i18n_contract.py
+python scripts/ci/test_receipt_object_contract.py
 python scripts/ci/test_no_mojibake.py
 ```
 
@@ -125,6 +127,10 @@ Richiesta per cambi UI, copy visibile, asset o motion.
 ```
 
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
+Se il runtime Windows non raggiunge il bootstrap, il job Linux
+`visual_qa_receipt` esegue lo stesso capture tool sotto Xvfb e pubblica
+l'artifact `of_01_receipt_visual_qa`; non sono ammesse catture desktop come
+sostituzione.
 
 Punti minimi:
 

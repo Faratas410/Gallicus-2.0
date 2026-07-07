@@ -9,11 +9,10 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 ## Stato corrente
 
 - Stage completato: **Foundation Reset**.
-- Stage attivo dopo l'integrazione di questa chiusura:
-  **Object-First Interaction Pass**.
+- Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto successivo: **OF-01 - quietanza**.
+- Pacchetto attivo: **OF-01 - quietanza**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -67,15 +66,20 @@ Ordine dei pacchetti:
   [matrice PR](https://github.com/Faratas410/Gallicus-2.0/actions/runs/28617462882).
 - Gate chiuso: 2026-07-02, due matrici canoniche consecutive verdi.
 
-### Pacchetto successivo: OF-01
+### Pacchetto attivo: OF-01
 
 - Comportamento: rappresentare l'incasso con la quietanza object-first.
 - Owner: `RunManager` per flow e outcome; UI reattiva per presentazione e
   invio dell'intento `request_pyl_cashout`.
 - Contratti: ritual loop, object grammar e brief quietanza esistenti.
 - Vincoli: nessun nuovo manager, phase enum, payload o calcolo UI.
-- Apertura: creare la branch runtime dal `main` che contiene la chiusura
-  FR-01.
+- Implementazione candidate: texture unica, quattro stati Godot, copy
+  IT/EN/ES, stato taken immediato e cue `registry_receipt_take`.
+- Prove locali: static suite e import Godot verdi; `ROUTE_CASHOUT` ha prodotto
+  un pass verde e due retry diagnostici fermati dal crash nativo Windows prima
+  di `SMOKE:BOOT_OK`.
+- Evidenza mancante: matrice Linux completa e artifact visuale con 18
+  catture viewport-only.
 
 ## 1. Foundation Reset
 
@@ -270,8 +274,7 @@ Gate:
 
 ## Prossimo step operativo
 
-Dal `main` contenente la chiusura FR-01, creare `codex/of-01-quietanza` e
-implementare l'incasso come quietanza. Mantenere invariati intento
-`request_pyl_cashout`, flow, payload e outcome; completare asset, copy
-IT/EN/ES, feedback, accessibilita', test e prove visuali nello stesso
-pacchetto.
+Eseguire la CI della PR OF-01. Chiudere il pacchetto soltanto con i sei smoke
+Linux verdi e con l'artifact visuale completo per IT/EN/ES, normal, focus e
+disabled a 1280x720 e 1920x1080. Dopo la firma, indicare `OF-02`: marchio di
+condanna.

@@ -13,6 +13,7 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"pickup": -12.0,
 	&"level_up": -11.0,
 	&"stage_complete": -9.0,
+	&"registry_receipt_take": -11.0,
 	&"game_over": -8.0,
 }
 const SFX_PATHS: Dictionary = {
@@ -26,6 +27,7 @@ const SFX_PATHS: Dictionary = {
 	&"pickup": "res://assets/audio/sfx/pickup.wav",
 	&"level_up": "res://assets/audio/sfx/level_up.wav",
 	&"stage_complete": "res://assets/audio/sfx/stage_complete.wav",
+	&"registry_receipt_take": "res://assets/audio/sfx/registry_receipt_take.wav",
 	&"game_over": "res://assets/audio/sfx/game_over.wav",
 }
 

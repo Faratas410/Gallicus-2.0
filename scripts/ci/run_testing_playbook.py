@@ -59,6 +59,8 @@ STATIC_STEPS: tuple[tuple[str, list[str]], ...] = (
     ("era_visual_template", _python_script("scripts/ci/test_era_visual_template_audit.py")),
     ("pressure_presentation", _python_script("scripts/ci/test_pressure_presentation_contract.py")),
     ("ui_motion", _python_script("scripts/ci/test_ui_motion_contract.py")),
+    ("i18n_contract", _python_script("scripts/ci/test_i18n_contract.py")),
+    ("receipt_object", _python_script("scripts/ci/test_receipt_object_contract.py")),
     ("release_content", _python_script("scripts/ci/test_release_content_contract.py")),
     ("no_mojibake", _python_script("scripts/ci/test_no_mojibake.py")),
 )

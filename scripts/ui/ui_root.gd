@@ -47,6 +47,9 @@ const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://assets/ui/official/style
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres"
 const BUTTON_STYLE_PRIMARY_DISABLED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres"
+const RECEIPT_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/receipt/sb_registry_receipt_pressed.tres")
+const RECEIPT_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/receipt/sb_registry_receipt_disabled.tres")
+const RECEIPT_TAKEN_META: StringName = &"registry_receipt_taken"
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -2468,8 +2471,9 @@ func _on_intermediate_choice_provoca_pressed() -> void:
 func _on_push_luck_cashout_pressed() -> void:
 	if _pyl_locked:
 		return
-	_play_sfx(&"stage_complete")
+	_play_sfx(&"registry_receipt_take")
 	_pyl_locked = true
+	_set_receipt_taken_state(true)
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_cashout_button)
 	_pulse_pyl_panel(Color(0.55, 0.46, 0.28, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_cashout"):
@@ -2575,7 +2579,21 @@ func _reset_pyl_lock_state() -> void:
 		var panel_color: Color = push_luck_panel.modulate
 		push_luck_panel.modulate = Color(1.0, 1.0, 1.0, panel_color.a)
 	_pyl_locked = false
+	_set_receipt_taken_state(false)
 	_set_pyl_buttons_enabled(true)
+
+func _set_receipt_taken_state(taken: bool) -> void:
+	if push_luck_cashout_button == null:
+		return
+	push_luck_cashout_button.set_meta(RECEIPT_TAKEN_META, taken)
+	push_luck_cashout_button.add_theme_stylebox_override(
+		"disabled",
+		RECEIPT_STYLE_PRESSED if taken else RECEIPT_STYLE_DISABLED
+	)
+	push_luck_cashout_button.add_theme_color_override(
+		"font_disabled_color",
+		Color(0.95, 0.91, 0.78, 1.0) if taken else Color(0.54, 0.52, 0.48, 1.0)
+	)
 
 func _on_bet_win_pressed() -> void:
 	_play_sfx(&"cursor_select")
@@ -3112,6 +3130,17 @@ func _apply_push_luck_button_visual(button: Button) -> void:
 	var active: bool = button.visible and not button.disabled
 	button.modulate = Color(1.0, 0.98, 0.86, 1.0) if active else Color(0.82, 0.78, 0.7, 0.62)
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
+	if button == push_luck_cashout_button:
+		var taken: bool = bool(button.get_meta(RECEIPT_TAKEN_META, false))
+		button.add_theme_color_override("font_color", Color(0.16, 0.11, 0.06, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.08, 0.055, 0.03, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(0.08, 0.055, 0.03, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(0.95, 0.91, 0.78, 1.0))
+		button.add_theme_color_override(
+			"font_disabled_color",
+			Color(0.95, 0.91, 0.78, 1.0) if taken else Color(0.54, 0.52, 0.48, 1.0)
+		)
+		return
 	button.add_theme_color_override("font_color", Color(0.98, 0.9, 0.66, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
 	button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
 	button.add_theme_color_override("font_disabled_color", Color(0.54, 0.52, 0.48, 1.0))

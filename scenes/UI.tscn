@@ -26,6 +26,10 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_scars_dossier.tres" id="32_scars_dossier"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_scars_inner.tres" id="33_scars_inner"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_slab.tres" id="34_register_slab"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/receipt/sb_registry_receipt_normal.tres" id="35_registry_receipt_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/receipt/sb_registry_receipt_focus.tres" id="36_registry_receipt_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/receipt/sb_registry_receipt_pressed.tres" id="37_registry_receipt_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/receipt/sb_registry_receipt_disabled.tres" id="38_registry_receipt_disabled"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -1231,19 +1235,23 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Btn_PUSH_YOUR_LUCK_CASHOUT" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
-theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
-theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
-theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
-theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
-theme_override_colors/font_color = Color(0.95, 0.94, 0.91, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.98, 0.94, 1)
+focus_mode = 2
+theme_override_styles/normal = ExtResource("35_registry_receipt_normal")
+theme_override_styles/hover = ExtResource("36_registry_receipt_focus")
+theme_override_styles/focus = ExtResource("36_registry_receipt_focus")
+theme_override_styles/pressed = ExtResource("37_registry_receipt_pressed")
+theme_override_styles/disabled = ExtResource("38_registry_receipt_disabled")
+theme_override_colors/font_color = Color(0.16, 0.11, 0.06, 1)
+theme_override_colors/font_hover_color = Color(0.08, 0.055, 0.03, 1)
+theme_override_colors/font_focus_color = Color(0.08, 0.055, 0.03, 1)
+theme_override_colors/font_pressed_color = Color(0.95, 0.91, 0.78, 1)
+theme_override_colors/font_disabled_color = Color(0.76, 0.73, 0.66, 1)
 theme_override_font_sizes/font_size = 17
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 64)
 size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
-text = "INCASSA ORA"
+text = "PRENDI LA QUIETANZA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0"]
 custom_minimum_size = Vector2(0, 56)

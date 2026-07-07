@@ -46,12 +46,23 @@ Asset previsto:
 - safe area centrale libera per copy renderizzato da Godot;
 - stati con geometria identica: normal, focus, taken, disabled;
 - destinazione `assets/ui/official/objects/receipt/`;
+- texture condivisa:
+  `registry_receipt_base.png`;
+- risorse:
+  `sb_registry_receipt_normal.tres`,
+  `sb_registry_receipt_focus.tres`,
+  `sb_registry_receipt_pressed.tres` e
+  `sb_registry_receipt_disabled.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key e
+  rimozione locale dello sfondo; nessuna fonte third-party;
+- cue originale procedurale:
+  `res://assets/audio/sfx/registry_receipt_take.wav`;
 - consumer:
   `Btn_PUSH_YOUR_LUCK_CASHOUT` dentro `res://scenes/UI.tscn`;
 - nessuna modifica a payout, eleggibilita', payload o transizione;
-- il movimento non sposta il target e dura al massimo 180 ms;
-- reduced motion sostituisce la presa con lo stato taken e un cambio di
-  contrasto breve.
+- lo stato taken e' immediato e non richiede movimento;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
 
 Accettazione OF-01:
 

@@ -109,13 +109,16 @@ meccanica.
 
 Asset:
 
-- `registry_receipt_normal.png`
+- `registry_receipt_base.png`
 - `registry_condemnation_mark_pressed.png`
 - `registry_second_incision_sealed.png`
 
 Risorse:
 
-- `sb_registry_receipt.tres`
+- `sb_registry_receipt_normal.tres`
+- `sb_registry_receipt_focus.tres`
+- `sb_registry_receipt_pressed.tres`
+- `sb_registry_receipt_disabled.tres`
 - `mat_condemnation_heat.tres`
 
 Nodi:

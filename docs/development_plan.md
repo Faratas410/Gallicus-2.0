@@ -12,7 +12,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-01 - quietanza**.
+- Pacchetto attivo: **OF-02 - marchio**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -66,20 +66,35 @@ Ordine dei pacchetti:
   [matrice PR](https://github.com/Faratas410/Gallicus-2.0/actions/runs/28617462882).
 - Gate chiuso: 2026-07-02, due matrici canoniche consecutive verdi.
 
-### Pacchetto attivo: OF-01
+### Pacchetto chiuso: OF-01
 
 - Comportamento: rappresentare l'incasso con la quietanza object-first.
 - Owner: `RunManager` per flow e outcome; UI reattiva per presentazione e
   invio dell'intento `request_pyl_cashout`.
 - Contratti: ritual loop, object grammar e brief quietanza esistenti.
 - Vincoli: nessun nuovo manager, phase enum, payload o calcolo UI.
-- Implementazione candidate: texture unica, quattro stati Godot, copy
+- Implementazione: texture unica, quattro stati Godot, copy
   IT/EN/ES, stato taken immediato e cue `registry_receipt_take`.
 - Prove locali: static suite e import Godot verdi; `ROUTE_CASHOUT` ha prodotto
   un pass verde e due retry diagnostici fermati dal crash nativo Windows prima
   di `SMOKE:BOOT_OK`.
-- Evidenza mancante: matrice Linux completa e artifact visuale con 18
-  catture viewport-only.
+- Evidenza Linux: commit `c0f8254`, sei scenari verdi nella
+  [matrice PR #535](https://github.com/Faratas410/Gallicus-2.0/actions/runs/28846986069).
+- Evidenza visuale: artifact `of_01_receipt_visual_qa`, 18 catture
+  viewport-only IT/EN/ES per normal, focus e disabled a 1280x720 e 1920x1080,
+  digest `sha256:30a8872ec6b005b460c0ca111365234b843a3a96a7855e6e555ea59e622d2704`.
+- Gate chiuso: 2026-07-07, PR #535 verde prima del merge.
+
+### Pacchetto attivo: OF-02
+
+- Comportamento: trasformare il marchio in oggetto gameplay leggibile.
+- Owner: `RunManager` per flow e outcome; UI reattiva per presentazione e
+  invio degli intenti esistenti.
+- Contratti: ritual loop, object grammar e brief object-first da aggiornare nel
+  pacchetto.
+- Vincoli: nessun nuovo manager, phase enum, payload o calcolo UI.
+- Evidenza richiesta: test focalizzati, i18n IT/EN/ES, focus/reduced motion,
+  import Godot, sei smoke Linux e catture viewport-only pertinenti.
 
 ## 1. Foundation Reset
 
@@ -274,7 +289,5 @@ Gate:
 
 ## Prossimo step operativo
 
-Eseguire la CI della PR OF-01. Chiudere il pacchetto soltanto con i sei smoke
-Linux verdi e con l'artifact visuale completo per IT/EN/ES, normal, focus e
-disabled a 1280x720 e 1920x1080. Dopo la firma, indicare `OF-02`: marchio di
-condanna.
+Mergiare PR #535 dopo il secondo verde sull'ultimo commit, attendere i sei smoke
+Linux sul merge commit di `main`, quindi aprire `OF-02`: marchio di condanna.

@@ -64,6 +64,10 @@ jobs:
         run: |
           python3 scripts/ci/test_receipt_object_contract.py
 
+      - name: Validate OF-02 condemnation mark object contract (static)
+        run: |
+          python3 scripts/ci/test_condemnation_mark_object_contract.py
+
       - name: Validate release content baseline (static)
         run: |
           python3 scripts/ci/test_release_content_contract.py
@@ -135,7 +139,7 @@ jobs:
             artifacts/${{ matrix.scenario }}
           if-no-files-found: ignore
 
-  visual_qa_receipt:
+  visual_qa_object_first_pyl:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -174,20 +178,23 @@ jobs:
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit
 
-      - name: Capture OF-01 receipt visual matrix
+      - name: Capture object-first push-your-luck visual matrix
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           timeout 120s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
+          MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
           test "$RECEIPT_COUNT" -eq 18
+          test "$MARK_COUNT" -eq 18
 
-      - name: Upload OF-01 visual evidence
+      - name: Upload object-first push-your-luck visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: of_01_receipt_visual_qa
+          name: object_first_pyl_visual_qa
           path: |
             artifacts/visual_qa/07_receipt_*.png
+            artifacts/visual_qa/07_mark_*.png
             artifacts/visual_qa/07_push_your_luck.png
           if-no-files-found: error

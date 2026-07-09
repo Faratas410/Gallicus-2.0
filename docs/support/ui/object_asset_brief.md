@@ -82,6 +82,61 @@ Uso: route condanna.
 - Il gesto e' esporre la superficie e ricevere l'impronta.
 - Nessun gore esplicito.
 
+### Scheda OF-02
+
+```text
+Intento del soggetto: accettare il costo e chiudere il percorso senza premio.
+Oggetto: ferro-timbro amministrativo di condanna.
+Materiale: ferro annerito, bordo consumato, calore rosso smorzato, rivetti di bronzo.
+Gesto: ricevere il marchio.
+Conseguenza leggibile prima del gesto: perdita della posta e chiusura del percorso.
+Stato prima: marchio disponibile, focus o bloccato senza sembrare gia' registrato.
+Stato dopo: marchio registrato e oggetto spento dal lock esistente.
+Feedback visivo: ferro caldo/registered immediato, senza movimento obbligatorio.
+Feedback audio: colpo basso di ferro con coda termica smorzata.
+Feedback testuale: perdita della posta e Registro chiuso.
+Registrazione prodotta: route condanna invariata.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_pyl_condanna, invariato.
+Fallback accessibile: focus netto; stato registered immediato senza movimento.
+Schermata o scenario QA: Phase_PUSH_YOUR_LUCK e ROUTE_CONDANNA.
+```
+
+Asset previsto:
+
+- sorgente trasparente senza testo, rapporto `5:2`;
+- safe area centrale libera per copy renderizzato da Godot;
+- stati con geometria identica: normal, focus, heated/pressed, registered,
+  disabled;
+- destinazione `assets/ui/official/objects/condemnation_mark/`;
+- texture condivisa:
+  `registry_condemnation_mark_base.png`;
+- risorse:
+  `sb_registry_condemnation_mark_normal.tres`,
+  `sb_registry_condemnation_mark_focus.tres`,
+  `sb_registry_condemnation_mark_pressed.tres`,
+  `sb_registry_condemnation_mark_registered.tres` e
+  `sb_registry_condemnation_mark_disabled.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key e
+  rimozione locale dello sfondo; nessuna fonte third-party;
+- cue originale procedurale:
+  `res://assets/audio/sfx/registry_condemnation_mark.wav`;
+- consumer:
+  `Btn_PUSH_YOUR_LUCK_CONDANNA` dentro `res://scenes/UI.tscn`;
+- nessuna modifica a reward, eleggibilita', payload o transizione;
+- lo stato registered e' immediato e non richiede movimento;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
+
+Accettazione OF-02:
+
+- oggetto riconoscibile senza leggere la label;
+- costo e conseguenza restano leggibili in IT/EN/ES;
+- disabled non sembra una condanna gia' scelta;
+- mouse, tastiera e focus emettono lo stesso intento;
+- screenshot viewport-only a 1280x720 e 1920x1080;
+- `ROUTE_CONDANNA` e ritual-loop contract verdi.
+
 ## Seconda incisione
 
 Uso: route double.

@@ -93,8 +93,15 @@ Ordine dei pacchetti:
 - Contratti: ritual loop, object grammar e brief object-first da aggiornare nel
   pacchetto.
 - Vincoli: nessun nuovo manager, phase enum, payload o calcolo UI.
+- Implementazione candidate: ferro-timbro object-first, copy IT/EN/ES
+  `RICEVI IL MARCHIO`, stato registered immediato e cue
+  `registry_condemnation_mark`.
 - Evidenza richiesta: test focalizzati, i18n IT/EN/ES, focus/reduced motion,
-  import Godot, sei smoke Linux e catture viewport-only pertinenti.
+  import Godot, `ROUTE_CONDANNA`, sei smoke Linux e catture viewport-only
+  pertinenti.
+- Prove locali candidate: static suite, i18n, contract OF-01/OF-02,
+  path/import e import Godot verdi; `ROUTE_CONDANNA` diagnostico Windows
+  fermato da crash nativo prima di `SMOKE:BOOT_OK`.
 
 ## 1. Foundation Reset
 
@@ -289,5 +296,6 @@ Gate:
 
 ## Prossimo step operativo
 
-Mergiare PR #535 dopo il secondo verde sull'ultimo commit, attendere i sei smoke
-Linux sul merge commit di `main`, quindi aprire `OF-02`: marchio di condanna.
+Aprire PR OF-02, attendere i sei smoke Linux e l'artifact
+`object_first_pyl_visual_qa`, chiudere il pacchetto solo dopo il verde finale,
+poi indicare `OF-03`: seconda incisione.

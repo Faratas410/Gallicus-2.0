@@ -68,6 +68,10 @@ jobs:
         run: |
           python3 scripts/ci/test_condemnation_mark_object_contract.py
 
+      - name: Validate OF-03 second incision object contract (static)
+        run: |
+          python3 scripts/ci/test_second_incision_object_contract.py
+
       - name: Validate release content baseline (static)
         run: |
           python3 scripts/ci/test_release_content_contract.py
@@ -185,8 +189,10 @@ jobs:
           timeout 120s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
           MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
+          INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
           test "$RECEIPT_COUNT" -eq 18
           test "$MARK_COUNT" -eq 18
+          test "$INCISION_COUNT" -eq 24
 
       - name: Upload object-first push-your-luck visual evidence
         if: always()
@@ -196,5 +202,6 @@ jobs:
           path: |
             artifacts/visual_qa/07_receipt_*.png
             artifacts/visual_qa/07_mark_*.png
+            artifacts/visual_qa/07_incision_*.png
             artifacts/visual_qa/07_push_your_luck.png
           if-no-files-found: error

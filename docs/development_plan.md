@@ -114,9 +114,18 @@ Ordine dei pacchetti:
   invio dell'intento esistente.
 - Contratti: ritual loop, object grammar e naming object-first.
 - Vincoli: nessun nuovo manager, phase enum, payload, campo save o calcolo UI.
+- Implementazione locale: tavoletta di cera object-first con cinque stati
+  Godot, CTA canonica `RADDOPPIA`, stato sealed sincrono e cue
+  `registry_second_incision`; intento `request_pyl_double` invariato.
+- Prove locali: playbook statico completo e import Godot 4.6.2 verdi.
+  `ROUTE_DOUBLE` e visual QA Windows restano diagnostici e si fermano sul
+  crash nativo noto prima di `SMOKE:BOOT_OK`, senza parser error o missing
+  resource.
 - Evidenza richiesta: test focalizzati, i18n IT/EN/ES, focus/reduced motion,
   import Godot, route pertinente, sei smoke Linux e catture viewport-only
   pertinenti.
+- Gate ancora aperto: servono sei smoke Linux e artifact visuale OF-03 dopo
+  il push manuale dell'utente.
 
 ## 1. Foundation Reset
 
@@ -311,6 +320,8 @@ Gate:
 
 ## Prossimo step operativo
 
-Portare PR #536 al secondo verde dopo la firma documentale, renderla ready,
-mergiarla in `main`, attendere i sei smoke Linux sul merge commit e poi aprire
-il lavoro runtime `OF-03`: seconda incisione.
+Completare implementazione e verifica locale di `OF-03`, lasciando il lavoro
+nel working tree senza commit, push o PR automatici. Dopo il push manuale
+dell'utente, eseguire `workflow_dispatch` sul branch per i sei smoke Linux e
+l'evidenza visuale; solo il verde canonico puo' chiudere `OF-03` e attivare
+`OF-04`: soglia.

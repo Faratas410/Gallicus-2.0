@@ -50,6 +50,7 @@ python scripts/ci/test_ui_motion_contract.py
 python scripts/ci/test_i18n_contract.py
 python scripts/ci/test_receipt_object_contract.py
 python scripts/ci/test_condemnation_mark_object_contract.py
+python scripts/ci/test_second_incision_object_contract.py
 python scripts/ci/test_no_mojibake.py
 ```
 
@@ -129,12 +130,13 @@ Richiesta per cambi UI, copy visibile, asset o motion.
 
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
 Se il runtime Windows non raggiunge il bootstrap, il job Linux
-`visual_qa_object_first_pyl` produce l'evidenza canonica per quietanza e
-marchio object-first. Le catture desktop intere non sostituiscono la viewport
-Godot.
+`visual_qa_object_first_pyl` produce l'evidenza canonica per quietanza,
+marchio e seconda incisione object-first. Le catture desktop intere non
+sostituiscono la viewport Godot.
 Il job esegue lo stesso capture tool sotto Xvfb e pubblica l'artifact
-`object_first_pyl_visual_qa`; non sono ammesse catture desktop come
-sostituzione.
+`object_first_pyl_visual_qa`; la matrice comprende 18 catture quietanza, 18
+catture marchio e 24 catture seconda incisione. Non sono ammesse catture
+desktop come sostituzione.
 
 Punti minimi:
 

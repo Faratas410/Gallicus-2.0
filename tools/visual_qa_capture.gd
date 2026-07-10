@@ -17,6 +17,13 @@ const MARK_VIEWPORT_SIZES: Array[Vector2i] = [
 const MARK_LOCALES: Array[String] = ["it", "en", "es"]
 const MARK_BUTTON_PATH: String = "Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA"
 const MARK_NOTE_PATH: String = "Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel/Lbl_PUSH_YOUR_LUCK_CHOICE_1"
+const INCISION_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const INCISION_LOCALES: Array[String] = ["it", "en", "es"]
+const INCISION_BUTTON_PATH: String = "Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Btn_PUSH_YOUR_LUCK_DOUBLE"
+const INCISION_NOTE_PATH: String = "Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE"
 const UI_ROOT_PATH: String = "Main/UI"
 
 var _main: Node = null
@@ -72,6 +79,7 @@ func _run() -> void:
 	await _capture("07_push_your_luck")
 	await _capture_receipt_matrix()
 	await _capture_condemnation_mark_matrix()
+	await _capture_second_incision_matrix()
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_END_RUN", true, 5.0)
@@ -226,6 +234,73 @@ func _capture_condemnation_mark_matrix() -> void:
 	note.text = previous_note_text
 	note.visible = previous_note_visible
 	ui_root.call("_set_condemnation_mark_registered_state", false)
+	ui_root.call("_apply_push_luck_button_visual", button)
+	TranslationServer.set_locale(previous_locale)
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	await _settle(8)
+
+func _capture_second_incision_matrix() -> void:
+	var button: Button = get_tree().root.get_node_or_null(INCISION_BUTTON_PATH) as Button
+	var note: Label = get_tree().root.get_node_or_null(INCISION_NOTE_PATH) as Label
+	var ui_root: Node = get_tree().root.get_node_or_null(UI_ROOT_PATH)
+	if button == null or note == null or ui_root == null:
+		_failures.append("OF-03 second incision nodes missing for visual QA matrix")
+		return
+
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_disabled: bool = button.disabled
+	var previous_note_text: String = note.text
+	var previous_note_visible: bool = note.visible
+
+	for locale: String in INCISION_LOCALES:
+		TranslationServer.set_locale(locale)
+		await _settle(8)
+		for viewport_size: Vector2i in INCISION_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "07_incision_%s_%dx%d" % [
+				locale,
+				viewport_size.x,
+				viewport_size.y,
+			]
+
+			ui_root.call("_set_second_incision_sealed_state", false)
+			button.disabled = false
+			note.text = tr("Prossima posta +%d Gloria | Pressione +%d") % [2, 1]
+			note.visible = true
+			button.release_focus()
+			ui_root.call("_apply_push_luck_button_visual", button)
+			await _capture("%s_normal" % prefix, viewport_size)
+
+			button.grab_focus()
+			await _settle(20)
+			await _capture("%s_focus" % prefix, viewport_size)
+
+			button.release_focus()
+			ui_root.call("_set_second_incision_sealed_state", false)
+			button.disabled = true
+			note.text = tr("Disponibile dopo l'arena in corso.")
+			note.visible = true
+			ui_root.call("_apply_push_luck_button_visual", button)
+			await _capture("%s_disabled" % prefix, viewport_size)
+
+			ui_root.call("_set_second_incision_sealed_state", true)
+			button.disabled = true
+			note.text = tr("Prossima posta +%d Gloria | Pressione +%d") % [2, 1]
+			note.visible = true
+			ui_root.call("_apply_push_luck_button_visual", button)
+			await _capture("%s_sealed" % prefix, viewport_size)
+
+	button.disabled = previous_disabled
+	note.text = previous_note_text
+	note.visible = previous_note_visible
+	ui_root.call("_set_second_incision_sealed_state", false)
 	ui_root.call("_apply_push_luck_button_visual", button)
 	TranslationServer.set_locale(previous_locale)
 	DisplayServer.window_set_size(previous_size)

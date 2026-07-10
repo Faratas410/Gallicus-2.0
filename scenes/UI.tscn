@@ -35,6 +35,10 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/condemnation_mark/sb_registry_condemnation_mark_pressed.tres" id="41_registry_condemnation_mark_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/condemnation_mark/sb_registry_condemnation_mark_registered.tres" id="42_registry_condemnation_mark_registered"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/condemnation_mark/sb_registry_condemnation_mark_disabled.tres" id="43_registry_condemnation_mark_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_normal.tres" id="44_registry_second_incision_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_focus.tres" id="45_registry_second_incision_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_pressed.tres" id="46_registry_second_incision_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_disabled.tres" id="48_registry_second_incision_disabled"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -1311,19 +1315,23 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Btn_PUSH_YOUR_LUCK_DOUBLE" type="Button" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
-theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
-theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
-theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
-theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
-theme_override_colors/font_color = Color(0.96, 0.92, 0.86, 1)
-theme_override_colors/font_hover_color = Color(1, 0.98, 0.93, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.89, 0.8, 1)
+focus_mode = 2
+theme_override_styles/normal = ExtResource("44_registry_second_incision_normal")
+theme_override_styles/hover = ExtResource("45_registry_second_incision_focus")
+theme_override_styles/focus = ExtResource("45_registry_second_incision_focus")
+theme_override_styles/pressed = ExtResource("46_registry_second_incision_pressed")
+theme_override_styles/disabled = ExtResource("48_registry_second_incision_disabled")
+theme_override_colors/font_color = Color(0.98, 0.9, 0.66, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.72, 1)
+theme_override_colors/font_focus_color = Color(1, 0.95, 0.72, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.84, 0.66, 1)
+theme_override_colors/font_disabled_color = Color(0.6, 0.56, 0.5, 1)
 theme_override_font_sizes/font_size = 17
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 64)
 size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
-text = "RILANCIA"
+text = "RADDOPPIA"
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2"]
 custom_minimum_size = Vector2(0, 56)

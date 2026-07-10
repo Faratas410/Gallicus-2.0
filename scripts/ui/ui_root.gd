@@ -53,6 +53,9 @@ const RECEIPT_TAKEN_META: StringName = &"registry_receipt_taken"
 const CONDEMNATION_MARK_STYLE_REGISTERED: StyleBox = preload("res://assets/ui/official/objects/condemnation_mark/sb_registry_condemnation_mark_registered.tres")
 const CONDEMNATION_MARK_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/condemnation_mark/sb_registry_condemnation_mark_disabled.tres")
 const CONDEMNATION_MARK_REGISTERED_META: StringName = &"registry_condemnation_mark_registered"
+const SECOND_INCISION_STYLE_SEALED: StyleBox = preload("res://assets/ui/official/objects/second_incision/sb_registry_second_incision_sealed.tres")
+const SECOND_INCISION_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/second_incision/sb_registry_second_incision_disabled.tres")
+const SECOND_INCISION_SEALED_META: StringName = &"registry_second_incision_sealed"
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -2500,8 +2503,9 @@ func _on_push_luck_condanna_pressed() -> void:
 func _on_push_luck_double_pressed() -> void:
 	if _pyl_locked:
 		return
-	_play_sfx(&"level_up")
+	_play_sfx(&"registry_second_incision")
 	_pyl_locked = true
+	_set_second_incision_sealed_state(true)
 	_apply_decision_lock(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason, push_luck_double_button)
 	_pulse_pyl_panel(Color(0.66, 0.25, 0.12, 1.0))
 	if not _emit_game_event_signal_if_available(&"request_pyl_double"):
@@ -2585,6 +2589,7 @@ func _reset_pyl_lock_state() -> void:
 	_pyl_locked = false
 	_set_receipt_taken_state(false)
 	_set_condemnation_mark_registered_state(false)
+	_set_second_incision_sealed_state(false)
 	_set_pyl_buttons_enabled(true)
 
 func _set_receipt_taken_state(taken: bool) -> void:
@@ -2611,6 +2616,19 @@ func _set_condemnation_mark_registered_state(registered: bool) -> void:
 	push_luck_condanna_button.add_theme_color_override(
 		"font_disabled_color",
 		Color(1.0, 0.82, 0.68, 1.0) if registered else Color(0.54, 0.52, 0.48, 1.0)
+	)
+
+func _set_second_incision_sealed_state(sealed: bool) -> void:
+	if push_luck_double_button == null:
+		return
+	push_luck_double_button.set_meta(SECOND_INCISION_SEALED_META, sealed)
+	push_luck_double_button.add_theme_stylebox_override(
+		"disabled",
+		SECOND_INCISION_STYLE_SEALED if sealed else SECOND_INCISION_STYLE_DISABLED
+	)
+	push_luck_double_button.add_theme_color_override(
+		"font_disabled_color",
+		Color(1.0, 0.84, 0.66, 1.0) if sealed else Color(0.54, 0.52, 0.48, 1.0)
 	)
 
 func _on_bet_win_pressed() -> void:
@@ -3170,9 +3188,16 @@ func _apply_push_luck_button_visual(button: Button) -> void:
 			Color(1.0, 0.82, 0.68, 1.0) if registered else Color(0.54, 0.52, 0.48, 1.0)
 		)
 		return
-	button.add_theme_color_override("font_color", Color(0.98, 0.9, 0.66, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
-	button.add_theme_color_override("font_disabled_color", Color(0.54, 0.52, 0.48, 1.0))
+	if button == push_luck_double_button:
+		var sealed: bool = bool(button.get_meta(SECOND_INCISION_SEALED_META, false))
+		button.add_theme_color_override("font_color", Color(0.98, 0.9, 0.66, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(1.0, 0.95, 0.72, 1.0))
+		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.84, 0.66, 1.0))
+		button.add_theme_color_override(
+			"font_disabled_color",
+			Color(1.0, 0.84, 0.66, 1.0) if sealed else Color(0.54, 0.52, 0.48, 1.0)
+		)
 
 func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween, kind: String = MOTION_KIND_STANDARD) -> Tween:
 	if panel == null or modal == null:

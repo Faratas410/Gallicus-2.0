@@ -34,6 +34,8 @@ Il mood e' rituale e amministrativo, non action-horror.
 - Cashout: chiusura contabile, non fanfara.
 - Condanna: impatto pesante senza jump scare.
 - Double: incisione aggiuntiva con tensione crescente.
+- OF-03 usa il cue `registry_second_incision`: graffio asciutto nella cera e
+  breve chiusura di bronzo, senza semantica level-up o fanfara.
 - END_RUN: timbro e fascicolo, differenziati dal finale terminale.
 
 Nessuna azione importante puo' essere muta senza una ragione documentata.

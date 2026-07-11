@@ -374,6 +374,7 @@ Current MP3 files under `res://assets/audio/`:
 - Push Your Luck must show current `PRESSIONE X/10` plus the threshold label and must describe `RADDOPPIA` as `Pressione +1`; `INCASSA` must state that it closes/records the result.
 - Push Your Luck must expose a compact receipt for `Posta`, `Gloria`, and `Corruzione`. `Posta` is player-facing calculated value, not persisted state; it represents the Glory currently collectable from the active wager.
 - UI resta reattiva per la ricevuta Push Your Luck: `res://scripts/ui/ui_root.gd` consumes RunManager payload fields such as `stake_glory`, `cashout_glory_delta`, and `double_next_stake_glory`; it must not recompute reward tiers, cashout modifiers, or corruption relief.
+- Push Your Luck maps its three existing intents to object-first surfaces: cashout uses the quietanza, condanna uses the condemnation mark, and double uses the second-incision wax tablet. The double CTA remains `RADDOPPIA`; activation seals the presentational second-incision state synchronously before emitting the unchanged `request_pyl_double` intent and never delays the intent for motion.
 - END_RUN must show peak pressure as `Pressione massima: X/10`, derived from run stats `max_escalation` when available.
 - Motion Contract:
   - UI motion is presentational-only; it must not emit `GameEvents`, mutate run state, or create phase authority.

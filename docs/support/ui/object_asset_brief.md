@@ -82,14 +82,126 @@ Uso: route condanna.
 - Il gesto e' esporre la superficie e ricevere l'impronta.
 - Nessun gore esplicito.
 
+### Scheda OF-02
+
+```text
+Intento del soggetto: accettare il costo e chiudere il percorso senza premio.
+Oggetto: ferro-timbro amministrativo di condanna.
+Materiale: ferro annerito, bordo consumato, calore rosso smorzato, rivetti di bronzo.
+Gesto: ricevere il marchio.
+Conseguenza leggibile prima del gesto: perdita della posta e chiusura del percorso.
+Stato prima: marchio disponibile, focus o bloccato senza sembrare gia' registrato.
+Stato dopo: marchio registrato e oggetto spento dal lock esistente.
+Feedback visivo: ferro caldo/registered immediato, senza movimento obbligatorio.
+Feedback audio: colpo basso di ferro con coda termica smorzata.
+Feedback testuale: perdita della posta e Registro chiuso.
+Registrazione prodotta: route condanna invariata.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_pyl_condanna, invariato.
+Fallback accessibile: focus netto; stato registered immediato senza movimento.
+Schermata o scenario QA: Phase_PUSH_YOUR_LUCK e ROUTE_CONDANNA.
+```
+
+Asset previsto:
+
+- sorgente trasparente senza testo, rapporto `5:2`;
+- safe area centrale libera per copy renderizzato da Godot;
+- stati con geometria identica: normal, focus, heated/pressed, registered,
+  disabled;
+- destinazione `assets/ui/official/objects/condemnation_mark/`;
+- texture condivisa:
+  `registry_condemnation_mark_base.png`;
+- risorse:
+  `sb_registry_condemnation_mark_normal.tres`,
+  `sb_registry_condemnation_mark_focus.tres`,
+  `sb_registry_condemnation_mark_pressed.tres`,
+  `sb_registry_condemnation_mark_registered.tres` e
+  `sb_registry_condemnation_mark_disabled.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key e
+  rimozione locale dello sfondo; nessuna fonte third-party;
+- cue originale procedurale:
+  `res://assets/audio/sfx/registry_condemnation_mark.wav`;
+- consumer:
+  `Btn_PUSH_YOUR_LUCK_CONDANNA` dentro `res://scenes/UI.tscn`;
+- nessuna modifica a reward, eleggibilita', payload o transizione;
+- lo stato registered e' immediato e non richiede movimento;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
+
+Accettazione OF-02:
+
+- oggetto riconoscibile senza leggere la label;
+- costo e conseguenza restano leggibili in IT/EN/ES;
+- disabled non sembra una condanna gia' scelta;
+- mouse, tastiera e focus emettono lo stesso intento;
+- screenshot viewport-only a 1280x720 e 1920x1080;
+- `ROUTE_CONDANNA` e ritual-loop contract verdi.
+
 ## Seconda incisione
 
 Uso: route double.
 
 - Tavoletta gia' firmata con spazio per una seconda linea.
-- Stati: normal, focus, incised, sealed.
+- Stati: normal, focus, pressed/incised, sealed, disabled.
 - Il gesto e' incidere nuovamente.
 - Deve mostrare pressione e continuita', non un generico moltiplicatore.
+
+### Scheda OF-03
+
+```text
+Intento del soggetto: rifiutare la chiusura e aumentare la posta registrata.
+Oggetto: tavoletta di cera gia' firmata con una seconda linea di incisione.
+Materiale: basalto, bronzo pallido, cera rossa compressa.
+Gesto: incidere nuovamente e sigillare la continuita'.
+Conseguenza leggibile prima del gesto: prossima posta e Pressione +1 dal payload.
+Stato prima: prima incisione presente; seconda incisione disponibile, in focus o bloccata.
+Stato dopo: seconda incisione sigillata e oggetto spento dal lock esistente.
+Feedback visivo: incisione calda e stato sealed immediato, senza movimento obbligatorio.
+Feedback audio: graffio asciutto nella cera seguito da un breve colpo di bronzo.
+Feedback testuale: RADDOPPIA con prossima posta e incremento di pressione.
+Registrazione prodotta: rilancio invariato.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_pyl_double, invariato.
+Fallback accessibile: focus netto; stato sealed immediato senza movimento.
+Schermata o scenario QA: Phase_PUSH_YOUR_LUCK e ROUTE_DOUBLE.
+```
+
+Asset previsto:
+
+- sorgente trasparente senza testo, rapporto `5:2`;
+- safe area centrale libera per copy renderizzato da Godot;
+- stati con geometria identica: normal, focus, pressed/incised, sealed,
+  disabled;
+- destinazione `assets/ui/official/objects/second_incision/`;
+- texture condivisa:
+  `registry_second_incision_sealed.png`;
+- risorse:
+  `sb_registry_second_incision_normal.tres`,
+  `sb_registry_second_incision_focus.tres`,
+  `sb_registry_second_incision_pressed.tres`,
+  `sb_registry_second_incision_sealed.tres` e
+  `sb_registry_second_incision_disabled.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key con
+  quietanza e marchio come riferimenti stilistici, seguita da rimozione
+  locale dello sfondo; nessuna fonte third-party;
+- cue originale procedurale:
+  `res://assets/audio/sfx/registry_second_incision.wav`;
+- consumer:
+  `Btn_PUSH_YOUR_LUCK_DOUBLE` dentro `res://scenes/UI.tscn`;
+- CTA canonica `RADDOPPIA`, con traduzioni `DOUBLE` e `DOBLA`;
+- nessuna modifica a reward, eleggibilita', payload o transizione;
+- lo stato sealed e' immediato e non richiede movimento;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
+
+Accettazione OF-03:
+
+- oggetto riconoscibile senza leggere la label;
+- prossima posta e Pressione +1 restano leggibili in IT/EN/ES;
+- disabled non sembra una seconda incisione gia' sigillata;
+- mouse, tastiera e focus emettono lo stesso intento;
+- screenshot viewport-only a 1280x720 e 1920x1080;
+- `ROUTE_DOUBLE` e ritual-loop contract verdi.
 
 ## Pietra del giudizio
 

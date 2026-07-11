@@ -12,6 +12,13 @@ These rules apply to all coding agents working in this repository.
 - Current gameplay authority must not move: `RunManager` owns flow, `GameEvents` is the event bus, UI is reactive.
 - Core gameplay, phase ownership, save flow, signal contracts, and canon rules may not be changed during documentation-only work.
 
+## Local Delivery Workflow
+
+- Agents must leave completed and verified changes in the local working tree by default.
+- Agents must not create commits, push branches, open pull requests, mark pull requests ready, or merge them unless the user explicitly requests that specific action.
+- The user reviews and pushes local changes manually with GitHub Desktop.
+- Final handoff must list the changed files and the verification performed.
+
 ## Documentation Operating System
 
 - Start from `docs/README.md` before changing project docs.

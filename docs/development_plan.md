@@ -12,7 +12,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-02 - marchio**.
+- Pacchetto attivo: **OF-03 - seconda incisione**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -85,16 +85,47 @@ Ordine dei pacchetti:
   digest `sha256:30a8872ec6b005b460c0ca111365234b843a3a96a7855e6e555ea59e622d2704`.
 - Gate chiuso: 2026-07-07, PR #535 verde prima del merge.
 
-### Pacchetto attivo: OF-02
+### Pacchetto chiuso: OF-02
 
 - Comportamento: trasformare il marchio in oggetto gameplay leggibile.
 - Owner: `RunManager` per flow e outcome; UI reattiva per presentazione e
   invio degli intenti esistenti.
-- Contratti: ritual loop, object grammar e brief object-first da aggiornare nel
-  pacchetto.
+- Contratti: ritual loop, object grammar e brief object-first.
 - Vincoli: nessun nuovo manager, phase enum, payload o calcolo UI.
+- Implementazione: ferro-timbro object-first, copy IT/EN/ES
+  `RICEVI IL MARCHIO`, stato registered immediato, cue
+  `registry_condemnation_mark`.
+- Prove locali: static suite, i18n, contract OF-01/OF-02,
+  path/import e import Godot verdi; `ROUTE_CONDANNA` diagnostico Windows
+  fermato da crash nativo prima di `SMOKE:BOOT_OK`.
+- Evidenza Linux: commit `58be872`, sei scenari verdi nella
+  [matrice PR #536](https://github.com/Faratas410/Gallicus-2.0/actions/runs/29003421266).
+- Evidenza visuale: artifact `object_first_pyl_visual_qa`, 36 catture
+  viewport-only, 18 quietanza e 18 marchio, IT/EN/ES per normal, focus e
+  disabled/registered a 1280x720 e 1920x1080, digest
+  `sha256:08a211c831a5c42e314d5d38201d9f8ad9a657f38394c979138ce383280cec1d`.
+- Gate chiuso: 2026-07-09, PR #536 verde prima del merge.
+
+### Pacchetto attivo: OF-03
+
+- Comportamento: trasformare la seconda incisione in gesto object-first
+  leggibile senza cambiare flow, payload, reward, save o autorita'.
+- Owner: `RunManager` per flow e outcome; UI reattiva per presentazione e
+  invio dell'intento esistente.
+- Contratti: ritual loop, object grammar e naming object-first.
+- Vincoli: nessun nuovo manager, phase enum, payload, campo save o calcolo UI.
+- Implementazione locale: tavoletta di cera object-first con cinque stati
+  Godot, CTA canonica `RADDOPPIA`, stato sealed sincrono e cue
+  `registry_second_incision`; intento `request_pyl_double` invariato.
+- Prove locali: playbook statico completo e import Godot 4.6.2 verdi.
+  `ROUTE_DOUBLE` e visual QA Windows restano diagnostici e si fermano sul
+  crash nativo noto prima di `SMOKE:BOOT_OK`, senza parser error o missing
+  resource.
 - Evidenza richiesta: test focalizzati, i18n IT/EN/ES, focus/reduced motion,
-  import Godot, sei smoke Linux e catture viewport-only pertinenti.
+  import Godot, route pertinente, sei smoke Linux e catture viewport-only
+  pertinenti.
+- Gate ancora aperto: servono sei smoke Linux e artifact visuale OF-03 dopo
+  il push manuale dell'utente.
 
 ## 1. Foundation Reset
 
@@ -289,5 +320,8 @@ Gate:
 
 ## Prossimo step operativo
 
-Mergiare PR #535 dopo il secondo verde sull'ultimo commit, attendere i sei smoke
-Linux sul merge commit di `main`, quindi aprire `OF-02`: marchio di condanna.
+Completare implementazione e verifica locale di `OF-03`, lasciando il lavoro
+nel working tree senza commit, push o PR automatici. Dopo il push manuale
+dell'utente, eseguire `workflow_dispatch` sul branch per i sei smoke Linux e
+l'evidenza visuale; solo il verde canonico puo' chiudere `OF-03` e attivare
+`OF-04`: soglia.

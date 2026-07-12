@@ -12,7 +12,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-03 - seconda incisione**.
+- Pacchetto attivo: **OF-04 - soglia**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -106,7 +106,7 @@ Ordine dei pacchetti:
   `sha256:08a211c831a5c42e314d5d38201d9f8ad9a657f38394c979138ce383280cec1d`.
 - Gate chiuso: 2026-07-09, PR #536 verde prima del merge.
 
-### Pacchetto attivo: OF-03
+### Pacchetto chiuso: OF-03
 
 - Comportamento: trasformare la seconda incisione in gesto object-first
   leggibile senza cambiare flow, payload, reward, save o autorita'.
@@ -121,11 +121,34 @@ Ordine dei pacchetti:
   `ROUTE_DOUBLE` e visual QA Windows restano diagnostici e si fermano sul
   crash nativo noto prima di `SMOKE:BOOT_OK`, senza parser error o missing
   resource.
-- Evidenza richiesta: test focalizzati, i18n IT/EN/ES, focus/reduced motion,
-  import Godot, route pertinente, sei smoke Linux e catture viewport-only
-  pertinenti.
-- Gate ancora aperto: servono sei smoke Linux e artifact visuale OF-03 dopo
-  il push manuale dell'utente.
+- Evidenza Linux: commit `66fbdfb`, sei scenari e visual QA verdi nella
+  [matrice PR #536](https://github.com/Faratas410/Gallicus-2.0/actions/runs/29122736504).
+- Evidenza visuale: artifact `object_first_pyl_visual_qa`, 61 catture
+  viewport-only: 18 quietanze, 18 marchi, 24 incisioni e schermata generale
+  Push Your Luck. La matrice OF-03 copre IT/EN/ES, normal, focus, disabled e
+  sealed a 1280x720 e 1920x1080; digest
+  `sha256:ee1193ef9802f650b4e8bc41dcf819ef6dd2079ce31e6f19623bf0a0969164ab`.
+- Gate chiuso: 2026-07-11, PR #536 verde e mergiata in `main`.
+
+### Pacchetto attivo: OF-04
+
+- Comportamento: trasformare l'ingresso della campagna nella soglia
+  object-first dell'arena, mantenendo il CTA `ENTRA NELL'ARENA` e il flow
+  esistente.
+- Owner: `RunManager` per avvio e transizione; menu reattivo per
+  presentazione e invio dell'intento `request_new_run`.
+- Contratti: object grammar, menu canonico, art direction e layout.
+- Vincoli: nessun nuovo segnale, payload, campo save, manager o calcolo UI.
+- Implementazione locale: soglia 5:2 in basalto, bronzo e sabbia con stati
+  stabili normal, focus, pressed, crossed e disabled; CTA IT/EN/ES e brand
+  Gallicus preservati; cue `arena_threshold_cross` e intento
+  `request_new_run` invariato.
+- Prove locali: playbook statico e import Godot 4.6.2 verdi; visual QA verde
+  con 24 catture viewport-only IT/EN/ES a 1280x720 e 1920x1080. Lo smoke
+  `BET_PRESENT` Windows resta diagnostico e ha riprodotto il crash nativo
+  noto prima di `SMOKE:BOOT_OK` (`NATIVE_CRASH_BEFORE_BOOTSTRAP`).
+- Gate ancora aperto: servono sei smoke Linux e artifact
+  `object_first_visual_qa` dopo il push manuale dell'utente.
 
 ## 1. Foundation Reset
 
@@ -320,8 +343,9 @@ Gate:
 
 ## Prossimo step operativo
 
-Completare implementazione e verifica locale di `OF-03`, lasciando il lavoro
-nel working tree senza commit, push o PR automatici. Dopo il push manuale
-dell'utente, eseguire `workflow_dispatch` sul branch per i sei smoke Linux e
-l'evidenza visuale; solo il verde canonico puo' chiudere `OF-03` e attivare
-`OF-04`: soglia.
+`OF-04` e' implementato e verificato localmente. Il lavoro resta nel working
+tree senza commit, push o PR automatici fino alla pubblicazione manuale del
+branch `codex/of-04-soglia`. Dopo il push, eseguire `workflow_dispatch` sul
+branch per i sei smoke Linux e l'artifact `object_first_visual_qa`; solo sette
+job verdi e l'ispezione dell'evidenza possono chiudere `OF-04` e attivare
+`OF-05`: apertura e consultazione del Registro.

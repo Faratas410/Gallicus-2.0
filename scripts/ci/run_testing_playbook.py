@@ -63,6 +63,7 @@ STATIC_STEPS: tuple[tuple[str, list[str]], ...] = (
     ("receipt_object", _python_script("scripts/ci/test_receipt_object_contract.py")),
     ("condemnation_mark_object", _python_script("scripts/ci/test_condemnation_mark_object_contract.py")),
     ("second_incision_object", _python_script("scripts/ci/test_second_incision_object_contract.py")),
+    ("arena_threshold_object", _python_script("scripts/ci/test_arena_threshold_object_contract.py")),
     ("release_content", _python_script("scripts/ci/test_release_content_contract.py")),
     ("no_mojibake", _python_script("scripts/ci/test_no_mojibake.py")),
 )

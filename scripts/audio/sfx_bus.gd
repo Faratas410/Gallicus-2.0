@@ -16,6 +16,7 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"registry_receipt_take": -11.0,
 	&"registry_condemnation_mark": -10.5,
 	&"registry_second_incision": -11.0,
+	&"arena_threshold_cross": -11.0,
 	&"game_over": -8.0,
 }
 const SFX_PATHS: Dictionary = {
@@ -32,6 +33,7 @@ const SFX_PATHS: Dictionary = {
 	&"registry_receipt_take": "res://assets/audio/sfx/registry_receipt_take.wav",
 	&"registry_condemnation_mark": "res://assets/audio/sfx/registry_condemnation_mark.wav",
 	&"registry_second_incision": "res://assets/audio/sfx/registry_second_incision.wav",
+	&"arena_threshold_cross": "res://assets/audio/sfx/arena_threshold_cross.wav",
 	&"game_over": "res://assets/audio/sfx/game_over.wav",
 }
 

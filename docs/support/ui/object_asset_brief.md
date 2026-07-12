@@ -229,6 +229,58 @@ Uso: menu e inizio campagna.
 - Il gesto e' entrare.
 - Il brand Gallicus resta evidente.
 
+### Scheda OF-04
+
+```text
+Intento del soggetto: accettare l'esposizione e iniziare una nuova run.
+Oggetto: soglia fisica dell'arena vista appena prima dell'attraversamento.
+Materiale: basalto scuro, bronzo pallido consumato e sabbia rossa compressa.
+Gesto: oltrepassare la soglia.
+Conseguenza leggibile prima del gesto: ingresso nell'arena e avvio della run.
+Stato prima: soglia disponibile, in focus o bloccata.
+Stato dopo: soglia crossed e menu ritirato dal flow esistente.
+Feedback visivo: bronzo caldo e bordo di sabbia riconoscibile, senza spostare il target.
+Feedback audio: sfregamento di pietra e passo sulla sabbia con breve risposta di bronzo.
+Feedback testuale: ENTRA NELL'ARENA con traduzioni esistenti.
+Registrazione prodotta: nuova run avviata dal flow invariato.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_new_run, invariato.
+Fallback accessibile: focus netto e stato crossed immediato senza movimento obbligatorio.
+Schermata o scenario QA: menu principale e BET_PRESENT.
+```
+
+Asset previsto:
+
+- sorgente trasparente senza testo, rapporto `5:2`;
+- safe area centrale scura per copy renderizzato da Godot;
+- stati con geometria identica: normal, focus, pressed, crossed e disabled;
+- destinazione `assets/ui/official/objects/arena_threshold/`;
+- texture condivisa `arena_threshold_base.png`;
+- risorse `sb_arena_threshold_normal.tres`,
+  `sb_arena_threshold_focus.tres`, `sb_arena_threshold_pressed.tres`,
+  `sb_arena_threshold_crossed.tres` e `sb_arena_threshold_disabled.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key con menu
+  e quietanza come riferimenti stilistici, seguita da rimozione locale dello
+  sfondo; nessuna fonte third-party;
+- cue originale procedurale
+  `res://assets/audio/sfx/arena_threshold_cross.wav`;
+- consumer `NewGameButton` dentro `res://scenes/Main.tscn`;
+- CTA canonica `ENTRA NELL'ARENA`, con traduzioni `ENTER THE ARENA` e
+  `ENTRA EN LA ARENA`;
+- nessuna modifica a flow, payload, save o transizione;
+- lo stato crossed precede l'intento e non attende motion;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
+
+Accettazione OF-04:
+
+- soglia riconoscibile senza leggere la label;
+- brand e CTA leggibili in IT/EN/ES nel primo viewport;
+- disabled non sembra una soglia gia' attraversata;
+- mouse, tastiera e focus emettono lo stesso intento;
+- 24 screenshot viewport-only a 1280x720 e 1920x1080;
+- `BET_PRESENT` e ritual-loop contract verdi.
+
 ## Verifica
 
 Ogni famiglia richiede:

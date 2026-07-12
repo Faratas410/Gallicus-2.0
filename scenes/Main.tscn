@@ -25,6 +25,11 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_field_normal.tres" id="24_settings_field_normal"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_field_hover.tres" id="25_settings_field_hover"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_menu_title_stone.tres" id="26_menu_title_stone"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_normal.tres" id="27_arena_threshold_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_focus.tres" id="28_arena_threshold_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_pressed.tres" id="29_arena_threshold_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_crossed.tres" id="30_arena_threshold_crossed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_disabled.tres" id="31_arena_threshold_disabled"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
 texture = null
@@ -309,15 +314,20 @@ text = "Nessuna partita salvata."
 theme_override_font_sizes/font_size = 18
 
 [node name="NewGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 72)
+focus_mode = 2
 text = "ENTRA NELL'ARENA"
 theme_override_colors/font_color = Color(1, 0.94, 0.78, 1)
 theme_override_colors/font_hover_color = Color(1, 0.98, 0.86, 1)
+theme_override_colors/font_focus_color = Color(1, 0.98, 0.86, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.84, 0.66, 1)
+theme_override_colors/font_disabled_color = Color(0.54, 0.52, 0.48, 1)
 theme_override_font_sizes/font_size = 22
-theme_override_styles/normal = ExtResource("8")
-theme_override_styles/hover = ExtResource("9")
-theme_override_styles/pressed = ExtResource("10")
-theme_override_styles/disabled = ExtResource("11")
+theme_override_styles/normal = ExtResource("27_arena_threshold_normal")
+theme_override_styles/hover = ExtResource("28_arena_threshold_focus")
+theme_override_styles/focus = ExtResource("28_arena_threshold_focus")
+theme_override_styles/pressed = ExtResource("29_arena_threshold_pressed")
+theme_override_styles/disabled = ExtResource("31_arena_threshold_disabled")
 
 [node name="LoadGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 custom_minimum_size = Vector2(0, 48)

@@ -119,6 +119,10 @@ Regole canoniche:
 - la diegesi non puo' ridurre leggibilita' o accessibilita';
 - settings, lingua, volume, risoluzione, back e quit possono usare controlli
   convenzionali senza metafora rituale.
+- Nel menu principale `ENTRA NELL'ARENA` e' presentato come soglia fisica:
+  l'input tecnico resta `NewGameButton`, lo stato crossed e' presentazionale
+  e precede l'emissione invariata di `request_new_run`; `RunManager` conserva
+  avvio e transizione.
 
 Le Ere non sono nominate o numerate nella UI. La loro deriva si manifesta
 gradualmente attraverso materiale, copy, suono e composizione. L'Assenza del

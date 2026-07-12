@@ -3,6 +3,13 @@ extends Node
 const MAIN_SCENE: PackedScene = preload("res://scenes/Main.tscn")
 const OUTPUT_DIR: String = "res://artifacts/visual_qa"
 const VIEWPORT_SIZE: Vector2i = Vector2i(1280, 720)
+const THRESHOLD_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const THRESHOLD_LOCALES: Array[String] = ["it", "en", "es"]
+const THRESHOLD_BUTTON_PATH: String = "Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton"
+const MAIN_MENU_PATH: String = "Main/MenuLayer/MainMenu"
 const RECEIPT_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -43,6 +50,7 @@ func _run() -> void:
 		_main = MAIN_SCENE.instantiate()
 		get_tree().root.add_child(_main)
 	await _settle(20)
+	await _capture_arena_threshold_matrix()
 	await _capture("01_menu")
 
 	await _press_when_ready("Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton", 4.0)
@@ -126,6 +134,63 @@ func _capture(name: String, expected_size: Vector2i = Vector2i.ZERO) -> void:
 		_failures.append("Could not save screenshot %s err=%d" % [path, err])
 	else:
 		print("VISUAL_QA:CAPTURE=%s" % ProjectSettings.globalize_path(path))
+
+func _capture_arena_threshold_matrix() -> void:
+	var button: Button = get_tree().root.get_node_or_null(THRESHOLD_BUTTON_PATH) as Button
+	var main_menu: Node = get_tree().root.get_node_or_null(MAIN_MENU_PATH)
+	if button == null or main_menu == null:
+		_failures.append("OF-04 arena threshold nodes missing for visual QA matrix")
+		return
+
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_disabled: bool = button.disabled
+	var previous_crossed: bool = bool(button.get_meta(&"arena_threshold_crossed", false))
+	var previous_processing: bool = main_menu.is_processing()
+	main_menu.set_process(false)
+
+	for locale: String in THRESHOLD_LOCALES:
+		TranslationServer.set_locale(locale)
+		main_menu.call("_refresh_localized_ui")
+		await _settle(8)
+		for viewport_size: Vector2i in THRESHOLD_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "01_threshold_%s_%dx%d" % [
+				locale,
+				viewport_size.x,
+				viewport_size.y,
+			]
+
+			main_menu.call("_set_arena_threshold_crossed_state", false)
+			button.disabled = false
+			button.release_focus()
+			await _capture("%s_normal" % prefix, viewport_size)
+
+			button.grab_focus()
+			await _settle(20)
+			await _capture("%s_focus" % prefix, viewport_size)
+
+			button.release_focus()
+			main_menu.call("_set_arena_threshold_crossed_state", false)
+			button.disabled = true
+			await _capture("%s_disabled" % prefix, viewport_size)
+
+			main_menu.call("_set_arena_threshold_crossed_state", true)
+			await _capture("%s_crossed" % prefix, viewport_size)
+
+	main_menu.call("_set_arena_threshold_crossed_state", previous_crossed)
+	button.disabled = previous_disabled
+	TranslationServer.set_locale(previous_locale)
+	main_menu.call("_refresh_localized_ui")
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	main_menu.set_process(previous_processing)
+	await _settle(8)
 
 func _capture_receipt_matrix() -> void:
 	var button: Button = get_tree().root.get_node_or_null(RECEIPT_BUTTON_PATH) as Button

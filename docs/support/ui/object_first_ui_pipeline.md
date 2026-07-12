@@ -112,6 +112,7 @@ Asset:
 - `registry_receipt_base.png`
 - `registry_condemnation_mark_base.png`
 - `registry_second_incision_sealed.png`
+- `arena_threshold_base.png`
 
 Risorse:
 
@@ -129,12 +130,18 @@ Risorse:
 - `sb_registry_second_incision_pressed.tres`
 - `sb_registry_second_incision_sealed.tres`
 - `sb_registry_second_incision_disabled.tres`
+- `sb_arena_threshold_normal.tres`
+- `sb_arena_threshold_focus.tres`
+- `sb_arena_threshold_pressed.tres`
+- `sb_arena_threshold_crossed.tres`
+- `sb_arena_threshold_disabled.tres`
 
 Nodi:
 
 - `Object_RECEIPT`
 - `Object_CONDEMNATION_MARK`
 - `Object_SECOND_INCISION`
+- `Object_ARENA_THRESHOLD`
 
 ## Definition of Done
 

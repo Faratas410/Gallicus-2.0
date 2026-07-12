@@ -36,6 +36,8 @@ Il mood e' rituale e amministrativo, non action-horror.
 - Double: incisione aggiuntiva con tensione crescente.
 - OF-03 usa il cue `registry_second_incision`: graffio asciutto nella cera e
   breve chiusura di bronzo, senza semantica level-up o fanfara.
+- OF-04 usa il cue `arena_threshold_cross`: pietra sfregata, passo breve sulla
+  sabbia e risposta di bronzo, senza fanfara o semantica di vittoria.
 - END_RUN: timbro e fascicolo, differenziati dal finale terminale.
 
 Nessuna azione importante puo' essere muta senza una ragione documentata.

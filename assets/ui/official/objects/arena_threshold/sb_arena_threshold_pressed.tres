@@ -1,0 +1,15 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/official/objects/arena_threshold/arena_threshold_base.png" id="1_threshold"]
+
+[resource]
+texture = ExtResource("1_threshold")
+texture_margin_left = 32.0
+texture_margin_top = 18.0
+texture_margin_right = 32.0
+texture_margin_bottom = 18.0
+content_margin_left = 36.0
+content_margin_top = 14.0
+content_margin_right = 36.0
+content_margin_bottom = 14.0
+modulate_color = Color(1, 0.68, 0.42, 1)

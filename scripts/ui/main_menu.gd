@@ -15,6 +15,9 @@ const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
 const LanguagesScript = preload("res://assets/i18n/languages.gd")
+const ARENA_THRESHOLD_STYLE_CROSSED: StyleBox = preload("res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_crossed.tres")
+const ARENA_THRESHOLD_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_disabled.tres")
+const ARENA_THRESHOLD_CROSSED_META: StringName = &"arena_threshold_crossed"
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var menu_center: CenterContainer = get_node("CenterContainer") as CenterContainer
@@ -187,6 +190,7 @@ func _load_csv_translation(path: String, locale: String) -> void:
 
 func _show_menu() -> void:
 	menu_vbox.visible = true
+	_set_arena_threshold_crossed_state(false)
 	achievements_panel.visible = false
 	credits_panel.visible = false
 	settings_panel.visible = false
@@ -195,6 +199,20 @@ func _show_menu() -> void:
 
 func _hide_menu() -> void:
 	visible = false
+
+func _set_arena_threshold_crossed_state(crossed: bool) -> void:
+	if new_game_button == null:
+		return
+	new_game_button.set_meta(ARENA_THRESHOLD_CROSSED_META, crossed)
+	new_game_button.disabled = crossed
+	new_game_button.add_theme_stylebox_override(
+		"disabled",
+		ARENA_THRESHOLD_STYLE_CROSSED if crossed else ARENA_THRESHOLD_STYLE_DISABLED
+	)
+	new_game_button.add_theme_color_override(
+		"font_disabled_color",
+		Color(1.0, 0.84, 0.66, 1.0) if crossed else Color(0.54, 0.52, 0.48, 1.0)
+	)
 
 func _on_run_phase_changed(next_phase: int) -> void:
 	if next_phase == RunPhaseContractScript.MAIN_MENU:
@@ -432,9 +450,12 @@ func _on_new_game_pressed() -> void:
 	# NOTE: UI must never call gameplay/run logic directly.
 	# It only emits intent via GameEvents. RunManager is the authority.
 	if GameEvents != null and GameEvents.has_signal("request_new_run"):
+		_play_sfx(&"arena_threshold_cross")
+		_set_arena_threshold_crossed_state(true)
 		GameEvents.request_new_run.emit()
 		_hide_menu()
 	else:
+		_set_arena_threshold_crossed_state(false)
 		continue_hint_label.text = tr("In arrivo.")
 		continue_hint_panel.visible = true
 		continue_hint_label.visible = true
@@ -826,6 +847,8 @@ func _on_menu_button_hover(button: Button, active: bool) -> void:
 
 func _on_menu_button_pressed(button: Button) -> void:
 	if button == null or button.disabled:
+		return
+	if button == new_game_button:
 		return
 	_play_sfx(&"button_click")
 

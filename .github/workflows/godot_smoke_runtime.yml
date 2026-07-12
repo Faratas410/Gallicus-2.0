@@ -72,6 +72,10 @@ jobs:
         run: |
           python3 scripts/ci/test_second_incision_object_contract.py
 
+      - name: Validate OF-04 arena threshold object contract (static)
+        run: |
+          python3 scripts/ci/test_arena_threshold_object_contract.py
+
       - name: Validate release content baseline (static)
         run: |
           python3 scripts/ci/test_release_content_contract.py
@@ -143,7 +147,7 @@ jobs:
             artifacts/${{ matrix.scenario }}
           if-no-files-found: ignore
 
-  visual_qa_object_first_pyl:
+  visual_qa_object_first:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -182,24 +186,27 @@ jobs:
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit
 
-      - name: Capture object-first push-your-luck visual matrix
+      - name: Capture object-first visual matrix
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          timeout 180s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
+          timeout 240s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
+          THRESHOLD_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '01_threshold_*.png' | wc -l)
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
           MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
           INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
+          test "$THRESHOLD_COUNT" -eq 24
           test "$RECEIPT_COUNT" -eq 18
           test "$MARK_COUNT" -eq 18
           test "$INCISION_COUNT" -eq 24
 
-      - name: Upload object-first push-your-luck visual evidence
+      - name: Upload object-first visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: object_first_pyl_visual_qa
+          name: object_first_visual_qa
           path: |
+            artifacts/visual_qa/01_threshold_*.png
             artifacts/visual_qa/07_receipt_*.png
             artifacts/visual_qa/07_mark_*.png
             artifacts/visual_qa/07_incision_*.png

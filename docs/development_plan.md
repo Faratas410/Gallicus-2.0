@@ -148,7 +148,7 @@ Ordine dei pacchetti:
   `BET_PRESENT` Windows resta diagnostico e ha riprodotto il crash nativo
   noto prima di `SMOKE:BOOT_OK` (`NATIVE_CRASH_BEFORE_BOOTSTRAP`).
 - Gate ancora aperto: servono sei smoke Linux e artifact
-  `object_first_visual_qa` dopo il push manuale dell'utente.
+  `object_first_visual_qa` dopo il push manuale su `main`.
 
 ## 1. Foundation Reset
 
@@ -343,9 +343,10 @@ Gate:
 
 ## Prossimo step operativo
 
-`OF-04` e' implementato e verificato localmente. Il lavoro resta nel working
-tree senza commit, push o PR automatici fino alla pubblicazione manuale del
-branch `codex/of-04-soglia`. Dopo il push, eseguire `workflow_dispatch` sul
-branch per i sei smoke Linux e l'artifact `object_first_visual_qa`; solo sette
-job verdi e l'ispezione dell'evidenza possono chiudere `OF-04` e attivare
-`OF-05`: apertura e consultazione del Registro.
+`OF-04` e' implementato e verificato nel commit `f85ad0c`, ora presente sul
+`main` locale. L'utente pubblica manualmente `main` con GitHub Desktop; il push
+avvia il workflow per i sei smoke Linux e l'artifact
+`object_first_visual_qa`. Solo sette job verdi e l'ispezione dell'evidenza
+possono chiudere `OF-04` e attivare `OF-05`: apertura e consultazione del
+Registro. I pacchetti successivi restano sul `main` locale e non usano branch
+alternativi salvo richiesta esplicita dell'utente.

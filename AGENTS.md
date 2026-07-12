@@ -15,8 +15,9 @@ These rules apply to all coding agents working in this repository.
 ## Local Delivery Workflow
 
 - Agents must leave completed and verified changes in the local working tree by default.
-- Agents must not create commits, push branches, open pull requests, mark pull requests ready, or merge them unless the user explicitly requests that specific action.
-- The user reviews and pushes local changes manually with GitHub Desktop.
+- Agents work directly on the local `main` branch by default and must not create or switch to feature branches unless the user explicitly requests it.
+- Agents must not create commits, push any ref, open pull requests, mark pull requests ready, or merge them unless the user explicitly requests that specific action.
+- The user reviews, commits, and pushes local changes manually from `main` with GitHub Desktop.
 - Final handoff must list the changed files and the verification performed.
 
 ## Documentation Operating System

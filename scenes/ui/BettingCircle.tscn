@@ -5,8 +5,8 @@
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_betting_title.tres" id="10"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/italiana_regular_font.tres" id="11_book_font"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_slab.tres" id="12_register_slab"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_slab_closed.tres" id="13_register_slab_closed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/registry_table/sb_registry_table_open.tres" id="12_registry_table_open"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/registry_table/sb_registry_table_closed_normal.tres" id="13_registry_table_closed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_register_tablet.tres" id="14_register_tablet"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_normal.tres" id="15_button_normal"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_hover.tres" id="16_button_hover"]
@@ -43,28 +43,28 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -410.0
-offset_top = -255.0
-offset_right = 410.0
-offset_bottom = 283.0
+offset_left = -450.0
+offset_top = -280.0
+offset_right = 450.0
+offset_bottom = 310.0
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_minimum_size = Vector2(820, 538)
+custom_minimum_size = Vector2(900, 590)
 mouse_filter = 1
 
 [node name="SpellbookBg" type="PanelContainer" parent="CenterContainer/BookFrame"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = ExtResource("12_register_slab")
+theme_override_styles/panel = ExtResource("12_registry_table_open")
 
 [node name="ClosedBookBg" type="PanelContainer" parent="CenterContainer/BookFrame"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = ExtResource("13_register_slab_closed")
+theme_override_styles/panel = ExtResource("13_registry_table_closed")
 
 [node name="ClosedIntro" type="Control" parent="CenterContainer/BookFrame"]
 visible = false
@@ -128,6 +128,7 @@ anchor_left = 0.34
 anchor_top = 0.645
 anchor_right = 0.66
 anchor_bottom = 0.745
+focus_mode = 2
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
 theme_override_styles/pressed = ExtResource("17_button_pressed")
@@ -165,16 +166,16 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="LeftPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.075
-anchor_top = 0.12
-anchor_right = 0.475
-anchor_bottom = 0.89
+anchor_left = 0.125
+anchor_top = 0.237
+anchor_right = 0.455
+anchor_bottom = 0.77
 mouse_filter = 1
 
 [node name="LeftPaper" type="PanelContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = ExtResource("14_register_tablet")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_1")
 
 [node name="LeftSelectionOutline" type="Control" parent="CenterContainer/BookFrame/LeftPage"]
 visible = false
@@ -217,11 +218,11 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
-anchor_bottom = 0.79
-offset_left = 28.0
-offset_top = 18.0
-offset_right = -18.0
-offset_bottom = -6.0
+anchor_bottom = 0.81
+offset_left = 20.0
+offset_top = 26.0
+offset_right = -14.0
+offset_bottom = -4.0
 clip_contents = true
 mouse_filter = 2
 
@@ -231,21 +232,24 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.82, 0.74, 0.6, 0.98)
+theme_override_colors/default_color = Color(0.16, 0.13, 0.11, 0.98)
 theme_override_fonts/normal_font = ExtResource("11_book_font")
 theme_override_fonts/bold_font = ExtResource("11_book_font")
-theme_override_font_sizes/normal_font_size = 13
-theme_override_font_sizes/bold_font_size = 13
+theme_override_fonts/italics_font = ExtResource("11_book_font")
+theme_override_constants/line_separation = -1
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
 bbcode_enabled = true
 text = "[center][b]VIA SINISTRA[/b][/center]"
 scroll_active = false
 autowrap_mode = 3
 
 [node name="Btn_Sign_Left" type="Button" parent="CenterContainer/BookFrame/LeftPage"]
-anchor_left = 0.25
-anchor_top = 0.835
-anchor_right = 0.75
-anchor_bottom = 0.955
+anchor_left = 0.22
+anchor_top = 0.84
+anchor_right = 0.78
+anchor_bottom = 0.97
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
 theme_override_styles/pressed = ExtResource("17_button_pressed")
@@ -261,16 +265,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
 [node name="RightPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.525
-anchor_top = 0.12
-anchor_right = 0.925
-anchor_bottom = 0.89
+anchor_left = 0.545
+anchor_top = 0.237
+anchor_right = 0.875
+anchor_bottom = 0.77
 mouse_filter = 1
 
 [node name="RightPaper" type="PanelContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = ExtResource("14_register_tablet")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_1")
 
 [node name="RightSelectionOutline" type="Control" parent="CenterContainer/BookFrame/RightPage"]
 visible = false
@@ -313,11 +317,11 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
-anchor_bottom = 0.79
-offset_left = 18.0
-offset_top = 18.0
-offset_right = -28.0
-offset_bottom = -6.0
+anchor_bottom = 0.81
+offset_left = 14.0
+offset_top = 26.0
+offset_right = -16.0
+offset_bottom = -4.0
 clip_contents = true
 mouse_filter = 2
 
@@ -327,21 +331,24 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.82, 0.74, 0.6, 0.98)
+theme_override_colors/default_color = Color(0.16, 0.13, 0.11, 0.98)
 theme_override_fonts/normal_font = ExtResource("11_book_font")
 theme_override_fonts/bold_font = ExtResource("11_book_font")
-theme_override_font_sizes/normal_font_size = 13
-theme_override_font_sizes/bold_font_size = 13
+theme_override_fonts/italics_font = ExtResource("11_book_font")
+theme_override_constants/line_separation = -1
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
 bbcode_enabled = true
 text = "[center][b]VIA DESTRA[/b][/center]"
 scroll_active = false
 autowrap_mode = 3
 
 [node name="Btn_Sign_Right" type="Button" parent="CenterContainer/BookFrame/RightPage"]
-anchor_left = 0.25
-anchor_top = 0.835
-anchor_right = 0.75
-anchor_bottom = 0.955
+anchor_left = 0.22
+anchor_top = 0.84
+anchor_right = 0.78
+anchor_bottom = 0.97
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
 theme_override_styles/pressed = ExtResource("17_button_pressed")

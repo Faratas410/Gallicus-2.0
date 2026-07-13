@@ -113,6 +113,8 @@ Asset:
 - `registry_condemnation_mark_base.png`
 - `registry_second_incision_sealed.png`
 - `arena_threshold_base.png`
+- `registry_table_closed.png`
+- `registry_table_open.png`
 
 Risorse:
 
@@ -135,6 +137,11 @@ Risorse:
 - `sb_arena_threshold_pressed.tres`
 - `sb_arena_threshold_crossed.tres`
 - `sb_arena_threshold_disabled.tres`
+- `sb_registry_table_closed_normal.tres`
+- `sb_registry_table_closed_focus.tres`
+- `sb_registry_table_closed_pressed.tres`
+- `sb_registry_table_closed_disabled.tres`
+- `sb_registry_table_open.tres`
 
 Nodi:
 
@@ -142,6 +149,7 @@ Nodi:
 - `Object_CONDEMNATION_MARK`
 - `Object_SECOND_INCISION`
 - `Object_ARENA_THRESHOLD`
+- `Object_REGISTRY_TABLE` (`ClosedBookBg`/`SpellbookBg` nel consumer attuale)
 
 ## Definition of Done
 

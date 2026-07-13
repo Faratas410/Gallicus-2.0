@@ -8,6 +8,15 @@ const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
 const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
 const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/backgrounds/bg_registry_ritual.png")
+const REGISTRY_TABLE_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_normal.tres")
+const REGISTRY_TABLE_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_focus.tres")
+const REGISTRY_TABLE_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_pressed.tres")
+const REGISTRY_TABLE_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_disabled.tres")
+const REGISTRY_TABLE_STATE_NORMAL: StringName = &"normal"
+const REGISTRY_TABLE_STATE_FOCUS: StringName = &"focus"
+const REGISTRY_TABLE_STATE_PRESSED: StringName = &"pressed"
+const REGISTRY_TABLE_STATE_DISABLED: StringName = &"disabled"
+const REGISTRY_TABLE_STATE_META: StringName = &"registry_table_state"
 const BOOK_TITLE_PULSE_SPEED: float = 1.15
 const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
 const BOOK_DROP_SECONDS: float = 0.62
@@ -33,7 +42,7 @@ const PAGE_IDLE_DRIFT_PIXELS: float = 1.4
 @onready var header_label: Label = get_node_or_null("CenterContainer/BookFrame/Title") as Label
 @onready var book_frame: Control = $CenterContainer/BookFrame as Control
 @onready var open_book_bg: Control = $CenterContainer/BookFrame/SpellbookBg as Control
-@onready var closed_book_bg: Control = $CenterContainer/BookFrame/ClosedBookBg as Control
+@onready var closed_book_bg: PanelContainer = $CenterContainer/BookFrame/ClosedBookBg as PanelContainer
 @onready var closed_intro: Control = $CenterContainer/BookFrame/ClosedIntro as Control
 @onready var intro_text: Label = $CenterContainer/BookFrame/ClosedIntro/IntroText as Label
 @onready var intro_body: Label = $CenterContainer/BookFrame/ClosedIntro/IntroBodyPanel/IntroBody as Label
@@ -68,6 +77,12 @@ func _ready() -> void:
 	right_sign_button.pressed.connect(_on_sign_right_pressed)
 	if open_book_button != null:
 		open_book_button.pressed.connect(_on_open_book_pressed)
+		open_book_button.mouse_entered.connect(_on_open_book_focus_entered)
+		open_book_button.mouse_exited.connect(_on_open_book_focus_exited)
+		open_book_button.focus_entered.connect(_on_open_book_focus_entered)
+		open_book_button.focus_exited.connect(_on_open_book_focus_exited)
+		open_book_button.button_down.connect(_on_open_book_button_down)
+		open_book_button.button_up.connect(_on_open_book_button_up)
 	_wire_button_feedback_sfx()
 	# Legacy CI contract token: bet_option_3.visible = false
 	_refresh_from_catalog_if_empty()
@@ -102,7 +117,10 @@ func _refresh_localized_text() -> void:
 	if intro_text != null:
 		intro_text.text = tr("IL REGISTRO E' CHIUSO")
 	if intro_body != null:
-		intro_body.text = tr("La pietra attende una firma.\nOgni patto lascia un segno.")
+		intro_body.text = "%s\n%s" % [
+			tr("La pietra attende una firma."),
+			tr("Ogni patto lascia un segno."),
+		]
 	if intro_seal != null:
 		intro_seal.text = tr("I    II    III")
 	if open_book_label != null:
@@ -234,6 +252,7 @@ func _show_closed_intro() -> void:
 		closed_intro.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	if open_book_button != null:
 		open_book_button.disabled = false
+	_set_registry_table_closed_state(REGISTRY_TABLE_STATE_NORMAL)
 	_set_book_input_enabled(false)
 
 func _hide_closed_intro() -> void:
@@ -241,13 +260,54 @@ func _hide_closed_intro() -> void:
 		closed_intro.visible = false
 	if open_book_button != null:
 		open_book_button.disabled = true
+	_set_registry_table_closed_state(REGISTRY_TABLE_STATE_DISABLED)
 
 func _on_open_book_pressed() -> void:
 	if not _awaiting_open_request:
 		return
-	_play_sfx(&"button_click")
+	_play_sfx(&"registry_table_open")
 	_awaiting_open_request = false
 	_play_open_animation()
+
+func _on_open_book_focus_entered() -> void:
+	if not _awaiting_open_request or open_book_button == null or open_book_button.disabled:
+		return
+	_set_registry_table_closed_state(REGISTRY_TABLE_STATE_FOCUS)
+
+func _on_open_book_focus_exited() -> void:
+	if not _awaiting_open_request or open_book_button == null or open_book_button.disabled:
+		return
+	if open_book_button.is_hovered():
+		return
+	_set_registry_table_closed_state(REGISTRY_TABLE_STATE_NORMAL)
+
+func _on_open_book_button_down() -> void:
+	if not _awaiting_open_request or open_book_button == null or open_book_button.disabled:
+		return
+	_set_registry_table_closed_state(REGISTRY_TABLE_STATE_PRESSED)
+
+func _on_open_book_button_up() -> void:
+	if not _awaiting_open_request or open_book_button == null or open_book_button.disabled:
+		return
+	var next_state: StringName = REGISTRY_TABLE_STATE_FOCUS if open_book_button.has_focus() or open_book_button.is_hovered() else REGISTRY_TABLE_STATE_NORMAL
+	_set_registry_table_closed_state(next_state)
+
+func _set_registry_table_closed_state(state: StringName) -> void:
+	if closed_book_bg == null:
+		return
+	var style: StyleBox = REGISTRY_TABLE_STYLE_NORMAL
+	match state:
+		REGISTRY_TABLE_STATE_FOCUS:
+			style = REGISTRY_TABLE_STYLE_FOCUS
+		REGISTRY_TABLE_STATE_PRESSED:
+			style = REGISTRY_TABLE_STYLE_PRESSED
+		REGISTRY_TABLE_STATE_DISABLED:
+			style = REGISTRY_TABLE_STYLE_DISABLED
+		_:
+			state = REGISTRY_TABLE_STATE_NORMAL
+	closed_book_bg.add_theme_stylebox_override("panel", style)
+	if open_book_button != null:
+		open_book_button.set_meta(REGISTRY_TABLE_STATE_META, state)
 
 func _build_book_content_node_list() -> void:
 	_book_content_nodes = [] as Array[CanvasItem]
@@ -608,7 +668,7 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 	_append_contract_section(lines, tr("PATTO"), pact_text, false)
 	if lines.is_empty():
 		return EMPTY_PAGE_BODY
-	return "\n\n".join(lines)
+	return "\n".join(lines)
 
 func _append_contract_section(lines: Array[String], section_title: String, body_text: String, emphasize_effect: bool) -> void:
 	var body: String = body_text.strip_edges()

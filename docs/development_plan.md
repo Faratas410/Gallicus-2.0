@@ -12,7 +12,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-04 - soglia**.
+- Pacchetto attivo: **OF-05 - apertura e consultazione del Registro**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -130,7 +130,7 @@ Ordine dei pacchetti:
   `sha256:ee1193ef9802f650b4e8bc41dcf819ef6dd2079ce31e6f19623bf0a0969164ab`.
 - Gate chiuso: 2026-07-11, PR #536 verde e mergiata in `main`.
 
-### Pacchetto attivo: OF-04
+### Pacchetto chiuso: OF-04
 
 - Comportamento: trasformare l'ingresso della campagna nella soglia
   object-first dell'arena, mantenendo il CTA `ENTRA NELL'ARENA` e il flow
@@ -147,8 +147,35 @@ Ordine dei pacchetti:
   con 24 catture viewport-only IT/EN/ES a 1280x720 e 1920x1080. Lo smoke
   `BET_PRESENT` Windows resta diagnostico e ha riprodotto il crash nativo
   noto prima di `SMOKE:BOOT_OK` (`NATIVE_CRASH_BEFORE_BOOTSTRAP`).
-- Gate ancora aperto: servono sei smoke Linux e artifact
-  `object_first_visual_qa` dopo il push manuale su `main`.
+- Evidenza Linux: commit `d14013f`, sei smoke e visual QA verdi nella
+  [run 29211497525](https://github.com/Faratas410/Gallicus-2.0/actions/runs/29211497525).
+- Evidenza visuale: artifact `object_first_visual_qa`, 85 catture viewport-only:
+  24 soglie, 18 quietanze, 18 marchi, 24 incisioni e schermata generale Push
+  Your Luck. La matrice OF-04 copre IT/EN/ES, normal, focus, disabled e crossed
+  a 1280x720 e 1920x1080; digest
+  `sha256:8ebb1d87621a2fa8a5513ef258a77cc09c9f3c7573c7e0ad5fd184abf1bfddab`.
+- Gate chiuso: 2026-07-13, sette job verdi su `main` e artifact ispezionato.
+
+### Pacchetto attivo: OF-05
+
+- Comportamento: trasformare apertura e consultazione delle offerte nella
+  tavola object-first del Registro, mantenendo flow e selezione esistenti.
+- Owner: `RunManager` per flow e dati delle offerte; UI reattiva per apertura,
+  presentazione e invio degli intenti gia' esistenti.
+- Contratti: object grammar, ritual loop, UI canon e localizzazione IT/EN/ES.
+- Vincoli: nessun nuovo segnale, payload, campo save, manager o calcolo UI.
+- Implementazione locale: tavola 3:2 chiusa/aperta in basalto, bronzo,
+  calcare e cera, stati closed normal/focus/pressed/disabled e open, CTA
+  `APRI IL REGISTRO` localizzata e cue `registry_table_open`. L'apertura resta
+  presentazione UI-only; `request_place_bet` e le offerte sono invariati.
+- Prove locali: playbook statico completo, i18n, motion, contratti object-first
+  e import Godot 4.6.2 verdi. La matrice visuale locale produce 24 catture
+  Registro IT/EN/ES, closed normal/focus/disabled e open a 1280x720 e
+  1920x1080, tutte con dimensioni e layout verificati. `BET_PRESENT` Windows
+  resta diagnostico e riproduce il crash nativo noto prima di
+  `SMOKE:BOOT_OK` (`NATIVE_CRASH_BEFORE_BOOTSTRAP`, exit `0xC0000005`).
+- Gate aperto: servono verifica locale completa, sei smoke Linux e artifact
+  `object_first_visual_qa` con 24 catture Registro ispezionate.
 
 ## 1. Foundation Reset
 
@@ -343,10 +370,9 @@ Gate:
 
 ## Prossimo step operativo
 
-`OF-04` e' implementato e verificato nel commit `f85ad0c`, ora presente sul
-`main` locale. L'utente pubblica manualmente `main` con GitHub Desktop; il push
-avvia il workflow per i sei smoke Linux e l'artifact
-`object_first_visual_qa`. Solo sette job verdi e l'ispezione dell'evidenza
-possono chiudere `OF-04` e attivare `OF-05`: apertura e consultazione del
-Registro. I pacchetti successivi restano sul `main` locale e non usano branch
-alternativi salvo richiesta esplicita dell'utente.
+`OF-05` e' implementato e verificato localmente nel working tree di `main`
+senza cambiare flow, payload, save o autorita'. Il prossimo passo esterno e'
+il commit e push manuale tramite GitHub Desktop; quindi sei smoke Linux e il
+job `visual_qa_object_first`, con ispezione delle 24 catture Registro
+nell'artifact `object_first_visual_qa`, chiudono il gate. `OF-06` non e'
+ancora attivo.

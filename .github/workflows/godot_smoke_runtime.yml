@@ -76,6 +76,10 @@ jobs:
         run: |
           python3 scripts/ci/test_arena_threshold_object_contract.py
 
+      - name: Validate OF-05 registry table object contract (static)
+        run: |
+          python3 scripts/ci/test_registry_table_object_contract.py
+
       - name: Validate release content baseline (static)
         run: |
           python3 scripts/ci/test_release_content_contract.py
@@ -190,12 +194,14 @@ jobs:
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          timeout 240s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
+          timeout 300s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
           THRESHOLD_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '01_threshold_*.png' | wc -l)
+          REGISTRY_TABLE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '02_registry_*.png' | wc -l)
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
           MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
           INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
           test "$THRESHOLD_COUNT" -eq 24
+          test "$REGISTRY_TABLE_COUNT" -eq 24
           test "$RECEIPT_COUNT" -eq 18
           test "$MARK_COUNT" -eq 18
           test "$INCISION_COUNT" -eq 24
@@ -207,6 +213,9 @@ jobs:
           name: object_first_visual_qa
           path: |
             artifacts/visual_qa/01_threshold_*.png
+            artifacts/visual_qa/02_registry_*.png
+            artifacts/visual_qa/02_register_closed.png
+            artifacts/visual_qa/03_register_open.png
             artifacts/visual_qa/07_receipt_*.png
             artifacts/visual_qa/07_mark_*.png
             artifacts/visual_qa/07_incision_*.png

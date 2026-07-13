@@ -251,13 +251,19 @@ Stop-condition note (active): version `.png.import` sidecars only for tracked so
 
 ### Gallicus-special widgets (bet/choice UI, etc.)
 - Active StonePixel assets:
-  - `res://assets/ui/third_party/gowl_stonepixel/frame_panel.png` for register slab and ritual panels.
+  - `res://assets/ui/third_party/gowl_stonepixel/frame_panel.png` for ritual panels outside the OF-05 Registry table.
   - `res://assets/ui/third_party/gowl_stonepixel/panel_plain.png` for register tablets, scars bodies, verdict bodies, and small plates.
   - `res://assets/ui/third_party/gowl_stonepixel/title_plate.png` for title/banners where a compact stone title surface is needed.
   - `res://assets/ui/third_party/gowl_stonepixel/bar_stone.png`, `bar_dark.png`, and `bar_knob.png` for pressure and slider-style surfaces.
+- Dedicated object-first assets:
+  - `res://assets/ui/official/objects/registry_table/registry_table_closed.png` and
+    `registry_table_open.png` provide the closed/open OF-05 Registry surface.
 - Legacy/residue naming still present during migration:
-  - `res://scenes/ui/BettingCircle.tscn` still contains book-era node names such as `BookFrame`, `SpellbookBg`, and `ClosedBookBg`, but those nodes are PanelContainers styled through StonePixel-backed registry styleboxes.
-- Legacy references replaced: `Spellbook & Tabs` PNG assets are no longer part of active runtime scenes.
+  - `res://scenes/ui/BettingCircle.tscn` keeps book-era node names such as
+    `BookFrame`, `SpellbookBg`, and `ClosedBookBg`, but those PanelContainers now
+    bind the dedicated Registry table resources.
+- Legacy references replaced: `Spellbook & Tabs` PNG assets and the generic
+  StonePixel register slab are no longer part of the active BettingCircle surface.
 - Notes: runtime behavior remains UI-presentational; RunManager flow authority is unchanged.
 
 ## Visual binding audit baseline (placeholder policy)
@@ -415,12 +421,17 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - `CondannaIcon` remains present but non-dominant (`custom_minimum_size = Vector2(0, 32)`, non-expanding stretch mode), so iconography does not displace label readability.
 - Scope guard: this baseline is visual-only and does not change `RunManager`, `GameEvents`, bet payload content, or flow authority.
 
-## BettingCircle page contract model (Patch: book readability)
+## BettingCircle Registry table contract (OF-05)
 - Runtime scene: `res://scenes/ui/BettingCircle.tscn`.
-- The open book remains the active pact-selection metaphor. It must not be replaced by generic modal cards unless the asset direction is explicitly retired.
+- The two-leaf Registry table preserves the established open-book composition
+  while reading as basalt, bronze and limestone rather than a fantasy spellbook.
+  It must not be replaced by generic modal cards.
+- Opening the table is UI-only presentation: it emits no new intent and does not
+  alter the prepared offer payload. Signing still emits the existing
+  `request_place_bet` intent.
 - Each page renders one unified `RichTextLabel` contract block (`Rtl_Left_Contract`, `Rtl_Right_Contract`) containing title, subtitle, condanna, condition, and pact copy.
 - Local fragmented render paths (`Lbl_*_Title`, `Rtl_*_Bet`, `Rtl_*_Explain`) are retired because they create scrollbars, duplicated spacing, and overlay-like text drift.
-- Contract text is styled as dark ink on parchment. White overlay text is reserved for global labels/buttons, not pact body copy.
+- Contract text is styled as dark ink on pale limestone. White overlay text is reserved for global labels/buttons, not pact body copy.
 - Scope guard: this is presentation-only. BettingCircle still consumes prepared offer payloads and does not own bet selection authority beyond emitting the existing sign intent.
 
 ## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)

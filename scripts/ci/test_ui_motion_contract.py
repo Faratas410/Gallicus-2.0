@@ -115,7 +115,7 @@ def test_ui_motion_contract() -> None:
 
     betting_scene = (ROOT / "scenes" / "ui" / "BettingCircle.tscn").read_text(encoding="utf-8")
     for token in [
-        "sb_register_slab_closed.tres",
+        "sb_registry_table_closed_normal.tres",
         "ClosedBookBg",
         "ClosedIntro",
         "Btn_Open_Book",

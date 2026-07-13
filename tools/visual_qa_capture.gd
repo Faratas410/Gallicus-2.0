@@ -10,6 +10,13 @@ const THRESHOLD_VIEWPORT_SIZES: Array[Vector2i] = [
 const THRESHOLD_LOCALES: Array[String] = ["it", "en", "es"]
 const THRESHOLD_BUTTON_PATH: String = "Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton"
 const MAIN_MENU_PATH: String = "Main/MenuLayer/MainMenu"
+const REGISTRY_TABLE_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const REGISTRY_TABLE_LOCALES: Array[String] = ["it", "en", "es"]
+const REGISTRY_TABLE_PATH: String = "Main/UI/UI_RunRoot/BettingCircle"
+const REGISTRY_TABLE_BUTTON_PATH: String = "Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book"
 const RECEIPT_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -56,6 +63,7 @@ func _run() -> void:
 	await _press_when_ready("Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/BettingCircle", true, 4.0)
 	await _settle(12)
+	await _capture_registry_table_matrix()
 	await _capture("02_register_closed")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book", 4.0)
@@ -190,6 +198,61 @@ func _capture_arena_threshold_matrix() -> void:
 	get_tree().root.content_scale_size = previous_content_scale_size
 	get_tree().root.size = previous_size
 	main_menu.set_process(previous_processing)
+	await _settle(8)
+
+func _capture_registry_table_matrix() -> void:
+	var registry_table: Node = get_tree().root.get_node_or_null(REGISTRY_TABLE_PATH)
+	var open_button: Button = get_tree().root.get_node_or_null(REGISTRY_TABLE_BUTTON_PATH) as Button
+	if registry_table == null or open_button == null:
+		_failures.append("OF-05 registry table nodes missing for visual QA matrix")
+		return
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = DisplayServer.window_get_size()
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_processing: bool = registry_table.is_processing()
+	registry_table.set_process(false)
+	for locale: String in REGISTRY_TABLE_LOCALES:
+		TranslationServer.set_locale(locale)
+		await _settle(8)
+		for viewport_size: Vector2i in REGISTRY_TABLE_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "02_registry_%s_%dx%d" % [
+				locale,
+				viewport_size.x,
+				viewport_size.y,
+			]
+
+			registry_table.call("_show_closed_intro")
+			open_button.disabled = false
+			open_button.release_focus()
+			registry_table.call("_set_registry_table_closed_state", &"normal")
+			await _capture("%s_closed_normal" % prefix, viewport_size)
+
+			open_button.grab_focus()
+			registry_table.call("_set_registry_table_closed_state", &"focus")
+			await _settle(20)
+			await _capture("%s_closed_focus" % prefix, viewport_size)
+
+			open_button.release_focus()
+			open_button.disabled = true
+			registry_table.call("_set_registry_table_closed_state", &"disabled")
+			await _capture("%s_closed_disabled" % prefix, viewport_size)
+
+			registry_table.call("_hide_closed_intro")
+			registry_table.call("_show_book_open_state")
+			registry_table.call("_show_book_content_immediate")
+			registry_table.call("_show_contract_text_immediate")
+			await _capture("%s_open" % prefix, viewport_size)
+
+	TranslationServer.set_locale(previous_locale)
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	registry_table.call("_show_closed_intro")
+	registry_table.set_process(previous_processing)
 	await _settle(8)
 
 func _capture_receipt_matrix() -> void:

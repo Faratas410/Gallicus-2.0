@@ -281,6 +281,66 @@ Accettazione OF-04:
 - 24 screenshot viewport-only a 1280x720 e 1920x1080;
 - `BET_PRESENT` e ritual-loop contract verdi.
 
+## Tavola del Registro
+
+Uso: apertura e consultazione delle due offerte in `BET_PRESENT`.
+
+- Tavola amministrativa a due foglie, non spellbook fantasy o modal generico.
+- Stati: closed normal, focus, pressed, disabled e open persistente.
+- Il gesto e' aprire; la firma delle offerte resta il gesto del pacchetto successivo.
+- La conseguenza e' l'esposizione delle due offerte gia' preparate dal flow.
+
+### Scheda OF-05
+
+```text
+Intento del soggetto: aprire il Registro e consultare le due offerte esposte.
+Oggetto: tavola del Registro chiusa da sigillo e apribile in due foglie.
+Materiale: basalto intatto, bronzo consumato, calcare chiaro e cera rossa spezzata.
+Gesto: aprire la tavola.
+Conseguenza leggibile prima del gesto: due offerte comparabili diventano consultabili.
+Stato prima: tavola chiusa disponibile, in focus, premuta o bloccata.
+Stato dopo: tavola aperta con due superfici leggibili e geometria invariata.
+Feedback visivo: focus dorato, pressione calda, sigillo diviso e foglie esposte.
+Feedback audio: scorrimento di lastra, cerniera di bronzo e assestamento grave.
+Feedback testuale: APRI IL REGISTRO con traduzioni IT/EN/ES.
+Registrazione prodotta: offerte esposte; nessuna decisione gameplay al solo gesto di apertura.
+Owner dati/flow: RunManager.
+Segnale GameEvents: nessuno per l'apertura; request_place_bet resta invariato per la firma.
+Fallback accessibile: stato chiuso/aperto, focus e copy restano leggibili senza motion.
+Schermata o scenario QA: BET_PRESENT, Registro chiuso e Registro aperto.
+```
+
+Asset previsto:
+
+- due sorgenti trasparenti senza testo, rapporto `3:2` e dimensioni identiche;
+- safe area centrale scura nello stato chiuso e due safe area chiare nello stato aperto;
+- destinazione `assets/ui/official/objects/registry_table/`;
+- texture `registry_table_closed.png` e `registry_table_open.png`;
+- risorse `sb_registry_table_closed_normal.tres`,
+  `sb_registry_table_closed_focus.tres`,
+  `sb_registry_table_closed_pressed.tres`,
+  `sb_registry_table_closed_disabled.tres` e `sb_registry_table_open.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key con soglia,
+  quietanza e schermata Registro come riferimenti, seguita da rimozione locale
+  dello sfondo; nessuna fonte third-party;
+- cue originale procedurale `res://assets/audio/sfx/registry_table_open.wav`;
+- consumer `ClosedBookBg`, `SpellbookBg` e `Btn_Open_Book` dentro
+  `res://scenes/ui/BettingCircle.tscn`;
+- CTA `APRI IL REGISTRO`, con traduzioni `OPEN THE REGISTRY` e
+  `ABRE EL REGISTRO`;
+- nessuna modifica a flow, payload, save, offerte o transizione;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
+
+Accettazione OF-05:
+
+- tavola chiusa e aperta riconoscibili senza leggere la label;
+- due offerte confrontabili senza wrapping distruttivo;
+- CTA e intro leggibili in IT/EN/ES;
+- focus, pressed, disabled e open non cambiano geometria;
+- 24 screenshot viewport-only a 1280x720 e 1920x1080;
+- `BET_PRESENT`, motion, i18n e ritual-loop contract verdi.
+
 ## Verifica
 
 Ogni famiglia richiede:

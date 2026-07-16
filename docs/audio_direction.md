@@ -40,6 +40,9 @@ Il mood e' rituale e amministrativo, non action-horror.
   sabbia e risposta di bronzo, senza fanfara o semantica di vittoria.
 - OF-05 usa il cue `registry_table_open`: lastra che scorre, cerniera di bronzo
   e assestamento grave, senza click digitale o semantica di ricompensa.
+- OF-06 usa il cue `registry_promise_sign`: graffio asciutto dello stilo nella
+  cera seguito da una breve impressione di bronzo, senza click digitale o
+  fanfara.
 - END_RUN: timbro e fascicolo, differenziati dal finale terminale.
 
 Nessuna azione importante puo' essere muta senza una ragione documentata.

@@ -12,6 +12,10 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_hover.tres" id="16_button_hover"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres" id="17_button_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres" id="18_button_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_normal.tres" id="19_promise_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_focus.tres" id="20_promise_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_pressed.tres" id="21_promise_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_disabled.tres" id="24_promise_disabled"]
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
 [node name="BettingCircle" type="Control"]
@@ -250,10 +254,12 @@ anchor_left = 0.22
 anchor_top = 0.84
 anchor_right = 0.78
 anchor_bottom = 0.97
-theme_override_styles/normal = ExtResource("15_button_normal")
-theme_override_styles/hover = ExtResource("16_button_hover")
-theme_override_styles/pressed = ExtResource("17_button_pressed")
-theme_override_styles/disabled = ExtResource("18_button_disabled")
+focus_mode = 2
+theme_override_styles/normal = ExtResource("19_promise_normal")
+theme_override_styles/hover = ExtResource("20_promise_focus")
+theme_override_styles/focus = ExtResource("20_promise_focus")
+theme_override_styles/pressed = ExtResource("21_promise_pressed")
+theme_override_styles/disabled = ExtResource("24_promise_disabled")
 text = ""
 
 [node name="Lbl_Sign_Left" type="Label" parent="CenterContainer/BookFrame/LeftPage/Btn_Sign_Left"]
@@ -349,10 +355,12 @@ anchor_left = 0.22
 anchor_top = 0.84
 anchor_right = 0.78
 anchor_bottom = 0.97
-theme_override_styles/normal = ExtResource("15_button_normal")
-theme_override_styles/hover = ExtResource("16_button_hover")
-theme_override_styles/pressed = ExtResource("17_button_pressed")
-theme_override_styles/disabled = ExtResource("18_button_disabled")
+focus_mode = 2
+theme_override_styles/normal = ExtResource("19_promise_normal")
+theme_override_styles/hover = ExtResource("20_promise_focus")
+theme_override_styles/focus = ExtResource("20_promise_focus")
+theme_override_styles/pressed = ExtResource("21_promise_pressed")
+theme_override_styles/disabled = ExtResource("24_promise_disabled")
 text = ""
 
 [node name="Lbl_Sign_Right" type="Label" parent="CenterContainer/BookFrame/RightPage/Btn_Sign_Right"]

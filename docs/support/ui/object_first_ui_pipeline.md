@@ -115,6 +115,8 @@ Asset:
 - `arena_threshold_base.png`
 - `registry_table_closed.png`
 - `registry_table_open.png`
+- `registry_promise_signature_blank.png`
+- `registry_promise_signature_signed.png`
 
 Risorse:
 
@@ -142,6 +144,12 @@ Risorse:
 - `sb_registry_table_closed_pressed.tres`
 - `sb_registry_table_closed_disabled.tres`
 - `sb_registry_table_open.tres`
+- `sb_registry_promise_signature_normal.tres`
+- `sb_registry_promise_signature_focus.tres`
+- `sb_registry_promise_signature_pressed.tres`
+- `sb_registry_promise_signature_selected.tres`
+- `sb_registry_promise_signature_signed.tres`
+- `sb_registry_promise_signature_disabled.tres`
 
 Nodi:
 
@@ -150,6 +158,7 @@ Nodi:
 - `Object_SECOND_INCISION`
 - `Object_ARENA_THRESHOLD`
 - `Object_REGISTRY_TABLE` (`ClosedBookBg`/`SpellbookBg` nel consumer attuale)
+- `Object_PROMISE_SIGNATURE` (`Btn_Sign_Left`/`Btn_Sign_Right` nel consumer attuale)
 
 ## Definition of Done
 
@@ -160,6 +169,10 @@ Nodi:
 - feedback completo;
 - focus e reduced motion verificati;
 - smoke e visual QA verdi.
+
+La prova completa e' cumulativa ai checkpoint OF-06, OF-09 e OF-11. Tra i
+checkpoint il pacchetto usa contratto specifico, import pertinente e QA
+rappresentativa; il signoff formale resta sospeso fino al checkpoint.
 
 ## Stop
 

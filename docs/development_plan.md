@@ -12,7 +12,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-05 - apertura e consultazione del Registro**.
+- Pacchetto attivo: **OF-06 - scelta e firma della promessa**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -26,7 +26,8 @@ sono versioni di prodotto e non sostituiscono i gate degli stage.
 Regole:
 
 - un solo pacchetto runtime puo' essere attivo;
-- una CI rossa blocca il pacchetto successivo;
+- una CI rossa di checkpoint o attivata da un percorso ad alto rischio blocca
+  il pacchetto successivo;
 - ogni pacchetto dichiara stage, comportamento, owner, contratti, test ed
   evidenze;
 - UI, copy IT/EN/ES, feedback, focus, reduced motion e documentazione entrano
@@ -34,7 +35,25 @@ Regole:
 - asset e contenuti possono essere preparati in parallelo solo senza cambiare
   flow, dati o superfici runtime non ancora aperte;
 - un helper condiviso nasce solo con almeno due consumer immediati;
-- nessun gate e' chiuso senza prova Linux, visuale, audio o manuale richiesta.
+- nessun gate e' chiuso senza prova Linux, visuale, audio o manuale richiesta;
+- tra checkpoint una feature puo' diventare `implementata, in attesa di
+  signoff cumulativo` dopo le verifiche locali mirate, liberando il pacchetto
+  runtime successivo senza dichiarare una chiusura formale.
+
+### Cadenza CI a checkpoint
+
+La suite automatica completa non viene eseguita per ogni singola feature.
+I checkpoint Object-First sono `OF-06`, `OF-09` e `OF-11`, registrati in
+`.github/ci/full_suite_checkpoint.txt`.
+
+- per feature: contratto specifico, import Godot quando pertinente, controllo
+  visuale/audio rappresentativo, docs refs, mojibake e diff check;
+- per checkpoint: un job statico, sei smoke Linux e visual QA cumulativo;
+- per eccezione ad alto rischio: la stessa suite completa parte subito se
+  cambiano `RunManager`, `GameEvents`, save, contratti/run systems,
+  `project.godot` o il workflow;
+- `workflow_dispatch` resta sempre disponibile e non sposta il checkpoint;
+- un'eccezione ad alto rischio non modifica la sequenza OF-06/OF-09/OF-11.
 
 Ordine dei pacchetti:
 
@@ -156,7 +175,7 @@ Ordine dei pacchetti:
   `sha256:8ebb1d87621a2fa8a5513ef258a77cc09c9f3c7573c7e0ad5fd184abf1bfddab`.
 - Gate chiuso: 2026-07-13, sette job verdi su `main` e artifact ispezionato.
 
-### Pacchetto attivo: OF-05
+### Pacchetto chiuso: OF-05
 
 - Comportamento: trasformare apertura e consultazione delle offerte nella
   tavola object-first del Registro, mantenendo flow e selezione esistenti.
@@ -174,8 +193,40 @@ Ordine dei pacchetti:
   1920x1080, tutte con dimensioni e layout verificati. `BET_PRESENT` Windows
   resta diagnostico e riproduce il crash nativo noto prima di
   `SMOKE:BOOT_OK` (`NATIVE_CRASH_BEFORE_BOOTSTRAP`, exit `0xC0000005`).
-- Gate aperto: servono verifica locale completa, sei smoke Linux e artifact
-  `object_first_visual_qa` con 24 catture Registro ispezionate.
+- Evidenza Linux: commit `b7d9e4b`, sei smoke e visual QA verdi nella
+  [run 29291362204](https://github.com/Faratas410/Gallicus-2.0/actions/runs/29291362204).
+- Evidenza visuale: artifact `object_first_visual_qa`, 111 catture
+  viewport-only: 24 soglie, 24 tavole del Registro, 18 quietanze, 18 marchi,
+  24 incisioni e tre schermate generali. Le 24 catture Registro coprono
+  IT/EN/ES, closed normal/focus/disabled e open a 1280x720 e 1920x1080;
+  artifact ispezionato e senza overflow distruttivi. Digest
+  `sha256:142fffe8e158032b5d57e0702e964c2a3350a5cefc7ea36d280593e28d38443c`.
+- Gate chiuso: 2026-07-15, sette job verdi su `main` e artifact ispezionato.
+
+### Pacchetto attivo: OF-06
+
+- Comportamento: trasformare scelta e firma della promessa in un gesto su un
+  cartiglio di cera integrato nelle due foglie del Registro.
+- Owner: `RunManager` conserva selezione, flow e registrazione del patto; la UI
+  mostra gli stati e invia l'intento esistente `request_place_bet`.
+- Contratti: object grammar, ritual loop, UI canon, localizzazione IT/EN/ES e
+  cadenza CI a checkpoint.
+- Vincoli: nessun nuovo segnale, payload, campo save, manager, transizione o
+  calcolo gameplay.
+- Implementazione locale: coppia RGBA 4:1 blank/signed a silhouette identica,
+  stati normal/focus/pressed/selected/signed/disabled a geometria stabile,
+  CTA `FIRMA`/`SIGN`/`FIRMAR` e cue `registry_promise_sign`. Lo stato signed
+  precede decision lock, cue ed emissione invariata di `request_place_bet`;
+  non esiste `await` nel gesto.
+- Prove locali: playbook statico completo, contratto checkpoint, import Godot
+  4.6.2 e visual QA verdi. La matrice produce 30 catture OF-06 IT/EN/ES per
+  normal, focus, selected, signed e disabled a 1280x720 e 1920x1080,
+  ispezionate senza overflow o variazioni di geometria. `BET_PRESENT` Windows
+  resta diagnostico e riproduce il crash nativo noto prima di
+  `SMOKE:BOOT_OK` (`NATIVE_CRASH_BEFORE_BOOTSTRAP`, exit `124`).
+- Gate aperto: OF-06 e' il primo checkpoint. Dopo commit e push manuale servono
+  un job statico, sei smoke Linux e il visual QA cumulativo con 30 catture
+  `03_promise_*` ispezionate prima di chiudere OF-06 e attivare OF-07.
 
 ## 1. Foundation Reset
 
@@ -370,9 +421,10 @@ Gate:
 
 ## Prossimo step operativo
 
-`OF-05` e' implementato e verificato localmente nel working tree di `main`
-senza cambiare flow, payload, save o autorita'. Il prossimo passo esterno e'
-il commit e push manuale tramite GitHub Desktop; quindi sei smoke Linux e il
-job `visual_qa_object_first`, con ispezione delle 24 catture Registro
-nell'artifact `object_first_visual_qa`, chiudono il gate. `OF-06` non e'
-ancora attivo.
+`OF-05` e' chiuso con evidenza Linux e visuale. `OF-06` e' implementato
+localmente su `main` come primo checkpoint della nuova cadenza. Dopo le
+verifiche locali il prossimo passo esterno e' commit e push manuale tramite
+GitHub Desktop: il marker OF-06 avvia un job statico, sei smoke Linux e
+`visual_qa_object_first`. L'ispezione delle 30 catture promessa IT/EN/ES alle
+due risoluzioni, con registrazione di run, commit e digest, chiude OF-06 e
+attiva `OF-07 - tavoletta del patto`.

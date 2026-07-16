@@ -258,6 +258,9 @@ Stop-condition note (active): version `.png.import` sidecars only for tracked so
 - Dedicated object-first assets:
   - `res://assets/ui/official/objects/registry_table/registry_table_closed.png` and
     `registry_table_open.png` provide the closed/open OF-05 Registry surface.
+  - `res://assets/ui/official/objects/promise_signature/registry_promise_signature_blank.png`
+    and `registry_promise_signature_signed.png` provide the OF-06 promise and
+    registered-signature states inside the open Registry leaves.
 - Legacy/residue naming still present during migration:
   - `res://scenes/ui/BettingCircle.tscn` keeps book-era node names such as
     `BookFrame`, `SpellbookBg`, and `ClosedBookBg`, but those PanelContainers now
@@ -433,6 +436,24 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Local fragmented render paths (`Lbl_*_Title`, `Rtl_*_Bet`, `Rtl_*_Explain`) are retired because they create scrollbars, duplicated spacing, and overlay-like text drift.
 - Contract text is styled as dark ink on pale limestone. White overlay text is reserved for global labels/buttons, not pact body copy.
 - Scope guard: this is presentation-only. BettingCircle still consumes prepared offer payloads and does not own bet selection authority beyond emitting the existing sign intent.
+
+## BettingCircle promise signature contract (OF-06)
+
+- Runtime scene: `res://scenes/ui/BettingCircle.tscn`.
+- `Btn_Sign_Left` and `Btn_Sign_Right` are technical input nodes presented as
+  wax signature cartouches inside the two existing Registry recesses.
+- States are normal, focus, pressed, selected, signed and disabled. They share
+  identical geometry; selection and signing must not scale or move the target.
+- `FIRMA`, `SIGN` and `FIRMAR` remain Godot-rendered CTA copy, never baked into
+  the textures.
+- On activation the selected cartouche enters signed state, the existing
+  decision lock is applied, cue `registry_promise_sign` plays and the unchanged
+  `request_place_bet` intent is emitted. No presentation `await` may delay the
+  intent.
+- Opening, new offer payload, reset, recovery and close restore blank states.
+- Scope guard: this is presentation-only. `RunManager` remains the sole owner
+  of bet validation, flow and pact registration; no signal, payload or save
+  field is added.
 
 ## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)
 - `Phase_FIRST_REACTION` (`IL PATTO E' SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.

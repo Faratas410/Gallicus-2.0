@@ -17,6 +17,13 @@ const REGISTRY_TABLE_VIEWPORT_SIZES: Array[Vector2i] = [
 const REGISTRY_TABLE_LOCALES: Array[String] = ["it", "en", "es"]
 const REGISTRY_TABLE_PATH: String = "Main/UI/UI_RunRoot/BettingCircle"
 const REGISTRY_TABLE_BUTTON_PATH: String = "Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book"
+const PROMISE_SIGNATURE_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const PROMISE_SIGNATURE_LOCALES: Array[String] = ["it", "en", "es"]
+const PROMISE_SIGNATURE_LEFT_PATH: String = "Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/LeftPage/Btn_Sign_Left"
+const PROMISE_SIGNATURE_RIGHT_PATH: String = "Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/RightPage/Btn_Sign_Right"
 const RECEIPT_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -69,6 +76,7 @@ func _run() -> void:
 	await _press_when_ready("Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book", 4.0)
 	await _settle(360)
 	await _wait_button_enabled("Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/LeftPage/Btn_Sign_Left", 6.0)
+	await _capture_promise_signature_matrix()
 	await _capture("03_register_open")
 
 	await _press_preferred_sign_button()
@@ -252,6 +260,77 @@ func _capture_registry_table_matrix() -> void:
 	get_tree().root.content_scale_size = previous_content_scale_size
 	get_tree().root.size = previous_size
 	registry_table.call("_show_closed_intro")
+	registry_table.set_process(previous_processing)
+	await _settle(8)
+
+func _capture_promise_signature_matrix() -> void:
+	var registry_table: Node = get_tree().root.get_node_or_null(REGISTRY_TABLE_PATH)
+	var left_button: Button = get_tree().root.get_node_or_null(PROMISE_SIGNATURE_LEFT_PATH) as Button
+	var right_button: Button = get_tree().root.get_node_or_null(PROMISE_SIGNATURE_RIGHT_PATH) as Button
+	if registry_table == null or left_button == null or right_button == null:
+		_failures.append("OF-06 promise signature nodes missing for visual QA matrix")
+		return
+
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_left_disabled: bool = left_button.disabled
+	var previous_right_disabled: bool = right_button.disabled
+	var previous_left_state: StringName = left_button.get_meta(&"registry_promise_signature_state", &"normal") as StringName
+	var previous_right_state: StringName = right_button.get_meta(&"registry_promise_signature_state", &"normal") as StringName
+	var previous_processing: bool = registry_table.is_processing()
+	registry_table.set_process(false)
+
+	for locale: String in PROMISE_SIGNATURE_LOCALES:
+		TranslationServer.set_locale(locale)
+		registry_table.call("_refresh_localized_text")
+		await _settle(8)
+		for viewport_size: Vector2i in PROMISE_SIGNATURE_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "03_promise_%s_%dx%d" % [
+				locale,
+				viewport_size.x,
+				viewport_size.y,
+			]
+
+			left_button.disabled = false
+			right_button.disabled = false
+			left_button.release_focus()
+			registry_table.call("_set_promise_signature_state", left_button, &"normal")
+			registry_table.call("_set_promise_signature_state", right_button, &"normal")
+			await _capture("%s_normal" % prefix, viewport_size)
+
+			left_button.grab_focus()
+			await _settle(20)
+			await _capture("%s_focus" % prefix, viewport_size)
+
+			left_button.release_focus()
+			registry_table.call("_set_promise_signature_state", left_button, &"selected")
+			await _capture("%s_selected" % prefix, viewport_size)
+
+			left_button.disabled = true
+			right_button.disabled = true
+			registry_table.call("_set_promise_signature_state", left_button, &"signed")
+			registry_table.call("_set_promise_signature_state", right_button, &"disabled")
+			await _capture("%s_signed" % prefix, viewport_size)
+
+			right_button.disabled = false
+			registry_table.call("_set_promise_signature_state", left_button, &"disabled")
+			registry_table.call("_set_promise_signature_state", right_button, &"normal")
+			await _capture("%s_disabled" % prefix, viewport_size)
+
+	left_button.disabled = previous_left_disabled
+	right_button.disabled = previous_right_disabled
+	registry_table.call("_set_promise_signature_state", left_button, previous_left_state)
+	registry_table.call("_set_promise_signature_state", right_button, previous_right_state)
+	TranslationServer.set_locale(previous_locale)
+	registry_table.call("_refresh_localized_text")
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
 	registry_table.set_process(previous_processing)
 	await _settle(8)
 

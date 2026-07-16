@@ -341,6 +341,71 @@ Accettazione OF-05:
 - 24 screenshot viewport-only a 1280x720 e 1920x1080;
 - `BET_PRESENT`, motion, i18n e ritual-loop contract verdi.
 
+## Cartiglio della promessa
+
+Uso: scelta e firma dell'offerta in `BET_PRESENT`.
+
+- Cartiglio amministrativo di cera inserito nell'incavo di ciascuna foglia.
+- Stati: normal, focus, pressed, selected, signed e disabled.
+- Il gesto e' incidere la promessa scelta con lo stilo e registrarne
+  l'impressione.
+- La selezione resta confrontabile prima della firma; la geometria non cambia.
+
+### Scheda OF-06
+
+```text
+Intento del soggetto: scegliere una promessa e vincolarsi all'offerta esposta.
+Oggetto: cartiglio di cera con stilo, incastonato nella foglia del Registro.
+Materiale: basalto intatto, bronzo consumato e cera rossa liscia o impressa.
+Gesto: incidere la promessa e premere il segno amministrativo.
+Conseguenza leggibile prima del gesto: offerta, condanna, condizione e patto restano sulla stessa foglia.
+Stato prima: cartiglio blank disponibile, in focus, premuto, selezionato o bloccato.
+Stato dopo: incisione e impressione signed persistono fino alla chiusura del modal.
+Feedback visivo: cera selezionata calda, incisione e impronta immediate senza spostare il target.
+Feedback audio: graffio asciutto dello stilo seguito da breve impressione di cera e bronzo.
+Feedback testuale: FIRMA con traduzioni SIGN e FIRMAR.
+Registrazione prodotta: patto scelto tramite request_place_bet invariato.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_place_bet, invariato.
+Fallback accessibile: focus netto, stato signed e lock leggibili senza motion.
+Schermata o scenario QA: BET_PRESENT, Registro aperto e matrice 03_promise_*.
+```
+
+Asset previsto:
+
+- due sorgenti RGBA senza testo, rapporto `4:1`, dimensioni `1024x256` e alpha
+  silhouette identica;
+- destinazione `assets/ui/official/objects/promise_signature/`;
+- texture `registry_promise_signature_blank.png` e
+  `registry_promise_signature_signed.png`;
+- risorse `sb_registry_promise_signature_normal.tres`,
+  `sb_registry_promise_signature_focus.tres`,
+  `sb_registry_promise_signature_pressed.tres`,
+  `sb_registry_promise_signature_selected.tres`,
+  `sb_registry_promise_signature_signed.tres` e
+  `sb_registry_promise_signature_disabled.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key con tavola
+  del Registro, soglia e seconda incisione come riferimenti, rimozione locale
+  e normalizzazione della silhouette; nessuna fonte third-party;
+- cue originale procedurale
+  `res://assets/audio/sfx/registry_promise_sign.wav`;
+- consumer `Btn_Sign_Left` e `Btn_Sign_Right` dentro
+  `res://scenes/ui/BettingCircle.tscn`;
+- nessuna modifica a flow, offerte, payload, save o transizione;
+- signed precede lock, cue ed emissione dell'intento e non attende motion;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
+
+Accettazione OF-06:
+
+- cartiglio blank, selected, signed e disabled riconoscibili senza variazione
+  di geometria;
+- CTA leggibile in IT/EN/ES e costo/promessa sulla stessa tavola;
+- mouse, tastiera e focus emettono lo stesso intento;
+- WAV mono PCM16 44,1 kHz, 0,45-0,70 s e picco massimo -3 dBFS;
+- 30 screenshot viewport-only a 1280x720 e 1920x1080;
+- `BET_PRESENT`, i18n, motion e ritual-loop contract verdi.
+
 ## Verifica
 
 Ogni famiglia richiede:

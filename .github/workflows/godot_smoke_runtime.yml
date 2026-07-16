@@ -2,9 +2,17 @@ name: Godot Smoke Runtime
 
 on:
   workflow_dispatch:
-  pull_request:
   push:
-    branches: [ main, master ]
+    branches: [main]
+    paths:
+      - ".github/ci/full_suite_checkpoint.txt"
+      - ".github/workflows/godot_smoke_runtime.yml"
+      - "project.godot"
+      - "scripts/systems/game_events.gd"
+      - "scripts/systems/run_manager.gd"
+      - "scripts/systems/save_manager.gd"
+      - "scripts/systems/run/**"
+      - "scripts/contracts/**"
 
 env:
   GODOT_VERSION: "4.6.2-stable"
@@ -13,7 +21,37 @@ env:
   GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip"
 
 jobs:
+  static_contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Run static contract suite once
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/test_headless_smoke_validator.py
+          python3 scripts/ci/check_docs_active_refs.py
+          python3 tools/ci/verify_res_paths.py
+          python3 scripts/ci/test_ritual_loop_contract.py
+          python3 scripts/ci/test_era_visual_template_audit.py
+          python3 scripts/ci/test_pressure_presentation_contract.py
+          python3 scripts/ci/test_ui_motion_contract.py
+          python3 scripts/ci/test_i18n_contract.py
+          python3 scripts/ci/test_receipt_object_contract.py
+          python3 scripts/ci/test_condemnation_mark_object_contract.py
+          python3 scripts/ci/test_second_incision_object_contract.py
+          python3 scripts/ci/test_arena_threshold_object_contract.py
+          python3 scripts/ci/test_registry_table_object_contract.py
+          python3 scripts/ci/test_promise_signature_object_contract.py
+          python3 scripts/ci/test_ci_checkpoint_contract.py
+          python3 scripts/ci/test_release_content_contract.py
+          python3 scripts/ci/test_no_mojibake.py
+
   smoke_runtime:
+    needs: static_contracts
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -22,71 +60,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb git-lfs
-
-      - name: Validate smoke log parser (no Godot)
-        run: |
-          python3 scripts/ci/test_headless_smoke_validator.py
-
-      - name: Validate active documentation references (no Godot)
-        run: |
-          python3 scripts/ci/check_docs_active_refs.py
-
-      - name: Validate res:// paths (no Godot)
-        run: |
-          python3 tools/ci/verify_res_paths.py
-
-      - name: Validate ritual-loop contract (static)
-        run: |
-          python3 scripts/ci/test_ritual_loop_contract.py
-
-      - name: Validate era visual template anchors (static)
-        run: |
-          python3 scripts/ci/test_era_visual_template_audit.py
-
-      - name: Validate pressure presentation contract (static)
-        run: |
-          python3 scripts/ci/test_pressure_presentation_contract.py
-
-      - name: Validate UI motion contract (static)
-        run: |
-          python3 scripts/ci/test_ui_motion_contract.py
-
-      - name: Validate localization contract (static)
-        run: |
-          python3 scripts/ci/test_i18n_contract.py
-
-      - name: Validate OF-01 receipt object contract (static)
-        run: |
-          python3 scripts/ci/test_receipt_object_contract.py
-
-      - name: Validate OF-02 condemnation mark object contract (static)
-        run: |
-          python3 scripts/ci/test_condemnation_mark_object_contract.py
-
-      - name: Validate OF-03 second incision object contract (static)
-        run: |
-          python3 scripts/ci/test_second_incision_object_contract.py
-
-      - name: Validate OF-04 arena threshold object contract (static)
-        run: |
-          python3 scripts/ci/test_arena_threshold_object_contract.py
-
-      - name: Validate OF-05 registry table object contract (static)
-        run: |
-          python3 scripts/ci/test_registry_table_object_contract.py
-
-      - name: Validate release content baseline (static)
-        run: |
-          python3 scripts/ci/test_release_content_contract.py
-
-      - name: Validate no mojibake markers (static)
-        run: |
-          python3 scripts/ci/test_no_mojibake.py
+          sudo apt-get install -y wget unzip xvfb
 
       - name: Cache Godot 4.6.2 headless binary
         id: cache-godot
@@ -94,11 +74,6 @@ jobs:
         with:
           path: tools/godot
           key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}
-
-      - name: Git LFS pull
-        run: |
-          git lfs install
-          git lfs pull
 
       - name: Download Godot 4.6.2 headless
         if: steps.cache-godot.outputs.cache-hit != 'true'
@@ -110,7 +85,7 @@ jobs:
           rm -f "$GODOT_ZIP_NAME"
           chmod +x "$GODOT_BIN_NAME" || true
 
-      - name: Import project assets (headless editor pass)
+      - name: Import project assets
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
@@ -147,20 +122,22 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: smoke_runtime_${{ matrix.scenario }}
-          path: |
-            artifacts/${{ matrix.scenario }}
+          path: artifacts/${{ matrix.scenario }}
           if-no-files-found: ignore
 
   visual_qa_object_first:
+    needs: static_contracts
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb git-lfs
+          sudo apt-get install -y wget unzip xvfb
 
       - name: Cache Godot 4.6.2 headless binary
         id: cache-godot
@@ -168,11 +145,6 @@ jobs:
         with:
           path: tools/godot
           key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}
-
-      - name: Git LFS pull
-        run: |
-          git lfs install
-          git lfs pull
 
       - name: Download Godot 4.6.2 headless
         if: steps.cache-godot.outputs.cache-hit != 'true'
@@ -194,14 +166,16 @@ jobs:
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          timeout 300s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
+          timeout 360s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
           THRESHOLD_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '01_threshold_*.png' | wc -l)
           REGISTRY_TABLE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '02_registry_*.png' | wc -l)
+          PROMISE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '03_promise_*.png' | wc -l)
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
           MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
           INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
           test "$THRESHOLD_COUNT" -eq 24
           test "$REGISTRY_TABLE_COUNT" -eq 24
+          test "$PROMISE_COUNT" -eq 30
           test "$RECEIPT_COUNT" -eq 18
           test "$MARK_COUNT" -eq 18
           test "$INCISION_COUNT" -eq 24
@@ -215,6 +189,7 @@ jobs:
             artifacts/visual_qa/01_threshold_*.png
             artifacts/visual_qa/02_registry_*.png
             artifacts/visual_qa/02_register_closed.png
+            artifacts/visual_qa/03_promise_*.png
             artifacts/visual_qa/03_register_open.png
             artifacts/visual_qa/07_receipt_*.png
             artifacts/visual_qa/07_mark_*.png

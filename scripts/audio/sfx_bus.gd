@@ -18,6 +18,7 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"registry_second_incision": -11.0,
 	&"arena_threshold_cross": -11.0,
 	&"registry_table_open": -11.0,
+	&"registry_promise_sign": -11.0,
 	&"game_over": -8.0,
 }
 const SFX_PATHS: Dictionary = {
@@ -36,6 +37,7 @@ const SFX_PATHS: Dictionary = {
 	&"registry_second_incision": "res://assets/audio/sfx/registry_second_incision.wav",
 	&"arena_threshold_cross": "res://assets/audio/sfx/arena_threshold_cross.wav",
 	&"registry_table_open": "res://assets/audio/sfx/registry_table_open.wav",
+	&"registry_promise_sign": "res://assets/audio/sfx/registry_promise_sign.wav",
 	&"game_over": "res://assets/audio/sfx/game_over.wav",
 }
 

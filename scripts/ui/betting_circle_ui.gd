@@ -17,6 +17,17 @@ const REGISTRY_TABLE_STATE_FOCUS: StringName = &"focus"
 const REGISTRY_TABLE_STATE_PRESSED: StringName = &"pressed"
 const REGISTRY_TABLE_STATE_DISABLED: StringName = &"disabled"
 const REGISTRY_TABLE_STATE_META: StringName = &"registry_table_state"
+const PROMISE_SIGNATURE_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_normal.tres")
+const PROMISE_SIGNATURE_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_focus.tres")
+const PROMISE_SIGNATURE_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_pressed.tres")
+const PROMISE_SIGNATURE_STYLE_SELECTED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_selected.tres")
+const PROMISE_SIGNATURE_STYLE_SIGNED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_signed.tres")
+const PROMISE_SIGNATURE_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_disabled.tres")
+const PROMISE_SIGNATURE_STATE_NORMAL: StringName = &"normal"
+const PROMISE_SIGNATURE_STATE_SELECTED: StringName = &"selected"
+const PROMISE_SIGNATURE_STATE_SIGNED: StringName = &"signed"
+const PROMISE_SIGNATURE_STATE_DISABLED: StringName = &"disabled"
+const PROMISE_SIGNATURE_STATE_META: StringName = &"registry_promise_signature_state"
 const BOOK_TITLE_PULSE_SPEED: float = 1.15
 const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
 const BOOK_DROP_SECONDS: float = 0.62
@@ -442,10 +453,8 @@ func _update_page_idle_motion() -> void:
 func _reset_interaction_lock() -> void:
 	selected_bet_id = &""
 	_submit_locked = false
-	if left_sign_button != null:
-		left_sign_button.scale = Vector2.ONE
-	if right_sign_button != null:
-		right_sign_button.scale = Vector2.ONE
+	_set_promise_signature_state(left_sign_button, PROMISE_SIGNATURE_STATE_NORMAL)
+	_set_promise_signature_state(right_sign_button, PROMISE_SIGNATURE_STATE_NORMAL)
 
 func _apply_default_selection() -> void:
 	if _betting_circle_options.is_empty():
@@ -490,10 +499,6 @@ func _apply_selection_visual() -> void:
 		left_page.modulate = Color(1.0, 0.98, 0.9, 1.0) if left_selected else Color(0.86, 0.84, 0.78, 0.96)
 	if right_page != null:
 		right_page.modulate = Color(1.0, 0.98, 0.9, 1.0) if right_selected else Color(0.86, 0.84, 0.78, 0.96)
-	if left_sign_button != null:
-		left_sign_button.scale = Vector2(1.04, 1.04) if left_selected else Vector2(0.99, 0.99)
-	if right_sign_button != null:
-		right_sign_button.scale = Vector2(1.04, 1.04) if right_selected else Vector2(0.99, 0.99)
 
 func _offer_id_at(index: int) -> StringName:
 	if index < 0 or index >= _betting_circle_options.size():
@@ -522,23 +527,47 @@ func _submit_offer_index(index: int, button: Button) -> void:
 func _submit_selected_offer(button: Button) -> void:
 	if _opening_locked or _submit_locked or selected_bet_id == &"":
 		return
+	_set_promise_signature_state(button, PROMISE_SIGNATURE_STATE_SIGNED)
 	_submit_locked = true
 	_update_sigilla_state()
-	_play_sfx(&"cursor_select")
-	_play_stamp_feedback(button)
+	_play_sfx(&"registry_promise_sign")
 	if GameEvents.has_signal("request_place_bet"):
 		GameEvents.request_place_bet.emit(String(selected_bet_id), 0)
 	close()
 
-func _play_stamp_feedback(button: Button) -> void:
+func _set_promise_signature_state(button: Button, state: StringName) -> void:
 	if button == null:
 		return
-	var tween: Tween = create_tween()
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(button, "scale", Vector2(1.06, 1.06), 0.06)
-	tween.set_ease(Tween.EASE_IN)
-	tween.tween_property(button, "scale", Vector2.ONE, 0.08)
+	var normal_style: StyleBox = PROMISE_SIGNATURE_STYLE_NORMAL
+	var focus_style: StyleBox = PROMISE_SIGNATURE_STYLE_FOCUS
+	var pressed_style: StyleBox = PROMISE_SIGNATURE_STYLE_PRESSED
+	var disabled_style: StyleBox = PROMISE_SIGNATURE_STYLE_DISABLED
+	match state:
+		PROMISE_SIGNATURE_STATE_SELECTED:
+			normal_style = PROMISE_SIGNATURE_STYLE_SELECTED
+		PROMISE_SIGNATURE_STATE_SIGNED:
+			normal_style = PROMISE_SIGNATURE_STYLE_SIGNED
+			focus_style = PROMISE_SIGNATURE_STYLE_SIGNED
+			pressed_style = PROMISE_SIGNATURE_STYLE_SIGNED
+			disabled_style = PROMISE_SIGNATURE_STYLE_SIGNED
+		PROMISE_SIGNATURE_STATE_DISABLED:
+			normal_style = PROMISE_SIGNATURE_STYLE_DISABLED
+			focus_style = PROMISE_SIGNATURE_STYLE_DISABLED
+			pressed_style = PROMISE_SIGNATURE_STYLE_DISABLED
+	button.set_meta(PROMISE_SIGNATURE_STATE_META, state)
+	button.add_theme_stylebox_override("normal", normal_style)
+	button.add_theme_stylebox_override("hover", focus_style)
+	button.add_theme_stylebox_override("focus", focus_style)
+	button.add_theme_stylebox_override("pressed", pressed_style)
+	button.add_theme_stylebox_override("disabled", disabled_style)
+	var label: Label = left_sign_label if button == left_sign_button else right_sign_label
+	if label != null:
+		if state == PROMISE_SIGNATURE_STATE_DISABLED:
+			label.modulate = Color(0.64, 0.61, 0.57, 0.8)
+		elif state == PROMISE_SIGNATURE_STATE_SIGNED:
+			label.modulate = Color(1.0, 0.91, 0.72, 1.0)
+		else:
+			label.modulate = Color(1.0, 0.94, 0.82, 1.0)
 
 func _wire_button_feedback_sfx() -> void:
 	for button: Button in [open_book_button, left_select_button, right_select_button, left_sign_button, right_sign_button]:
@@ -567,18 +596,24 @@ func _update_sigilla_state() -> void:
 	var right_id: StringName = _offer_id_at(1)
 	var left_ready: bool = left_id != &"" and not _submit_locked and not _opening_locked
 	var right_ready: bool = right_id != &"" and not _submit_locked and not _opening_locked
-	if left_sign_button != null:
-		left_sign_button.disabled = not left_ready
-		if left_ready:
-			left_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == left_id else Color(0.98, 0.96, 0.9, 1.0)
-		else:
-			left_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
-	if right_sign_button != null:
-		right_sign_button.disabled = not right_ready
-		if right_ready:
-			right_sign_button.modulate = Color(1.0, 1.0, 1.0, 1.0) if selected_bet_id == right_id else Color(0.98, 0.96, 0.9, 1.0)
-		else:
-			right_sign_button.modulate = Color(0.7, 0.66, 0.6, 0.6)
+	_update_promise_signature_button(left_sign_button, left_id, left_ready)
+	_update_promise_signature_button(right_sign_button, right_id, right_ready)
+
+func _update_promise_signature_button(button: Button, offer_id: StringName, ready: bool) -> void:
+	if button == null:
+		return
+	var current_state: StringName = button.get_meta(PROMISE_SIGNATURE_STATE_META, PROMISE_SIGNATURE_STATE_NORMAL) as StringName
+	if current_state == PROMISE_SIGNATURE_STATE_SIGNED:
+		button.disabled = true
+		_set_promise_signature_state(button, PROMISE_SIGNATURE_STATE_SIGNED)
+		return
+	button.disabled = not ready
+	if not ready:
+		_set_promise_signature_state(button, PROMISE_SIGNATURE_STATE_DISABLED)
+	elif offer_id != &"" and selected_bet_id == offer_id:
+		_set_promise_signature_state(button, PROMISE_SIGNATURE_STATE_SELECTED)
+	else:
+		_set_promise_signature_state(button, PROMISE_SIGNATURE_STATE_NORMAL)
 
 func _set_book_input_enabled(enabled: bool) -> void:
 	if left_select_button != null:

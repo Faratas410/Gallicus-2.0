@@ -23,6 +23,27 @@ Un livello non sostituisce quello successivo.
 - **Flow/save:** suite completa, tutti gli smoke, resume e CI Linux.
 - **Campagna:** save pulito, Ere/Silenzi, durata e stato terminale.
 
+## Cadenza automatica
+
+La suite Linux completa e' cumulativa ma non parte per ogni feature.
+
+- **Per feature:** eseguire contratto specifico, import Godot quando cambiano
+  runtime/scene/asset, QA visuale o audio rappresentativa, docs refs,
+  mojibake e `git diff --check`.
+- **Checkpoint:** OF-06, OF-09 e OF-11 aggiornano
+  `.github/ci/full_suite_checkpoint.txt` e avviano un job statico, i sei smoke
+  Linux e il visual QA cumulativo.
+- **Eccezione ad alto rischio:** modifiche a `RunManager`, `GameEvents`, save,
+  contratti/run systems, `project.godot` o workflow avviano subito la suite
+  completa senza spostare il checkpoint programmato.
+- **Manuale:** `workflow_dispatch` resta sempre disponibile per diagnosi e
+  signoff straordinari.
+
+Una feature non checkpoint puo' essere marcata `implementata, in attesa di
+signoff cumulativo` dopo i controlli locali mirati. La chiusura formale arriva
+con il checkpoint che copre il blocco; una CI rossa di checkpoint o rischio
+blocca il pacchetto successivo.
+
 ## Runner
 
 Il runner locale aggrega la suite disponibile:
@@ -53,6 +74,8 @@ python scripts/ci/test_condemnation_mark_object_contract.py
 python scripts/ci/test_second_incision_object_contract.py
 python scripts/ci/test_arena_threshold_object_contract.py
 python scripts/ci/test_registry_table_object_contract.py
+python scripts/ci/test_promise_signature_object_contract.py
+python scripts/ci/test_ci_checkpoint_contract.py
 python scripts/ci/test_no_mojibake.py
 ```
 
@@ -115,6 +138,10 @@ python scripts/ci/run_headless_smoke.py --scenario ROUTE_CASHOUT --godot-bin ".\
 - `END_RUN_FINAL ending_key=`.
 
 Workflow canonico: `.github/workflows/godot_smoke_runtime.yml`.
+Nei checkpoint il workflow espone otto job: `static_contracts` una sola volta,
+sei istanze della matrice `smoke_runtime` e `visual_qa_object_first`. Smoke e
+visual QA dipendono dal job statico, quindi i contratti non vengono ripetuti
+in ogni scenario.
 
 Il runner inietta un seed smoke canonico e lo registra come
 `SMOKE:RUNNER_SEED` e `SMOKE:RUN_SEED`. La matrice di signoff non usa
@@ -133,13 +160,12 @@ Richiesta per cambi UI, copy visibile, asset o motion.
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
 Se il runtime Windows non raggiunge il bootstrap, il job Linux
 `visual_qa_object_first` produce l'evidenza canonica per soglia, tavola del
-Registro, quietanza, marchio e seconda incisione object-first. Le catture desktop intere non
-sostituiscono la viewport Godot.
+Registro, promessa/firma, quietanza, marchio e seconda incisione object-first.
+Le catture desktop intere non sostituiscono la viewport Godot.
 Il job esegue lo stesso capture tool sotto Xvfb e pubblica l'artifact
-`object_first_visual_qa`; la matrice comprende 24 catture soglia, 18 catture
-quietanza, 18 catture marchio, 24 catture seconda incisione e 24 catture della
-tavola del Registro chiusa/aperta. Non sono ammesse
-catture desktop come sostituzione.
+`object_first_visual_qa`; al checkpoint OF-06 la matrice comprende 24 catture
+soglia, 24 tavola del Registro, 30 promessa/firma, 18 quietanza, 18 marchio e
+24 seconda incisione. Non sono ammesse catture desktop come sostituzione.
 
 Punti minimi:
 

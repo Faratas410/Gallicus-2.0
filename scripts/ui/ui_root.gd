@@ -56,6 +56,10 @@ const CONDEMNATION_MARK_REGISTERED_META: StringName = &"registry_condemnation_ma
 const SECOND_INCISION_STYLE_SEALED: StyleBox = preload("res://assets/ui/official/objects/second_incision/sb_registry_second_incision_sealed.tres")
 const SECOND_INCISION_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/second_incision/sb_registry_second_incision_disabled.tres")
 const SECOND_INCISION_SEALED_META: StringName = &"registry_second_incision_sealed"
+const PACT_TABLET_STYLE_VALIDATED: StyleBox = preload("res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_validated.tres")
+const PACT_TABLET_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_disabled.tres")
+const PACT_TABLET_VALIDATED_META: StringName = &"registry_pact_tablet_validated"
+const PACT_TABLET_WATCHDOG_SECONDS: float = 1.25
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -310,6 +314,8 @@ var resolve_ritual_strike_button: Button = null
 var resolve_ritual_strike_marks: Array[Label] = []
 var pact_sealed_advance_button: Button = null
 var resolve_ritual_advance_button: Button = null
+var _pact_tablet_locked: bool = false
+var _pact_tablet_request_sequence_id: int = 0
 var _resolve_ritual_strike_count: int = 0
 var _resolve_ritual_started_msec: int = 0
 var _resolve_ritual_pulse_tween: Tween = null
@@ -680,6 +686,7 @@ func show_phase(phase: int) -> void:
 	_current_modal = target
 	_reset_sign_feedback()
 	_reset_pyl_lock_state()
+	_reset_pact_tablet_state()
 	if phase == RunPhaseContract.BET_PRESENT or phase == RunPhaseContract.NEXT_BET:
 		_reset_decision_surface(bet_panel, _bet_buttons, condanna_focus_label)
 	elif phase == RunPhaseContract.INTERMEDIATE_CHOICE:
@@ -915,6 +922,7 @@ func show_countdown(seconds: int = 3) -> void:
 # Preconditions: RunManager emitted GameEvents.run_started; UI nodes are initialized.
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
 func _on_run_started() -> void:
+	_reset_pact_tablet_state()
 	_refresh_runtime_group_cache(false)
 	if escalation_row != null:
 		escalation_row.visible = true
@@ -1160,6 +1168,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	_refresh_verdict_panel()
 
 func _on_run_failed() -> void:
+	_reset_pact_tablet_state()
 	_set_bet_modal(false)
 	if escalation_row != null:
 		escalation_row.visible = false
@@ -1748,6 +1757,7 @@ func _on_bet_selected(bet_id: String) -> void:
 
 func _on_pact_sealed_opened() -> void:
 	_reset_sign_feedback()
+	_reset_pact_tablet_state()
 	_clear_betting_transient_overlays()
 	if pact_sealed_title != null:
 		pact_sealed_title.text = tr("PATTO SIGILLATO")
@@ -1760,12 +1770,62 @@ func _on_pact_sealed_opened() -> void:
 	_refresh_modal_dimmer()
 
 func _on_pact_sealed_closed() -> void:
+	_reset_pact_tablet_state()
 	_set_pact_sealed_modal(false)
 	_refresh_modal_dimmer()
 
 func _on_pact_ritual_next_pressed() -> void:
-	_play_sfx(&"cursor_select")
-	_emit_game_event_signal_if_available(&"request_ritual_advance", ["pact"])
+	if _pact_tablet_locked or pact_sealed_advance_button == null:
+		return
+	_set_pact_tablet_validated_state(true)
+	_pact_tablet_locked = true
+	var pact_buttons: Array[Button] = [pact_sealed_advance_button]
+	_apply_decision_lock(pact_sealed_panel, pact_buttons, null, null, false)
+	_play_sfx(&"registry_pact_validate")
+	if not _emit_game_event_signal_if_available(&"request_ritual_advance", ["pact"]):
+		_recover_pact_tablet_request_lock()
+		return
+	_start_pact_tablet_request_watchdog()
+
+func _start_pact_tablet_request_watchdog() -> void:
+	_pact_tablet_request_sequence_id += 1
+	var request_id: int = _pact_tablet_request_sequence_id
+	var timer: SceneTreeTimer = get_tree().create_timer(PACT_TABLET_WATCHDOG_SECONDS)
+	timer.timeout.connect(Callable(self, "_recover_pact_tablet_request_if_still_open").bind(request_id), CONNECT_ONE_SHOT)
+
+func _recover_pact_tablet_request_if_still_open(request_id: int) -> void:
+	if request_id != _pact_tablet_request_sequence_id:
+		return
+	if not _pact_tablet_locked:
+		return
+	if pact_sealed_modal == null or not pact_sealed_modal.visible:
+		return
+	_recover_pact_tablet_request_lock()
+
+func _recover_pact_tablet_request_lock() -> void:
+	_reset_pact_tablet_state()
+
+func _reset_pact_tablet_state() -> void:
+	_pact_tablet_request_sequence_id += 1
+	_pact_tablet_locked = false
+	_set_pact_tablet_validated_state(false)
+	if pact_sealed_advance_button == null:
+		return
+	var pact_buttons: Array[Button] = [pact_sealed_advance_button]
+	_reset_decision_surface(pact_sealed_panel, pact_buttons, null)
+
+func _set_pact_tablet_validated_state(validated: bool) -> void:
+	if pact_sealed_advance_button == null:
+		return
+	pact_sealed_advance_button.set_meta(PACT_TABLET_VALIDATED_META, validated)
+	pact_sealed_advance_button.add_theme_stylebox_override(
+		"disabled",
+		PACT_TABLET_STYLE_VALIDATED if validated else PACT_TABLET_STYLE_DISABLED
+	)
+	pact_sealed_advance_button.add_theme_color_override(
+		"font_disabled_color",
+		Color(1.0, 0.9, 0.72, 1.0) if validated else Color(0.58, 0.56, 0.52, 1.0)
+	)
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_reset_sign_feedback()
@@ -1897,6 +1957,7 @@ func enqueue_post_bet_message(payload: Dictionary) -> void:
 func _show_post_bet_payload(payload: Dictionary) -> void:
 	var kind: String = str(payload.get("kind", ""))
 	if kind == "pact_sealed":
+		_reset_pact_tablet_state()
 		if pact_sealed_title != null:
 			pact_sealed_title.text = str(payload.get("title", tr("PATTO SIGILLATO")))
 		if pact_sealed_subtitle != null:
@@ -2994,7 +3055,7 @@ func _place_bet(bet_id: String) -> void:
 	_apply_decision_lock(_resolve_bet_sign_panel() as Control, sign_buttons, condanna_focus_label)
 	_emit_game_event_signal_if_available(&"request_place_bet", [bet_id, 0])
 
-func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label, selected_button: Button = null) -> void:
+func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label, selected_button: Button = null, play_feedback_sfx: bool = true) -> void:
 	for button: Button in buttons:
 		if button == null or not button.visible or button.disabled:
 			continue
@@ -3019,7 +3080,8 @@ func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: La
 	_sign_feedback_tween.tween_property(panel, "modulate:r", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
 	_sign_feedback_tween.parallel().tween_property(panel, "modulate:g", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
 	_sign_feedback_tween.parallel().tween_property(panel, "modulate:b", 1.0, SIGN_LOCK_FEEDBACK_SECONDS)
-	_play_sign_feedback_sfx_if_available()
+	if play_feedback_sfx:
+		_play_sign_feedback_sfx_if_available()
 
 func _reset_decision_surface(panel: Control, buttons: Array[Button], hint_label: Label) -> void:
 	for button: Button in buttons:

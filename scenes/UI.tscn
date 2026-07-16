@@ -39,6 +39,11 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_focus.tres" id="45_registry_second_incision_focus"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_pressed.tres" id="46_registry_second_incision_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_disabled.tres" id="48_registry_second_incision_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_normal.tres" id="49_registry_pact_tablet_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_focus.tres" id="50_registry_pact_tablet_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_pressed.tres" id="51_registry_pact_tablet_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_validated.tres" id="52_registry_pact_tablet_validated"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_disabled.tres" id="53_registry_pact_tablet_disabled"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -664,11 +669,19 @@ clip_text = true
 text = "La pietra ha preso la firma.\nLa gradinata attende il gesto."
 
 [node name="Btn_FIRST_REACTION_NEXT" type="Button" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
-custom_minimum_size = Vector2(240, 54)
+focus_mode = 2
+theme_override_styles/normal = ExtResource("49_registry_pact_tablet_normal")
+theme_override_styles/hover = ExtResource("50_registry_pact_tablet_focus")
+theme_override_styles/focus = ExtResource("50_registry_pact_tablet_focus")
+theme_override_styles/pressed = ExtResource("51_registry_pact_tablet_pressed")
+theme_override_styles/disabled = ExtResource("53_registry_pact_tablet_disabled")
+theme_override_colors/font_color = Color(0.98, 0.92, 0.76, 1)
+theme_override_colors/font_hover_color = Color(1, 0.97, 0.84, 1)
+theme_override_colors/font_focus_color = Color(1, 0.97, 0.84, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.84, 0.66, 1)
+theme_override_colors/font_disabled_color = Color(0.58, 0.56, 0.52, 1)
+theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(320, 72)
 size_flags_horizontal = 4
 text = "MOSTRA IL PATTO"
 

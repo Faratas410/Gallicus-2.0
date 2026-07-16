@@ -43,6 +43,9 @@ Il mood e' rituale e amministrativo, non action-horror.
 - OF-06 usa il cue `registry_promise_sign`: graffio asciutto dello stilo nella
   cera seguito da una breve impressione di bronzo, senza click digitale o
   fanfara.
+- OF-07 usa il cue `registry_pact_validate`: assestamento grave della tavoletta,
+  compressione breve della cera e colpo di bronzo, senza il doppio cue
+  `cursor_select` o semantica di ricompensa.
 - END_RUN: timbro e fascicolo, differenziati dal finale terminale.
 
 Nessuna azione importante puo' essere muta senza una ragione documentata.

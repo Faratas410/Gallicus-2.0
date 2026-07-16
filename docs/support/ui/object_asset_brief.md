@@ -406,6 +406,69 @@ Accettazione OF-06:
 - 30 screenshot viewport-only a 1280x720 e 1920x1080;
 - `BET_PRESENT`, i18n, motion e ritual-loop contract verdi.
 
+## Tavoletta del patto
+
+Uso: convalida del patto nella fase `FIRST_REACTION`.
+
+- Tavoletta amministrativa sigillata, integra e leggibile come oggetto fisico.
+- Stati: normal, focus, pressed, validated e disabled.
+- Il gesto e' mostrare e convalidare la tavoletta gia' sigillata.
+- Tutti gli stati mantengono silhouette, margini e target invariati.
+
+### Scheda OF-07
+
+```text
+Intento del soggetto: mostrare il patto appena registrato e proseguire nel rito.
+Oggetto: tavoletta sigillata con ampio incavo centrale per la CTA.
+Materiale: basalto intatto, bronzo consumato e cera rossa chiusa.
+Gesto: assestare la tavoletta e convalidarne il sigillo.
+Conseguenza leggibile prima del gesto: il patto e' gia' chiuso e pronto per la convalida.
+Stato prima: tavoletta disponibile, in focus, premuta o bloccata.
+Stato dopo: validated persiste fino alla chiusura o al cambio di fase.
+Feedback visivo: bronzo e cera si scaldano senza scala o spostamento del target.
+Feedback audio: assestamento grave, compressione breve della cera e colpo di bronzo.
+Feedback testuale: MOSTRA IL PATTO con traduzioni SHOW THE PACT e MUESTRA EL PACTO.
+Registrazione prodotta: avanzamento pact tramite request_ritual_advance invariato.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_ritual_advance("pact"), invariato.
+Fallback accessibile: focus netto, stato validated e lock leggibili senza motion.
+Schermata o scenario QA: FIRST_REACTION e matrice 04_pact_*.
+```
+
+Asset previsto:
+
+- sorgente RGBA senza testo, rapporto `5:2`, dimensioni `1280x512` e alpha
+  validato;
+- destinazione `assets/ui/official/objects/pact_tablet/`;
+- texture `registry_pact_tablet_sealed.png`;
+- risorse `sb_registry_pact_tablet_normal.tres`,
+  `sb_registry_pact_tablet_focus.tres`,
+  `sb_registry_pact_tablet_pressed.tres`,
+  `sb_registry_pact_tablet_validated.tres` e
+  `sb_registry_pact_tablet_disabled.tres`;
+- provenienza visuale: generazione originale built-in su chroma-key con
+  Registro aperto, cartiglio firmato e soglia come riferimenti, rimozione
+  locale e validazione alpha; nessuna fonte third-party;
+- cue originale procedurale
+  `res://assets/audio/sfx/registry_pact_validate.wav`;
+- consumer `Btn_FIRST_REACTION_NEXT` dentro `res://scenes/UI.tscn`;
+- nessuna modifica a flow, payload, save o transizione;
+- validated precede lock, cue ed emissione dell'intento e non attende motion;
+- apertura, nuovo payload, chiusura, cambio fase, recovery e watchdog
+  ripristinano stato e lock;
+- reduced motion riceve la stessa informazione tramite stato, contrasto, copy
+  e cue.
+
+Accettazione OF-07:
+
+- normal, focus, validated e disabled riconoscibili senza variazione di
+  geometria;
+- CTA leggibile in IT/EN/ES a 1280x720 e 1920x1080;
+- mouse, tastiera e focus emettono lo stesso intento una sola volta;
+- WAV mono PCM16 44,1 kHz, 0,55-0,80 s e picco massimo -3 dBFS;
+- 24 screenshot viewport-only nella matrice `04_pact_*`;
+- contratto OF-07, i18n, path e import Godot verdi.
+
 ## Verifica
 
 Ogni famiglia richiede:

@@ -24,6 +24,13 @@ const PROMISE_SIGNATURE_VIEWPORT_SIZES: Array[Vector2i] = [
 const PROMISE_SIGNATURE_LOCALES: Array[String] = ["it", "en", "es"]
 const PROMISE_SIGNATURE_LEFT_PATH: String = "Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/LeftPage/Btn_Sign_Left"
 const PROMISE_SIGNATURE_RIGHT_PATH: String = "Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/RightPage/Btn_Sign_Right"
+const PACT_TABLET_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const PACT_TABLET_LOCALES: Array[String] = ["it", "en", "es"]
+const PACT_TABLET_BUTTON_PATH: String = "Main/UI/UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Btn_FIRST_REACTION_NEXT"
+const PACT_TABLET_SECTION: String = "pact_tablet"
 const RECEIPT_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -49,8 +56,12 @@ const UI_ROOT_PATH: String = "Main/UI"
 
 var _main: Node = null
 var _failures: PackedStringArray = PackedStringArray()
+var _capture_section: String = ""
 
 func _ready() -> void:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--section="):
+			_capture_section = argument.trim_prefix("--section=").strip_edges().to_lower()
 	DisplayServer.window_set_size(VIEWPORT_SIZE)
 	get_tree().root.content_scale_size = VIEWPORT_SIZE
 	get_tree().root.size = VIEWPORT_SIZE
@@ -58,30 +69,38 @@ func _ready() -> void:
 
 func _run() -> void:
 	_prepare_output_dir()
+	var pact_tablet_only: bool = _capture_section == PACT_TABLET_SECTION
 	if get_node_or_null("UI") != null and get_node_or_null("RunManager") != null:
 		_main = self
 	else:
 		_main = MAIN_SCENE.instantiate()
 		get_tree().root.add_child(_main)
 	await _settle(20)
-	await _capture_arena_threshold_matrix()
-	await _capture("01_menu")
+	if not pact_tablet_only:
+		await _capture_arena_threshold_matrix()
+		await _capture("01_menu")
 
 	await _press_when_ready("Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/BettingCircle", true, 4.0)
 	await _settle(12)
-	await _capture_registry_table_matrix()
-	await _capture("02_register_closed")
+	if not pact_tablet_only:
+		await _capture_registry_table_matrix()
+		await _capture("02_register_closed")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book", 4.0)
 	await _settle(360)
 	await _wait_button_enabled("Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/LeftPage/Btn_Sign_Left", 6.0)
-	await _capture_promise_signature_matrix()
-	await _capture("03_register_open")
+	if not pact_tablet_only:
+		await _capture_promise_signature_matrix()
+		await _capture("03_register_open")
 
 	await _press_preferred_sign_button()
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_FIRST_REACTION", true, 4.0)
 	await _settle(60)
+	await _capture_pact_tablet_matrix()
+	if pact_tablet_only:
+		_finish_capture_run()
+		return
 	await _capture("04_pact_signed")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Btn_FIRST_REACTION_NEXT", 4.0)
@@ -110,6 +129,9 @@ func _run() -> void:
 	await _settle(240)
 	await _capture("08_end_run")
 
+	_finish_capture_run()
+
+func _finish_capture_run() -> void:
 	if _failures.is_empty():
 		print("VISUAL_QA:OK output=%s" % ProjectSettings.globalize_path(OUTPUT_DIR))
 		get_tree().quit(0)
@@ -118,6 +140,70 @@ func _run() -> void:
 			push_error(failure)
 		print("VISUAL_QA:FAILED failures=%d output=%s" % [_failures.size(), ProjectSettings.globalize_path(OUTPUT_DIR)])
 		get_tree().quit(1)
+
+func _capture_pact_tablet_matrix() -> void:
+	var button: Button = get_tree().root.get_node_or_null(PACT_TABLET_BUTTON_PATH) as Button
+	var ui_root: Node = get_tree().root.get_node_or_null(UI_ROOT_PATH)
+	if button == null or ui_root == null:
+		_failures.append("OF-07 pact tablet nodes missing for visual QA matrix")
+		return
+
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_disabled: bool = button.disabled
+	var previous_validated: bool = bool(button.get_meta(&"registry_pact_tablet_validated", false))
+
+	for locale: String in PACT_TABLET_LOCALES:
+		TranslationServer.set_locale(locale)
+		ui_root.call("_on_pact_sealed_opened")
+		await _settle(8)
+		for viewport_size: Vector2i in PACT_TABLET_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "04_pact_%s_%dx%d" % [
+				locale,
+				viewport_size.x,
+				viewport_size.y,
+			]
+
+			ui_root.call("_set_pact_tablet_validated_state", false)
+			button.disabled = false
+			button.release_focus()
+			_touch_runtime_watchdog_for_pact_matrix()
+			await _capture("%s_normal" % prefix, viewport_size)
+
+			button.grab_focus()
+			_touch_runtime_watchdog_for_pact_matrix()
+			await _capture("%s_focus" % prefix, viewport_size)
+
+			ui_root.call("_set_pact_tablet_validated_state", true)
+			button.disabled = true
+			_touch_runtime_watchdog_for_pact_matrix()
+			await _capture("%s_validated" % prefix, viewport_size)
+
+			ui_root.call("_set_pact_tablet_validated_state", false)
+			button.disabled = true
+			_touch_runtime_watchdog_for_pact_matrix()
+			await _capture("%s_disabled" % prefix, viewport_size)
+
+	TranslationServer.set_locale(previous_locale)
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	ui_root.call("_set_pact_tablet_validated_state", previous_validated)
+	button.disabled = previous_disabled
+	button.release_focus()
+	await _settle(8)
+
+func _touch_runtime_watchdog_for_pact_matrix() -> void:
+	if _main == null:
+		return
+	var run_manager: Node = _main.get_node_or_null("RunManager")
+	if run_manager != null and run_manager.has_method("_touch_request_activity"):
+		run_manager.call("_touch_request_activity", "visual_qa_pact_matrix")
 
 func _prepare_output_dir() -> void:
 	var absolute_path: String = ProjectSettings.globalize_path(OUTPUT_DIR)

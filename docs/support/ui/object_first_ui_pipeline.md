@@ -117,6 +117,7 @@ Asset:
 - `registry_table_open.png`
 - `registry_promise_signature_blank.png`
 - `registry_promise_signature_signed.png`
+- `registry_pact_tablet_sealed.png`
 
 Risorse:
 
@@ -150,6 +151,11 @@ Risorse:
 - `sb_registry_promise_signature_selected.tres`
 - `sb_registry_promise_signature_signed.tres`
 - `sb_registry_promise_signature_disabled.tres`
+- `sb_registry_pact_tablet_normal.tres`
+- `sb_registry_pact_tablet_focus.tres`
+- `sb_registry_pact_tablet_pressed.tres`
+- `sb_registry_pact_tablet_validated.tres`
+- `sb_registry_pact_tablet_disabled.tres`
 
 Nodi:
 
@@ -159,6 +165,7 @@ Nodi:
 - `Object_ARENA_THRESHOLD`
 - `Object_REGISTRY_TABLE` (`ClosedBookBg`/`SpellbookBg` nel consumer attuale)
 - `Object_PROMISE_SIGNATURE` (`Btn_Sign_Left`/`Btn_Sign_Right` nel consumer attuale)
+- `Object_PACT_TABLET` (`Btn_FIRST_REACTION_NEXT` nel consumer attuale)
 
 ## Definition of Done
 

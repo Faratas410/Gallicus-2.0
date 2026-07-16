@@ -455,6 +455,26 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   of bet validation, flow and pact registration; no signal, payload or save
   field is added.
 
+## Sealed pact tablet contract (OF-07)
+
+- Runtime scene: `res://scenes/UI.tscn`; technical input node:
+  `Btn_FIRST_REACTION_NEXT`.
+- The button is presented as a sealed basalt, bronze and red-wax pact tablet
+  using a text-free 5:2 RGBA texture. The CTA remains Godot-rendered as
+  `MOSTRA IL PATTO`, `SHOW THE PACT` and `MUESTRA EL PACTO`.
+- States are normal, focus, pressed, validated and disabled. They share
+  identical margins and geometry; validation must not scale or move the
+  target.
+- On activation the tablet enters validated state, the existing decision lock
+  is applied without generic click feedback, cue `registry_pact_validate`
+  plays and the unchanged `request_ritual_advance("pact")` intent is emitted.
+  No presentation `await` may delay the intent.
+- Opening, new payload, close, phase change, failed emission, recovery and
+  watchdog restore the initial state and clear the local lock.
+- Scope guard: this is presentation-only. `RunManager` remains the sole owner
+  of ritual flow; no signal, payload, save field, manager or transition is
+  added.
+
 ## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)
 - `Phase_FIRST_REACTION` (`IL PATTO E' SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
 - Resolve ritual overlay container `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.

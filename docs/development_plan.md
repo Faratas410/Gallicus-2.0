@@ -12,7 +12,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-06 - scelta e firma della promessa**.
+- Pacchetto attivo: **OF-08 - gesto davanti alla gradinata**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -203,7 +203,7 @@ Ordine dei pacchetti:
   `sha256:142fffe8e158032b5d57e0702e964c2a3350a5cefc7ea36d280593e28d38443c`.
 - Gate chiuso: 2026-07-15, sette job verdi su `main` e artifact ispezionato.
 
-### Pacchetto attivo: OF-06
+### Pacchetto chiuso: OF-06
 
 - Comportamento: trasformare scelta e firma della promessa in un gesto su un
   cartiglio di cera integrato nelle due foglie del Registro.
@@ -224,9 +224,52 @@ Ordine dei pacchetti:
   ispezionate senza overflow o variazioni di geometria. `BET_PRESENT` Windows
   resta diagnostico e riproduce il crash nativo noto prima di
   `SMOKE:BOOT_OK` (`NATIVE_CRASH_BEFORE_BOOTSTRAP`, exit `124`).
-- Gate aperto: OF-06 e' il primo checkpoint. Dopo commit e push manuale servono
-  un job statico, sei smoke Linux e il visual QA cumulativo con 30 catture
-  `03_promise_*` ispezionate prima di chiudere OF-06 e attivare OF-07.
+- Evidenza Linux: commit `d115c60`, job `static_contracts`, sei smoke e visual
+  QA verdi nella
+  [run 29531241698](https://github.com/Faratas410/Gallicus-2.0/actions/runs/29531241698).
+- Evidenza visuale: artifact `object_first_visual_qa`, 141 catture
+  viewport-only: 24 soglie, 24 tavole del Registro, 30 promesse/firme,
+  18 quietanze, 18 marchi, 24 incisioni e tre schermate generali. Le 30
+  catture `03_promise_*` coprono IT/EN/ES, normal, focus, selected, signed e
+  disabled a 1280x720 e 1920x1080; artifact ispezionato senza overflow
+  distruttivi o variazioni di geometria. Digest
+  `sha256:01e5b2be8d15b73831fd6f42a0d01b4fd4bd6a93cdfd267b83c6ef6554999f01`.
+- Gate chiuso: 2026-07-16, otto job verdi su `main` e artifact ispezionato.
+
+### Pacchetto implementato, in attesa di signoff cumulativo: OF-07
+
+- Comportamento: trasformare `MOSTRA IL PATTO` in una tavoletta sigillata di
+  basalto, bronzo e cera che rende leggibile la convalida del patto.
+- Owner: `RunManager` conserva flow e avanzamento rituale; la UI presenta gli
+  stati ed emette l'intento invariato `request_ritual_advance("pact")`.
+- Contratti: object grammar, ritual loop, UI canon, localizzazione IT/EN/ES e
+  contratto object-first OF-07.
+- Vincoli: nessun nuovo segnale, payload, campo save, manager, transizione o
+  calcolo gameplay; il marker checkpoint resta `OF-06` fino a OF-09.
+- Implementazione locale: tavoletta RGBA 5:2 senza testo, stati
+  normal/focus/pressed/validated/disabled a geometria stabile, CTA
+  `MOSTRA IL PATTO`/`SHOW THE PACT`/`MUESTRA EL PACTO` e cue
+  `registry_pact_validate`. Lo stato validated precede decision lock, cue ed
+  emissione dell'intento; non esiste `await` nel gesto.
+- Prove locali: contratto OF-07, import e runtime Godot 4.6.2, i18n, path,
+  docs refs, mojibake e diff check verdi. Il WAV e' mono PCM16 44,1 kHz,
+  dura 0,68 s e raggiunge al massimo -3 dBFS. Il selettore locale
+  `--section=pact_tablet` produce 24 catture `04_pact_*` IT/EN/ES per normal,
+  focus, validated e disabled a 1280x720 e 1920x1080; matrice ispezionata
+  senza overflow o variazioni di geometria.
+- Stato: implementato il 2026-07-16. OF-07 non e' un checkpoint e resta in
+  attesa del signoff cumulativo OF-09; il marker resta `OF-06`.
+
+### Pacchetto attivo: OF-08
+
+- Comportamento: trasformare la scelta intermedia nel gesto pubblico davanti
+  alla gradinata previsto dal rituale object-first.
+- Owner: `RunManager` conserva flow, scelta e conseguenze; la UI resta
+  presentazionale e invia soltanto gli intenti esistenti.
+- Apertura: definire oggetto, gesto, stati, cue, copy e contratto locale senza
+  modificare segnali, payload, save o marker checkpoint.
+- Signoff: OF-08 non e' un checkpoint; dopo le verifiche locali mirate restera'
+  in attesa della convalida cumulativa OF-09.
 
 ## 1. Foundation Reset
 
@@ -421,10 +464,8 @@ Gate:
 
 ## Prossimo step operativo
 
-`OF-05` e' chiuso con evidenza Linux e visuale. `OF-06` e' implementato
-localmente su `main` come primo checkpoint della nuova cadenza. Dopo le
-verifiche locali il prossimo passo esterno e' commit e push manuale tramite
-GitHub Desktop: il marker OF-06 avvia un job statico, sei smoke Linux e
-`visual_qa_object_first`. L'ispezione delle 30 catture promessa IT/EN/ES alle
-due risoluzioni, con registrazione di run, commit e digest, chiude OF-06 e
-attiva `OF-07 - tavoletta del patto`.
+`OF-06` e' chiuso sul commit `d115c60` con otto job Linux verdi e artifact
+visuale ispezionato. `OF-07 - tavoletta del patto` e' implementato su `main`
+e attende il signoff cumulativo OF-09; il marker resta `OF-06`. Il prossimo
+step operativo e' pianificare e implementare `OF-08 - gesto davanti alla
+gradinata` con sole verifiche locali mirate.

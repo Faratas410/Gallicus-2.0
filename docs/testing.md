@@ -75,6 +75,7 @@ python scripts/ci/test_second_incision_object_contract.py
 python scripts/ci/test_arena_threshold_object_contract.py
 python scripts/ci/test_registry_table_object_contract.py
 python scripts/ci/test_promise_signature_object_contract.py
+python scripts/ci/test_pact_tablet_object_contract.py
 python scripts/ci/test_ci_checkpoint_contract.py
 python scripts/ci/test_no_mojibake.py
 ```
@@ -157,15 +158,25 @@ Richiesta per cambi UI, copy visibile, asset o motion.
 .\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn
 ```
 
+Per OF-07 non checkpoint, la matrice locale mirata usa:
+
+```powershell
+.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=pact_tablet
+```
+
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
 Se il runtime Windows non raggiunge il bootstrap, il job Linux
 `visual_qa_object_first` produce l'evidenza canonica per soglia, tavola del
-Registro, promessa/firma, quietanza, marchio e seconda incisione object-first.
+Registro, promessa/firma, tavoletta del patto, quietanza, marchio e seconda
+incisione object-first.
 Le catture desktop intere non sostituiscono la viewport Godot.
 Il job esegue lo stesso capture tool sotto Xvfb e pubblica l'artifact
 `object_first_visual_qa`; al checkpoint OF-06 la matrice comprende 24 catture
 soglia, 24 tavola del Registro, 30 promessa/firma, 18 quietanza, 18 marchio e
 24 seconda incisione. Non sono ammesse catture desktop come sostituzione.
+Dal pacchetto OF-07 la matrice cumulativa aggiunge 24 catture `04_pact_*`:
+IT/EN/ES, 1280x720 e 1920x1080, normal, focus, validated e disabled. Lo stato
+pressed resta coperto dal contratto statico.
 
 Punti minimi:
 

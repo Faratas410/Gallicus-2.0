@@ -31,6 +31,14 @@ const PACT_TABLET_VIEWPORT_SIZES: Array[Vector2i] = [
 const PACT_TABLET_LOCALES: Array[String] = ["it", "en", "es"]
 const PACT_TABLET_BUTTON_PATH: String = "Main/UI/UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Btn_FIRST_REACTION_NEXT"
 const PACT_TABLET_SECTION: String = "pact_tablet"
+const GESTURE_CHOICE_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const GESTURE_CHOICE_LOCALES: Array[String] = ["it", "en", "es"]
+const GESTURE_CHOICE_PLACA_PATH: String = "Main/UI/UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0"
+const GESTURE_CHOICE_PROVOCA_PATH: String = "Main/UI/UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1"
+const GESTURE_CHOICE_SECTION: String = "gesture_choice"
 const RECEIPT_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -70,42 +78,50 @@ func _ready() -> void:
 func _run() -> void:
 	_prepare_output_dir()
 	var pact_tablet_only: bool = _capture_section == PACT_TABLET_SECTION
+	var gesture_choice_only: bool = _capture_section == GESTURE_CHOICE_SECTION
+	var targeted_section: bool = pact_tablet_only or gesture_choice_only
 	if get_node_or_null("UI") != null and get_node_or_null("RunManager") != null:
 		_main = self
 	else:
 		_main = MAIN_SCENE.instantiate()
 		get_tree().root.add_child(_main)
 	await _settle(20)
-	if not pact_tablet_only:
+	if not targeted_section:
 		await _capture_arena_threshold_matrix()
 		await _capture("01_menu")
 
 	await _press_when_ready("Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/BettingCircle", true, 4.0)
 	await _settle(12)
-	if not pact_tablet_only:
+	if not targeted_section:
 		await _capture_registry_table_matrix()
 		await _capture("02_register_closed")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book", 4.0)
 	await _settle(360)
 	await _wait_button_enabled("Main/UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/LeftPage/Btn_Sign_Left", 6.0)
-	if not pact_tablet_only:
+	if not targeted_section:
 		await _capture_promise_signature_matrix()
 		await _capture("03_register_open")
 
 	await _press_preferred_sign_button()
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_FIRST_REACTION", true, 4.0)
 	await _settle(60)
-	await _capture_pact_tablet_matrix()
+	if not gesture_choice_only:
+		await _capture_pact_tablet_matrix()
 	if pact_tablet_only:
 		_finish_capture_run()
 		return
-	await _capture("04_pact_signed")
+	if not gesture_choice_only:
+		await _capture("04_pact_signed")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Btn_FIRST_REACTION_NEXT", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_MID_CHOICE", true, 4.0)
 	await _settle(24)
+	await _capture_gesture_choice_matrix()
+	if gesture_choice_only:
+		_finish_capture_run()
+		return
 	await _capture("05_intermediate_choice")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0", 4.0)
@@ -204,6 +220,87 @@ func _touch_runtime_watchdog_for_pact_matrix() -> void:
 	var run_manager: Node = _main.get_node_or_null("RunManager")
 	if run_manager != null and run_manager.has_method("_touch_request_activity"):
 		run_manager.call("_touch_request_activity", "visual_qa_pact_matrix")
+
+func _capture_gesture_choice_matrix() -> void:
+	var placa_button: Button = get_tree().root.get_node_or_null(GESTURE_CHOICE_PLACA_PATH) as Button
+	var provoca_button: Button = get_tree().root.get_node_or_null(GESTURE_CHOICE_PROVOCA_PATH) as Button
+	var ui_root: Node = get_tree().root.get_node_or_null(UI_ROOT_PATH)
+	if placa_button == null or provoca_button == null or ui_root == null:
+		_failures.append("OF-08 arena gesture nodes missing for visual QA matrix")
+		return
+
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+
+	for locale: String in GESTURE_CHOICE_LOCALES:
+		TranslationServer.set_locale(locale)
+		ui_root.call("_on_intermediate_choice_opened")
+		await _settle(8)
+		for viewport_size: Vector2i in GESTURE_CHOICE_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "05_gesture_%s_%dx%d" % [
+				locale,
+				viewport_size.x,
+				viewport_size.y,
+			]
+
+			ui_root.call("_reset_gesture_choice_state")
+			placa_button.release_focus()
+			provoca_button.release_focus()
+			_touch_runtime_watchdog_for_gesture_matrix()
+			await _capture("%s_normal" % prefix, viewport_size)
+
+			placa_button.grab_focus()
+			await _settle(20)
+			_touch_runtime_watchdog_for_gesture_matrix()
+			await _capture("%s_focus_placa" % prefix, viewport_size)
+
+			placa_button.release_focus()
+			provoca_button.grab_focus()
+			await _settle(20)
+			_touch_runtime_watchdog_for_gesture_matrix()
+			await _capture("%s_focus_provoca" % prefix, viewport_size)
+
+			provoca_button.release_focus()
+			ui_root.call("_reset_gesture_choice_state")
+			ui_root.call("_set_gesture_choice_selected_state", 0)
+			placa_button.disabled = true
+			provoca_button.disabled = true
+			_touch_runtime_watchdog_for_gesture_matrix()
+			await _capture("%s_selected_placa" % prefix, viewport_size)
+
+			ui_root.call("_reset_gesture_choice_state")
+			ui_root.call("_set_gesture_choice_selected_state", 1)
+			placa_button.disabled = true
+			provoca_button.disabled = true
+			_touch_runtime_watchdog_for_gesture_matrix()
+			await _capture("%s_selected_provoca" % prefix, viewport_size)
+
+			ui_root.call("_reset_gesture_choice_state")
+			placa_button.disabled = true
+			provoca_button.disabled = true
+			_touch_runtime_watchdog_for_gesture_matrix()
+			await _capture("%s_disabled" % prefix, viewport_size)
+
+	TranslationServer.set_locale(previous_locale)
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	ui_root.call("_on_intermediate_choice_opened")
+	placa_button.release_focus()
+	provoca_button.release_focus()
+	await _settle(8)
+
+func _touch_runtime_watchdog_for_gesture_matrix() -> void:
+	if _main == null:
+		return
+	var run_manager: Node = _main.get_node_or_null("RunManager")
+	if run_manager != null and run_manager.has_method("_touch_request_activity"):
+		run_manager.call("_touch_request_activity", "visual_qa_gesture_matrix")
 
 func _prepare_output_dir() -> void:
 	var absolute_path: String = ProjectSettings.globalize_path(OUTPUT_DIR)

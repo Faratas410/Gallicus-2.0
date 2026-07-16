@@ -46,6 +46,11 @@ Il mood e' rituale e amministrativo, non action-horror.
 - OF-07 usa il cue `registry_pact_validate`: assestamento grave della tavoletta,
   compressione breve della cera e colpo di bronzo, senza il doppio cue
   `cursor_select` o semantica di ricompensa.
+- OF-08 usa `arena_gesture_placa` per tessera deposta, sabbia che si assesta e
+  respiro della folla che cala; `arena_gesture_provoca` usa graffio nella
+  sabbia, colpo di pietra/bronzo e reazione breve. Entrambi sostituiscono
+  `cursor_select` soltanto in questo gesto e restano mono PCM16 44,1 kHz,
+  0,55-0,85 s, con picco massimo -3 dBFS.
 - END_RUN: timbro e fascicolo, differenziati dal finale terminale.
 
 Nessuna azione importante puo' essere muta senza una ragione documentata.

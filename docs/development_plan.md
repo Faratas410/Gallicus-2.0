@@ -12,7 +12,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-08 - gesto davanti alla gradinata**.
+- Pacchetto attivo: **OF-09 - colpo sul sigillo**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica locale: static suite e import Godot verdi.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
@@ -251,6 +251,10 @@ Ordine dei pacchetti:
   `MOSTRA IL PATTO`/`SHOW THE PACT`/`MUESTRA EL PACTO` e cue
   `registry_pact_validate`. Lo stato validated precede decision lock, cue ed
   emissione dell'intento; non esiste `await` nel gesto.
+- Correzione proporzioni e copy: controllo `320x128` nel pannello `660x390`,
+  StyleBoxTexture senza margini nine-slice, soggetto all'89,1% della larghezza
+  e all'82,8% dell'altezza del canvas. Titolo, corpo, CTA, `SEGNI` e stato del
+  Registro sono localizzati integralmente in IT/EN/ES.
 - Prove locali: contratto OF-07, import e runtime Godot 4.6.2, i18n, path,
   docs refs, mojibake e diff check verdi. Il WAV e' mono PCM16 44,1 kHz,
   dura 0,68 s e raggiunge al massimo -3 dBFS. Il selettore locale
@@ -260,16 +264,37 @@ Ordine dei pacchetti:
 - Stato: implementato il 2026-07-16. OF-07 non e' un checkpoint e resta in
   attesa del signoff cumulativo OF-09; il marker resta `OF-06`.
 
-### Pacchetto attivo: OF-08
+### Pacchetto implementato, in attesa di signoff cumulativo: OF-08
 
 - Comportamento: trasformare la scelta intermedia nel gesto pubblico davanti
   alla gradinata previsto dal rituale object-first.
 - Owner: `RunManager` conserva flow, scelta e conseguenze; la UI resta
   presentazionale e invia soltanto gli intenti esistenti.
-- Apertura: definire oggetto, gesto, stati, cue, copy e contratto locale senza
-  modificare segnali, payload, save o marker checkpoint.
-- Signoff: OF-08 non e' un checkpoint; dopo le verifiche locali mirate restera'
-  in attesa della convalida cumulativa OF-09.
+- Implementazione locale: tessere RGBA gemelle 3:2 `placa` e `provoca`, con
+  silhouette coincidenti al 99,88%, controlli `336x224`, pannello `764x430` e
+  stati normal/focus/pressed/selected/disabled senza scala. CTA, Pressione,
+  registrazione e otto messaggi dinamici sono completi in IT/EN/ES.
+- Runtime: selected precede il decision lock; i cue dedicati
+  `arena_gesture_placa`/`arena_gesture_provoca` precedono gli intenti invariati
+  `request_mid_choice_select(0/1)`. Doppia attivazione, emissione fallita e
+  watchdog sono gestiti localmente senza `await` o calcolo gameplay.
+- Prove locali: contratti OF-07/OF-08, import Godot 4.6.2, i18n, motion,
+  ritual-loop, path, docs refs, mojibake e diff check verdi. I WAV durano 0,68
+  s e 0,76 s, mono PCM16 44,1 kHz, con picco non superiore a -3 dBFS.
+- Evidenza visuale: 24 catture `04_pact_*` e 36 catture `05_gesture_*`,
+  IT/EN/ES a 1280x720 e 1920x1080, generate con i selettori locali e
+  ispezionate senza overflow, fallback italiano, deformazioni o variazioni di
+  geometria. OF-08 non e' un checkpoint e resta in attesa del signoff
+  cumulativo OF-09; il marker resta `OF-06`.
+
+### Pacchetto attivo: OF-09
+
+- Comportamento: trasformare il colpo sul sigillo nel prossimo gesto
+  object-first della sequenza rituale.
+- Checkpoint: OF-09 aggiornera' il marker e richiedera' job statico, sei smoke
+  Linux e visual QA cumulativo prima di chiudere OF-07, OF-08 e OF-09.
+- Vincoli: preservare flow, segnali, payload, save e autorita' di `RunManager`;
+  definire oggetto, gesto e prova prima dell'implementazione.
 
 ## 1. Foundation Reset
 
@@ -465,7 +490,8 @@ Gate:
 ## Prossimo step operativo
 
 `OF-06` e' chiuso sul commit `d115c60` con otto job Linux verdi e artifact
-visuale ispezionato. `OF-07 - tavoletta del patto` e' implementato su `main`
-e attende il signoff cumulativo OF-09; il marker resta `OF-06`. Il prossimo
-step operativo e' pianificare e implementare `OF-08 - gesto davanti alla
-gradinata` con sole verifiche locali mirate.
+visuale ispezionato. `OF-07 - tavoletta del patto` e `OF-08 - gesto davanti
+alla gradinata` sono implementati su `main`, verificati localmente e attendono
+il signoff cumulativo OF-09; il marker resta `OF-06`. Il prossimo step
+operativo e' pianificare e implementare `OF-09 - colpo sul sigillo`, checkpoint
+con suite Linux completa dopo il push manuale.

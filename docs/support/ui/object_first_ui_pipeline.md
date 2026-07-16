@@ -118,6 +118,8 @@ Asset:
 - `registry_promise_signature_blank.png`
 - `registry_promise_signature_signed.png`
 - `registry_pact_tablet_sealed.png`
+- `arena_gesture_tile_placa.png`
+- `arena_gesture_tile_provoca.png`
 
 Risorse:
 
@@ -156,6 +158,16 @@ Risorse:
 - `sb_registry_pact_tablet_pressed.tres`
 - `sb_registry_pact_tablet_validated.tres`
 - `sb_registry_pact_tablet_disabled.tres`
+- `sb_arena_gesture_placa_normal.tres`
+- `sb_arena_gesture_placa_focus.tres`
+- `sb_arena_gesture_placa_pressed.tres`
+- `sb_arena_gesture_placa_selected.tres`
+- `sb_arena_gesture_placa_disabled.tres`
+- `sb_arena_gesture_provoca_normal.tres`
+- `sb_arena_gesture_provoca_focus.tres`
+- `sb_arena_gesture_provoca_pressed.tres`
+- `sb_arena_gesture_provoca_selected.tres`
+- `sb_arena_gesture_provoca_disabled.tres`
 
 Nodi:
 
@@ -166,6 +178,7 @@ Nodi:
 - `Object_REGISTRY_TABLE` (`ClosedBookBg`/`SpellbookBg` nel consumer attuale)
 - `Object_PROMISE_SIGNATURE` (`Btn_Sign_Left`/`Btn_Sign_Right` nel consumer attuale)
 - `Object_PACT_TABLET` (`Btn_FIRST_REACTION_NEXT` nel consumer attuale)
+- `Object_ARENA_GESTURE` (`Btn_MID_CHOICE_SELECT_0/1` nel consumer attuale)
 
 ## Definition of Done
 

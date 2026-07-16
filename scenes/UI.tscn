@@ -44,6 +44,16 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_pressed.tres" id="51_registry_pact_tablet_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_validated.tres" id="52_registry_pact_tablet_validated"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_disabled.tres" id="53_registry_pact_tablet_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_normal.tres" id="54_arena_gesture_placa_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_focus.tres" id="55_arena_gesture_placa_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_pressed.tres" id="56_arena_gesture_placa_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_selected.tres" id="57_arena_gesture_placa_selected"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_disabled.tres" id="58_arena_gesture_placa_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_normal.tres" id="59_arena_gesture_provoca_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_focus.tres" id="60_arena_gesture_provoca_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_pressed.tres" id="61_arena_gesture_provoca_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_selected.tres" id="62_arena_gesture_provoca_selected"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_disabled.tres" id="63_arena_gesture_provoca_disabled"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -625,10 +635,10 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -330.0
-offset_top = -165.0
+offset_top = -195.0
 offset_right = 330.0
-offset_bottom = 165.0
-custom_minimum_size = Vector2(660, 330)
+offset_bottom = 195.0
+custom_minimum_size = Vector2(660, 390)
 
 [node name="Box_FIRST_REACTION" type="VBoxContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION"]
 anchor_right = 1.0
@@ -679,9 +689,9 @@ theme_override_colors/font_color = Color(0.98, 0.92, 0.76, 1)
 theme_override_colors/font_hover_color = Color(1, 0.97, 0.84, 1)
 theme_override_colors/font_focus_color = Color(1, 0.97, 0.84, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.84, 0.66, 1)
-theme_override_colors/font_disabled_color = Color(0.58, 0.56, 0.52, 1)
-theme_override_font_sizes/font_size = 18
-custom_minimum_size = Vector2(320, 72)
+theme_override_colors/font_disabled_color = Color(0.76, 0.72, 0.64, 1)
+theme_override_font_sizes/font_size = 20
+custom_minimum_size = Vector2(320, 128)
 size_flags_horizontal = 4
 text = "MOSTRA IL PATTO"
 
@@ -865,11 +875,11 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -382.0
-offset_top = -178.0
+offset_top = -215.0
 offset_right = 382.0
-offset_bottom = 178.0
+offset_bottom = 215.0
 clip_contents = true
-custom_minimum_size = Vector2(764, 356)
+custom_minimum_size = Vector2(764, 430)
 
 [node name="BackgroundMidChoice" type="TextureRect" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
 visible = false
@@ -932,33 +942,42 @@ text = "ATTO DAVANTI ALLA GRADINATA"
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 14
+alignment = 1
 
 [node name="Btn_MID_CHOICE_SELECT_0" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
-theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
-theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
-theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
-theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
-theme_override_colors/font_color = Color(0.95, 0.94, 0.92, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.98, 0.94, 1)
+focus_mode = 2
+theme_override_styles/normal = ExtResource("54_arena_gesture_placa_normal")
+theme_override_styles/hover = ExtResource("55_arena_gesture_placa_focus")
+theme_override_styles/focus = ExtResource("55_arena_gesture_placa_focus")
+theme_override_styles/pressed = ExtResource("56_arena_gesture_placa_pressed")
+theme_override_styles/disabled = ExtResource("58_arena_gesture_placa_disabled")
+theme_override_colors/font_color = Color(0.98, 0.94, 0.82, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.86, 1)
+theme_override_colors/font_focus_color = Color(1, 0.98, 0.86, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.91, 0.7, 1)
+theme_override_colors/font_disabled_color = Color(0.72, 0.7, 0.64, 1)
 theme_override_font_sizes/font_size = 18
-custom_minimum_size = Vector2(0, 126)
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(336, 224)
+size_flags_horizontal = 0
 size_flags_vertical = 0
 autowrap_mode = 2
 text = "ABBASSA LO SGUARDO\nPressione -1.\nIl Registro annota misura."
 
 [node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
-theme_override_styles/normal = ExtResource("27_mid_choice_button_normal")
-theme_override_styles/hover = ExtResource("28_mid_choice_button_hover")
-theme_override_styles/pressed = ExtResource("29_mid_choice_button_pressed")
-theme_override_styles/disabled = ExtResource("31_mid_choice_button_disabled")
-theme_override_colors/font_color = Color(1, 0.9, 0.86, 1)
-theme_override_colors/font_hover_color = Color(1, 0.95, 0.92, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.87, 0.82, 1)
+focus_mode = 2
+theme_override_styles/normal = ExtResource("59_arena_gesture_provoca_normal")
+theme_override_styles/hover = ExtResource("60_arena_gesture_provoca_focus")
+theme_override_styles/focus = ExtResource("60_arena_gesture_provoca_focus")
+theme_override_styles/pressed = ExtResource("61_arena_gesture_provoca_pressed")
+theme_override_styles/disabled = ExtResource("63_arena_gesture_provoca_disabled")
+theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_focus_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.84, 0.7, 1)
+theme_override_colors/font_disabled_color = Color(0.72, 0.68, 0.62, 1)
 theme_override_font_sizes/font_size = 18
-custom_minimum_size = Vector2(0, 126)
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(336, 224)
+size_flags_horizontal = 0
 size_flags_vertical = 0
 autowrap_mode = 2
 text = "SFIDA LA GRADINATA\nPressione +1.\nIl Registro annota esposizione."

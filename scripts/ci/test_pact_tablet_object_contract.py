@@ -25,9 +25,32 @@ VISUAL_QA = ROOT / "tools/visual_qa_capture.gd"
 
 STYLE_NAMES = ("normal", "focus", "pressed", "validated", "disabled")
 EXPECTED_COPY = {
-    "it": "MOSTRA IL PATTO",
-    "en": "SHOW THE PACT",
-    "es": "MUESTRA EL PACTO",
+    "MOSTRA IL PATTO": {
+        "it": "MOSTRA IL PATTO",
+        "en": "SHOW THE PACT",
+        "es": "MUESTRA EL PACTO",
+    },
+    "PATTO SIGILLATO": {
+        "it": "PATTO SIGILLATO",
+        "en": "PACT SEALED",
+        "es": "PACTO SELLADO",
+    },
+    "La pietra ha preso la firma.": {
+        "it": "La pietra ha preso la firma.",
+        "en": "The stone has taken the signature.",
+        "es": "La piedra ha recibido la firma.",
+    },
+    "La gradinata attende il gesto.": {
+        "it": "La gradinata attende il gesto.",
+        "en": "The crowd awaits the gesture.",
+        "es": "La grada espera el gesto.",
+    },
+    "SEGNI": {"it": "SEGNI", "en": "MARKS", "es": "MARCAS"},
+    "Registro pulito: nessun segno inciso.": {
+        "it": "Registro pulito: nessun segno inciso.",
+        "en": "Clean Registry: no mark inscribed.",
+        "es": "Registro limpio: ninguna marca inscrita.",
+    },
 }
 
 
@@ -135,6 +158,15 @@ def _assert_texture_and_styles() -> None:
     coverage = sum(value > 0 for value in alpha) / len(alpha)
     if not 0.50 <= coverage <= 0.85:
         raise AssertionError(f"unexpected pact tablet subject coverage: {coverage:.3f}")
+    occupied = [index for index, value in enumerate(alpha) if value > 0]
+    xs = [index % width for index in occupied]
+    ys = [index // width for index in occupied]
+    width_coverage = (max(xs) - min(xs) + 1) / width
+    height_coverage = (max(ys) - min(ys) + 1) / height
+    if not 0.88 <= width_coverage <= 0.96:
+        raise AssertionError(f"pact tablet width coverage out of range: {width_coverage:.3f}")
+    if not 0.82 <= height_coverage <= 0.92:
+        raise AssertionError(f"pact tablet height coverage out of range: {height_coverage:.3f}")
 
     geometry: tuple[str, ...] | None = None
     for state in STYLE_NAMES:
@@ -151,6 +183,8 @@ def _assert_texture_and_styles() -> None:
         )
         if len(values) != 8:
             raise AssertionError(f"{path.name} must define stable texture/content margins")
+        if any(float(value) != 0.0 for value in values[:4]):
+            raise AssertionError(f"{path.name} must render uniformly without nine-slice margins")
         if geometry is None:
             geometry = values
         elif values != geometry:
@@ -171,15 +205,28 @@ def _assert_scene_and_copy() -> None:
         'theme_override_styles/focus = ExtResource("50_registry_pact_tablet_focus")',
         'theme_override_styles/pressed = ExtResource("51_registry_pact_tablet_pressed")',
         'theme_override_styles/disabled = ExtResource("53_registry_pact_tablet_disabled")',
-        "custom_minimum_size = Vector2(320, 72)",
+        "theme_override_colors/font_disabled_color = Color(0.76, 0.72, 0.64, 1)",
+        "theme_override_font_sizes/font_size = 20",
+        "custom_minimum_size = Vector2(320, 128)",
         'text = "MOSTRA IL PATTO"',
     ):
         if token not in block:
             raise AssertionError(f"pact tablet scene binding missing: {token}")
-    for locale, expected in EXPECTED_COPY.items():
-        actual = _csv_value(locale, "MOSTRA IL PATTO")
-        if actual != expected:
-            raise AssertionError(f"{locale} pact CTA mismatch: {actual!r}")
+    panel = _node_block(scene, "Panel_FIRST_REACTION")
+    if "custom_minimum_size = Vector2(660, 390)" not in panel:
+        raise AssertionError("pact panel must be 660x390")
+    for key, translations in EXPECTED_COPY.items():
+        for locale, expected in translations.items():
+            actual = _csv_value(locale, key)
+            if actual != expected:
+                raise AssertionError(f"{locale} pact copy mismatch for {key!r}: {actual!r}")
+
+    disabled_style = _read(STYLE_DIR / "sb_registry_pact_tablet_disabled.tres")
+    normal_style = _read(STYLE_DIR / "sb_registry_pact_tablet_normal.tres")
+    if "modulate_color = Color(0.43, 0.42, 0.4, 1)" not in disabled_style:
+        raise AssertionError("pact disabled state must retain readable contrast")
+    if "modulate_color = Color(0.78, 0.73, 0.66, 1)" not in normal_style:
+        raise AssertionError("pact normal contrast baseline changed")
 
 
 def _assert_runtime_contract() -> None:

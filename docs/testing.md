@@ -76,6 +76,7 @@ python scripts/ci/test_arena_threshold_object_contract.py
 python scripts/ci/test_registry_table_object_contract.py
 python scripts/ci/test_promise_signature_object_contract.py
 python scripts/ci/test_pact_tablet_object_contract.py
+python scripts/ci/test_arena_gesture_object_contract.py
 python scripts/ci/test_ci_checkpoint_contract.py
 python scripts/ci/test_no_mojibake.py
 ```
@@ -164,6 +165,12 @@ Per OF-07 non checkpoint, la matrice locale mirata usa:
 .\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=pact_tablet
 ```
 
+Per OF-08 non checkpoint, la matrice locale mirata usa:
+
+```powershell
+.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=gesture_choice
+```
+
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
 Se il runtime Windows non raggiunge il bootstrap, il job Linux
 `visual_qa_object_first` produce l'evidenza canonica per soglia, tavola del
@@ -177,6 +184,11 @@ soglia, 24 tavola del Registro, 30 promessa/firma, 18 quietanza, 18 marchio e
 Dal pacchetto OF-07 la matrice cumulativa aggiunge 24 catture `04_pact_*`:
 IT/EN/ES, 1280x720 e 1920x1080, normal, focus, validated e disabled. Lo stato
 pressed resta coperto dal contratto statico.
+Dal pacchetto OF-08 aggiunge 36 catture `05_gesture_*`: IT/EN/ES, entrambe le
+risoluzioni, normal, focus placa, focus provoca, selected placa, selected
+provoca e disabled. Pressed resta coperto dal contratto statico. A ogni
+ispezione si controllano rapporto 3:2, identita' delle silhouette, wrapping,
+accenti e assenza di fallback italiano in EN/ES.
 
 Punti minimi:
 

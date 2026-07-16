@@ -23,7 +23,6 @@ const ENDING_FADE_OUT_SEC: float = 0.34
 const SIGN_LOCK_FEEDBACK_SECONDS: float = 0.18
 const SIGN_LOCK_DARKEN_RGB: float = 0.76
 const SIGN_PREVIEW_SCALE: float = 1.015
-const MID_CHOICE_HOVER_SCALE: float = 1.025
 const MOTION_KIND_STANDARD: String = "standard"
 const MOTION_KIND_RITUAL: String = "ritual"
 const MOTION_KIND_ENDING: String = "ending"
@@ -60,6 +59,12 @@ const PACT_TABLET_STYLE_VALIDATED: StyleBox = preload("res://assets/ui/official/
 const PACT_TABLET_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_disabled.tres")
 const PACT_TABLET_VALIDATED_META: StringName = &"registry_pact_tablet_validated"
 const PACT_TABLET_WATCHDOG_SECONDS: float = 1.25
+const GESTURE_PLACA_STYLE_SELECTED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_selected.tres")
+const GESTURE_PLACA_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_disabled.tres")
+const GESTURE_PROVOCA_STYLE_SELECTED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_selected.tres")
+const GESTURE_PROVOCA_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_disabled.tres")
+const GESTURE_CHOICE_STATE_META: StringName = &"arena_gesture_choice_state"
+const GESTURE_CHOICE_WATCHDOG_SECONDS: float = 1.25
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -327,6 +332,8 @@ var intermediate_choice_label: Label = null
 var intermediate_choice_audience_label: Label = null
 var intermediate_choice_placa_button: Button = null
 var intermediate_choice_provoca_button: Button = null
+var _gesture_choice_locked: bool = false
+var _gesture_choice_request_sequence_id: int = 0
 
 var push_luck_modal: Control = null
 var push_luck_panel: Control = null
@@ -687,14 +694,9 @@ func show_phase(phase: int) -> void:
 	_reset_sign_feedback()
 	_reset_pyl_lock_state()
 	_reset_pact_tablet_state()
+	_reset_gesture_choice_state()
 	if phase == RunPhaseContract.BET_PRESENT or phase == RunPhaseContract.NEXT_BET:
 		_reset_decision_surface(bet_panel, _bet_buttons, condanna_focus_label)
-	elif phase == RunPhaseContract.INTERMEDIATE_CHOICE:
-		_reset_decision_surface(
-			intermediate_choice_panel,
-			[intermediate_choice_placa_button, intermediate_choice_provoca_button],
-			intermediate_choice_label
-		)
 	elif phase == RunPhaseContract.PUSH_YOUR_LUCK:
 		_reset_decision_surface(push_luck_panel, _collect_pyl_buttons(), push_luck_audience_reason)
 	if hud_top_left_stats_box != null:
@@ -923,6 +925,7 @@ func show_countdown(seconds: int = 3) -> void:
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
 func _on_run_started() -> void:
 	_reset_pact_tablet_state()
+	_reset_gesture_choice_state()
 	_refresh_runtime_group_cache(false)
 	if escalation_row != null:
 		escalation_row.visible = true
@@ -1169,6 +1172,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 
 func _on_run_failed() -> void:
 	_reset_pact_tablet_state()
+	_reset_gesture_choice_state()
 	_set_bet_modal(false)
 	if escalation_row != null:
 		escalation_row.visible = false
@@ -1762,7 +1766,10 @@ func _on_pact_sealed_opened() -> void:
 	if pact_sealed_title != null:
 		pact_sealed_title.text = tr("PATTO SIGILLATO")
 	if pact_sealed_subtitle != null:
-		pact_sealed_subtitle.text = tr("La pietra ha preso la firma.\nLa gradinata attende il gesto.")
+		pact_sealed_subtitle.text = "%s\n%s" % [
+			tr("La pietra ha preso la firma."),
+			tr("La gradinata attende il gesto."),
+		]
 		_force_label_readable(pact_sealed_subtitle)
 	if pact_sealed_advance_button != null:
 		pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
@@ -1824,7 +1831,7 @@ func _set_pact_tablet_validated_state(validated: bool) -> void:
 	)
 	pact_sealed_advance_button.add_theme_color_override(
 		"font_disabled_color",
-		Color(1.0, 0.9, 0.72, 1.0) if validated else Color(0.58, 0.56, 0.52, 1.0)
+		Color(1.0, 0.9, 0.72, 1.0) if validated else Color(0.76, 0.72, 0.64, 1.0)
 	)
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
@@ -1959,9 +1966,13 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 	if kind == "pact_sealed":
 		_reset_pact_tablet_state()
 		if pact_sealed_title != null:
-			pact_sealed_title.text = str(payload.get("title", tr("PATTO SIGILLATO")))
+			pact_sealed_title.text = tr(str(payload.get("title", "PATTO SIGILLATO")))
 		if pact_sealed_subtitle != null:
-			pact_sealed_subtitle.text = str(payload.get("subtitle", tr("La pietra ha preso la firma.\nLa gradinata attende il gesto.")))
+			var pact_subtitle: String = str(payload.get(
+				"subtitle",
+				"La pietra ha preso la firma.\nLa gradinata attende il gesto."
+			))
+			pact_sealed_subtitle.text = _translate_multiline_copy(pact_subtitle)
 			_force_label_readable(pact_sealed_subtitle)
 		if pact_sealed_advance_button != null:
 			pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
@@ -1977,6 +1988,7 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 
 func _on_intermediate_choice_opened() -> void:
 	_reset_sign_feedback()
+	_reset_gesture_choice_state()
 	var payload: RunUiPayload = RunUiPayloadScript.new()
 	payload.phase = RunPhaseContract.INTERMEDIATE_CHOICE
 	payload.title = tr("ATTO DAVANTI ALLA GRADINATA")
@@ -2000,6 +2012,7 @@ func apply_run_ui_payload(payload: RunUiPayload) -> void:
 		_apply_push_luck_payload(payload)
 
 func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
+	_reset_gesture_choice_state()
 	if intermediate_choice_panel == null:
 		return
 	_set_bet_modal(false)
@@ -2014,24 +2027,43 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		if audience_line == "" and parts.size() > 0:
 			audience_line = parts[0].strip_edges()
 		title = parts[parts.size() - 1].strip_edges()
+	audience_line = tr(audience_line) if audience_line != "" else ""
+	title = tr(title) if title != "" else tr("ATTO DAVANTI ALLA GRADINATA")
 	if intermediate_choice_audience_label != null:
 		intermediate_choice_audience_label.text = audience_line
 		intermediate_choice_audience_label.visible = audience_line != ""
 	if intermediate_choice_label != null:
-		if title == "":
-			title = tr("ATTO DAVANTI ALLA GRADINATA")
 		intermediate_choice_label.text = title
 	_set_intermediate_choice_modal(true)
 	var choice_buttons: Array[Button] = []
 	if intermediate_choice_placa_button != null:
 		intermediate_choice_placa_button.visible = payload.choices.is_empty() or payload.choices.has("placa")
-		intermediate_choice_placa_button.modulate = Color(1, 1, 1, 0.93)
 		choice_buttons.append(intermediate_choice_placa_button)
 	if intermediate_choice_provoca_button != null:
 		intermediate_choice_provoca_button.visible = payload.choices.is_empty() or payload.choices.has("provoca")
-		intermediate_choice_provoca_button.modulate = Color(1, 1, 1, 0.93)
 		choice_buttons.append(intermediate_choice_provoca_button)
+	_refresh_gesture_choice_copy()
 	_apply_modal_read_delay(choice_buttons)
+
+func _translate_multiline_copy(source: String) -> String:
+	var localized_lines: PackedStringArray = []
+	for line: String in source.split("\n"):
+		localized_lines.append(tr(line.strip_edges()))
+	return "\n".join(localized_lines)
+
+func _refresh_gesture_choice_copy() -> void:
+	if intermediate_choice_placa_button != null:
+		intermediate_choice_placa_button.text = "%s\n%s\n%s" % [
+			tr("ABBASSA LO SGUARDO"),
+			tr("Pressione -1."),
+			tr("Il Registro annota misura."),
+		]
+	if intermediate_choice_provoca_button != null:
+		intermediate_choice_provoca_button.text = "%s\n%s\n%s" % [
+			tr("SFIDA LA GRADINATA"),
+			tr("Pressione +1."),
+			tr("Il Registro annota esposizione."),
+		]
 
 func _update_special_arena_ui() -> void:
 	if special_arena_label == null:
@@ -2478,62 +2510,92 @@ func _wire_intermediate_choice_buttons() -> void:
 		var placa_callable: Callable = Callable(self, "_on_intermediate_choice_placa_pressed")
 		if not intermediate_choice_placa_button.pressed.is_connected(placa_callable):
 			intermediate_choice_placa_button.pressed.connect(placa_callable)
-		_wire_sign_preview(intermediate_choice_placa_button)
-		_wire_mid_choice_emphasis(intermediate_choice_placa_button)
 	if intermediate_choice_provoca_button != null:
 		var provoca_callable: Callable = Callable(self, "_on_intermediate_choice_provoca_pressed")
 		if not intermediate_choice_provoca_button.pressed.is_connected(provoca_callable):
 			intermediate_choice_provoca_button.pressed.connect(provoca_callable)
-		_wire_sign_preview(intermediate_choice_provoca_button)
-		_wire_mid_choice_emphasis(intermediate_choice_provoca_button)
-
-func _wire_mid_choice_emphasis(button: Button) -> void:
-	if button == null:
-		return
-	var enter_mouse: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, true)
-	if not button.mouse_entered.is_connected(enter_mouse):
-		button.mouse_entered.connect(enter_mouse)
-	var enter_focus: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, true)
-	if not button.focus_entered.is_connected(enter_focus):
-		button.focus_entered.connect(enter_focus)
-	var exit_mouse: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, false)
-	if not button.mouse_exited.is_connected(exit_mouse):
-		button.mouse_exited.connect(exit_mouse)
-	var exit_focus: Callable = Callable(self, "_on_mid_choice_emphasis").bind(button, false)
-	if not button.focus_exited.is_connected(exit_focus):
-		button.focus_exited.connect(exit_focus)
-
-func _on_mid_choice_emphasis(button: Button, active: bool) -> void:
-	if button == null or button.disabled:
-		return
-	var target_alpha: float = 1.0 if active else 0.93
-	var target_scale: Vector2 = Vector2(MID_CHOICE_HOVER_SCALE, MID_CHOICE_HOVER_SCALE) if active else Vector2.ONE
-	button.pivot_offset = button.size * 0.5
-	var tween: Tween = create_tween()
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(button, "modulate", Color(1, 1, 1, target_alpha), 0.08)
-	tween.parallel().tween_property(button, "scale", target_scale, 0.12)
 
 func _on_intermediate_choice_placa_pressed() -> void:
-	_play_sfx(&"cursor_select")
+	if _gesture_choice_locked:
+		return
+	_set_gesture_choice_selected_state(0)
+	_gesture_choice_locked = true
 	_apply_decision_lock(
 		intermediate_choice_panel,
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
-		intermediate_choice_label,
-		intermediate_choice_placa_button
+		null,
+		intermediate_choice_placa_button,
+		false,
+		false
 	)
-	_emit_game_event_signal_if_available(&"request_mid_choice_select", [0])
+	_play_sfx(&"arena_gesture_placa")
+	if not _emit_game_event_signal_if_available(&"request_mid_choice_select", [0]):
+		_recover_gesture_choice_request_lock()
+		return
+	_start_gesture_choice_request_watchdog()
 
 func _on_intermediate_choice_provoca_pressed() -> void:
-	_play_sfx(&"cursor_select")
+	if _gesture_choice_locked:
+		return
+	_set_gesture_choice_selected_state(1)
+	_gesture_choice_locked = true
 	_apply_decision_lock(
 		intermediate_choice_panel,
 		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
-		intermediate_choice_label,
-		intermediate_choice_provoca_button
+		null,
+		intermediate_choice_provoca_button,
+		false,
+		false
 	)
-	_emit_game_event_signal_if_available(&"request_mid_choice_select", [1])
+	_play_sfx(&"arena_gesture_provoca")
+	if not _emit_game_event_signal_if_available(&"request_mid_choice_select", [1]):
+		_recover_gesture_choice_request_lock()
+		return
+	_start_gesture_choice_request_watchdog()
+
+func _start_gesture_choice_request_watchdog() -> void:
+	_gesture_choice_request_sequence_id += 1
+	var request_id: int = _gesture_choice_request_sequence_id
+	var timer: SceneTreeTimer = get_tree().create_timer(GESTURE_CHOICE_WATCHDOG_SECONDS)
+	timer.timeout.connect(Callable(self, "_recover_gesture_choice_request_if_still_open").bind(request_id), CONNECT_ONE_SHOT)
+
+func _recover_gesture_choice_request_if_still_open(request_id: int) -> void:
+	if request_id != _gesture_choice_request_sequence_id:
+		return
+	if not _gesture_choice_locked:
+		return
+	if intermediate_choice_modal == null or not intermediate_choice_modal.visible:
+		return
+	_recover_gesture_choice_request_lock()
+
+func _recover_gesture_choice_request_lock() -> void:
+	_reset_gesture_choice_state()
+
+func _reset_gesture_choice_state() -> void:
+	_gesture_choice_request_sequence_id += 1
+	_gesture_choice_locked = false
+	_set_gesture_choice_selected_state(-1)
+	_reset_decision_surface(
+		intermediate_choice_panel,
+		[intermediate_choice_placa_button, intermediate_choice_provoca_button],
+		null
+	)
+
+func _set_gesture_choice_selected_state(selected_index: int) -> void:
+	var buttons: Array[Button] = [intermediate_choice_placa_button, intermediate_choice_provoca_button]
+	var selected_styles: Array[StyleBox] = [GESTURE_PLACA_STYLE_SELECTED, GESTURE_PROVOCA_STYLE_SELECTED]
+	var disabled_styles: Array[StyleBox] = [GESTURE_PLACA_STYLE_DISABLED, GESTURE_PROVOCA_STYLE_DISABLED]
+	for index: int in range(buttons.size()):
+		var button: Button = buttons[index]
+		if button == null:
+			continue
+		var selected: bool = index == selected_index
+		button.set_meta(GESTURE_CHOICE_STATE_META, &"selected" if selected else &"normal")
+		button.add_theme_stylebox_override("disabled", selected_styles[index] if selected else disabled_styles[index])
+		button.add_theme_color_override(
+			"font_disabled_color",
+			Color(1.0, 0.91, 0.7, 1.0) if selected else Color(0.72, 0.69, 0.63, 1.0)
+		)
 
 func _on_push_luck_cashout_pressed() -> void:
 	if _pyl_locked:
@@ -3055,14 +3117,14 @@ func _place_bet(bet_id: String) -> void:
 	_apply_decision_lock(_resolve_bet_sign_panel() as Control, sign_buttons, condanna_focus_label)
 	_emit_game_event_signal_if_available(&"request_place_bet", [bet_id, 0])
 
-func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label, selected_button: Button = null, play_feedback_sfx: bool = true) -> void:
+func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: Label, selected_button: Button = null, play_feedback_sfx: bool = true, scale_selected: bool = true) -> void:
 	for button: Button in buttons:
 		if button == null or not button.visible or button.disabled:
 			continue
 		button.disabled = true
 		if selected_button != null:
 			button.modulate = Color(1.0, 1.0, 1.0, 1.0) if button == selected_button else Color(1.0, 1.0, 1.0, 0.45)
-			button.scale = Vector2(1.025, 1.025) if button == selected_button else Vector2.ONE
+			button.scale = Vector2(1.025, 1.025) if button == selected_button and scale_selected else Vector2.ONE
 		else:
 			button.scale = Vector2.ONE
 	if hint_label != null:
@@ -3490,6 +3552,8 @@ func _set_resolve_ritual_modal(active: bool) -> void:
 	get_viewport().gui_release_focus()
 
 func _set_intermediate_choice_modal(active: bool) -> void:
+	if not active:
+		_reset_gesture_choice_state()
 	if active:
 		show_modal(intermediate_choice_modal)
 	_intermediate_choice_modal_fade_tween = _fade_modal(

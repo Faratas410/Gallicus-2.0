@@ -18,6 +18,9 @@ larghezza viewport.
 - Vietate card dentro card.
 - Dimensioni e aspect ratio degli oggetti critici sono stabili.
 - Hover, focus, label e stato non devono ridimensionare il layout.
+- La tavoletta OF-07 usa controllo `320x128` (5:2) nel pannello `660x390`;
+  le tessere OF-08 usano controlli `336x224` (3:2) nel pannello `764x430`,
+  centrate con separazione `14 px`. Gli stati conservano queste geometrie.
 
 ## Gerarchia
 

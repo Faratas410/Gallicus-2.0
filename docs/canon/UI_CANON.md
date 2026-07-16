@@ -479,3 +479,24 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - `Phase_FIRST_REACTION` (`IL PATTO E' SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
 - Resolve ritual overlay container `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.
 - Scope guard: this contract removes only legacy post-bet copy selection (`POST_BET_TEXTS`) and does not alter phase/event sequencing authority.
+
+## Arena gesture tesserae contract (OF-08)
+
+- Runtime scene: `res://scenes/UI.tscn`; technical input nodes:
+  `Btn_MID_CHOICE_SELECT_0` and `Btn_MID_CHOICE_SELECT_1`.
+- `placa` and `provoca` are presented as text-free 3:2 basalt, bronze and sand
+  tesserae with the same silhouette. Their Godot-rendered CTAs remain
+  descriptive in IT/EN/ES and expose Pressure -1/+1 before activation.
+- Each control is `336x224` inside a `764x430` panel. Normal, focus, pressed,
+  selected and disabled share identical margins and never scale or move.
+- Activation guards duplicate input, exposes selected, applies decision lock
+  without generic click feedback, plays the dedicated gesture cue and emits
+  the unchanged `request_mid_choice_select(0/1)` intent. No presentation
+  `await` may delay the intent.
+- Opening, new payload, phase change, new run, failed emission, recovery and
+  watchdog restore both tesserae and clear the local lock.
+- All visible modal copy, including the eight audience lines delivered by the
+  existing payload, is localized in UI without changing `RunManager`.
+- Scope guard: presentation only. `RunManager` remains the sole owner of
+  pressure, consequences and flow; no signal, payload, save field, manager or
+  transition is added.

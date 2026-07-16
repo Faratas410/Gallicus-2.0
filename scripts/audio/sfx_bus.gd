@@ -20,6 +20,8 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"registry_table_open": -11.0,
 	&"registry_promise_sign": -11.0,
 	&"registry_pact_validate": -10.5,
+	&"arena_gesture_placa": -11.0,
+	&"arena_gesture_provoca": -10.5,
 	&"game_over": -8.0,
 }
 const SFX_PATHS: Dictionary = {
@@ -40,6 +42,8 @@ const SFX_PATHS: Dictionary = {
 	&"registry_table_open": "res://assets/audio/sfx/registry_table_open.wav",
 	&"registry_promise_sign": "res://assets/audio/sfx/registry_promise_sign.wav",
 	&"registry_pact_validate": "res://assets/audio/sfx/registry_pact_validate.wav",
+	&"arena_gesture_placa": "res://assets/audio/sfx/arena_gesture_placa.wav",
+	&"arena_gesture_provoca": "res://assets/audio/sfx/arena_gesture_provoca.wav",
 	&"game_over": "res://assets/audio/sfx/game_over.wav",
 }
 

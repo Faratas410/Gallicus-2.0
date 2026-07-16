@@ -50,6 +50,11 @@ entrare nel sistema di localizzazione nello stesso blocco che la introduce.
 - Le stringhe mancanti non possono ricadere silenziosamente sull'italiano in
   una build di release.
 - Glossario e termini canonici devono avere una resa stabile.
+- Nei modali object-first la localizzazione copre l'intera superficie visibile:
+  titolo, corpo, CTA, effetto e registrazione. Le righe dinamiche ricevute dal
+  payload vengono tradotte in UI; EN/ES non possono mostrare fallback italiani.
+- Le tessere del gesto conservano focus visibile e target `336x224`; selected e
+  disabled restano distinguibili tramite forma, contrasto e copy, senza scala.
 
 ## QA linguistica
 

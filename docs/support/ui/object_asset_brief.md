@@ -438,7 +438,7 @@ Schermata o scenario QA: FIRST_REACTION e matrice 04_pact_*.
 Asset previsto:
 
 - sorgente RGBA senza testo, rapporto `5:2`, dimensioni `1280x512` e alpha
-  validato;
+  validato; il soggetto occupa 88-96% della larghezza e 82-92% dell'altezza;
 - destinazione `assets/ui/official/objects/pact_tablet/`;
 - texture `registry_pact_tablet_sealed.png`;
 - risorse `sb_registry_pact_tablet_normal.tres`,
@@ -452,6 +452,10 @@ Asset previsto:
 - cue originale procedurale
   `res://assets/audio/sfx/registry_pact_validate.wav`;
 - consumer `Btn_FIRST_REACTION_NEXT` dentro `res://scenes/UI.tscn`;
+- controllo `320x128` dentro pannello `660x390`; gli StyleBoxTexture usano
+  margini texture a zero per conservare il rapporto 5:2 senza nine-slice;
+- titolo, due righe di corpo, CTA, `SEGNI` e stato del Registro sono tradotti
+  integralmente in IT/EN/ES;
 - nessuna modifica a flow, payload, save o transizione;
 - validated precede lock, cue ed emissione dell'intento e non attende motion;
 - apertura, nuovo payload, chiusura, cambio fase, recovery e watchdog
@@ -468,6 +472,60 @@ Accettazione OF-07:
 - WAV mono PCM16 44,1 kHz, 0,55-0,80 s e picco massimo -3 dBFS;
 - 24 screenshot viewport-only nella matrice `04_pact_*`;
 - contratto OF-07, i18n, path e import Godot verdi.
+
+## Tessere del gesto davanti alla gradinata
+
+Uso: scelta `placa`/`provoca` nella fase `INTERMEDIATE_CHOICE`.
+
+- Due tessere gemelle rendono fisica la scelta pubblica senza cambiare esito,
+  pressione o flow.
+- Stati: normal, focus, pressed, selected e disabled.
+- La silhouette resta identica; cambia soltanto la sabbia nell'incavo.
+
+### Scheda OF-08
+
+```text
+Intento del soggetto: scegliere come esporsi davanti alla gradinata.
+Oggetto: coppia di tessere gemelle con incavo di sabbia.
+Materiale: basalto, bronzo e sabbia d'arena.
+Gesto: deporre la tessera composta oppure incidere quella di sfida.
+Conseguenza leggibile prima del gesto: Pressione -1 oppure Pressione +1.
+Stato prima: tessere disponibili, in focus, premute o bloccate.
+Stato dopo: selected persiste fino al cambio di fase o al recovery.
+Feedback visivo: sabbia composta per placa; sabbia calda e incisa per provoca.
+Feedback audio: assestamento e folla che cala; graffio, colpo e reazione breve.
+Feedback testuale: ABBASSA LO SGUARDO / SFIDA LA GRADINATA con copy IT/EN/ES.
+Registrazione prodotta: scelta 0/1 tramite request_mid_choice_select invariato.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_mid_choice_select(0/1), invariato.
+Fallback accessibile: forma, copy, contrasto e stato selected; nessuna scala.
+Schermata o scenario QA: INTERMEDIATE_CHOICE e matrice 05_gesture_*.
+```
+
+Asset previsto:
+
+- `arena_gesture_tile_placa.png` e `arena_gesture_tile_provoca.png`, RGBA
+  `768x512`, rapporto 3:2, senza testo e con silhouette coincidenti;
+- destinazione `assets/ui/official/objects/arena_gesture/`;
+- cinque StyleBoxTexture per tessera, geometria identica e margini texture a
+  zero;
+- consumer `Btn_MID_CHOICE_SELECT_0/1` in controlli fissi `336x224`, dentro
+  pannello `764x430`, separazione `14 px`;
+- cue originali procedurali `arena_gesture_placa.wav` e
+  `arena_gesture_provoca.wav`;
+- provenienza visuale: generazione built-in su chroma-key con tavoletta,
+  soglia e Registro come riferimenti, rimozione locale e validazione alpha;
+- selected precede lock, cue ed emissione; emissione fallita e watchdog
+  ripristinano entrambe le tessere;
+- nessuna modifica a flow, payload, save, segnale o transizione.
+
+Accettazione OF-08:
+
+- normal, focus, selected e disabled distinguibili senza scala o spostamento;
+- CTA, pressione, registrazione e otto messaggi payload leggibili in IT/EN/ES;
+- WAV mono PCM16 44,1 kHz, 0,55-0,85 s e picco massimo -3 dBFS;
+- 36 screenshot viewport-only nella matrice `05_gesture_*`;
+- contratto OF-08, i18n, motion, ritual loop, path e import Godot verdi.
 
 ## Verifica
 

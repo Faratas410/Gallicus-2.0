@@ -126,6 +126,15 @@ Le Ere non vengono nominate nella UI e le transizioni restano graduali.
 - Nessuna chiave mancante o fallback player-facing in release.
 - Il glossario canonico guida la terminologia.
 
+### Gesto davanti alla gradinata
+
+- La scelta composta usa `ABBASSA LO SGUARDO`, `LOWER YOUR GAZE`,
+  `BAJA LA MIRADA` e registra misura/restraint/mesura.
+- La scelta di sfida usa `SFIDA LA GRADINATA`, `CHALLENGE THE CROWD`,
+  `DESAFÍA A LA GRADA` e registra esposizione/exposure/exposición.
+- Le reazioni della gradinata restano osservazioni del payload, non giudizi o
+  tutorial del Registro, e sono complete nelle tre lingue di release.
+
 ## Accettazione
 
 - nessun placeholder o fallback generico;

@@ -54,6 +54,13 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_pressed.tres" id="61_arena_gesture_provoca_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_selected.tres" id="62_arena_gesture_provoca_selected"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_disabled.tres" id="63_arena_gesture_provoca_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_normal.tres" id="64_registry_judgment_seal_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_focus.tres" id="65_registry_judgment_seal_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_pressed.tres" id="66_registry_judgment_seal_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_strike_1.tres" id="67_registry_judgment_seal_strike_1"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_strike_2.tres" id="68_registry_judgment_seal_strike_2"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_resolved.tres" id="69_registry_judgment_seal_resolved"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_disabled.tres" id="70_registry_judgment_seal_disabled"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -788,12 +795,17 @@ theme_override_font_sizes/font_size = 15
 text = "COLPISCI IL SIGILLO A TEMPO"
 
 [node name="Btn_RESOLUTION_STRIKE" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
-theme_override_font_sizes/font_size = 18
-custom_minimum_size = Vector2(260, 56)
+theme_override_styles/normal = ExtResource("64_registry_judgment_seal_normal")
+theme_override_styles/hover = ExtResource("65_registry_judgment_seal_focus")
+theme_override_styles/focus = ExtResource("65_registry_judgment_seal_focus")
+theme_override_styles/pressed = ExtResource("66_registry_judgment_seal_pressed")
+theme_override_styles/disabled = ExtResource("70_registry_judgment_seal_disabled")
+theme_override_colors/font_color = Color(1, 0.91, 0.68, 1)
+theme_override_colors/font_focus_color = Color(1, 0.96, 0.76, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.82, 0.58, 1)
+theme_override_colors/font_disabled_color = Color(0.8, 0.75, 0.67, 1)
+theme_override_font_sizes/font_size = 20
+custom_minimum_size = Vector2(360, 144)
 size_flags_horizontal = 4
 text = "COLPISCI"
 

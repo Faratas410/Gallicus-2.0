@@ -14,7 +14,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Campagna completa: non ancora implementata.
 - Pacchetto attivo: **OF-09 - colpo sul sigillo**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
-- Verifica locale: static suite e import Godot verdi.
+- Verifica locale: OF-09 in corso; checkpoint Linux richiesto dopo push manuale.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
   bootstrap; le matrici Linux canoniche sono verdi.
 
@@ -245,7 +245,8 @@ Ordine dei pacchetti:
 - Contratti: object grammar, ritual loop, UI canon, localizzazione IT/EN/ES e
   contratto object-first OF-07.
 - Vincoli: nessun nuovo segnale, payload, campo save, manager, transizione o
-  calcolo gameplay; il marker checkpoint resta `OF-06` fino a OF-09.
+  calcolo gameplay; il marker checkpoint resta `OF-09` fino al prossimo
+  checkpoint programmato.
 - Implementazione locale: tavoletta RGBA 5:2 senza testo, stati
   normal/focus/pressed/validated/disabled a geometria stabile, CTA
   `MOSTRA IL PATTO`/`SHOW THE PACT`/`MUESTRA EL PACTO` e cue
@@ -262,7 +263,7 @@ Ordine dei pacchetti:
   focus, validated e disabled a 1280x720 e 1920x1080; matrice ispezionata
   senza overflow o variazioni di geometria.
 - Stato: implementato il 2026-07-16. OF-07 non e' un checkpoint e resta in
-  attesa del signoff cumulativo OF-09; il marker resta `OF-06`.
+  attesa del signoff cumulativo OF-09.
 
 ### Pacchetto implementato, in attesa di signoff cumulativo: OF-08
 
@@ -285,16 +286,23 @@ Ordine dei pacchetti:
   IT/EN/ES a 1280x720 e 1920x1080, generate con i selettori locali e
   ispezionate senza overflow, fallback italiano, deformazioni o variazioni di
   geometria. OF-08 non e' un checkpoint e resta in attesa del signoff
-  cumulativo OF-09; il marker resta `OF-06`.
+  cumulativo OF-09.
 
-### Pacchetto attivo: OF-09
+### Pacchetto implementato, in attesa di signoff Linux: OF-09
 
-- Comportamento: trasformare il colpo sul sigillo nel prossimo gesto
-  object-first della sequenza rituale.
-- Checkpoint: OF-09 aggiornera' il marker e richiedera' job statico, sei smoke
-  Linux e visual QA cumulativo prima di chiudere OF-07, OF-08 e OF-09.
+- Comportamento: trasformare il colpo sul sigillo nel gesto object-first della
+  sequenza rituale: il sigillo su pietra riceve tre colpi e si chiude prima
+  dell'avanzamento.
+- Owner: `RunManager` conserva flow e giudizio; la UI mostra stati e invia
+  soltanto l'intento invariato `request_ritual_advance("resolve")`.
+- Implementazione locale: sigillo RGBA 5:2 in basalto, bronzo e cera rossa,
+  stati normal/focus/pressed/strike_1/strike_2/resolved/disabled a geometria
+  stabile, controllo `360x144`, CTA `COLPISCI` e cue
+  `registry_judgment_seal_strike`/`registry_judgment_seal_resolve`.
+- Checkpoint: OF-09 aggiorna il marker a `OF-09` e richiede job statico, sei
+  smoke Linux e visual QA cumulativo prima di chiudere OF-07, OF-08 e OF-09.
 - Vincoli: preservare flow, segnali, payload, save e autorita' di `RunManager`;
-  definire oggetto, gesto e prova prima dell'implementazione.
+  nessun `await` o calcolo gameplay nel gesto.
 
 ## 1. Foundation Reset
 
@@ -490,8 +498,9 @@ Gate:
 ## Prossimo step operativo
 
 `OF-06` e' chiuso sul commit `d115c60` con otto job Linux verdi e artifact
-visuale ispezionato. `OF-07 - tavoletta del patto` e `OF-08 - gesto davanti
-alla gradinata` sono implementati su `main`, verificati localmente e attendono
-il signoff cumulativo OF-09; il marker resta `OF-06`. Il prossimo step
-operativo e' pianificare e implementare `OF-09 - colpo sul sigillo`, checkpoint
-con suite Linux completa dopo il push manuale.
+visuale ispezionato. `OF-07 - tavoletta del patto`, `OF-08 - gesto davanti
+alla gradinata` e `OF-09 - colpo sul sigillo` sono implementati su `main` e
+attendono il signoff cumulativo del checkpoint OF-09. Il marker locale e'
+`OF-09`. Il prossimo prerequisito esterno e' il commit e push manuale; poi
+vanno verificati job statico, sei smoke Linux, visual QA cumulativo e digest
+artifact prima di chiudere OF-07/OF-08/OF-09 e attivare OF-10.

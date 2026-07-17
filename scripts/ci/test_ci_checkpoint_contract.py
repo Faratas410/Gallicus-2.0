@@ -39,6 +39,9 @@ STATIC_TESTS = (
     "test_arena_threshold_object_contract.py",
     "test_registry_table_object_contract.py",
     "test_promise_signature_object_contract.py",
+    "test_pact_tablet_object_contract.py",
+    "test_arena_gesture_object_contract.py",
+    "test_judgment_seal_object_contract.py",
     "test_ci_checkpoint_contract.py",
     "test_release_content_contract.py",
     "test_no_mojibake.py",
@@ -105,9 +108,22 @@ def _assert_workflow() -> None:
     ):
         if scenario not in smoke_block:
             raise AssertionError(f"smoke matrix missing canonical scenario: {scenario}")
-    for token in ("PROMISE_COUNT", "03_promise_*.png", 'test "$PROMISE_COUNT" -eq 30'):
+    for token in (
+        "PROMISE_COUNT",
+        "03_promise_*.png",
+        'test "$PROMISE_COUNT" -eq 30',
+        "PACT_COUNT",
+        "04_pact_*.png",
+        'test "$PACT_COUNT" -eq 24',
+        "GESTURE_COUNT",
+        "05_gesture_*.png",
+        'test "$GESTURE_COUNT" -eq 36',
+        "JUDGMENT_COUNT",
+        "06_judgment_*.png",
+        'test "$JUDGMENT_COUNT" -eq 30',
+    ):
         if token not in visual_block:
-            raise AssertionError(f"checkpoint visual job missing OF-06 token: {token}")
+            raise AssertionError(f"checkpoint visual job missing Object-First token: {token}")
 
 
 def _assert_documentation() -> None:

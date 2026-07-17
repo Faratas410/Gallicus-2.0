@@ -135,6 +135,16 @@ Le Ere non vengono nominate nella UI e le transizioni restano graduali.
 - Le reazioni della gradinata restano osservazioni del payload, non giudizi o
   tutorial del Registro, e sono complete nelle tre lingue di release.
 
+### Colpo sul sigillo
+
+- Il rito usa `COLPISCI`, `STRIKE`, `GOLPEA` come CTA breve sul sigillo.
+- Il prompt resta amministrativo: colpire il sigillo a tempo, non vincere un
+  minigioco.
+- I tre messaggi sono progressivi e materiali: verdetto inciso, condanna
+  incisa, sigillo chiuso.
+- Il Registro registra l'avanzamento del verbale, non commenta l'abilita' del
+  giocatore.
+
 ## Accettazione
 
 - nessun placeholder o fallback generico;

@@ -55,6 +55,8 @@ entrare nel sistema di localizzazione nello stesso blocco che la introduce.
   payload vengono tradotte in UI; EN/ES non possono mostrare fallback italiani.
 - Le tessere del gesto conservano focus visibile e target `336x224`; selected e
   disabled restano distinguibili tramite forma, contrasto e copy, senza scala.
+- Il sigillo OF-09 conserva target `360x144`; i tre colpi sono leggibili anche
+  senza audio o timing perfetto tramite stati strike_1, strike_2 e resolved.
 
 ## QA linguistica
 

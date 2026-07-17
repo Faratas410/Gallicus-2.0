@@ -39,6 +39,13 @@ const GESTURE_CHOICE_LOCALES: Array[String] = ["it", "en", "es"]
 const GESTURE_CHOICE_PLACA_PATH: String = "Main/UI/UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0"
 const GESTURE_CHOICE_PROVOCA_PATH: String = "Main/UI/UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_1"
 const GESTURE_CHOICE_SECTION: String = "gesture_choice"
+const JUDGMENT_SEAL_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const JUDGMENT_SEAL_LOCALES: Array[String] = ["it", "en", "es"]
+const JUDGMENT_SEAL_BUTTON_PATH: String = "Main/UI/UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE"
+const JUDGMENT_SEAL_SECTION: String = "judgment_seal"
 const RECEIPT_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -79,7 +86,8 @@ func _run() -> void:
 	_prepare_output_dir()
 	var pact_tablet_only: bool = _capture_section == PACT_TABLET_SECTION
 	var gesture_choice_only: bool = _capture_section == GESTURE_CHOICE_SECTION
-	var targeted_section: bool = pact_tablet_only or gesture_choice_only
+	var judgment_seal_only: bool = _capture_section == JUDGMENT_SEAL_SECTION
+	var targeted_section: bool = pact_tablet_only or gesture_choice_only or judgment_seal_only
 	if get_node_or_null("UI") != null and get_node_or_null("RunManager") != null:
 		_main = self
 	else:
@@ -107,26 +115,32 @@ func _run() -> void:
 	await _press_preferred_sign_button()
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_FIRST_REACTION", true, 4.0)
 	await _settle(60)
-	if not gesture_choice_only:
+	if not targeted_section or pact_tablet_only:
 		await _capture_pact_tablet_matrix()
 	if pact_tablet_only:
 		_finish_capture_run()
 		return
-	if not gesture_choice_only:
+	if not targeted_section:
 		await _capture("04_pact_signed")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Btn_FIRST_REACTION_NEXT", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_MID_CHOICE", true, 4.0)
 	await _settle(24)
-	await _capture_gesture_choice_matrix()
+	if not targeted_section or gesture_choice_only:
+		await _capture_gesture_choice_matrix()
 	if gesture_choice_only:
 		_finish_capture_run()
 		return
-	await _capture("05_intermediate_choice")
+	if not targeted_section:
+		await _capture("05_intermediate_choice")
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_RESOLUTION", true, 4.0)
 	await _settle(60)
+	await _capture_judgment_seal_matrix()
+	if judgment_seal_only:
+		_finish_capture_run()
+		return
 	await _capture("06_resolve_ritual")
 
 	for i: int in range(3):
@@ -301,6 +315,79 @@ func _touch_runtime_watchdog_for_gesture_matrix() -> void:
 	var run_manager: Node = _main.get_node_or_null("RunManager")
 	if run_manager != null and run_manager.has_method("_touch_request_activity"):
 		run_manager.call("_touch_request_activity", "visual_qa_gesture_matrix")
+
+func _capture_judgment_seal_matrix() -> void:
+	var button: Button = get_tree().root.get_node_or_null(JUDGMENT_SEAL_BUTTON_PATH) as Button
+	var ui_root: Node = get_tree().root.get_node_or_null(UI_ROOT_PATH)
+	if button == null or ui_root == null:
+		_failures.append("OF-09 judgment seal nodes missing for visual QA matrix")
+		return
+
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_disabled: bool = button.disabled
+	var previous_state: int = int(button.get_meta(&"registry_judgment_seal_state", 0))
+
+	for locale: String in JUDGMENT_SEAL_LOCALES:
+		TranslationServer.set_locale(locale)
+		ui_root.call("_on_resolve_ritual_opened", {})
+		await _settle(8)
+		for viewport_size: Vector2i in JUDGMENT_SEAL_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "06_judgment_%s_%dx%d" % [
+				locale,
+				viewport_size.x,
+				viewport_size.y,
+			]
+
+			ui_root.call("_reset_resolution_ritual_interaction")
+			button.disabled = false
+			button.release_focus()
+			_touch_runtime_watchdog_for_judgment_matrix()
+			await _capture("%s_normal" % prefix, viewport_size)
+
+			button.grab_focus()
+			await _settle(20)
+			_touch_runtime_watchdog_for_judgment_matrix()
+			await _capture("%s_focus" % prefix, viewport_size)
+
+			button.release_focus()
+			button.disabled = false
+			button.text = tr("COLPISCI ANCORA")
+			ui_root.call("_set_judgment_seal_state", 1)
+			_touch_runtime_watchdog_for_judgment_matrix()
+			await _capture("%s_strike_1" % prefix, viewport_size)
+
+			button.text = tr("COLPISCI ANCORA")
+			ui_root.call("_set_judgment_seal_state", 2)
+			_touch_runtime_watchdog_for_judgment_matrix()
+			await _capture("%s_strike_2" % prefix, viewport_size)
+
+			button.text = tr("SIGILLATO")
+			ui_root.call("_set_judgment_seal_state", 3)
+			button.disabled = true
+			_touch_runtime_watchdog_for_judgment_matrix()
+			await _capture("%s_resolved" % prefix, viewport_size)
+
+	TranslationServer.set_locale(previous_locale)
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	ui_root.call("_set_judgment_seal_state", previous_state)
+	button.disabled = previous_disabled
+	button.release_focus()
+	await _settle(8)
+
+func _touch_runtime_watchdog_for_judgment_matrix() -> void:
+	if _main == null:
+		return
+	var run_manager: Node = _main.get_node_or_null("RunManager")
+	if run_manager != null and run_manager.has_method("_touch_request_activity"):
+		run_manager.call("_touch_request_activity", "visual_qa_judgment_matrix")
 
 func _prepare_output_dir() -> void:
 	var absolute_path: String = ProjectSettings.globalize_path(OUTPUT_DIR)

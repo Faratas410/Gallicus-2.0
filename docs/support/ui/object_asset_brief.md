@@ -527,6 +527,33 @@ Accettazione OF-08:
 - 36 screenshot viewport-only nella matrice `05_gesture_*`;
 - contratto OF-08, i18n, motion, ritual loop, path e import Godot verdi.
 
+### Scheda OF-09
+
+Intento del soggetto: chiudere il giudizio del patto.
+Oggetto: sigillo su pietra.
+Materiale: basalto, bronzo consumato e cera rossa.
+Gesto: tre colpi sullo stesso sigillo.
+Stato prima: intact/normal, con focus dorato e pressed caldo.
+Stato dopo: strike_1, strike_2 e resolved persistente prima dell'avanzamento.
+Feedback visivo: crepe e chiusura del sigillo senza cambio di geometria.
+Feedback audio: `registry_judgment_seal_strike` per i primi due colpi e
+`registry_judgment_seal_resolve` per il terzo.
+Registrazione prodotta: avanzamento resolve tramite
+`request_ritual_advance("resolve")`, invariato.
+Owner dati/flow: `RunManager`.
+Segnale GameEvents: `request_ritual_advance("resolve")`, invariato.
+Schermata o scenario QA: `Phase_RESOLUTION` e matrice `06_judgment_*`.
+
+Accettazione OF-09:
+
+- sigillo RGBA 5:2, senza testo, con silhouette stabile;
+- stati normal, focus, pressed, strike_1, strike_2, resolved e disabled;
+- CTA, corpo e prompt leggibili in IT/EN/ES a 1280x720;
+- WAV mono PCM16 44,1 kHz con picco massimo -3 dBFS;
+- 30 screenshot viewport-only nella matrice `06_judgment_*`;
+- contratto OF-09, i18n, motion, ritual loop, path, import Godot e checkpoint
+  CI verdi prima della chiusura formale.
+
 ## Verifica
 
 Ogni famiglia richiede:

@@ -65,6 +65,15 @@ const GESTURE_PROVOCA_STYLE_SELECTED: StyleBox = preload("res://assets/ui/offici
 const GESTURE_PROVOCA_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_disabled.tres")
 const GESTURE_CHOICE_STATE_META: StringName = &"arena_gesture_choice_state"
 const GESTURE_CHOICE_WATCHDOG_SECONDS: float = 1.25
+const JUDGMENT_SEAL_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_normal.tres")
+const JUDGMENT_SEAL_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_focus.tres")
+const JUDGMENT_SEAL_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_pressed.tres")
+const JUDGMENT_SEAL_STYLE_STRIKE_1: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_strike_1.tres")
+const JUDGMENT_SEAL_STYLE_STRIKE_2: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_strike_2.tres")
+const JUDGMENT_SEAL_STYLE_RESOLVED: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_resolved.tres")
+const JUDGMENT_SEAL_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_disabled.tres")
+const JUDGMENT_SEAL_STATE_META: StringName = &"registry_judgment_seal_state"
+const JUDGMENT_SEAL_WATCHDOG_SECONDS: float = 1.25
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -325,6 +334,8 @@ var _resolve_ritual_strike_count: int = 0
 var _resolve_ritual_started_msec: int = 0
 var _resolve_ritual_pulse_tween: Tween = null
 var _resolve_ritual_hit_tween: Tween = null
+var _judgment_seal_locked: bool = false
+var _judgment_seal_request_sequence_id: int = 0
 
 var intermediate_choice_modal: Control = null
 var intermediate_choice_panel: Control = null
@@ -695,6 +706,7 @@ func show_phase(phase: int) -> void:
 	_reset_pyl_lock_state()
 	_reset_pact_tablet_state()
 	_reset_gesture_choice_state()
+	_reset_judgment_seal_state()
 	if phase == RunPhaseContract.BET_PRESENT or phase == RunPhaseContract.NEXT_BET:
 		_reset_decision_surface(bet_panel, _bet_buttons, condanna_focus_label)
 	elif phase == RunPhaseContract.PUSH_YOUR_LUCK:
@@ -1839,9 +1851,15 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_pre_resolve_tension_boost()
 	_last_ritual_outcome_snapshot = _extract_ritual_outcome_snapshot(payload)
 	var doom_short: String = str(payload.get("doom_short", ""))
-	var subtitle: String = tr("Il Registro pesa il patto.\nColpisci tre volte il sigillo quando pulsa.")
+	var subtitle: String = "%s\n%s" % [
+		tr("Il Registro pesa il patto."),
+		tr("Colpisci tre volte il sigillo quando pulsa."),
+	]
 	if doom_short != "":
-		subtitle = tr("CONDANNA: %s\nTre colpi chiudono il verbale.") % doom_short
+		subtitle = "%s\n%s" % [
+			tr("CONDANNA: %s") % doom_short,
+			tr("Tre colpi chiudono il verbale."),
+		]
 	enqueue_post_bet_message({
 		"kind": "resolve_ritual",
 		"title": tr("RITO DI GIUDIZIO"),
@@ -1849,40 +1867,42 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	})
 
 func _on_resolve_ritual_closed() -> void:
+	_reset_judgment_seal_state()
 	_set_resolve_ritual_modal(false)
 	_pending_resolution_context_line = ""
 	_resolve_ritual_base_body = ""
 	_refresh_modal_dimmer()
 
 func _on_resolve_ritual_next_pressed() -> void:
-	if resolve_ritual_modal != null and resolve_ritual_modal.visible and _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED:
+	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
 		_on_resolve_ritual_strike_pressed()
 		return
-	_play_sfx(&"cursor_select")
-	_emit_game_event_signal_if_available(&"request_ritual_advance", ["resolve"])
 
 func _on_resolve_ritual_strike_pressed() -> void:
 	if resolve_ritual_modal == null or not resolve_ritual_modal.visible:
+		return
+	if _judgment_seal_locked:
 		return
 	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
 		return
 	var on_beat: bool = _is_resolution_ritual_on_beat()
 	_resolve_ritual_strike_count += 1
-	_play_sfx(&"enemy_hit")
 	_apply_resolution_ritual_strike_feedback(on_beat)
 	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
 		_complete_resolution_ritual_interaction()
+	else:
+		_play_sfx(&"registry_judgment_seal_strike")
 
 func _reset_resolution_ritual_interaction() -> void:
 	_resolve_ritual_strike_count = 0
 	_resolve_ritual_started_msec = Time.get_ticks_msec()
+	_reset_judgment_seal_state()
 	if resolve_ritual_prompt != null:
 		resolve_ritual_prompt.text = tr("COLPISCI IL SIGILLO A TEMPO")
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.visible = true
 		resolve_ritual_strike_button.disabled = false
 		resolve_ritual_strike_button.text = tr("COLPISCI")
-		resolve_ritual_strike_button.scale = Vector2.ONE
 	if resolve_ritual_advance_button != null:
 		resolve_ritual_advance_button.visible = false
 		resolve_ritual_advance_button.disabled = true
@@ -1906,13 +1926,12 @@ func _start_resolution_ritual_pulse() -> void:
 		return
 	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
 		_resolve_ritual_pulse_tween.kill()
-	resolve_ritual_strike_button.pivot_offset = resolve_ritual_strike_button.size * 0.5
 	_resolve_ritual_pulse_tween = create_tween()
 	_resolve_ritual_pulse_tween.set_loops()
 	_resolve_ritual_pulse_tween.set_trans(Tween.TRANS_SINE)
 	_resolve_ritual_pulse_tween.set_ease(Tween.EASE_IN_OUT)
-	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "scale", Vector2(1.055, 1.055), 0.42)
-	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "scale", Vector2.ONE, 0.48)
+	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "modulate", Color(1.0, 0.9, 0.7, 1.0), 0.42)
+	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "modulate", Color.WHITE, 0.48)
 
 func _is_resolution_ritual_on_beat() -> bool:
 	if _resolve_ritual_started_msec <= 0:
@@ -1938,25 +1957,77 @@ func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 		resolve_ritual_prompt.text = prompts[mini(_resolve_ritual_strike_count - 1, prompts.size() - 1)]
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.text = tr("COLPISCI ANCORA") if _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED else tr("SIGILLATO")
-		if _resolve_ritual_hit_tween != null and _resolve_ritual_hit_tween.is_valid():
-			_resolve_ritual_hit_tween.kill()
-		var peak_scale: Vector2 = Vector2(1.12, 1.12) if on_beat else Vector2(1.06, 1.06)
-		resolve_ritual_strike_button.scale = peak_scale
-		_resolve_ritual_hit_tween = create_tween()
-		_resolve_ritual_hit_tween.set_trans(Tween.TRANS_QUAD)
-		_resolve_ritual_hit_tween.set_ease(Tween.EASE_OUT)
-		_resolve_ritual_hit_tween.tween_property(resolve_ritual_strike_button, "scale", Vector2.ONE, 0.18)
+		_set_judgment_seal_state(_resolve_ritual_strike_count)
 
 func _complete_resolution_ritual_interaction() -> void:
 	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
 		_resolve_ritual_pulse_tween.kill()
 	if resolve_ritual_prompt != null:
 		resolve_ritual_prompt.text = tr("VERBALE INCISO - IL REGISTRO PUO AVANZARE")
+	_set_judgment_seal_state(RESOLUTION_RITUAL_STRIKES_REQUIRED)
+	_judgment_seal_locked = true
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.disabled = true
 	if resolve_ritual_advance_button != null:
-		resolve_ritual_advance_button.visible = true
-		resolve_ritual_advance_button.disabled = false
+		resolve_ritual_advance_button.visible = false
+		resolve_ritual_advance_button.disabled = true
+	_play_sfx(&"registry_judgment_seal_resolve")
+	if not _emit_game_event_signal_if_available(&"request_ritual_advance", ["resolve"]):
+		_recover_judgment_seal_request_lock()
+	else:
+		_start_judgment_seal_request_watchdog()
+
+func _start_judgment_seal_request_watchdog() -> void:
+	_judgment_seal_request_sequence_id += 1
+	var request_id: int = _judgment_seal_request_sequence_id
+	var timer := get_tree().create_timer(JUDGMENT_SEAL_WATCHDOG_SECONDS)
+	timer.timeout.connect(Callable(self, "_recover_judgment_seal_request_if_still_open").bind(request_id), CONNECT_ONE_SHOT)
+
+func _recover_judgment_seal_request_if_still_open(request_id: int) -> void:
+	if request_id != _judgment_seal_request_sequence_id:
+		return
+	if not _judgment_seal_locked:
+		return
+	if resolve_ritual_modal == null or not resolve_ritual_modal.visible:
+		return
+	_recover_judgment_seal_request_lock()
+
+func _recover_judgment_seal_request_lock() -> void:
+	_reset_resolution_ritual_interaction()
+
+func _reset_judgment_seal_state() -> void:
+	_judgment_seal_request_sequence_id += 1
+	_judgment_seal_locked = false
+	if resolve_ritual_strike_button == null:
+		return
+	resolve_ritual_strike_button.set_meta(JUDGMENT_SEAL_STATE_META, 0)
+	resolve_ritual_strike_button.modulate = Color.WHITE
+	resolve_ritual_strike_button.scale = Vector2.ONE
+	resolve_ritual_strike_button.add_theme_stylebox_override("normal", JUDGMENT_SEAL_STYLE_NORMAL)
+	resolve_ritual_strike_button.add_theme_stylebox_override("hover", JUDGMENT_SEAL_STYLE_FOCUS)
+	resolve_ritual_strike_button.add_theme_stylebox_override("focus", JUDGMENT_SEAL_STYLE_FOCUS)
+	resolve_ritual_strike_button.add_theme_stylebox_override("pressed", JUDGMENT_SEAL_STYLE_PRESSED)
+	resolve_ritual_strike_button.add_theme_stylebox_override("disabled", JUDGMENT_SEAL_STYLE_DISABLED)
+
+func _set_judgment_seal_state(strike_count: int) -> void:
+	if resolve_ritual_strike_button == null:
+		return
+	resolve_ritual_strike_button.set_meta(JUDGMENT_SEAL_STATE_META, strike_count)
+	var style: StyleBox = null
+	if strike_count == 1:
+		style = JUDGMENT_SEAL_STYLE_STRIKE_1
+	elif strike_count == 2:
+		style = JUDGMENT_SEAL_STYLE_STRIKE_2
+	elif strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
+		style = JUDGMENT_SEAL_STYLE_RESOLVED
+	if style == null:
+		_reset_judgment_seal_state()
+		return
+	resolve_ritual_strike_button.add_theme_stylebox_override("normal", style)
+	resolve_ritual_strike_button.add_theme_stylebox_override("hover", style)
+	resolve_ritual_strike_button.add_theme_stylebox_override("focus", style)
+	resolve_ritual_strike_button.add_theme_stylebox_override("pressed", style)
+	resolve_ritual_strike_button.add_theme_stylebox_override("disabled", style if strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED else JUDGMENT_SEAL_STYLE_DISABLED)
 
 func enqueue_post_bet_message(payload: Dictionary) -> void:
 	_show_post_bet_payload(payload)
@@ -2503,7 +2574,6 @@ func _wire_ritual_advance_buttons() -> void:
 		var strike_callable: Callable = Callable(self, "_on_resolve_ritual_strike_pressed")
 		if not resolve_ritual_strike_button.pressed.is_connected(strike_callable):
 			resolve_ritual_strike_button.pressed.connect(strike_callable)
-		_wire_sign_preview(resolve_ritual_strike_button)
 
 func _wire_intermediate_choice_buttons() -> void:
 	if intermediate_choice_placa_button != null:

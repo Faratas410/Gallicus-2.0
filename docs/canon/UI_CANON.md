@@ -500,3 +500,24 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Scope guard: presentation only. `RunManager` remains the sole owner of
   pressure, consequences and flow; no signal, payload, save field, manager or
   transition is added.
+
+## Judgment seal contract (OF-09)
+
+- Runtime scene: `res://scenes/UI.tscn`; technical input node:
+  `Btn_RESOLUTION_STRIKE`.
+- The resolve ritual strike control is presented as a text-free 5:2 basalt,
+  bronze and red-wax seal. The Godot-rendered CTA remains `COLPISCI`,
+  `STRIKE` and `GOLPEA`.
+- States are normal, focus, pressed, strike_1, strike_2, resolved and disabled.
+  They share identical margins and geometry; no strike may scale or move the
+  target.
+- The first two activations expose strike_1 and strike_2 and play
+  `registry_judgment_seal_strike`. The third activation exposes resolved,
+  applies the local lock, plays `registry_judgment_seal_resolve` and emits the
+  unchanged `request_ritual_advance("resolve")` intent. No presentation
+  `await` may delay the intent.
+- Opening, close, phase change, failed emission, recovery and watchdog restore
+  the intact state and clear the local lock.
+- Scope guard: presentation only. `RunManager` remains the sole owner of
+  judgment, outcome and flow; no signal, payload, save field, manager or
+  transition is added.

@@ -20,7 +20,8 @@ larghezza viewport.
 - Hover, focus, label e stato non devono ridimensionare il layout.
 - La tavoletta OF-07 usa controllo `320x128` (5:2) nel pannello `660x390`;
   le tessere OF-08 usano controlli `336x224` (3:2) nel pannello `764x430`,
-  centrate con separazione `14 px`. Gli stati conservano queste geometrie.
+  centrate con separazione `14 px`; il sigillo OF-09 usa controllo `360x144`
+  (5:2) nel pannello `640x420`. Gli stati conservano queste geometrie.
 
 ## Gerarchia
 

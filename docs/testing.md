@@ -77,6 +77,7 @@ python scripts/ci/test_registry_table_object_contract.py
 python scripts/ci/test_promise_signature_object_contract.py
 python scripts/ci/test_pact_tablet_object_contract.py
 python scripts/ci/test_arena_gesture_object_contract.py
+python scripts/ci/test_judgment_seal_object_contract.py
 python scripts/ci/test_ci_checkpoint_contract.py
 python scripts/ci/test_no_mojibake.py
 ```
@@ -171,11 +172,17 @@ Per OF-08 non checkpoint, la matrice locale mirata usa:
 .\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=gesture_choice
 ```
 
+Per OF-09 checkpoint, la matrice locale mirata usa:
+
+```powershell
+.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=judgment_seal
+```
+
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
 Se il runtime Windows non raggiunge il bootstrap, il job Linux
 `visual_qa_object_first` produce l'evidenza canonica per soglia, tavola del
-Registro, promessa/firma, tavoletta del patto, quietanza, marchio e seconda
-incisione object-first.
+Registro, promessa/firma, tavoletta del patto, gesto davanti alla gradinata,
+colpo sul sigillo, quietanza, marchio e seconda incisione object-first.
 Le catture desktop intere non sostituiscono la viewport Godot.
 Il job esegue lo stesso capture tool sotto Xvfb e pubblica l'artifact
 `object_first_visual_qa`; al checkpoint OF-06 la matrice comprende 24 catture
@@ -189,6 +196,11 @@ risoluzioni, normal, focus placa, focus provoca, selected placa, selected
 provoca e disabled. Pressed resta coperto dal contratto statico. A ogni
 ispezione si controllano rapporto 3:2, identita' delle silhouette, wrapping,
 accenti e assenza di fallback italiano in EN/ES.
+Dal pacchetto OF-09 aggiunge 30 catture `06_judgment_*`: IT/EN/ES, entrambe le
+risoluzioni, normal, focus, strike_1, strike_2 e resolved. Pressed e disabled
+restano coperti dal contratto statico. A ogni ispezione si controllano rapporto
+5:2, leggibilita' della CTA, progressione dei tre colpi e assenza di fallback
+italiano in EN/ES.
 
 Punti minimi:
 

@@ -51,6 +51,11 @@ Il mood e' rituale e amministrativo, non action-horror.
   sabbia, colpo di pietra/bronzo e reazione breve. Entrambi sostituiscono
   `cursor_select` soltanto in questo gesto e restano mono PCM16 44,1 kHz,
   0,55-0,85 s, con picco massimo -3 dBFS.
+- OF-09 usa `registry_judgment_seal_strike` per i primi due colpi: impatto
+  secco di pietra e bronzo con crepa breve; `registry_judgment_seal_resolve`
+  chiude il terzo colpo con peso piu' grave e cera/bronzo che serrano il
+  verbale. Entrambi sostituiscono i cue generici del rito e restano mono PCM16
+  44,1 kHz, con picco massimo -3 dBFS.
 - END_RUN: timbro e fascicolo, differenziati dal finale terminale.
 
 Nessuna azione importante puo' essere muta senza una ragione documentata.

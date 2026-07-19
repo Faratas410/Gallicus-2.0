@@ -118,7 +118,7 @@ func _run() -> void:
 	if not targeted_section or pact_tablet_only:
 		await _capture_pact_tablet_matrix()
 	if pact_tablet_only:
-		_finish_capture_run()
+		await _finish_capture_run()
 		return
 	if not targeted_section:
 		await _capture("04_pact_signed")
@@ -129,7 +129,7 @@ func _run() -> void:
 	if not targeted_section or gesture_choice_only:
 		await _capture_gesture_choice_matrix()
 	if gesture_choice_only:
-		_finish_capture_run()
+		await _finish_capture_run()
 		return
 	if not targeted_section:
 		await _capture("05_intermediate_choice")
@@ -139,7 +139,7 @@ func _run() -> void:
 	await _settle(60)
 	await _capture_judgment_seal_matrix()
 	if judgment_seal_only:
-		_finish_capture_run()
+		await _finish_capture_run()
 		return
 	await _capture("06_resolve_ritual")
 
@@ -158,9 +158,10 @@ func _run() -> void:
 	await _settle(240)
 	await _capture("08_end_run")
 
-	_finish_capture_run()
+	await _finish_capture_run()
 
 func _finish_capture_run() -> void:
+	await _cleanup_capture_scene()
 	if _failures.is_empty():
 		print("VISUAL_QA:OK output=%s" % ProjectSettings.globalize_path(OUTPUT_DIR))
 		get_tree().quit(0)
@@ -169,6 +170,12 @@ func _finish_capture_run() -> void:
 			push_error(failure)
 		print("VISUAL_QA:FAILED failures=%d output=%s" % [_failures.size(), ProjectSettings.globalize_path(OUTPUT_DIR)])
 		get_tree().quit(1)
+
+func _cleanup_capture_scene() -> void:
+	if _main != null and _main != self and is_instance_valid(_main):
+		_main.queue_free()
+		_main = null
+		await _settle(8)
 
 func _capture_pact_tablet_matrix() -> void:
 	var button: Button = get_tree().root.get_node_or_null(PACT_TABLET_BUTTON_PATH) as Button

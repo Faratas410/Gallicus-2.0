@@ -330,6 +330,19 @@ def _assert_visual_qa() -> None:
     ):
         if token not in visual_qa:
             raise AssertionError(f"visual QA missing token: {token}")
+    run_match = re.search(r"(?ms)^func _run\(\) -> void:.*?(?=^func |\Z)", visual_qa)
+    if run_match is None:
+        raise AssertionError("visual QA missing _run")
+    run_body = run_match.group(0)
+    strike_token = 'Btn_RESOLUTION_STRIKE", 4.0)'
+    next_token = 'Btn_RESOLUTION_NEXT", 4.0)'
+    push_luck_token = 'Phase_PUSH_YOUR_LUCK", true, 4.0)'
+    if strike_token not in run_body or push_luck_token not in run_body:
+        raise AssertionError("visual QA cumulative route must still strike the judgment seal and reach Push Your Luck")
+    if next_token in run_body:
+        raise AssertionError("visual QA cumulative route must not press Btn_RESOLUTION_NEXT after OF-09")
+    if run_body.index(strike_token) > run_body.index(push_luck_token):
+        raise AssertionError("visual QA cumulative route must strike the seal before waiting for Push Your Luck")
 
 
 def main() -> None:

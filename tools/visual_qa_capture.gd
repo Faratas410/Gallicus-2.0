@@ -146,7 +146,6 @@ func _run() -> void:
 	for i: int in range(3):
 		await _press_when_ready("Main/UI/UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE", 4.0)
 		await _settle(18)
-	await _press_when_ready("Main/UI/UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_NEXT", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK", true, 4.0)
 	await _settle(90)
 	await _capture("07_push_your_luck")

@@ -301,6 +301,12 @@ Ordine dei pacchetti:
   `registry_judgment_seal_strike`/`registry_judgment_seal_resolve`.
 - Checkpoint: OF-09 aggiorna il marker a `OF-09` e richiede job statico, sei
   smoke Linux e visual QA cumulativo prima di chiudere OF-07, OF-08 e OF-09.
+- Nota correttiva: la run Linux `29571887908` su commit `5cc5f8d` ha lasciato
+  verdi job statico e sei smoke; il solo rosso era `visual_qa_object_first`,
+  causato dal capture cumulativo rimasto agganciato al vecchio
+  `Btn_RESOLUTION_NEXT` dopo i tre colpi. La patch locale aggiorna soltanto il
+  tool visuale e il contratto OF-09: dopo `Btn_RESOLUTION_STRIKE` attende
+  direttamente `Phase_PUSH_YOUR_LUCK`.
 - Vincoli: preservare flow, segnali, payload, save e autorita' di `RunManager`;
   nessun `await` o calcolo gameplay nel gesto.
 

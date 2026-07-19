@@ -329,6 +329,8 @@ def _assert_visual_qa() -> None:
         "_capture_judgment_seal_matrix",
         "func _cleanup_capture_scene() -> void:",
         "_main.queue_free()",
+        "ResourceLoader.CACHE_MODE_IGNORE",
+        "_main_scene = null",
     ):
         if token not in visual_qa:
             raise AssertionError(f"visual QA missing token: {token}")

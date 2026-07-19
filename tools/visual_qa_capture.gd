@@ -1,6 +1,6 @@
 extends Node
 
-const MAIN_SCENE: PackedScene = preload("res://scenes/Main.tscn")
+const MAIN_SCENE_PATH: String = "res://scenes/Main.tscn"
 const OUTPUT_DIR: String = "res://artifacts/visual_qa"
 const VIEWPORT_SIZE: Vector2i = Vector2i(1280, 720)
 const THRESHOLD_VIEWPORT_SIZES: Array[Vector2i] = [
@@ -70,6 +70,7 @@ const INCISION_NOTE_PATH: String = "Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK/Pane
 const UI_ROOT_PATH: String = "Main/UI"
 
 var _main: Node = null
+var _main_scene: PackedScene = null
 var _failures: PackedStringArray = PackedStringArray()
 var _capture_section: String = ""
 
@@ -91,7 +92,12 @@ func _run() -> void:
 	if get_node_or_null("UI") != null and get_node_or_null("RunManager") != null:
 		_main = self
 	else:
-		_main = MAIN_SCENE.instantiate()
+		_main_scene = ResourceLoader.load(MAIN_SCENE_PATH, "", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
+		if _main_scene == null:
+			_failures.append("Could not load main scene for visual QA: %s" % MAIN_SCENE_PATH)
+			await _finish_capture_run()
+			return
+		_main = _main_scene.instantiate()
 		get_tree().root.add_child(_main)
 	await _settle(20)
 	if not targeted_section:
@@ -175,7 +181,9 @@ func _cleanup_capture_scene() -> void:
 	if _main != null and _main != self and is_instance_valid(_main):
 		_main.queue_free()
 		_main = null
-		await _settle(8)
+		await _settle(16)
+	_main_scene = null
+	await _settle(4)
 
 func _capture_pact_tablet_matrix() -> void:
 	var button: Button = get_tree().root.get_node_or_null(PACT_TABLET_BUTTON_PATH) as Button

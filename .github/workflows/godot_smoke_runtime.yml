@@ -173,7 +173,7 @@ jobs:
           THRESHOLD_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '01_threshold_*.png' | wc -l)
           REGISTRY_TABLE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '02_registry_*.png' | wc -l)
           PROMISE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '03_promise_*.png' | wc -l)
-          PACT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '04_pact_*.png' | wc -l)
+          PACT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '04_pact_??_*.png' | wc -l)
           GESTURE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '05_gesture_*.png' | wc -l)
           JUDGMENT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '06_judgment_*.png' | wc -l)
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)

@@ -24,6 +24,7 @@ operativi e canonici.
 - `docs/support/ui/object_first_ui_pipeline.md` - produzione UI da intento a verifica.
 - `docs/support/ui/object_asset_brief.md` - famiglie oggetto e gap asset.
 - `docs/support/ui/run_ui_phase_paths.md` - riferimento tecnico a path e nodi.
+- `docs/support/media_vertical_slice/README.md` - brief, audit e preparazione del gate media.
 
 ## Regola
 

@@ -882,7 +882,7 @@ func _hide_arena_resolution_overlay() -> void:
 
 func _build_resolution_body(primary_text: String) -> String:
 	var body: String = primary_text.strip_edges()
-	var context_line: String = _pending_resolution_context_line.strip_edges()
+	var context_line: String = tr(_pending_resolution_context_line.strip_edges())
 	if context_line == "":
 		return body
 	if body == "" or body == context_line:
@@ -1020,13 +1020,14 @@ func _on_audience_context_line_emitted(text: String) -> void:
 	if audience_context_label == null:
 		return
 	_pending_resolution_context_line = text.strip_edges()
+	var localized_text: String = tr(_pending_resolution_context_line)
 	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
 		_set_resolve_ritual_body(_resolve_ritual_base_body)
 		return
-	audience_context_label.text = text
-	audience_context_label.visible = text != ""
+	audience_context_label.text = localized_text
+	audience_context_label.visible = localized_text != ""
 	if audience_context_panel != null:
-		audience_context_panel.visible = text != ""
+		audience_context_panel.visible = localized_text != ""
 
 func _clear_audience_context_overlay() -> void:
 	_pending_resolution_context_line = ""

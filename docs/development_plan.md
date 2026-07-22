@@ -62,6 +62,7 @@ Ordine dei pacchetti:
 | `FR-01` | Foundation Reset | smoke deterministici e matrice Linux verde |
 | `OF-01..03` | Object-First | quietanza, marchio, seconda incisione |
 | `OF-04..11` | Object-First | soglia, Registro, promessa, firma, patto, gesto, sigillo, fascicolo |
+| `MV-01..05` | Media Vertical Slice | apertura, Registro, render, motion, audio e checkpoint |
 | `RF-01..02` | Readability | leggibilita' della run e affidabilita' multi-run |
 | `RM-01..04` | Registry Memory | contratto, evidenza, convergenza, persistenza |
 | `ES-01..04` | Eras And Silences | Silenzio, ramp, mutazioni, Assenza |
@@ -307,6 +308,18 @@ Ordine dei pacchetti:
   `Btn_RESOLUTION_NEXT` dopo i tre colpi. La patch locale aggiorna soltanto il
   tool visuale e il contratto OF-09: dopo `Btn_RESOLUTION_STRIKE` attende
   direttamente `Phase_PUSH_YOUR_LUCK`.
+- Verifica del fix: la run Linux `29900307187` su commit `1449506` ha lasciato
+  verdi job statico e sei smoke e ha completato tutte le catture fino a
+  `VISUAL_QA:OK`. Il conteggio CI della matrice patto includeva pero' anche
+  `04_pact_signed.png`, ottenendo 25 file invece delle 24 varianti localizzate.
+  La patch locale restringe `PACT_COUNT` a `04_pact_??_*.png` e aggiorna il
+  contratto checkpoint senza cambiare capture, runtime o criteri del gate.
+- Ispezione artifact: le catture EN/ES del sigillo mostravano in italiano la
+  riga contestuale deterministica `Il gesto pesa poco. La folla resta ferma.`.
+  Un capture locale con seed diverso ha confermato lo stesso fallback su una
+  seconda variante. La patch locale traduce le righe al confine UI, completa
+  nelle tre lingue l'intero pool `GESTURE_CHOSEN` (12 righe base e tre harsh)
+  e lo rende obbligatorio nel contratto OF-09; flow e payload restano invariati.
 - Vincoli: preservare flow, segnali, payload, save e autorita' di `RunManager`;
   nessun `await` o calcolo gameplay nel gesto.
 
@@ -364,9 +377,45 @@ Gate:
 - nessuna regressione ai contratti del ritual loop;
 - un tester identifica oggetto, gesto e conseguenza senza spiegazione.
 
-## 3. Run Readability And Feedback
+## 3. Media Vertical Slice
 
-Dipendenza: Object-First Interaction Pass.
+Dipendenza: checkpoint Object-First `OF-11` chiuso. Brief, audit, concept e
+prototipi non collegati al runtime possono essere preparati prima.
+
+Obiettivo: validare in una slice production-ready l'apertura e il primo
+contatto con il Registro senza anticipare l'intero stage audiovisivo.
+
+Ordine:
+
+1. `MV-01` brief, storyboard e audit `KEEP / REWORK / REPLACE / REMOVE`;
+2. `MV-02` quattro direzioni visive, selezione e pacchetto 1920x1080 a layer;
+3. `MV-03` sequenza locale in-engine, skip e reduced motion;
+4. `MV-04` cue materiali, ambience e musica prototipo a stem;
+5. `MV-05` catture, ascolto, performance, licenze e checkpoint.
+
+Vincoli:
+
+- `RunManager` conserva flow e transizioni; `GameEvents` resta invariato;
+- il controller cinematografico e' locale a `Main` e non salva progresso;
+- nessun asset review-only entra in una scena prima dell'apertura runtime;
+- il prototipo musicale richiede ascolto umano e mastering prima del lock.
+
+Gate:
+
+- sequenza comprensibile, skippabile e osservabile senza modificare la fase;
+- focus restituito ad `APRI IL REGISTRO` in IT/EN/ES;
+- equivalente reduced-motion verificato;
+- render e layer leggibili a 1280x720 e 1920x1080;
+- audio senza path mancanti, clipping o seam percepibile;
+- provenienza e stato di adozione definiti per ogni asset.
+
+Preparazione disponibile in `docs/support/media_vertical_slice/`: `MV-01` e
+`MV-02` sono pronti per revisione; gli asset `MV-04` sono prototipi di ascolto.
+Nessun file del pacchetto e' ancora consumer runtime.
+
+## 4. Run Readability And Feedback
+
+Dipendenza: Media Vertical Slice.
 
 Obiettivo: rendere una run comprensibile, reattiva e affidabile.
 
@@ -385,7 +434,7 @@ Gate:
 - nessun stuck modal o route ambigua;
 - nessuna azione importante muta o priva di conferma.
 
-## 4. Registry Memory And Convergence
+## 5. Registry Memory And Convergence
 
 Dipendenza: Run Readability And Feedback.
 
@@ -408,7 +457,7 @@ Gate:
 - save/continue conserva lo stato senza corruzione;
 - test statici e runtime coprono soglie e fallback.
 
-## 5. Eras And Silences
+## 6. Eras And Silences
 
 Dipendenza: Registry Memory And Convergence.
 
@@ -431,7 +480,7 @@ Gate:
 - il profilo terminale non reinizializza il Registro;
 - campaign smoke copre transizioni, resume e finale.
 
-## 6. Content Completion
+## 7. Content Completion
 
 Dipendenza: Eras And Silences.
 
@@ -452,7 +501,7 @@ Gate:
 - tre run consecutive nella stessa Era non presentano una sequenza identica;
 - playtest completi rientrano nel target di durata senza grind.
 
-## 7. Audiovisual Completion
+## 8. Audiovisual Completion
 
 Dipendenza: Content Completion. La produzione preparatoria puo' iniziare prima,
 ma il lock richiede contenuto stabile.
@@ -477,7 +526,7 @@ Gate:
 - reduced motion preserva informazioni e tempi di input;
 - budget performance rispettato alle risoluzioni target.
 
-## 8. Release Lock
+## 9. Release Lock
 
 Dipendenza: tutti gli stage precedenti.
 
@@ -510,3 +559,6 @@ attendono il signoff cumulativo del checkpoint OF-09. Il marker locale e'
 `OF-09`. Il prossimo prerequisito esterno e' il commit e push manuale; poi
 vanno verificati job statico, sei smoke Linux, visual QA cumulativo e digest
 artifact prima di chiudere OF-07/OF-08/OF-09 e attivare OF-10.
+Nel frattempo la preparazione non-runtime `MV-01/MV-02` e i prototipi audio
+`MV-04` sono disponibili in `docs/support/media_vertical_slice/`; l'integrazione
+Godot resta bloccata fino alla chiusura di `OF-11`.

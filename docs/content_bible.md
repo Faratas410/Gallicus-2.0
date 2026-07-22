@@ -144,6 +144,8 @@ Le Ere non vengono nominate nella UI e le transizioni restano graduali.
   incisa, sigillo chiuso.
 - Il Registro registra l'avanzamento del verbale, non commenta l'abilita' del
   giocatore.
+- La riga contestuale della folla ricevuta dal payload viene localizzata al
+  confine UI; EN/ES non mostrano la chiave sorgente italiana nel rito.
 
 ## Accettazione
 

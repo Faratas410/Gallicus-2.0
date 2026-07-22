@@ -96,6 +96,20 @@ per uso reale, rinominate se adottate oppure rimosse dalle superfici finali.
   comunicano semantica action/combat o risultano incoerenti.
 - Ogni asset deve avere owner, uso, path e stato di licenza.
 
+### Media Vertical Slice
+
+- I prototipi `MV-04` vivono in
+  `docs/support/media_vertical_slice/audio_prototypes/` e non sono consumer
+  runtime.
+- Tre stem sincronizzati da 48 secondi rappresentano pietra, bronzo e
+  aria/respiro; il mix allegato serve soltanto all'ascolto comparativo.
+- L'ambience da 36 secondi e i cue di soglia/Registro sono procedurali,
+  deterministici e normalizzati a -3 dBFS.
+- L'adozione richiede ascolto su cuffie e speaker, verifica del seam, decisione
+  esplicita sui diritti e mastering umano.
+- Gli MP3 legacy senza provenienza documentata restano candidati `REPLACE` o
+  `REMOVE`, anche quando sono gia' collegati a `MusicDirector`.
+
 ## Accettazione
 
 - tutti i gesti della mappa object-first hanno un cue;

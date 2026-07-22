@@ -113,7 +113,7 @@ def _assert_workflow() -> None:
         "03_promise_*.png",
         'test "$PROMISE_COUNT" -eq 30',
         "PACT_COUNT",
-        "04_pact_*.png",
+        "04_pact_??_*.png",
         'test "$PACT_COUNT" -eq 24',
         "GESTURE_COUNT",
         "05_gesture_*.png",

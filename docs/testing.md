@@ -188,7 +188,8 @@ Il job esegue lo stesso capture tool sotto Xvfb e pubblica l'artifact
 `object_first_visual_qa`; al checkpoint OF-06 la matrice comprende 24 catture
 soglia, 24 tavola del Registro, 30 promessa/firma, 18 quietanza, 18 marchio e
 24 seconda incisione. Non sono ammesse catture desktop come sostituzione.
-Dal pacchetto OF-07 la matrice cumulativa aggiunge 24 catture `04_pact_*`:
+Dal pacchetto OF-07 la matrice cumulativa aggiunge 24 catture localizzate
+`04_pact_<lingua>_*`:
 IT/EN/ES, 1280x720 e 1920x1080, normal, focus, validated e disabled. Lo stato
 pressed resta coperto dal contratto statico.
 Dal pacchetto OF-08 aggiunge 36 catture `05_gesture_*`: IT/EN/ES, entrambe le
@@ -224,6 +225,17 @@ Per ogni gesto modificato verificare:
 - persistenza slider;
 - nessun path o import mancante;
 - feedback visuale equivalente.
+
+### Gate Media Vertical Slice
+
+Prima dell'adozione runtime di `MV-03/MV-04` verificare inoltre:
+
+- catture viewport-only a inizio, meta', fine, skip e reduced motion;
+- trigger singolo per nuova run e restituzione del focus al Registro;
+- nessuna variazione della fase autoritativa durante l'overlay;
+- PNG review a 1920x1080 e layer RGBA ispezionati separatamente;
+- stem allineati, picco massimo -3 dBFS e loop ascoltato al punto di wrap;
+- provenienza e stato `REVIEW_ONLY` rimossi soltanto dopo il signoff umano.
 
 ## Playtest di run
 

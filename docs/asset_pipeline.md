@@ -17,6 +17,8 @@ Ogni asset gameplay deve sostenere un oggetto, un gesto, uno stato o un luogo.
 - `assets/audio/` - musica e ambience.
 - `assets/audio/sfx/` - effetti brevi.
 - `assets/i18n/` - cataloghi di traduzione.
+- `docs/support/media_vertical_slice/` - concept, layer e audio di revisione
+  non importati dal runtime durante la preparazione del gate MV.
 
 ## Scheda asset
 

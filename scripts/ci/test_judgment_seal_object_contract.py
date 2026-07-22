@@ -44,6 +44,81 @@ EXPECTED_COPY = {
         "en": "Three strikes close the record.",
         "es": "Tres golpes cierran el acta.",
     },
+    "Il tuo gesto li irrita. Ora vogliono il prezzo.": {
+        "it": "Il tuo gesto li irrita. Ora vogliono il prezzo.",
+        "en": "Your gesture irritates them. Now they demand the price.",
+        "es": "Tu gesto los irrita. Ahora exigen el precio.",
+    },
+    "Hai mostrato il fianco. Ti puniscono col silenzio.": {
+        "it": "Hai mostrato il fianco. Ti puniscono col silenzio.",
+        "en": "You showed your flank. They punish you with silence.",
+        "es": "Has mostrado el flanco. Te castigan con el silencio.",
+    },
+    "Un gesto non basta. Vogliono vederti cedere.": {
+        "it": "Un gesto non basta. Vogliono vederti cedere.",
+        "en": "One gesture is not enough. They want to see you yield.",
+        "es": "Un gesto no basta. Quieren verte ceder.",
+    },
+    "Ti sei esposto. Ti vogliono spezzare.": {
+        "it": "Ti sei esposto. Ti vogliono spezzare.",
+        "en": "You exposed yourself. They want to break you.",
+        "es": "Te has expuesto. Quieren quebrarte.",
+    },
+    "Un gesto segnato, il debito resta.": {
+        "it": "Un gesto segnato, il debito resta.",
+        "en": "A gesture recorded; the debt remains.",
+        "es": "Un gesto registrado; la deuda permanece.",
+    },
+    "Hai scelto come muoverti. Non cambia nulla.": {
+        "it": "Hai scelto come muoverti. Non cambia nulla.",
+        "en": "You chose how to move. Nothing changes.",
+        "es": "Has elegido cómo moverte. Nada cambia.",
+    },
+    "Il gesto pesa poco. La folla resta ferma.": {
+        "it": "Il gesto pesa poco. La folla resta ferma.",
+        "en": "The gesture carries little weight. The crowd remains still.",
+        "es": "El gesto pesa poco. La multitud permanece inmóvil.",
+    },
+    "Scelta fatta. Ti valutano senza voce.": {
+        "it": "Scelta fatta. Ti valutano senza voce.",
+        "en": "Choice made. They judge you without a word.",
+        "es": "Elección hecha. Te evalúan sin decir palabra.",
+    },
+    "Hai scelto il gesto. Ora spingono di più.": {
+        "it": "Hai scelto il gesto. Ora spingono di più.",
+        "en": "You chose the gesture. Now they press harder.",
+        "es": "Has elegido el gesto. Ahora presionan más.",
+    },
+    "La folla ti segue. Vogliono il prossimo strappo.": {
+        "it": "La folla ti segue. Vogliono il prossimo strappo.",
+        "en": "The crowd follows you. They want the next rupture.",
+        "es": "La multitud te sigue. Quiere el próximo desgarro.",
+    },
+    "Il gesto accende l'arena. Ti vogliono oltre.": {
+        "it": "Il gesto accende l'arena. Ti vogliono oltre.",
+        "en": "The gesture ignites the arena. They want you to go further.",
+        "es": "El gesto enciende la arena. Quieren verte ir más allá.",
+    },
+    "Hai mosso la folla. Non fermarti ora.": {
+        "it": "Hai mosso la folla. Non fermarti ora.",
+        "en": "You stirred the crowd. Do not stop now.",
+        "es": "Has agitado a la multitud. No te detengas ahora.",
+    },
+    "Un gesto debole. Ora ti strappano il rispetto.": {
+        "it": "Un gesto debole. Ora ti strappano il rispetto.",
+        "en": "A weak gesture. Now they tear away your standing.",
+        "es": "Un gesto débil. Ahora te arrancan el respeto.",
+    },
+    "Il gesto è sterile. Ti tengono in debito.": {
+        "it": "Il gesto è sterile. Ti tengono in debito.",
+        "en": "The gesture is barren. They keep you in debt.",
+        "es": "El gesto es estéril. Te mantienen en deuda.",
+    },
+    "Il gesto li accende, ma chiedono il crollo.": {
+        "it": "Il gesto li accende, ma chiedono il crollo.",
+        "en": "The gesture ignites them, but they demand your collapse.",
+        "es": "El gesto los enciende, pero exigen tu caída.",
+    },
     "COLPISCI IL SIGILLO A TEMPO": {
         "it": "COLPISCI IL SIGILLO A TEMPO",
         "en": "STRIKE THE SEAL IN TIME",
@@ -236,6 +311,12 @@ def _assert_runtime() -> None:
     strike = _function_body(ui, "_on_resolve_ritual_strike_pressed")
     complete = _function_body(ui, "_complete_resolution_ritual_interaction")
     reset = _function_body(ui, "_reset_resolution_ritual_interaction")
+    audience_context = _function_body(ui, "_on_audience_context_line_emitted")
+    resolution_body = _function_body(ui, "_build_resolution_body")
+    if "_pending_resolution_context_line = text.strip_edges()" not in audience_context:
+        raise AssertionError("judgment audience context must retain its source localization key")
+    if "tr(_pending_resolution_context_line.strip_edges())" not in resolution_body:
+        raise AssertionError("judgment audience context must be localized when the ritual body is rendered")
     for forbidden in ("await ", "RunManager.", 'get_node_or_null("/root/RunManager")', "_on_request_ritual_advance("):
         if forbidden in strike or forbidden in complete:
             raise AssertionError(f"resolve ritual UI handler contains forbidden runtime token: {forbidden}")

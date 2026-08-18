@@ -109,6 +109,7 @@ def _assert_workflow() -> None:
         if scenario not in smoke_block:
             raise AssertionError(f"smoke matrix missing canonical scenario: {scenario}")
     for token in (
+        "timeout 480s",
         "PROMISE_COUNT",
         "03_promise_*.png",
         'test "$PROMISE_COUNT" -eq 30',

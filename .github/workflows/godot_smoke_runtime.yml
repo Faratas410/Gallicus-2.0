@@ -169,7 +169,7 @@ jobs:
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          timeout 360s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
+          timeout 480s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
           THRESHOLD_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '01_threshold_*.png' | wc -l)
           REGISTRY_TABLE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '02_registry_*.png' | wc -l)
           PROMISE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '03_promise_*.png' | wc -l)

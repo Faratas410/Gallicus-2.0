@@ -393,8 +393,9 @@ def _assert_public_contracts() -> None:
         raise AssertionError("RunManager resolve authority handler changed")
     if "_ritual_advance_resolve_requested = true" not in run_manager:
         raise AssertionError("RunManager resolve request authority changed")
-    if next((line.strip() for line in marker.splitlines() if line.strip() and not line.lstrip().startswith("#")), "") != "OF-09":
-        raise AssertionError("full-suite checkpoint marker must be OF-09")
+    marker_value = next((line.strip() for line in marker.splitlines() if line.strip() and not line.lstrip().startswith("#")), "")
+    if marker_value not in {"OF-09", "OF-11"}:
+        raise AssertionError("judgment seal must remain covered by checkpoint OF-09 or its OF-11 successor")
 
 
 def _assert_visual_qa() -> None:
@@ -417,6 +418,7 @@ def _assert_visual_qa() -> None:
         "_enable_deterministic_run_seed()",
         "_enable_favorable_capture_outcome()",
         "_disable_capture_overrides()",
+        "_center_judgment_panel_for_capture(viewport_size)",
         'OS.set_environment("GALLICUS_SMOKE_SCENARIO", "FULL_RUN")',
         "_restore_capture_environment()",
         'await _capture("08_end_run")',

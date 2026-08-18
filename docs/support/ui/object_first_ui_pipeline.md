@@ -175,6 +175,14 @@ Risorse:
 - `sb_registry_judgment_seal_strike_2.tres`
 - `sb_registry_judgment_seal_resolved.tres`
 - `sb_registry_judgment_seal_disabled.tres`
+- `sb_registry_final_dossier_open.tres`
+- `sb_registry_final_dossier_updated.tres`
+- `sb_registry_final_dossier_closed.tres`
+- `sb_registry_final_dossier_tab_normal.tres`
+- `sb_registry_final_dossier_tab_focus.tres`
+- `sb_registry_final_dossier_tab_pressed.tres`
+- `sb_registry_final_dossier_tab_selected.tres`
+- `sb_registry_final_dossier_tab_disabled.tres`
 
 Nodi:
 
@@ -187,6 +195,7 @@ Nodi:
 - `Object_PACT_TABLET` (`Btn_FIRST_REACTION_NEXT` nel consumer attuale)
 - `Object_ARENA_GESTURE` (`Btn_MID_CHOICE_SELECT_0/1` nel consumer attuale)
 - `Object_JUDGMENT_SEAL` (`Btn_RESOLUTION_STRIKE` nel consumer attuale)
+- `Object_FINAL_DOSSIER` (`Panel_END_RUN` e `EndRunRouteTabs` nel consumer attuale)
 
 ## Definition of Done
 

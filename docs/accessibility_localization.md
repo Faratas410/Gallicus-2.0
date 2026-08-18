@@ -57,6 +57,10 @@ entrare nel sistema di localizzazione nello stesso blocco che la introduce.
   disabled restano distinguibili tramite forma, contrasto e copy, senza scala.
 - Il sigillo OF-09 conserva target `360x144`; i tre colpi sono leggibili anche
   senza audio o timing perfetto tramite stati strike_1, strike_2 e resolved.
+- Il fascicolo OF-10 conserva pannello `1120x640` e linguette `304x64`;
+  open/updated/closed, focus, selected e disabled restano distinguibili senza
+  scala. Titolo, esito, pressione, patti, condanne, ultima voce e route sono
+  localizzati in IT/EN/ES al confine UI.
 
 ## QA linguistica
 

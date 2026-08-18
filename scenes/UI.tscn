@@ -61,6 +61,14 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_strike_2.tres" id="68_registry_judgment_seal_strike_2"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_resolved.tres" id="69_registry_judgment_seal_resolved"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_disabled.tres" id="70_registry_judgment_seal_disabled"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_open.tres" id="71_final_dossier_open"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_updated.tres" id="72_final_dossier_updated"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_closed.tres" id="73_final_dossier_closed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_normal.tres" id="74_final_dossier_tab_normal"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_focus.tres" id="75_final_dossier_tab_focus"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_pressed.tres" id="76_final_dossier_tab_pressed"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_selected.tres" id="77_final_dossier_tab_selected"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_disabled.tres" id="78_final_dossier_tab_disabled"]
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -1495,23 +1503,24 @@ offset_right = 560.0
 offset_bottom = 320.0
 clip_contents = true
 custom_minimum_size = Vector2(1120, 640)
-theme_override_styles/panel = ExtResource("34_register_slab")
+theme_override_styles/panel = ExtResource("71_final_dossier_open")
 
 [node name="Box_END_RUN" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 76.0
-offset_top = 52.0
-offset_right = -76.0
-offset_bottom = -44.0
-theme_override_constants/separation = 6
+offset_left = 88.0
+offset_top = 82.0
+offset_right = -88.0
+offset_bottom = -54.0
+theme_override_constants/separation = 7
 
 [node name="Lbl_END_RUN_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_type_variation = &"TitleLabel"
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.98, 0.9, 0.69, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 30
+custom_minimum_size = Vector2(0, 34)
 text = "LETTURA DEL REGISTRO"
 
 [node name="EndingIcon" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
@@ -1524,111 +1533,141 @@ stretch_mode = 5
 
 [node name="Lbl_END_RUN_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_styles/panel = ExtResource("20_verdict_banner")
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 40)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_SUBTITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_SUBTITLEPanel"]
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.96, 0.84, 0.58, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 text = ""
 
 [node name="Lbl_END_RUN_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-custom_minimum_size = Vector2(0, 148)
+custom_minimum_size = Vector2(0, 88)
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.82, 0.74, 0.6, 0.98)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 19
 autowrap_mode = 2
 text = ""
 
 [node name="Lbl_END_RUN_HINTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 theme_override_styles/panel = ExtResource("21_verdict_detail")
-custom_minimum_size = Vector2(0, 58)
+custom_minimum_size = Vector2(0, 40)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_HINT" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_HINTPanel"]
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.91, 0.81, 0.63, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 15
 text = ""
 
-[node name="Box_END_RUN_DETAILS" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+[node name="Box_END_RUN_DETAILS" type="HBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
 visible = false
+custom_minimum_size = Vector2(0, 116)
 size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/separation = 5
+theme_override_constants/separation = 10
 
-[node name="Lbl_END_RUN_PACTS_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Box_END_RUN_PACTS" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Lbl_END_RUN_PACTS_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_PACTS"]
 theme_override_styles/panel = ExtResource("21_verdict_detail")
+custom_minimum_size = Vector2(0, 30)
 size_flags_horizontal = 3
 
-[node name="Lbl_END_RUN_PACTS_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_TITLEPanel"]
+[node name="Lbl_END_RUN_PACTS_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_PACTS/Lbl_END_RUN_PACTS_TITLEPanel"]
+horizontal_alignment = 1
+vertical_alignment = 1
 theme_override_colors/font_color = Color(0.95, 0.83, 0.56, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "PATTI FIRMATI"
 
-[node name="Lbl_END_RUN_PACTS_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Lbl_END_RUN_PACTS_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_PACTS"]
 theme_override_styles/panel = ExtResource("22_verdict_body")
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 82)
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel"]
+[node name="Lbl_END_RUN_PACTS_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_PACTS/Lbl_END_RUN_PACTS_BODYPanel"]
 size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.88, 0.79, 0.64, 1)
-theme_override_font_sizes/normal_font_size = 15
+theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = false
 fit_content = false
+horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 2
 text = ""
 
-[node name="Lbl_END_RUN_CONDANNE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Box_END_RUN_CONDANNE" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Lbl_END_RUN_CONDANNE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE"]
 theme_override_styles/panel = ExtResource("21_verdict_detail")
+custom_minimum_size = Vector2(0, 30)
 size_flags_horizontal = 3
 
-[node name="Lbl_END_RUN_CONDANNE_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_TITLEPanel"]
+[node name="Lbl_END_RUN_CONDANNE_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE/Lbl_END_RUN_CONDANNE_TITLEPanel"]
+horizontal_alignment = 1
+vertical_alignment = 1
 theme_override_colors/font_color = Color(0.95, 0.83, 0.56, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "CONDANNE"
 
-[node name="Lbl_END_RUN_CONDANNE_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
+[node name="Lbl_END_RUN_CONDANNE_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE"]
 theme_override_styles/panel = ExtResource("22_verdict_body")
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 82)
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel"]
+[node name="Lbl_END_RUN_CONDANNE_BODY" type="RichTextLabel" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE/Lbl_END_RUN_CONDANNE_BODYPanel"]
 size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.88, 0.79, 0.64, 1)
-theme_override_font_sizes/normal_font_size = 15
+theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = false
 fit_content = false
+horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 2
 text = ""
 
 [node name="Box_END_RUN_CROWD" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 visible = false
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="Lbl_END_RUN_CROWD_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
 theme_override_styles/panel = ExtResource("21_verdict_detail")
+custom_minimum_size = Vector2(0, 30)
 size_flags_horizontal = 3
 
 [node name="Lbl_END_RUN_CROWD_TITLE" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel"]
+horizontal_alignment = 1
+vertical_alignment = 1
 theme_override_colors/font_color = Color(0.95, 0.83, 0.56, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "ULTIMA VOCE"
 
 [node name="Lbl_END_RUN_CROWD_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
 theme_override_styles/panel = ExtResource("22_verdict_body")
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 82)
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="Lbl_END_RUN_CROWD_BODY" type="Label" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel"]
 size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.88, 0.79, 0.64, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 2
 clip_text = true
 text = ""
@@ -1657,29 +1696,53 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = ""
 
-[node name="Btn_END_RUN_RESTART" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
-custom_minimum_size = Vector2(0, 44)
+[node name="EndRunRouteTabs" type="HBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+custom_minimum_size = Vector2(940, 64)
+size_flags_horizontal = 4
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Btn_END_RUN_RESTART" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs"]
+custom_minimum_size = Vector2(304, 64)
+theme_override_colors/font_color = Color(0.22, 0.16, 0.11, 1)
+theme_override_colors/font_hover_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.92, 0.7, 1)
+theme_override_colors/font_disabled_color = Color(0.5, 0.46, 0.41, 0.86)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = ExtResource("74_final_dossier_tab_normal")
+theme_override_styles/hover = ExtResource("75_final_dossier_tab_focus")
+theme_override_styles/focus = ExtResource("75_final_dossier_tab_focus")
+theme_override_styles/pressed = ExtResource("76_final_dossier_tab_pressed")
+theme_override_styles/disabled = ExtResource("78_final_dossier_tab_disabled")
 text = "NUOVO PERCORSO"
 
-[node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
+[node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs"]
 visible = false
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(304, 64)
+theme_override_colors/font_color = Color(0.22, 0.16, 0.11, 1)
+theme_override_colors/font_hover_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.92, 0.7, 1)
+theme_override_colors/font_disabled_color = Color(0.5, 0.46, 0.41, 0.86)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = ExtResource("74_final_dossier_tab_normal")
+theme_override_styles/hover = ExtResource("75_final_dossier_tab_focus")
+theme_override_styles/focus = ExtResource("75_final_dossier_tab_focus")
+theme_override_styles/pressed = ExtResource("76_final_dossier_tab_pressed")
+theme_override_styles/disabled = ExtResource("78_final_dossier_tab_disabled")
 text = "PROSSIMA SCOMMESSA"
 
-[node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-theme_override_styles/normal = ExtResource("12")
-theme_override_styles/hover = ExtResource("13")
-theme_override_styles/pressed = ExtResource("14")
-theme_override_styles/disabled = ExtResource("15")
-custom_minimum_size = Vector2(0, 44)
+[node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs"]
+custom_minimum_size = Vector2(304, 64)
+theme_override_colors/font_color = Color(0.22, 0.16, 0.11, 1)
+theme_override_colors/font_hover_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.92, 0.7, 1)
+theme_override_colors/font_disabled_color = Color(0.5, 0.46, 0.41, 0.86)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = ExtResource("74_final_dossier_tab_normal")
+theme_override_styles/hover = ExtResource("75_final_dossier_tab_focus")
+theme_override_styles/focus = ExtResource("75_final_dossier_tab_focus")
+theme_override_styles/pressed = ExtResource("76_final_dossier_tab_pressed")
+theme_override_styles/disabled = ExtResource("78_final_dossier_tab_disabled")
 text = "TORNA AL MENU"
 
 [node name="WaxSeal" type="TextureRect" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]

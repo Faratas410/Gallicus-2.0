@@ -24,6 +24,9 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"arena_gesture_provoca": -10.5,
 	&"registry_judgment_seal_strike": -10.5,
 	&"registry_judgment_seal_resolve": -10.0,
+	&"registry_dossier_update": -11.0,
+	&"registry_dossier_close": -10.0,
+	&"registry_dossier_route": -11.0,
 	&"game_over": -8.0,
 }
 const SFX_PATHS: Dictionary = {
@@ -48,6 +51,9 @@ const SFX_PATHS: Dictionary = {
 	&"arena_gesture_provoca": "res://assets/audio/sfx/arena_gesture_provoca.wav",
 	&"registry_judgment_seal_strike": "res://assets/audio/sfx/registry_judgment_seal_strike.wav",
 	&"registry_judgment_seal_resolve": "res://assets/audio/sfx/registry_judgment_seal_resolve.wav",
+	&"registry_dossier_update": "res://assets/audio/sfx/registry_dossier_update.wav",
+	&"registry_dossier_close": "res://assets/audio/sfx/registry_dossier_close.wav",
+	&"registry_dossier_route": "res://assets/audio/sfx/registry_dossier_route.wav",
 	&"game_over": "res://assets/audio/sfx/game_over.wav",
 }
 

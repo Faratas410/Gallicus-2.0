@@ -99,6 +99,13 @@ Priorita' di audit:
 5. variazioni delle Ere;
 6. audio con naming o mood action/combat.
 
+Il pacchetto OF-10 vive in
+`assets/ui/official/objects/final_dossier/`: i tre dossier `1400x800` devono
+conservare alpha e silhouette identici, mentre la linguetta `1000x200` usa
+stati StyleBoxTexture a margini texture zero. Dopo l'import si versionano
+soltanto i sidecar runtime dei quattro PNG e dei tre WAV; `work/` e le
+catture diagnostiche non sono consumer runtime.
+
 ## Verifica
 
 ```powershell

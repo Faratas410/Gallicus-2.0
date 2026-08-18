@@ -54,6 +54,12 @@ Le texture devono rendere il materiale riconoscibile senza sporcare il testo.
 Ogni oggetto ha stati coerenti: integro, disponibile, attivato, registrato,
 consumato o assente.
 
+Il fascicolo finale usa carta amministrativa leggibile, dorso di basalto,
+cerniere di bronzo e cera rossa controllata. Open e updated conservano carta
+chiara e inchiostro scuro; closed introduce una superficie scura e testo
+chiaro senza alterare perimetro o safe area. Le linguette restano subordinate
+al documento e non diventano card flottanti.
+
 ## Composizione
 
 - L'oggetto attivo domina il centro funzionale della schermata.

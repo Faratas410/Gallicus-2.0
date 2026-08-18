@@ -176,6 +176,7 @@ jobs:
           PACT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '04_pact_??_*.png' | wc -l)
           GESTURE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '05_gesture_*.png' | wc -l)
           JUDGMENT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '06_judgment_*.png' | wc -l)
+          DOSSIER_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_dossier_*.png' | wc -l)
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
           MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
           INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
@@ -186,6 +187,7 @@ jobs:
           test "$PACT_COUNT" -eq 24
           test "$GESTURE_COUNT" -eq 36
           test "$JUDGMENT_COUNT" -eq 30
+          test "$DOSSIER_COUNT" -eq 36
           test "$RECEIPT_COUNT" -eq 18
           test "$MARK_COUNT" -eq 18
           test "$INCISION_COUNT" -eq 24
@@ -213,4 +215,5 @@ jobs:
             artifacts/visual_qa/07_incision_*.png
             artifacts/visual_qa/07_push_your_luck.png
             artifacts/visual_qa/08_end_run.png
+            artifacts/visual_qa/08_dossier_*.png
           if-no-files-found: error

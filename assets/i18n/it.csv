@@ -275,3 +275,210 @@ PRIMO COLPO - VERDETTO INCISO,PRIMO COLPO - VERDETTO INCISO
 SECONDO COLPO - CONDANNA INCISA,SECONDO COLPO - CONDANNA INCISA
 TERZO COLPO - SIGILLO CHIUSO,TERZO COLPO - SIGILLO CHIUSO
 VERBALE INCISO - IL REGISTRO PUO AVANZARE,VERBALE INCISO - IL REGISTRO PUO AVANZARE
+FASCICOLO CHIUSO - COMPROMISSIONE,FASCICOLO CHIUSO - COMPROMISSIONE
+FASCICOLO CHIUSO - ASCESA,FASCICOLO CHIUSO - ASCESA
+FASCICOLO CHIUSO - CONSUMO,FASCICOLO CHIUSO - CONSUMO
+FASCICOLO CHIUSO - PATTERN,FASCICOLO CHIUSO - PATTERN
+FASCICOLO CHIUSO,FASCICOLO CHIUSO
+"Il Registro conserva la traccia del percorso.","Il Registro conserva la traccia del percorso."
+"Il Registro chiude il fascicolo e classifica l'esito.","Il Registro chiude il fascicolo e classifica l'esito."
+"Hai lasciato l'arena con la posta riconosciuta.","Hai lasciato l'arena con la posta riconosciuta."
+"Il patto regge: il percorso puo proseguire.","Il patto regge: il percorso puo proseguire."
+"La condanna viene accettata e il percorso resta segnato.","La condanna viene accettata e il percorso resta segnato."
+Pressione massima: %d/%d.,Pressione massima: %d/%d.
+"Patti e sblocchi sono stati aggiornati nell'Archivio.","Patti e sblocchi sono stati aggiornati nell'Archivio."
+"%d condanne archiviate; il dettaglio resta nell'Archivio.","%d condanne archiviate; il dettaglio resta nell'Archivio."
+"Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.","Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi."
+"Il dettaglio degli sblocchi resta consultabile nell'Archivio.","Il dettaglio degli sblocchi resta consultabile nell'Archivio."
+"Il Registro resta aperto: scegli se proseguire o lasciare l'arena.","Il Registro resta aperto: scegli se proseguire o lasciare l'arena."
+rinunciato,rinunciato
+accettato,accettato
+%d condizioni registrate,%d condizioni registrate
+I. APERTURA - CONSTATAZIONE,I. APERTURA - CONSTATAZIONE
+II. CORPO - LETTURA DEI PATTERN,II. CORPO - LETTURA DEI PATTERN
+III. FRATTURA,III. FRATTURA
+Stato finale: %s.,Stato finale: %s.
+"Il soggetto ha interrotto il ciclo prima della definizione.","Il soggetto ha interrotto il ciclo prima della definizione."
+"Il soggetto ha completato il ciclo operativo.","Il soggetto ha completato il ciclo operativo."
+"Il soggetto presenta un profilo registrabile.","Il soggetto presenta un profilo registrabile."
+accettazione ricorrente di condizioni irreversibili,accettazione ricorrente di condizioni irreversibili
+rifiuto della chiusura quando disponibile,rifiuto della chiusura quando disponibile
+accumulo di Scar persistenti su più passaggi,accumulo di Scar persistenti su più passaggi
+reiterazione oltre l'utile con esposizione crescente,reiterazione oltre l'utile con esposizione crescente
+sacrificio di opzioni future registrato,sacrificio di opzioni future registrato
+"Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.","Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente."
+"Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva.","Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva."
+"Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta.","Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta."
+"Stato registrato con parametri attivi. Chiusura finale non applicabile.","Stato registrato con parametri attivi. Chiusura finale non applicabile."
+classificazione non conclusiva,classificazione non conclusiva
+classificazione incompleta,classificazione incompleta
+registrato in sospensione,registrato in sospensione
+interruzione immediata,interruzione immediata
+segnato,segnato
+compromesso,compromesso
+in debito attivo,in debito attivo
+conforme al pubblico,conforme al pubblico
+consumo completo,consumo completo
+libertà registrata,libertà registrata
+caduta amministrativa,caduta amministrativa
+non definito,non definito
+"Fascicolo aggiornato. Valutazione sospesa.","Fascicolo aggiornato. Valutazione sospesa."
+"Atto registrato. Campione insufficiente.","Atto registrato. Campione insufficiente."
+"Dati acquisiti. Analisi in corso.","Dati acquisiti. Analisi in corso."
+"Aggiornamento completato. Nessuna conclusione emessa.","Aggiornamento completato. Nessuna conclusione emessa."
+"Il soggetto resta in osservazione.","Il soggetto resta in osservazione."
+"Archiviazione parziale. Raccolta incompleta.","Archiviazione parziale. Raccolta incompleta."
+"Evento conforme. Interpretazione rinviata.","Evento conforme. Interpretazione rinviata."
+"Nuova evidenza inserita. Profilo non definito.","Nuova evidenza inserita. Profilo non definito."
+"Registrazione valida. Sentenza non autorizzata.","Registrazione valida. Sentenza non autorizzata."
+"Traiettoria non stabilizzata. Attendere ulteriori eventi.","Traiettoria non stabilizzata. Attendere ulteriori eventi."
+"Documento acquisito. Il Registro non conclude.","Documento acquisito. Il Registro non conclude."
+"Pattern non consolidato. Prosecuzione richiesta.","Pattern non consolidato. Prosecuzione richiesta."
+fascicolo registrato,fascicolo registrato
+"Soglia di deviazione superata. Fascicolo chiuso.","Soglia di deviazione superata. Fascicolo chiuso."
+"Corruzione confermata. Archiviazione definitiva.","Corruzione confermata. Archiviazione definitiva."
+"Indice di compromissione: critico. Sentenza emessa.","Indice di compromissione: critico. Sentenza emessa."
+"Integrità del soggetto: insufficiente. Caso concluso.","Integrità del soggetto: insufficiente. Caso concluso."
+"Deriva irreversibile rilevata. Il Registro conclude.","Deriva irreversibile rilevata. Il Registro conclude."
+"Evidenza prevalente: debito. Fascicolo definito.","Evidenza prevalente: debito. Fascicolo definito."
+"Profilo compromesso. Non sono richiesti ulteriori dati.","Profilo compromesso. Non sono richiesti ulteriori dati."
+"Scostamento oltre limite. Atto finale registrato.","Scostamento oltre limite. Atto finale registrato."
+"Indice di gloria: eccedente. Fascicolo chiuso.","Indice di gloria: eccedente. Fascicolo chiuso."
+"Rilevanza confermata. Archiviazione definitiva.","Rilevanza confermata. Archiviazione definitiva."
+"Profilo di eccezione registrato. Sentenza emessa.","Profilo di eccezione registrato. Sentenza emessa."
+"Valore del soggetto: determinato. Caso concluso.","Valore del soggetto: determinato. Caso concluso."
+"Evidenza prevalente: ascesa. Il Registro conclude.","Evidenza prevalente: ascesa. Il Registro conclude."
+"Traccia storica sufficiente. Fascicolo definito.","Traccia storica sufficiente. Fascicolo definito."
+"Comportamento coerente con grandezza. Atto finale registrato.","Comportamento coerente con grandezza. Atto finale registrato."
+"Risultato consolidato. Non sono richiesti ulteriori dati.","Risultato consolidato. Non sono richiesti ulteriori dati."
+"Danno permanente rilevato. Fascicolo chiuso.","Danno permanente rilevato. Fascicolo chiuso."
+"Cicatrici critiche registrate. Archiviazione definitiva.","Cicatrici critiche registrate. Archiviazione definitiva."
+"Stato del soggetto: degradato. Sentenza emessa.","Stato del soggetto: degradato. Sentenza emessa."
+"Accumulo irreversibile. Caso concluso.","Accumulo irreversibile. Caso concluso."
+"Integrità fisica compromessa. Il Registro conclude.","Integrità fisica compromessa. Il Registro conclude."
+"Evidenza prevalente: consumo. Fascicolo definito.","Evidenza prevalente: consumo. Fascicolo definito."
+"Segni sufficienti. Non sono richiesti ulteriori dati.","Segni sufficienti. Non sono richiesti ulteriori dati."
+"Profilo stabilizzato su consumo. Atto finale registrato.","Profilo stabilizzato su consumo. Atto finale registrato."
+"Campione minimo raggiunto. Fascicolo chiuso.","Campione minimo raggiunto. Fascicolo chiuso."
+"Pattern confermato. Archiviazione definitiva.","Pattern confermato. Archiviazione definitiva."
+"Coerenza comportamentale stabilita. Sentenza emessa.","Coerenza comportamentale stabilita. Sentenza emessa."
+"Traiettoria consolidata. Caso concluso.","Traiettoria consolidata. Caso concluso."
+"Dati sufficienti per definizione. Il Registro conclude.","Dati sufficienti per definizione. Il Registro conclude."
+"Ripetizione significativa rilevata. Fascicolo definito.","Ripetizione significativa rilevata. Fascicolo definito."
+"Profilo determinato per frequenza. Atto finale registrato.","Profilo determinato per frequenza. Atto finale registrato."
+"Analisi completata. Non sono richiesti ulteriori dati.","Analisi completata. Non sono richiesti ulteriori dati."
++%d altre,+%d altre
+Non mi fermero.,Non mi fermero.
+Ancora.,Ancora.
+Finche regge.,Finche regge.
+Non dovevo provarci.,Non dovevo provarci.
+Firmato.,Firmato.
+Sapevo cosa stavo facendo.,Sapevo cosa stavo facendo.
+L'ho accettato.,L'ho accettato.
+Era il prezzo.,Era il prezzo.
+So come finisce.,So come finisce.
+Non oggi.,Non oggi.
+Ho visto abbastanza.,Ho visto abbastanza.
+Mi sono fermato.,Mi sono fermato.
+E finita cosi.,E finita cosi.
+Non abbastanza.,Non abbastanza.
+Troppo tardi.,Troppo tardi.
+Non e colpa loro.,Non e colpa loro.
+Ricordato.,Ricordato.
+Visto dal pubblico.,Visto dal pubblico.
+Il tuo nome.,Il tuo nome.
+Non sara l'ultima.,Non sara l'ultima.
+Registro: Compromissione.,Registro: Compromissione.
+Registro: Ascesa.,Registro: Ascesa.
+Registro: Consumo.,Registro: Consumo.
+Registro: Pattern.,Registro: Pattern.
+"Caduta finale. Hanno avuto il rischio.","Caduta finale. Hanno avuto il rischio."
+"Caduta nuda. Nessuno ti ricorda.","Caduta nuda. Nessuno ti ricorda."
+"Caduta secca. Il pubblico non reagisce.","Caduta secca. Il pubblico non reagisce."
+"Continui e li nutri. Vogliono il tuo errore.","Continui e li nutri. Vogliono il tuo errore."
+"Continui per orgoglio. Ti vogliono in ginocchio.","Continui per orgoglio. Ti vogliono in ginocchio."
+"Continui. La folla vuole il prossimo taglio.","Continui. La folla vuole il prossimo taglio."
+"Continui. Nessun applauso, solo attesa.","Continui. Nessun applauso, solo attesa."
+"Continui. Nessuno ti deve niente.","Continui. Nessuno ti deve niente."
+"Continui. Ora ti vogliono sanguinare.","Continui. Ora ti vogliono sanguinare."
+"Così finisci. La folla non ti piange.","Così finisci. La folla non ti piange."
+"È finita. Il pubblico prende il tuo nome.","È finita. Il pubblico prende il tuo nome."
+"È finita. Solo occhi fermi.","È finita. Solo occhi fermi."
+"Fine della corsa. Il silenzio resta.","Fine della corsa. Il silenzio resta."
+"Fine violenta. La folla ha ciò che voleva.","Fine violenta. La folla ha ciò che voleva."
+"Firma asciutta. Ti contano come errore.","Firma asciutta. Ti contano come errore."
+"Firma e alza il rischio. Ti chiedono il salto.","Firma e alza il rischio. Ti chiedono il salto."
+"Firma fatta. Aspettano il tuo crollo.","Firma fatta. Aspettano il tuo crollo."
+"Hai chiuso la mano. Il silenzio pesa.","Hai chiuso la mano. Il silenzio pesa."
+"Hai firmato forte. L'arena vuole vedere.","Hai firmato forte. L'arena vuole vedere."
+"Hai firmato male. Ora ti vogliono spezzato.","Hai firmato male. Ora ti vogliono spezzato."
+"Hai firmato troppo forte. Ora vogliono la tua rovina.","Hai firmato troppo forte. Ora vogliono la tua rovina."
+"Hai firmato. Nessuno ti dà tregua.","Hai firmato. Nessuno ti dà tregua."
+"Hai firmato. Ora non ti vogliono intero.","Hai firmato. Ora non ti vogliono intero."
+"Hai incassato per paura. Ora paghi doppio.","Hai incassato per paura. Ora paghi doppio."
+"Hai perso come volevano. Non ti lasciano il nome.","Hai perso come volevano. Non ti lasciano il nome."
+"Hai perso. L'arena resta accesa.","Hai perso. L'arena resta accesa."
+"Hai rifiutato l'uscita. Ti puniscono con occhi feroci.","Hai rifiutato l'uscita. Ti puniscono con occhi feroci."
+"Hai rilanciato. Ora vogliono il colpo finale.","Hai rilanciato. Ora vogliono il colpo finale."
+"Hai scelto di continuare. L'arena prende nota.","Hai scelto di continuare. L'arena prende nota."
+"Hai scelto di restare. Non chiamarla coraggio.","Hai scelto di restare. Non chiamarla coraggio."
+"Hai scelto l'uscita. La folla ti mette il conto.","Hai scelto l'uscita. La folla ti mette il conto."
+"Hai segnato il destino. Ti vogliono a terra.","Hai segnato il destino. Ti vogliono a terra."
+"Hai spento il delirio. Ora ti chiedono sangue.","Hai spento il delirio. Ora ti chiedono sangue."
+"Hai spento la corsa. La folla voleva il salto.","Hai spento la corsa. La folla voleva il salto."
+"Il brusio non concede riparo.","Il brusio non concede riparo."
+"Il delirio ti brucia addosso.","Il delirio ti brucia addosso."
+"Il patto accende la folla. Spingi ora.","Il patto accende la folla. Spingi ora."
+"Il patto è inciso. Ti misurano.","Il patto è inciso. Ti misurano."
+"Il patto ti lega. La folla annusa il sangue.","Il patto ti lega. La folla annusa il sangue."
+"Il pubblico calcola, non parteggia.","Il pubblico calcola, non parteggia."
+"Il Registro sente una folla senza indulgenza.","Il Registro sente una folla senza indulgenza."
+"Il silenzio pesa piu dell'acciaio.","Il silenzio pesa piu dell'acciaio."
+"Il tuo nome urla, ma il prezzo sale.","Il tuo nome urla, ma il prezzo sale."
+"Incassi e scappi. Non ti lasciano respirare.","Incassi e scappi. Non ti lasciano respirare."
+"Incassi e vai. Il giudizio resta.","Incassi e vai. Il giudizio resta."
+"Incassi mentre vogliono di più. Ti giudicano.","Incassi mentre vogliono di più. Ti giudicano."
+"Incasso facile. Il silenzio ti pesa addosso.","Incasso facile. Il silenzio ti pesa addosso."
+"Incasso preso. Il pubblico non si muove.","Incasso preso. Il pubblico non si muove."
+"L'arena ti pesa addosso.","L'arena ti pesa addosso."
+"La firma pesa. Il pubblico resta in giudizio.","La firma pesa. Il pubblico resta in giudizio."
+"La folla chiama sangue, non prudenza.","La folla chiama sangue, non prudenza."
+"La folla in furia pretende una caduta registrata.","La folla in furia pretende una caduta registrata."
+"La folla ti vuole oltre. La firma è l'inizio.","La folla ti vuole oltre. La firma è l'inizio."
+"La gradinata rifiuta la tua uscita.","La gradinata rifiuta la tua uscita."
+"Nessun calore, solo misura.","Nessun calore, solo misura."
+"Nessun grido, solo occhi fissi.","Nessun grido, solo occhi fissi."
+"Non applaudono, registrano.","Non applaudono, registrano."
+"Non cercano vittoria: cercano il prezzo.","Non cercano vittoria: cercano il prezzo."
+"Non ti credono degno di chiudere il patto.","Non ti credono degno di chiudere il patto."
+"Ogni colpo chiede di piu.","Ogni colpo chiede di piu."
+"Ogni mossa apre un conto.","Ogni mossa apre un conto."
+"Ogni passo indietro diventa accusa.","Ogni passo indietro diventa accusa."
+"Patto chiuso. L'arena ti osserva.","Patto chiuso. L'arena ti osserva."
+"Per loro sei garanzia, non campione.","Per loro sei garanzia, non campione."
+"Perduto. Il loro giudizio resta addosso.","Perduto. Il loro giudizio resta addosso."
+"Qui la cautela viene letta come debito.","Qui la cautela viene letta come debito."
+"Resti dentro. La folla pretende il tuo errore.","Resti dentro. La folla pretende il tuo errore."
+"Resti dentro. Ti chiedono l'eccesso.","Resti dentro. Ti chiedono l'eccesso."
+"Resti. Nessuno ti salva.","Resti. Nessuno ti salva."
+"Rimani. Il pubblico ti pesa addosso.","Rimani. Il pubblico ti pesa addosso."
+"Se esiti, la pressione ti stringe.","Se esiti, la pressione ti stringe."
+"Se rallenti, ti strappano la gloria.","Se rallenti, ti strappano la gloria."
+"Sei caduto. Hanno avuto il sangue.","Sei caduto. Hanno avuto il sangue."
+"Sei caduto. Ti volevano in ginocchio.","Sei caduto. Ti volevano in ginocchio."
+"Sei crollato. Hanno avuto il sacrificio.","Sei crollato. Hanno avuto il sacrificio."
+"Sei crollato. Nessun suono.","Sei crollato. Nessun suono."
+"Ti alzano in alto per pesare la caduta.","Ti alzano in alto per pesare la caduta."
+"Ti concedono spazio, non rispetto.","Ti concedono spazio, non rispetto."
+"Ti fermi mentre urlano. Ora è delusione.","Ti fermi mentre urlano. Ora è delusione."
+"Ti fermi qui. Nessuno ti segue.","Ti fermi qui. Nessuno ti segue."
+"Ti osservano e aspettano l'errore.","Ti osservano e aspettano l'errore."
+"Ti seguono senza pieta ne favore.","Ti seguono senza pieta ne favore."
+"Ti sei fermato in alto. Ti lasciano cadere.","Ti sei fermato in alto. Ti lasciano cadere."
+"Ti sei fermato. Troppo presto per essere pulito.","Ti sei fermato. Troppo presto per essere pulito."
+"Ti sei tirato indietro. La folla non dimentica.","Ti sei tirato indietro. La folla non dimentica."
+"Ti spingi avanti. L'arena grida il rischio.","Ti spingi avanti. L'arena grida il rischio."
+"Ti spingono al gesto che lascia segno.","Ti spingono al gesto che lascia segno."
+"Ti vogliono oltre il limite, senza ritorno.","Ti vogliono oltre il limite, senza ritorno."
+"Vogliono che tu rischi tutto, ora.","Vogliono che tu rischi tutto, ora."
+"Vogliono vedere il conto saldato in arena.","Vogliono vedere il conto saldato in arena."

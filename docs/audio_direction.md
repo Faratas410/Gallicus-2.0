@@ -57,6 +57,11 @@ Il mood e' rituale e amministrativo, non action-horror.
   verbale. Entrambi sostituiscono i cue generici del rito e restano mono PCM16
   44,1 kHz, con picco massimo -3 dBFS.
 - END_RUN: timbro e fascicolo, differenziati dal finale terminale.
+- OF-10 usa `registry_dossier_update` per carta e timbro breve,
+  `registry_dossier_close` per chiusura grave e sigillo terminale, e
+  `registry_dossier_route` per sollevamento della linguetta e pagina. I tre
+  cue sostituiscono il click generico soltanto nel fascicolo, sono mono PCM16
+  44,1 kHz e non superano -3 dBFS.
 
 Nessuna azione importante puo' essere muta senza una ragione documentata.
 

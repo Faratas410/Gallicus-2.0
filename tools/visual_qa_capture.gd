@@ -51,7 +51,18 @@ const JUDGMENT_SEAL_VIEWPORT_SIZES: Array[Vector2i] = [
 ]
 const JUDGMENT_SEAL_LOCALES: Array[String] = ["it", "en", "es"]
 const JUDGMENT_SEAL_BUTTON_PATH: String = "Main/UI/UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE"
+const JUDGMENT_SEAL_PANEL_PATH: String = "Main/UI/UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION"
 const JUDGMENT_SEAL_SECTION: String = "judgment_seal"
+const FINAL_DOSSIER_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const FINAL_DOSSIER_LOCALES: Array[String] = ["it", "en", "es"]
+const FINAL_DOSSIER_PANEL_PATH: String = "Main/UI/UI_RunRoot/Phase_END_RUN/Panel_END_RUN"
+const FINAL_DOSSIER_RESTART_PATH: String = "Main/UI/UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_RESTART"
+const FINAL_DOSSIER_NEXT_BET_PATH: String = "Main/UI/UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_NEXT_BET"
+const FINAL_DOSSIER_QUIT_PATH: String = "Main/UI/UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_QUIT"
+const FINAL_DOSSIER_SECTION: String = "final_dossier"
 const RECEIPT_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -97,7 +108,8 @@ func _run() -> void:
 	var pact_tablet_only: bool = _capture_section == PACT_TABLET_SECTION
 	var gesture_choice_only: bool = _capture_section == GESTURE_CHOICE_SECTION
 	var judgment_seal_only: bool = _capture_section == JUDGMENT_SEAL_SECTION
-	var targeted_section: bool = pact_tablet_only or gesture_choice_only or judgment_seal_only
+	var final_dossier_only: bool = _capture_section == FINAL_DOSSIER_SECTION
+	var targeted_section: bool = pact_tablet_only or gesture_choice_only or judgment_seal_only or final_dossier_only
 	if get_node_or_null("UI") != null and get_node_or_null("RunManager") != null:
 		_main = self
 	else:
@@ -155,11 +167,13 @@ func _run() -> void:
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_RESOLUTION", true, 4.0)
 	_enable_favorable_capture_outcome()
 	await _settle(60)
-	await _capture_judgment_seal_matrix()
+	if not targeted_section or judgment_seal_only:
+		await _capture_judgment_seal_matrix()
 	if judgment_seal_only:
 		await _finish_capture_run()
 		return
-	await _capture("06_resolve_ritual")
+	if not targeted_section:
+		await _capture("06_resolve_ritual")
 
 	for i: int in range(3):
 		await _press_when_ready("Main/UI/UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE", 4.0)
@@ -167,15 +181,18 @@ func _run() -> void:
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK", true, 4.0)
 	_disable_capture_overrides()
 	await _settle(90)
-	await _capture("07_push_your_luck")
-	await _capture_receipt_matrix()
-	await _capture_condemnation_mark_matrix()
-	await _capture_second_incision_matrix()
+	if not targeted_section:
+		await _capture("07_push_your_luck")
+		await _capture_receipt_matrix()
+		await _capture_condemnation_mark_matrix()
+		await _capture_second_incision_matrix()
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Btn_PUSH_YOUR_LUCK_CONDANNA", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_END_RUN", true, 5.0)
 	await _settle(240)
-	await _capture("08_end_run")
+	await _capture_final_dossier_matrix()
+	if not targeted_section:
+		await _capture("08_end_run")
 
 	await _finish_capture_run()
 
@@ -404,7 +421,8 @@ func _capture_judgment_seal_matrix() -> void:
 			DisplayServer.window_set_size(viewport_size)
 			get_tree().root.content_scale_size = viewport_size
 			get_tree().root.size = viewport_size
-			await _settle(20)
+			await _settle(30)
+			_center_judgment_panel_for_capture(viewport_size)
 			var prefix: String = "06_judgment_%s_%dx%d" % [
 				locale,
 				viewport_size.x,
@@ -444,10 +462,22 @@ func _capture_judgment_seal_matrix() -> void:
 	DisplayServer.window_set_size(previous_size)
 	get_tree().root.content_scale_size = previous_content_scale_size
 	get_tree().root.size = previous_size
+	await _settle(30)
+	_center_judgment_panel_for_capture(previous_size)
 	ui_root.call("_set_judgment_seal_state", previous_state)
 	button.disabled = previous_disabled
 	button.release_focus()
 	await _settle(8)
+
+func _center_judgment_panel_for_capture(viewport_size: Vector2i) -> void:
+	var panel: Control = get_tree().root.get_node_or_null(JUDGMENT_SEAL_PANEL_PATH) as Control
+	if panel == null:
+		_failures.append("OF-09 judgment panel missing while stabilizing visual QA layout")
+		return
+	panel.scale = Vector2.ONE
+	panel.position = (Vector2(viewport_size) - panel.size) * 0.5
+	panel.pivot_offset = panel.size * 0.5
+	panel.set_meta(&"motion_base_position", panel.position)
 
 func _touch_runtime_watchdog_for_judgment_matrix() -> void:
 	if _main == null:
@@ -455,6 +485,98 @@ func _touch_runtime_watchdog_for_judgment_matrix() -> void:
 	var run_manager: Node = _main.get_node_or_null("RunManager")
 	if run_manager != null and run_manager.has_method("_touch_request_activity"):
 		run_manager.call("_touch_request_activity", "visual_qa_judgment_matrix")
+
+func _capture_final_dossier_matrix() -> void:
+	var panel: Control = get_tree().root.get_node_or_null(FINAL_DOSSIER_PANEL_PATH) as Control
+	var restart: Button = get_tree().root.get_node_or_null(FINAL_DOSSIER_RESTART_PATH) as Button
+	var next_bet: Button = get_tree().root.get_node_or_null(FINAL_DOSSIER_NEXT_BET_PATH) as Button
+	var quit: Button = get_tree().root.get_node_or_null(FINAL_DOSSIER_QUIT_PATH) as Button
+	var ui_root: Node = get_tree().root.get_node_or_null(UI_ROOT_PATH)
+	if panel == null or restart == null or next_bet == null or quit == null or ui_root == null:
+		_failures.append("OF-10 final dossier nodes missing for visual QA matrix")
+		return
+
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_register_final: bool = bool(ui_root.get("_last_register_final"))
+	var previous_next_bet_enabled: bool = bool(ui_root.get("_last_next_bet_enabled"))
+	var previous_title_key: String = str(ui_root.get("_last_finale_title_key"))
+	var previous_state: StringName = ui_root.get("_final_dossier_state") as StringName
+
+	for locale: String in FINAL_DOSSIER_LOCALES:
+		TranslationServer.set_locale(locale)
+		for viewport_size: Vector2i in FINAL_DOSSIER_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(30)
+			_center_final_dossier_for_capture(viewport_size)
+			var prefix: String = "08_dossier_%s_%dx%d" % [locale, viewport_size.x, viewport_size.y]
+
+			ui_root.set("_last_register_final", false)
+			ui_root.set("_last_next_bet_enabled", true)
+			ui_root.call("_reset_final_dossier_route_interaction")
+			ui_root.call("_set_final_dossier_state", &"open")
+			ui_root.call("_refresh_verdict_panel")
+			restart.release_focus()
+			await _capture("%s_open" % prefix, viewport_size)
+
+			ui_root.call("_set_final_dossier_state", &"updated")
+			ui_root.call("_refresh_verdict_panel")
+			await _capture("%s_updated" % prefix, viewport_size)
+
+			ui_root.set("_last_register_final", true)
+			ui_root.set("_last_next_bet_enabled", false)
+			ui_root.set("_last_finale_title_key", "FASCICOLO CHIUSO - PATTERN")
+			ui_root.call("_set_end_run_buttons_enabled", true)
+			ui_root.call("_set_final_dossier_state", &"closed")
+			ui_root.call("_refresh_verdict_panel")
+			await _capture("%s_closed" % prefix, viewport_size)
+
+			ui_root.set("_last_register_final", false)
+			ui_root.set("_last_next_bet_enabled", true)
+			ui_root.set("_last_finale_title_key", previous_title_key)
+			ui_root.call("_reset_final_dossier_route_interaction")
+			ui_root.call("_set_final_dossier_state", &"updated")
+			ui_root.call("_refresh_verdict_panel")
+			restart.grab_focus()
+			await _settle(20)
+			await _capture("%s_focus" % prefix, viewport_size)
+
+			restart.release_focus()
+			ui_root.call("_select_final_dossier_route", restart)
+			ui_root.call("_set_end_run_buttons_enabled", false)
+			await _capture("%s_selected" % prefix, viewport_size)
+
+			ui_root.call("_reset_final_dossier_route_interaction")
+			ui_root.call("_set_end_run_buttons_enabled", false)
+			await _capture("%s_disabled" % prefix, viewport_size)
+
+	TranslationServer.set_locale(previous_locale)
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	await _settle(30)
+	_center_final_dossier_for_capture(previous_size)
+	ui_root.set("_last_register_final", previous_register_final)
+	ui_root.set("_last_next_bet_enabled", previous_next_bet_enabled)
+	ui_root.set("_last_finale_title_key", previous_title_key)
+	ui_root.call("_reset_final_dossier_route_interaction")
+	ui_root.call("_set_final_dossier_state", previous_state)
+	ui_root.call("_refresh_verdict_panel")
+	restart.release_focus()
+	await _settle(8)
+
+func _center_final_dossier_for_capture(viewport_size: Vector2i) -> void:
+	var panel: Control = get_tree().root.get_node_or_null(FINAL_DOSSIER_PANEL_PATH) as Control
+	if panel == null:
+		_failures.append("OF-10 final dossier missing while stabilizing visual QA layout")
+		return
+	panel.scale = Vector2.ONE
+	panel.position = (Vector2(viewport_size) - panel.size) * 0.5
+	panel.pivot_offset = panel.size * 0.5
+	panel.set_meta(&"motion_base_position", panel.position)
 
 func _prepare_output_dir() -> void:
 	var absolute_path: String = ProjectSettings.globalize_path(OUTPUT_DIR)

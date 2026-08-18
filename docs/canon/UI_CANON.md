@@ -521,3 +521,25 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Scope guard: presentation only. `RunManager` remains the sole owner of
   judgment, outcome and flow; no signal, payload, save field, manager or
   transition is added.
+
+## Final dossier contract (OF-10/OF-11)
+
+- Runtime scene: `res://scenes/UI.tscn`; `Panel_END_RUN` is presented as a
+  fixed `1120x640` dossier, not as a generic modal card.
+- The dossier uses the same text-free 7:4 alpha silhouette for open, updated
+  and closed. `meta.register_final=false` maps to updated;
+  `meta.register_final=true` maps to closed. The UI does not infer either
+  state from outcome copy.
+- `EndRunRouteTabs` contains fixed `304x64` text-free tabs for
+  `NUOVO PERCORSO`, `PROSSIMA SCOMMESSA` and `TORNA AL MENU`. Normal, focus,
+  pressed, selected and disabled share identical geometry and never scale.
+- `meta.next_bet_enabled` remains the sole owner of next-bet visibility and
+  availability.
+- Activation exposes selected, applies the local lock, plays
+  `registry_dossier_route` and emits the unchanged END_RUN intent. Failed
+  emission and watchdog restore the tabs; no presentation `await` delays the
+  intent.
+- All final report, Register message, condanna title and last-crowd-line copy
+  is translated at the UI boundary. `RunManager` payloads remain unchanged.
+- Scope guard: presentation only. `RunManager` remains the owner of final
+  classification and route flow; `GameEvents` remains the intent bus.

@@ -12,9 +12,10 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Object-First Interaction Pass**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-09 - colpo sul sigillo**.
+- Pacchetto attivo: **OF-11 - checkpoint Object-First**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
-- Verifica locale: OF-09 in corso; checkpoint Linux richiesto dopo push manuale.
+- Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux verde;
+  OF-10 e OF-11 implementati localmente e in attesa del signoff Linux.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
   bootstrap; le matrici Linux canoniche sono verdi.
 
@@ -237,7 +238,7 @@ Ordine dei pacchetti:
   `sha256:01e5b2be8d15b73831fd6f42a0d01b4fd4bd6a93cdfd267b83c6ef6554999f01`.
 - Gate chiuso: 2026-07-16, otto job verdi su `main` e artifact ispezionato.
 
-### Pacchetto implementato, in attesa di signoff cumulativo: OF-07
+### Pacchetto chiuso: OF-07
 
 - Comportamento: trasformare `MOSTRA IL PATTO` in una tavoletta sigillata di
   basalto, bronzo e cera che rende leggibile la convalida del patto.
@@ -263,10 +264,10 @@ Ordine dei pacchetti:
   `--section=pact_tablet` produce 24 catture `04_pact_*` IT/EN/ES per normal,
   focus, validated e disabled a 1280x720 e 1920x1080; matrice ispezionata
   senza overflow o variazioni di geometria.
-- Stato: implementato il 2026-07-16. OF-07 non e' un checkpoint e resta in
-  attesa del signoff cumulativo OF-09.
+- Stato: chiuso dal checkpoint cumulativo OF-09 il 2026-08-18, run Linux
+  `32152390171`, commit `3f1fd3b` e artifact ispezionato.
 
-### Pacchetto implementato, in attesa di signoff cumulativo: OF-08
+### Pacchetto chiuso: OF-08
 
 - Comportamento: trasformare la scelta intermedia nel gesto pubblico davanti
   alla gradinata previsto dal rituale object-first.
@@ -286,10 +287,10 @@ Ordine dei pacchetti:
 - Evidenza visuale: 24 catture `04_pact_*` e 36 catture `05_gesture_*`,
   IT/EN/ES a 1280x720 e 1920x1080, generate con i selettori locali e
   ispezionate senza overflow, fallback italiano, deformazioni o variazioni di
-  geometria. OF-08 non e' un checkpoint e resta in attesa del signoff
-  cumulativo OF-09.
+  geometria. Stato chiuso dal checkpoint cumulativo OF-09 il 2026-08-18, run
+  Linux `32152390171`, commit `3f1fd3b` e artifact ispezionato.
 
-### Pacchetto implementato, in attesa di signoff Linux: OF-09
+### Pacchetto chiuso: OF-09
 
 - Comportamento: trasformare il colpo sul sigillo nel gesto object-first della
   sequenza rituale: il sigillo su pietra riceve tre colpi e si chiude prima
@@ -322,6 +323,41 @@ Ordine dei pacchetti:
   e lo rende obbligatorio nel contratto OF-09; flow e payload restano invariati.
 - Vincoli: preservare flow, segnali, payload, save e autorita' di `RunManager`;
   nessun `await` o calcolo gameplay nel gesto.
+- Gate chiuso: run Linux `32152390171` sul commit `3f1fd3b`, con
+  `static_contracts`, sei smoke e `visual_qa_object_first` verdi. L'artifact
+  `object_first_visual_qa` contiene 235 file, incluse 30 catture
+  `06_judgment_*`, `06_resolve_ritual.png`, `07_push_your_luck.png`, 18
+  quietanze, 18 marchi, 24 incisioni e `08_end_run.png`; digest
+  `sha256:208f8b14eeb855df405455e0e8e7ab925db1b0b45e02aa8b950a9489a872ca03`.
+- Cleanup dell'evidenza: l'ispezione ha rilevato un recentring tardivo del solo
+  capture headless nel passaggio 1920x1080 -> 1280x720. Il tool e il contratto
+  OF-09 sono corretti localmente; la matrice mirata IT/EN/ES e' centrata e
+  leggibile e verra' riassorbita dal checkpoint cumulativo OF-11.
+
+### Pacchetto implementato: OF-10
+
+- Comportamento: `END_RUN` e' un fascicolo fisico `1120x640` con stati open,
+  updated e closed; le route sono linguette fisse `304x64`.
+- Mapping: `meta.register_final` sceglie esclusivamente updated/closed;
+  `meta.next_bet_enabled` resta l'unico owner della route successiva.
+- Runtime: guardia, selected, lock, cue, intento invariato e watchdog, senza
+  `await`, calcolo gameplay o accesso diretto a `RunManager`.
+- Asset: tre dossier RGBA 7:4 e una linguetta RGBA 5:1, generati built-in e
+  validati con silhouette stabile; cue procedurali update/close/route.
+- Localizzazione: report finale, messaggi del Registro, titoli condanna,
+  ultima voce e route sono tradotti al confine UI in IT/EN/ES.
+- Prove locali: contratto OF-10 verde, import Godot 4.6.2 verde e 36 catture
+  mirate `08_dossier_*` verdi; proporzioni, safe area, contrasto, wrapping e
+  CTA verificati a 1280x720 e 1920x1080.
+
+### Checkpoint implementato: OF-11
+
+- Il marker full-suite e' `OF-11`; il playbook include tutti i contratti
+  Object-First e il consolidamento dello stage.
+- Il visual QA cumulativo richiede 36 dossier e 271 catture complessive,
+  inclusa `08_end_run.png`, con timeout 480 secondi.
+- Stato: implementato localmente, in attesa di otto job Linux verdi e
+  ispezione dell'artifact prima della chiusura formale dello stage.
 
 ## 1. Foundation Reset
 
@@ -552,13 +588,15 @@ Gate:
 
 ## Prossimo step operativo
 
-`OF-06` e' chiuso sul commit `d115c60` con otto job Linux verdi e artifact
-visuale ispezionato. `OF-07 - tavoletta del patto`, `OF-08 - gesto davanti
-alla gradinata` e `OF-09 - colpo sul sigillo` sono implementati su `main` e
-attendono il signoff cumulativo del checkpoint OF-09. Il marker locale e'
-`OF-09`. Il prossimo prerequisito esterno e' il commit e push manuale; poi
-vanno verificati job statico, sei smoke Linux, visual QA cumulativo e digest
-artifact prima di chiudere OF-07/OF-08/OF-09 e attivare OF-10.
+`OF-07 - tavoletta del patto`, `OF-08 - gesto davanti alla gradinata` e
+`OF-09 - colpo sul sigillo` sono chiusi dalla run Linux `32152390171` sul
+commit `3f1fd3b`, con otto job verdi e artifact digest
+`sha256:208f8b14eeb855df405455e0e8e7ab925db1b0b45e02aa8b950a9489a872ca03`.
+OF-10 e OF-11 sono implementati localmente su `main`; il marker e' `OF-11`.
+Il prossimo passo e' pubblicare il checkpoint, richiedere `static_contracts`,
+i sei smoke Linux e `visual_qa_object_first`, quindi ispezionare le 271
+catture e registrarne run, commit e digest. Solo con otto job verdi lo stage
+Object-First potra' chiudersi e Media Vertical Slice diventare lo stage attivo.
 Nel frattempo la preparazione non-runtime `MV-01/MV-02` e i prototipi audio
 `MV-04` sono disponibili in `docs/support/media_vertical_slice/`; l'integrazione
 Godot resta bloccata fino alla chiusura di `OF-11`.

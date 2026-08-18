@@ -48,8 +48,8 @@ CANON_HARD_PATHS = [
     "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS",
     "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE",
     "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_BODY",
-    "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART",
-    "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT",
+    "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_RESTART",
+    "UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_QUIT",
 ]
 SUMMARY_KEYWORDS = [
     "SUMMARY",

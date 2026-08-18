@@ -38,7 +38,6 @@ const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.38
 const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.44
 const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.36
 const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.30
-const END_RUN_BUTTON_READY_SCALE: Vector2 = Vector2(1.012, 1.012)
 const RESOLUTION_RITUAL_STRIKES_REQUIRED: int = 3
 const RESOLUTION_RITUAL_BEAT_SECONDS: float = 0.9
 const RESOLUTION_RITUAL_HIT_WINDOW_SECONDS: float = 0.18
@@ -74,6 +73,19 @@ const JUDGMENT_SEAL_STYLE_RESOLVED: StyleBox = preload("res://assets/ui/official
 const JUDGMENT_SEAL_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_disabled.tres")
 const JUDGMENT_SEAL_STATE_META: StringName = &"registry_judgment_seal_state"
 const JUDGMENT_SEAL_WATCHDOG_SECONDS: float = 1.25
+const FINAL_DOSSIER_STYLE_OPEN: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_open.tres")
+const FINAL_DOSSIER_STYLE_UPDATED: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_updated.tres")
+const FINAL_DOSSIER_STYLE_CLOSED: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_closed.tres")
+const FINAL_DOSSIER_TAB_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_normal.tres")
+const FINAL_DOSSIER_TAB_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_focus.tres")
+const FINAL_DOSSIER_TAB_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_pressed.tres")
+const FINAL_DOSSIER_TAB_STYLE_SELECTED: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_selected.tres")
+const FINAL_DOSSIER_TAB_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_disabled.tres")
+const FINAL_DOSSIER_ROUTE_SELECTED_META: StringName = &"registry_final_dossier_route_selected"
+const FINAL_DOSSIER_STATE_OPEN: StringName = &"open"
+const FINAL_DOSSIER_STATE_UPDATED: StringName = &"updated"
+const FINAL_DOSSIER_STATE_CLOSED: StringName = &"closed"
+const FINAL_DOSSIER_WATCHDOG_SECONDS: float = 1.5
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
@@ -204,7 +216,9 @@ var _arena_theme_payload: Dictionary = {}
 var _last_ritual_outcome_snapshot: Dictionary = {}
 
 var _last_finale_title: String = ""
+var _last_finale_title_key: String = ""
 var _last_finale_text: String = ""
+var _last_final_report: Dictionary = {}
 var _last_finale_scars: Array = []
 var _last_finale_ending_id: String = ""
 var _last_finale_seed: int = 0
@@ -213,14 +227,19 @@ var _last_finale_hint: String = ""
 var _last_ending_icon_path: String = ENDING_ICON_FALLBACK_PATH
 var _last_next_bet_enabled: bool = false
 var _last_register_message: String = ""
+var _last_register_message_key: String = ""
 var _last_register_final: bool = false
 var _last_register_ending_key: String = ""
 var _last_verdict_outcome: StringName = &"LOSS"
 var _last_verdict_sentence: String = ""
 var _last_verdict_charge: String = ""
 var _last_verdict_crowd_line: String = ""
+var _last_verdict_crowd_line_key: String = ""
 var _last_verdict_pacts: Array[String] = []
 var _last_verdict_condanne: Array[String] = []
+var _final_dossier_state: StringName = FINAL_DOSSIER_STATE_OPEN
+var _final_dossier_route_locked: bool = false
+var _final_dossier_request_sequence_id: int = 0
 var _scars_detail_text: String = ""
 var _bet_confirm_default_text: String = ""
 
@@ -653,13 +672,13 @@ func _bind_scene_nodes() -> void:
 	game_over_scroll = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL") as ScrollContainer
 	ending_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_SCROLL/Box_END_RUN_MARGIN/Lbl_END_RUN_FOOTERPanel/Lbl_END_RUN_FOOTER") as RichTextLabel
 	verdict_sections = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS") as Control
-	verdict_pacts_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
-	verdict_condanne_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Lbl_END_RUN_CONDANNE_BODYPanel/Lbl_END_RUN_CONDANNE_BODY") as RichTextLabel
+	verdict_pacts_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_PACTS/Lbl_END_RUN_PACTS_BODYPanel/Lbl_END_RUN_PACTS_BODY") as RichTextLabel
+	verdict_condanne_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE/Lbl_END_RUN_CONDANNE_BODYPanel/Lbl_END_RUN_CONDANNE_BODY") as RichTextLabel
 	verdict_crowd_section = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD") as Control
 	verdict_crowd_text = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_BODYPanel/Lbl_END_RUN_CROWD_BODY") as Label
-	restart_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_RESTART") as Button
-	next_bet_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_NEXT_BET") as Button
-	quit_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Btn_END_RUN_QUIT") as Button
+	restart_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_RESTART") as Button
+	next_bet_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_NEXT_BET") as Button
+	quit_button = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs/Btn_END_RUN_QUIT") as Button
 
 func _init_phase_node_map() -> void:
 	_phase_node_map = {
@@ -938,6 +957,7 @@ func show_countdown(seconds: int = 3) -> void:
 func _on_run_started() -> void:
 	_reset_pact_tablet_state()
 	_reset_gesture_choice_state()
+	_reset_final_dossier_route_interaction()
 	_refresh_runtime_group_cache(false)
 	if escalation_row != null:
 		escalation_row.visible = true
@@ -964,6 +984,7 @@ func _on_run_started() -> void:
 	_last_ritual_outcome_snapshot = {}
 	_set_game_over_modal(false)
 	_last_register_message = ""
+	_last_register_message_key = ""
 	_last_register_final = false
 	_last_register_ending_key = ""
 	_last_ending_icon_path = ""
@@ -972,7 +993,9 @@ func _on_run_started() -> void:
 		next_bet_button.visible = false
 		next_bet_button.disabled = true
 	_last_finale_title = tr("PERCORSO FALLITO")
+	_last_finale_title_key = "PERCORSO FALLITO"
 	_last_finale_text = ""
+	_last_final_report = {}
 	_last_finale_scars = []
 	_last_finale_ending_id = ""
 	_last_finale_seed = 0
@@ -981,6 +1004,7 @@ func _on_run_started() -> void:
 	_last_verdict_pacts = []
 	_last_verdict_condanne = []
 	_last_verdict_crowd_line = ""
+	_last_verdict_crowd_line_key = ""
 	_last_verdict_outcome = &"LOSS"
 	_special_arena_payload = {}
 	if special_arena_label != null:
@@ -1126,11 +1150,13 @@ func _apply_quick_cut_glitch(glitch: String) -> void:
 
 func _on_run_finale_selected(payload: Dictionary) -> void:
 	if payload.has("title"):
-		_last_finale_title = str(payload["title"])
+		_last_finale_title_key = str(payload["title"])
 	else:
-		_last_finale_title = tr("PERCORSO FALLITO")
+		_last_finale_title_key = "PERCORSO FALLITO"
+	_last_finale_title = tr(_last_finale_title_key)
+	_last_final_report = (payload.get("final_report", {}) as Dictionary).duplicate(true)
 	if payload.has("text"):
-		_last_finale_text = str(payload["text"])
+		_last_finale_text = _localize_final_report(_last_final_report, str(payload["text"]))
 	else:
 		_last_finale_text = ""
 	if payload.has("scars"):
@@ -1150,21 +1176,24 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	else:
 		_last_finale_stats = {}
 	var finale_meta: Dictionary = payload.get("meta", {}) as Dictionary
-	_last_register_message = str(finale_meta.get("register_message", ""))
+	_last_register_message_key = str(finale_meta.get("register_message", ""))
+	_last_register_message = tr(_last_register_message_key)
 	_last_register_final = bool(finale_meta.get("register_final", false))
 	_last_register_ending_key = str(finale_meta.get("register_ending_key", ""))
 	if _last_register_final:
 		var ending_ui_data: Dictionary = ENDING_UI_MAP.get(_last_register_ending_key, {}) as Dictionary
-		_last_finale_title = str(ending_ui_data.get("title", "FASCICOLO CHIUSO"))
+		_last_finale_title_key = str(ending_ui_data.get("title", "FASCICOLO CHIUSO"))
+		_last_finale_title = tr(_last_finale_title_key)
 		_last_ending_icon_path = str(ending_ui_data.get("icon", ENDING_ICON_FALLBACK_PATH))
 	else:
-		_last_finale_title = "AGGIORNAMENTO DEL REGISTRO"
+		_last_finale_title_key = "AGGIORNAMENTO DEL REGISTRO"
+		_last_finale_title = tr(_last_finale_title_key)
 		_last_ending_icon_path = ""
 	_last_next_bet_enabled = bool(finale_meta.get("next_bet_enabled", false))
 	if next_bet_button != null:
 		next_bet_button.visible = _last_next_bet_enabled
 		next_bet_button.disabled = not _last_next_bet_enabled
-		next_bet_button.text = "PROSSIMA SCOMMESSA"
+		next_bet_button.text = tr("PROSSIMA SCOMMESSA")
 	var pacts_payload: Array = []
 	if payload.has("pacts_signed"):
 		pacts_payload = payload.get("pacts_signed", []) as Array
@@ -1173,7 +1202,8 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	_last_verdict_pacts = _coerce_string_list(pacts_payload)
 	var condanne_payload: Array = payload.get("condanne_this_run", []) as Array
 	_last_verdict_condanne = _coerce_string_list(condanne_payload)
-	_last_verdict_crowd_line = str(payload.get("last_crowd_line", ""))
+	_last_verdict_crowd_line_key = str(payload.get("last_crowd_line", ""))
+	_last_verdict_crowd_line = tr(_last_verdict_crowd_line_key)
 	var outcome_value: Variant = payload.get("outcome", &"LOSS")
 	_last_verdict_outcome = StringName(str(outcome_value))
 	var summary: Dictionary = _build_verdict_summary(payload, pacts_payload, condanne_payload)
@@ -1181,6 +1211,8 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	_last_verdict_charge = VerdictLinesScript.pick_charge(summary)
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
+	_set_final_dossier_state(FINAL_DOSSIER_STATE_OPEN)
+	_reset_final_dossier_route_interaction()
 	_refresh_verdict_panel()
 
 func _on_run_failed() -> void:
@@ -1203,12 +1235,13 @@ func _on_run_failed() -> void:
 		next_bet_button.visible = _last_next_bet_enabled
 		next_bet_button.disabled = not _last_next_bet_enabled
 	if restart_button != null:
-		restart_button.text = "NUOVO PERCORSO"
+		restart_button.text = tr("NUOVO PERCORSO")
 	if quit_button != null:
-		quit_button.text = "MENU"
+		quit_button.text = tr("TORNA AL MENU")
 	_last_finale_hint = ""
 	if _last_register_final and _last_register_message == "":
-		_last_register_message = fmt_system_state("fascicolo registrato")
+		_last_register_message_key = "fascicolo registrato"
+		_last_register_message = fmt_system_state(tr(_last_register_message_key))
 	_refresh_game_over_scars()
 	_refresh_game_over_meta()
 	_refresh_verdict_panel()
@@ -1236,18 +1269,38 @@ func _coerce_string_list(values: Array) -> Array[String]:
 			result.append(text)
 	return result
 
+func _localize_final_report(report: Dictionary, fallback_text: String = "") -> String:
+	if report.is_empty():
+		return tr(fallback_text)
+	var opening: String = tr(str(report.get("opening", "")))
+	var fracture: String = tr(str(report.get("fracture", "")))
+	var final_state: String = tr(str(report.get("final_state", "")))
+	var pattern_lines: PackedStringArray = []
+	for pattern_value: Variant in report.get("patterns", []) as Array:
+		pattern_lines.append(tr(str(pattern_value)))
+	var sections: PackedStringArray = []
+	sections.append("%s\n%s" % [tr("I. APERTURA - CONSTATAZIONE"), opening])
+	sections.append("%s\n- %s" % [tr("II. CORPO - LETTURA DEI PATTERN"), "\n- ".join(pattern_lines)])
+	if fracture != "":
+		sections.append("%s\n%s" % [tr("III. FRATTURA"), fracture])
+	sections.append(tr("Stato finale: %s.") % final_state)
+	return "\n\n".join(sections)
+
 func _format_verdict_list(values: Array[String]) -> String:
 	if values.is_empty():
 		return "-"
 	var lines: PackedStringArray = []
-	for value in values:
-		lines.append("- %s" % value)
+	var visible_count: int = mini(values.size(), 2)
+	for index: int in range(visible_count):
+		lines.append("- %s" % values[index])
+	if values.size() > visible_count:
+		lines.append(tr("+%d altre") % (values.size() - visible_count))
 	return "\n".join(lines)
 
 func _format_verdict_pacts_list(values: Array[String]) -> String:
 	if values.is_empty():
-		return fmt_register_line("rinunciato", "continuato")
-	return fmt_register_line("accettato", "%d condizioni registrate" % values.size())
+		return fmt_register_line(tr("rinunciato"), tr("continuato"))
+	return fmt_register_line(tr("accettato"), tr("%d condizioni registrate") % values.size())
 
 func _build_smart_register_summary() -> String:
 	var pact_count: int = _last_verdict_pacts.size()
@@ -1283,10 +1336,33 @@ func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 		var title: String = str(titles_by_id.get(key, ""))
 		if title == "":
 			title = value
-		result.append(title)
+		result.append(tr(title))
 	return result
 
 func _refresh_verdict_panel() -> void:
+	if _last_finale_title_key != "":
+		_last_finale_title = tr(_last_finale_title_key)
+	if not _last_final_report.is_empty():
+		_last_finale_text = _localize_final_report(_last_final_report, _last_finale_text)
+	if _last_register_message_key != "":
+		_last_register_message = tr(_last_register_message_key)
+	if _last_verdict_crowd_line_key != "":
+		_last_verdict_crowd_line = tr(_last_verdict_crowd_line_key)
+	if restart_button != null:
+		restart_button.text = tr("NUOVO PERCORSO")
+	if next_bet_button != null:
+		next_bet_button.text = tr("PROSSIMA SCOMMESSA")
+	if quit_button != null:
+		quit_button.text = tr("TORNA AL MENU")
+	var pacts_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_PACTS/Lbl_END_RUN_PACTS_TITLEPanel/Lbl_END_RUN_PACTS_TITLE") as Label
+	if pacts_title != null:
+		pacts_title.text = tr("PATTI FIRMATI")
+	var condanne_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE/Lbl_END_RUN_CONDANNE_TITLEPanel/Lbl_END_RUN_CONDANNE_TITLE") as Label
+	if condanne_title != null:
+		condanne_title.text = tr("CONDANNE")
+	var crowd_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel/Lbl_END_RUN_CROWD_TITLE") as Label
+	if crowd_title != null:
+		crowd_title.text = tr("ULTIMA VOCE")
 	if verdict_header != null:
 		var title_text: String = _last_finale_title.strip_edges()
 		if title_text == "":
@@ -1344,15 +1420,16 @@ func _refresh_verdict_panel() -> void:
 				condanne_title_panel.visible = true
 	var crowd_line: String = _last_verdict_crowd_line.strip_edges()
 	if verdict_crowd_section != null:
-		verdict_crowd_section.visible = crowd_line != ""
+		verdict_crowd_section.visible = true
 	if verdict_crowd_text != null:
-		verdict_crowd_text.text = crowd_line
+		verdict_crowd_text.text = crowd_line if crowd_line != "" else "-"
 	if verdict_sections != null:
-		verdict_sections.visible = false
+		verdict_sections.visible = true
 	if game_over_scroll != null:
 		game_over_scroll.visible = false
 	if ending_text != null:
 		ending_text.visible = false
+	_apply_final_dossier_palette()
 
 func _set_verdict_canvas_alpha(alpha: float) -> void:
 	var targets: Array[CanvasItem] = []
@@ -1426,12 +1503,107 @@ func _apply_end_run_button_visual(button: Button, can_be_active: bool) -> void:
 	if button == null:
 		return
 	var active: bool = button.visible and can_be_active and not button.disabled
-	button.modulate = Color(1.0, 0.98, 0.84, 1.0) if active else Color(0.86, 0.82, 0.74, 0.62)
-	button.scale = END_RUN_BUTTON_READY_SCALE if active else Vector2.ONE
+	var selected: bool = bool(button.get_meta(FINAL_DOSSIER_ROUTE_SELECTED_META, false))
+	button.scale = Vector2.ONE
+	button.modulate = Color.WHITE
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
-	button.add_theme_color_override("font_color", Color(0.98, 0.92, 0.74, 1.0) if active else Color(0.56, 0.54, 0.5, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
-	button.add_theme_color_override("font_disabled_color", Color(0.54, 0.52, 0.48, 1.0))
+	button.add_theme_stylebox_override("normal", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_NORMAL)
+	button.add_theme_stylebox_override("hover", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_FOCUS)
+	button.add_theme_stylebox_override("focus", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_FOCUS)
+	button.add_theme_stylebox_override("pressed", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_PRESSED)
+	button.add_theme_stylebox_override("disabled", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_DISABLED)
+	button.add_theme_color_override("font_color", Color(0.18, 0.12, 0.08, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(0.1, 0.06, 0.03, 1.0))
+	button.add_theme_color_override("font_pressed_color", Color(1.0, 0.93, 0.74, 1.0))
+	button.add_theme_color_override("font_disabled_color", Color(1.0, 0.92, 0.72, 1.0) if selected else Color(0.5, 0.46, 0.41, 0.86))
+
+func _set_final_dossier_state(state: StringName) -> void:
+	_final_dossier_state = state
+	if game_over_panel == null:
+		return
+	var style: StyleBox = FINAL_DOSSIER_STYLE_OPEN
+	match state:
+		FINAL_DOSSIER_STATE_UPDATED:
+			style = FINAL_DOSSIER_STYLE_UPDATED
+		FINAL_DOSSIER_STATE_CLOSED:
+			style = FINAL_DOSSIER_STYLE_CLOSED
+		_:
+			_final_dossier_state = FINAL_DOSSIER_STATE_OPEN
+	game_over_panel.add_theme_stylebox_override("panel", style)
+	_apply_final_dossier_palette()
+
+func _apply_final_dossier_palette() -> void:
+	var closed: bool = _final_dossier_state == FINAL_DOSSIER_STATE_CLOSED
+	var heading_color: Color = Color(0.98, 0.9, 0.7, 1.0) if closed else Color(0.19, 0.12, 0.08, 1.0)
+	var body_color: Color = Color(0.9, 0.82, 0.68, 1.0) if closed else Color(0.28, 0.2, 0.14, 1.0)
+	var detail_color: Color = Color(0.86, 0.77, 0.61, 1.0) if closed else Color(0.12, 0.08, 0.05, 1.0)
+	for label: Label in [verdict_header, verdict_outcome, verdict_charge_label]:
+		if label != null:
+			label.add_theme_color_override("font_color", heading_color)
+	if verdict_sentence_label != null:
+		verdict_sentence_label.add_theme_color_override("font_color", body_color)
+	for rich_label: RichTextLabel in [verdict_pacts_text, verdict_condanne_text]:
+		if rich_label != null:
+			rich_label.add_theme_color_override("default_color", detail_color)
+	if verdict_crowd_text != null:
+		verdict_crowd_text.add_theme_color_override("font_color", detail_color)
+	for title_path: String in [
+		"UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_PACTS/Lbl_END_RUN_PACTS_TITLEPanel/Lbl_END_RUN_PACTS_TITLE",
+		"UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE/Lbl_END_RUN_CONDANNE_TITLEPanel/Lbl_END_RUN_CONDANNE_TITLE",
+		"UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel/Lbl_END_RUN_CROWD_TITLE",
+	]:
+		var title_label := get_node_or_null(title_path) as Label
+		if title_label != null:
+			title_label.add_theme_color_override("font_color", heading_color)
+
+func _apply_final_dossier_meta_state(sequence_id: int) -> void:
+	if sequence_id != _final_dossier_request_sequence_id or game_over_modal == null or not game_over_modal.visible:
+		return
+	if _last_register_final:
+		_set_final_dossier_state(FINAL_DOSSIER_STATE_CLOSED)
+		_play_sfx(&"registry_dossier_close")
+	else:
+		_set_final_dossier_state(FINAL_DOSSIER_STATE_UPDATED)
+		_play_sfx(&"registry_dossier_update")
+
+func _reset_final_dossier_route_interaction(restore_buttons: bool = true) -> void:
+	_final_dossier_request_sequence_id += 1
+	_final_dossier_route_locked = false
+	for button: Button in [restart_button, next_bet_button, quit_button]:
+		if button != null:
+			button.set_meta(FINAL_DOSSIER_ROUTE_SELECTED_META, false)
+	if restore_buttons:
+		_set_end_run_buttons_enabled(true)
+	else:
+		_set_end_run_buttons_enabled(false)
+
+func _select_final_dossier_route(button: Button) -> void:
+	for route_button: Button in [restart_button, next_bet_button, quit_button]:
+		if route_button != null:
+			route_button.set_meta(FINAL_DOSSIER_ROUTE_SELECTED_META, route_button == button)
+	_refresh_end_run_button_visuals()
+
+func _on_final_dossier_watchdog(sequence_id: int) -> void:
+	if sequence_id != _final_dossier_request_sequence_id:
+		return
+	_reset_final_dossier_route_interaction()
+
+func _activate_final_dossier_route(button: Button, signal_name: StringName) -> void:
+	if _final_dossier_route_locked or button == null or button.disabled or not button.visible:
+		return
+	_select_final_dossier_route(button)
+	_final_dossier_route_locked = true
+	_set_end_run_buttons_enabled(false)
+	_play_sfx(&"registry_dossier_route")
+	if not _emit_game_event_signal_if_available(signal_name):
+		_reset_final_dossier_route_interaction()
+		return
+	_final_dossier_request_sequence_id += 1
+	var sequence_id: int = _final_dossier_request_sequence_id
+	get_tree().create_timer(FINAL_DOSSIER_WATCHDOG_SECONDS).timeout.connect(
+		Callable(self, "_on_final_dossier_watchdog").bind(sequence_id),
+		CONNECT_ONE_SHOT
+	)
 
 func _set_verdict_mode(active: bool) -> void:
 	if verdict_header != null:
@@ -2847,12 +3019,10 @@ func _emit_intro_bet_request(slot_index: int) -> void:
 	_emit_game_event_signal_if_available(&"request_place_bet", [bet_id, 0])
 
 func _on_restart_pressed() -> void:
-	_play_sfx(&"button_click")
-	_emit_game_event_signal_if_available(&"request_end_run_restart")
+	_activate_final_dossier_route(restart_button, &"request_end_run_restart")
 
 func _on_retry_pressed() -> void:
-	_play_sfx(&"button_click")
-	_emit_game_event_signal_if_available(&"request_end_run_next_bet")
+	_activate_final_dossier_route(next_bet_button, &"request_end_run_next_bet")
 
 func _request_reset() -> void:
 	_set_game_over_modal(false)
@@ -2872,8 +3042,7 @@ func _request_retry() -> void:
 	_refresh_modal_dimmer()
 
 func _on_quit_pressed() -> void:
-	_play_sfx(&"button_click")
-	_emit_game_event_signal_if_available(&"request_end_run_quit")
+	_activate_final_dossier_route(quit_button, &"request_end_run_quit")
 
 func _handle_fast_countdown(seconds: int) -> void:
 	if fast_countdown_label == null:
@@ -3657,17 +3826,18 @@ func _set_push_luck_modal(active: bool) -> void:
 func _set_game_over_modal(active: bool) -> void:
 	if active:
 		show_modal(game_over_modal)
+		_reset_final_dossier_route_interaction()
+		_set_final_dossier_state(FINAL_DOSSIER_STATE_OPEN)
 	_game_over_modal_fade_tween = _fade_modal(game_over_panel, game_over_modal, active, _game_over_modal_fade_tween, MOTION_KIND_ENDING)
 	if active:
 		_play_backdrop_enter(game_over_modal, MOTION_KIND_ENDING)
-		if _last_register_final or _last_verdict_outcome != &"LOSS":
-			_play_sfx(&"stage_complete")
-		else:
-			_play_sfx(&"game_over")
 		_play_panel_enter(game_over_panel, MOTION_KIND_ENDING)
+		call_deferred("_apply_final_dossier_meta_state", _final_dossier_request_sequence_id)
 		enter_ending_mode()
 		_emit_modal_telemetry("ending", true)
 	else:
+		_reset_final_dossier_route_interaction(false)
+		_set_final_dossier_state(FINAL_DOSSIER_STATE_OPEN)
 		exit_ending_mode()
 		_emit_modal_telemetry("ending", false)
 	_refresh_modal_dimmer()

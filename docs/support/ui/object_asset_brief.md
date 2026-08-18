@@ -554,6 +554,56 @@ Accettazione OF-09:
 - contratto OF-09, i18n, motion, ritual loop, path, import Godot e checkpoint
   CI verdi prima della chiusura formale.
 
+## Fascicolo finale con linguette
+
+Uso: presentazione `END_RUN` e scelta della route successiva.
+
+### Scheda OF-10
+
+```text
+Intento del soggetto: leggere l'esito e scegliere la route disponibile.
+Oggetto: fascicolo amministrativo con tre linguette fisiche.
+Materiale: carta, dorso in basalto, bronzo e cera rossa.
+Gesto: sollevare una linguetta e voltare la pagina.
+Conseguenza leggibile prima del gesto: nuovo percorso, prossima scommessa o menu.
+Stato prima: open durante la presentazione iniziale.
+Stato dopo: updated se il Registro resta aperto; closed se il Registro e' finale.
+Feedback visivo: perimetro stabile, timbro aggiornato/chiuso e linguetta selected.
+Feedback audio: carta/timbro, chiusura grave e pagina della route.
+Feedback testuale: esito, pressione massima, patti, condanne e ultima voce.
+Registrazione prodotta: intenti END_RUN esistenti e invariati.
+Owner dati/flow: RunManager.
+Segnale GameEvents: request_end_run_restart/next_bet/quit, invariati.
+Fallback accessibile: focus, selected e disabled persistono senza scala o motion.
+Schermata o scenario QA: END_RUN e matrice 08_dossier_*.
+```
+
+Asset e geometria:
+
+- `registry_final_dossier_open.png`, `registry_final_dossier_updated.png` e
+  `registry_final_dossier_closed.png`: RGBA `1400x800`, rapporto 7:4, stesso
+  perimetro e safe area, senza testo;
+- `registry_final_dossier_tab.png`: RGBA `1000x200`, rapporto 5:1, senza testo;
+- consumer `Panel_END_RUN` fisso `1120x640` e linguette `304x64` dentro una
+  riga `940x64` centrata;
+- stati linguetta normal, focus, pressed, selected e disabled a geometria
+  identica;
+- `meta.register_final` sceglie esclusivamente updated/closed e
+  `meta.next_bet_enabled` resta l'unico owner di visibilita'/abilitazione
+  della route successiva;
+- cue procedurali `registry_dossier_update`, `registry_dossier_close` e
+  `registry_dossier_route`, mono PCM16 44,1 kHz e picco massimo -3 dBFS;
+- provenienza visuale: generazione built-in con Registro, cartiglio e sigillo
+  come riferimenti, alpha locale validato; nessuna fonte third-party.
+
+Accettazione OF-10:
+
+- CTA e tutto il copy dinamico END_RUN sono localizzati al confine UI;
+- nessun overflow a 1280x720 e 1920x1080;
+- guardia, selected, lock, cue, intento e watchdog rispettano quest'ordine;
+- 36 screenshot `08_dossier_*`, sei stati per lingua e risoluzione;
+- contratto OF-10 e consolidamento OF-11 verdi.
+
 ## Verifica
 
 Ogni famiglia richiede:

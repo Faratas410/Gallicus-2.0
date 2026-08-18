@@ -45,6 +45,12 @@ Il testo secondario non deve competere con il gesto principale.
 - **Rito:** oggetto centrale, conteggio colpi e responso.
 - **Push-your-luck:** quietanza, marchio e incisione chiaramente distinte.
 - **END_RUN:** fascicolo, esito, memoria e route disponibili.
+
+Il fascicolo END_RUN usa un controllo fisso `1120x640`. La safe area interna
+mantiene il titolo sotto la cerniera, tre colonne compatte per patti,
+condanne e ultima voce, e una riga centrata `940x64`. Le linguette restano
+`304x64` anche quando `PROSSIMA SCOMMESSA` non e' disponibile; non si
+espandono e non cambiano scala tra focus, selected e disabled.
 - **Archivio:** consultazione, non griglia di achievement generica.
 - **Assenza:** nessun residuo del normale HUD.
 

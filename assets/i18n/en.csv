@@ -275,3 +275,210 @@ PRIMO COLPO - VERDETTO INCISO,FIRST STRIKE - VERDICT CARVED
 SECONDO COLPO - CONDANNA INCISA,SECOND STRIKE - SENTENCE CARVED
 TERZO COLPO - SIGILLO CHIUSO,THIRD STRIKE - SEAL CLOSED
 VERBALE INCISO - IL REGISTRO PUO AVANZARE,RECORD CARVED - THE REGISTRY MAY ADVANCE
+FASCICOLO CHIUSO - COMPROMISSIONE,CASE FILE CLOSED - COMPROMISE
+FASCICOLO CHIUSO - ASCESA,CASE FILE CLOSED - ASCENT
+FASCICOLO CHIUSO - CONSUMO,CASE FILE CLOSED - ATTRITION
+FASCICOLO CHIUSO - PATTERN,CASE FILE CLOSED - PATTERN
+FASCICOLO CHIUSO,CASE FILE CLOSED
+"Il Registro conserva la traccia del percorso.","The Registry preserves the record of the path."
+"Il Registro chiude il fascicolo e classifica l'esito.","The Registry closes the case file and classifies the outcome."
+"Hai lasciato l'arena con la posta riconosciuta.","You left the arena with the stake acknowledged."
+"Il patto regge: il percorso puo proseguire.","The pact holds: the path may continue."
+"La condanna viene accettata e il percorso resta segnato.","The sentence is accepted and the path remains marked."
+Pressione massima: %d/%d.,Peak pressure: %d/%d.
+"Patti e sblocchi sono stati aggiornati nell'Archivio.","Pacts and unlocks have been updated in the Archive."
+"%d condanne archiviate; il dettaglio resta nell'Archivio.","%d sentences archived; details remain in the Archive."
+"Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.","No additional pacts to list: consult the Archive for unlocks."
+"Il dettaglio degli sblocchi resta consultabile nell'Archivio.","Unlock details remain available in the Archive."
+"Il Registro resta aperto: scegli se proseguire o lasciare l'arena.","The Registry remains open: choose whether to continue or leave the arena."
+rinunciato,declined
+accettato,accepted
+%d condizioni registrate,%d conditions recorded
+I. APERTURA - CONSTATAZIONE,I. OPENING - FINDING
+II. CORPO - LETTURA DEI PATTERN,II. BODY - PATTERN REVIEW
+III. FRATTURA,III. FRACTURE
+Stato finale: %s.,Final state: %s.
+"Il soggetto ha interrotto il ciclo prima della definizione.","The subject interrupted the cycle before classification."
+"Il soggetto ha completato il ciclo operativo.","The subject completed the operational cycle."
+"Il soggetto presenta un profilo registrabile.","The subject presents a recordable profile."
+accettazione ricorrente di condizioni irreversibili,repeated acceptance of irreversible conditions
+rifiuto della chiusura quando disponibile,refusal of closure when available
+accumulo di Scar persistenti su più passaggi,accumulation of persistent Scars across multiple stages
+reiterazione oltre l'utile con esposizione crescente,repetition beyond utility with increasing exposure
+sacrificio di opzioni future registrato,sacrifice of future options recorded
+"Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.","The observed profile exceeds expected operating thresholds; classification remains consistent."
+"Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva.","The observed profile does not fully fit the available classes. Classification is consistent, but not conclusive."
+"Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta.","Precedent detected in historical memory. Applicability cannot be determined; classification incomplete."
+"Stato registrato con parametri attivi. Chiusura finale non applicabile.","State recorded with active parameters. Final closure does not apply."
+classificazione non conclusiva,inconclusive classification
+classificazione incompleta,incomplete classification
+registrato in sospensione,recorded in suspension
+interruzione immediata,immediate interruption
+segnato,marked
+compromesso,compromised
+in debito attivo,active debt
+conforme al pubblico,aligned with the crowd
+consumo completo,complete attrition
+libertà registrata,liberty recorded
+caduta amministrativa,administrative fall
+non definito,undefined
+"Fascicolo aggiornato. Valutazione sospesa.","Case file updated. Assessment suspended."
+"Atto registrato. Campione insufficiente.","Record filed. Insufficient sample."
+"Dati acquisiti. Analisi in corso.","Data acquired. Analysis in progress."
+"Aggiornamento completato. Nessuna conclusione emessa.","Update complete. No conclusion issued."
+"Il soggetto resta in osservazione.","The subject remains under observation."
+"Archiviazione parziale. Raccolta incompleta.","Partial filing. Collection incomplete."
+"Evento conforme. Interpretazione rinviata.","Compliant event. Interpretation deferred."
+"Nuova evidenza inserita. Profilo non definito.","New evidence entered. Profile undefined."
+"Registrazione valida. Sentenza non autorizzata.","Valid record. Sentence not authorized."
+"Traiettoria non stabilizzata. Attendere ulteriori eventi.","Trajectory not stabilized. Await further events."
+"Documento acquisito. Il Registro non conclude.","Document acquired. The Registry does not conclude."
+"Pattern non consolidato. Prosecuzione richiesta.","Pattern not consolidated. Continuation required."
+fascicolo registrato,case file recorded
+"Soglia di deviazione superata. Fascicolo chiuso.","Deviation threshold exceeded. Case file closed."
+"Corruzione confermata. Archiviazione definitiva.","Corruption confirmed. Final filing complete."
+"Indice di compromissione: critico. Sentenza emessa.","Compromise index: critical. Sentence issued."
+"Integrità del soggetto: insufficiente. Caso concluso.","Subject integrity: insufficient. Case concluded."
+"Deriva irreversibile rilevata. Il Registro conclude.","Irreversible drift detected. The Registry concludes."
+"Evidenza prevalente: debito. Fascicolo definito.","Prevailing evidence: debt. Case file defined."
+"Profilo compromesso. Non sono richiesti ulteriori dati.","Profile compromised. No further data required."
+"Scostamento oltre limite. Atto finale registrato.","Deviation beyond limit. Final record filed."
+"Indice di gloria: eccedente. Fascicolo chiuso.","Glory index: exceeding. Case file closed."
+"Rilevanza confermata. Archiviazione definitiva.","Relevance confirmed. Final filing complete."
+"Profilo di eccezione registrato. Sentenza emessa.","Exceptional profile recorded. Sentence issued."
+"Valore del soggetto: determinato. Caso concluso.","Subject value: determined. Case concluded."
+"Evidenza prevalente: ascesa. Il Registro conclude.","Prevailing evidence: ascent. The Registry concludes."
+"Traccia storica sufficiente. Fascicolo definito.","Historical record sufficient. Case file defined."
+"Comportamento coerente con grandezza. Atto finale registrato.","Behavior consistent with greatness. Final record filed."
+"Risultato consolidato. Non sono richiesti ulteriori dati.","Outcome consolidated. No further data required."
+"Danno permanente rilevato. Fascicolo chiuso.","Permanent damage detected. Case file closed."
+"Cicatrici critiche registrate. Archiviazione definitiva.","Critical scars recorded. Final filing complete."
+"Stato del soggetto: degradato. Sentenza emessa.","Subject state: degraded. Sentence issued."
+"Accumulo irreversibile. Caso concluso.","Irreversible accumulation. Case concluded."
+"Integrità fisica compromessa. Il Registro conclude.","Physical integrity compromised. The Registry concludes."
+"Evidenza prevalente: consumo. Fascicolo definito.","Prevailing evidence: attrition. Case file defined."
+"Segni sufficienti. Non sono richiesti ulteriori dati.","Sufficient marks. No further data required."
+"Profilo stabilizzato su consumo. Atto finale registrato.","Profile stabilized on attrition. Final record filed."
+"Campione minimo raggiunto. Fascicolo chiuso.","Minimum sample reached. Case file closed."
+"Pattern confermato. Archiviazione definitiva.","Pattern confirmed. Final filing complete."
+"Coerenza comportamentale stabilita. Sentenza emessa.","Behavioral consistency established. Sentence issued."
+"Traiettoria consolidata. Caso concluso.","Trajectory consolidated. Case concluded."
+"Dati sufficienti per definizione. Il Registro conclude.","Sufficient data for classification. The Registry concludes."
+"Ripetizione significativa rilevata. Fascicolo definito.","Significant repetition detected. Case file defined."
+"Profilo determinato per frequenza. Atto finale registrato.","Profile determined by frequency. Final record filed."
+"Analisi completata. Non sono richiesti ulteriori dati.","Analysis complete. No further data required."
++%d altre,+%d more
+Non mi fermero.,I will not stop.
+Ancora.,Again.
+Finche regge.,As long as it holds.
+Non dovevo provarci.,I should not have tried.
+Firmato.,Signed.
+Sapevo cosa stavo facendo.,I knew what I was doing.
+L'ho accettato.,I accepted it.
+Era il prezzo.,It was the price.
+So come finisce.,I know how it ends.
+Non oggi.,Not today.
+Ho visto abbastanza.,I have seen enough.
+Mi sono fermato.,I stopped.
+E finita cosi.,This is how it ended.
+Non abbastanza.,Not enough.
+Troppo tardi.,Too late.
+Non e colpa loro.,It is not their fault.
+Ricordato.,Remembered.
+Visto dal pubblico.,Seen by the crowd.
+Il tuo nome.,Your name.
+Non sara l'ultima.,It will not be the last.
+Registro: Compromissione.,Registry: Compromise.
+Registro: Ascesa.,Registry: Ascent.
+Registro: Consumo.,Registry: Attrition.
+Registro: Pattern.,Registry: Pattern.
+"Caduta finale. Hanno avuto il rischio.","Final fall. They got the risk they wanted."
+"Caduta nuda. Nessuno ti ricorda.","A bare fall. No one remembers you."
+"Caduta secca. Il pubblico non reagisce.","A blunt fall. The crowd does not react."
+"Continui e li nutri. Vogliono il tuo errore.","You continue and feed them. They want your mistake."
+"Continui per orgoglio. Ti vogliono in ginocchio.","You continue out of pride. They want you on your knees."
+"Continui. La folla vuole il prossimo taglio.","You continue. The crowd wants the next cut."
+"Continui. Nessun applauso, solo attesa.","You continue. No applause, only waiting."
+"Continui. Nessuno ti deve niente.","You continue. No one owes you anything."
+"Continui. Ora ti vogliono sanguinare.","You continue. Now they want to see you bleed."
+"Così finisci. La folla non ti piange.","This is how you end. The crowd does not mourn you."
+"È finita. Il pubblico prende il tuo nome.","It is over. The crowd takes your name."
+"È finita. Solo occhi fermi.","It is over. Only fixed eyes remain."
+"Fine della corsa. Il silenzio resta.","The run is over. The silence remains."
+"Fine violenta. La folla ha ciò che voleva.","A violent end. The crowd got what it wanted."
+"Firma asciutta. Ti contano come errore.","A dry signature. They count you as a mistake."
+"Firma e alza il rischio. Ti chiedono il salto.","Sign and raise the risk. They demand the leap."
+"Firma fatta. Aspettano il tuo crollo.","Signature made. They await your collapse."
+"Hai chiuso la mano. Il silenzio pesa.","You closed your hand. The silence weighs heavily."
+"Hai firmato forte. L'arena vuole vedere.","You signed boldly. The arena wants to see."
+"Hai firmato male. Ora ti vogliono spezzato.","You signed poorly. Now they want you broken."
+"Hai firmato troppo forte. Ora vogliono la tua rovina.","You signed too boldly. Now they want your ruin."
+"Hai firmato. Nessuno ti dà tregua.","You signed. No one gives you respite."
+"Hai firmato. Ora non ti vogliono intero.","You signed. Now they do not want you whole."
+"Hai incassato per paura. Ora paghi doppio.","You cashed out in fear. Now you pay twice."
+"Hai perso come volevano. Non ti lasciano il nome.","You lost as they wanted. They do not leave you your name."
+"Hai perso. L'arena resta accesa.","You lost. The arena stays alight."
+"Hai rifiutato l'uscita. Ti puniscono con occhi feroci.","You refused the exit. They punish you with fierce eyes."
+"Hai rilanciato. Ora vogliono il colpo finale.","You raised again. Now they want the final blow."
+"Hai scelto di continuare. L'arena prende nota.","You chose to continue. The arena takes note."
+"Hai scelto di restare. Non chiamarla coraggio.","You chose to stay. Do not call it courage."
+"Hai scelto l'uscita. La folla ti mette il conto.","You chose the exit. The crowd hands you the bill."
+"Hai segnato il destino. Ti vogliono a terra.","You marked your fate. They want you on the ground."
+"Hai spento il delirio. Ora ti chiedono sangue.","You ended the frenzy. Now they demand blood."
+"Hai spento la corsa. La folla voleva il salto.","You stopped the run. The crowd wanted the leap."
+"Il brusio non concede riparo.","The murmur offers no shelter."
+"Il delirio ti brucia addosso.","The frenzy burns against you."
+"Il patto accende la folla. Spingi ora.","The pact ignites the crowd. Push now."
+"Il patto è inciso. Ti misurano.","The pact is carved. They measure you."
+"Il patto ti lega. La folla annusa il sangue.","The pact binds you. The crowd smells blood."
+"Il pubblico calcola, non parteggia.","The crowd calculates; it does not take sides."
+"Il Registro sente una folla senza indulgenza.","The Registry hears a crowd without mercy."
+"Il silenzio pesa piu dell'acciaio.","The silence weighs more than steel."
+"Il tuo nome urla, ma il prezzo sale.","Your name roars, but the price rises."
+"Incassi e scappi. Non ti lasciano respirare.","You cash out and flee. They do not let you breathe."
+"Incassi e vai. Il giudizio resta.","You cash out and leave. The judgment remains."
+"Incassi mentre vogliono di più. Ti giudicano.","You cash out while they want more. They judge you."
+"Incasso facile. Il silenzio ti pesa addosso.","An easy cashout. The silence weighs on you."
+"Incasso preso. Il pubblico non si muove.","Cashout taken. The crowd does not move."
+"L'arena ti pesa addosso.","The arena weighs on you."
+"La firma pesa. Il pubblico resta in giudizio.","The signature weighs heavily. The crowd keeps judging."
+"La folla chiama sangue, non prudenza.","The crowd calls for blood, not caution."
+"La folla in furia pretende una caduta registrata.","The furious crowd demands a recorded fall."
+"La folla ti vuole oltre. La firma è l'inizio.","The crowd wants you beyond the limit. The signature is only the beginning."
+"La gradinata rifiuta la tua uscita.","The stands reject your exit."
+"Nessun calore, solo misura.","No warmth, only measure."
+"Nessun grido, solo occhi fissi.","No cries, only fixed eyes."
+"Non applaudono, registrano.","They do not applaud; they record."
+"Non cercano vittoria: cercano il prezzo.","They do not seek victory: they seek the price."
+"Non ti credono degno di chiudere il patto.","They do not deem you worthy of closing the pact."
+"Ogni colpo chiede di piu.","Every blow demands more."
+"Ogni mossa apre un conto.","Every move opens an account."
+"Ogni passo indietro diventa accusa.","Every step back becomes an accusation."
+"Patto chiuso. L'arena ti osserva.","Pact closed. The arena watches you."
+"Per loro sei garanzia, non campione.","To them you are collateral, not a champion."
+"Perduto. Il loro giudizio resta addosso.","Lost. Their judgment clings to you."
+"Qui la cautela viene letta come debito.","Here caution is read as debt."
+"Resti dentro. La folla pretende il tuo errore.","You stay in. The crowd demands your mistake."
+"Resti dentro. Ti chiedono l'eccesso.","You stay in. They demand excess."
+"Resti. Nessuno ti salva.","You stay. No one saves you."
+"Rimani. Il pubblico ti pesa addosso.","You remain. The crowd weighs on you."
+"Se esiti, la pressione ti stringe.","If you hesitate, the pressure tightens."
+"Se rallenti, ti strappano la gloria.","If you slow down, they tear away your glory."
+"Sei caduto. Hanno avuto il sangue.","You fell. They got their blood."
+"Sei caduto. Ti volevano in ginocchio.","You fell. They wanted you on your knees."
+"Sei crollato. Hanno avuto il sacrificio.","You collapsed. They got their sacrifice."
+"Sei crollato. Nessun suono.","You collapsed. Not a sound."
+"Ti alzano in alto per pesare la caduta.","They lift you high to weigh the fall."
+"Ti concedono spazio, non rispetto.","They grant you space, not respect."
+"Ti fermi mentre urlano. Ora è delusione.","You stop while they roar. Now comes disappointment."
+"Ti fermi qui. Nessuno ti segue.","You stop here. No one follows you."
+"Ti osservano e aspettano l'errore.","They watch you and wait for the mistake."
+"Ti seguono senza pieta ne favore.","They follow you without pity or favor."
+"Ti sei fermato in alto. Ti lasciano cadere.","You stopped at the top. They let you fall."
+"Ti sei fermato. Troppo presto per essere pulito.","You stopped. Too early to be clean."
+"Ti sei tirato indietro. La folla non dimentica.","You pulled back. The crowd does not forget."
+"Ti spingi avanti. L'arena grida il rischio.","You push onward. The arena cries out for risk."
+"Ti spingono al gesto che lascia segno.","They drive you toward the gesture that leaves a mark."
+"Ti vogliono oltre il limite, senza ritorno.","They want you beyond the limit, with no return."
+"Vogliono che tu rischi tutto, ora.","They want you to risk everything, now."
+"Vogliono vedere il conto saldato in arena.","They want to see the debt settled in the arena."

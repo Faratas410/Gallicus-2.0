@@ -78,6 +78,8 @@ python scripts/ci/test_promise_signature_object_contract.py
 python scripts/ci/test_pact_tablet_object_contract.py
 python scripts/ci/test_arena_gesture_object_contract.py
 python scripts/ci/test_judgment_seal_object_contract.py
+python scripts/ci/test_final_dossier_object_contract.py
+python scripts/ci/test_object_first_stage_contract.py
 python scripts/ci/test_ci_checkpoint_contract.py
 python scripts/ci/test_no_mojibake.py
 ```
@@ -178,6 +180,12 @@ Per OF-09 checkpoint, la matrice locale mirata usa:
 .\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=judgment_seal
 ```
 
+Per OF-10/OF-11, la matrice locale mirata del fascicolo usa:
+
+```powershell
+.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=final_dossier
+```
+
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
 Se il runtime Windows non raggiunge il bootstrap, il job Linux
 `visual_qa_object_first` produce l'evidenza canonica per soglia, tavola del
@@ -202,6 +210,11 @@ risoluzioni, normal, focus, strike_1, strike_2 e resolved. Pressed e disabled
 restano coperti dal contratto statico. A ogni ispezione si controllano rapporto
 5:2, leggibilita' della CTA, progressione dei tre colpi e assenza di fallback
 italiano in EN/ES.
+Dal pacchetto OF-10 aggiunge 36 catture `08_dossier_*`: IT/EN/ES, entrambe
+le risoluzioni, open, updated, closed, focus, selected e disabled. Il
+checkpoint OF-11 richiede 271 catture complessive, inclusa
+`08_end_run.png`; si controllano rapporto 7:4, linguette fisse 304x64,
+wrapping, contrasto e assenza di fallback italiano nel copy dinamico.
 
 Punti minimi:
 

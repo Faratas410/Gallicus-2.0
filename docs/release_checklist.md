@@ -22,6 +22,8 @@ Non esistono firme intermedie di prodotto.
 - [ ] Soglia, Registro, firma, patto, gesto e rito hanno oggetti leggibili.
 - [ ] Cashout, condanna e double sono quietanza, marchio e incisione.
 - [ ] Il fascicolo rappresenta l'esito.
+- [ ] Il fascicolo mantiene linguette, copy IT/EN/ES e stati accessibili senza
+  overflow a 1280x720 e 1920x1080.
 - [ ] Utility e accessibilita' restano convenzionali.
 
 ## Sistemi

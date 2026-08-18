@@ -121,6 +121,9 @@ def _assert_workflow() -> None:
         "JUDGMENT_COUNT",
         "06_judgment_*.png",
         'test "$JUDGMENT_COUNT" -eq 30',
+        "END_RUN_COUNT",
+        "08_end_run.png",
+        'test "$END_RUN_COUNT" -eq 1',
     ):
         if token not in visual_block:
             raise AssertionError(f"checkpoint visual job missing Object-First token: {token}")

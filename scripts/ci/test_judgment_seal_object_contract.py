@@ -412,6 +412,14 @@ def _assert_visual_qa() -> None:
         "_main.queue_free()",
         "ResourceLoader.CACHE_MODE_IGNORE",
         "_main_scene = null",
+        'const CANONICAL_VISUAL_QA_SEED: String = "1782373819"',
+        "_snapshot_and_neutralize_capture_environment()",
+        "_enable_deterministic_run_seed()",
+        "_enable_favorable_capture_outcome()",
+        "_disable_capture_overrides()",
+        'OS.set_environment("GALLICUS_SMOKE_SCENARIO", "FULL_RUN")',
+        "_restore_capture_environment()",
+        'await _capture("08_end_run")',
     ):
         if token not in visual_qa:
             raise AssertionError(f"visual QA missing token: {token}")
@@ -428,6 +436,17 @@ def _assert_visual_qa() -> None:
         raise AssertionError("visual QA cumulative route must not press Btn_RESOLUTION_NEXT after OF-09")
     if run_body.index(strike_token) > run_body.index(push_luck_token):
         raise AssertionError("visual QA cumulative route must strike the seal before waiting for Push Your Luck")
+    seed_token = "_enable_deterministic_run_seed()"
+    favorable_token = "_enable_favorable_capture_outcome()"
+    if run_body.index(seed_token) > run_body.index('NewGameButton", 4.0)'):
+        raise AssertionError("visual QA must fix the run seed before requesting a new run")
+    if run_body.index(favorable_token) < run_body.index('Phase_RESOLUTION", true, 4.0)'):
+        raise AssertionError("visual QA must not enable smoke outcome overrides before the resolve ritual opens")
+    if run_body.index(favorable_token) > run_body.index(push_luck_token):
+        raise AssertionError("visual QA must stabilize the outcome before waiting for Push Your Luck")
+    cleanup_match = re.search(r"(?ms)^func _cleanup_capture_scene\(\) -> void:.*?(?=^func |\Z)", visual_qa)
+    if cleanup_match is None or "_restore_capture_environment()" not in cleanup_match.group(0):
+        raise AssertionError("visual QA cleanup must always restore the caller environment")
 
 
 def main() -> None:

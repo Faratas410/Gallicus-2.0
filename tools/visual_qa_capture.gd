@@ -2,6 +2,12 @@ extends Node
 
 const MAIN_SCENE_PATH: String = "res://scenes/Main.tscn"
 const OUTPUT_DIR: String = "res://artifacts/visual_qa"
+const CANONICAL_VISUAL_QA_SEED: String = "1782373819"
+const CAPTURE_ENVIRONMENT_KEYS: Array[String] = [
+	"GALLICUS_SMOKE",
+	"GALLICUS_SMOKE_SCENARIO",
+	"GALLICUS_SMOKE_SEED",
+]
 const VIEWPORT_SIZE: Vector2i = Vector2i(1280, 720)
 const THRESHOLD_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
@@ -73,8 +79,11 @@ var _main: Node = null
 var _main_scene: PackedScene = null
 var _failures: PackedStringArray = PackedStringArray()
 var _capture_section: String = ""
+var _capture_environment_snapshot: Dictionary = {}
+var _capture_environment_saved: bool = false
 
 func _ready() -> void:
+	_snapshot_and_neutralize_capture_environment()
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--section="):
 			_capture_section = argument.trim_prefix("--section=").strip_edges().to_lower()
@@ -104,8 +113,10 @@ func _run() -> void:
 		await _capture_arena_threshold_matrix()
 		await _capture("01_menu")
 
+	_enable_deterministic_run_seed()
 	await _press_when_ready("Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/BettingCircle", true, 4.0)
+	_disable_capture_overrides()
 	await _settle(12)
 	if not targeted_section:
 		await _capture_registry_table_matrix()
@@ -142,6 +153,7 @@ func _run() -> void:
 
 	await _press_when_ready("Main/UI/UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES/Btn_MID_CHOICE_SELECT_0", 4.0)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_RESOLUTION", true, 4.0)
+	_enable_favorable_capture_outcome()
 	await _settle(60)
 	await _capture_judgment_seal_matrix()
 	if judgment_seal_only:
@@ -153,6 +165,7 @@ func _run() -> void:
 		await _press_when_ready("Main/UI/UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE", 4.0)
 		await _settle(18)
 	await _wait_visible("Main/UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK", true, 4.0)
+	_disable_capture_overrides()
 	await _settle(90)
 	await _capture("07_push_your_luck")
 	await _capture_receipt_matrix()
@@ -183,7 +196,47 @@ func _cleanup_capture_scene() -> void:
 		_main = null
 		await _settle(16)
 	_main_scene = null
+	_restore_capture_environment()
 	await _settle(4)
+
+func _snapshot_and_neutralize_capture_environment() -> void:
+	if _capture_environment_saved:
+		return
+	for key: String in CAPTURE_ENVIRONMENT_KEYS:
+		_capture_environment_snapshot[key] = {
+			"present": OS.has_environment(key),
+			"value": OS.get_environment(key),
+		}
+		OS.unset_environment(key)
+	_capture_environment_saved = true
+
+func _enable_deterministic_run_seed() -> void:
+	# Enable smoke seed lookup only while RunManager creates this run.
+	OS.set_environment("GALLICUS_SMOKE", "1")
+	OS.set_environment("GALLICUS_SMOKE_SEED", CANONICAL_VISUAL_QA_SEED)
+
+func _enable_favorable_capture_outcome() -> void:
+	# The resolve ritual is already open, so its smoke shortcut cannot activate.
+	# The existing favorable outcome override only stabilizes the later result.
+	OS.set_environment("GALLICUS_SMOKE", "1")
+	OS.set_environment("GALLICUS_SMOKE_SCENARIO", "FULL_RUN")
+	OS.set_environment("GALLICUS_SMOKE_SEED", CANONICAL_VISUAL_QA_SEED)
+
+func _disable_capture_overrides() -> void:
+	for key: String in CAPTURE_ENVIRONMENT_KEYS:
+		OS.unset_environment(key)
+
+func _restore_capture_environment() -> void:
+	if not _capture_environment_saved:
+		return
+	for key: String in CAPTURE_ENVIRONMENT_KEYS:
+		var snapshot: Dictionary = _capture_environment_snapshot.get(key, {}) as Dictionary
+		if bool(snapshot.get("present", false)):
+			OS.set_environment(key, str(snapshot.get("value", "")))
+		else:
+			OS.unset_environment(key)
+	_capture_environment_snapshot.clear()
+	_capture_environment_saved = false
 
 func _capture_pact_tablet_matrix() -> void:
 	var button: Button = get_tree().root.get_node_or_null(PACT_TABLET_BUTTON_PATH) as Button

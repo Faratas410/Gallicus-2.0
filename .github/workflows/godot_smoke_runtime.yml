@@ -179,6 +179,7 @@ jobs:
           RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
           MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
           INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
+          END_RUN_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_end_run.png' | wc -l)
           test "$THRESHOLD_COUNT" -eq 24
           test "$REGISTRY_TABLE_COUNT" -eq 24
           test "$PROMISE_COUNT" -eq 30
@@ -188,6 +189,7 @@ jobs:
           test "$RECEIPT_COUNT" -eq 18
           test "$MARK_COUNT" -eq 18
           test "$INCISION_COUNT" -eq 24
+          test "$END_RUN_COUNT" -eq 1
 
       - name: Upload object-first visual evidence
         if: always()
@@ -210,4 +212,5 @@ jobs:
             artifacts/visual_qa/07_mark_*.png
             artifacts/visual_qa/07_incision_*.png
             artifacts/visual_qa/07_push_your_luck.png
+            artifacts/visual_qa/08_end_run.png
           if-no-files-found: error

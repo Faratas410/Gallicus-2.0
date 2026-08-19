@@ -9,14 +9,15 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 ## Stato corrente
 
 - Stage completato: **Foundation Reset**.
-- Stage attivo: **Object-First Interaction Pass**.
+- Stage completato: **Object-First Interaction Pass**.
+- Stage attivo: **Core Playable Candidate**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **OF-11 - checkpoint Object-First**.
+- Pacchetto attivo: **CP-01 - stabilita' e leggibilita' del loop esistente**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
-- Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux verde;
-  OF-10 e OF-11 pubblicati su `main` al commit `3132acc` e in attesa del
-  signoff lean Linux.
+- Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux
+  `32152390171`; OF-10, OF-11 e lo stage Object-First chiusi dalla run lean
+  `32238429965` sul commit `8449766`.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
   bootstrap; le matrici Linux canoniche sono verdi.
 
@@ -338,7 +339,7 @@ Ordine dei pacchetti:
   OF-09 sono corretti localmente; la matrice mirata IT/EN/ES e' centrata e
   leggibile e verra' riassorbita dal checkpoint cumulativo OF-11.
 
-### Pacchetto implementato: OF-10
+### Pacchetto chiuso: OF-10
 
 - Comportamento: `END_RUN` e' un fascicolo fisico `1120x640` con stati open,
   updated e closed; le route sono linguette fisse `304x64`.
@@ -353,8 +354,13 @@ Ordine dei pacchetti:
 - Prove locali: contratto OF-10 verde, import Godot 4.6.2 verde e 36 catture
   mirate `08_dossier_*` verdi; proporzioni, safe area, contrasto, wrapping e
   CTA verificati a 1280x720 e 1920x1080.
+- Gate chiuso: run lean Linux `32238429965` sul commit `8449766`, con
+  `static_contracts`, `runtime_routes` e `visual_stage` verdi. L'artifact
+  `visual_qa_evidence` contiene esattamente 36 catture dossier IT/EN/ES alle
+  due risoluzioni; digest
+  `sha256:839f8d3e20e302037a78d432f1a007ecf634d69233869db2333cbc8786cc5adb`.
 
-### Checkpoint implementato: OF-11
+### Checkpoint chiuso: OF-11
 
 - Il marker full-suite e' `OF-11`; il playbook include tutti i contratti
   Object-First e il consolidamento dello stage.
@@ -362,11 +368,15 @@ Ordine dei pacchetti:
   digest `sha256:f44f7922cd1389d6c71ec48e382413423c6bde31f3d04107c7230260de6b2156`,
   ma quattro runner sono stati cancellati durante `apt-get update` prima di
   raggiungere Godot; non costituisce quindi signoff complessivo.
-- Il nuovo gate richiede tre job: playbook statico unico, quattro route nello
+- Il gate lean usa tre job: playbook statico unico, quattro route nello
   stesso runner e 36 catture dossier stage-only. Il profilo `full` conserva
   la matrice storica da 271 immagini per uso manuale.
-- Stato: implementato su `main`, in attesa della prima run lean verde e del
-  relativo artifact prima della chiusura formale dello stage.
+- Signoff: run Linux `32238429965` sul commit `8449766`; i tre job sono verdi,
+  le quattro route riportano `status: ok` e l'artifact visuale e' stato
+  contato e ispezionato in IT/EN/ES a 1280x720 e 1920x1080. Il digest dei log
+  route e' `sha256:0da51ab069e3cee7a5be9e3a4ac499dcd167b0566c1c9dc3003bc010dbab7d0b`.
+- OF-10, OF-11 e lo stage Object-First Interaction Pass sono formalmente
+  chiusi; il pacchetto attivo diventa `CP-01`.
 
 ## 1. Foundation Reset
 
@@ -394,6 +404,8 @@ Gate:
 ## 2. Object-First Interaction Pass
 
 Dipendenza: Foundation Reset.
+
+Status: **COMPLETE**.
 
 Obiettivo: rendere ogni azione gameplay un gesto su un oggetto leggibile.
 
@@ -425,6 +437,8 @@ Gate:
 ## 3. Core Playable Candidate
 
 Dipendenza: checkpoint Object-First `OF-11` chiuso.
+
+Status: **ACTIVE - CP-01**.
 
 Obiettivo: produrre una build interna completa, leggibile ed esportabile del
 loop attuale prima di riaprire nuovi sistemi della campagna. Non e' una release
@@ -634,12 +648,13 @@ Gate:
 `OF-09 - colpo sul sigillo` sono chiusi dalla run Linux `32152390171` sul
 commit `3f1fd3b`, con otto job verdi e artifact digest
 `sha256:208f8b14eeb855df405455e0e8e7ab925db1b0b45e02aa8b950a9489a872ca03`.
-OF-10 e OF-11 sono pubblicati su `main` al commit `3132acc`; il marker resta
-`OF-11`. La run `32158939715` conserva l'artifact cumulativo Object-First da
-271 catture con digest `sha256:f44f7922...b2156`, ma non chiude il gate perche'
-alcuni runner sono stati cancellati nel bootstrap Linux. Il prossimo passo e'
-pubblicare la CI lean, richiedere verdi `static_contracts`, `runtime_routes` e
-`visual_stage`, ispezionare le 36 catture dossier e registrare run, commit e
-digest. Solo allora OF-10/OF-11 e Object-First chiudono e si attiva `CP-01`.
-Media Vertical Slice e tutti i nuovi sistemi campagna restano congelati fino
-alla decisione go/no-go di CP-03.
+OF-10, OF-11 e lo stage Object-First sono chiusi dalla run lean Linux
+`32238429965` sul commit `8449766`: `static_contracts`, `runtime_routes` e
+`visual_stage` sono verdi; le quattro route risultano valide e le 36 catture
+dossier sono state ispezionate. Il digest dell'artifact lean e'
+`sha256:839f8d3e20e302037a78d432f1a007ecf634d69233869db2333cbc8786cc5adb`.
+La run `32158939715` resta evidenza cumulativa storica da 271 catture, digest
+`sha256:f44f7922cd1389d6c71ec48e382413423c6bde31f3d04107c7230260de6b2156`.
+Il prossimo passo operativo e' `CP-01`: stabilizzare e verificare la
+leggibilita' del loop esistente. Media Vertical Slice e tutti i nuovi sistemi
+campagna restano congelati fino alla decisione go/no-go di CP-03.

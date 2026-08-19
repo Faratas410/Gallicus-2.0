@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guard the three-feature CI checkpoint cadence and risk exceptions."""
+"""Guard the lean three-job checkpoint cadence and manual full profile."""
 
 from __future__ import annotations
 
@@ -10,6 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/godot_smoke_runtime.yml"
 MARKER = ROOT / ".github/ci/full_suite_checkpoint.txt"
+PLAYBOOK = ROOT / "scripts/ci/run_testing_playbook.py"
+BOOTSTRAP = ROOT / "scripts/ci/bootstrap_linux_godot.sh"
 TESTING_DOC = ROOT / "docs/testing.md"
 ROADMAP = ROOT / "docs/development_plan.md"
 
@@ -42,6 +44,8 @@ STATIC_TESTS = (
     "test_pact_tablet_object_contract.py",
     "test_arena_gesture_object_contract.py",
     "test_judgment_seal_object_contract.py",
+    "test_final_dossier_object_contract.py",
+    "test_object_first_stage_contract.py",
     "test_ci_checkpoint_contract.py",
     "test_release_content_contract.py",
     "test_no_mojibake.py",
@@ -76,77 +80,91 @@ def _assert_marker() -> None:
 
 def _assert_workflow() -> None:
     workflow = _read(WORKFLOW)
-    if "workflow_dispatch:" not in workflow:
-        raise AssertionError("full CI must remain manually dispatchable")
+    playbook = _read(PLAYBOOK)
+    bootstrap = _read(BOOTSTRAP)
+
+    if "workflow_dispatch:" not in workflow or "profile:" not in workflow:
+        raise AssertionError("CI must expose a manual lean/full profile")
+    for token in ("default: lean", "- lean", "- full"):
+        if token not in workflow:
+            raise AssertionError(f"workflow profile is incomplete: {token}")
     if "pull_request:" in workflow:
         raise AssertionError("direct-main workflow must not run automatically for pull requests")
     if "branches: [main]" not in workflow or "paths:" not in workflow:
-        raise AssertionError("automatic full CI must be a path-filtered main push trigger")
+        raise AssertionError("automatic CI must remain a path-filtered main push trigger")
     for risk_path in RISK_PATHS:
         if f'"{risk_path}"' not in workflow:
             raise AssertionError(f"workflow missing checkpoint/risk trigger path: {risk_path}")
 
+    job_names = re.findall(r"(?m)^  ([a-zA-Z0-9_]+):\n", workflow.split("jobs:\n", 1)[1])
+    if job_names != ["static_contracts", "runtime_routes", "visual_stage"]:
+        raise AssertionError(f"lean checkpoint must expose exactly three jobs, got {job_names}")
+
     static_block = _job_block(workflow, "static_contracts")
-    smoke_block = _job_block(workflow, "smoke_runtime")
-    visual_block = _job_block(workflow, "visual_qa_object_first")
+    runtime_block = _job_block(workflow, "runtime_routes")
+    visual_block = _job_block(workflow, "visual_stage")
+    if static_block.count("python3 scripts/ci/run_testing_playbook.py") != 1:
+        raise AssertionError("static_contracts must call the canonical playbook exactly once")
     for test_name in STATIC_TESTS:
-        if static_block.count(test_name) != 1:
-            raise AssertionError(f"static contract must run exactly once in static_contracts: {test_name}")
-        if test_name in smoke_block or test_name in visual_block:
-            raise AssertionError(f"static contract must not be repeated by downstream jobs: {test_name}")
-    if "needs: static_contracts" not in smoke_block:
-        raise AssertionError("six-scenario smoke matrix must depend on static_contracts")
-    if "needs: static_contracts" not in visual_block:
-        raise AssertionError("visual QA must depend on static_contracts")
-    for scenario in (
-        "BET_PRESENT",
-        "FULL_RUN",
-        "ROUTE_CASHOUT",
-        "ROUTE_DOUBLE",
-        "ROUTE_CONDANNA",
-        "ROUTE_REGISTER_FINAL",
-    ):
-        if scenario not in smoke_block:
-            raise AssertionError(f"smoke matrix missing canonical scenario: {scenario}")
+        if playbook.count(test_name) != 1:
+            raise AssertionError(f"canonical playbook must contain static contract exactly once: {test_name}")
+        if test_name in static_block:
+            raise AssertionError(f"workflow must not duplicate playbook contract: {test_name}")
+
+    for downstream in (runtime_block, visual_block):
+        if "needs: static_contracts" not in downstream:
+            raise AssertionError("runtime and visual jobs must depend on static_contracts")
+        if downstream.count("bash scripts/ci/bootstrap_linux_godot.sh") != 1:
+            raise AssertionError("each Godot job must use the shared bounded bootstrap")
+    if workflow.count("Import project assets once") != 2:
+        raise AssertionError("lean checkpoint must perform exactly two Godot imports")
+    if "apt-get update" in workflow:
+        raise AssertionError("workflow must not run apt-get update unconditionally")
+
+    for scenario in ("ROUTE_CASHOUT", "ROUTE_DOUBLE", "ROUTE_CONDANNA", "ROUTE_REGISTER_FINAL"):
+        if scenario not in runtime_block:
+            raise AssertionError(f"lean route bundle missing scenario: {scenario}")
+    for full_only in ("BET_PRESENT", "FULL_RUN"):
+        if full_only not in runtime_block:
+            raise AssertionError(f"manual full profile missing historical scenario: {full_only}")
+    for token in ("overall=0", "for scenario in", "runtime_routes_logs"):
+        if token not in runtime_block:
+            raise AssertionError(f"route bundle must retain all results and logs: {token}")
+
     for token in (
+        "--section=final_dossier",
+        "timeout 240s",
         "timeout 480s",
-        "PROMISE_COUNT",
-        "03_promise_*.png",
-        'test "$PROMISE_COUNT" -eq 30',
-        "PACT_COUNT",
-        "04_pact_??_*.png",
-        'test "$PACT_COUNT" -eq 24',
-        "GESTURE_COUNT",
-        "05_gesture_*.png",
-        'test "$GESTURE_COUNT" -eq 36',
-        "JUDGMENT_COUNT",
-        "06_judgment_*.png",
-        'test "$JUDGMENT_COUNT" -eq 30',
-        "END_RUN_COUNT",
-        "08_end_run.png",
-        'test "$END_RUN_COUNT" -eq 1',
+        'test "$DOSSIER_COUNT" -eq 36',
+        'test "$TOTAL_COUNT" -eq 36',
+        "visual_qa_evidence",
     ):
         if token not in visual_block:
-            raise AssertionError(f"checkpoint visual job missing Object-First token: {token}")
+            raise AssertionError(f"stage/full visual profile missing token: {token}")
+
+    apt_guard = 'if [ "${#missing_packages[@]}" -gt 0 ]; then'
+    if apt_guard not in bootstrap or bootstrap.index(apt_guard) > bootstrap.index("apt-get"):
+        raise AssertionError("apt fallback must be guarded by missing tool detection")
+    for token in ("archive.ubuntu.com", "Acquire::Retries=3", "Acquire::http::Timeout=20", "timeout 180s"):
+        if token not in bootstrap:
+            raise AssertionError(f"Linux bootstrap is not bounded: {token}")
 
 
 def _assert_documentation() -> None:
-    testing = _read(TESTING_DOC)
-    roadmap = _read(ROADMAP)
-    combined = f"{testing}\n{roadmap}"
+    combined = f"{_read(TESTING_DOC)}\n{_read(ROADMAP)}"
     for checkpoint in CHECKPOINTS:
         if checkpoint not in combined:
             raise AssertionError(f"testing/roadmap must document checkpoint {checkpoint}")
-    for phrase in ("checkpoint", "signoff cumulativo", "workflow_dispatch"):
+    for phrase in ("checkpoint", "workflow_dispatch", "Core Playable Candidate", "runtime_routes", "visual_stage"):
         if phrase not in combined:
-            raise AssertionError(f"testing/roadmap missing CI cadence phrase: {phrase}")
+            raise AssertionError(f"testing/roadmap missing lean CI phrase: {phrase}")
 
 
 def main() -> int:
     _assert_marker()
     _assert_workflow()
     _assert_documentation()
-    print("[OK][CI_CHECKPOINT_CONTRACT] checkpoint cadence and risk exceptions passed")
+    print("[OK][CI_CHECKPOINT_CONTRACT] lean three-job cadence and full profile passed")
     return 0
 
 

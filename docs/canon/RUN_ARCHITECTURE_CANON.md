@@ -99,8 +99,8 @@ All changes to systems described here must update this document in the same PR.
 - Consumes environment inputs and phase snapshots only.
 - Must not call `get_tree()` and must not emit `GameEvents`.
 - `RunManager` remains the sole smoke flow authority for timer node ownership, quit gate, and event emission.
-- Runtime smoke validation entrypoint: `scripts/ci/run_headless_smoke.py` (scenarios: `BET_PRESENT`, `FULL_RUN`).
-- CI runtime smoke workflow: `.github/workflows/godot_smoke_runtime.yml` runs both scenarios headlessly and fails on missing milestones or disallowed warnings/errors.
+- Runtime smoke validation entrypoint: `scripts/ci/run_headless_smoke.py` (scenarios: `BET_PRESENT`, `FULL_RUN`, `ROUTE_CASHOUT`, `ROUTE_DOUBLE`, `ROUTE_CONDANNA`, `ROUTE_REGISTER_FINAL`).
+- CI runtime smoke workflow: `.github/workflows/godot_smoke_runtime.yml` bundles the four route scenarios in one lean runner; the manual `full` profile also runs the two historical scenarios. Every profile fails on missing milestones or disallowed warnings/errors.
 
 ### Watchdog
 

@@ -7,13 +7,14 @@ for `MV-04`. It does not activate the media slice in runtime.
 
 Runtime work remains locked until:
 
-1. the open `OF-09` Linux checkpoint is signed off;
-2. `OF-10` is completed;
-3. the `OF-11` checkpoint is closed.
+1. the `OF-11` checkpoint is closed;
+2. `CP-01` and `CP-02` produce a stable internal Windows build;
+3. the `CP-03` playtest records an explicit go decision.
 
-This preserves the single-active-runtime-package rule. Nothing in this folder
-is imported by a Godot scene or treated as release-ready. The folder-level
-`.gdignore` also prevents editor import sidecars for these review-only files.
+This preserves the single-active-runtime-package rule and the Core Playable
+Candidate freeze. Nothing in this folder is imported by a Godot scene or
+treated as release-ready. The folder-level `.gdignore` also prevents editor
+import sidecars for these review-only files.
 
 ## Creative decision
 

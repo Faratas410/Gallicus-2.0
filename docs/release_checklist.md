@@ -66,7 +66,7 @@ Non esistono firme intermedie di prodotto.
 
 - [ ] Static suite completa verde.
 - [ ] Godot import senza errori.
-- [ ] Sei smoke runtime verdi su CI Linux.
+- [ ] Profilo CI `full` con i sei scenari storici verde su Linux.
 - [ ] Nessun fatal error, missing resource o `SANITY FAIL`.
 - [ ] Mojibake scan pulito.
 - [ ] Save migration da schema supportato.

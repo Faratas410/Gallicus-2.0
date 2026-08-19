@@ -25,19 +25,21 @@ Un livello non sostituisce quello successivo.
 
 ## Cadenza automatica
 
-La suite Linux completa e' cumulativa ma non parte per ogni feature.
+La suite Linux automatica e' lean e non parte per ogni feature.
 
 - **Per feature:** eseguire contratto specifico, import Godot quando cambiano
   runtime/scene/asset, QA visuale o audio rappresentativa, docs refs,
   mojibake e `git diff --check`.
 - **Checkpoint:** OF-06, OF-09 e OF-11 aggiornano
-  `.github/ci/full_suite_checkpoint.txt` e avviano un job statico, i sei smoke
-  Linux e il visual QA cumulativo.
+  `.github/ci/full_suite_checkpoint.txt` e avviano `static_contracts`,
+  `runtime_routes` e `visual_stage`.
 - **Eccezione ad alto rischio:** modifiche a `RunManager`, `GameEvents`, save,
-  contratti/run systems, `project.godot` o workflow avviano subito la suite
-  completa senza spostare il checkpoint programmato.
-- **Manuale:** `workflow_dispatch` resta sempre disponibile per diagnosi e
-  signoff straordinari.
+  contratti/run systems, `project.godot` o workflow avviano subito il profilo
+  lean senza spostare il checkpoint programmato; prima del signoff richiedono
+  anche il profilo `full` manuale.
+- **Manuale:** `workflow_dispatch` espone `lean` e `full`. Il secondo conserva
+  i sei scenari storici e il visual QA cumulativo per CP-03, Release Lock e
+  diagnosi straordinarie.
 
 Una feature non checkpoint puo' essere marcata `implementata, in attesa di
 signoff cumulativo` dopo i controlli locali mirati. La chiusura formale arriva
@@ -143,10 +145,17 @@ python scripts/ci/run_headless_smoke.py --scenario ROUTE_CASHOUT --godot-bin ".\
 - `END_RUN_FINAL ending_key=`.
 
 Workflow canonico: `.github/workflows/godot_smoke_runtime.yml`.
-Nei checkpoint il workflow espone otto job: `static_contracts` una sola volta,
-sei istanze della matrice `smoke_runtime` e `visual_qa_object_first`. Smoke e
-visual QA dipendono dal job statico, quindi i contratti non vengono ripetuti
-in ogni scenario.
+Nei checkpoint il workflow espone esattamente tre job:
+
+- `static_contracts` chiama una sola volta il playbook, fonte unica dei test;
+- `runtime_routes` importa Godot una volta e percorre in sequenza cashout,
+  double, condanna e register-final, conservando tutti i log anche se una route
+  fallisce;
+- `visual_stage` importa Godot una volta e cattura soltanto lo stage corrente.
+
+Il profilo manuale `full` aggiunge `BET_PRESENT`, `FULL_RUN` e il visual QA
+storico. Il bootstrap controlla prima i tool presenti e usa `apt` soltanto come
+fallback con mirror ufficiale, retry e timeout limitati.
 
 Il runner inietta un seed smoke canonico e lo registra come
 `SMOKE:RUNNER_SEED` e `SMOKE:RUN_SEED`. La matrice di signoff non usa
@@ -187,13 +196,13 @@ Per OF-10/OF-11, la matrice locale mirata del fascicolo usa:
 ```
 
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
-Se il runtime Windows non raggiunge il bootstrap, il job Linux
-`visual_qa_object_first` produce l'evidenza canonica per soglia, tavola del
-Registro, promessa/firma, tavoletta del patto, gesto davanti alla gradinata,
-colpo sul sigillo, quietanza, marchio e seconda incisione object-first.
+Se il runtime Windows non raggiunge il bootstrap, il job Linux `visual_stage`
+produce l'evidenza canonica mirata. Per OF-11 sono richieste le 36 catture
+`08_dossier_*` del fascicolo.
 Le catture desktop intere non sostituiscono la viewport Godot.
 Il job esegue lo stesso capture tool sotto Xvfb e pubblica l'artifact
-`object_first_visual_qa`; al checkpoint OF-06 la matrice comprende 24 catture
+`visual_qa_evidence`. Il profilo manuale `full` conserva la matrice storica:
+al checkpoint OF-06 comprendeva 24 catture
 soglia, 24 tavola del Registro, 30 promessa/firma, 18 quietanza, 18 marchio e
 24 seconda incisione. Non sono ammesse catture desktop come sostituzione.
 Dal pacchetto OF-07 la matrice cumulativa aggiunge 24 catture localizzate
@@ -212,7 +221,7 @@ restano coperti dal contratto statico. A ogni ispezione si controllano rapporto
 italiano in EN/ES.
 Dal pacchetto OF-10 aggiunge 36 catture `08_dossier_*`: IT/EN/ES, entrambe
 le risoluzioni, open, updated, closed, focus, selected e disabled. Il
-checkpoint OF-11 richiede 271 catture complessive, inclusa
+Il profilo `full` OF-11 richiede 271 catture complessive, inclusa
 `08_end_run.png`; si controllano rapporto 7:4, linguette fisse 304x64,
 wrapping, contrasto e assenza di fallback italiano nel copy dinamico.
 

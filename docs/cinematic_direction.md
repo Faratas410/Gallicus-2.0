@@ -35,7 +35,7 @@ La reference operativa del gate `MV-03` e' in
 `docs/support/media_vertical_slice/README.md`: durata target 6-8 secondi,
 controller locale a `Main`, skip dopo 0,5 secondi e dissolvenza di circa un
 secondo per reduced motion. Le reference e i layer in quella cartella non
-entrano nel runtime prima della chiusura di `OF-11`.
+entrano nel runtime prima della decisione go/no-go di `CP-03`.
 
 ### Firma e patto
 

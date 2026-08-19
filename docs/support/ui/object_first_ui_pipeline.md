@@ -207,9 +207,10 @@ Nodi:
 - focus e reduced motion verificati;
 - smoke e visual QA verdi.
 
-La prova completa e' cumulativa ai checkpoint OF-06, OF-09 e OF-11. Tra i
-checkpoint il pacchetto usa contratto specifico, import pertinente e QA
-rappresentativa; il signoff formale resta sospeso fino al checkpoint.
+La prova storica completa resta disponibile nel profilo CI manuale `full`.
+Il profilo automatico `lean` usa contratto specifico, un solo route bundle e
+QA rappresentativa dello stage corrente; il signoff formale resta sospeso fino
+al checkpoint pertinente.
 
 ## Stop
 

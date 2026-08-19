@@ -103,6 +103,9 @@ per uso reale, rinominate se adottate oppure rimosse dalle superfici finali.
 
 ### Media Vertical Slice
 
+- L'integrazione runtime resta congelata fino alla decisione go/no-go di
+  `CP-03`; il Core Playable Candidate usa soltanto audio gia' collegato o fix
+  necessari alla leggibilita' del loop.
 - I prototipi `MV-04` vivono in
   `docs/support/media_vertical_slice/audio_prototypes/` e non sono consumer
   runtime.

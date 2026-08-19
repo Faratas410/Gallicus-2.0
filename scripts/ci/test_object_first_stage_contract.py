@@ -114,12 +114,21 @@ def _assert_ownership_and_intents() -> None:
             raise AssertionError(f"UI bypasses RunManager authority: {forbidden}")
 
 
-def _assert_cumulative_checkpoint() -> None:
+def _assert_lean_and_full_checkpoint() -> None:
     marker_value = next((line.strip() for line in _read(MARKER).splitlines() if line.strip() and not line.lstrip().startswith("#")), "")
     if marker_value != "OF-11":
         raise AssertionError("full-suite checkpoint marker must be OF-11")
     workflow = _read(WORKFLOW)
     capture = _read(VISUAL_QA)
+    for lean_token in (
+        "visual_stage:",
+        "--section=final_dossier",
+        "timeout 240s",
+        'test "$DOSSIER_COUNT" -eq 36',
+        'test "$TOTAL_COUNT" -eq 36',
+    ):
+        if lean_token not in workflow:
+            raise AssertionError(f"lean Object-First checkpoint missing: {lean_token}")
     for count_token in (
         'test "$THRESHOLD_COUNT" -eq 24',
         'test "$REGISTRY_TABLE_COUNT" -eq 24',
@@ -135,7 +144,7 @@ def _assert_cumulative_checkpoint() -> None:
         "timeout 480s",
     ):
         if count_token not in workflow:
-            raise AssertionError(f"cumulative visual checkpoint missing: {count_token}")
+            raise AssertionError(f"manual full visual profile missing: {count_token}")
     for matrix in (
         "_capture_arena_threshold_matrix",
         "_capture_registry_table_matrix",
@@ -156,7 +165,7 @@ def main() -> int:
     _assert_contract_coverage()
     _assert_stable_visual_grammar()
     _assert_ownership_and_intents()
-    _assert_cumulative_checkpoint()
+    _assert_lean_and_full_checkpoint()
     print("OF-11 Object-First stage contract: OK")
     return 0
 

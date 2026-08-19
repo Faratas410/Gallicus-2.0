@@ -15,7 +15,8 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Pacchetto attivo: **OF-11 - checkpoint Object-First**.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux verde;
-  OF-10 e OF-11 implementati localmente e in attesa del signoff Linux.
+  OF-10 e OF-11 pubblicati su `main` al commit `3132acc` e in attesa del
+  signoff lean Linux.
 - Runtime Windows headless: diagnostico bloccato da crash nativo prima del
   bootstrap; le matrici Linux canoniche sono verdi.
 
@@ -43,17 +44,19 @@ Regole:
 
 ### Cadenza CI a checkpoint
 
-La suite automatica completa non viene eseguita per ogni singola feature.
+La suite automatica lean non viene eseguita per ogni singola feature.
 I checkpoint Object-First sono `OF-06`, `OF-09` e `OF-11`, registrati in
 `.github/ci/full_suite_checkpoint.txt`.
 
 - per feature: contratto specifico, import Godot quando pertinente, controllo
   visuale/audio rappresentativo, docs refs, mojibake e diff check;
-- per checkpoint: un job statico, sei smoke Linux e visual QA cumulativo;
-- per eccezione ad alto rischio: la stessa suite completa parte subito se
+- per checkpoint: `static_contracts`, `runtime_routes` con le quattro route
+  in un solo runner e `visual_stage` limitato allo stage corrente;
+- per eccezione ad alto rischio: la suite lean parte subito se
   cambiano `RunManager`, `GameEvents`, save, contratti/run systems,
   `project.godot` o il workflow;
-- `workflow_dispatch` resta sempre disponibile e non sposta il checkpoint;
+- `workflow_dispatch` espone `lean` e `full`; il profilo completo con sei
+  scenari e QA storico resta manuale per autorita', save, CP-03 e Release Lock;
 - un'eccezione ad alto rischio non modifica la sequenza OF-06/OF-09/OF-11.
 
 Ordine dei pacchetti:
@@ -63,6 +66,7 @@ Ordine dei pacchetti:
 | `FR-01` | Foundation Reset | smoke deterministici e matrice Linux verde |
 | `OF-01..03` | Object-First | quietanza, marchio, seconda incisione |
 | `OF-04..11` | Object-First | soglia, Registro, promessa, firma, patto, gesto, sigillo, fascicolo |
+| `CP-01..03` | Core Playable Candidate | stabilita', export interno e playtest go/no-go |
 | `MV-01..05` | Media Vertical Slice | apertura, Registro, render, motion, audio e checkpoint |
 | `RF-01..02` | Readability | leggibilita' della run e affidabilita' multi-run |
 | `RM-01..04` | Registry Memory | contratto, evidenza, convergenza, persistenza |
@@ -354,10 +358,15 @@ Ordine dei pacchetti:
 
 - Il marker full-suite e' `OF-11`; il playbook include tutti i contratti
   Object-First e il consolidamento dello stage.
-- Il visual QA cumulativo richiede 36 dossier e 271 catture complessive,
-  inclusa `08_end_run.png`, con timeout 480 secondi.
-- Stato: implementato localmente, in attesa di otto job Linux verdi e
-  ispezione dell'artifact prima della chiusura formale dello stage.
+- La run `32158939715` ha prodotto e superato il QA cumulativo da 271 catture,
+  digest `sha256:f44f7922cd1389d6c71ec48e382413423c6bde31f3d04107c7230260de6b2156`,
+  ma quattro runner sono stati cancellati durante `apt-get update` prima di
+  raggiungere Godot; non costituisce quindi signoff complessivo.
+- Il nuovo gate richiede tre job: playbook statico unico, quattro route nello
+  stesso runner e 36 catture dossier stage-only. Il profilo `full` conserva
+  la matrice storica da 271 immagini per uso manuale.
+- Stato: implementato su `main`, in attesa della prima run lean verde e del
+  relativo artifact prima della chiusura formale dello stage.
 
 ## 1. Foundation Reset
 
@@ -413,10 +422,43 @@ Gate:
 - nessuna regressione ai contratti del ritual loop;
 - un tester identifica oggetto, gesto e conseguenza senza spiegazione.
 
-## 3. Media Vertical Slice
+## 3. Core Playable Candidate
 
-Dipendenza: checkpoint Object-First `OF-11` chiuso. Brief, audit, concept e
-prototipi non collegati al runtime possono essere preparati prima.
+Dipendenza: checkpoint Object-First `OF-11` chiuso.
+
+Obiettivo: produrre una build interna completa, leggibile ed esportabile del
+loop attuale prima di riaprire nuovi sistemi della campagna. Non e' una release
+intermedia e non modifica la Definition of Done di Gallicus 1.0.
+
+Ordine:
+
+1. `CP-01` stabilita', leggibilita' e rimozione dei blocker del loop corrente;
+2. `CP-02` save/continue, settings, IT/EN/ES, input, reduced motion ed export
+   Windows x64 da profilo pulito;
+3. `CP-03` playtest interno e decisione go/no-go sugli stage campagna.
+
+Vincoli:
+
+- fino a CP-03 sono congelati nuovi sistemi di memoria, convergenza, Ere,
+  Silenzi, cinematiche ed espansione contenuti;
+- sono ammessi soltanto fix necessari a completare e rendere affidabile il
+  loop gia' esistente;
+- `RunManager`, `GameEvents`, payload e save cambiano solo per blocker provati
+  e richiedono il profilo CI `full` manuale.
+
+Gate:
+
+- menu, nuova run, continue e rituale completo fino al fascicolo;
+- quattro route push-your-luck e tre route del fascicolo affidabili;
+- settings, mouse, tastiera e reduced motion verificati;
+- IT/EN/ES leggibili a 1280x720 e 1920x1080;
+- export Windows avviabile fuori dall'editor da profilo pulito;
+- nessun fatal error, soft lock, save corrotto, asset mancante o fallback.
+
+## 4. Media Vertical Slice
+
+Dipendenza: Core Playable Candidate chiuso con decisione go. Brief, audit,
+concept e prototipi non collegati al runtime restano congelati ma disponibili.
 
 Obiettivo: validare in una slice production-ready l'apertura e il primo
 contatto con il Registro senza anticipare l'intero stage audiovisivo.
@@ -449,7 +491,7 @@ Preparazione disponibile in `docs/support/media_vertical_slice/`: `MV-01` e
 `MV-02` sono pronti per revisione; gli asset `MV-04` sono prototipi di ascolto.
 Nessun file del pacchetto e' ancora consumer runtime.
 
-## 4. Run Readability And Feedback
+## 5. Run Readability And Feedback
 
 Dipendenza: Media Vertical Slice.
 
@@ -470,7 +512,7 @@ Gate:
 - nessun stuck modal o route ambigua;
 - nessuna azione importante muta o priva di conferma.
 
-## 5. Registry Memory And Convergence
+## 6. Registry Memory And Convergence
 
 Dipendenza: Run Readability And Feedback.
 
@@ -493,7 +535,7 @@ Gate:
 - save/continue conserva lo stato senza corruzione;
 - test statici e runtime coprono soglie e fallback.
 
-## 6. Eras And Silences
+## 7. Eras And Silences
 
 Dipendenza: Registry Memory And Convergence.
 
@@ -516,7 +558,7 @@ Gate:
 - il profilo terminale non reinizializza il Registro;
 - campaign smoke copre transizioni, resume e finale.
 
-## 7. Content Completion
+## 8. Content Completion
 
 Dipendenza: Eras And Silences.
 
@@ -537,7 +579,7 @@ Gate:
 - tre run consecutive nella stessa Era non presentano una sequenza identica;
 - playtest completi rientrano nel target di durata senza grind.
 
-## 8. Audiovisual Completion
+## 9. Audiovisual Completion
 
 Dipendenza: Content Completion. La produzione preparatoria puo' iniziare prima,
 ma il lock richiede contenuto stabile.
@@ -562,7 +604,7 @@ Gate:
 - reduced motion preserva informazioni e tempi di input;
 - budget performance rispettato alle risoluzioni target.
 
-## 9. Release Lock
+## 10. Release Lock
 
 Dipendenza: tutti gli stage precedenti.
 
@@ -592,11 +634,12 @@ Gate:
 `OF-09 - colpo sul sigillo` sono chiusi dalla run Linux `32152390171` sul
 commit `3f1fd3b`, con otto job verdi e artifact digest
 `sha256:208f8b14eeb855df405455e0e8e7ab925db1b0b45e02aa8b950a9489a872ca03`.
-OF-10 e OF-11 sono implementati localmente su `main`; il marker e' `OF-11`.
-Il prossimo passo e' pubblicare il checkpoint, richiedere `static_contracts`,
-i sei smoke Linux e `visual_qa_object_first`, quindi ispezionare le 271
-catture e registrarne run, commit e digest. Solo con otto job verdi lo stage
-Object-First potra' chiudersi e Media Vertical Slice diventare lo stage attivo.
-Nel frattempo la preparazione non-runtime `MV-01/MV-02` e i prototipi audio
-`MV-04` sono disponibili in `docs/support/media_vertical_slice/`; l'integrazione
-Godot resta bloccata fino alla chiusura di `OF-11`.
+OF-10 e OF-11 sono pubblicati su `main` al commit `3132acc`; il marker resta
+`OF-11`. La run `32158939715` conserva l'artifact cumulativo Object-First da
+271 catture con digest `sha256:f44f7922...b2156`, ma non chiude il gate perche'
+alcuni runner sono stati cancellati nel bootstrap Linux. Il prossimo passo e'
+pubblicare la CI lean, richiedere verdi `static_contracts`, `runtime_routes` e
+`visual_stage`, ispezionare le 36 catture dossier e registrare run, commit e
+digest. Solo allora OF-10/OF-11 e Object-First chiudono e si attiva `CP-01`.
+Media Vertical Slice e tutti i nuovi sistemi campagna restano congelati fino
+alla decisione go/no-go di CP-03.

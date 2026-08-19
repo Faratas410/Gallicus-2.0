@@ -2,6 +2,15 @@ name: Godot Smoke Runtime
 
 on:
   workflow_dispatch:
+    inputs:
+      profile:
+        description: Validation profile
+        required: true
+        default: lean
+        type: choice
+        options:
+          - lean
+          - full
   push:
     branches: [main]
     paths:
@@ -29,106 +38,95 @@ jobs:
         with:
           lfs: true
 
-      - name: Run static contract suite once
+      - name: Run the canonical static playbook once
         run: |
           set -euo pipefail
-          python3 scripts/ci/test_headless_smoke_validator.py
-          python3 scripts/ci/check_docs_active_refs.py
-          python3 tools/ci/verify_res_paths.py
-          python3 scripts/ci/test_ritual_loop_contract.py
-          python3 scripts/ci/test_era_visual_template_audit.py
-          python3 scripts/ci/test_pressure_presentation_contract.py
-          python3 scripts/ci/test_ui_motion_contract.py
-          python3 scripts/ci/test_i18n_contract.py
-          python3 scripts/ci/test_receipt_object_contract.py
-          python3 scripts/ci/test_condemnation_mark_object_contract.py
-          python3 scripts/ci/test_second_incision_object_contract.py
-          python3 scripts/ci/test_arena_threshold_object_contract.py
-          python3 scripts/ci/test_registry_table_object_contract.py
-          python3 scripts/ci/test_promise_signature_object_contract.py
-          python3 scripts/ci/test_pact_tablet_object_contract.py
-          python3 scripts/ci/test_arena_gesture_object_contract.py
-          python3 scripts/ci/test_judgment_seal_object_contract.py
-          python3 scripts/ci/test_ci_checkpoint_contract.py
-          python3 scripts/ci/test_release_content_contract.py
-          python3 scripts/ci/test_no_mojibake.py
+          python3 scripts/ci/run_testing_playbook.py \
+            --skip-import \
+            --output-dir artifacts/static_contracts
 
-  smoke_runtime:
+      - name: Upload static diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: static_contracts_logs
+          path: artifacts/static_contracts
+          if-no-files-found: ignore
+
+  runtime_routes:
     needs: static_contracts
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        scenario: [BET_PRESENT, FULL_RUN, ROUTE_CASHOUT, ROUTE_DOUBLE, ROUTE_CONDANNA, ROUTE_REGISTER_FINAL]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           lfs: true
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb
-
       - name: Cache Godot 4.6.2 headless binary
-        id: cache-godot
         uses: actions/cache@v4
         with:
           path: tools/godot
           key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}
 
-      - name: Download Godot 4.6.2 headless
-        if: steps.cache-godot.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p tools/godot
-          cd tools/godot
-          wget -O "$GODOT_ZIP_NAME" "$GODOT_DOWNLOAD_URL"
-          unzip -o "$GODOT_ZIP_NAME" "$GODOT_BIN_NAME"
-          rm -f "$GODOT_ZIP_NAME"
-          chmod +x "$GODOT_BIN_NAME" || true
+      - name: Prepare Linux tooling and Godot
+        run: bash scripts/ci/bootstrap_linux_godot.sh
 
-      - name: Import project assets
+      - name: Import project assets once
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          LOG_DIR="artifacts/${{ matrix.scenario }}"
+          LOG_DIR=artifacts/runtime_routes
           mkdir -p "$LOG_DIR"
           xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit > "$LOG_DIR/import.log" 2>&1
           tail -n 200 "$LOG_DIR/import.log" || true
 
-      - name: Run scenario smoke
+      - name: Run route bundle
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          PROFILE="${{ inputs.profile || 'lean' }}"
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          LOG_DIR="artifacts/${{ matrix.scenario }}"
-          mkdir -p "$LOG_DIR"
-          if [ "${{ matrix.scenario }}" = "BET_PRESENT" ]; then
-            TIMEOUT_SEC=45
-            HARD_TIMEOUT_SEC=60
+          LEAN_SCENARIOS=(ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL)
+          FULL_SCENARIOS=(BET_PRESENT FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL)
+          if [ "$PROFILE" = "full" ]; then
+            SCENARIOS=("${FULL_SCENARIOS[@]}")
           else
-            TIMEOUT_SEC=60
-            HARD_TIMEOUT_SEC=80
+            SCENARIOS=("${LEAN_SCENARIOS[@]}")
           fi
-          python3 scripts/ci/run_headless_smoke.py \
-            --scenario "${{ matrix.scenario }}" \
-            --project-root "." \
-            --godot-bin "$GODOT_BIN" \
-            --timeout-sec "$TIMEOUT_SEC" \
-            --hard-timeout-sec "$HARD_TIMEOUT_SEC" \
-            --use-xvfb \
-            --log-file "$LOG_DIR/smoke.log" \
-            --summary-file "$LOG_DIR/smoke_summary.json"
 
-      - name: Upload smoke logs
+          overall=0
+          for scenario in "${SCENARIOS[@]}"; do
+            LOG_DIR="artifacts/runtime_routes/$scenario"
+            mkdir -p "$LOG_DIR"
+            if [ "$scenario" = "BET_PRESENT" ]; then
+              TIMEOUT_SEC=45
+              HARD_TIMEOUT_SEC=60
+            else
+              TIMEOUT_SEC=60
+              HARD_TIMEOUT_SEC=80
+            fi
+            if ! python3 scripts/ci/run_headless_smoke.py \
+              --scenario "$scenario" \
+              --project-root "." \
+              --godot-bin "$GODOT_BIN" \
+              --timeout-sec "$TIMEOUT_SEC" \
+              --hard-timeout-sec "$HARD_TIMEOUT_SEC" \
+              --use-xvfb \
+              --log-file "$LOG_DIR/smoke.log" \
+              --summary-file "$LOG_DIR/smoke_summary.json"; then
+              overall=1
+            fi
+          done
+          exit "$overall"
+
+      - name: Upload route logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke_runtime_${{ matrix.scenario }}
-          path: artifacts/${{ matrix.scenario }}
-          if-no-files-found: ignore
+          name: runtime_routes_logs
+          path: artifacts/runtime_routes
+          if-no-files-found: error
 
-  visual_qa_object_first:
+  visual_stage:
     needs: static_contracts
     runs-on: ubuntu-latest
     steps:
@@ -137,67 +135,64 @@ jobs:
         with:
           lfs: true
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb
-
       - name: Cache Godot 4.6.2 headless binary
-        id: cache-godot
         uses: actions/cache@v4
         with:
           path: tools/godot
           key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_BIN_NAME }}
 
-      - name: Download Godot 4.6.2 headless
-        if: steps.cache-godot.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p tools/godot
-          cd tools/godot
-          wget -O "$GODOT_ZIP_NAME" "$GODOT_DOWNLOAD_URL"
-          unzip -o "$GODOT_ZIP_NAME" "$GODOT_BIN_NAME"
-          rm -f "$GODOT_ZIP_NAME"
-          chmod +x "$GODOT_BIN_NAME" || true
+      - name: Prepare Linux tooling and Godot
+        run: bash scripts/ci/bootstrap_linux_godot.sh
 
-      - name: Import project assets
+      - name: Import project assets once
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit
 
-      - name: Capture object-first visual matrix
+      - name: Capture stage or full visual QA
         run: |
           set -euo pipefail
+          PROFILE="${{ inputs.profile || 'lean' }}"
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          timeout 480s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
-          THRESHOLD_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '01_threshold_*.png' | wc -l)
-          REGISTRY_TABLE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '02_registry_*.png' | wc -l)
-          PROMISE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '03_promise_*.png' | wc -l)
-          PACT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '04_pact_??_*.png' | wc -l)
-          GESTURE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '05_gesture_*.png' | wc -l)
-          JUDGMENT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '06_judgment_*.png' | wc -l)
-          DOSSIER_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_dossier_*.png' | wc -l)
-          RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
-          MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
-          INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
-          END_RUN_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_end_run.png' | wc -l)
-          test "$THRESHOLD_COUNT" -eq 24
-          test "$REGISTRY_TABLE_COUNT" -eq 24
-          test "$PROMISE_COUNT" -eq 30
-          test "$PACT_COUNT" -eq 24
-          test "$GESTURE_COUNT" -eq 36
-          test "$JUDGMENT_COUNT" -eq 30
-          test "$DOSSIER_COUNT" -eq 36
-          test "$RECEIPT_COUNT" -eq 18
-          test "$MARK_COUNT" -eq 18
-          test "$INCISION_COUNT" -eq 24
-          test "$END_RUN_COUNT" -eq 1
+          rm -rf artifacts/visual_qa
+          if [ "$PROFILE" = "full" ]; then
+            timeout 480s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn
+            THRESHOLD_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '01_threshold_*.png' | wc -l)
+            REGISTRY_TABLE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '02_registry_*.png' | wc -l)
+            PROMISE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '03_promise_*.png' | wc -l)
+            PACT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '04_pact_??_*.png' | wc -l)
+            GESTURE_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '05_gesture_*.png' | wc -l)
+            JUDGMENT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '06_judgment_*.png' | wc -l)
+            DOSSIER_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_dossier_*.png' | wc -l)
+            RECEIPT_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_receipt_*.png' | wc -l)
+            MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
+            INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
+            END_RUN_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_end_run.png' | wc -l)
+            test "$THRESHOLD_COUNT" -eq 24
+            test "$REGISTRY_TABLE_COUNT" -eq 24
+            test "$PROMISE_COUNT" -eq 30
+            test "$PACT_COUNT" -eq 24
+            test "$GESTURE_COUNT" -eq 36
+            test "$JUDGMENT_COUNT" -eq 30
+            test "$DOSSIER_COUNT" -eq 36
+            test "$RECEIPT_COUNT" -eq 18
+            test "$MARK_COUNT" -eq 18
+            test "$INCISION_COUNT" -eq 24
+            test "$END_RUN_COUNT" -eq 1
+          else
+            timeout 240s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn -- --section=final_dossier
+            DOSSIER_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_dossier_*.png' | wc -l)
+            TOTAL_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '*.png' | wc -l)
+            test "$DOSSIER_COUNT" -eq 36
+            test "$TOTAL_COUNT" -eq 36
+          fi
 
-      - name: Upload object-first visual evidence
+      - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: object_first_visual_qa
+          name: visual_qa_evidence
           path: |
             artifacts/visual_qa/01_threshold_*.png
             artifacts/visual_qa/02_registry_*.png

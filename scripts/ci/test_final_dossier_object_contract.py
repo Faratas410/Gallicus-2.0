@@ -279,9 +279,16 @@ def _assert_visual_qa() -> None:
     ):
         if token not in capture:
             raise AssertionError(f"final dossier visual QA missing: {token}")
-    for token in ("timeout 480s", "DOSSIER_COUNT", 'test "$DOSSIER_COUNT" -eq 36', "08_dossier_*.png"):
+    for token in (
+        "--section=final_dossier",
+        "timeout 240s",
+        "timeout 480s",
+        "DOSSIER_COUNT",
+        'test "$DOSSIER_COUNT" -eq 36',
+        "08_dossier_*.png",
+    ):
         if token not in workflow:
-            raise AssertionError(f"workflow missing cumulative dossier evidence: {token}")
+            raise AssertionError(f"workflow missing lean/full dossier evidence: {token}")
 
 
 def main() -> int:

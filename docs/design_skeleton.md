@@ -66,6 +66,14 @@ Da completare per 1.0:
 - identita' audio, VFX e cinematiche in-engine;
 - accessibilita', export e QA pubblica.
 
+## Priorita' operativa: Core Playable Candidate
+
+Prima di aggiungere altri sistemi della campagna, il loop singola-run esistente
+viene portato a una build interna completa, leggibile ed esportabile. Memoria,
+convergenza, Ere, Silenzi, cinematiche ed espansione contenuti restano congelati
+fino al playtest go/no-go di `CP-03`. Questo gate non e' una release intermedia
+e non riduce la promessa o la Definition of Done di Gallicus 1.0.
+
 ## Pilastri
 
 - **Atto fisico:** il player manipola oggetti credibili, non menu astratti.

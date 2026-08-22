@@ -13,8 +13,9 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Stage attivo: **Core Playable Candidate**.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
-- Pacchetto attivo: **CP-01 - stabilita' e leggibilita' del loop esistente**.
-- Stato CP-01: implementazione locale pronta, in attesa del signoff lean Linux.
+- Pacchetto chiuso: **CP-01 - stabilita' e leggibilita' del loop esistente**.
+- Pacchetto attivo: **CP-02 - accessibilita', save ed export interno**.
+- Signoff CP-01: run lean Linux `32594244882` verde sul commit `047ed67`.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux
   `32152390171`; OF-10, OF-11 e lo stage Object-First chiusi dalla run lean
@@ -437,7 +438,7 @@ Gate:
 
 Dipendenza: checkpoint Object-First `OF-11` chiuso.
 
-Status: **ACTIVE - CP-01**.
+Status: **ACTIVE - CP-02**.
 
 Obiettivo: produrre una build interna completa, leggibile ed esportabile del
 loop attuale prima di riaprire nuovi sistemi della campagna. Non e' una release
@@ -479,6 +480,27 @@ Gate:
 - export Windows avviabile fuori dall'editor da profilo pulito;
 - nessun fatal error, soft lock, save corrotto, asset mancante o fallback.
 - zero issue Critical e nessuna issue Important irrisolta al gate `CP-03`.
+
+### Pacchetto chiuso: CP-01
+
+- Comportamento: stabilizzare il loop esistente e verificare nello stesso
+  processo tre run consecutive, le quattro route push-your-luck e le tre
+  linguette finali.
+- Owner: `RunManager` conserva flow e outcome; `GameEvents` resta il bus; la
+  UI resta reattiva.
+- Implementazione: il playbook canonico include tutti i contratti statici;
+  `CORE_CONTINUITY` percorre tre run e usa `PROSSIMA SCOMMESSA`,
+  `NUOVO PERCORSO` e `TORNA AL MENU`. La route next-bet raggiunge l'handler
+  esistente senza introdurre un nuovo sistema di campagna.
+- Signoff Linux: run lean `32594244882` sul commit `047ed67`, con
+  `static_contracts`, `runtime_routes` e `visual_stage` verdi.
+- Evidenza runtime: artifact `runtime_routes_logs`, digest
+  `sha256:fffc177002b0e8d6e1a764a8f5cdec1aa5259f3e72eaafad340da1a58e8cfb86`.
+- Evidenza visuale: artifact `visual_qa_evidence`, 36 catture del fascicolo
+  IT/EN/ES a 1280x720 e 1920x1080, digest
+  `sha256:f4242b4f6181ae8d5499f17d5ce5f74b8cec862a7f2586ffb53cb8059a3d1090`.
+- Gate chiuso: 2026-08-22. Il runtime Windows headless resta diagnostico per
+  il crash nativo noto prima di `SMOKE:BOOT_OK`; non invalida il signoff Linux.
 
 ## 4. Campaign Spine
 
@@ -596,26 +618,13 @@ Gate:
 
 ## Prossimo step operativo
 
-`OF-07 - tavoletta del patto`, `OF-08 - gesto davanti alla gradinata` e
-`OF-09 - colpo sul sigillo` sono chiusi dalla run Linux `32152390171` sul
-commit `3f1fd3b`, con otto job verdi e artifact digest
-`sha256:208f8b14eeb855df405455e0e8e7ab925db1b0b45e02aa8b950a9489a872ca03`.
-OF-10, OF-11 e lo stage Object-First sono chiusi dalla run lean Linux
-`32238429965` sul commit `8449766`: `static_contracts`, `runtime_routes` e
-`visual_stage` sono verdi; le quattro route risultano valide e le 36 catture
-dossier sono state ispezionate. Il digest dell'artifact lean e'
-`sha256:839f8d3e20e302037a78d432f1a007ecf634d69233869db2333cbc8786cc5adb`.
-La run `32158939715` resta evidenza cumulativa storica da 271 catture, digest
-`sha256:f44f7922cd1389d6c71ec48e382413423c6bde31f3d04107c7230260de6b2156`.
-`CP-01` ora include tutti i contratti statici nel playbook canonico e uno smoke
-`CORE_CONTINUITY` che percorre tre run e le tre linguette finali. E' stato
-corretto il blocker per cui `request_end_run_next_bet` raggiungeva un handler
-che non accettava l'intento: la route riapre il loop esistente senza diventare
-`NUOVO PERCORSO`. Playbook e import Godot sono verdi; lo smoke Windows resta
-diagnostico per il crash nativo prima di `SMOKE:BOOT_OK`.
+`CP-01` e' chiuso dalla run lean Linux `32594244882` sul commit `047ed67`.
+I tre job canonici sono verdi; `CORE_CONTINUITY` verifica tre run consecutive e
+le tre linguette finali. I digest degli artifact runtime e visuali sono
+registrati nella scheda CP-01.
 
-Il prossimo passo operativo e' pubblicare manualmente questa patch su `main` e
-ottenere i tre job lean verdi, incluso `CORE_CONTINUITY`. Solo dopo quel gate
-CP-01 viene chiuso e si apre `CP-02` per reduced motion, volume SFX persistente,
-save recovery/migration, input e primo export Windows x64. Media Vertical Slice
-e sistemi campagna restano congelati fino alla decisione go/no-go di CP-03.
+Il pacchetto attivo e' `CP-02`: reduced motion, volume SFX persistente,
+save recovery/migration, percorso completo da tastiera e primo export Windows
+x64 da profilo pulito. La patch deve preservare ownership, segnali gameplay,
+wrapper run schema `1` e Level 3 schema `2`. Media Vertical Slice, sistemi
+campagna ed espansione contenuti restano congelati fino al go/no-go di CP-03.

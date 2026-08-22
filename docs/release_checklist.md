@@ -65,7 +65,8 @@ Non esistono firme intermedie di prodotto.
 ## Tecnica
 
 - [ ] Static suite completa verde.
-- [ ] Tre run consecutive e tre linguette END_RUN verificate.
+- [x] Tre run consecutive e tre linguette END_RUN verificate dalla run lean
+  Linux `32594244882` sul commit `047ed67`.
 - [ ] Godot import senza errori.
 - [ ] Profilo CI `full` con i sei scenari storici verde su Linux.
 - [ ] Nessun fatal error, missing resource o `SANITY FAIL`.

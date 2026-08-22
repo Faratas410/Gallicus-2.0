@@ -18,6 +18,7 @@ SCENARIO_ROUTE_CASHOUT = "ROUTE_CASHOUT"
 SCENARIO_ROUTE_DOUBLE = "ROUTE_DOUBLE"
 SCENARIO_ROUTE_CONDANNA = "ROUTE_CONDANNA"
 SCENARIO_ROUTE_REGISTER_FINAL = "ROUTE_REGISTER_FINAL"
+SCENARIO_CORE_CONTINUITY = "CORE_CONTINUITY"
 # Stable fixture from a previously green six-scenario Linux matrix. Runtime
 # smoke must never derive gameplay coverage from the wall clock.
 CANONICAL_SMOKE_SEED = 1782373819
@@ -153,6 +154,23 @@ SCENARIO_SPECS: dict[str, SmokeScenarioSpec] = {
             "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
             "SMOKE:MILESTONE=END_RUN",
             "SMOKE:MILESTONE=END_RUN_FINAL ending_key=",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_boot_marker=True,
+    ),
+    SCENARIO_CORE_CONTINUITY: SmokeScenarioSpec(
+        name=SCENARIO_CORE_CONTINUITY,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_CORE_CONTINUITY_START",
+            "SMOKE:REQ=request_pyl_condanna",
+            "SMOKE:MILESTONE=CORE_RUN_1",
+            "SMOKE:REQ=request_end_run_next_bet",
+            "SMOKE:MILESTONE=CORE_RUN_2",
+            "SMOKE:REQ=request_end_run_restart",
+            "SMOKE:MILESTONE=CORE_RUN_3",
+            "SMOKE:REQ=request_end_run_quit",
+            "SMOKE:MILESTONE=CORE_RETURNED_TO_MENU",
             "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
         ),
         require_single_boot_marker=True,
@@ -348,6 +366,18 @@ def validate_log_text(log_text: str, scenario: str) -> list[str]:
             and "SMOKE:REQ=request_pyl_cashout" not in log_text
         ):
             failures.append("missing full-run request token: request_pyl_double/request_pyl_cashout")
+
+    if scenario == SCENARIO_CORE_CONTINUITY:
+        for token, expected_count in (
+            ("SMOKE:MILESTONE=BET_PRESENT", 3),
+            ("SMOKE:MILESTONE=END_RUN", 3),
+            ("SMOKE:REQ=request_pyl_condanna", 3),
+        ):
+            actual_count = log_text.count(token)
+            if actual_count != expected_count:
+                failures.append(
+                    f"core continuity expected {expected_count} occurrences of {token}, got {actual_count}"
+                )
 
     if spec.require_single_boot_marker:
         boot_marker_count = log_text.count("SMOKE:BOOT_OK")

@@ -85,8 +85,8 @@ jobs:
           set -uo pipefail
           PROFILE="${{ inputs.profile || 'lean' }}"
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          LEAN_SCENARIOS=(ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL)
-          FULL_SCENARIOS=(BET_PRESENT FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL)
+          LEAN_SCENARIOS=(ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
+          FULL_SCENARIOS=(BET_PRESENT FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
           if [ "$PROFILE" = "full" ]; then
             SCENARIOS=("${FULL_SCENARIOS[@]}")
           else
@@ -100,6 +100,9 @@ jobs:
             if [ "$scenario" = "BET_PRESENT" ]; then
               TIMEOUT_SEC=45
               HARD_TIMEOUT_SEC=60
+            elif [ "$scenario" = "CORE_CONTINUITY" ]; then
+              TIMEOUT_SEC=120
+              HARD_TIMEOUT_SEC=140
             else
               TIMEOUT_SEC=60
               HARD_TIMEOUT_SEC=80

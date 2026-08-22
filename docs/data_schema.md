@@ -85,7 +85,7 @@ Regole:
 
 ## Matrice contenuto
 
-Il gate Content Completion deve poter verificare:
+Il gate Content & Readability deve poter verificare:
 
 - path tag coperti;
 - behavior coperti;

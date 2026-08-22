@@ -18,6 +18,8 @@ UI_ROOT = ROOT / "scripts/ui/ui_root.gd"
 SFX_BUS = ROOT / "scripts/audio/sfx_bus.gd"
 GAME_EVENTS = ROOT / "scripts/systems/game_events.gd"
 RUN_MANAGER = ROOT / "scripts/systems/run_manager.gd"
+GAME_OVER_HANDLER = ROOT / "scripts/systems/run/phase_handlers/phase_game_over_handler.gd"
+FLOW_CATALOG = ROOT / "scripts/systems/run/run_flow_catalog.gd"
 VISUAL_QA = ROOT / "tools/visual_qa_capture.gd"
 WORKFLOW = ROOT / ".github/workflows/godot_smoke_runtime.yml"
 
@@ -256,11 +258,25 @@ def _assert_copy_audio_and_public_contracts() -> None:
 
     events = _read(GAME_EVENTS)
     manager = _read(RUN_MANAGER)
+    game_over_handler = _read(GAME_OVER_HANDLER)
+    flow_catalog = _read(FLOW_CATALOG)
     for signal_name in ("request_end_run_restart", "request_end_run_next_bet", "request_end_run_quit"):
         if f"signal {signal_name}" not in events:
             raise AssertionError(f"GameEvents END_RUN signal changed: {signal_name}")
         if signal_name not in manager:
             raise AssertionError(f"RunManager no longer owns END_RUN intent: {signal_name}")
+
+    if '"request_end_run_next_bet"' not in _function_body(game_over_handler, "can_accept_request"):
+        raise AssertionError("GAME_OVER handler must accept the visible next-bet dossier route")
+    next_bet_branch = _function_body(game_over_handler, "handle_request")
+    for token in ('request_name == "request_end_run_next_bet"', 'res.action = "GAMEOVER_NEXT_BET"'):
+        if token not in next_bet_branch:
+            raise AssertionError(f"GAME_OVER next-bet route missing: {token}")
+    if 'registry.register_handler("GAMEOVER_NEXT_BET", Callable(run_manager, "_mut_gameover_next_bet"))' not in flow_catalog:
+        raise AssertionError("flow catalog must register the next-bet mutation")
+    next_bet_mutation = _function_body(manager, "_mut_gameover_next_bet")
+    if "_start_level3_run()" not in next_bet_mutation or "request_new_game()" in next_bet_mutation:
+        raise AssertionError("next-bet must reopen the current loop without becoming New Path")
 
 
 def _assert_visual_qa() -> None:

@@ -7,14 +7,15 @@ for `MV-04`. It does not activate the media slice in runtime.
 
 Runtime work remains locked until:
 
-1. the `OF-11` checkpoint is closed;
-2. `CP-01` and `CP-02` produce a stable internal Windows build;
-3. the `CP-03` playtest records an explicit go decision.
+1. the Core Playable Candidate records an explicit go decision;
+2. Campaign Spine makes the Era 0 to Absence campaign completable;
+3. Content & Readability reaches Content Lock.
 
-This preserves the single-active-runtime-package rule and the Core Playable
-Candidate freeze. Nothing in this folder is imported by a Godot scene or
-treated as release-ready. The folder-level `.gdignore` also prevents editor
-import sidecars for these review-only files.
+The package is integrated during Audiovisual Lock, not as a separate roadmap
+stage. This preserves the single-active-runtime-package rule and the campaign-
+first priority. Nothing in this folder is imported by a Godot scene or treated
+as release-ready. The folder-level `.gdignore` also prevents editor import
+sidecars for these review-only files.
 
 ## Creative decision
 

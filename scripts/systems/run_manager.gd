@@ -804,6 +804,7 @@ var _smoke_full_run_mid_choice_sent: bool = false
 var _smoke_full_run_pyl_sent: bool = false
 var _smoke_full_run_pact_advance_sent: bool = false
 var _smoke_full_run_resolve_advance_sent: bool = false
+var _smoke_core_completed_runs: int = 0
 var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
 var _flow_diagnostics: FlowDiagnostics = FlowDiagnostics.new()
 var _finale_builder: FinaleBuilder = FinaleBuilder.new()
@@ -855,6 +856,7 @@ func _smoke_start_scenario() -> void:
 	_smoke_full_run_pyl_sent = false
 	_smoke_full_run_pact_advance_sent = false
 	_smoke_full_run_resolve_advance_sent = false
+	_smoke_core_completed_runs = 0
 	var start_logs: PackedStringArray = _smoke.begin_scenario()
 	for line: String in start_logs:
 		print(line)
@@ -967,6 +969,9 @@ func _run_smoke_full_run_driver() -> void:
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step == "PUSH_YOUR_LUCK":
 		_drive_smoke_full_run_pyl_request()
 		return
+	if _phase == RunPhase.GAME_OVER and _is_smoke_core_continuity_scenario():
+		_drive_smoke_core_continuity_route()
+		return
 	if _phase == RunPhase.GAME_OVER and (_is_register_final() or not _smoke_requires_register_final()):
 		print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
 		_stop_smoke_driver()
@@ -980,7 +985,39 @@ func _is_smoke_full_run_like_scenario() -> bool:
 		"ROUTE_DOUBLE",
 		"ROUTE_CONDANNA",
 		"ROUTE_REGISTER_FINAL",
+		"CORE_CONTINUITY",
 	]
+
+func _is_smoke_core_continuity_scenario() -> bool:
+	return OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "CORE_CONTINUITY"
+
+func _reset_smoke_full_run_cycle() -> void:
+	_smoke_full_run_step = ""
+	_smoke_full_run_place_bet_sent = false
+	_smoke_full_run_mid_choice_sent = false
+	_smoke_full_run_pyl_sent = false
+	_smoke_full_run_pact_advance_sent = false
+	_smoke_full_run_resolve_advance_sent = false
+
+func _drive_smoke_core_continuity_route() -> void:
+	_smoke_core_completed_runs += 1
+	print("SMOKE:MILESTONE=CORE_RUN_%d" % _smoke_core_completed_runs)
+	if _smoke_core_completed_runs == 1:
+		print("SMOKE:REQ=request_end_run_next_bet")
+		_reset_smoke_full_run_cycle()
+		_on_request_end_run_next_bet()
+		return
+	if _smoke_core_completed_runs == 2:
+		print("SMOKE:REQ=request_end_run_restart")
+		_reset_smoke_full_run_cycle()
+		_on_request_end_run_restart()
+		return
+	print("SMOKE:REQ=request_end_run_quit")
+	_on_request_end_run_quit()
+	print("SMOKE:MILESTONE=CORE_RETURNED_TO_MENU")
+	print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
+	_stop_smoke_driver()
+	_smoke_quit_gate()
 
 func _smoke_requires_register_final() -> bool:
 	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
@@ -988,7 +1025,7 @@ func _smoke_requires_register_final() -> bool:
 
 func _drive_smoke_full_run_pyl_request() -> void:
 	var scenario: String = OS.get_environment("GALLICUS_SMOKE_SCENARIO")
-	if scenario == "ROUTE_CONDANNA":
+	if scenario == "ROUTE_CONDANNA" or scenario == "CORE_CONTINUITY":
 		if not _smoke_full_run_pyl_sent:
 			print("SMOKE:REQ=request_pyl_condanna")
 			_smoke_full_run_pyl_sent = true
@@ -2637,6 +2674,9 @@ func _mut_intm_select(step: Dictionary) -> void:
 
 func _mut_gameover_show_menu(_step: Dictionary) -> void:
 	request_quit_to_menu()
+
+func _mut_gameover_next_bet(_step: Dictionary) -> void:
+	_start_level3_run()
 
 func _mut_gameover_restart(_step: Dictionary) -> void:
 	request_new_game()

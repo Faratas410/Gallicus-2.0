@@ -65,7 +65,11 @@ func build_ui_payload(run_state: RunState, inputs: Dictionary = {}) -> Dictionar
 	}
 
 func can_accept_request(request_name: String) -> bool:
-	return request_name == "request_end_run_quit" or request_name == "request_end_run_restart"
+	return request_name in [
+		"request_end_run_quit",
+		"request_end_run_restart",
+		"request_end_run_next_bet",
+	]
 
 func handle_request(request_name: String, _run_state: RunState, _request_payload: Dictionary) -> PhaseResult:
 	var res: PhaseResult = PhaseResult.new()
@@ -75,6 +79,10 @@ func handle_request(request_name: String, _run_state: RunState, _request_payload
 	if request_name == "request_end_run_quit":
 		res.action = "GAMEOVER_SHOW_MENU"
 		res.mutation_plan.append({"type": "APPLY_STATE_MUTATION", "name": "GAMEOVER_SHOW_MENU"})
+		return res
+	if request_name == "request_end_run_next_bet":
+		res.action = "GAMEOVER_NEXT_BET"
+		res.mutation_plan.append({"type": "APPLY_STATE_MUTATION", "name": "GAMEOVER_NEXT_BET"})
 		return res
 	res.action = "GAMEOVER_RESTART"
 	res.mutation_plan.append({"type": "APPLY_STATE_MUTATION", "name": "GAMEOVER_RESTART"})

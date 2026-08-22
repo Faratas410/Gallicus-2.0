@@ -57,8 +57,7 @@ Disponibile:
 
 Da completare per 1.0:
 
-- pass object-first su tutte le azioni gameplay;
-- leggibilita' e feedback completi;
+- stabilita', accessibilita' ed export del Core Playable Candidate;
 - firma comportamentale, coerenza e isteresi;
 - avanzamento reale delle Ere tramite Silenzio;
 - ramp, campagna terminale e blocco post-finale;
@@ -73,6 +72,11 @@ viene portato a una build interna completa, leggibile ed esportabile. Memoria,
 convergenza, Ere, Silenzi, cinematiche ed espansione contenuti restano congelati
 fino al playtest go/no-go di `CP-03`. Questo gate non e' una release intermedia
 e non riduce la promessa o la Definition of Done di Gallicus 1.0.
+
+La produzione segue cinque stage attivi verso 1.0: Core Playable Candidate,
+Campaign Spine, Content & Readability, Audiovisual Lock e Release Lock. La
+Media Vertical Slice preparata confluisce nell'Audiovisual Lock soltanto dopo
+che campagna e contenuto sono verificati.
 
 ## Pilastri
 

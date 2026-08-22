@@ -15,7 +15,16 @@ BOOTSTRAP = ROOT / "scripts/ci/bootstrap_linux_godot.sh"
 TESTING_DOC = ROOT / "docs/testing.md"
 ROADMAP = ROOT / "docs/development_plan.md"
 
-CHECKPOINTS = ("OF-06", "OF-09", "OF-11")
+CHECKPOINTS = (
+    "OF-06",
+    "OF-09",
+    "OF-11",
+    "CP-03",
+    "CS-04",
+    "CONTENT-LOCK",
+    "AUDIOVISUAL-LOCK",
+    "RELEASE-LOCK",
+)
 RISK_PATHS = (
     ".github/ci/full_suite_checkpoint.txt",
     ".github/workflows/godot_smoke_runtime.yml",
@@ -26,29 +35,15 @@ RISK_PATHS = (
     "scripts/systems/run/**",
     "scripts/contracts/**",
 )
-STATIC_TESTS = (
-    "test_headless_smoke_validator.py",
+STATIC_TESTS = tuple(sorted(path.name for path in (ROOT / "scripts/ci").glob("test_*.py")))
+STATIC_CHECKS = (
     "check_docs_active_refs.py",
+    "check_no_legacy_references.py",
+    "check_runtime_invariants.py",
+    "audit_end_run_summary.py",
+    "check_tscn_format.py",
+    "validate_gameevents_contract.py",
     "verify_res_paths.py",
-    "test_ritual_loop_contract.py",
-    "test_era_visual_template_audit.py",
-    "test_pressure_presentation_contract.py",
-    "test_ui_motion_contract.py",
-    "test_i18n_contract.py",
-    "test_receipt_object_contract.py",
-    "test_condemnation_mark_object_contract.py",
-    "test_second_incision_object_contract.py",
-    "test_arena_threshold_object_contract.py",
-    "test_registry_table_object_contract.py",
-    "test_promise_signature_object_contract.py",
-    "test_pact_tablet_object_contract.py",
-    "test_arena_gesture_object_contract.py",
-    "test_judgment_seal_object_contract.py",
-    "test_final_dossier_object_contract.py",
-    "test_object_first_stage_contract.py",
-    "test_ci_checkpoint_contract.py",
-    "test_release_content_contract.py",
-    "test_no_mojibake.py",
 )
 
 
@@ -73,9 +68,9 @@ def _assert_marker() -> None:
     active_line = next((line.strip() for line in marker.splitlines() if line.strip() and not line.lstrip().startswith("#")), "")
     if active_line not in CHECKPOINTS:
         raise AssertionError(f"active full-suite marker must be a scheduled checkpoint, got {active_line!r}")
-    for checkpoint in CHECKPOINTS:
+    for checkpoint in ("OF-06", "OF-09", "OF-11"):
         if checkpoint not in marker:
-            raise AssertionError(f"checkpoint marker must document {checkpoint}")
+            raise AssertionError(f"checkpoint marker must document historical checkpoint {checkpoint}")
 
 
 def _assert_workflow() -> None:
@@ -105,7 +100,7 @@ def _assert_workflow() -> None:
     visual_block = _job_block(workflow, "visual_stage")
     if static_block.count("python3 scripts/ci/run_testing_playbook.py") != 1:
         raise AssertionError("static_contracts must call the canonical playbook exactly once")
-    for test_name in STATIC_TESTS:
+    for test_name in STATIC_TESTS + STATIC_CHECKS:
         if playbook.count(test_name) != 1:
             raise AssertionError(f"canonical playbook must contain static contract exactly once: {test_name}")
         if test_name in static_block:
@@ -124,6 +119,8 @@ def _assert_workflow() -> None:
     for scenario in ("ROUTE_CASHOUT", "ROUTE_DOUBLE", "ROUTE_CONDANNA", "ROUTE_REGISTER_FINAL"):
         if scenario not in runtime_block:
             raise AssertionError(f"lean route bundle missing scenario: {scenario}")
+    if "CORE_CONTINUITY" not in runtime_block:
+        raise AssertionError("lean route bundle must cover three runs and all dossier routes")
     for full_only in ("BET_PRESENT", "FULL_RUN"):
         if full_only not in runtime_block:
             raise AssertionError(f"manual full profile missing historical scenario: {full_only}")
@@ -152,9 +149,12 @@ def _assert_workflow() -> None:
 
 def _assert_documentation() -> None:
     combined = f"{_read(TESTING_DOC)}\n{_read(ROADMAP)}"
-    for checkpoint in CHECKPOINTS:
+    for checkpoint in ("OF-06", "OF-09", "OF-11", "CP-03", "CS-04"):
         if checkpoint not in combined:
             raise AssertionError(f"testing/roadmap must document checkpoint {checkpoint}")
+    for checkpoint_name in ("Content Lock", "Audiovisual Lock", "Release Lock"):
+        if checkpoint_name not in combined:
+            raise AssertionError(f"testing/roadmap must document checkpoint {checkpoint_name}")
     for phrase in ("checkpoint", "workflow_dispatch", "Core Playable Candidate", "runtime_routes", "visual_stage"):
         if phrase not in combined:
             raise AssertionError(f"testing/roadmap missing lean CI phrase: {phrase}")

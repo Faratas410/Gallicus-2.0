@@ -28,6 +28,7 @@ func _register_mutations(registry: RunFlowMutationRegistry, run_manager: Node) -
 	registry.register_handler("INTRO_CONFIRM", Callable(run_manager, "_mut_intro_confirm"))
 	registry.register_handler("INTM_SELECT", Callable(run_manager, "_mut_intm_select"))
 	registry.register_handler("GAMEOVER_SHOW_MENU", Callable(run_manager, "_mut_gameover_show_menu"))
+	registry.register_handler("GAMEOVER_NEXT_BET", Callable(run_manager, "_mut_gameover_next_bet"))
 	registry.register_handler("GAMEOVER_RESTART", Callable(run_manager, "_mut_gameover_restart"))
 	registry.register_handler("MAINMENU_NEW_RUN", Callable(run_manager, "_mut_mainmenu_new_run"))
 	registry.register_handler("MAINMENU_CONTINUE_RUN", Callable(run_manager, "_mut_mainmenu_continue_run"))

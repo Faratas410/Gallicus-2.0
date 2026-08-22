@@ -30,16 +30,17 @@ La suite Linux automatica e' lean e non parte per ogni feature.
 - **Per feature:** eseguire contratto specifico, import Godot quando cambiano
   runtime/scene/asset, QA visuale o audio rappresentativa, docs refs,
   mojibake e `git diff --check`.
-- **Checkpoint:** OF-06, OF-09 e OF-11 aggiornano
-  `.github/ci/full_suite_checkpoint.txt` e avviano `static_contracts`,
-  `runtime_routes` e `visual_stage`.
+- **Checkpoint:** dopo lo storico Object-First, i gate programmati sono
+  `CP-03`, `CS-04`, Content Lock, Audiovisual Lock e Release Lock. Il marker
+  resta `OF-11` fino a `CP-03`.
 - **Eccezione ad alto rischio:** modifiche a `RunManager`, `GameEvents`, save,
   contratti/run systems, `project.godot` o workflow avviano subito il profilo
-  lean senza spostare il checkpoint programmato; prima del signoff richiedono
-  anche il profilo `full` manuale.
+  lean senza spostare il checkpoint programmato. Il profilo `full` immediato
+  resta obbligatorio soltanto se cambiano ownership, segnali, shape pubbliche o
+  schema save.
 - **Manuale:** `workflow_dispatch` espone `lean` e `full`. Il secondo conserva
-  i sei scenari storici e il visual QA cumulativo per CP-03, Release Lock e
-  diagnosi straordinarie.
+  gli scenari storici e il visual QA cumulativo per i checkpoint programmati
+  e le diagnosi straordinarie.
 
 Una feature non checkpoint puo' essere marcata `implementata, in attesa di
 signoff cumulativo` dopo i controlli locali mirati. La chiusura formale arriva
@@ -48,7 +49,10 @@ blocca il pacchetto successivo.
 
 ## Runner
 
-Il runner locale aggrega la suite disponibile:
+Il runner locale e' la fonte unica dell'inventario statico: include ogni
+`scripts/ci/test_*.py` esistente e i check canonici di docs, path, runtime,
+GameEvents e formato scene. Il contratto CI fallisce se un test presente su
+disco non compare esattamente una volta nel playbook.
 
 ```powershell
 python scripts/ci/run_testing_playbook.py --godot-bin ".\tools\godot\Godot_v4.6.2-stable_win64_console.exe" --scenario FULL_RUN
@@ -62,31 +66,11 @@ la superficie automatica canonica resta CI Linux.
 Gate base:
 
 ```powershell
-python scripts/ci/test_headless_smoke_validator.py
-python scripts/ci/check_docs_active_refs.py
-python tools/ci/verify_res_paths.py
-python scripts/ci/test_ritual_loop_contract.py
-python scripts/ci/test_release_content_contract.py
-python scripts/ci/test_era_visual_template_audit.py
-python scripts/ci/test_pressure_presentation_contract.py
-python scripts/ci/test_ui_motion_contract.py
-python scripts/ci/test_i18n_contract.py
-python scripts/ci/test_receipt_object_contract.py
-python scripts/ci/test_condemnation_mark_object_contract.py
-python scripts/ci/test_second_incision_object_contract.py
-python scripts/ci/test_arena_threshold_object_contract.py
-python scripts/ci/test_registry_table_object_contract.py
-python scripts/ci/test_promise_signature_object_contract.py
-python scripts/ci/test_pact_tablet_object_contract.py
-python scripts/ci/test_arena_gesture_object_contract.py
-python scripts/ci/test_judgment_seal_object_contract.py
-python scripts/ci/test_final_dossier_object_contract.py
-python scripts/ci/test_object_first_stage_contract.py
-python scripts/ci/test_ci_checkpoint_contract.py
-python scripts/ci/test_no_mojibake.py
+python scripts/ci/run_testing_playbook.py --skip-import
 ```
 
-Eseguire inoltre i test focalizzati dal runner quando la patch tocca:
+Per diagnosi si puo' eseguire anche il singolo test focalizzato. Il signoff
+statico, pero', usa sempre il playbook completo e comprende:
 
 - phase identity o save flow;
 - GameEvents;
@@ -127,6 +111,7 @@ Scenari:
 - `ROUTE_DOUBLE`
 - `ROUTE_CONDANNA`
 - `ROUTE_REGISTER_FINAL`
+- `CORE_CONTINUITY`
 
 Esempio:
 
@@ -149,13 +134,17 @@ Nei checkpoint il workflow espone esattamente tre job:
 
 - `static_contracts` chiama una sola volta il playbook, fonte unica dei test;
 - `runtime_routes` importa Godot una volta e percorre in sequenza cashout,
-  double, condanna e register-final, conservando tutti i log anche se una route
-  fallisce;
+  double, condanna, register-final e `CORE_CONTINUITY`, conservando tutti i log
+  anche se una route fallisce;
 - `visual_stage` importa Godot una volta e cattura soltanto lo stage corrente.
 
 Il profilo manuale `full` aggiunge `BET_PRESENT`, `FULL_RUN` e il visual QA
 storico. Il bootstrap controlla prima i tool presenti e usa `apt` soltanto come
 fallback con mirror ufficiale, retry e timeout limitati.
+
+`CORE_CONTINUITY` completa tre run nello stesso processo e verifica le tre
+linguette del fascicolo: next bet, new path e ritorno al menu. Le quattro route
+push-your-luck restano coperte dagli scenari dedicati.
 
 Il runner inietta un seed smoke canonico e lo registra come
 `SMOKE:RUNNER_SEED` e `SMOKE:RUN_SEED`. La matrice di signoff non usa
@@ -248,7 +237,7 @@ Per ogni gesto modificato verificare:
 - nessun path o import mancante;
 - feedback visuale equivalente.
 
-### Gate Media Vertical Slice
+### Gate Media Vertical Slice nell'Audiovisual Lock
 
 Prima dell'adozione runtime di `MV-03/MV-04` verificare inoltre:
 
@@ -274,7 +263,7 @@ Usare `docs/playtest_guide.md`.
 
 ## Playtest campagna
 
-Obbligatorio dagli stage Registry Memory in avanti:
+Obbligatorio da Campaign Spine in avanti:
 
 - profilo pulito;
 - prima run fino all'Assenza;

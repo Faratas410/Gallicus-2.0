@@ -14,6 +14,7 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
 - Pacchetto attivo: **CP-01 - stabilita' e leggibilita' del loop esistente**.
+- Stato CP-01: implementazione locale pronta, in attesa del signoff lean Linux.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux
   `32152390171`; OF-10, OF-11 e lo stage Object-First chiusi dalla run lean
@@ -45,20 +46,21 @@ Regole:
 
 ### Cadenza CI a checkpoint
 
-La suite automatica lean non viene eseguita per ogni singola feature.
-I checkpoint Object-First sono `OF-06`, `OF-09` e `OF-11`, registrati in
-`.github/ci/full_suite_checkpoint.txt`.
+La suite automatica lean non viene eseguita per ogni singola feature. Il marker
+resta su `OF-11` fino al prossimo checkpoint programmato, `CP-03`.
 
 - per feature: contratto specifico, import Godot quando pertinente, controllo
   visuale/audio rappresentativo, docs refs, mojibake e diff check;
-- per checkpoint: `static_contracts`, `runtime_routes` con le quattro route
-  in un solo runner e `visual_stage` limitato allo stage corrente;
+- per checkpoint: `static_contracts`, `runtime_routes` con le quattro route e
+  `CORE_CONTINUITY` in un solo runner, e `visual_stage` limitato allo stage
+  corrente;
 - per eccezione ad alto rischio: la suite lean parte subito se
   cambiano `RunManager`, `GameEvents`, save, contratti/run systems,
   `project.godot` o il workflow;
-- `workflow_dispatch` espone `lean` e `full`; il profilo completo con sei
-  scenari e QA storico resta manuale per autorita', save, CP-03 e Release Lock;
-- un'eccezione ad alto rischio non modifica la sequenza OF-06/OF-09/OF-11.
+- `workflow_dispatch` espone `lean` e `full`; il profilo completo resta
+  manuale per `CP-03`, `CS-04`, Content Lock, Audiovisual Lock, Release Lock e
+  per ogni modifica ad autorita' o save;
+- un'eccezione ad alto rischio non sposta i checkpoint programmati.
 
 Ordine dei pacchetti:
 
@@ -68,12 +70,9 @@ Ordine dei pacchetti:
 | `OF-01..03` | Object-First | quietanza, marchio, seconda incisione |
 | `OF-04..11` | Object-First | soglia, Registro, promessa, firma, patto, gesto, sigillo, fascicolo |
 | `CP-01..03` | Core Playable Candidate | stabilita', export interno e playtest go/no-go |
-| `MV-01..05` | Media Vertical Slice | apertura, Registro, render, motion, audio e checkpoint |
-| `RF-01..02` | Readability | leggibilita' della run e affidabilita' multi-run |
-| `RM-01..04` | Registry Memory | contratto, evidenza, convergenza, persistenza |
-| `ES-01..04` | Eras And Silences | Silenzio, ramp, mutazioni, Assenza |
-| `CC-01..06` | Content | validatore matrice e completamento per Era |
-| `AV-01..05` | Audiovisual | oggetti, VFX, SFX, musica, sequenze |
+| `CS-01..04` | Campaign Spine | firma, Silenzi, Ere, Assenza e campagna accelerata |
+| `CR-01..03` | Content & Readability | feedback, Archivio, matrice contenuti e Content Lock |
+| `AV-01..05` | Audiovisual Lock | Media Vertical Slice, VFX, audio, musica e cinematiche |
 | `RL-01..03` | Release Lock | accessibilita', export, campagne candidate |
 
 ### Pacchetto chiuso: FR-01
@@ -446,10 +445,13 @@ intermedia e non modifica la Definition of Done di Gallicus 1.0.
 
 Ordine:
 
-1. `CP-01` stabilita', leggibilita' e rimozione dei blocker del loop corrente;
+1. `CP-01` playbook completo, tre run consecutive, quattro route
+   push-your-luck e tre linguette del fascicolo; correggere soltanto problemi
+   Critical o Important di stabilita' e leggibilita';
 2. `CP-02` save/continue, settings, IT/EN/ES, input, reduced motion ed export
-   Windows x64 da profilo pulito;
-3. `CP-03` playtest interno e decisione go/no-go sugli stage campagna.
+   Windows x64 da profilo pulito, con volume SFX persistente e migrazione;
+3. `CP-03` build interna e tre sessioni da 20-30 minuti con mouse, tastiera,
+   due risoluzioni e audit IT/EN/ES; decisione go/no-go sulla campagna.
 
 Vincoli:
 
@@ -457,8 +459,16 @@ Vincoli:
   Silenzi, cinematiche ed espansione contenuti;
 - sono ammessi soltanto fix necessari a completare e rendere affidabile il
   loop gia' esistente;
-- `RunManager`, `GameEvents`, payload e save cambiano solo per blocker provati
-  e richiedono il profilo CI `full` manuale.
+- cambi di ownership, `GameEvents`, shape payload o schema save sono ammessi
+  solo per blocker provati e richiedono il profilo CI `full` manuale; fix
+  interni a `RunManager` che preservano questi contratti usano il gate lean.
+
+Blocker noti all'apertura:
+
+- nessun `export_presets.cfg` Windows x64;
+- reduced motion assente;
+- volume SFX non regolabile;
+- nessun playtest corrente registrato.
 
 Gate:
 
@@ -468,140 +478,79 @@ Gate:
 - IT/EN/ES leggibili a 1280x720 e 1920x1080;
 - export Windows avviabile fuori dall'editor da profilo pulito;
 - nessun fatal error, soft lock, save corrotto, asset mancante o fallback.
+- zero issue Critical e nessuna issue Important irrisolta al gate `CP-03`.
 
-## 4. Media Vertical Slice
+## 4. Campaign Spine
 
-Dipendenza: Core Playable Candidate chiuso con decisione go. Brief, audit,
-concept e prototipi non collegati al runtime restano congelati ma disponibili.
+Dipendenza: `CP-03` chiuso con decisione go.
 
-Obiettivo: validare in una slice production-ready l'apertura e il primo
-contatto con il Registro senza anticipare l'intero stage audiovisivo.
+Status: **LOCKED UNTIL CP-03**.
+
+Obiettivo: rendere completabile la campagna canonica da Era 0 ad Assenza senza
+spostare autorita', alterare reward o mostrare al giocatore metriche interne.
 
 Ordine:
 
-1. `MV-01` brief, storyboard e audit `KEEP / REWORK / REPLACE / REMOVE`;
-2. `MV-02` quattro direzioni visive, selezione e pacchetto 1920x1080 a layer;
-3. `MV-03` sequenza locale in-engine, skip e reduced motion;
-4. `MV-04` cue materiali, ambience e musica prototipo a stem;
-5. `MV-05` catture, ascolto, performance, licenze e checkpoint.
+1. `CS-01` firma comportamentale, coerenza, fissazione e isteresi come helper
+   deterministici sotto l'autorita' di `RunManager`;
+2. `CS-02` Silenzi, incremento monotono delle Ere e ramp invisibile di tre run;
+3. `CS-03` Era 4, Assenza, persistenza terminale, resume e blocco definitivo
+   della nuova run, senza New Game+;
+4. `CS-04` smoke campagna accelerato, simulazione deterministica e playtest
+   grezzo end-to-end.
 
-Vincoli:
+Contratti:
 
-- `RunManager` conserva flow e transizioni; `GameEvents` resta invariato;
-- il controller cinematografico e' locale a `Main` e non salva progresso;
-- nessun asset review-only entra in una scena prima dell'apertura runtime;
-- il prototipo musicale richiede ascolto umano e mastering prima del lock.
+- una versione save successiva a CP-02 persiste firma, contatore di stabilita'
+  e stato della ramp, con default, migrazione e round-trip;
+- `run_ended` conserva la shape e aggiunge `REGISTRY_SILENCE` e
+  `REGISTRY_ABSENCE`, senza verdetto classificatorio;
+- il port UI espone soltanto `can_start`/terminale, mai Era, firma o soglie;
+- il Silenzio di Era 3 imposta `registry_era=4`, elimina il run save attivo e
+  impedisce ogni nuova inizializzazione del Registro.
 
 Gate:
 
-- sequenza comprensibile, skippabile e osservabile senza modificare la fase;
-- focus restituito ad `APRI IL REGISTRO` in IT/EN/ES;
-- equivalente reduced-motion verificato;
-- render e layer leggibili a 1280x720 e 1920x1080;
-- audio senza path mancanti, clipping o seam percepibile;
-- provenienza e stato di adozione definiti per ogni asset.
+- transizione deterministica Era 0 -> 4 e resume intermedio;
+- Silenzio non farmabile, fissazione stabile e ramp di tre run verificata;
+- nessuna ricompensa o probabilita' outcome alterata dall'Era;
+- nuova run rifiutata dopo l'Assenza;
+- campagna completabile con durata proiettata nel target 2-4 ore.
 
-Preparazione disponibile in `docs/support/media_vertical_slice/`: `MV-01` e
-`MV-02` sono pronti per revisione; gli asset `MV-04` sono prototipi di ascolto.
-Nessun file del pacchetto e' ancora consumer runtime.
+## 5. Content & Readability
 
-## 5. Run Readability And Feedback
+Dipendenza: `CS-04` verde.
 
-Dipendenza: Media Vertical Slice.
-
-Obiettivo: rendere una run comprensibile, reattiva e affidabile.
+Obiettivo: completare contenuto e comprensione della campagna funzionante prima
+del lock audiovisivo.
 
 Deliverable:
 
-- stato corrente, prossima azione, rischio e conseguenza sempre leggibili;
-- feedback visivo, audio e UI per ogni gesto;
-- route finali inequivocabili;
-- save/continue, settings e piu' run consecutive verificati;
-- focus, reduced motion e mix audio di base.
+- feedback di stato, rischio e conseguenza per ogni gesto;
+- Archivio, copy e matrice `path x Era x route` completi;
+- ending dichiarati raggiungibili;
+- IT/EN/ES allineate per ogni riga player-facing, comprese le righe dinamiche;
+- rimozione di placeholder, fallback e semantica action/combat;
+- varieta' sufficiente a evitare la stessa sequenza per tre run consecutive
+  nella stessa Era.
 
 Gate:
 
-- tre run consecutive senza riavvio;
-- cashout, double e condanna coperti;
-- nessun stuck modal o route ambigua;
-- nessuna azione importante muta o priva di conferma.
+- campagne complete sui path rappresentativi;
+- nessun overflow o fallback alle due risoluzioni;
+- nessuna route ambigua o azione importante priva di conferma;
+- checkpoint Content Lock `full` verde prima del congelamento del contenuto.
 
-## 6. Registry Memory And Convergence
+## 6. Audiovisual Lock
 
-Dipendenza: Run Readability And Feedback.
-
-Obiettivo: implementare la memoria interpretativa che collega le run.
-
-Deliverable:
-
-- firma comportamentale a quattro assi;
-- coerenza, smoothing, fissazione e isteresi;
-- scars, condanne e path integrati come evidenza;
-- Archivio e riconoscimenti coerenti;
-- persistenza e migrazione save;
-- metriche interne mai esposte come progress bar.
-
-Gate:
-
-- stessi seed producono la stessa evoluzione;
-- fissazione richiede le condizioni canoniche;
-- inversioni rapide non annullano la firma;
-- save/continue conserva lo stato senza corruzione;
-- test statici e runtime coprono soglie e fallback.
-
-## 7. Eras And Silences
-
-Dipendenza: Registry Memory And Convergence.
-
-Obiettivo: trasformare le run in una campagna finita.
-
-Deliverable:
-
-- progressione monotona `registry_era` da 0 a 4;
-- transizioni causate esclusivamente dal Silenzio;
-- ramp di tre run dopo ogni transizione;
-- mutazioni graduali di copy, offerte, art e audio;
-- compressione terminale conforme al canon;
-- Assenza del Registro e blocco definitivo della campagna.
-
-Gate:
-
-- nessuna UI nomina o numera le Ere;
-- il Silenzio non e' farmabile;
-- nessuna ricompensa o probabilita' outcome e' alterata dall'Era;
-- il profilo terminale non reinizializza il Registro;
-- campaign smoke copre transizioni, resume e finale.
-
-## 8. Content Completion
-
-Dipendenza: Eras And Silences.
-
-Obiettivo: completare la varieta' necessaria a una campagna di 2-4 ore.
-
-Deliverable:
-
-- matrice path x Era x route finale coperta;
-- bet, condanne, scars, verdetti e ending senza placeholder;
-- variazioni linguistiche coerenti con convergenza ed Era;
-- Archivio completo;
-- IT/EN/ES allineate al contenuto sorgente.
-
-Gate:
-
-- tutti gli ending dichiarati sono raggiungibili;
-- nessun ramo usa testo generico di fallback;
-- tre run consecutive nella stessa Era non presentano una sequenza identica;
-- playtest completi rientrano nel target di durata senza grind.
-
-## 9. Audiovisual Completion
-
-Dipendenza: Content Completion. La produzione preparatoria puo' iniziare prima,
-ma il lock richiede contenuto stabile.
+Dipendenza: Content Lock. La preparazione Media Vertical Slice resta disponibile
+ma l'integrazione runtime inizia soltanto dopo la campagna funzionante.
 
 Obiettivo: dare alla campagna un'identita' audiovisiva coerente e finita.
 
 Deliverable:
 
+- Media Vertical Slice integrata e validata come primo segmento;
 - kit di oggetti rituali runtime-ready;
 - background e variazioni graduali per il Registro;
 - VFX e motion associati a gesti e conseguenze;
@@ -618,7 +567,10 @@ Gate:
 - reduced motion preserva informazioni e tempi di input;
 - budget performance rispettato alle risoluzioni target.
 
-## 10. Release Lock
+Il checkpoint Audiovisual Lock usa il profilo `full`; include performance,
+mix, provenienza asset e verifica delle alternative reduced-motion.
+
+## 7. Release Lock
 
 Dipendenza: tutti gli stage precedenti.
 
@@ -655,6 +607,15 @@ dossier sono state ispezionate. Il digest dell'artifact lean e'
 `sha256:839f8d3e20e302037a78d432f1a007ecf634d69233869db2333cbc8786cc5adb`.
 La run `32158939715` resta evidenza cumulativa storica da 271 catture, digest
 `sha256:f44f7922cd1389d6c71ec48e382413423c6bde31f3d04107c7230260de6b2156`.
-Il prossimo passo operativo e' `CP-01`: stabilizzare e verificare la
-leggibilita' del loop esistente. Media Vertical Slice e tutti i nuovi sistemi
-campagna restano congelati fino alla decisione go/no-go di CP-03.
+`CP-01` ora include tutti i contratti statici nel playbook canonico e uno smoke
+`CORE_CONTINUITY` che percorre tre run e le tre linguette finali. E' stato
+corretto il blocker per cui `request_end_run_next_bet` raggiungeva un handler
+che non accettava l'intento: la route riapre il loop esistente senza diventare
+`NUOVO PERCORSO`. Playbook e import Godot sono verdi; lo smoke Windows resta
+diagnostico per il crash nativo prima di `SMOKE:BOOT_OK`.
+
+Il prossimo passo operativo e' pubblicare manualmente questa patch su `main` e
+ottenere i tre job lean verdi, incluso `CORE_CONTINUITY`. Solo dopo quel gate
+CP-01 viene chiuso e si apre `CP-02` per reduced motion, volume SFX persistente,
+save recovery/migration, input e primo export Windows x64. Media Vertical Slice
+e sistemi campagna restano congelati fino alla decisione go/no-go di CP-03.

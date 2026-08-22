@@ -9,6 +9,7 @@ from run_headless_smoke import (
     SCENARIO_ROUTE_CONDANNA,
     SCENARIO_ROUTE_DOUBLE,
     SCENARIO_ROUTE_REGISTER_FINAL,
+    SCENARIO_CORE_CONTINUITY,
     SCENARIO_BET_PRESENT,
     SCENARIO_FULL_RUN,
     SMOKE_CLASS_NATIVE_CRASH_AFTER_BOOTSTRAP,
@@ -90,6 +91,33 @@ def _build_route_log(scenario: str, pyl_request: str, register_final: bool = Fal
     return "\n".join(lines)
 
 
+def _build_core_continuity_log() -> str:
+    return "\n".join(
+        [
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_CORE_CONTINUITY_START",
+            f"SMOKE:RUN_SEED={CANONICAL_SMOKE_SEED}",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:REQ=request_pyl_condanna",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:MILESTONE=CORE_RUN_1",
+            "SMOKE:REQ=request_end_run_next_bet",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:REQ=request_pyl_condanna",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:MILESTONE=CORE_RUN_2",
+            "SMOKE:REQ=request_end_run_restart",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:REQ=request_pyl_condanna",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:MILESTONE=CORE_RUN_3",
+            "SMOKE:REQ=request_end_run_quit",
+            "SMOKE:MILESTONE=CORE_RETURNED_TO_MENU",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ]
+    )
+
+
 def main() -> int:
     if CANONICAL_SMOKE_SEED <= 0:
         return fail(f"expected a positive canonical smoke seed, got: {CANONICAL_SMOKE_SEED}")
@@ -134,6 +162,10 @@ def main() -> int:
         )
         if route_failures:
             return fail(f"expected {route_scenario} sample log to pass, got: {route_failures}")
+
+    continuity_failures = validate_log_text(_build_core_continuity_log(), SCENARIO_CORE_CONTINUITY)
+    if continuity_failures:
+        return fail(f"expected CORE_CONTINUITY sample log to pass, got: {continuity_failures}")
 
     command = _build_runtime_command("godot", ".", 60, False)
     if command[-2:] != ["--quit-after", "36000"]:

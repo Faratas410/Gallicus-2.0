@@ -18,11 +18,11 @@ Non esistono firme intermedie di prodotto.
 
 ## Object-First
 
-- [ ] Ogni azione gameplay compila la formula object-first.
-- [ ] Soglia, Registro, firma, patto, gesto e rito hanno oggetti leggibili.
-- [ ] Cashout, condanna e double sono quietanza, marchio e incisione.
-- [ ] Il fascicolo rappresenta l'esito.
-- [ ] Il fascicolo mantiene linguette, copy IT/EN/ES e stati accessibili senza
+- [x] Ogni azione gameplay compila la formula object-first.
+- [x] Soglia, Registro, firma, patto, gesto e rito hanno oggetti leggibili.
+- [x] Cashout, condanna e double sono quietanza, marchio e incisione.
+- [x] Il fascicolo rappresenta l'esito.
+- [x] Il fascicolo mantiene linguette, copy IT/EN/ES e stati accessibili senza
   overflow a 1280x720 e 1920x1080.
 - [ ] Utility e accessibilita' restano convenzionali.
 
@@ -65,6 +65,7 @@ Non esistono firme intermedie di prodotto.
 ## Tecnica
 
 - [ ] Static suite completa verde.
+- [ ] Tre run consecutive e tre linguette END_RUN verificate.
 - [ ] Godot import senza errori.
 - [ ] Profilo CI `full` con i sei scenari storici verde su Linux.
 - [ ] Nessun fatal error, missing resource o `SANITY FAIL`.

@@ -314,6 +314,10 @@ commit manuale:
 - registrazione SHA-256, dimensione, log e commit sorgente;
 - controllo manuale di persistenza, mute SFX, focus e Reduced Motion.
 
+L'EXE non deve dipendere dai CSV sorgente: nell'export Godot il bootstrap i18n
+carica le risorse importate `*.translation`. Qualsiasi warning per CSV mancanti
+nel log dell'eseguibile rende rosso lo smoke di export.
+
 Icona, signing e metadata commerciali restano al Release Lock.
 
 Il Release Lock richiede:

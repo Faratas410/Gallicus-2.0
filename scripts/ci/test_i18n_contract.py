@@ -15,6 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 LANGUAGES_PATH = ROOT / "assets/i18n/languages.gd"
 DEFAULT_CSV = ROOT / "assets/i18n/it.csv"
+MAIN_MENU_PATH = ROOT / "scripts/ui/main_menu.gd"
 
 
 def _registry_paths() -> dict[str, Path]:
@@ -70,7 +71,18 @@ def main() -> int:
                 f"{locale} CSV key mismatch; missing={missing[:8]} extra={extra[:8]}"
             )
 
-    print("[OK][I18N_CONTRACT] language registry and CSV keys are aligned")
+    main_menu = MAIN_MENU_PATH.read_text(encoding="utf-8")
+    for token in (
+        "func _load_imported_translation",
+        "func _compiled_translation_path",
+        "func _translation_resource_exists",
+        "ResourceLoader.exists(translation_path)",
+        'ResourceLoader.load(translation_path, "Translation")',
+    ):
+        if token not in main_menu:
+            raise AssertionError(f"missing exported translation bootstrap contract: {token}")
+
+    print("[OK][I18N_CONTRACT] source CSV and exported translation contracts are aligned")
     return 0
 
 

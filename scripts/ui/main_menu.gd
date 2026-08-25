@@ -176,6 +176,8 @@ func _ensure_i18n_loaded() -> void:
 
 func _load_csv_translation(path: String, locale: String) -> void:
 	if not FileAccess.file_exists(path):
+		if _load_imported_translation(path, locale):
+			return
 		push_warning("[I18N] Missing CSV translation file: %s" % path)
 		return
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
@@ -199,6 +201,26 @@ func _load_csv_translation(path: String, locale: String) -> void:
 			continue
 		translation.add_message(key, row[1])
 	TranslationServer.add_translation(translation)
+
+func _load_imported_translation(csv_path: String, locale: String) -> bool:
+	var translation_path: String = _compiled_translation_path(csv_path, locale)
+	if not ResourceLoader.exists(translation_path):
+		return false
+	var resource: Resource = ResourceLoader.load(translation_path, "Translation")
+	var translation: Translation = resource as Translation
+	if translation == null:
+		push_warning("[I18N] Imported translation has an invalid type: %s" % translation_path)
+		return false
+	TranslationServer.add_translation(translation)
+	return true
+
+func _compiled_translation_path(csv_path: String, locale: String) -> String:
+	return "%s.%s.translation" % [csv_path.get_basename(), locale]
+
+func _translation_resource_exists(csv_path: String, locale: String) -> bool:
+	return FileAccess.file_exists(csv_path) or ResourceLoader.exists(
+		_compiled_translation_path(csv_path, locale)
+	)
 
 func _show_menu() -> void:
 	menu_vbox.visible = true
@@ -787,11 +809,11 @@ func _refresh_localized_ui() -> void:
 
 func _resolve_available_locale(target_locale: String) -> String:
 	var requested_path: String = LanguagesScript.path_for(target_locale)
-	if FileAccess.file_exists(requested_path):
+	if _translation_resource_exists(requested_path, target_locale):
 		return target_locale
 	var fallback_locale: String = LanguagesScript.fallback_locale(target_locale)
 	var fallback_path: String = LanguagesScript.path_for(fallback_locale)
-	if FileAccess.file_exists(fallback_path):
+	if _translation_resource_exists(fallback_path, fallback_locale):
 		if not _language_fallback_logged:
 			print("[I18N] Missing translation resource ", requested_path, ". Fallback locale: ", fallback_locale)
 			_language_fallback_logged = true

@@ -109,6 +109,10 @@ func _ready() -> void:
 	if arena_background != null:
 		_arena_background_default_texture = arena_background.texture
 	_build_book_content_node_list()
+	if GameEvents != null and GameEvents.has_signal("settings_changed"):
+		var settings_callable: Callable = Callable(self, "_on_settings_changed")
+		if not GameEvents.settings_changed.is_connected(settings_callable):
+			GameEvents.settings_changed.connect(settings_callable)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
@@ -140,6 +144,11 @@ func _refresh_localized_text() -> void:
 func _process(delta: float) -> void:
 	if not visible:
 		return
+	if _is_reduced_motion():
+		if header_label != null:
+			header_label.modulate = Color.WHITE
+		_restore_page_positions()
+		return
 	_idle_time += delta
 	if header_label != null:
 		var pulse: float = 0.9 + (sin(_idle_time * BOOK_TITLE_PULSE_SPEED) * 0.1)
@@ -168,6 +177,7 @@ func open() -> void:
 	reset()
 	visible = true
 	_show_closed_intro()
+	call_deferred("_focus_open_book")
 	if GameEvents.has_signal("modal_opened"):
 		GameEvents.modal_opened.emit("betting_circle")
 
@@ -214,6 +224,12 @@ func _play_open_animation() -> void:
 	if _book_content_target_modulates.is_empty():
 		_hide_book_content_for_opening()
 	_hide_closed_intro()
+	if _is_reduced_motion():
+		_show_book_open_state()
+		_show_book_content_immediate()
+		_show_contract_text_immediate()
+		_finish_open_animation()
+		return
 	_show_book_closed_state()
 	modulate = Color(1.0, 1.0, 1.0, 1.0)
 	book_frame.pivot_offset = book_frame.size * 0.5
@@ -379,6 +395,10 @@ func _force_contract_text_readable() -> void:
 func _start_contract_write_animation() -> void:
 	if _contract_write_tween != null and _contract_write_tween.is_valid():
 		_contract_write_tween.kill()
+	if _is_reduced_motion():
+		_show_contract_text_immediate()
+		_finish_open_animation()
+		return
 	_contract_write_tween = create_tween()
 	_contract_write_tween.set_trans(Tween.TRANS_LINEAR)
 	_contract_write_tween.set_ease(Tween.EASE_IN_OUT)
@@ -441,14 +461,48 @@ func _finish_open_animation() -> void:
 	_apply_selection_visual()
 	_update_sigilla_state()
 	_set_book_input_enabled(true)
+	call_deferred("_focus_first_signature")
 
 func _update_page_idle_motion() -> void:
+	if _is_reduced_motion():
+		_restore_page_positions()
+		return
 	if _opening_locked or _awaiting_open_request or _submit_locked:
 		return
 	if left_page != null:
 		left_page.position = _left_page_base_position + Vector2(0.0, sin(_idle_time * 0.72) * PAGE_IDLE_DRIFT_PIXELS)
 	if right_page != null:
 		right_page.position = _right_page_base_position + Vector2(0.0, sin(_idle_time * 0.68 + 0.8) * PAGE_IDLE_DRIFT_PIXELS)
+
+func _restore_page_positions() -> void:
+	if left_page != null:
+		left_page.position = _left_page_base_position
+	if right_page != null:
+		right_page.position = _right_page_base_position
+
+func _is_reduced_motion() -> bool:
+	return SaveManager != null and SaveManager.has_method("get_reduced_motion") and SaveManager.get_reduced_motion()
+
+func _on_settings_changed(payload: Dictionary) -> void:
+	if not payload.has("reduced_motion") or not bool(payload.get("reduced_motion", false)):
+		return
+	if _open_tween != null and _open_tween.is_valid():
+		_open_tween.kill()
+	if _contract_write_tween != null and _contract_write_tween.is_valid():
+		_contract_write_tween.kill()
+	if visible and not _awaiting_open_request:
+		_finish_open_animation()
+	_restore_page_positions()
+
+func _focus_open_book() -> void:
+	if open_book_button != null and open_book_button.visible and not open_book_button.disabled:
+		open_book_button.grab_focus()
+
+func _focus_first_signature() -> void:
+	for button: Button in [left_sign_button, right_sign_button]:
+		if button != null and button.visible and not button.disabled:
+			button.grab_focus()
+			return
 
 func _reset_interaction_lock() -> void:
 	selected_bet_id = &""

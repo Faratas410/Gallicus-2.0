@@ -159,6 +159,15 @@ def _godot_import_step(godot_bin: str) -> list[str]:
     return [godot_bin, "--headless", "--editor", "--path", str(ROOT), "--quit"]
 
 
+def _cp02_runtime_contract_step(godot_bin: str) -> list[str]:
+    return [
+        sys.executable,
+        "scripts/ci/run_cp02_runtime_contract.py",
+        "--godot-bin",
+        godot_bin,
+    ]
+
+
 def _smoke_step(godot_bin: str, scenario: str, output_dir: Path, timeout_sec: int, hard_timeout_sec: int) -> list[str]:
     scenario_dir = output_dir / scenario
     scenario_dir.mkdir(parents=True, exist_ok=True)
@@ -213,6 +222,7 @@ def main() -> int:
         godot_bin = str(Path(args.godot_bin).resolve())
         if not args.skip_import:
             results.append(_run_step("godot_import_headless", _godot_import_step(godot_bin), output_dir))
+        results.append(_run_step("cp02_runtime_contract", _cp02_runtime_contract_step(godot_bin), output_dir))
         for scenario in scenarios:
             results.append(
                 _run_step(

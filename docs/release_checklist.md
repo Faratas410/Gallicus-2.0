@@ -77,6 +77,10 @@ Non esistono firme intermedie di prodotto.
 ## Pacchetto
 
 - [ ] Export Windows x64 avviabile fuori dall'editor.
+
+Nota CP-02: implementazione runtime, preset e contratti sono presenti nel
+working tree; le caselle accessibilita', input, audio ed export restano aperte
+fino al signoff locale/CI successivo al commit manuale.
 - [ ] Clean-install test.
 - [ ] Metadata, icona e versione corretti.
 - [ ] Crediti e licenze completi.

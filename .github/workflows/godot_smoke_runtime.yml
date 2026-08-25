@@ -80,13 +80,18 @@ jobs:
           xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit > "$LOG_DIR/import.log" 2>&1
           tail -n 200 "$LOG_DIR/import.log" || true
 
+      - name: Run isolated CP-02 persistence contract
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/run_cp02_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
+
       - name: Run route bundle
         run: |
           set -uo pipefail
           PROFILE="${{ inputs.profile || 'lean' }}"
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          LEAN_SCENARIOS=(ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
-          FULL_SCENARIOS=(BET_PRESENT FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
+          LEAN_SCENARIOS=(KEYBOARD_FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
+          FULL_SCENARIOS=(BET_PRESENT FULL_RUN KEYBOARD_FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
           if [ "$PROFILE" = "full" ]; then
             SCENARIOS=("${FULL_SCENARIOS[@]}")
           else
@@ -172,6 +177,8 @@ jobs:
             MARK_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_mark_*.png' | wc -l)
             INCISION_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '07_incision_*.png' | wc -l)
             END_RUN_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_end_run.png' | wc -l)
+            SETTINGS_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '09_settings_*.png' | wc -l)
+            TOTAL_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '*.png' | wc -l)
             test "$THRESHOLD_COUNT" -eq 24
             test "$REGISTRY_TABLE_COUNT" -eq 24
             test "$PROMISE_COUNT" -eq 30
@@ -183,12 +190,14 @@ jobs:
             test "$MARK_COUNT" -eq 18
             test "$INCISION_COUNT" -eq 24
             test "$END_RUN_COUNT" -eq 1
+            test "$SETTINGS_COUNT" -eq 18
+            test "$TOTAL_COUNT" -eq 289
           else
-            timeout 240s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn -- --section=final_dossier
-            DOSSIER_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '08_dossier_*.png' | wc -l)
+            timeout 240s xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT_BIN" --path "." --scene res://tools/visual_qa_capture.tscn -- --section=accessibility_settings
+            SETTINGS_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '09_settings_*.png' | wc -l)
             TOTAL_COUNT=$(find artifacts/visual_qa -maxdepth 1 -type f -name '*.png' | wc -l)
-            test "$DOSSIER_COUNT" -eq 36
-            test "$TOTAL_COUNT" -eq 36
+            test "$SETTINGS_COUNT" -eq 18
+            test "$TOTAL_COUNT" -eq 18
           fi
 
       - name: Upload visual evidence
@@ -214,4 +223,5 @@ jobs:
             artifacts/visual_qa/07_push_your_luck.png
             artifacts/visual_qa/08_end_run.png
             artifacts/visual_qa/08_dossier_*.png
+            artifacts/visual_qa/09_settings_*.png
           if-no-files-found: error

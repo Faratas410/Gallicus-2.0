@@ -642,6 +642,34 @@ theme_override_styles/panel = ExtResource("23_settings_row")
 horizontal_alignment = 1
 text = "Musica: 75%"
 
+[node name="SfxVolumeLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_styles/panel = ExtResource("23_settings_row")
+
+[node name="SfxVolumeLabel" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/SfxVolumeLabelPanel"]
+text = "VOLUME EFFETTI"
+
+[node name="SfxVolumeSlider" type="HSlider" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn"]
+custom_minimum_size = Vector2(0, 24)
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 1.0
+theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
+theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
+theme_override_styles/slider = ExtResource("19_settings_slider_track")
+theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
+theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
+
+[node name="SfxVolumeValuePanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn"]
+custom_minimum_size = Vector2(0, 36)
+theme_override_styles/panel = ExtResource("23_settings_row")
+
+[node name="SfxVolumeValue" type="Label" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/SfxVolumeValuePanel"]
+horizontal_alignment = 1
+text = "Effetti: 100%"
+
 [node name="ResolutionLabelPanel" type="PanelContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn"]
 custom_minimum_size = Vector2(0, 38)
 theme_override_styles/panel = ExtResource("23_settings_row")
@@ -670,6 +698,10 @@ text = "Risoluzione: 1280x720"
 [node name="SchermoInteroToggle" type="CheckBox" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn"]
 custom_minimum_size = Vector2(0, 36)
 text = "SCHERMO INTERO"
+
+[node name="ReducedMotionToggle" type="CheckBox" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn"]
+custom_minimum_size = Vector2(0, 36)
+text = "MOVIMENTO RIDOTTO"
 
 [node name="SettingsButtonRow" type="HBoxContainer" parent="MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox"]
 size_flags_horizontal = 3

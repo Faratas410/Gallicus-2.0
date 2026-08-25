@@ -79,6 +79,8 @@ per uso reale, rinominate se adottate oppure rimosse dalle superfici finali.
 ## Mix
 
 - Bus minimi: Master, Music, SFX.
+- In CP-02 il bus `SFX` viene creato a runtime se assente, inviato a `Master` e
+  regolato dal profilo persistente; i livelli per-cue restano invariati.
 - UI e gesti critici restano leggibili sopra ambience e musica.
 - Evitare picchi improvvisi su condanna e finale.
 - Volumi coerenti tra SFX della stessa famiglia.
@@ -125,4 +127,5 @@ per uso reale, rinominate se adottate oppure rimosse dalle superfici finali.
 - il mix resta leggibile in tutte le schermate;
 - reduced motion non rimuove feedback audio necessario;
 - impostazioni persistono correttamente;
+- mute SFX a `0` silenzia il bus senza modificare o sostituire i cue;
 - nessun path audio mancante o warning di import.

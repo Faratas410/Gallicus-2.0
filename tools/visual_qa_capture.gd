@@ -16,6 +16,15 @@ const THRESHOLD_VIEWPORT_SIZES: Array[Vector2i] = [
 const THRESHOLD_LOCALES: Array[String] = ["it", "en", "es"]
 const THRESHOLD_BUTTON_PATH: String = "Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton"
 const MAIN_MENU_PATH: String = "Main/MenuLayer/MainMenu"
+const ACCESSIBILITY_SETTINGS_SECTION: String = "accessibility_settings"
+const SETTINGS_PANEL_PATH: String = "Main/MenuLayer/MainMenu/SettingsPanel"
+const SETTINGS_SFX_SLIDER_PATH: String = "Main/MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/SfxVolumeSlider"
+const SETTINGS_REDUCED_MOTION_PATH: String = "Main/MenuLayer/MainMenu/SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/ReducedMotionToggle"
+const ACCESSIBILITY_SETTINGS_VIEWPORT_SIZES: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
+]
+const ACCESSIBILITY_SETTINGS_LOCALES: Array[String] = ["it", "en", "es"]
 const REGISTRY_TABLE_VIEWPORT_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1920, 1080),
@@ -109,7 +118,8 @@ func _run() -> void:
 	var gesture_choice_only: bool = _capture_section == GESTURE_CHOICE_SECTION
 	var judgment_seal_only: bool = _capture_section == JUDGMENT_SEAL_SECTION
 	var final_dossier_only: bool = _capture_section == FINAL_DOSSIER_SECTION
-	var targeted_section: bool = pact_tablet_only or gesture_choice_only or judgment_seal_only or final_dossier_only
+	var accessibility_settings_only: bool = _capture_section == ACCESSIBILITY_SETTINGS_SECTION
+	var targeted_section: bool = pact_tablet_only or gesture_choice_only or judgment_seal_only or final_dossier_only or accessibility_settings_only
 	if get_node_or_null("UI") != null and get_node_or_null("RunManager") != null:
 		_main = self
 	else:
@@ -124,6 +134,11 @@ func _run() -> void:
 	if not targeted_section:
 		await _capture_arena_threshold_matrix()
 		await _capture("01_menu")
+	if not targeted_section or accessibility_settings_only:
+		await _capture_accessibility_settings_matrix()
+	if accessibility_settings_only:
+		await _finish_capture_run()
+		return
 
 	_enable_deterministic_run_seed()
 	await _press_when_ready("Main/MenuLayer/MainMenu/CenterContainer/MenuVBox/NewGameButton", 4.0)
@@ -195,6 +210,62 @@ func _run() -> void:
 		await _capture("08_end_run")
 
 	await _finish_capture_run()
+
+func _capture_accessibility_settings_matrix() -> void:
+	var main_menu: Node = get_tree().root.get_node_or_null(MAIN_MENU_PATH)
+	var settings_panel: Control = get_tree().root.get_node_or_null(SETTINGS_PANEL_PATH) as Control
+	var sfx_slider: HSlider = get_tree().root.get_node_or_null(SETTINGS_SFX_SLIDER_PATH) as HSlider
+	var reduced_motion_toggle: CheckBox = get_tree().root.get_node_or_null(SETTINGS_REDUCED_MOTION_PATH) as CheckBox
+	if main_menu == null or settings_panel == null or sfx_slider == null or reduced_motion_toggle == null:
+		_failures.append("CP-02 settings nodes missing for visual QA matrix")
+		return
+	var previous_locale: String = TranslationServer.get_locale()
+	var previous_size: Vector2i = get_tree().root.size
+	var previous_content_scale_size: Vector2i = get_tree().root.content_scale_size
+	var previous_reduced_motion: bool = SaveManager.get_reduced_motion()
+	var previous_processing: bool = main_menu.is_processing()
+	main_menu.set_process(false)
+	main_menu.call("_on_settings_pressed")
+	await _settle(12)
+	for locale: String in ACCESSIBILITY_SETTINGS_LOCALES:
+		SaveManager.set_language(locale)
+		TranslationServer.set_locale(locale)
+		main_menu.call("_refresh_localized_ui")
+		await _settle(8)
+		for viewport_size: Vector2i in ACCESSIBILITY_SETTINGS_VIEWPORT_SIZES:
+			DisplayServer.window_set_size(viewport_size)
+			get_tree().root.content_scale_size = viewport_size
+			get_tree().root.size = viewport_size
+			await _settle(20)
+			var prefix: String = "09_settings_%s_%dx%d" % [locale, viewport_size.x, viewport_size.y]
+
+			reduced_motion_toggle.set_pressed_no_signal(false)
+			main_menu.call("_on_reduced_motion_toggled", false)
+			sfx_slider.release_focus()
+			await _settle(8)
+			await _capture("%s_standard" % prefix, viewport_size)
+
+			sfx_slider.grab_focus()
+			await _settle(12)
+			await _capture("%s_focus_sfx" % prefix, viewport_size)
+
+			sfx_slider.release_focus()
+			reduced_motion_toggle.set_pressed_no_signal(true)
+			main_menu.call("_on_reduced_motion_toggled", true)
+			await _settle(8)
+			await _capture("%s_reduced" % prefix, viewport_size)
+
+	reduced_motion_toggle.set_pressed_no_signal(previous_reduced_motion)
+	main_menu.call("_on_reduced_motion_toggled", previous_reduced_motion)
+	SaveManager.set_language(previous_locale)
+	TranslationServer.set_locale(previous_locale)
+	main_menu.call("_refresh_localized_ui")
+	main_menu.call("_on_settings_back_pressed")
+	main_menu.set_process(previous_processing)
+	DisplayServer.window_set_size(previous_size)
+	get_tree().root.content_scale_size = previous_content_scale_size
+	get_tree().root.size = previous_size
+	await _settle(8)
 
 func _finish_capture_run() -> void:
 	await _cleanup_capture_scene()

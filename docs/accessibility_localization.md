@@ -13,6 +13,12 @@ percezione del solo colore o conoscenza della lingua sorgente.
 - Enter/Space attivano l'elemento focalizzato.
 - Escape torna indietro solo quando non perde una decisione irreversibile.
 - Nessun gesto richiede drag, timing stretto o click ripetuti per necessita'.
+- In CP-02 `ui_accept`, `ui_cancel` e la navigazione focus nativa coprono menu,
+  Registro, firma, patto, gesto, sigillo, Push Your Luck e linguette finali.
+- `Escape` chiude soltanto Opzioni, Crediti e Archivio. Una superficie rituale
+  aperta non viene chiusa e non emette intenti in risposta a `Escape`.
+- Ordine Opzioni: lingua, risoluzione, fullscreen, reduced motion, luminosita',
+  Master, Music, SFX, indietro.
 
 ## Visuale
 
@@ -22,6 +28,12 @@ percezione del solo colore o conoscenza della lingua sorgente.
 - Icona, forma o testo accompagnano gli stati critici.
 - Reduced motion preserva feedback e durata di lettura.
 - Flash ripetuti e flicker non sono ammessi.
+- Con Reduced Motion attivo drift, fog, bandiera, fiamme, bob, pulse, flicker,
+  shake, scale, traslazioni e scrittura progressiva si fermano. Restano cambi di
+  stato e dissolvenze non superiori a 0,08 secondi, senza rimuovere copy, focus,
+  selezione o conseguenza.
+- La modalita' standard conserva soltanto ambience lenta e a bassa ampiezza;
+  non usa componenti stroboscopiche rapide o ad alto contrasto.
 
 ## Audio
 
@@ -29,6 +41,8 @@ percezione del solo colore o conoscenza della lingua sorgente.
 - Le azioni critiche hanno anche feedback visuale/testuale.
 - Nessuna informazione di gameplay e' audio-only.
 - Picchi e transizioni rispettano un volume coerente.
+- Il bus runtime `SFX` e' figlio di `Master`; lo slider SFX agisce sul bus senza
+  alterare i dB specifici dei singoli cue.
 
 ## Lingue
 

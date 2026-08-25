@@ -122,10 +122,10 @@ def _assert_lean_and_full_checkpoint() -> None:
     capture = _read(VISUAL_QA)
     for lean_token in (
         "visual_stage:",
-        "--section=final_dossier",
+        "--section=accessibility_settings",
         "timeout 240s",
-        'test "$DOSSIER_COUNT" -eq 36',
-        'test "$TOTAL_COUNT" -eq 36',
+        'test "$SETTINGS_COUNT" -eq 18',
+        'test "$TOTAL_COUNT" -eq 18',
     ):
         if lean_token not in workflow:
             raise AssertionError(f"lean Object-First checkpoint missing: {lean_token}")

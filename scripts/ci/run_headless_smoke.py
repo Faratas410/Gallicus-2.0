@@ -19,6 +19,7 @@ SCENARIO_ROUTE_DOUBLE = "ROUTE_DOUBLE"
 SCENARIO_ROUTE_CONDANNA = "ROUTE_CONDANNA"
 SCENARIO_ROUTE_REGISTER_FINAL = "ROUTE_REGISTER_FINAL"
 SCENARIO_CORE_CONTINUITY = "CORE_CONTINUITY"
+SCENARIO_KEYBOARD_FULL_RUN = "KEYBOARD_FULL_RUN"
 # Stable fixture from a previously green six-scenario Linux matrix. Runtime
 # smoke must never derive gameplay coverage from the wall clock.
 CANONICAL_SMOKE_SEED = 1782373819
@@ -171,6 +172,23 @@ SCENARIO_SPECS: dict[str, SmokeScenarioSpec] = {
             "SMOKE:MILESTONE=CORE_RUN_3",
             "SMOKE:REQ=request_end_run_quit",
             "SMOKE:MILESTONE=CORE_RETURNED_TO_MENU",
+            "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
+        ),
+        require_single_boot_marker=True,
+    ),
+    SCENARIO_KEYBOARD_FULL_RUN: SmokeScenarioSpec(
+        name=SCENARIO_KEYBOARD_FULL_RUN,
+        required_substrings=(
+            "SMOKE:BOOT_OK",
+            "SMOKE:STEP=SCENARIO_KEYBOARD_FULL_RUN_START",
+            "SMOKE:KEYBOARD key=Enter focus=NewGameButton",
+            "SMOKE:MILESTONE=BET_PRESENT",
+            "SMOKE:MILESTONE=PACT_SEALED_OPENED",
+            "SMOKE:MILESTONE=INTERMEDIATE_CHOICE",
+            "SMOKE:MILESTONE=RESOLVE_OPENED",
+            "SMOKE:MILESTONE=PUSH_YOUR_LUCK",
+            "SMOKE:MILESTONE=END_RUN",
+            "SMOKE:MILESTONE=KEYBOARD_RETURNED_TO_MENU",
             "SMOKE:QUIT_REQUESTED reason=smoke_gate_complete",
         ),
         require_single_boot_marker=True,
@@ -378,6 +396,19 @@ def validate_log_text(log_text: str, scenario: str) -> list[str]:
                 failures.append(
                     f"core continuity expected {expected_count} occurrences of {token}, got {actual_count}"
                 )
+
+    if scenario == SCENARIO_KEYBOARD_FULL_RUN:
+        for token, expected_count in (
+            ("SMOKE:KEYBOARD key=Enter focus=Btn_FIRST_REACTION_NEXT", 1),
+            ("SMOKE:KEYBOARD key=Enter focus=Btn_RESOLUTION_STRIKE", 3),
+        ):
+            actual_count = log_text.count(token)
+            if actual_count != expected_count:
+                failures.append(
+                    f"keyboard full run expected {expected_count} occurrences of {token}, got {actual_count}"
+                )
+        if "SMOKE:REQ=" in log_text:
+            failures.append("keyboard full run must not use direct smoke intent requests")
 
     if spec.require_single_boot_marker:
         boot_marker_count = log_text.count("SMOKE:BOOT_OK")

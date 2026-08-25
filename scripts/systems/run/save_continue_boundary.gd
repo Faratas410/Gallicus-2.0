@@ -32,7 +32,7 @@ func validate_continue_payload(payload: Dictionary) -> Dictionary:
 	if not payload.has("run") or not (payload.get("run") is Dictionary):
 		return {"ok": false, "reason": "missing_run_payload"}
 	var run_payload: Dictionary = payload.get("run", {}) as Dictionary
-	if not run_payload.has("level3_schema") or typeof(run_payload.get("level3_schema", null)) != TYPE_INT:
+	if not run_payload.has("level3_schema") or not _is_integer_number(run_payload.get("level3_schema", null)):
 		return {"ok": false, "reason": "missing_level3_schema"}
 	if int(run_payload.get("level3_schema", 0)) != LEVEL3_SCHEMA_VERSION:
 		return {"ok": false, "reason": "unsupported_level3_schema"}
@@ -116,6 +116,13 @@ func _resolve_candidate_bet_id(run_state: RunState) -> StringName:
 	if run_state.current_bet_id != "":
 		return StringName(run_state.current_bet_id)
 	return &""
+
+func _is_integer_number(value: Variant) -> bool:
+	if typeof(value) == TYPE_INT:
+		return true
+	if typeof(value) != TYPE_FLOAT:
+		return false
+	return is_equal_approx(float(value), floorf(float(value)))
 
 func _build_runtime_payload(runtime_fields: Dictionary) -> Dictionary:
 	var upgrades: Dictionary = {}

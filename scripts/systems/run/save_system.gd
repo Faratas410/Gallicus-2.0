@@ -83,14 +83,14 @@ func apply_level3_payload(run_state: RunState, payload: Dictionary) -> Dictionar
 
 
 func validate_level3_payload(payload: Dictionary) -> Dictionary:
-	if not payload.has("schema_version") or typeof(payload.get("schema_version")) != TYPE_INT:
+	if not payload.has("schema_version") or not _is_integer_number(payload.get("schema_version")):
 		return {"ok": false, "reason": "missing_or_invalid_schema_version"}
 	if int(payload.get("schema_version", 0)) != RUN_SCHEMA_VERSION:
 		return {"ok": false, "reason": "unsupported_save_wrapper_schema"}
 	if not payload.has("run") or not (payload.get("run") is Dictionary):
 		return {"ok": false, "reason": "missing_run_payload"}
 	var run_payload: Dictionary = payload.get("run", {}) as Dictionary
-	if not run_payload.has("level3_schema") or typeof(run_payload.get("level3_schema")) != TYPE_INT:
+	if not run_payload.has("level3_schema") or not _is_integer_number(run_payload.get("level3_schema")):
 		return {"ok": false, "reason": "missing_level3_schema"}
 	if int(run_payload.get("level3_schema", 0)) != LEVEL3_RUN_SCHEMA_VERSION:
 		return {"ok": false, "reason": "unsupported_level3_schema"}
@@ -140,17 +140,36 @@ func save_run_payload(payload: Dictionary) -> bool:
 	return replace_err == OK
 
 func load_run_payload() -> Dictionary:
-	var payload: Dictionary = {}
-	if FileAccess.file_exists(RUN_PATH):
-		if _load_run_from_path(RUN_PATH, payload):
-			return payload
-		_backup_corrupt_run()
-		if FileAccess.file_exists(RUN_BAK_PATH) and _load_run_from_path(RUN_BAK_PATH, payload):
-			return payload
+	var result: Dictionary = load_run_payload_result()
+	if not bool(result.get("ok", false)):
 		return {}
-	if FileAccess.file_exists(RUN_BAK_PATH) and _load_run_from_path(RUN_BAK_PATH, payload):
-		return payload
-	return {}
+	return (result.get("payload", {}) as Dictionary).duplicate(true)
+
+
+func load_run_payload_result() -> Dictionary:
+	var primary_exists: bool = FileAccess.file_exists(RUN_PATH)
+	var backup_exists: bool = FileAccess.file_exists(RUN_BAK_PATH)
+	if not primary_exists and not backup_exists:
+		return _load_result(false, {}, "none", "missing_run_save")
+
+	var primary_result: Dictionary = _load_run_from_path_result(RUN_PATH) if primary_exists else _load_result(false, {}, "primary", "missing_run_save")
+	if bool(primary_result.get("ok", false)):
+		return _load_result(true, primary_result.get("payload", {}) as Dictionary, "primary", "")
+
+	var backup_result: Dictionary = _load_run_from_path_result(RUN_BAK_PATH) if backup_exists else _load_result(false, {}, "backup", "missing_backup_save")
+	if bool(backup_result.get("ok", false)):
+		if primary_exists:
+			_quarantine_path(RUN_PATH, str(primary_result.get("reason", "corrupt_run_save")))
+		var recovered_payload: Dictionary = (backup_result.get("payload", {}) as Dictionary).duplicate(true)
+		if not save_run_payload(recovered_payload):
+			return _load_result(false, {}, "backup", "backup_recovery_write_failed")
+		return _load_result(true, recovered_payload, "backup", "recovered_from_backup")
+
+	var final_reason: String = str(primary_result.get("reason", "corrupt_run_save"))
+	if final_reason == "missing_run_save":
+		final_reason = str(backup_result.get("reason", "corrupt_run_save"))
+	quarantine_run_set(final_reason)
+	return _load_result(false, {}, "none", final_reason)
 
 func clear_run() -> void:
 	var tmp_abs: String = ProjectSettings.globalize_path(RUN_TMP_PATH)
@@ -166,32 +185,73 @@ func clear_run() -> void:
 	if FileAccess.file_exists(RUN_BAK2_PATH):
 		DirAccess.remove_absolute(bak2_abs)
 
-func _backup_corrupt_run() -> void:
-	if not FileAccess.file_exists(RUN_PATH):
-		return
-	var timestamp: int = int(Time.get_unix_time_from_system())
-	var corrupt_path: String = "user://run.corrupt.%d.save" % timestamp
-	var run_abs: String = ProjectSettings.globalize_path(RUN_PATH)
-	var corrupt_abs: String = ProjectSettings.globalize_path(corrupt_path)
-	DirAccess.rename_absolute(run_abs, corrupt_abs)
+func quarantine_run_set(reason: String = "invalid_continue_payload") -> Array[String]:
+	var quarantined: Array[String] = []
+	for path: String in [RUN_PATH, RUN_TMP_PATH, RUN_BAK_PATH, RUN_BAK2_PATH]:
+		var quarantined_path: String = _quarantine_path(path, reason)
+		if quarantined_path != "":
+			quarantined.append(quarantined_path)
+	return quarantined
+
+
+func _quarantine_path(path: String, reason: String) -> String:
+	if not FileAccess.file_exists(path):
+		return ""
+	var safe_reason: String = reason.to_lower().strip_edges()
+	for forbidden: String in ["/", "\\", ":", " ", "\t", "\r", "\n"]:
+		safe_reason = safe_reason.replace(forbidden, "_")
+	if safe_reason == "":
+		safe_reason = "invalid_save"
+	var timestamp: int = Time.get_ticks_msec()
+	var base_name: String = path.trim_prefix("user://").replace(".", "_")
+	var quarantine_path: String = "user://%s.quarantine.%d.%s" % [base_name, timestamp, safe_reason]
+	var rename_error: Error = DirAccess.rename_absolute(
+		ProjectSettings.globalize_path(path),
+		ProjectSettings.globalize_path(quarantine_path)
+	)
+	return quarantine_path if rename_error == OK else ""
 
 func _load_run_from_path(path: String, out_payload: Dictionary) -> bool:
+	var result: Dictionary = _load_run_from_path_result(path)
+	if not bool(result.get("ok", false)):
+		return false
+	out_payload.clear()
+	out_payload.merge(result.get("payload", {}) as Dictionary, true)
+	return true
+
+
+func _load_run_from_path_result(path: String) -> Dictionary:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		return false
+		return _load_result(false, {}, path, "run_save_unreadable")
 	var text: String = file.get_as_text()
 	file.close()
 	var parsed: Variant = JSON.parse_string(text)
 	if typeof(parsed) != TYPE_DICTIONARY:
-		return false
+		return _load_result(false, {}, path, "corrupt_run_save")
 	var data: Dictionary = parsed as Dictionary
-	if not data.has("schema_version") or typeof(data.get("schema_version")) != TYPE_INT:
-		return false
+	if not data.has("schema_version") or not _is_integer_number(data.get("schema_version")):
+		return _load_result(false, {}, path, "missing_or_invalid_schema_version")
 	if not data.has("payload") or not (data.get("payload") is Dictionary):
-		return false
+		return _load_result(false, {}, path, "missing_run_payload")
 	var version_value: int = int(data.get("schema_version", RUN_SCHEMA_VERSION))
 	if version_value != RUN_SCHEMA_VERSION:
+		return _load_result(false, {}, path, "unsupported_save_wrapper_schema")
+	return _load_result(true, (data.get("payload", {}) as Dictionary).duplicate(true), path, "")
+
+
+func _load_result(ok: bool, payload: Dictionary, source: String, reason: String) -> Dictionary:
+	return {
+		"ok": ok,
+		"payload": payload.duplicate(true),
+		"source": source,
+		"reason": reason,
+	}
+
+
+func _is_integer_number(value: Variant) -> bool:
+	if typeof(value) == TYPE_INT:
+		return true
+	if typeof(value) != TYPE_FLOAT:
 		return false
-	out_payload.clear()
-	out_payload.merge(data.get("payload", {}) as Dictionary, true)
-	return true
+	return is_equal_approx(float(value), floorf(float(value)))

@@ -464,7 +464,8 @@ Vincoli:
   solo per blocker provati e richiedono il profilo CI `full` manuale; fix
   interni a `RunManager` che preservano questi contratti usano il gate lean.
 
-Blocker noti all'apertura:
+Blocker registrati all'apertura (risolti nel working tree CP-02, in attesa di
+signoff):
 
 - nessun `export_presets.cfg` Windows x64;
 - reduced motion assente;
@@ -501,6 +502,38 @@ Gate:
   `sha256:f4242b4f6181ae8d5499f17d5ce5f74b8cec862a7f2586ffb53cb8059a3d1090`.
 - Gate chiuso: 2026-08-22. Il runtime Windows headless resta diagnostico per
   il crash nativo noto prima di `SMOKE:BOOT_OK`; non invalida il signoff Linux.
+
+### Pacchetto attivo: CP-02
+
+Status: **IMPLEMENTATO, IN ATTESA DI SIGNOFF**.
+
+- Profilo `v4`: SFX persistente e Reduced Motion con migrazione `v3 -> v4`,
+  default e sanitizzazione coperti dal contratto runtime isolato.
+- UI: opzioni IT/EN/ES, focus deterministico, `ui_accept`/`ui_cancel`, controlli
+  dinamici focalizzabili e `Escape` limitato a Opzioni, Crediti e Archivio.
+  `RunManager` conserva flow e outcome; la UI emette gli intenti esistenti.
+- Motion: Reduced Motion rimuove drift, flicker, pulse, scale, traslazioni,
+  shake e scrittura progressiva preservando stato, copy, focus e conseguenza.
+  Anche il profilo standard elimina strobing rapido o ad alto contrasto.
+- Audio: bus `SFX` runtime inviato a `Master`, volume persistente additivo nel
+  payload `settings_changed`, dB specifici dei cue invariati.
+- Save: risultato `ok/payload/source/reason`, recovery dal backup con
+  rigenerazione del primario e quarantena conservativa dei file invalidi. Run
+  schema `1`, Level 3 schema `2` e normalizzazione legacy restano invariati.
+- Export: preset `Core Playable Candidate - Windows x86_64`, EXE singolo con
+  PCK incorporato in `artifacts/exports/cp02/`; signing, icona e metadata finali
+  restano al Release Lock. Viewport 1280x720, stretch `viewport`, aspect `keep`.
+- Verifica introdotta: contratto runtime isolato, `KEYBOARD_FULL_RUN` con eventi
+  tastiera reali e matrice `09_settings_*` da 18 catture. Il profilo `full`
+  atteso passa da 271 a 289 immagini; il lean CP-02 produce soltanto le 18 nuove.
+- Prove locali: playbook statico completo, import Godot 4.6.2 e contratto
+  runtime isolato verdi; matrice visuale locale verde con 18/18 PNG ispezionati.
+  Gli smoke headless Windows, incluso il baseline `BET_PRESENT`, riproducono il
+  crash nativo noto prima di `SMOKE:BOOT_OK` e restano diagnostici.
+- Signoff ancora richiesto: commit/push manuale, export Windows avviabile con
+  `APPDATA` isolato, SHA-256/dimensione/log/commit sorgente, ispezione manuale,
+  CI Linux lean verde e profilo `full` manuale con tre job verdi.
+- `CP-03` resta chiuso fino alla nota documentale successiva a queste evidenze.
 
 ## 4. Campaign Spine
 

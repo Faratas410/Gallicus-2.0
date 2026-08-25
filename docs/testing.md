@@ -60,6 +60,8 @@ python scripts/ci/run_testing_playbook.py --godot-bin ".\tools\godot\Godot_v4.6.
 
 Scrive log e summary in `artifacts/testing_playbook/`. Windows e' diagnostico;
 la superficie automatica canonica resta CI Linux.
+Quando e' fornito `--godot-bin`, il playbook esegue anche il contratto runtime
+CP-02 con directory utente temporanea prima degli smoke.
 
 ## Static suite
 
@@ -134,8 +136,8 @@ Nei checkpoint il workflow espone esattamente tre job:
 
 - `static_contracts` chiama una sola volta il playbook, fonte unica dei test;
 - `runtime_routes` importa Godot una volta e percorre in sequenza cashout,
-  double, condanna, register-final e `CORE_CONTINUITY`, conservando tutti i log
-  anche se una route fallisce;
+  double, condanna, register-final, `CORE_CONTINUITY` e `KEYBOARD_FULL_RUN`,
+  conservando tutti i log anche se una route fallisce;
 - `visual_stage` importa Godot una volta e cattura soltanto lo stage corrente.
 
 Il profilo manuale `full` aggiunge `BET_PRESENT`, `FULL_RUN` e il visual QA
@@ -145,6 +147,11 @@ fallback con mirror ufficiale, retry e timeout limitati.
 `CORE_CONTINUITY` completa tre run nello stesso processo e verifica le tre
 linguette del fascicolo: next bet, new path e ritorno al menu. Le quattro route
 push-your-luck restano coperte dagli scenari dedicati.
+
+`KEYBOARD_FULL_RUN` inietta eventi `InputEventKey` press/release reali. Parte
+dal focus del menu, attraversa Registro, firma, patto, gesto, tre colpi,
+Push Your Luck e fascicolo, quindi verifica il ritorno al menu senza chiamare
+direttamente gli intenti di gameplay.
 
 Il runner inietta un seed smoke canonico e lo registra come
 `SMOKE:RUNNER_SEED` e `SMOKE:RUN_SEED`. La matrice di signoff non usa
@@ -184,6 +191,12 @@ Per OF-10/OF-11, la matrice locale mirata del fascicolo usa:
 .\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=final_dossier
 ```
 
+Per CP-02, la matrice mirata delle impostazioni usa:
+
+```powershell
+.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=accessibility_settings
+```
+
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
 Se il runtime Windows non raggiunge il bootstrap, il job Linux `visual_stage`
 produce l'evidenza canonica mirata. Per OF-11 sono richieste le 36 catture
@@ -213,6 +226,9 @@ le risoluzioni, open, updated, closed, focus, selected e disabled. Il
 Il profilo `full` OF-11 richiede 271 catture complessive, inclusa
 `08_end_run.png`; si controllano rapporto 7:4, linguette fisse 304x64,
 wrapping, contrasto e assenza di fallback italiano nel copy dinamico.
+CP-02 aggiunge 18 catture `09_settings_*`: IT/EN/ES, 1280x720 e 1920x1080,
+stato standard, focus SFX e Reduced Motion attivo. Il lean CP-02 produce solo
+queste 18; il profilo manuale `full` ne richiede 289 complessive.
 
 Punti minimi:
 
@@ -287,6 +303,18 @@ Per IT/EN/ES:
 - informazioni non solo colore/audio.
 
 ## Export
+
+Il gate CP-02 usa il preset `Core Playable Candidate - Windows x86_64` e
+produce `artifacts/exports/cp02/Gallicus_Core_Playable_Candidate.exe`. Dopo il
+commit manuale:
+
+- export release con template Windows Godot 4.6.2;
+- avvio con `APPDATA` temporaneo;
+- `KEYBOARD_FULL_RUN` sull'EXE;
+- registrazione SHA-256, dimensione, log e commit sorgente;
+- controllo manuale di persistenza, mute SFX, focus e Reduced Motion.
+
+Icona, signing e metadata commerciali restano al Release Lock.
 
 Il Release Lock richiede:
 

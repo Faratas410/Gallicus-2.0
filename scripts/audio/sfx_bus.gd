@@ -1,6 +1,7 @@
 extends Node
 
 const DEFAULT_VOLUME_DB: float = -10.0
+const SFX_BUS_NAME: String = "SFX"
 const POOL_SIZE: int = 8
 const CUE_VOLUME_DB: Dictionary = {
 	&"button_hover": -18.0,
@@ -60,16 +61,49 @@ const SFX_PATHS: Dictionary = {
 var _streams: Dictionary = {}
 var _players: Array[AudioStreamPlayer] = []
 var _next_player_index: int = 0
+var _sfx_bus_index: int = -1
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_ensure_sfx_bus()
 	for index: int in range(POOL_SIZE):
 		var player: AudioStreamPlayer = AudioStreamPlayer.new()
 		player.name = "SfxPlayer%d" % index
 		player.volume_db = DEFAULT_VOLUME_DB
+		player.bus = SFX_BUS_NAME
 		add_child(player)
 		_players.append(player)
 	_preload_streams()
+	_apply_saved_sfx_volume()
+	if GameEvents != null and GameEvents.has_signal("settings_changed"):
+		var settings_callable: Callable = Callable(self, "_on_settings_changed")
+		if not GameEvents.settings_changed.is_connected(settings_callable):
+			GameEvents.settings_changed.connect(settings_callable)
+
+func _ensure_sfx_bus() -> void:
+	_sfx_bus_index = AudioServer.get_bus_index(SFX_BUS_NAME)
+	if _sfx_bus_index < 0:
+		AudioServer.add_bus()
+		_sfx_bus_index = AudioServer.bus_count - 1
+		AudioServer.set_bus_name(_sfx_bus_index, SFX_BUS_NAME)
+	AudioServer.set_bus_send(_sfx_bus_index, "Master")
+
+func _apply_saved_sfx_volume() -> void:
+	var value: float = 1.0
+	if SaveManager != null and SaveManager.has_method("get_sfx_volume"):
+		value = float(SaveManager.get_sfx_volume())
+	_apply_sfx_volume_linear(value)
+
+func _on_settings_changed(payload: Dictionary) -> void:
+	if payload.has("sfx_volume"):
+		_apply_sfx_volume_linear(float(payload.get("sfx_volume", 1.0)))
+
+func _apply_sfx_volume_linear(value: float) -> void:
+	if _sfx_bus_index < 0:
+		_ensure_sfx_bus()
+	var volume_scale: float = clamp(value, 0.0, 1.0)
+	var db_value: float = -80.0 if volume_scale <= 0.001 else linear_to_db(volume_scale)
+	AudioServer.set_bus_volume_db(_sfx_bus_index, db_value)
 
 func play_cue(cue: StringName, volume_db: float = INF) -> void:
 	if _players.is_empty():

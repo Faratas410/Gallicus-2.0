@@ -121,6 +121,8 @@ def _assert_workflow() -> None:
             raise AssertionError(f"lean route bundle missing scenario: {scenario}")
     if "CORE_CONTINUITY" not in runtime_block:
         raise AssertionError("lean route bundle must cover three runs and all dossier routes")
+    if "KEYBOARD_FULL_RUN" not in runtime_block:
+        raise AssertionError("lean route bundle must cover the full keyboard-only run")
     for full_only in ("BET_PRESENT", "FULL_RUN"):
         if full_only not in runtime_block:
             raise AssertionError(f"manual full profile missing historical scenario: {full_only}")
@@ -129,11 +131,13 @@ def _assert_workflow() -> None:
             raise AssertionError(f"route bundle must retain all results and logs: {token}")
 
     for token in (
-        "--section=final_dossier",
+        "--section=accessibility_settings",
         "timeout 240s",
         "timeout 480s",
         'test "$DOSSIER_COUNT" -eq 36',
-        'test "$TOTAL_COUNT" -eq 36',
+        'test "$SETTINGS_COUNT" -eq 18',
+        'test "$TOTAL_COUNT" -eq 18',
+        'test "$TOTAL_COUNT" -eq 289',
         "visual_qa_evidence",
     ):
         if token not in visual_block:

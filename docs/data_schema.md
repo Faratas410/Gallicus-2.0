@@ -83,6 +83,23 @@ Regole:
 - profilo terminale non puo' riattivare il Registro;
 - un save interrotto durante una cinematica riprende da uno stato canonico.
 
+### Profilo e recovery CP-02
+
+- Il profilo persistente e' alla versione `4`. Aggiunge `sfx_volume` (`float`,
+  default `1.0`, range `0..1`) e `reduced_motion` (`bool`, default `false`).
+- La migrazione `v3 -> v4` preserva lingua, luminosita', Master, Music,
+  risoluzione, fullscreen, unlock e meta.
+- Il wrapper run resta schema `1`; il payload Level 3 resta schema `2` e non
+  riceve campi CP-02.
+- `SaveSystem.load_run_payload_result()` restituisce `ok`, `payload`, `source`
+  e `reason`; `load_run_payload()` resta il wrapper compatibile che restituisce
+  soltanto il payload.
+- Un backup valido rigenera il primario. Primario e backup corrotti o
+  incompatibili vengono rinominati in quarantena, mai cancellati dal recovery;
+  Continue viene disabilitato e il menu mostra una ragione localizzata.
+- Gli alias legacy dei flow step restano normalizzati soltanto al boundary;
+  valori sconosciuti sono rifiutati.
+
 ## Matrice contenuto
 
 Il gate Content & Readability deve poter verificare:

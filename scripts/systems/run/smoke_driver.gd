@@ -9,6 +9,7 @@ const SCENARIO_ROUTE_DOUBLE: String = "ROUTE_DOUBLE"
 const SCENARIO_ROUTE_CONDANNA: String = "ROUTE_CONDANNA"
 const SCENARIO_ROUTE_REGISTER_FINAL: String = "ROUTE_REGISTER_FINAL"
 const SCENARIO_CORE_CONTINUITY: String = "CORE_CONTINUITY"
+const SCENARIO_KEYBOARD_FULL_RUN: String = "KEYBOARD_FULL_RUN"
 var _phase_name_main_menu: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.MAIN_MENU)
 var _phase_name_run_init: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.RUN_INIT)
 var _phase_name_bet_present: String = RunPhaseContract.get_phase_name(RunPhaseContractScript.BET_PRESENT)
@@ -45,6 +46,7 @@ func should_start_driver_scenario() -> bool:
 		SCENARIO_ROUTE_CONDANNA,
 		SCENARIO_ROUTE_REGISTER_FINAL,
 		SCENARIO_CORE_CONTINUITY,
+		SCENARIO_KEYBOARD_FULL_RUN,
 	]
 
 

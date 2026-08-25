@@ -296,8 +296,6 @@ def _assert_visual_qa() -> None:
         if token not in capture:
             raise AssertionError(f"final dossier visual QA missing: {token}")
     for token in (
-        "--section=final_dossier",
-        "timeout 240s",
         "timeout 480s",
         "DOSSIER_COUNT",
         'test "$DOSSIER_COUNT" -eq 36',

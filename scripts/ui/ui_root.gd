@@ -416,6 +416,10 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_run_manager_port = RunManagerUiPort.new(get_tree())
 	_bind_scene_nodes()
+	if GameEvents != null and GameEvents.has_signal("settings_changed"):
+		var settings_callable: Callable = Callable(self, "_on_settings_changed")
+		if not GameEvents.settings_changed.is_connected(settings_callable):
+			GameEvents.settings_changed.connect(settings_callable)
 	if boot_fail_button != null:
 		var boot_fail_callable: Callable = Callable(self, "_on_boot_fail_back_to_menu")
 		if not boot_fail_button.pressed.is_connected(boot_fail_callable):
@@ -847,6 +851,10 @@ func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_popup_panel == null:
 		return
 	scar_popup_panel.visible = true
+	if _is_reduced_motion():
+		scar_popup_panel.modulate.a = 1.0
+		scar_popup_panel.scale = Vector2.ONE
+		return
 	scar_popup_panel.modulate.a = 0.0
 	scar_popup_panel.scale = Vector2(0.96, 0.96)
 	if _scar_popup_tween != null and _scar_popup_tween.is_valid():
@@ -881,6 +889,9 @@ func _show_arena_resolution_overlay() -> void:
 	arena_resolution_label.visible = true
 	if arena_resolution_panel != null:
 		arena_resolution_panel.visible = true
+	if _is_reduced_motion():
+		arena_resolution_label.modulate.a = 1.0
+		return
 	arena_resolution_label.modulate.a = 0.0
 	if _arena_resolution_tween != null and _arena_resolution_tween.is_valid():
 		_arena_resolution_tween.kill()
@@ -1458,6 +1469,10 @@ func _reveal_verdict_group(group: Array[CanvasItem], sequence_id: int) -> bool:
 			reveal_targets.append(node)
 	if reveal_targets.is_empty():
 		return sequence_id == _verdict_reveal_sequence_id
+	if _is_reduced_motion():
+		for node: CanvasItem in reveal_targets:
+			node.modulate.a = 1.0
+		return sequence_id == _verdict_reveal_sequence_id
 	if _verdict_reveal_tween != null and _verdict_reveal_tween.is_valid():
 		_verdict_reveal_tween.kill()
 	_verdict_reveal_tween = create_tween()
@@ -1730,6 +1745,13 @@ func _pulse_pressure_indicator(previous: int, next: int) -> void:
 		return
 	if _pressure_pulse_tween != null and _pressure_pulse_tween.is_valid():
 		_pressure_pulse_tween.kill()
+	if _is_reduced_motion():
+		escalation_row.scale = Vector2.ONE
+		if escalation_label != null:
+			escalation_label.modulate = Color.WHITE
+		if pressure_state_label != null:
+			pressure_state_label.modulate = Color.WHITE
+		return
 	var increasing: bool = next > previous
 	var pulse_color: Color = Color(0.88, 0.26, 0.12, 1.0) if increasing else Color(0.92, 0.68, 0.28, 1.0)
 	var pulse_scale: Vector2 = Vector2(1.045, 1.045) if increasing else Vector2(1.025, 1.025)
@@ -2099,6 +2121,9 @@ func _start_resolution_ritual_pulse() -> void:
 		return
 	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
 		_resolve_ritual_pulse_tween.kill()
+	resolve_ritual_strike_button.modulate = Color.WHITE
+	if _is_reduced_motion():
+		return
 	_resolve_ritual_pulse_tween = create_tween()
 	_resolve_ritual_pulse_tween.set_loops()
 	_resolve_ritual_pulse_tween.set_trans(Tween.TRANS_SINE)
@@ -2120,7 +2145,7 @@ func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 		var mark: Label = resolve_ritual_strike_marks[mark_index]
 		if mark != null:
 			mark.modulate = Color(0.98, 0.82, 0.46, 1.0) if on_beat else Color(0.76, 0.68, 0.5, 1.0)
-			mark.scale = Vector2(1.18, 1.18) if on_beat else Vector2(1.08, 1.08)
+			mark.scale = Vector2.ONE if _is_reduced_motion() else (Vector2(1.18, 1.18) if on_beat else Vector2(1.08, 1.08))
 	if resolve_ritual_prompt != null:
 		var prompts: Array[String] = [
 			tr("PRIMO COLPO - VERDETTO INCISO"),
@@ -3150,7 +3175,7 @@ func _create_bet_option(bet_id: String, bet: Dictionary, extra_note: String) -> 
 func _create_bet_button(bet_id: String, bet: Dictionary, extra_note: String) -> Button:
 	var button: Button = Button.new()
 	button.flat = false
-	button.focus_mode = Control.FOCUS_NONE
+	button.focus_mode = Control.FOCUS_ALL
 	button.custom_minimum_size = Vector2(0, 230)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -3184,7 +3209,7 @@ func _create_signature_button(bet_id: String) -> Button:
 	var button: Button = Button.new()
 	button.text = tr("FIRMA")
 	button.flat = false
-	button.focus_mode = Control.FOCUS_NONE
+	button.focus_mode = Control.FOCUS_ALL
 	button.custom_minimum_size = Vector2(0, 48)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.add_theme_font_size_override("font_size", 18)
@@ -3364,7 +3389,7 @@ func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: La
 		button.disabled = true
 		if selected_button != null:
 			button.modulate = Color(1.0, 1.0, 1.0, 1.0) if button == selected_button else Color(1.0, 1.0, 1.0, 0.45)
-			button.scale = Vector2(1.025, 1.025) if button == selected_button and scale_selected else Vector2.ONE
+			button.scale = Vector2(1.025, 1.025) if button == selected_button and scale_selected and not _is_reduced_motion() else Vector2.ONE
 		else:
 			button.scale = Vector2.ONE
 	if hint_label != null:
@@ -3376,6 +3401,11 @@ func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: La
 		_sign_feedback_tween.kill()
 	var panel_color: Color = panel.modulate
 	panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
+	if _is_reduced_motion():
+		panel.modulate = Color(1.0, 1.0, 1.0, panel_color.a)
+		if play_feedback_sfx:
+			_play_sign_feedback_sfx_if_available()
+		return
 	_sign_feedback_tween = create_tween()
 	_sign_feedback_tween.set_trans(Tween.TRANS_QUAD)
 	_sign_feedback_tween.set_ease(Tween.EASE_OUT)
@@ -3403,6 +3433,9 @@ func _reset_decision_surface(panel: Control, buttons: Array[Button], hint_label:
 
 func _pre_resolve_tension_boost() -> void:
 	if modals_root == null:
+		return
+	if _is_reduced_motion():
+		modals_root.modulate.a = 1.0
 		return
 	var tween: Tween = create_tween()
 	tween.tween_property(modals_root, "modulate:a", 0.85, 0.08)
@@ -3432,6 +3465,9 @@ func _on_sign_preview_entered(button: Button) -> void:
 	if button == null or button.disabled or _is_signing:
 		return
 	_play_sfx(&"button_hover")
+	if _is_reduced_motion():
+		button.scale = Vector2.ONE
+		return
 	button.pivot_offset = button.size * 0.5
 	button.scale = Vector2(SIGN_PREVIEW_SCALE, SIGN_PREVIEW_SCALE)
 
@@ -3457,6 +3493,10 @@ func begin_sign_feedback(buttons: Array[Button], panel: CanvasItem) -> void:
 			_sign_feedback_tween.kill()
 		var panel_color: Color = _sign_feedback_panel.modulate
 		_sign_feedback_panel.modulate = Color(SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, SIGN_LOCK_DARKEN_RGB, panel_color.a)
+		if _is_reduced_motion():
+			_sign_feedback_panel.modulate = Color(1.0, 1.0, 1.0, panel_color.a)
+			_play_sign_feedback_sfx_if_available()
+			return
 		_sign_feedback_tween = create_tween()
 		_sign_feedback_tween.set_trans(Tween.TRANS_QUAD)
 		_sign_feedback_tween.set_ease(Tween.EASE_OUT)
@@ -3519,6 +3559,7 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if not should_disable else Control.CURSOR_ARROW
 		if _is_pyl_button(button):
 			_apply_push_luck_button_visual(button)
+	_focus_first_available(buttons)
 
 func _refresh_push_luck_button_visuals() -> void:
 	for button: Button in [push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button]:
@@ -3572,6 +3613,15 @@ func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween, 
 		return tween
 	if tween != null and tween.is_valid():
 		tween.kill()
+	if _is_reduced_motion():
+		_restore_panel_motion_base(panel)
+		panel.modulate.a = 1.0
+		panel.visible = active
+		modal.visible = active
+		if not active and modal == _current_modal:
+			_current_modal = null
+		_refresh_modal_dimmer()
+		return null
 	if active:
 		modal.visible = true
 		panel.visible = true
@@ -3684,6 +3734,9 @@ func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -
 	var control: Control = panel as Control
 	if control == null:
 		return
+	if _is_reduced_motion():
+		_restore_panel_motion_base(control)
+		return
 	var base_position: Vector2 = _get_panel_motion_base_position(control)
 	var start_scale: Vector2 = Vector2(0.985, 0.985)
 	var start_position: Vector2 = base_position
@@ -3715,19 +3768,25 @@ func _play_backdrop_enter(modal: Control, kind: String = MOTION_KIND_STANDARD) -
 		if not texture_backdrop.has_meta(BACKDROP_BASE_SCALE_META):
 			texture_backdrop.set_meta(BACKDROP_BASE_SCALE_META, texture_backdrop.scale)
 		var base_scale: Vector2 = texture_backdrop.get_meta(BACKDROP_BASE_SCALE_META) as Vector2
-		texture_backdrop.pivot_offset = texture_backdrop.size * 0.5
-		var start_scale: Vector2 = base_scale * (Vector2(1.018, 1.018) if kind == MOTION_KIND_ENDING else Vector2(1.012, 1.012))
-		texture_backdrop.scale = start_scale
-		var backdrop_tween: Tween = create_tween()
-		backdrop_tween.set_trans(Tween.TRANS_SINE)
-		backdrop_tween.set_ease(Tween.EASE_OUT)
-		backdrop_tween.tween_property(texture_backdrop, "scale", base_scale, 1.15 if kind == MOTION_KIND_ENDING else 0.7)
+		if _is_reduced_motion():
+			texture_backdrop.scale = base_scale
+		else:
+			texture_backdrop.pivot_offset = texture_backdrop.size * 0.5
+			var start_scale: Vector2 = base_scale * (Vector2(1.018, 1.018) if kind == MOTION_KIND_ENDING else Vector2(1.012, 1.012))
+			texture_backdrop.scale = start_scale
+			var backdrop_tween: Tween = create_tween()
+			backdrop_tween.set_trans(Tween.TRANS_SINE)
+			backdrop_tween.set_ease(Tween.EASE_OUT)
+			backdrop_tween.tween_property(texture_backdrop, "scale", base_scale, 1.15 if kind == MOTION_KIND_ENDING else 0.7)
 	var shade: ColorRect = _find_modal_shade(modal)
 	if shade == null:
 		return
 	if not shade.has_meta(BACKDROP_SHADE_ALPHA_META):
 		shade.set_meta(BACKDROP_SHADE_ALPHA_META, shade.color.a)
 	var base_alpha: float = float(shade.get_meta(BACKDROP_SHADE_ALPHA_META))
+	if _is_reduced_motion():
+		shade.color.a = base_alpha
+		return
 	var color: Color = shade.color
 	color.a = clamp(base_alpha + (0.12 if kind == MOTION_KIND_ENDING else 0.08), 0.0, 0.86)
 	shade.color = color
@@ -3763,6 +3822,8 @@ func _set_bet_modal(active: bool) -> void:
 	_emit_modal_telemetry("bet", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+	if active:
+		call_deferred("_focus_first_available", _bet_buttons)
 
 func _set_pact_sealed_modal(active: bool) -> void:
 	if active:
@@ -3775,6 +3836,8 @@ func _set_pact_sealed_modal(active: bool) -> void:
 	_emit_modal_telemetry("pact_sealed", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+	if active:
+		call_deferred("_focus_first_available", [pact_sealed_advance_button])
 
 func _set_resolve_ritual_modal(active: bool) -> void:
 	if active:
@@ -3790,6 +3853,8 @@ func _set_resolve_ritual_modal(active: bool) -> void:
 	_emit_modal_telemetry("resolve_ritual", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+	if active:
+		call_deferred("_focus_first_available", [resolve_ritual_strike_button, resolve_ritual_advance_button])
 
 func _set_intermediate_choice_modal(active: bool) -> void:
 	if not active:
@@ -3810,6 +3875,8 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 	_emit_modal_telemetry("intermediate_choice", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+	if active:
+		call_deferred("_focus_first_available", [intermediate_choice_placa_button, intermediate_choice_provoca_button])
 
 func _set_push_luck_modal(active: bool) -> void:
 	if active:
@@ -3822,6 +3889,8 @@ func _set_push_luck_modal(active: bool) -> void:
 	_emit_modal_telemetry("push_luck", active)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+	if active:
+		call_deferred("_focus_first_available", [push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button])
 
 func _set_game_over_modal(active: bool) -> void:
 	if active:
@@ -3842,6 +3911,42 @@ func _set_game_over_modal(active: bool) -> void:
 		_emit_modal_telemetry("ending", false)
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
+	if active:
+		call_deferred("_focus_first_available", [restart_button, next_bet_button, quit_button])
+
+func _focus_first_available(controls: Array) -> void:
+	for candidate: Variant in controls:
+		var control: Control = candidate as Control
+		if control == null or not control.is_visible_in_tree() or control.focus_mode == Control.FOCUS_NONE:
+			continue
+		var button: BaseButton = control as BaseButton
+		if button != null and button.disabled:
+			continue
+		control.grab_focus()
+		return
+
+func _is_reduced_motion() -> bool:
+	return SaveManager != null and SaveManager.has_method("get_reduced_motion") and SaveManager.get_reduced_motion()
+
+func _on_settings_changed(payload: Dictionary) -> void:
+	var reduced_motion: bool = bool(payload.get("reduced_motion", _is_reduced_motion()))
+	if not reduced_motion:
+		return
+	if _pressure_pulse_tween != null and _pressure_pulse_tween.is_valid():
+		_pressure_pulse_tween.kill()
+	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
+		_resolve_ritual_pulse_tween.kill()
+	if _resolve_ritual_hit_tween != null and _resolve_ritual_hit_tween.is_valid():
+		_resolve_ritual_hit_tween.kill()
+	if _sign_feedback_tween != null and _sign_feedback_tween.is_valid():
+		_sign_feedback_tween.kill()
+	if escalation_row != null:
+		escalation_row.scale = Vector2.ONE
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.scale = Vector2.ONE
+		resolve_ritual_strike_button.modulate = Color.WHITE
+	if torch_flicker_player != null:
+		torch_flicker_player.stop()
 
 func enter_ending_mode() -> void:
 	_ending_mode_active = true
@@ -3853,7 +3958,7 @@ func enter_ending_mode() -> void:
 		ending_background.visible = true
 	if torch_flicker_overlay != null:
 		torch_flicker_overlay.visible = true
-	if torch_flicker_player != null and torch_flicker_player.has_animation("flicker"):
+	if not _is_reduced_motion() and torch_flicker_player != null and torch_flicker_player.has_animation("flicker"):
 		torch_flicker_player.play("flicker")
 	if modal_dimmer != null:
 		modal_dimmer.visible = false
@@ -4055,6 +4160,10 @@ func _handle_resolution_ritual_input(event: InputEvent) -> bool:
 		return false
 	var should_strike: bool = false
 	if event is InputEventKey:
+		if resolve_ritual_strike_button != null and resolve_ritual_strike_button.has_focus():
+			# The focused Button owns ui_accept. Handling the same key again here
+			# would count one physical press as two ritual strikes.
+			return false
 		var key_event: InputEventKey = event as InputEventKey
 		should_strike = key_event.pressed and not key_event.echo and (
 			key_event.keycode == KEY_SPACE or key_event.keycode == KEY_ENTER or key_event.keycode == KEY_KP_ENTER

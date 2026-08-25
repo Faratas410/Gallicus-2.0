@@ -805,6 +805,7 @@ var _smoke_full_run_pyl_sent: bool = false
 var _smoke_full_run_pact_advance_sent: bool = false
 var _smoke_full_run_resolve_advance_sent: bool = false
 var _smoke_core_completed_runs: int = 0
+var _smoke_keyboard_last_input_msec: int = 0
 var _flow_watchdog: FlowWatchdog = FlowWatchdogScript.new()
 var _flow_diagnostics: FlowDiagnostics = FlowDiagnostics.new()
 var _finale_builder: FinaleBuilder = FinaleBuilder.new()
@@ -857,6 +858,7 @@ func _smoke_start_scenario() -> void:
 	_smoke_full_run_pact_advance_sent = false
 	_smoke_full_run_resolve_advance_sent = false
 	_smoke_core_completed_runs = 0
+	_smoke_keyboard_last_input_msec = 0
 	var start_logs: PackedStringArray = _smoke.begin_scenario()
 	for line: String in start_logs:
 		print(line)
@@ -868,6 +870,9 @@ func _stop_smoke_driver() -> void:
 	_smoke_driver_next_tick_msec = -1
 
 func _on_smoke_driver_tick() -> void:
+	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "KEYBOARD_FULL_RUN":
+		_run_smoke_keyboard_full_run_driver()
+		return
 	if _is_smoke_full_run_like_scenario():
 		_run_smoke_full_run_driver()
 		return
@@ -988,8 +993,80 @@ func _is_smoke_full_run_like_scenario() -> bool:
 		"CORE_CONTINUITY",
 	]
 
+func _run_smoke_keyboard_full_run_driver() -> void:
+	var now_msec: int = Time.get_ticks_msec()
+	if now_msec - _smoke_keyboard_last_input_msec < 140:
+		return
+	var focus_owner: Control = get_viewport().gui_get_focus_owner()
+	var focus_name: String = focus_owner.name if focus_owner != null else "NONE"
+	if _phase == RunPhase.MAIN_MENU:
+		if _smoke_full_run_step == "QUIT_REQUESTED":
+			print("SMOKE:MILESTONE=KEYBOARD_RETURNED_TO_MENU")
+			print("SMOKE:QUIT_REQUESTED reason=smoke_gate_complete")
+			_stop_smoke_driver()
+			_smoke_quit_gate()
+			return
+		_smoke_full_run_step = "NEW_RUN"
+		_smoke_keyboard_input(KEY_ENTER, focus_name)
+		return
+	if _phase == RunPhase.RUN_INIT:
+		_smoke_full_run_step = "RUN_INIT"
+		return
+	if _phase == RunPhase.BET_PRESENT:
+		if focus_name == "NONE":
+			_smoke_keyboard_input(KEY_TAB, focus_name)
+			return
+		if focus_name == "Btn_Open_Book" or focus_name.begins_with("Btn_Select") or focus_name.begins_with("Btn_Sign"):
+			_smoke_keyboard_input(KEY_ENTER, focus_name)
+			return
+		_smoke_keyboard_input(KEY_TAB, focus_name)
+		return
+	if _phase == RunPhase.BET_COMMITTED:
+		_smoke_keyboard_accept_or_focus(focus_owner, focus_name)
+		return
+	if _phase == RunPhase.INTERMEDIATE_CHOICE:
+		_smoke_keyboard_accept_or_focus(focus_owner, focus_name)
+		return
+	if _phase == RunPhase.PUSH_YOUR_LUCK:
+		if focus_name == "Btn_PUSH_YOUR_LUCK_CONDANNA":
+			_smoke_keyboard_input(KEY_ENTER, focus_name)
+			return
+		_smoke_keyboard_input(KEY_TAB, focus_name)
+		return
+	if _phase == RunPhase.GAME_OVER:
+		if focus_name == "Btn_END_RUN_QUIT":
+			_smoke_full_run_step = "QUIT_REQUESTED"
+			_smoke_keyboard_input(KEY_ENTER, focus_name)
+			return
+		_smoke_keyboard_input(KEY_TAB, focus_name)
+
+func _smoke_keyboard_accept_or_focus(focus_owner: Control, focus_name: String) -> void:
+	if focus_name == "NONE":
+		_smoke_keyboard_input(KEY_TAB, focus_name)
+		return
+	var button: BaseButton = focus_owner as BaseButton
+	if button != null and button.disabled:
+		return
+	_smoke_keyboard_input(KEY_ENTER, focus_name)
+
+func _smoke_keyboard_input(keycode: Key, focus_name: String) -> void:
+	_smoke_keyboard_last_input_msec = Time.get_ticks_msec()
+	var pressed_event: InputEventKey = InputEventKey.new()
+	pressed_event.keycode = keycode
+	pressed_event.physical_keycode = keycode
+	pressed_event.pressed = true
+	pressed_event.echo = false
+	print("SMOKE:KEYBOARD key=%s focus=%s" % [OS.get_keycode_string(keycode), focus_name])
+	Input.parse_input_event(pressed_event)
+	var released_event: InputEventKey = pressed_event.duplicate() as InputEventKey
+	released_event.pressed = false
+	Input.parse_input_event(released_event)
+
 func _is_smoke_core_continuity_scenario() -> bool:
 	return OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "CORE_CONTINUITY"
+
+func _is_keyboard_full_run_smoke() -> bool:
+	return OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "KEYBOARD_FULL_RUN"
 
 func _reset_smoke_full_run_cycle() -> void:
 	_smoke_full_run_step = ""
@@ -1425,9 +1502,11 @@ func request_load_continue() -> void:
 	if _phase != RunPhase.MAIN_MENU and _phase != RunPhase.NONE:
 		push_error("RunManager: request_load_continue in wrong phase %s\nSNAPSHOT:\n%s" % [_phase_to_name(_phase), _flow_snapshot("request_load_continue")])
 		return
-	var payload: Dictionary = _save_system.load_run_payload()
-	if payload.is_empty():
+	var load_result: Dictionary = _save_system.load_run_payload_result()
+	if not bool(load_result.get("ok", false)):
+		_reject_invalid_continue_payload(str(load_result.get("reason", "invalid_continue_payload")))
 		return
+	var payload: Dictionary = (load_result.get("payload", {}) as Dictionary).duplicate(true)
 	if not _apply_run_save_payload(payload):
 		_reject_invalid_continue_payload(_last_save_reject_reason)
 		return
@@ -1622,7 +1701,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	_smoke_mark("PACT_SEALED_OPENED")
 	_ritual_advance_pact_requested = false
 	GameEvents.pact_sealed_opened.emit()
-	if _is_smoke_mode():
+	if _is_smoke_mode() and not _is_keyboard_full_run_smoke():
 		_ritual_advance_pact_requested = true
 		GameEvents.pact_sealed_closed.emit()
 		_smoke_mark("PACT_SEALED_CLOSED")
@@ -1664,7 +1743,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	_ritual_advance_resolve_requested = false
 	_touch_request_activity("resolve_ritual_opened")
 	GameEvents.resolve_ritual_opened.emit(payload)
-	if _is_smoke_mode():
+	if _is_smoke_mode() and not _is_keyboard_full_run_smoke():
 		_ritual_advance_resolve_requested = true
 		GameEvents.resolve_ritual_closed.emit()
 		_flow_log("resolve_ritual_closed", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
@@ -2174,7 +2253,7 @@ func _reject_invalid_continue_payload(reason: String) -> void:
 	push_warning("RUN_SAVE_REJECTED: %s" % final_reason)
 	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("continue_rejected"):
 		GameEvents.continue_rejected.emit(final_reason)
-	_save_system.clear_run()
+	_save_system.quarantine_run_set(final_reason)
 	_set_phase(RunPhase.MAIN_MENU, "continue_rejected_invalid_save")
 
 func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:

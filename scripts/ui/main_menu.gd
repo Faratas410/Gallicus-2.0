@@ -18,6 +18,8 @@ const LanguagesScript = preload("res://assets/i18n/languages.gd")
 const ARENA_THRESHOLD_STYLE_CROSSED: StyleBox = preload("res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_crossed.tres")
 const ARENA_THRESHOLD_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_disabled.tres")
 const ARENA_THRESHOLD_CROSSED_META: StringName = &"arena_threshold_crossed"
+const SETTINGS_ROW_STYLE: StyleBox = preload("res://assets/ui/official/styleboxes/sb_settings_row.tres")
+const SETTINGS_FOCUS_STYLE: StyleBox = preload("res://assets/ui/official/styleboxes/sb_settings_field_hover.tres")
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var menu_center: CenterContainer = get_node("CenterContainer") as CenterContainer
@@ -30,6 +32,8 @@ const ARENA_THRESHOLD_CROSSED_META: StringName = &"arena_threshold_crossed"
 @onready var language_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/LanguageLabelPanel/LanguageLabel") as Label
 @onready var volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/VolumeLabelPanel/VolumeLabel") as Label
 @onready var music_volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/MusicVolumeLabelPanel/MusicVolumeLabel") as Label
+@onready var sfx_volume_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/SfxVolumeLabelPanel/SfxVolumeLabel") as Label
+@onready var sfx_volume_label_panel: PanelContainer = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/SfxVolumeLabelPanel") as PanelContainer
 @onready var resolution_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/ResolutionLabelPanel/ResolutionLabel") as Label
 @onready var continue_button: Button = get_node("CenterContainer/MenuVBox/ContinueButton") as Button
 @onready var continue_hint_panel: PanelContainer = get_node("CenterContainer/MenuVBox/ContinueHintPanel") as PanelContainer
@@ -58,9 +62,12 @@ const ARENA_THRESHOLD_CROSSED_META: StringName = &"arena_threshold_crossed"
 @onready var master_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/MasterVolumeValuePanel/MasterVolumeValue") as Label
 @onready var music_volume_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/MusicVolumeSlider") as HSlider
 @onready var music_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/MusicVolumeValuePanel/MusicVolumeValue") as Label
+@onready var sfx_volume_slider: HSlider = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/SfxVolumeSlider") as HSlider
+@onready var sfx_volume_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/SfxVolumeValuePanel/SfxVolumeValue") as Label
 @onready var resolution_option: OptionButton = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/ResolutionOption") as OptionButton
 @onready var resolution_value: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/ResolutionValuePanel/ResolutionValue") as Label
 @onready var fullscreen_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/SchermoInteroToggle") as CheckBox
+@onready var reduced_motion_toggle: CheckBox = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/ReducedMotionToggle") as CheckBox
 @onready var brightness_modulate: CanvasModulate = get_node_or_null("../../BrightnessModulate") as CanvasModulate
 @onready var brightness_overlay: ColorRect = get_node_or_null("../../BrightnessOverlayLayer/BrightnessOverlay") as ColorRect
 
@@ -131,7 +138,12 @@ func _ready() -> void:
 	resolution_option.item_selected.connect(_on_resolution_selected)
 	master_volume_slider.value_changed.connect(_on_master_volume_changed)
 	music_volume_slider.value_changed.connect(_on_music_volume_changed)
+	sfx_volume_slider.value_changed.connect(_on_sfx_volume_changed)
+	sfx_volume_slider.focus_entered.connect(_on_sfx_focus_changed.bind(true))
+	sfx_volume_slider.focus_exited.connect(_on_sfx_focus_changed.bind(false))
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
+	reduced_motion_toggle.toggled.connect(_on_reduced_motion_toggled)
+	_configure_focus_order()
 		# Godot 4.6: TranslationServer no longer exposes a translation-changed signal.
 	# UI refresh on locale updates is handled in _notification(NOTIFICATION_TRANSLATION_CHANGED).
 	if GameEvents.has_signal("condanna_registered"):
@@ -196,6 +208,7 @@ func _show_menu() -> void:
 	settings_panel.visible = false
 	condanna_tooltip.visible = false
 	_refresh_continue_button()
+	call_deferred("_focus_main_menu")
 
 func _hide_menu() -> void:
 	visible = false
@@ -234,18 +247,21 @@ func _show_achievements() -> void:
 	_build_museo_list()
 	_set_achievements_tab(ACHIEVEMENTS_TAB_CONDANNE)
 	_refresh_condanne_visuals()
+	call_deferred("_focus_first_available", [condanne_tab_button, museo_tab_button, back_button])
 
 func _show_credits() -> void:
 	menu_vbox.visible = false
 	achievements_panel.visible = false
 	credits_panel.visible = true
 	settings_panel.visible = false
+	call_deferred("_focus_first_available", [credits_back_button])
 
 func _show_settings() -> void:
 	menu_vbox.visible = false
 	achievements_panel.visible = false
 	credits_panel.visible = false
 	settings_panel.visible = true
+	call_deferred("_focus_first_available", [language_option])
 
 func _disable_unavailable_buttons() -> void:
 	load_game_button.disabled = true
@@ -399,6 +415,14 @@ func _refresh_continue_button() -> void:
 		continue_hint_label.text = tr(MENU_EMPTY_RUN_HINT)
 
 func _format_continue_reject_reason(reason: String) -> String:
+	if reason == "missing_run_save":
+		return tr("Nessun salvataggio valido disponibile. Inizia un nuovo percorso.")
+	if reason == "corrupt_run_save" or reason == "run_save_unreadable":
+		return tr("Salvataggio corrotto: i file sono stati messi in quarantena.")
+	if reason == "missing_backup_save":
+		return tr("Salvataggio corrotto e backup non disponibile.")
+	if reason == "backup_recovery_write_failed":
+		return tr("Backup valido trovato, ma il ripristino non è riuscito.")
 	if reason == "missing_or_invalid_schema_version":
 		return tr("Salvataggio non valido: schema del file mancante o corrotto.")
 	if reason == "unsupported_save_wrapper_schema":
@@ -526,12 +550,17 @@ func _apply_saved_settings() -> void:
 	var saved_music_volume: float = SaveManager.get_music_volume()
 	music_volume_slider.set_value_no_signal(saved_music_volume)
 	_update_music_volume_label(saved_music_volume)
+	var saved_sfx_volume: float = SaveManager.get_sfx_volume()
+	sfx_volume_slider.set_value_no_signal(saved_sfx_volume)
+	_update_sfx_volume_label(saved_sfx_volume)
 	var saved_resolution: String = SaveManager.get_window_resolution()
 	_select_resolution(saved_resolution)
 	_apply_window_resolution(saved_resolution)
 	var saved_fullscreen: bool = SaveManager.get_fullscreen()
 	fullscreen_toggle.set_pressed_no_signal(saved_fullscreen)
 	_apply_fullscreen(saved_fullscreen)
+	reduced_motion_toggle.set_pressed_no_signal(SaveManager.get_reduced_motion())
+	_update_toggle_labels()
 	var saved_language: String = SaveManager.get_language()
 	_select_language(saved_language)
 	_apply_language(saved_language)
@@ -651,6 +680,25 @@ func _update_music_volume_label(value: float) -> void:
 	if music_volume_value != null:
 		music_volume_value.text = tr("Musica: %d%%") % int(round(value * 100.0))
 
+func _on_sfx_volume_changed(value: float) -> void:
+	if _suppress_settings_events:
+		return
+	SaveManager.set_sfx_volume(value)
+	var applied_value: float = SaveManager.get_sfx_volume()
+	if not is_equal_approx(applied_value, value):
+		sfx_volume_slider.set_value_no_signal(applied_value)
+	_update_sfx_volume_label(applied_value)
+	_emit_settings_changed()
+
+func _update_sfx_volume_label(value: float) -> void:
+	if sfx_volume_value != null:
+		sfx_volume_value.text = tr("Effetti: %d%%") % int(round(value * 100.0))
+
+func _on_sfx_focus_changed(active: bool) -> void:
+	if sfx_volume_label_panel == null:
+		return
+	sfx_volume_label_panel.add_theme_stylebox_override("panel", SETTINGS_FOCUS_STYLE if active else SETTINGS_ROW_STYLE)
+
 func _apply_master_volume(value: float) -> void:
 	var bus_index: int = AudioServer.get_bus_index("Master")
 	if bus_index >= 0:
@@ -714,10 +762,11 @@ func _refresh_localized_ui() -> void:
 		volume_label.text = tr("VOLUME MASTER")
 	if music_volume_label != null:
 		music_volume_label.text = tr("VOLUME MUSICA")
+	if sfx_volume_label != null:
+		sfx_volume_label.text = tr("VOLUME EFFETTI")
 	if resolution_label != null:
 		resolution_label.text = tr("RISOLUZIONE")
-	if fullscreen_toggle != null:
-		fullscreen_toggle.text = tr("SCHERMO INTERO")
+	_update_toggle_labels()
 	if back_button != null:
 		back_button.text = tr("TORNA AL MENU")
 	if credits_back_button != null:
@@ -729,6 +778,8 @@ func _refresh_localized_ui() -> void:
 		_update_volume_label(master_volume_slider.value)
 	if music_volume_slider != null:
 		_update_music_volume_label(music_volume_slider.value)
+	if sfx_volume_slider != null:
+		_update_sfx_volume_label(sfx_volume_slider.value)
 	if brightness_slider != null:
 		_apply_brightness(brightness_slider.value)
 	if resolution_value != null:
@@ -757,6 +808,8 @@ func _emit_settings_changed() -> void:
 			"brightness": SaveManager.get_brightness(),
 			"master_volume": SaveManager.get_master_volume(),
 			"music_volume": SaveManager.get_music_volume(),
+			"sfx_volume": SaveManager.get_sfx_volume(),
+			"reduced_motion": SaveManager.get_reduced_motion(),
 			"fullscreen": SaveManager.get_fullscreen(),
 			"window_resolution": SaveManager.get_window_resolution(),
 		}
@@ -770,7 +823,22 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 		return
 	SaveManager.set_fullscreen(toggled)
 	_apply_fullscreen(SaveManager.get_fullscreen())
+	_update_toggle_labels()
 	_emit_settings_changed()
+
+func _on_reduced_motion_toggled(toggled: bool) -> void:
+	if _suppress_settings_events:
+		return
+	SaveManager.set_reduced_motion(toggled)
+	_update_toggle_labels()
+	_reset_menu_motion_if_reduced()
+	_emit_settings_changed()
+
+func _update_toggle_labels() -> void:
+	if fullscreen_toggle != null:
+		fullscreen_toggle.text = "%s %s" % ["[X]" if fullscreen_toggle.button_pressed else "[ ]", tr("SCHERMO INTERO")]
+	if reduced_motion_toggle != null:
+		reduced_motion_toggle.text = "%s %s" % ["[X]" if reduced_motion_toggle.button_pressed else "[ ]", tr("MOVIMENTO RIDOTTO")]
 
 func _on_settings_opened() -> void:
 	_show_settings()
@@ -780,6 +848,9 @@ func _on_settings_closed() -> void:
 	_show_menu()
 
 func _process(delta: float) -> void:
+	if SaveManager != null and SaveManager.get_reduced_motion():
+		_reset_menu_motion_if_reduced()
+		return
 	_menu_idle_time += delta
 	if title_label != null:
 		var pulse: float = MENU_TITLE_PULSE_BASE + (sin(_menu_idle_time * MENU_TITLE_PULSE_SPEED) * MENU_TITLE_PULSE_AMPLITUDE)
@@ -787,6 +858,67 @@ func _process(delta: float) -> void:
 	if menu_center != null and menu_vbox != null and menu_vbox.visible:
 		var bob_y: float = sin(_menu_idle_time * MENU_IDLE_BOB_SPEED) * MENU_IDLE_BOB_AMPLITUDE
 		menu_center.position = _menu_center_base_position + Vector2(0.0, bob_y)
+
+func _reset_menu_motion_if_reduced() -> void:
+	if SaveManager == null or not SaveManager.get_reduced_motion():
+		return
+	if title_label != null:
+		title_label.modulate = Color.WHITE
+	if menu_center != null:
+		menu_center.position = _menu_center_base_position
+	for button: Button in _menu_buttons:
+		if button != null:
+			button.scale = Vector2.ONE
+
+func _configure_focus_order() -> void:
+	_set_focus_cycle([continue_button, new_game_button, achievements_button, settings_button, credits_button])
+	_set_focus_cycle([
+		language_option,
+		resolution_option,
+		fullscreen_toggle,
+		reduced_motion_toggle,
+		brightness_slider,
+		master_volume_slider,
+		music_volume_slider,
+		sfx_volume_slider,
+		settings_back_button,
+	])
+	_set_focus_cycle([condanne_tab_button, museo_tab_button, back_button])
+
+func _set_focus_cycle(controls: Array[Control]) -> void:
+	var valid_controls: Array[Control] = []
+	for control: Control in controls:
+		if control != null:
+			control.focus_mode = Control.FOCUS_ALL
+			valid_controls.append(control)
+	if valid_controls.size() < 2:
+		return
+	for index: int in range(valid_controls.size()):
+		var control: Control = valid_controls[index]
+		var next_control: Control = valid_controls[(index + 1) % valid_controls.size()]
+		var previous_control: Control = valid_controls[(index - 1 + valid_controls.size()) % valid_controls.size()]
+		control.focus_next = control.get_path_to(next_control)
+		control.focus_previous = control.get_path_to(previous_control)
+
+func _focus_main_menu() -> void:
+	_focus_first_available([continue_button, new_game_button, achievements_button, settings_button, credits_button])
+
+func _focus_first_available(controls: Array) -> void:
+	for candidate: Variant in controls:
+		var control: Control = candidate as Control
+		if control != null and control.visible and not control.is_in_group("disabled"):
+			var button: BaseButton = control as BaseButton
+			if button != null and button.disabled:
+				continue
+			control.grab_focus()
+			return
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("ui_cancel"):
+		return
+	if settings_panel.visible or credits_panel.visible or achievements_panel.visible:
+		_show_menu()
+		get_viewport().set_input_as_handled()
 
 func _cache_menu_buttons() -> void:
 	_menu_buttons = [
@@ -839,6 +971,9 @@ func _on_menu_button_hover(button: Button, active: bool) -> void:
 	var existing_tween: Tween = _menu_button_tweens.get(tween_key, null) as Tween
 	if existing_tween != null and existing_tween.is_valid():
 		existing_tween.kill()
+	if SaveManager != null and SaveManager.get_reduced_motion():
+		button.scale = Vector2.ONE
+		return
 	var tween: Tween = create_tween()
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.set_ease(Tween.EASE_OUT)

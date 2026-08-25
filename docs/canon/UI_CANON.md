@@ -408,7 +408,19 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Runtime enforcement note (Level 3): player HP UI reactive wiring is removed from active runtime path (no `health_changed`/`get_health` bindings in UIRoot).
 - Main menu visual ambience contract: `res://scenes/Main.tscn` includes `MenuLayer/MainMenu/MenuAmbience` with visual-only layered textures (`Base`, `CloudsLayer`, `LightOverlay`, `FelixStatue`, `FlagRoot/Pole`, `FlagRoot/FlagCloth`, `FogLayer_Back`, `FogLayer_Mid`, `FogLayer_Front`, `TorchFlames`) driven by `res://scripts/ui/menu_ambience.gd`; no GameEvents wiring and no flow authority changes are allowed in this node.
 - Flag motion contract: only `FlagRoot/FlagCloth` receives wind deformation material; `FlagRoot/Pole` remains static.
-- Fog placement and top-band contract: menu fog layers remain constrained to the lower ambience band (no sky coverage), while the upper CloudsLayer remains static on X and applies an intentionally harsh strobing tint effect for degraded visual style.
+- Fog placement and top-band contract: menu fog layers remain constrained to the lower ambience band (no sky coverage), while the upper CloudsLayer remains static on X and uses only slow, low-amplitude tint variation. Rapid or high-contrast strobing is forbidden.
+- CP-02 accessibility contract: `settings_changed` keeps its single additive
+  dictionary payload and includes `sfx_volume` and `reduced_motion`; no new
+  signal or flow authority is introduced.
+- Reduced Motion suppresses continuous drift/fog/flag/flame/bob/pulse/flicker,
+  transforms, shake and progressive writing. State, copy, visible focus,
+  selection and consequence remain authoritative feedback; any remaining fade
+  is at most 0.08 seconds.
+- Keyboard focus is deterministic and follows reading order. Dynamic bet and
+  signature controls use `FOCUS_ALL`; `Escape` is a back action only in
+  Options, Credits and Archive, never inside ritual decisions.
+- Runtime SFX players use the `SFX` bus routed to `Master`; the persistent bus
+  volume must not rewrite the canonical per-cue dB map.
 
 ## UI boot-failure fallback surface (Patch: UX robustness)
 - Runtime scene `res://scenes/UI.tscn` includes `UI_RunRoot/Overlays/BootFailOverlay` as a user-facing fallback surface, hidden by default in healthy runs.

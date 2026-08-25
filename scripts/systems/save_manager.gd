@@ -1,6 +1,6 @@
 extends Node
 
-const PROFILE_VERSION: int = 3
+const PROFILE_VERSION: int = 4
 const PROFILE_PATH: String = "user://profile.save"
 const TMP_PATH: String = "%s.tmp" % PROFILE_PATH
 const BAK_PATH: String = "%s.bak" % PROFILE_PATH
@@ -22,6 +22,8 @@ const DEFAULT_LANGUAGE: String = LanguagesScript.DEFAULT_LOCALE
 const DEFAULT_BRIGHTNESS: float = 1.0
 const DEFAULT_MASTER_VOLUME: float = 0.8
 const DEFAULT_MUSIC_VOLUME: float = 0.75
+const DEFAULT_SFX_VOLUME: float = 1.0
+const DEFAULT_REDUCED_MOTION: bool = false
 const DEFAULT_FULLSCREEN: bool = false
 const DEFAULT_WINDOW_RESOLUTION: String = "1280x720"
 const BRIGHTNESS_MIN: float = 0.6
@@ -155,6 +157,16 @@ func get_music_volume() -> float:
 		load_profile()
 	return float(_settings.get("music_volume", DEFAULT_MUSIC_VOLUME))
 
+func get_sfx_volume() -> float:
+	if not _profile_loaded:
+		load_profile()
+	return float(_settings.get("sfx_volume", DEFAULT_SFX_VOLUME))
+
+func get_reduced_motion() -> bool:
+	if not _profile_loaded:
+		load_profile()
+	return bool(_settings.get("reduced_motion", DEFAULT_REDUCED_MOTION))
+
 func get_fullscreen() -> bool:
 	if not _profile_loaded:
 		load_profile()
@@ -226,6 +238,25 @@ func set_music_volume(value: float) -> void:
 	if is_equal_approx(float(_settings.get("music_volume", DEFAULT_MUSIC_VOLUME)), sanitized):
 		return
 	_settings["music_volume"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func set_sfx_volume(value: float) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: float = _sanitize_sfx_volume(value)
+	if is_equal_approx(float(_settings.get("sfx_volume", DEFAULT_SFX_VOLUME)), sanitized):
+		return
+	_settings["sfx_volume"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func set_reduced_motion(value: bool) -> void:
+	if not _profile_loaded:
+		load_profile()
+	if bool(_settings.get("reduced_motion", DEFAULT_REDUCED_MOTION)) == value:
+		return
+	_settings["reduced_motion"] = value
 	_profile_dirty = true
 	save_profile()
 
@@ -318,6 +349,8 @@ func _migrate(data: Dictionary, from_version: int) -> Dictionary:
 				current = _migrate_v1_to_v2(current)
 			2:
 				current = _migrate_v2_to_v3(current)
+			3:
+				current = _migrate_v3_to_v4(current)
 			_:
 				break
 		working_version += 1
@@ -329,12 +362,25 @@ func _migrate_v1_to_v2(data: Dictionary) -> Dictionary:
 func _migrate_v2_to_v3(data: Dictionary) -> Dictionary:
 	return data
 
+func _migrate_v3_to_v4(data: Dictionary) -> Dictionary:
+	var migrated: Dictionary = data.duplicate(true)
+	var settings_value: Dictionary = {}
+	if migrated.has("settings") and migrated["settings"] is Dictionary:
+		settings_value = (migrated["settings"] as Dictionary).duplicate(true)
+	settings_value["sfx_volume"] = float(settings_value.get("sfx_volume", DEFAULT_SFX_VOLUME))
+	settings_value["reduced_motion"] = bool(settings_value.get("reduced_motion", DEFAULT_REDUCED_MOTION))
+	migrated["settings"] = settings_value
+	migrated["version"] = PROFILE_VERSION
+	return migrated
+
 func _get_default_settings() -> Dictionary:
 	return {
 		"language": DEFAULT_LANGUAGE,
 		"brightness": DEFAULT_BRIGHTNESS,
 		"master_volume": DEFAULT_MASTER_VOLUME,
 		"music_volume": DEFAULT_MUSIC_VOLUME,
+		"sfx_volume": DEFAULT_SFX_VOLUME,
+		"reduced_motion": DEFAULT_REDUCED_MOTION,
 		"fullscreen": DEFAULT_FULLSCREEN,
 		"window_resolution": DEFAULT_WINDOW_RESOLUTION,
 	}
@@ -355,6 +401,9 @@ func _sanitize_master_volume(value: float) -> float:
 	return clamp(value, VOLUME_MIN, VOLUME_MAX)
 
 func _sanitize_music_volume(value: float) -> float:
+	return clamp(value, VOLUME_MIN, VOLUME_MAX)
+
+func _sanitize_sfx_volume(value: float) -> float:
 	return clamp(value, VOLUME_MIN, VOLUME_MAX)
 
 func _sanitize_window_resolution(value: String) -> String:
@@ -396,6 +445,14 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 		sanitized["music_volume"] = _sanitize_music_volume(float(settings_value.get("music_volume", DEFAULT_MUSIC_VOLUME)))
 	else:
 		needs_save = true
+	if settings_value.has("sfx_volume"):
+		sanitized["sfx_volume"] = _sanitize_sfx_volume(float(settings_value.get("sfx_volume", DEFAULT_SFX_VOLUME)))
+	else:
+		needs_save = true
+	if settings_value.has("reduced_motion"):
+		sanitized["reduced_motion"] = bool(settings_value.get("reduced_motion", DEFAULT_REDUCED_MOTION))
+	else:
+		needs_save = true
 	if settings_value.has("fullscreen"):
 		sanitized["fullscreen"] = bool(settings_value.get("fullscreen", DEFAULT_FULLSCREEN))
 	else:
@@ -413,6 +470,10 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 		if not is_equal_approx(float(settings_value.get("master_volume", DEFAULT_MASTER_VOLUME)), float(sanitized["master_volume"])):
 			needs_save = true
 		if not is_equal_approx(float(settings_value.get("music_volume", DEFAULT_MUSIC_VOLUME)), float(sanitized["music_volume"])):
+			needs_save = true
+		if not is_equal_approx(float(settings_value.get("sfx_volume", DEFAULT_SFX_VOLUME)), float(sanitized["sfx_volume"])):
+			needs_save = true
+		if bool(settings_value.get("reduced_motion", DEFAULT_REDUCED_MOTION)) != bool(sanitized["reduced_motion"]):
 			needs_save = true
 		if bool(settings_value.get("fullscreen", DEFAULT_FULLSCREEN)) != bool(sanitized["fullscreen"]):
 			needs_save = true

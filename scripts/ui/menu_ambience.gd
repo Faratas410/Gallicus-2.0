@@ -2,7 +2,7 @@ extends Control
 
 const TORCH_FRAME_SIZE: Vector2i = Vector2i(64, 64)
 const TORCH_FRAME_COUNT: int = 4
-const TORCH_FPS: float = 8.0
+const TORCH_FPS: float = 6.0
 const MENU_CENTER: Vector2 = Vector2(640.0, 360.0)
 
 @export var base_path: NodePath
@@ -38,6 +38,8 @@ var _cloud_scale: Vector2 = Vector2.ONE
 var _fog_positions: Dictionary = {}
 var _statue_position: Vector2 = Vector2.ZERO
 var _flag_position: Vector2 = Vector2.ZERO
+var _reduced_motion: bool = false
+var _shader_defaults: Dictionary = {}
 
 func _ready() -> void:
 	_base = _resolve_control(base_path, "Base")
@@ -51,8 +53,17 @@ func _ready() -> void:
 	_cache_depth_layer_bases()
 	_cache_torch_nodes()
 	_setup_torch_animation()
+	_cache_shader_defaults()
+	_reduced_motion = SaveManager != null and SaveManager.get_reduced_motion()
+	_apply_motion_mode()
+	if GameEvents != null and GameEvents.has_signal("settings_changed"):
+		var settings_callable: Callable = Callable(self, "_on_settings_changed")
+		if not GameEvents.settings_changed.is_connected(settings_callable):
+			GameEvents.settings_changed.connect(settings_callable)
 
 func _process(delta: float) -> void:
+	if _reduced_motion:
+		return
 	_time += delta
 	_update_depth_layers()
 	_update_clouds(delta)
@@ -110,8 +121,74 @@ func _setup_torch_animation() -> void:
 	for torch: AnimatedSprite2D in _torch_nodes:
 		if torch.sprite_frames == null or not torch.sprite_frames.has_animation(&"default"):
 			torch.sprite_frames = _build_torch_frames(strip_texture)
-		torch.speed_scale = 1.8 + (_torch_nodes.find(torch) * 0.17)
+		torch.speed_scale = 0.75 + (_torch_nodes.find(torch) * 0.1)
 		torch.play(&"default")
+
+func _cache_shader_defaults() -> void:
+	var shader_items: Array[CanvasItem] = []
+	if _flag_root != null:
+		var flag_cloth: CanvasItem = _flag_root.get_node_or_null("FlagCloth") as CanvasItem
+		if flag_cloth != null:
+			shader_items.append(flag_cloth)
+	for fog_layer: Control in [_fog_back, _fog_mid, _fog_front]:
+		if fog_layer != null:
+			shader_items.append(fog_layer)
+	for item: CanvasItem in shader_items:
+		var shader_material: ShaderMaterial = item.material as ShaderMaterial
+		if shader_material == null:
+			continue
+		_shader_defaults[shader_material.get_instance_id()] = {
+			"material": shader_material,
+			"speed": shader_material.get_shader_parameter("speed"),
+			"amplitude": shader_material.get_shader_parameter("amplitude"),
+			"strength": shader_material.get_shader_parameter("strength"),
+		}
+
+func _on_settings_changed(payload: Dictionary) -> void:
+	if not payload.has("reduced_motion"):
+		return
+	_reduced_motion = bool(payload.get("reduced_motion", false))
+	_apply_motion_mode()
+
+func _apply_motion_mode() -> void:
+	for entry_value: Variant in _shader_defaults.values():
+		var entry: Dictionary = entry_value as Dictionary
+		var shader_material: ShaderMaterial = entry.get("material") as ShaderMaterial
+		if shader_material == null:
+			continue
+		if entry.get("amplitude") != null:
+			shader_material.set_shader_parameter("amplitude", 0.0 if _reduced_motion else entry.get("amplitude"))
+		if entry.get("speed") != null:
+			shader_material.set_shader_parameter("speed", 0.0 if _reduced_motion else entry.get("speed"))
+		if entry.get("strength") != null:
+			shader_material.set_shader_parameter("strength", 0.0 if _reduced_motion else entry.get("strength"))
+	for torch: AnimatedSprite2D in _torch_nodes:
+		if _reduced_motion:
+			torch.stop()
+			torch.frame = 0
+			torch.modulate = Color(1.0, 0.9, 0.72, 0.9)
+			torch.scale = Vector2.ONE
+		elif not torch.is_playing():
+			torch.play(&"default")
+	if _reduced_motion:
+		if _base != null:
+			_base.position = _base_position
+			_base.scale = _base_scale
+		if _clouds != null:
+			_clouds.position = _cloud_position
+			_clouds.scale = _cloud_scale
+		if _statue != null:
+			_statue.position = _statue_position
+			_statue.scale = Vector2.ONE
+		if _flag_root != null:
+			_flag_root.position = _flag_position
+		for fog_layer: Control in [_fog_back, _fog_mid, _fog_front]:
+			if fog_layer != null:
+				fog_layer.position = _fog_positions.get(fog_layer, fog_layer.position) as Vector2
+		if _light_overlay != null:
+			var light_color: Color = _light_overlay.modulate
+			light_color.a = 0.22
+			_light_overlay.modulate = light_color
 
 func _build_torch_frames(strip_texture: Texture2D) -> SpriteFrames:
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
@@ -171,9 +248,9 @@ func _update_light_flicker() -> void:
 	if _light_overlay == null:
 		return
 	var base_alpha: float = 0.22
-	var flicker_wave: float = (sin(_time * 2.8) * 0.44) + (sin(_time * 7.1) * 0.28) + (sin(_time * 13.0) * 0.12)
+	var flicker_wave: float = (sin(_time * 0.7) * 0.62) + (sin(_time * 1.1) * 0.24)
 	var overlay_modulate: Color = _light_overlay.modulate
-	overlay_modulate.a = clamp(base_alpha + (flicker_wave * 0.045), 0.15, 0.31)
+	overlay_modulate.a = clamp(base_alpha + (flicker_wave * 0.035), 0.17, 0.28)
 	_light_overlay.modulate = overlay_modulate
 
 func _update_torch_flicker() -> void:
@@ -181,9 +258,8 @@ func _update_torch_flicker() -> void:
 		var torch: AnimatedSprite2D = _torch_nodes[index]
 		if torch == null:
 			continue
-		var wave: float = sin(_time * (5.2 + index) + float(index) * 0.9)
-		var micro: float = sin(_time * (17.0 + index * 1.7))
-		var alpha: float = clamp(0.86 + (wave * 0.08) + (micro * 0.035), 0.68, 1.0)
+		var wave: float = sin(_time * (1.6 + index * 0.15) + float(index) * 0.9)
+		var alpha: float = clamp(0.88 + (wave * 0.07), 0.78, 0.96)
 		var warm: float = clamp(0.9 + (wave * 0.05), 0.78, 1.0)
 		torch.modulate = Color(1.0, warm, 0.72, alpha)
 		torch.scale = Vector2.ONE * (1.0 + (wave * 0.035))

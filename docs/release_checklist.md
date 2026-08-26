@@ -79,8 +79,10 @@ Non esistono firme intermedie di prodotto.
 - [ ] Export Windows x64 avviabile fuori dall'editor.
 
 Nota CP-02: implementazione runtime, preset e contratti sono presenti nel
-working tree; le caselle accessibilita', input, audio ed export restano aperte
-fino al signoff locale/CI successivo al commit manuale.
+candidate commit `7a61d32`. Export, smoke EXE, QA tecnica e lean Linux
+`32892092073` sono verdi. La run `full` `32892578364` ha completato statici e
+otto scenari runtime ma e' scaduta dopo 285/289 PNG; CP-03 resta chiuso fino al
+nuovo gate sul timeout visuale corretto e al signoff documentale finale.
 - [ ] Clean-install test.
 - [ ] Metadata, icona e versione corretti.
 - [ ] Crediti e licenze completi.

@@ -16,6 +16,10 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Pacchetto chiuso: **CP-01 - stabilita' e leggibilita' del loop esistente**.
 - Pacchetto attivo: **CP-02 - accessibilita', save ed export interno**.
 - Signoff CP-01: run lean Linux `32594244882` verde sul commit `047ed67`.
+- CP-02: export e QA locale verdi sul commit `7a61d32`; la run lean Linux
+  `32892092073` e' verde. La prima run `full` `32892578364` ha completato
+  statici e otto scenari runtime, ma il visual stage e' scaduto a 480 secondi
+  dopo 285/289 catture; il budget e' ora 600 secondi e richiede un nuovo gate.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux
   `32152390171`; OF-10, OF-11 e lo stage Object-First chiusi dalla run lean
@@ -528,11 +532,19 @@ Status: **IMPLEMENTATO, IN ATTESA DI SIGNOFF**.
   atteso passa da 271 a 289 immagini; il lean CP-02 produce soltanto le 18 nuove.
 - Prove locali: playbook statico completo, import Godot 4.6.2 e contratto
   runtime isolato verdi; matrice visuale locale verde con 18/18 PNG ispezionati.
-  Gli smoke headless Windows, incluso il baseline `BET_PRESENT`, riproducono il
-  crash nativo noto prima di `SMOKE:BOOT_OK` e restano diagnostici.
-- Signoff ancora richiesto: commit/push manuale, export Windows avviabile con
-  `APPDATA` isolato, SHA-256/dimensione/log/commit sorgente, ispezione manuale,
-  CI Linux lean verde e profilo `full` manuale con tre job verdi.
+  L'EXE ufficiale del commit `7a61d32` e' avviabile con `APPDATA` isolato;
+  `KEYBOARD_FULL_RUN` torna al menu e la QA tecnica di focus, Escape,
+  persistenza, bus SFX e Reduced Motion e' verde. SHA-256 EXE:
+  `aec133512a78cf24afae9431dea7fb0bb27c2342c991b28f71b663a0e3b8890b`;
+  dimensione: 213827552 byte.
+- CI Linux: la run lean `32892092073` sul commit `7a61d32` ha i tre job verdi.
+  La run `full` `32892578364` ha completato statici e tutti gli otto scenari
+  runtime, ma il visual stage ha raggiunto il timeout di 480 secondi dopo
+  285/289 PNG: mancavano tre catture `08_dossier_*` e `08_end_run.png`.
+  Il budget `full` viene portato a 600 secondi senza cambiare matrice o runtime.
+- Signoff ancora richiesto: commit/push manuale della correzione CI, nuova lean
+  verde sul nuovo SHA, nuovo export/manifest legato allo stesso SHA e un nuovo
+  profilo `full` manuale con tre job verdi e 289/289 PNG.
 - `CP-03` resta chiuso fino alla nota documentale successiva a queste evidenze.
 
 ## 4. Campaign Spine

@@ -133,7 +133,7 @@ def _assert_workflow() -> None:
     for token in (
         "--section=accessibility_settings",
         "timeout 240s",
-        "timeout 480s",
+        "timeout 600s",
         'test "$DOSSIER_COUNT" -eq 36',
         'test "$SETTINGS_COUNT" -eq 18',
         'test "$TOTAL_COUNT" -eq 18',

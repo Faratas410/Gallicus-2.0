@@ -228,7 +228,11 @@ Il profilo `full` OF-11 richiede 271 catture complessive, inclusa
 wrapping, contrasto e assenza di fallback italiano nel copy dinamico.
 CP-02 aggiunge 18 catture `09_settings_*`: IT/EN/ES, 1280x720 e 1920x1080,
 stato standard, focus SFX e Reduced Motion attivo. Il lean CP-02 produce solo
-queste 18; il profilo manuale `full` ne richiede 289 complessive.
+queste 18; il profilo manuale `full` ne richiede 289 complessive. Il capture
+cumulativo usa un timeout di 600 secondi: la run diagnostica `32892578364` ha
+raggiunto il precedente limite di 480 secondi dopo 285 immagini, mentre
+statici e tutti gli otto scenari runtime erano gia' verdi. Il timeout esteso
+non riduce la matrice ne' sostituisce il requisito di 289/289 PNG.
 
 Punti minimi:
 

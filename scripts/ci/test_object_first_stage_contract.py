@@ -141,7 +141,7 @@ def _assert_lean_and_full_checkpoint() -> None:
         'test "$INCISION_COUNT" -eq 24',
         'test "$DOSSIER_COUNT" -eq 36',
         'test "$END_RUN_COUNT" -eq 1',
-        "timeout 480s",
+        "timeout 600s",
     ):
         if count_token not in workflow:
             raise AssertionError(f"manual full visual profile missing: {count_token}")

@@ -233,6 +233,9 @@ cumulativo usa un timeout di 600 secondi: la run diagnostica `32892578364` ha
 raggiunto il precedente limite di 480 secondi dopo 285 immagini, mentre
 statici e tutti gli otto scenari runtime erano gia' verdi. Il timeout esteso
 non riduce la matrice ne' sostituisce il requisito di 289/289 PNG.
+Il contratto statico `scripts/ci/test_ci_checkpoint_contract.py` ricostruisce il
+totale dai pattern della matrice e dalle catture letterali, quindi fallisce prima
+di avviare Godot se un PNG resta fuori dall'artifact o se la somma diverge da 289.
 
 Punti minimi:
 

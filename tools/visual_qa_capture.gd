@@ -133,7 +133,6 @@ func _run() -> void:
 	await _settle(20)
 	if not targeted_section:
 		await _capture_arena_threshold_matrix()
-		await _capture("01_menu")
 	if not targeted_section or accessibility_settings_only:
 		await _capture_accessibility_settings_matrix()
 	if accessibility_settings_only:

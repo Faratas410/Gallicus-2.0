@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import fnmatch
 import re
 from pathlib import Path
 
@@ -14,6 +15,7 @@ PLAYBOOK = ROOT / "scripts/ci/run_testing_playbook.py"
 BOOTSTRAP = ROOT / "scripts/ci/bootstrap_linux_godot.sh"
 TESTING_DOC = ROOT / "docs/testing.md"
 ROADMAP = ROOT / "docs/development_plan.md"
+VISUAL_QA = ROOT / "tools/visual_qa_capture.gd"
 
 CHECKPOINTS = (
     "OF-06",
@@ -63,6 +65,116 @@ def _job_block(workflow: str, job_name: str) -> str:
     return match.group(0)
 
 
+def _glob_sample(pattern: str) -> str:
+    """Return a deterministic filename accepted by the workflow's simple globs."""
+    return pattern.replace("??", "it").replace("?", "x").replace("*", "sample")
+
+
+def _assert_visual_artifact_contract(visual_block: str) -> None:
+    full_match = re.search(
+        r'(?ms)if \[ "\$PROFILE" = "full" \]; then\n(.*?)(?=^          else$)',
+        visual_block,
+    )
+    if full_match is None:
+        raise AssertionError("visual stage missing an isolated full-profile branch")
+    full_branch = full_match.group(1)
+
+    count_patterns = dict(
+        re.findall(
+            r"(?m)^\s*([A-Z_]+)_COUNT=\$\(find artifacts/visual_qa "
+            r"-maxdepth 1 -type f -name '([^']+)' \| wc -l\)$",
+            full_branch,
+        )
+    )
+    expected_counts = {
+        name: int(value)
+        for name, value in re.findall(
+            r'(?m)^\s*test "\$([A-Z_]+)_COUNT" -eq ([0-9]+)$',
+            full_branch,
+        )
+    }
+    if count_patterns.get("TOTAL") != "*.png":
+        raise AssertionError("full visual profile must count every PNG before signoff")
+    if "TOTAL" not in expected_counts:
+        raise AssertionError("full visual profile missing its total PNG assertion")
+
+    matrix_patterns = {
+        name: pattern for name, pattern in count_patterns.items() if name != "TOTAL"
+    }
+    missing_expectations = sorted(set(matrix_patterns) - set(expected_counts))
+    if missing_expectations:
+        raise AssertionError(
+            f"visual matrix patterns missing expected counts: {missing_expectations}"
+        )
+
+    upload_match = re.search(
+        r"(?ms)name: visual_qa_evidence\n\s*path: \|\n(.*?)\n\s*if-no-files-found:",
+        visual_block,
+    )
+    if upload_match is None:
+        raise AssertionError("visual stage missing the visual_qa_evidence upload contract")
+    upload_patterns = tuple(
+        line.strip().rsplit("/", 1)[-1]
+        for line in upload_match.group(1).splitlines()
+        if line.strip()
+    )
+    if not upload_patterns:
+        raise AssertionError("visual_qa_evidence upload contract is empty")
+
+    visual_qa = _read(VISUAL_QA)
+    run_match = re.search(r"(?ms)^func _run\(\) -> void:\n(.*?)(?=^func |\Z)", visual_qa)
+    if run_match is None:
+        raise AssertionError("visual QA tool missing _run")
+    literal_captures = tuple(
+        f"{name}.png"
+        for name in re.findall(r'await _capture\("([^"%]+)"\)', run_match.group(1))
+    )
+    if len(literal_captures) != len(set(literal_captures)):
+        raise AssertionError("full visual profile contains duplicate literal captures")
+
+    unuploaded = sorted(
+        filename
+        for filename in literal_captures
+        if not any(fnmatch.fnmatchcase(filename, pattern) for pattern in upload_patterns)
+    )
+    if unuploaded:
+        raise AssertionError(
+            f"full visual capture emits files outside visual_qa_evidence: {unuploaded}"
+        )
+
+    uncovered_matrices = sorted(
+        pattern
+        for pattern in matrix_patterns.values()
+        if not any(
+            fnmatch.fnmatchcase(_glob_sample(pattern), upload_pattern)
+            for upload_pattern in upload_patterns
+        )
+    )
+    if uncovered_matrices:
+        raise AssertionError(
+            f"visual matrix patterns are not uploaded: {uncovered_matrices}"
+        )
+
+    fixed_captures = {
+        filename
+        for filename in literal_captures
+        if not any(
+            fnmatch.fnmatchcase(filename, pattern)
+            for pattern in matrix_patterns.values()
+        )
+    }
+    calculated_total = (
+        sum(expected_counts[name] for name in matrix_patterns) + len(fixed_captures)
+    )
+    if calculated_total != expected_counts["TOTAL"]:
+        raise AssertionError(
+            "full visual artifact total is inconsistent: "
+            f"matrix={calculated_total - len(fixed_captures)}, "
+            f"fixed={len(fixed_captures)}, calculated={calculated_total}, "
+            f"asserted={expected_counts['TOTAL']}"
+        )
+
+
 def _assert_marker() -> None:
     marker = _read(MARKER)
     active_line = next((line.strip() for line in marker.splitlines() if line.strip() and not line.lstrip().startswith("#")), "")
@@ -98,6 +210,7 @@ def _assert_workflow() -> None:
     static_block = _job_block(workflow, "static_contracts")
     runtime_block = _job_block(workflow, "runtime_routes")
     visual_block = _job_block(workflow, "visual_stage")
+    _assert_visual_artifact_contract(visual_block)
     if static_block.count("python3 scripts/ci/run_testing_playbook.py") != 1:
         raise AssertionError("static_contracts must call the canonical playbook exactly once")
     for test_name in STATIC_TESTS + STATIC_CHECKS:

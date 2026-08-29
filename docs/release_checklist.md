@@ -64,25 +64,31 @@ Non esistono firme intermedie di prodotto.
 
 ## Tecnica
 
-- [ ] Static suite completa verde.
+- [x] Static suite completa verde: playbook 42/42 sul commit `51eba5b`.
 - [x] Tre run consecutive e tre linguette END_RUN verificate dalla run lean
   Linux `32594244882` sul commit `047ed67`.
-- [ ] Godot import senza errori.
-- [ ] Profilo CI `full` con i sei scenari storici verde su Linux.
-- [ ] Nessun fatal error, missing resource o `SANITY FAIL`.
-- [ ] Mojibake scan pulito.
-- [ ] Save migration da schema supportato.
+- [ ] Godot import senza errori su cache fredda Windows.
+- [x] Profilo CI `full` con gli otto scenari verdi su Linux: `33250720906`.
+- [ ] Nessun fatal error, missing resource o `SANITY FAIL` su cache fredda.
+- [x] Mojibake scan pulito.
+- [x] Save migration da schema supportato.
 - [ ] Tre campagne candidate complete.
 
 ## Pacchetto
 
-- [ ] Export Windows x64 avviabile fuori dall'editor.
+- [x] Export Windows x64 avviabile fuori dall'editor.
 
-Nota CP-02: implementazione runtime, preset e contratti sono presenti nel
-candidate commit `7a61d32`. Export, smoke EXE, QA tecnica e lean Linux
-`32892092073` sono verdi. La run `full` `32892578364` ha completato statici e
-otto scenari runtime ma e' scaduta dopo 285/289 PNG; CP-03 resta chiuso fino al
-nuovo gate sul timeout visuale corretto e al signoff documentale finale.
+Nota CP-02: signoff tecnico chiuso sul commit `51eba5b`. La lean
+`33250711786` e la full `33250720906` hanno i tre job verdi; la full copre otto
+scenari e 289/289 PNG. L'EXE commit-specifico passa `KEYBOARD_FULL_RUN` da
+`APPDATA` nuovo ed e' registrato nel manifest
+`artifacts/exports/cp02/51eba5b/cp02_export_manifest_51eba5b.json`.
+
+Il cold import Windows ha richiesto la generazione della cache: i primi due
+pass conservano diagnostica pre-import, il terzo e' pulito. Per questo le due
+checkbox generali su cold import e missing resource restano aperte fino al
+clean-install gate. CP-03 resta non autorizzato e richiede tre sessioni umane
+con decisione go/no-go.
 - [ ] Clean-install test.
 - [ ] Metadata, icona e versione corretti.
 - [ ] Crediti e licenze completi.

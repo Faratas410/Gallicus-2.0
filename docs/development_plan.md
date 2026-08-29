@@ -14,12 +14,14 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Loop rituale: operativo e coperto da smoke.
 - Campagna completa: non ancora implementata.
 - Pacchetto chiuso: **CP-01 - stabilita' e leggibilita' del loop esistente**.
-- Pacchetto attivo: **CP-02 - accessibilita', save ed export interno**.
+- Pacchetto tecnico chiuso: **CP-02 - accessibilita', save ed export interno**.
+- Pacchetto successivo: **CP-03 - validazione interna**, non autorizzato dal
+  signoff tecnico e vincolato a tre sessioni umane con decisione go/no-go.
 - Signoff CP-01: run lean Linux `32594244882` verde sul commit `047ed67`.
-- CP-02: export e QA locale verdi sul commit `7a61d32`; la run lean Linux
-  `32892092073` e' verde. La prima run `full` `32892578364` ha completato
-  statici e otto scenari runtime, ma il visual stage e' scaduto a 480 secondi
-  dopo 285/289 catture; il budget e' ora 600 secondi e richiede un nuovo gate.
+- CP-02: signoff tecnico chiuso sul commit `51eba5b`. La run lean Linux
+  `33250711786` e la full `33250720906` hanno i tre job verdi; la full ha
+  prodotto esattamente 289/289 PNG entro 600 secondi. Export e manifest
+  commit-specifici sono in `artifacts/exports/cp02/51eba5b/`.
 - Vincoli invariati: `RunManager` flow authority, `GameEvents` bus, UI reattiva.
 - Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux
   `32152390171`; OF-10, OF-11 e lo stage Object-First chiusi dalla run lean
@@ -442,7 +444,7 @@ Gate:
 
 Dipendenza: checkpoint Object-First `OF-11` chiuso.
 
-Status: **ACTIVE - CP-02**.
+Status: **CP-02 TECHNICAL SIGNOFF CLOSED; CP-03 LOCKED**.
 
 Obiettivo: produrre una build interna completa, leggibile ed esportabile del
 loop attuale prima di riaprire nuovi sistemi della campagna. Non e' una release
@@ -468,13 +470,16 @@ Vincoli:
   solo per blocker provati e richiedono il profilo CI `full` manuale; fix
   interni a `RunManager` che preservano questi contratti usano il gate lean.
 
-Blocker registrati all'apertura (risolti nel working tree CP-02, in attesa di
-signoff):
+Blocker tecnici registrati all'apertura e chiusi dal signoff CP-02:
 
 - nessun `export_presets.cfg` Windows x64;
 - reduced motion assente;
-- volume SFX non regolabile;
-- nessun playtest corrente registrato.
+- volume SFX non regolabile.
+
+Gate umano residuo, fuori dal signoff CP-02:
+
+- nessun playtest corrente registrato; CP-03 richiede tre sessioni e una
+  decisione go/no-go esplicita prima di qualunque lavoro di campagna.
 
 Gate:
 
@@ -507,9 +512,9 @@ Gate:
 - Gate chiuso: 2026-08-22. Il runtime Windows headless resta diagnostico per
   il crash nativo noto prima di `SMOKE:BOOT_OK`; non invalida il signoff Linux.
 
-### Pacchetto attivo: CP-02
+### Pacchetto chiuso: CP-02
 
-Status: **IMPLEMENTATO, IN ATTESA DI SIGNOFF**.
+Status: **SIGNOFF TECNICO CHIUSO IL 2026-08-29; CP-03 NON AUTORIZZATO**.
 
 - Profilo `v4`: SFX persistente e Reduced Motion con migrazione `v3 -> v4`,
   default e sanitizzazione coperti dal contratto runtime isolato.
@@ -530,22 +535,27 @@ Status: **IMPLEMENTATO, IN ATTESA DI SIGNOFF**.
 - Verifica introdotta: contratto runtime isolato, `KEYBOARD_FULL_RUN` con eventi
   tastiera reali e matrice `09_settings_*` da 18 catture. Il profilo `full`
   atteso passa da 271 a 289 immagini; il lean CP-02 produce soltanto le 18 nuove.
-- Prove locali: playbook statico completo, import Godot 4.6.2 e contratto
-  runtime isolato verdi; matrice visuale locale verde con 18/18 PNG ispezionati.
-  L'EXE ufficiale del commit `7a61d32` e' avviabile con `APPDATA` isolato;
-  `KEYBOARD_FULL_RUN` torna al menu e la QA tecnica di focus, Escape,
-  persistenza, bus SFX e Reduced Motion e' verde. SHA-256 EXE:
-  `aec133512a78cf24afae9431dea7fb0bb27c2342c991b28f71b663a0e3b8890b`;
-  dimensione: 213827552 byte.
-- CI Linux: la run lean `32892092073` sul commit `7a61d32` ha i tre job verdi.
-  La run `full` `32892578364` ha completato statici e tutti gli otto scenari
-  runtime, ma il visual stage ha raggiunto il timeout di 480 secondi dopo
-  285/289 PNG: mancavano tre catture `08_dossier_*` e `08_end_run.png`.
-  Il budget `full` viene portato a 600 secondi senza cambiare matrice o runtime.
-- Signoff ancora richiesto: commit/push manuale della correzione CI, nuova lean
-  verde sul nuovo SHA, nuovo export/manifest legato allo stesso SHA e un nuovo
-  profilo `full` manuale con tre job verdi e 289/289 PNG.
-- `CP-03` resta chiuso fino alla nota documentale successiva a queste evidenze.
+- Prove locali: playbook statico 42/42 e contratto CP-02 di migrazione,
+  recovery, quarantena e normalizzazione verdi. Una copia `git archive` del
+  commit `51eba5b` ha completato l'import; i primi due pass conservano la
+  diagnostica della cache fredda Windows, mentre il terzo avvio e' pulito.
+- Export Windows: `Gallicus_Core_Playable_Candidate.exe` e' un singolo PE32+
+  x86-64 con PCK incorporato, senza PCK separato o console wrapper. Avvio con
+  `APPDATA` nuovo e `KEYBOARD_FULL_RUN` validato fino al ritorno al menu;
+  nessun CSV, Translation o resource mancante nel log dell'EXE.
+- Artifact Windows sul commit `51eba5b`: 213827632 byte, SHA-256
+  `176ab88288328c5093e87aeda4e733d4dad8ead4b30cc59fc4a9b82b74b615a1`.
+  Manifest: `artifacts/exports/cp02/51eba5b/cp02_export_manifest_51eba5b.json`.
+- CI Linux: run lean `33250711786` e full `33250720906` sullo stesso commit,
+  entrambe con `static_contracts`, `runtime_routes` e `visual_stage` verdi. La
+  full ha percorso otto scenari e prodotto 289/289 PNG in 456 secondi.
+- Evidenza runtime full: artifact `runtime_routes_logs`, digest
+  `sha256:3d3b7914eea00618883f215976a08fe81d7aa0735b1a65fe205f7c882569f786`.
+- Evidenza visuale full: artifact `visual_qa_evidence`, digest
+  `sha256:58d8f24c8733d85ec7e4ef623a4fd0d350bf1b5ba37cde044bf1a93854af4b3f`.
+- Signoff tecnico CP-02 chiuso il 2026-08-29. Questa chiusura non autorizza
+  CP-03, Campaign Spine, nuovi contenuti o Media Vertical Slice: servono ancora
+  tre sessioni umane CP-03 e una decisione go/no-go esplicita.
 
 ## 4. Campaign Spine
 
@@ -668,8 +678,8 @@ I tre job canonici sono verdi; `CORE_CONTINUITY` verifica tre run consecutive e
 le tre linguette finali. I digest degli artifact runtime e visuali sono
 registrati nella scheda CP-01.
 
-Il pacchetto attivo e' `CP-02`: reduced motion, volume SFX persistente,
-save recovery/migration, percorso completo da tastiera e primo export Windows
-x64 da profilo pulito. La patch deve preservare ownership, segnali gameplay,
-wrapper run schema `1` e Level 3 schema `2`. Media Vertical Slice, sistemi
-campagna ed espansione contenuti restano congelati fino al go/no-go di CP-03.
+Il signoff tecnico `CP-02` e' chiuso sul commit `51eba5b`. Il prossimo gate
+ammissibile e' `CP-03`, composto da tre sessioni umane da 20-30 minuti e da una
+decisione go/no-go; non e' autorizzato automaticamente da queste evidenze.
+Media Vertical Slice, sistemi campagna ed espansione contenuti restano
+congelati fino alla chiusura esplicita di CP-03.

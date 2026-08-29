@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 LANGUAGES_PATH = ROOT / "assets/i18n/languages.gd"
 DEFAULT_CSV = ROOT / "assets/i18n/it.csv"
 MAIN_MENU_PATH = ROOT / "scripts/ui/main_menu.gd"
+RUN_MANAGER_PATH = ROOT / "scripts/systems/run_manager.gd"
 
 
 def _registry_paths() -> dict[str, Path]:
@@ -58,6 +59,12 @@ def main() -> int:
     for locale, path in registry.items():
         if not path.exists():
             raise AssertionError(f"registered locale {locale} points at missing CSV: {path}")
+        compiled_path = path.with_name(f"{path.stem}.{locale}.translation")
+        if not compiled_path.exists():
+            raise AssertionError(
+                f"registered locale {locale} points at missing compiled Translation: "
+                f"{compiled_path}"
+            )
 
     default_keys = _csv_keys(DEFAULT_CSV)
     default_key_set = set(default_keys)
@@ -81,6 +88,42 @@ def main() -> int:
     ):
         if token not in main_menu:
             raise AssertionError(f"missing exported translation bootstrap contract: {token}")
+
+    run_manager = RUN_MANAGER_PATH.read_text(encoding="utf-8")
+    for token in (
+        "func _compiled_translation_path",
+        "func _translation_resource_exists",
+        "ResourceLoader.exists(",
+        "_compiled_translation_path(csv_path, locale)",
+    ):
+        if token not in run_manager:
+            raise AssertionError(
+                f"missing RunManager exported translation contract: {token}"
+            )
+    resolver_match = re.search(
+        r"(?ms)^func _resolve_available_locale\(target_locale: String\) -> String:\n"
+        r"(.*?)(?=^func |\Z)",
+        run_manager,
+    )
+    if resolver_match is None:
+        raise AssertionError("RunManager locale resolver is missing")
+    resolver = resolver_match.group(1)
+    for token in (
+        "_translation_resource_exists(requested_path, target_locale)",
+        "_translation_resource_exists(fallback_path, fallback_locale)",
+    ):
+        if token not in resolver:
+            raise AssertionError(
+                f"RunManager locale resolver ignores compiled Translation: {token}"
+            )
+    for csv_only_check in (
+        "FileAccess.file_exists(requested_path)",
+        "FileAccess.file_exists(fallback_path)",
+    ):
+        if csv_only_check in resolver:
+            raise AssertionError(
+                f"RunManager locale resolver remains CSV-only: {csv_only_check}"
+            )
 
     print("[OK][I18N_CONTRACT] source CSV and exported translation contracts are aligned")
     return 0

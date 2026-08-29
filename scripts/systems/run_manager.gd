@@ -1278,13 +1278,21 @@ func _apply_language(locale: String) -> void:
 	var target_locale: String = LanguagesScript.sanitize_locale(locale)
 	TranslationServer.set_locale(_resolve_available_locale(target_locale))
 
+func _compiled_translation_path(csv_path: String, locale: String) -> String:
+	return "%s.%s.translation" % [csv_path.get_basename(), locale]
+
+func _translation_resource_exists(csv_path: String, locale: String) -> bool:
+	return FileAccess.file_exists(csv_path) or ResourceLoader.exists(
+		_compiled_translation_path(csv_path, locale)
+	)
+
 func _resolve_available_locale(target_locale: String) -> String:
 	var requested_path: String = LanguagesScript.path_for(target_locale)
-	if FileAccess.file_exists(requested_path):
+	if _translation_resource_exists(requested_path, target_locale):
 		return target_locale
 	var fallback_locale: String = LanguagesScript.fallback_locale(target_locale)
 	var fallback_path: String = LanguagesScript.path_for(fallback_locale)
-	if FileAccess.file_exists(fallback_path):
+	if _translation_resource_exists(fallback_path, fallback_locale):
 		if not _language_fallback_logged:
 			print("[I18N] Missing translation resource ", requested_path, ". Fallback locale: ", fallback_locale)
 			_language_fallback_logged = true

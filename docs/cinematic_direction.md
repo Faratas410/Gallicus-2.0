@@ -88,3 +88,20 @@ entrano nel runtime prima della decisione go/no-go di `CP-03`.
 - nessun testo tagliato nelle tre lingue;
 - nessun frame vuoto involontario;
 - screenshot o video viewport-only per ogni sequenza modificata.
+
+## Pass animazioni autorizzato del 6 settembre 2026
+
+L'integrazione audiovisiva richiesta dall'utente supera il precedente freeze
+operativo; i gate umani restano aperti. Questo pass lavora sulle micro-sequenze
+esistenti e non dichiara completate intro, ramp audiovisiva o cutscene mancanti.
+L'apertura del Registro usa drop 0,22 s, apertura 0,24 s, assestamento 0,12 s,
+reveal 0,18 s e scrittura 0,35 s. La lettura non ha piu' un titolo pulsante.
+Il sigillo richiama l'attenzione una volta per 0,60 s; il gesto produce il
+feedback materico breve. Le entrate rituali usano 4 px e scala 0,99 per 0,22 s;
+la variazione dello shade e' ridotta a 0,02 (0,03 sul fascicolo finale).
+Controlli, intenti e proprieta' del flow rimangono invariati. Movimento ridotto
+conserva testo, stati e focus senza introdurre attese VFX.
+
+Entrata pannelli, backdrop e shade tengono un solo tween per superficie.
+Movimento ridotto interrompe anche una transizione gia' iniziata e ripristina
+subito geometria e alpha, senza un successivo rimbalzo al frame finale.

@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_chamber.png" id="4"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_betting_title.tres" id="10"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/italiana_regular_font.tres" id="11_book_font"]
@@ -48,15 +48,15 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -450.0
-offset_top = -280.0
+offset_top = -290.0
 offset_right = 450.0
-offset_bottom = 310.0
+offset_bottom = 250.0
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_minimum_size = Vector2(900, 590)
+custom_minimum_size = Vector2(900, 540)
 mouse_filter = 1
 
 [node name="SpellbookBg" type="PanelContainer" parent="CenterContainer/BookFrame"]
@@ -102,7 +102,7 @@ theme_override_styles/panel = ExtResource("14_register_tablet")
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_colors/font_color = Color(0.8, 0.74, 0.61, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 16
 text = "La pietra attende una firma.\nOgni patto lascia un segno."
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -170,10 +170,10 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="LeftPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.125
-anchor_top = 0.237
-anchor_right = 0.455
-anchor_bottom = 0.77
+anchor_left = 0.055
+anchor_top = 0.09
+anchor_right = 0.475
+anchor_bottom = 0.93
 mouse_filter = 1
 
 [node name="LeftPaper" type="PanelContainer" parent="CenterContainer/BookFrame/LeftPage"]
@@ -222,9 +222,9 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
-anchor_bottom = 0.81
+anchor_bottom = 0.89
 offset_left = 20.0
-offset_top = 26.0
+offset_top = 4.0
 offset_right = -14.0
 offset_bottom = -4.0
 clip_contents = true
@@ -236,14 +236,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.16, 0.13, 0.11, 0.98)
+theme_override_colors/default_color = Color(0.96, 0.92, 0.83, 1)
 theme_override_fonts/normal_font = ExtResource("11_book_font")
 theme_override_fonts/bold_font = ExtResource("11_book_font")
 theme_override_fonts/italics_font = ExtResource("11_book_font")
-theme_override_constants/line_separation = -1
-theme_override_font_sizes/normal_font_size = 12
-theme_override_font_sizes/bold_font_size = 12
-theme_override_font_sizes/italics_font_size = 12
+theme_override_constants/line_separation = 0
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
 bbcode_enabled = true
 text = "[center][b]VIA SINISTRA[/b][/center]"
 scroll_active = false
@@ -251,9 +251,9 @@ autowrap_mode = 3
 
 [node name="Btn_Sign_Left" type="Button" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_left = 0.22
-anchor_top = 0.84
+anchor_top = 0.9
 anchor_right = 0.78
-anchor_bottom = 0.97
+anchor_bottom = 1.015
 focus_mode = 2
 theme_override_styles/normal = ExtResource("19_promise_normal")
 theme_override_styles/hover = ExtResource("20_promise_focus")
@@ -271,10 +271,10 @@ horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
 [node name="RightPage" type="Control" parent="CenterContainer/BookFrame"]
-anchor_left = 0.545
-anchor_top = 0.237
-anchor_right = 0.875
-anchor_bottom = 0.77
+anchor_left = 0.525
+anchor_top = 0.09
+anchor_right = 0.945
+anchor_bottom = 0.93
 mouse_filter = 1
 
 [node name="RightPaper" type="PanelContainer" parent="CenterContainer/BookFrame/RightPage"]
@@ -323,9 +323,9 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
-anchor_bottom = 0.81
+anchor_bottom = 0.89
 offset_left = 14.0
-offset_top = 26.0
+offset_top = 4.0
 offset_right = -16.0
 offset_bottom = -4.0
 clip_contents = true
@@ -337,14 +337,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/default_color = Color(0.16, 0.13, 0.11, 0.98)
+theme_override_colors/default_color = Color(0.96, 0.92, 0.83, 1)
 theme_override_fonts/normal_font = ExtResource("11_book_font")
 theme_override_fonts/bold_font = ExtResource("11_book_font")
 theme_override_fonts/italics_font = ExtResource("11_book_font")
-theme_override_constants/line_separation = -1
-theme_override_font_sizes/normal_font_size = 12
-theme_override_font_sizes/bold_font_size = 12
-theme_override_font_sizes/italics_font_size = 12
+theme_override_constants/line_separation = 0
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
 bbcode_enabled = true
 text = "[center][b]VIA DESTRA[/b][/center]"
 scroll_active = false
@@ -352,9 +352,9 @@ autowrap_mode = 3
 
 [node name="Btn_Sign_Right" type="Button" parent="CenterContainer/BookFrame/RightPage"]
 anchor_left = 0.22
-anchor_top = 0.84
+anchor_top = 0.9
 anchor_right = 0.78
-anchor_bottom = 0.97
+anchor_bottom = 1.015
 focus_mode = 2
 theme_override_styles/normal = ExtResource("19_promise_normal")
 theme_override_styles/hover = ExtResource("20_promise_focus")

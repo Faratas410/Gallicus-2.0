@@ -9,11 +9,12 @@ Ogni asset gameplay deve sostenere un oggetto, un gesto, uno stato o un luogo.
 
 ## Struttura
 
-- `assets/backgrounds/` - luoghi e variazioni arena.
-- `assets/MainMenu/` - soglia e atmosfera del menu.
+- `assets/ui/generated/` - tutti i raster attivi originali e manifest.
+- `assets/backgrounds/` - sorgenti precedenti ritirate.
+- `assets/MainMenu/` - sorgenti precedenti ritirate.
 - `assets/ui/official/` - risorse adottate e runtime-ready.
-- `assets/ui/official_source/` - sorgenti tracciate.
-- `assets/ui/third_party/` - pacchetti con provenienza documentata.
+- `assets/ui/official_source/` - sorgenti storiche escluse dall'export.
+- `assets/ui/third_party/` - pacchetti storici esclusi dall'export.
 - `assets/audio/` - musica e ambience.
 - `assets/audio/sfx/` - effetti brevi.
 - `assets/i18n/` - cataloghi di traduzione.
@@ -99,12 +100,11 @@ Priorita' di audit:
 5. variazioni delle Ere;
 6. audio con naming o mood action/combat.
 
-Il pacchetto OF-10 vive in
-`assets/ui/official/objects/final_dossier/`: i tre dossier `1400x800` devono
-conservare alpha e silhouette identici, mentre la linguetta `1000x200` usa
-stati StyleBoxTexture a margini texture zero. Dopo l'import si versionano
-soltanto i sidecar runtime dei quattro PNG e dei tre WAV; `work/` e le
-catture diagnostiche non sono consumer runtime.
+Gli StyleBox OF-01..10 restano in `assets/ui/official/objects/` e puntano
+soltanto ai raster originali. Sono immagini rettangolari RGB a campo pieno:
+margini texture zero, safe area del testo e geometria costanti tra stati.
+La vecchia regola alpha non si applica alla nuova famiglia. Focus, pressione,
+selezione e registrazione restano stati nativi Godot.
 
 ## Verifica
 
@@ -120,3 +120,38 @@ Se cambia un asset runtime:
 - controllo path mancanti;
 - controllo licenza;
 - aggiornamento del documento di dominio.
+
+## Adozione ImageGen del 4 settembre 2026
+
+`assets/ui/generated/manifest.json` registra nome, prompt, tool, data e fonte
+per 15 immagini originali, copiate senza ritocco. PNG e sidecar sono versionati.
+I vecchi file restano consultabili come sorgenti storiche ma sono esclusi
+dall'export, inclusi `assets/ui/lapidary/` e i vecchi PNG sotto
+`assets/ui/official/`. Il controllo del pacchetto verifica anche i `.ctex`
+importati: nessun vecchio raster deve essere incluso. I WAV restano.
+ImageGen non sostituisce audio o font: il testo usa il font incorporato di
+Godot tramite `assets/ui/fonts/engine_sans.tres`. Attribuzioni audio sospese
+su richiesta dell'utente; il gate licenze release rimane aperto.
+
+Il menu aggiunge `assets/ui/generated/gallicus_wordmark.png`, sedicesimo PNG
+originale. La trasparenza generata e' conservata senza ritocchi; prompt e
+provenienza sono nel medesimo manifest. Il marchio GALLICUS e' invariabile,
+mentre ogni testo informativo/interattivo continua a essere Godot nativo.
+
+## Asset audiovisivi originali del 6 settembre 2026
+
+Il manifest immagini contiene ora 17 raster: il nuovo `ritual_dust` RGBA
+rimane integro a 1254x1254; l'import Godot usa `process/size_limit=256` per
+l'uso VFX. Si anima la texture nel motore, senza generare ogni frame.
+
+La raccolta audio e' ricostruibile con `python tools/generate_original_audio.py`
+in un ambiente NumPy. Cinque WAV musicali e il battito sono in
+`assets/audio/original/`; i 25 SFX sostituiscono i WAV negli stessi path per
+preservare i contratti. Il manifest originale registra tutti i 31 output.
+La CI controlla i file consegnati con sola libreria standard, senza installare
+NumPy o rigenerare audio. Budget source audio: meno di 24 MiB.
+
+Gli MP3 precedenti sono esclusi dal preset. Il controllo pack carica anche
+31 stream originali e rifiuta MP3 residui. Produzione originale e rimozione
+delle dipendenze audio precedenti non sostituiscono il completamento dei
+nomi da accreditare o il controllo finale di provenienza del pacchetto.

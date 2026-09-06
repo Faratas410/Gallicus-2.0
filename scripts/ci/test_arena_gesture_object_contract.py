@@ -10,6 +10,7 @@ import struct
 import wave
 import zlib
 from pathlib import Path
+from generated_art_contract import validate_family
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -116,68 +117,6 @@ def _node_block(scene: str, node_name: str) -> str:
     return match.group(0)
 
 
-def _paeth(left: int, up: int, upper_left: int) -> int:
-    estimate = left + up - upper_left
-    choices = (left, up, upper_left)
-    distances = tuple(abs(estimate - choice) for choice in choices)
-    return choices[distances.index(min(distances))]
-
-
-def _png_alpha(path: Path) -> tuple[int, int, bytes]:
-    raw = path.read_bytes()
-    if raw[:8] != b"\x89PNG\r\n\x1a\n":
-        raise AssertionError(f"{path.name} must be a PNG")
-    cursor = 8
-    idat = bytearray()
-    width = height = bit_depth = color_type = interlace = -1
-    while cursor < len(raw):
-        length = struct.unpack(">I", raw[cursor : cursor + 4])[0]
-        chunk_type = raw[cursor + 4 : cursor + 8]
-        payload = raw[cursor + 8 : cursor + 8 + length]
-        cursor += 12 + length
-        if chunk_type == b"IHDR":
-            width, height, bit_depth, color_type, _, _, interlace = struct.unpack(
-                ">IIBBBBB", payload
-            )
-        elif chunk_type == b"IDAT":
-            idat.extend(payload)
-        elif chunk_type == b"IEND":
-            break
-    if bit_depth != 8 or color_type != 6 or interlace != 0:
-        raise AssertionError(f"{path.name} must be non-interlaced 8-bit RGBA")
-    decoded = zlib.decompress(bytes(idat))
-    stride = width * 4
-    previous = bytearray(stride)
-    alpha = bytearray()
-    offset = 0
-    for _ in range(height):
-        filter_type = decoded[offset]
-        offset += 1
-        source = decoded[offset : offset + stride]
-        offset += stride
-        row = bytearray(stride)
-        for index, value in enumerate(source):
-            left = row[index - 4] if index >= 4 else 0
-            up = previous[index]
-            upper_left = previous[index - 4] if index >= 4 else 0
-            if filter_type == 0:
-                result = value
-            elif filter_type == 1:
-                result = value + left
-            elif filter_type == 2:
-                result = value + up
-            elif filter_type == 3:
-                result = value + ((left + up) // 2)
-            elif filter_type == 4:
-                result = value + _paeth(left, up, upper_left)
-            else:
-                raise AssertionError(f"unsupported PNG filter {filter_type} in {path.name}")
-            row[index] = result & 0xFF
-        alpha.extend(row[3::4])
-        previous = row
-    return width, height, bytes(alpha)
-
-
 def _csv_value(locale: str, key: str) -> str:
     path = ROOT / f"assets/i18n/{locale}.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -189,44 +128,7 @@ def _csv_value(locale: str, key: str) -> str:
 
 
 def _assert_assets_and_states() -> None:
-    masks: dict[str, set[int]] = {}
-    geometry: tuple[str, ...] | None = None
-    for gesture in GESTURES:
-        width, height, alpha = _png_alpha(OBJECT_DIR / f"arena_gesture_tile_{gesture}.png")
-        if (width, height) != (768, 512):
-            raise AssertionError(f"{gesture} tile must be 3:2 RGBA at 768x512")
-        if any(alpha[index] != 0 for index in (0, width - 1, len(alpha) - width, len(alpha) - 1)):
-            raise AssertionError(f"{gesture} tile must have transparent corners")
-        masks[gesture] = {index for index, value in enumerate(alpha) if value > 0}
-        xs = [index % width for index in masks[gesture]]
-        ys = [index // width for index in masks[gesture]]
-        width_coverage = (max(xs) - min(xs) + 1) / width
-        height_coverage = (max(ys) - min(ys) + 1) / height
-        if not 0.86 <= width_coverage <= 0.94 or not 0.86 <= height_coverage <= 0.94:
-            raise AssertionError(
-                f"{gesture} tile occupancy out of range: {width_coverage:.3f}x{height_coverage:.3f}"
-            )
-        for state in STATES:
-            style = _read(OBJECT_DIR / f"sb_arena_gesture_{gesture}_{state}.tres")
-            if f"arena_gesture_tile_{gesture}.png" not in style:
-                raise AssertionError(f"{gesture}/{state} style uses the wrong texture")
-            values = tuple(
-                re.findall(
-                    r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-                    style,
-                    re.MULTILINE,
-                )
-            )
-            if len(values) != 8 or any(float(value) != 0.0 for value in values[:4]):
-                raise AssertionError(f"{gesture}/{state} must use uniform, stable geometry")
-            if geometry is None:
-                geometry = values
-            elif values != geometry:
-                raise AssertionError(f"{gesture}/{state} changes the shared tile geometry")
-    intersection = len(masks["placa"] & masks["provoca"])
-    union = len(masks["placa"] | masks["provoca"])
-    if intersection / union < 0.995:
-        raise AssertionError("placa/provoca silhouettes must coincide")
+    validate_family("arena_gesture")
 
 
 def _assert_scene_and_copy() -> None:

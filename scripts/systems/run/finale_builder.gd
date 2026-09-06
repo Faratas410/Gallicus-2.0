@@ -63,6 +63,8 @@ func build_path_trace_from_bet_history(bet_history: Array[StringName]) -> Dictio
 	var trace: Dictionary = {
 		"path_prudence_count": 0,
 		"path_hubris_count": 0,
+		"path_violence_count": 0,
+		"path_penitence_count": 0,
 		"path_unknown_count": 0,
 	}
 	for bet_id: StringName in bet_history:
@@ -72,6 +74,10 @@ func build_path_trace_from_bet_history(bet_history: Array[StringName]) -> Dictio
 				trace["path_prudence_count"] = int(trace.get("path_prudence_count", 0)) + 1
 			BetCatalogScript.PATH_HUBRIS:
 				trace["path_hubris_count"] = int(trace.get("path_hubris_count", 0)) + 1
+			BetCatalogScript.PATH_VIOLENCE:
+				trace["path_violence_count"] = int(trace["path_violence_count"]) + 1
+			BetCatalogScript.PATH_PENITENCE:
+				trace["path_penitence_count"] = int(trace["path_penitence_count"]) + 1
 			_:
 				trace["path_unknown_count"] = int(trace.get("path_unknown_count", 0)) + 1
 	return trace
@@ -110,6 +116,8 @@ func _rule_matches(rule: Dictionary, trace: Dictionary) -> bool:
 		return false
 	if requires.has("min_glory") and int(trace.get("glory", 0)) < int(requires.get("min_glory", 0)):
 		return false
+	if requires.has("max_glory") and int(trace.get("glory", 0)) > int(requires["max_glory"]):
+		return false
 	if requires.has("min_corruption") and int(trace.get("corruption", 0)) < int(requires.get("min_corruption", 0)):
 		return false
 	if requires.has("max_corruption") and int(trace.get("corruption", 0)) > int(requires.get("max_corruption", 999999)):
@@ -122,6 +130,10 @@ func _rule_matches(rule: Dictionary, trace: Dictionary) -> bool:
 	var path_hubris_count: int = int(trace.get("path_hubris_count", 0))
 	if requires.has("min_path_hubris") and path_hubris_count < int(requires.get("min_path_hubris", 0)):
 		return false
+	for path_name: String in ["violence", "penitence"]:
+		var requirement: String = "min_path_%s" % path_name
+		if requires.has(requirement) and int(trace.get("path_%s_count" % path_name, 0)) < int(requires[requirement]):
+			return false
 	if bool(requires.get("requires_provoke_armed", false)) and not bool(trace.get("provoke_armed", false)):
 		return false
 	if requires.has("corruption_tier") and str(trace.get("corruption_tier", "")) != str(requires.get("corruption_tier", "")):

@@ -1,0 +1,142 @@
+{
+  "art_direction": "Roman administrative ritual: basalt, bronze, bone, red wax. Live text rendered by Godot.",
+  "assets": [
+    {
+      "name": "registry_chamber",
+      "prompt": "Original Roman registry chamber opening into arena; quiet central UI area, basalt, limestone, bronze, wax red. No baked text, original painterly realistic environment.",
+      "source": "exec-32d842ec-a2b5-4222-8a81-0171aae03918.png",
+      "path": "res://assets/ui/generated/registry_chamber.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "basalt_panel",
+      "prompt": "Use case: stylized-concept. Asset type: production nine-slice UI panel texture for Gallicus original Roman registry game. Create ONE flat front-facing rectangular basalt panel, landscape 1536x1024, full bleed no outside scene. Very dark warm charcoal stone #22221d, subtle fine tactile grain. A narrow delicate aged bronze inset border lies exactly 24 pixels inside all four edges, small plain rectangular corner joints. Entire central 90% absolutely plain, dark and uniform for legible pale UI text. Edges straight, no perspective, no dramatic lighting, no objects, no wax, no illustrations, no letters or text, no medieval ornaments, no bevelled glossy game buttons. Refined archaeological museum material, restrained and austere. This will be stretched via nine-slice as all panels and fields in the game; make all four corners geometrically consistent.",
+      "source": "exec-e42c51c3-d603-45eb-a518-4531e29b8d93.png",
+      "path": "res://assets/ui/generated/basalt_panel.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "bronze_plaque",
+      "prompt": "Use case: stylized-concept. Production game UI asset, original Gallicus Roman administrative ritual style. ONE wide horizontal rectangular control plaque, aspect ratio 3:1. Front view perfectly orthographic. Matte dark oxidized bronze, narrow polished pale bronze inner rule, restrained squared corners, fine physical grain, dark warm central surface. Central 85 percent EMPTY for text to be rendered by game engine. Straight outer silhouette fills image edge to edge, no surrounding scene, no perspective or deep relief. Archaeological museum aesthetic, severe and functional. No text, letters, numbers, symbols, fantasy decoration or glossy gradients. Intended nine-slice button texture, keep ornaments confined to corners.",
+      "source": "exec-8646ec69-c07d-47e8-8664-b28bd779575e.png",
+      "path": "res://assets/ui/generated/bronze_plaque.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "registry_table",
+      "prompt": "Use case: stylized-concept. Production original UI object texture for Gallicus Roman registry ritual game. One open Roman administrative registry table, a broad rectangular slab of dark basalt with two side-by-side recessed smooth dark wax writing surfaces, thin aged bronze perimeter and a narrow central bronze division. Viewed exactly from above, landscape ratio 3:2. Central writing surfaces EMPTY, uniform dark warm charcoal, optimized for pale live game text. Small red wax seal confined to lower outer corner. No paper, no wood, no text or glyphs. Full rectangle fills frame, restrained thin edges, no perspective. Material rendering is restrained painterly realism with fine grain, archaeological museum aesthetic, coherent warm charcoal, ivory, oxidized bronze, wax red palette. No baked text, letters, numbers, logos, watermark, scene or floating shadows. This is a usable game texture, not a presentation mockup.",
+      "source": "exec-9f1bb8b0-bf07-453a-82e7-5f0bfaf9754b.png",
+      "path": "res://assets/ui/generated/registry_table.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "final_dossier",
+      "prompt": "Use case: stylized-concept. Production original UI object texture for Gallicus Roman registry ritual game. One open Roman administrative dossier laid flat, landscape ratio 7:4, exactly front-on overhead view. An ivory limestone-toned fiber document on dark basalt backing, narrow oxidized bronze binding at left and a small red wax seal only in lower right outer margin. Broad single UNDIVIDED pale document covers central 90%, smooth warm bone #ded2b7 for dark engine-rendered text. Thin squared perimeter, no text, no lines, no inscriptions, no page curl, no fantasy parchment, no medieval book. Material rendering is restrained painterly realism with fine grain, archaeological museum aesthetic, coherent warm charcoal, ivory, oxidized bronze, wax red palette. No baked text, letters, numbers, logos, watermark, scene or floating shadows. This is a usable game texture, not a presentation mockup.",
+      "source": "exec-80607a79-7523-43e1-97f5-e9c12a9e1505.png",
+      "path": "res://assets/ui/generated/final_dossier.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "receipt",
+      "prompt": "Use case: stylized-concept. Production original game UI texture for Gallicus, Roman administrative ritual. One horizontal Roman receipt object, exact 5:2 aspect ratio. A warm ivory fiber strip with small dark bronze counterweight and red wax dot at far left only; straight clipped administrative edges. Center and right 80% EMPTY pale surface for dark live text. Full rectangle fills frame, no perspective, no text, no drawn ruled writing. Refined painterly realistic material with fine grain, restrained charcoal, pale bone, oxidized bronze and wax-red palette, matching an archaeological museum. No medieval fantasy, no baked text, no letters, numbers, logos, watermark. Keep the interactive silhouette simple and immediately recognizable.",
+      "source": "exec-b8ebc90d-76d1-43e0-a823-e246ef376f07.png",
+      "path": "res://assets/ui/generated/receipt.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "condemnation_mark",
+      "prompt": "Use case: stylized-concept. Production original game UI texture for Gallicus, Roman administrative ritual. One horizontal Roman condemnation stamp object, exact 5:2 aspect ratio. A dark charred iron rectangular die with a large deep red wax impression confined to far left quarter. The stamp has a severe simple abstract square impression without letters. Center and right 70% empty charcoal surface for pale live text. Front-on, rectangle fills frame, no scene, no perspective. Refined painterly realistic material with fine grain, restrained charcoal, pale bone, oxidized bronze and wax-red palette, matching an archaeological museum. No medieval fantasy, no baked text, no letters, numbers, logos, watermark. Keep the interactive silhouette simple and immediately recognizable.",
+      "source": "exec-fc1ee2a6-f821-4576-b7b9-b070f04564f5.png",
+      "path": "res://assets/ui/generated/condemnation_mark.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "second_incision",
+      "prompt": "Use case: stylized-concept. Production original game UI texture for Gallicus, Roman administrative ritual. One horizontal Roman second-incision object, exact 5:2 aspect ratio. A black wax writing tablet in narrow oxidized bronze frame, a thin bronze stylus laid along the bottom edge, exactly two small incisions confined to left margin. Center 80% EMPTY near-black wax for pale live text. Front-on full rectangle, no surrounding scene, no perspective, no letters or ornament. Refined painterly realistic material with fine grain, restrained charcoal, pale bone, oxidized bronze and wax-red palette, matching an archaeological museum. No medieval fantasy, no baked text, no letters, numbers, logos, watermark. Keep the interactive silhouette simple and immediately recognizable.",
+      "source": "exec-d0502edb-8aa0-482e-8545-917b19b06ba6.png",
+      "path": "res://assets/ui/generated/second_incision.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "promise_signature",
+      "prompt": "Use case: stylized-concept. Production original game UI object texture for Gallicus, Roman administrative ritual game. One wide horizontal signature plate, aspect 3:1. A narrow pale bronze frame surrounding smooth dark red sealing wax, with one small round pressed seal at the far left, right 80 percent empty dark warm wax for live pale text. Front-facing, exact full rectangle, no perspective. Fine restrained realistic painterly materials, same archaeological museum palette of charcoal, ivory, oxidized bronze and wax red. No letters, text, numbers, logos, watermarks, fantasy ornaments, scene, shadows outside image. Keep edge geometry straight and central safe area plain.",
+      "source": "exec-6763962d-2eaa-41d1-bc56-9ba056a88822.png",
+      "path": "res://assets/ui/generated/promise_signature.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "pact_tablet",
+      "prompt": "Use case: stylized-concept. Production original game UI object texture for Gallicus, Roman administrative ritual game. One wide horizontal Roman pact tablet, aspect 5:2. Dark warm basalt inset with a narrow aged bronze perimeter, one wax-red tie and tiny square bronze clasp at far left. Central 80 percent absolutely empty dark wax writing surface, for live pale text. Front-facing full rectangle, no perspective, no writing or symbols. Fine restrained realistic painterly materials, same archaeological museum palette of charcoal, ivory, oxidized bronze and wax red. No letters, text, numbers, logos, watermarks, fantasy ornaments, scene, shadows outside image. Keep edge geometry straight and central safe area plain.",
+      "source": "exec-e5d58553-ba89-4b18-9c72-b436d680aea5.png",
+      "path": "res://assets/ui/generated/pact_tablet.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "judgment_seal",
+      "prompt": "Use case: stylized-concept. Production original game UI object texture for Gallicus, Roman administrative ritual game. One wide horizontal Roman ritual judgment stone, aspect 5:2. A smooth charcoal basalt tablet with a circular red wax seal at far left, three small empty circular sockets in bronze directly below the seal; broad remaining right 70 percent empty dark stone for live pale text. Austere, no flourishes, one fine hairline crack confined to bottom edge. Front-on full rectangle, no perspective or surrounding objects. Fine restrained realistic painterly materials, same archaeological museum palette of charcoal, ivory, oxidized bronze and wax red. No letters, text, numbers, logos, watermarks, fantasy ornaments, scene, shadows outside image. Keep edge geometry straight and central safe area plain.",
+      "source": "exec-e40d8df6-c6dd-4c33-b543-fb2235f73b46.png",
+      "path": "res://assets/ui/generated/judgment_seal.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "gesture_placa",
+      "prompt": "Use case: stylized-concept. Production original UI object texture for Gallicus Roman administrative ritual game. One Roman gesture tablet, aspect 3:2. Dark basalt rectangular slab with narrow bronze border; top half shows a small open bronze shallow bowl of pale sand, a few grains beside it, symbol of calming a crowd. Bottom half entirely plain warm charcoal for live pale UI text. Perfect overhead view, contained edges, no hands, no letters or symbols. A restrained archaeological museum aesthetic. Realistic painterly basalt, warm charcoal, oxidized bronze, ivory and wax red palette. Full bleed rectangle, not a mockup or scene. No text, numbers, logos, watermark, fantasy, modern glossy buttons. The two visual roles must remain clear when displayed small.",
+      "source": "exec-437619af-7fe3-48b2-9073-8a0e2961d704.png",
+      "path": "res://assets/ui/generated/gesture_placa.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "gesture_provoca",
+      "prompt": "Use case: stylized-concept. Production original UI object texture for Gallicus Roman administrative ritual game. One Roman gesture tablet, aspect 3:2. Dark basalt rectangular slab with narrow bronze border; top half shows one red wax voting tessera standing against a small bronze ring, symbol of provoking a crowd. Bottom half entirely plain warm charcoal for live pale UI text. Perfect overhead view, contained edges, no hands, no letters or symbols. A restrained archaeological museum aesthetic. Realistic painterly basalt, warm charcoal, oxidized bronze, ivory and wax red palette. Full bleed rectangle, not a mockup or scene. No text, numbers, logos, watermark, fantasy, modern glossy buttons. The two visual roles must remain clear when displayed small.",
+      "source": "exec-f10cba8a-37e3-46a6-9a66-dbe4758bec03.png",
+      "path": "res://assets/ui/generated/gesture_provoca.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "registry_closed",
+      "prompt": "Use case: stylized-concept. Original production art for Gallicus, a Roman administrative ritual game. A closed Roman registry folio made of dark basalt, a single wide rectangular front cover, landscape 3:2. Thin inset aged-bronze frame, small red wax seal on a vertical bronze clasp on the FAR LEFT margin, remaining central 85 percent empty dark surface for live pale text. Fine square geometrical corners. Orthographic front view, fills frame. No letters, numbers, markings, scene or fantasy book. Refined painterly realistic material rendering, archaeological museum aesthetic, consistent warm charcoal, oxidized bronze and dark wax red. No mockup, no watermark, no external decorations.",
+      "source": "exec-11f75813-6d14-4006-acd2-9a16854efc29.png",
+      "path": "res://assets/ui/generated/registry_closed.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "registry_emblem",
+      "prompt": "Use case: stylized-concept. Original production art for Gallicus, a Roman administrative ritual game. One simple original Gallicus registry emblem for game icon. Square composition, a dark red circular wax seal on nearly-black warm basalt. Wax bears a single abstract geometric mark: three parallel vertical incisions joined by one horizontal line at the bottom, indicating a record. Narrow aged bronze ring surrounding the seal. Centered, bold clear silhouette, very restrained detail readable at 32 pixels. No text, letters, numbers, laurel, animals, weapons or fantasy symbols. Full bleed square dark background. Refined painterly realistic material rendering, archaeological museum aesthetic, consistent warm charcoal, oxidized bronze and dark wax red. No mockup, no watermark, no external decorations.",
+      "source": "exec-249b3237-a241-41e4-a006-aa4c9dba39bd.png",
+      "path": "res://assets/ui/generated/registry_emblem.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04"
+    },
+    {
+      "name": "gallicus_wordmark",
+      "prompt": "Use case: logo-brand. Asset type: final transparent title wordmark for the original Roman ritual game Gallicus, to be consumed directly in a Godot main menu. Text verbatim: \"GALLICUS\" (G A L L I C U S), one word, uppercase, exact spelling. Create a distinctive monumental Roman inscription wordmark with elegant broad lapidary serif capitals, sharply carved wedge serifs, refined thick-and-thin strokes and generous balanced spacing. It must feel authored and memorable, severe and ceremonial. Material: warm ivory limestone letter faces with subtle worn bronze edges and dark incised depth, fine tactile grain; restrained red wax accent as a tiny horizontal incision below the central letters, not a medallion. Flat frontal orthographic view. Main letter silhouette very clear and bright against a dark game background, legible when displayed 650 px wide. Composition: one centered horizontal wordmark occupying almost the entire width of a wide 3:1 canvas; letters occupy the middle vertical band, ample minimal transparent breathing room, no tall ornament. TRUE transparent background with alpha; no background scene, plaque, rectangle, paper, gradient, black matte, checkerboard pattern or shadow cloud. No extra words, subtitle, numbers, watermark, crown, weapons, laurel wreath, skulls, people or modern fantasy effects. Produce one polished production asset, not a presentation board.",
+      "source": "exec-0d8e7901-b022-45f8-b5f2-dcc0f907921e.png",
+      "path": "res://assets/ui/generated/gallicus_wordmark.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-04",
+      "role": "Invariant title wordmark; RGBA with generated alpha; body and gameplay text remain native."
+    },
+    {
+      "name": "ritual_dust",
+      "prompt": "Use case: stylized-concept. Asset type: ONE production transparent VFX sprite for Gallicus, a restrained Roman administrative ritual game. Create a small delicate puff of pale limestone dust and a few tiny matte bronze grains suspended immediately after a wax seal presses onto stone. Orthographic front view, isolated on genuinely transparent background with preserved alpha; square image. Centered organic low-density horizontal wisp, wispy translucent edges, about 12 tiny irregular mineral flakes, dusty ivory and muted ochre. Wide empty transparent margins on all sides. Very subtle realistic archaeological material, soft side light, no bright center. It will be drawn at only 90-180 pixels for under half a second beside an interactive object; clean silhouette and soft fine particulate texture. No text, symbols, rings, magic, glow, lens flare, sparks, flames, smoke column, black/white backdrop, checkerboard baked into image, border or UI mockup. The puff is an understated physical response; calm and light, not an explosion.",
+      "source": "exec-e5ad2b0a-4a4c-48ca-82b5-fcb879bea713.png",
+      "path": "res://assets/ui/generated/ritual_dust.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-06"
+    }
+  ]
+}

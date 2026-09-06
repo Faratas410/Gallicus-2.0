@@ -10,6 +10,7 @@ import struct
 import wave
 import zlib
 from pathlib import Path
+from generated_art_contract import validate_family
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -78,67 +79,6 @@ def _node_block(scene: str, node_name: str) -> str:
     return match.group(0)
 
 
-def _paeth(left: int, up: int, upper_left: int) -> int:
-    estimate = left + up - upper_left
-    distances = (abs(estimate - left), abs(estimate - up), abs(estimate - upper_left))
-    return (left, up, upper_left)[distances.index(min(distances))]
-
-
-def _png_alpha(path: Path) -> tuple[int, int, bytes]:
-    raw = path.read_bytes()
-    if raw[:8] != b"\x89PNG\r\n\x1a\n":
-        raise AssertionError(f"{path.name} must be a PNG")
-    cursor = 8
-    idat = bytearray()
-    width = height = bit_depth = color_type = interlace = -1
-    while cursor < len(raw):
-        length = struct.unpack(">I", raw[cursor : cursor + 4])[0]
-        chunk_type = raw[cursor + 4 : cursor + 8]
-        payload = raw[cursor + 8 : cursor + 8 + length]
-        cursor += 12 + length
-        if chunk_type == b"IHDR":
-            width, height, bit_depth, color_type, _, _, interlace = struct.unpack(
-                ">IIBBBBB", payload
-            )
-        elif chunk_type == b"IDAT":
-            idat.extend(payload)
-        elif chunk_type == b"IEND":
-            break
-    if bit_depth != 8 or color_type != 6 or interlace != 0:
-        raise AssertionError(f"{path.name} must be non-interlaced 8-bit RGBA")
-    decoded = zlib.decompress(bytes(idat))
-    stride = width * 4
-    previous = bytearray(stride)
-    alpha = bytearray()
-    offset = 0
-    for _ in range(height):
-        filter_type = decoded[offset]
-        offset += 1
-        source = decoded[offset : offset + stride]
-        offset += stride
-        row = bytearray(stride)
-        for index, value in enumerate(source):
-            left = row[index - 4] if index >= 4 else 0
-            up = previous[index]
-            upper_left = previous[index - 4] if index >= 4 else 0
-            if filter_type == 0:
-                result = value
-            elif filter_type == 1:
-                result = value + left
-            elif filter_type == 2:
-                result = value + up
-            elif filter_type == 3:
-                result = value + ((left + up) // 2)
-            elif filter_type == 4:
-                result = value + _paeth(left, up, upper_left)
-            else:
-                raise AssertionError(f"unsupported PNG filter {filter_type} in {path.name}")
-            row[index] = result & 0xFF
-        alpha.extend(row[3::4])
-        previous = row
-    return width, height, bytes(alpha)
-
-
 def _csv_value(locale: str, key: str) -> str:
     path = ROOT / f"assets/i18n/{locale}.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -150,45 +90,7 @@ def _csv_value(locale: str, key: str) -> str:
 
 
 def _assert_texture_and_styles() -> None:
-    width, height, alpha = _png_alpha(TEXTURE)
-    if (width, height) != (1280, 512):
-        raise AssertionError(f"pact tablet must be 5:2 at 1280x512, got {width}x{height}")
-    if any(alpha[index] != 0 for index in (0, width - 1, len(alpha) - width, len(alpha) - 1)):
-        raise AssertionError("pact tablet must have transparent corners")
-    coverage = sum(value > 0 for value in alpha) / len(alpha)
-    if not 0.50 <= coverage <= 0.85:
-        raise AssertionError(f"unexpected pact tablet subject coverage: {coverage:.3f}")
-    occupied = [index for index, value in enumerate(alpha) if value > 0]
-    xs = [index % width for index in occupied]
-    ys = [index // width for index in occupied]
-    width_coverage = (max(xs) - min(xs) + 1) / width
-    height_coverage = (max(ys) - min(ys) + 1) / height
-    if not 0.88 <= width_coverage <= 0.96:
-        raise AssertionError(f"pact tablet width coverage out of range: {width_coverage:.3f}")
-    if not 0.82 <= height_coverage <= 0.92:
-        raise AssertionError(f"pact tablet height coverage out of range: {height_coverage:.3f}")
-
-    geometry: tuple[str, ...] | None = None
-    for state in STYLE_NAMES:
-        path = STYLE_DIR / f"sb_registry_pact_tablet_{state}.tres"
-        text = _read(path)
-        if "registry_pact_tablet_sealed.png" not in text:
-            raise AssertionError(f"{path.name} must use the sealed pact tablet texture")
-        values = tuple(
-            re.findall(
-                r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-                text,
-                re.MULTILINE,
-            )
-        )
-        if len(values) != 8:
-            raise AssertionError(f"{path.name} must define stable texture/content margins")
-        if any(float(value) != 0.0 for value in values[:4]):
-            raise AssertionError(f"{path.name} must render uniformly without nine-slice margins")
-        if geometry is None:
-            geometry = values
-        elif values != geometry:
-            raise AssertionError(f"{path.name} changes pact tablet geometry")
+    validate_family("pact_tablet")
 
 
 def _assert_scene_and_copy() -> None:
@@ -223,9 +125,9 @@ def _assert_scene_and_copy() -> None:
 
     disabled_style = _read(STYLE_DIR / "sb_registry_pact_tablet_disabled.tres")
     normal_style = _read(STYLE_DIR / "sb_registry_pact_tablet_normal.tres")
-    if "modulate_color = Color(0.43, 0.42, 0.4, 1)" not in disabled_style:
+    if "modulate_color = Color(0.48, 0.48, 0.46, 1)" not in disabled_style:
         raise AssertionError("pact disabled state must retain readable contrast")
-    if "modulate_color = Color(0.78, 0.73, 0.66, 1)" not in normal_style:
+    if "modulate_color = Color(1, 1, 1, 1)" not in normal_style:
         raise AssertionError("pact normal contrast baseline changed")
 
 

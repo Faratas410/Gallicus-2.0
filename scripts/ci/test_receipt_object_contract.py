@@ -9,6 +9,7 @@ import re
 import struct
 import wave
 from pathlib import Path
+from generated_art_contract import validate_family
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -59,16 +60,6 @@ def _node_block(scene: str, node_name: str) -> str:
     return match.group(0)
 
 
-def _png_header(path: Path) -> tuple[int, int, int]:
-    raw = path.read_bytes()
-    if raw[:8] != b"\x89PNG\r\n\x1a\n" or raw[12:16] != b"IHDR":
-        raise AssertionError("registry receipt texture must be a PNG with an IHDR header")
-    width, height, bit_depth, color_type = struct.unpack(">IIBB", raw[16:26])
-    if bit_depth != 8:
-        raise AssertionError(f"receipt PNG must use 8-bit channels, got {bit_depth}")
-    return width, height, color_type
-
-
 def _csv_value(locale: str, key: str) -> str:
     path = ROOT / f"assets/i18n/{locale}.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -80,35 +71,7 @@ def _csv_value(locale: str, key: str) -> str:
 
 
 def _assert_shared_style_geometry() -> None:
-    geometry: tuple[str, ...] | None = None
-    for state in STYLE_NAMES:
-        path = STYLE_DIR / f"sb_registry_receipt_{state}.tres"
-        text = _read(path)
-        if TEXTURE_RES_PATH not in text:
-            raise AssertionError(f"{path.name} must share registry_receipt_base.png")
-        values = tuple(
-            re.findall(
-                r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-                text,
-                re.MULTILINE,
-            )
-        )
-        if len(values) != 8:
-            raise AssertionError(f"{path.name} must define all stable texture/content margins")
-        if geometry is None:
-            geometry = values
-        elif values != geometry:
-            raise AssertionError(f"{path.name} changes receipt geometry between states")
-
-
-def _assert_texture() -> None:
-    if not TEXTURE.exists():
-        raise AssertionError("missing registry_receipt_base.png")
-    width, height, color_type = _png_header(TEXTURE)
-    if color_type != 6:
-        raise AssertionError(f"receipt PNG must be RGBA, got PNG color type {color_type}")
-    if height <= 0 or not math.isclose(width / height, 2.5, rel_tol=0.002):
-        raise AssertionError(f"receipt PNG must be 5:2, got {width}x{height}")
+    validate_family("receipt")
 
 
 def _assert_scene_binding() -> None:
@@ -202,7 +165,6 @@ def _assert_visual_qa_matrix() -> None:
 
 
 def main() -> int:
-    _assert_texture()
     _assert_shared_style_geometry()
     _assert_scene_binding()
     _assert_runtime_contract()

@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/official/objects/final_dossier/registry_final_dossier_tab.png" id="1_tab"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/bronze_plaque.png" id="1_tab"]
 
 [resource]
 texture = ExtResource("1_tab")
@@ -12,4 +12,4 @@ content_margin_left = 28.0
 content_margin_top = 14.0
 content_margin_right = 38.0
 content_margin_bottom = 14.0
-modulate_color = Color(1, 0.9, 0.58, 1)
+modulate_color = Color(1.25, 1.18, 1.04, 1)

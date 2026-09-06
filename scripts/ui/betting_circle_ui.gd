@@ -7,7 +7,7 @@ const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
 const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
-const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/backgrounds/bg_registry_ritual.png")
+const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_chamber.png")
 const REGISTRY_TABLE_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_normal.tres")
 const REGISTRY_TABLE_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_focus.tres")
 const REGISTRY_TABLE_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_pressed.tres")
@@ -30,11 +30,11 @@ const PROMISE_SIGNATURE_STATE_DISABLED: StringName = &"disabled"
 const PROMISE_SIGNATURE_STATE_META: StringName = &"registry_promise_signature_state"
 const BOOK_TITLE_PULSE_SPEED: float = 1.15
 const BOOK_DROP_OFFSET: Vector2 = Vector2(0.0, -34.0)
-const BOOK_DROP_SECONDS: float = 0.62
-const BOOK_OPEN_SECONDS: float = 0.48
-const BOOK_SETTLE_SECONDS: float = 0.18
-const BOOK_CONTENT_REVEAL_SECONDS: float = 0.36
-const CONTRACT_WRITE_SECONDS: float = 2.25
+const BOOK_DROP_SECONDS: float = 0.22
+const BOOK_OPEN_SECONDS: float = 0.24
+const BOOK_SETTLE_SECONDS: float = 0.12
+const BOOK_CONTENT_REVEAL_SECONDS: float = 0.18
+const CONTRACT_WRITE_SECONDS: float = 0.35
 const PAGE_IDLE_DRIFT_PIXELS: float = 1.4
 
 @onready var left_select_button: Button = $CenterContainer/BookFrame/LeftPage/Btn_Select_Left as Button
@@ -140,20 +140,7 @@ func _refresh_localized_text() -> void:
 		intro_seal.text = tr("I    II    III")
 	if open_book_label != null:
 		open_book_label.text = tr("APRI IL REGISTRO")
-
-func _process(delta: float) -> void:
-	if not visible:
-		return
-	if _is_reduced_motion():
-		if header_label != null:
-			header_label.modulate = Color.WHITE
-		_restore_page_positions()
-		return
-	_idle_time += delta
-	if header_label != null:
-		var pulse: float = 0.9 + (sin(_idle_time * BOOK_TITLE_PULSE_SPEED) * 0.1)
-		header_label.modulate = Color(pulse, pulse, pulse, 1.0)
-	_update_page_idle_motion()
+	_render_pages()
 
 func set_offers(bets: Array[Dictionary]) -> void:
 	_betting_circle_options = []
@@ -640,6 +627,9 @@ func _on_feedback_button_hover(button: Button) -> void:
 	_play_sfx(&"button_hover")
 
 func _play_sfx(cue: StringName) -> void:
+	var feedback: Node = get_tree().get_first_node_in_group("ritual_feedback")
+	if feedback != null:
+		feedback.call("play_cue", cue, get_viewport().gui_get_focus_owner())
 	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
 	if sfx_bus == null or not sfx_bus.has_method("play_cue"):
 		return
@@ -693,7 +683,8 @@ func _offer_or_empty(index: int) -> Dictionary:
 
 func _apply_page(offer: Dictionary, contract_label: RichTextLabel) -> void:
 	if contract_label != null:
-		contract_label.text = str(offer.get("contract", EMPTY_PAGE_BODY))
+		var localized: Dictionary = _map_offer_for_display(offer.source) if offer.has("source") else offer
+		contract_label.text = str(localized.get("contract", EMPTY_PAGE_BODY))
 
 func _refresh_from_catalog_if_empty() -> void:
 	if not _betting_circle_options.is_empty():
@@ -711,6 +702,7 @@ func _map_offer_for_display(source_offer: Dictionary) -> Dictionary:
 		title = BetCatalog.get_level3_display_title(bet_id)
 	return {
 		"id": bet_id,
+		"source": source_offer.duplicate(true),
 		"name": title if title != "" else EMPTY_PAGE_TITLE,
 		"contract": _format_contract_body(title if title != "" else EMPTY_PAGE_TITLE, subtitle, doom_text, condition_text, pact_text),
 	}
@@ -725,17 +717,10 @@ func _rebuild_options_from_catalog() -> void:
 		if bet_data.is_empty():
 			continue
 		var identity: Dictionary = BetCatalog.resolve_bet_identity(bet_id)
-		_betting_circle_options.append({
-			"id": bet_id,
-			"name": str(identity.get("display_title", str(bet_data.get("name", String(bet_id))))),
-			"contract": _format_contract_body(
-				str(identity.get("display_title", str(bet_data.get("name", String(bet_id))))),
-				str(identity.get("display_subtitle", "")),
-				str(bet_data.get("doom", "")),
-				str(bet_data.get("condition", "")),
-				str(bet_data.get("pact", ""))
-			),
-		})
+		var source: Dictionary = bet_data.duplicate(true)
+		source["display_title"] = identity.get("display_title", bet_data.get("name", String(bet_id)))
+		source["display_subtitle"] = identity.get("display_subtitle", "")
+		_betting_circle_options.append(_map_offer_for_display(source))
 
 func _find_bet_data(bet_id: StringName) -> Dictionary:
 	for bet_value: Dictionary in BetCatalog.level3_active_bets():
@@ -746,10 +731,10 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 
 func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String) -> String:
 	var lines: Array[String] = []
-	var title_text: String = title.strip_edges()
+	var title_text: String = tr(title.strip_edges())
 	if title_text != "":
 		lines.append("[center][b]%s[/b][/center]" % _escape_bbcode(title_text))
-	var subtitle_text: String = subtitle.strip_edges()
+	var subtitle_text: String = tr(subtitle.strip_edges())
 	if subtitle_text != "":
 		lines.append("[center][i]%s[/i][/center]" % _escape_bbcode(subtitle_text))
 	_append_contract_section(lines, tr("CONDANNA"), doom_text, true)
@@ -760,13 +745,13 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 	return "\n".join(lines)
 
 func _append_contract_section(lines: Array[String], section_title: String, body_text: String, emphasize_effect: bool) -> void:
-	var body: String = body_text.strip_edges()
+	var body: String = tr(body_text.strip_edges())
 	if body == "":
 		return
 	var section_lines: Array[String] = ["[b]%s[/b]" % _escape_bbcode(section_title)]
 	var body_lines: PackedStringArray = body.split("\n", false)
 	for raw_line: String in body_lines:
-		var line: String = raw_line.strip_edges()
+		var line: String = tr(raw_line.strip_edges())
 		if line == "":
 			continue
 		if emphasize_effect and line.begins_with("Effetto:"):

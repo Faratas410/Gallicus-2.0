@@ -9,6 +9,7 @@ import struct
 import wave
 import zlib
 from pathlib import Path
+from generated_art_contract import validate_family
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,56 +57,6 @@ def _node_block(scene: str, node_name: str) -> str:
     return match.group(0)
 
 
-def _paeth(left: int, up: int, upper_left: int) -> int:
-    estimate = left + up - upper_left
-    choices = (left, up, upper_left)
-    return min(choices, key=lambda choice: abs(estimate - choice))
-
-
-def _png_alpha(path: Path) -> tuple[int, int, bytes]:
-    raw = path.read_bytes()
-    if raw[:8] != b"\x89PNG\r\n\x1a\n":
-        raise AssertionError(f"{path.name} must be a PNG")
-    cursor = 8
-    idat = bytearray()
-    width = height = bit_depth = color_type = interlace = -1
-    while cursor < len(raw):
-        length = struct.unpack(">I", raw[cursor : cursor + 4])[0]
-        chunk_type = raw[cursor + 4 : cursor + 8]
-        payload = raw[cursor + 8 : cursor + 8 + length]
-        cursor += 12 + length
-        if chunk_type == b"IHDR":
-            width, height, bit_depth, color_type, _, _, interlace = struct.unpack(">IIBBBBB", payload)
-        elif chunk_type == b"IDAT":
-            idat.extend(payload)
-        elif chunk_type == b"IEND":
-            break
-    if bit_depth != 8 or color_type != 6 or interlace != 0:
-        raise AssertionError(f"{path.name} must be non-interlaced 8-bit RGBA")
-    decoded = zlib.decompress(bytes(idat))
-    stride = width * 4
-    previous = bytearray(stride)
-    alpha = bytearray()
-    offset = 0
-    for _ in range(height):
-        filter_type = decoded[offset]
-        offset += 1
-        source = decoded[offset : offset + stride]
-        offset += stride
-        row = bytearray(stride)
-        for index, value in enumerate(source):
-            left = row[index - 4] if index >= 4 else 0
-            up = previous[index]
-            upper_left = previous[index - 4] if index >= 4 else 0
-            predictors = (0, left, up, (left + up) // 2, _paeth(left, up, upper_left))
-            if not 0 <= filter_type <= 4:
-                raise AssertionError(f"unsupported PNG filter {filter_type} in {path.name}")
-            row[index] = (value + predictors[filter_type]) & 0xFF
-        alpha.extend(row[3::4])
-        previous = row
-    return width, height, bytes(alpha)
-
-
 def _csv_value(locale: str, key: str) -> str:
     path = ROOT / f"assets/i18n/{locale}.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -117,47 +68,7 @@ def _csv_value(locale: str, key: str) -> str:
 
 
 def _assert_assets_and_styles() -> None:
-    silhouette: bytes | None = None
-    for state in DOSSIERS:
-        width, height, alpha = _png_alpha(OBJECT_DIR / f"registry_final_dossier_{state}.png")
-        if (width, height) != (1400, 800):
-            raise AssertionError(f"{state} dossier must be RGBA 1400x800 (7:4)")
-        if any(alpha[index] for index in (0, width - 1, len(alpha) - width, len(alpha) - 1)):
-            raise AssertionError(f"{state} dossier must have transparent corners")
-        coverage = sum(value > 0 for value in alpha) / len(alpha)
-        if not 0.68 <= coverage <= 0.94:
-            raise AssertionError(f"{state} dossier alpha coverage out of range: {coverage:.3f}")
-        if silhouette is None:
-            silhouette = alpha
-        elif alpha != silhouette:
-            raise AssertionError("open, updated, and closed dossiers must have identical alpha silhouettes")
-        style = _read(OBJECT_DIR / f"sb_registry_final_dossier_{state}.tres")
-        if f"registry_final_dossier_{state}.png" not in style:
-            raise AssertionError(f"{state} dossier style uses the wrong texture")
-
-    width, height, alpha = _png_alpha(OBJECT_DIR / "registry_final_dossier_tab.png")
-    if (width, height) != (1000, 200):
-        raise AssertionError("dossier tab must be RGBA 1000x200 (5:1)")
-    if any(alpha[index] for index in (0, width - 1, len(alpha) - width, len(alpha) - 1)):
-        raise AssertionError("dossier tab must have transparent corners")
-    geometry: tuple[str, ...] | None = None
-    for state in TAB_STATES:
-        style = _read(OBJECT_DIR / f"sb_registry_final_dossier_tab_{state}.tres")
-        if "registry_final_dossier_tab.png" not in style:
-            raise AssertionError(f"{state} tab style uses the wrong texture")
-        values = tuple(
-            re.findall(
-                r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-                style,
-                re.MULTILINE,
-            )
-        )
-        if len(values) != 8 or any(float(value) != 0.0 for value in values[:4]):
-            raise AssertionError(f"{state} tab style must use zero texture margins")
-        if geometry is None:
-            geometry = values
-        elif values != geometry:
-            raise AssertionError("all dossier tab states must share identical geometry")
+    validate_family("final_dossier")
 
 
 def _assert_scene_and_runtime() -> None:

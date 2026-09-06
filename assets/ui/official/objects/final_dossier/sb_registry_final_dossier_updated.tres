@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/official/objects/final_dossier/registry_final_dossier_updated.png" id="1_dossier"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/final_dossier.png" id="1_dossier"]
 
 [resource]
 texture = ExtResource("1_dossier")
@@ -12,3 +12,4 @@ content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
+modulate_color = Color(1, 1, 1, 1)

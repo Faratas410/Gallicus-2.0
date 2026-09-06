@@ -155,3 +155,35 @@ Le Ere non vengono nominate nella UI e le transizioni restano graduali.
 - ogni ending e contenuto dichiarato e' raggiungibile;
 - la matrice contenuti e' coperta da test o playtest;
 - il testo e' leggibile nelle tre lingue alle risoluzioni target.
+
+## Copy e classificazioni corrette nella bonifica
+
+Il rito richiede `IMPRIMI IL SIGILLO: TRE COLPI`; la CTA resta `COLPISCI`.
+Nessuna frase promette un effetto del timing sul risultato. Il gesto pubblico
+dichiara `Il gesto è registrato. La pressione è cambiata.` senza negare la
+conseguenza della scelta. La firma fissata usa `Condizione registrata.` e
+`Configurazione stabile.`; queste righe e i Quick Cut sono tradotti IT/EN/ES.
+
+Violence e Penitence mantengono identita' nella traccia. I 14 predicati ending
+hanno ciascuno un witness runtime indipendente. Broken precede i fallback;
+Fall richiede tre patti Violence; Survivor esclude gloria alta; Pet richiede
+un incasso, perche' il primo chiude la run. Silenzio e Assenza non emettono
+verdetto, sconfitta o unlock di fine run.
+
+## Voce del menu
+
+- Invito: "L'arena dimentica. Il Registro no."
+- Soglia: "ENTRA NELL'ARENA".
+- Ripresa quando esiste un salvataggio valido: "RIPRENDI IL PERCORSO".
+- Rientro: "Il tuo passaggio e' registrato." (accento nativo nei cataloghi).
+
+Il menu presenta identita' e invito; il vecchio paragrafo Obiettivo e'
+rimosso. Spiegazioni di gesti e conseguenze restano nelle rispettive fasi.
+Le tre nuove frasi sono localizzate in IT/EN/ES; il marchio non si traduce.
+
+## Copy del sigillo - 6 settembre 2026
+
+Il richiamo luminoso ora e' breve: l'istruzione del rito diventa
+"Imprimi tre colpi sul sigillo." (EN: "Press the seal three times.";
+ES: "Imprime tres golpes en el sello."). Non si richiede di attendere una
+pulsazione continua. Restano tre attivazioni e gli stessi intenti/esiti.

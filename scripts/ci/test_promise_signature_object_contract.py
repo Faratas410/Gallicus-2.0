@@ -10,6 +10,7 @@ import struct
 import wave
 import zlib
 from pathlib import Path
+from generated_art_contract import validate_family
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -52,71 +53,6 @@ def _node_block(scene: str, node_name: str) -> str:
     return match.group(0)
 
 
-def _paeth(left: int, up: int, upper_left: int) -> int:
-    estimate = left + up - upper_left
-    left_distance = abs(estimate - left)
-    up_distance = abs(estimate - up)
-    upper_left_distance = abs(estimate - upper_left)
-    if left_distance <= up_distance and left_distance <= upper_left_distance:
-        return left
-    if up_distance <= upper_left_distance:
-        return up
-    return upper_left
-
-
-def _png_alpha(path: Path) -> tuple[int, int, bytes]:
-    raw = path.read_bytes()
-    if raw[:8] != b"\x89PNG\r\n\x1a\n":
-        raise AssertionError(f"{path.name} must be a PNG")
-    cursor = 8
-    idat = bytearray()
-    width = height = bit_depth = color_type = interlace = -1
-    while cursor < len(raw):
-        length = struct.unpack(">I", raw[cursor : cursor + 4])[0]
-        chunk_type = raw[cursor + 4 : cursor + 8]
-        payload = raw[cursor + 8 : cursor + 8 + length]
-        cursor += 12 + length
-        if chunk_type == b"IHDR":
-            width, height, bit_depth, color_type, _, _, interlace = struct.unpack(">IIBBBBB", payload)
-        elif chunk_type == b"IDAT":
-            idat.extend(payload)
-        elif chunk_type == b"IEND":
-            break
-    if bit_depth != 8 or color_type != 6 or interlace != 0:
-        raise AssertionError(f"{path.name} must be non-interlaced 8-bit RGBA")
-    decoded = zlib.decompress(bytes(idat))
-    stride = width * 4
-    previous = bytearray(stride)
-    alpha = bytearray()
-    offset = 0
-    for _ in range(height):
-        filter_type = decoded[offset]
-        offset += 1
-        source = decoded[offset : offset + stride]
-        offset += stride
-        row = bytearray(stride)
-        for index, value in enumerate(source):
-            left = row[index - 4] if index >= 4 else 0
-            up = previous[index]
-            upper_left = previous[index - 4] if index >= 4 else 0
-            if filter_type == 0:
-                result = value
-            elif filter_type == 1:
-                result = value + left
-            elif filter_type == 2:
-                result = value + up
-            elif filter_type == 3:
-                result = value + ((left + up) // 2)
-            elif filter_type == 4:
-                result = value + _paeth(left, up, upper_left)
-            else:
-                raise AssertionError(f"unsupported PNG filter {filter_type} in {path.name}")
-            row[index] = result & 0xFF
-        alpha.extend(row[3::4])
-        previous = row
-    return width, height, bytes(alpha)
-
-
 def _csv_value(locale: str, key: str) -> str:
     path = ROOT / f"assets/i18n/{locale}.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -128,42 +64,7 @@ def _csv_value(locale: str, key: str) -> str:
 
 
 def _assert_textures() -> None:
-    blank_width, blank_height, blank_alpha = _png_alpha(BLANK_TEXTURE)
-    signed_width, signed_height, signed_alpha = _png_alpha(SIGNED_TEXTURE)
-    if (blank_width, blank_height) != (1024, 256):
-        raise AssertionError(f"promise signature textures must be 4:1 at 1024x256, got {blank_width}x{blank_height}")
-    if (signed_width, signed_height) != (blank_width, blank_height):
-        raise AssertionError("blank and signed promise textures must share dimensions")
-    if blank_alpha != signed_alpha:
-        raise AssertionError("blank and signed promise textures must share the exact alpha silhouette")
-    if any(blank_alpha[index] != 0 for index in (0, blank_width - 1, len(blank_alpha) - blank_width, len(blank_alpha) - 1)):
-        raise AssertionError("promise signature textures must have transparent corners")
-    opaque_coverage = sum(alpha > 0 for alpha in blank_alpha) / len(blank_alpha)
-    if not 0.55 <= opaque_coverage <= 0.95:
-        raise AssertionError(f"unexpected promise signature subject coverage: {opaque_coverage:.3f}")
-
-
-def _assert_style_geometry() -> None:
-    geometry: tuple[str, ...] | None = None
-    for state in STYLE_NAMES:
-        path = STYLE_DIR / f"sb_registry_promise_signature_{state}.tres"
-        text = _read(path)
-        expected_texture = "registry_promise_signature_signed.png" if state == "signed" else "registry_promise_signature_blank.png"
-        if expected_texture not in text:
-            raise AssertionError(f"{path.name} must use {expected_texture}")
-        values = tuple(
-            re.findall(
-                r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-                text,
-                re.MULTILINE,
-            )
-        )
-        if len(values) != 8:
-            raise AssertionError(f"{path.name} must define stable texture/content margins")
-        if geometry is None:
-            geometry = values
-        elif values != geometry:
-            raise AssertionError(f"{path.name} changes promise signature geometry")
+    validate_family("promise_signature")
 
 
 def _assert_scene_binding() -> None:
@@ -290,7 +191,6 @@ def _assert_visual_qa_matrix() -> None:
 
 def main() -> int:
     _assert_textures()
-    _assert_style_geometry()
     _assert_scene_binding()
     _assert_runtime_contract()
     _assert_audio()

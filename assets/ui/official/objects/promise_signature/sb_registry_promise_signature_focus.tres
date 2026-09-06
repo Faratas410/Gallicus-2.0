@@ -1,15 +1,15 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/official/objects/promise_signature/registry_promise_signature_blank.png" id="1_signature"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/promise_signature.png" id="1_signature"]
 
 [resource]
 texture = ExtResource("1_signature")
-texture_margin_left = 12.0
-texture_margin_top = 5.0
-texture_margin_right = 12.0
-texture_margin_bottom = 5.0
+texture_margin_left = 0.0
+texture_margin_top = 0.0
+texture_margin_right = 0.0
+texture_margin_bottom = 0.0
 content_margin_left = 12.0
 content_margin_top = 5.0
 content_margin_right = 12.0
 content_margin_bottom = 5.0
-modulate_color = Color(1, 0.9, 0.62, 1)
+modulate_color = Color(1.25, 1.18, 1.04, 1)

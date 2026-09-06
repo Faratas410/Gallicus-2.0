@@ -1,0 +1,92 @@
+# File del pass audiovisivo del 6 settembre 2026
+
+Confronto SHA-256 con lo stato locale all'inizio del pass, conservato in
+`artifacts/av_pass/before_hashes.json`. Non comprende le modifiche precedenti
+se rimaste identiche durante questo lavoro. Nessun commit creato.
+
+84 file nuovi o modificati; 0 rimossi.
+
+- `.github/workflows/godot_smoke_runtime.yml`
+- `assets/audio/original/atrium.wav`
+- `assets/audio/original/atrium.wav.import`
+- `assets/audio/original/dossier.wav`
+- `assets/audio/original/dossier.wav.import`
+- `assets/audio/original/inscription.wav`
+- `assets/audio/original/inscription.wav.import`
+- `assets/audio/original/manifest.json`
+- `assets/audio/original/registry.wav`
+- `assets/audio/original/registry.wav.import`
+- `assets/audio/original/terminal_heartbeat.wav`
+- `assets/audio/original/terminal_heartbeat.wav.import`
+- `assets/audio/original/threshold.wav`
+- `assets/audio/original/threshold.wav.import`
+- `assets/audio/sfx/arena_gesture_placa.wav`
+- `assets/audio/sfx/arena_gesture_provoca.wav`
+- `assets/audio/sfx/arena_threshold_cross.wav`
+- `assets/audio/sfx/button_click.wav`
+- `assets/audio/sfx/button_hover.wav`
+- `assets/audio/sfx/cursor_move.wav`
+- `assets/audio/sfx/cursor_select.wav`
+- `assets/audio/sfx/enemy_death.wav`
+- `assets/audio/sfx/enemy_hit.wav`
+- `assets/audio/sfx/game_over.wav`
+- `assets/audio/sfx/level_up.wav`
+- `assets/audio/sfx/pickup.wav`
+- `assets/audio/sfx/player_damage.wav`
+- `assets/audio/sfx/registry_condemnation_mark.wav`
+- `assets/audio/sfx/registry_dossier_close.wav`
+- `assets/audio/sfx/registry_dossier_route.wav`
+- `assets/audio/sfx/registry_dossier_update.wav`
+- `assets/audio/sfx/registry_judgment_seal_resolve.wav`
+- `assets/audio/sfx/registry_judgment_seal_strike.wav`
+- `assets/audio/sfx/registry_pact_validate.wav`
+- `assets/audio/sfx/registry_promise_sign.wav`
+- `assets/audio/sfx/registry_receipt_take.wav`
+- `assets/audio/sfx/registry_second_incision.wav`
+- `assets/audio/sfx/registry_table_open.wav`
+- `assets/audio/sfx/stage_complete.wav`
+- `assets/i18n/en.csv`
+- `assets/i18n/en.en.translation`
+- `assets/i18n/es.csv`
+- `assets/i18n/es.es.translation`
+- `assets/i18n/it.csv`
+- `assets/i18n/it.it.translation`
+- `assets/ui/generated/manifest.json`
+- `assets/ui/generated/ritual_dust.png`
+- `assets/ui/generated/ritual_dust.png.import`
+- `docs/README.md`
+- `docs/art_direction.md`
+- `docs/asset_pipeline.md`
+- `docs/audio_direction.md`
+- `docs/canon/UI_CANON.md`
+- `docs/cinematic_direction.md`
+- `docs/content_bible.md`
+- `docs/development_plan.md`
+- `docs/layout_rules.md`
+- `docs/release_checklist.md`
+- `docs/steam_release.md`
+- `docs/support/av_pass_2026-09-06.md`
+- `docs/support/av_pass_2026-09-06_files.md`
+- `docs/testing.md`
+- `export_presets.cfg`
+- `scenes/Main.tscn`
+- `scripts/audio/music_director.gd`
+- `scripts/audio/sfx_bus.gd`
+- `scripts/ci/av_runtime_contract.gd`
+- `scripts/ci/av_runtime_contract.gd.uid`
+- `scripts/ci/inspect_export_assets.gd`
+- `scripts/ci/run_av_runtime_contract.py`
+- `scripts/ci/run_testing_playbook.py`
+- `scripts/ci/test_av_asset_contract.py`
+- `scripts/ci/test_judgment_seal_object_contract.py`
+- `scripts/ui/betting_circle_ui.gd`
+- `scripts/ui/main_menu.gd`
+- `scripts/ui/menu_ambience.gd`
+- `scripts/ui/registry_terminal_view.gd`
+- `scripts/ui/ritual_feedback.gd`
+- `scripts/ui/ritual_feedback.gd.uid`
+- `scripts/ui/ui_root.gd`
+- `tools/generate_original_audio.py`
+- `tools/visual_qa_av_capture.gd`
+- `tools/visual_qa_av_capture.gd.uid`
+- `tools/visual_qa_av_capture.tscn`

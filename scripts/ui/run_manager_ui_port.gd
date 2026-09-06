@@ -18,6 +18,14 @@ func _get_manager() -> Node:
 func has_manager() -> bool:
 	return _get_manager() != null
 
+func can_start_run() -> bool:
+	var manager: Node = _get_manager()
+	return manager != null and bool(manager.can_start_run())
+
+func get_registry_presentation() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_registry_presentation() if manager != null else {}
+
 func is_visual_only() -> bool:
 	var manager: Node = _get_manager()
 	if manager == null:

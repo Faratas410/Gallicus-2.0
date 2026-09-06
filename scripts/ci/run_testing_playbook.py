@@ -52,6 +52,7 @@ def _python_script(script_path: str) -> list[str]:
 
 
 STATIC_STEPS: tuple[tuple[str, list[str]], ...] = (
+    ("av_assets", _python_script("scripts/ci/test_av_asset_contract.py")),
     ("smoke_validator", _python_script("scripts/ci/test_headless_smoke_validator.py")),
     ("docs_refs", _python_script("scripts/ci/check_docs_active_refs.py")),
     ("no_legacy_references", _python_script("scripts/ci/check_no_legacy_references.py")),
@@ -156,7 +157,7 @@ def _run_step(label: str, command: list[str], output_dir: Path) -> StepResult:
 
 
 def _godot_import_step(godot_bin: str) -> list[str]:
-    return [godot_bin, "--headless", "--editor", "--path", str(ROOT), "--quit"]
+    return [sys.executable, "scripts/ci/run_godot_import.py", "--godot-bin", godot_bin]
 
 
 def _cp02_runtime_contract_step(godot_bin: str) -> list[str]:
@@ -223,6 +224,8 @@ def main() -> int:
         if not args.skip_import:
             results.append(_run_step("godot_import_headless", _godot_import_step(godot_bin), output_dir))
         results.append(_run_step("cp02_runtime_contract", _cp02_runtime_contract_step(godot_bin), output_dir))
+        results.append(_run_step("audit_runtime_contract", [sys.executable, "scripts/ci/run_audit_runtime_contract.py", "--godot-bin", godot_bin], output_dir))
+        results.append(_run_step("av_runtime_contract", [sys.executable, "scripts/ci/run_av_runtime_contract.py", "--godot-bin", godot_bin], output_dir))
         for scenario in scenarios:
             results.append(
                 _run_step(

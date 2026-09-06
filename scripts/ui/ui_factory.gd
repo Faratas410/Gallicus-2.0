@@ -6,12 +6,13 @@ const BODY_FONT_PATH: String = "res://assets/ui/fonts/font_body.tres"
 
 static func create_sprite_label(text: String) -> PanelContainer:
 	var entry_panel := PanelContainer.new()
-	var main_panel_stylebox: StyleBox = _safe_load_stylebox(MAIN_PANEL_STYLEBOX_PATH)
+	var main_panel_stylebox: StyleBox = StyleBoxEmpty.new()
 	if main_panel_stylebox != null:
 		entry_panel.add_theme_stylebox_override("panel", main_panel_stylebox)
 	var entry_label := Label.new()
 	entry_label.text = text
-	entry_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	entry_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	entry_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	entry_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var body_font: Font = _safe_load_font(BODY_FONT_PATH)
 	if body_font != null:

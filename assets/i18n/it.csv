@@ -1,280 +1,279 @@
 keys,it
-"CONTINUA","CONTINUA"
-"Nessuna partita salvata.","Nessuna partita salvata."
-"ENTRA NELL'ARENA","ENTRA NELL'ARENA"
-"CARICA PARTITA","CARICA PARTITA"
-"ARCHIVIO","ARCHIVIO"
-"OPZIONI","OPZIONI"
-"CREDITI","CREDITI"
-"ARCHIVIO DELLE CONDANNE","ARCHIVIO DELLE CONDANNE"
-"Registro consultivo. Nessuna ricompensa.","Registro consultivo. Nessuna ricompensa."
-"CONDANNE","CONDANNE"
-"MUSEO","MUSEO"
-"PATTI DISPONIBILI (LIVELLO 3)","PATTI DISPONIBILI (LIVELLO 3)"
-"- Nessun patto disponibile.","- Nessun patto disponibile."
-"ARENE TEMATICHE","ARENE TEMATICHE"
-"- Nessuna arena disponibile.","- Nessuna arena disponibile."
-"VOCI DEL PUBBLICO","VOCI DEL PUBBLICO"
-"Voci base: %d","Voci base: %d"
-"Voci dure: %s","Voci dure: %s"
-"SBLOCCATE","SBLOCCATE"
-"BLOCCATE","BLOCCATE"
-"LUMINOSITÀ","LUMINOSITÀ"
-"Luminosità: %.2f","Luminosità: %.2f"
-"LINGUA","LINGUA"
-"Lingua selezionata: %s","Lingua selezionata: %s"
-"VOLUME MASTER","VOLUME MASTER"
-"VOLUME MUSICA","VOLUME MUSICA"
-"VOLUME EFFETTI","VOLUME EFFETTI"
-"SCHERMO INTERO","SCHERMO INTERO"
-"MOVIMENTO RIDOTTO","MOVIMENTO RIDOTTO"
-"RISOLUZIONE","RISOLUZIONE"
-"Risoluzione: %s","Risoluzione: %s"
-"Volume: %d%%","Volume: %d%%"
-"Musica: %d%%","Musica: %d%%"
-"Effetti: %d%%","Effetti: %d%%"
-"Nessun salvataggio valido disponibile. Inizia un nuovo percorso.","Nessun salvataggio valido disponibile. Inizia un nuovo percorso."
-"Salvataggio corrotto: i file sono stati messi in quarantena.","Salvataggio corrotto: i file sono stati messi in quarantena."
-"Salvataggio corrotto e backup non disponibile.","Salvataggio corrotto e backup non disponibile."
+CONTINUA,CONTINUA
+Nessuna partita salvata.,Nessuna partita salvata.
+ENTRA NELL'ARENA,ENTRA NELL'ARENA
+CARICA PARTITA,CARICA PARTITA
+ARCHIVIO,ARCHIVIO
+OPZIONI,OPZIONI
+CREDITI,CREDITI
+ARCHIVIO DELLE CONDANNE,ARCHIVIO DELLE CONDANNE
+Registro consultivo. Nessuna ricompensa.,Registro consultivo. Nessuna ricompensa.
+CONDANNE,CONDANNE
+MUSEO,MUSEO
+PATTI DISPONIBILI (LIVELLO 3),PATTI DISPONIBILI (LIVELLO 3)
+- Nessun patto disponibile.,- Nessun patto disponibile.
+ARENE TEMATICHE,ARENE TEMATICHE
+- Nessuna arena disponibile.,- Nessuna arena disponibile.
+VOCI DEL PUBBLICO,VOCI DEL PUBBLICO
+Voci base: %d,Voci base: %d
+Voci dure: %s,Voci dure: %s
+SBLOCCATE,SBLOCCATE
+BLOCCATE,BLOCCATE
+LUMINOSITÀ,LUMINOSITÀ
+Luminosità: %.2f,Luminosità: %.2f
+LINGUA,LINGUA
+Lingua selezionata: %s,Lingua selezionata: %s
+VOLUME MASTER,VOLUME MASTER
+VOLUME MUSICA,VOLUME MUSICA
+VOLUME EFFETTI,VOLUME EFFETTI
+SCHERMO INTERO,SCHERMO INTERO
+MOVIMENTO RIDOTTO,MOVIMENTO RIDOTTO
+RISOLUZIONE,RISOLUZIONE
+Risoluzione: %s,Risoluzione: %s
+Volume: %d%%,Volume: %d%%
+Musica: %d%%,Musica: %d%%
+Effetti: %d%%,Effetti: %d%%
+Nessun salvataggio valido disponibile. Inizia un nuovo percorso.,Nessun salvataggio valido disponibile. Inizia un nuovo percorso.
+Salvataggio corrotto: i file sono stati messi in quarantena.,Salvataggio corrotto: i file sono stati messi in quarantena.
+Salvataggio corrotto e backup non disponibile.,Salvataggio corrotto e backup non disponibile.
 "Backup valido trovato, ma il ripristino non è riuscito.","Backup valido trovato, ma il ripristino non è riuscito."
-"Italiano","Italiano"
-"English","English"
-"Español","Español"
-"GALLICUS","GALLICUS"
-"ACTA ARENAE","ACTA ARENAE"
-"Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)","Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)"
-"Luminosità: 1.00","Luminosità: 1.00"
-"(Placeholder)","(Placeholder)"
-"Lingua selezionata: Italiano","Lingua selezionata: Italiano"
-"Volume: 100%","Volume: 100%"
-"SCOMMESSA","SCOMMESSA"
-"-","-"
-"PRESSIONE","PRESSIONE"
-"PRESSIONE %d/%d","PRESSIONE %d/%d"
-"Sotto controllo","Sotto controllo"
-"La folla si scalda","La folla si scalda"
-"Rischio alto","Rischio alto"
-"Fuori controllo","Fuori controllo"
-"Pressione -1.","Pressione -1."
-"Pressione +1.","Pressione +1."
-"Pressione +1. Aumenti posta e rischio.","Pressione +1. Aumenti posta e rischio."
-"Pressione massima: %d/%d","Pressione massima: %d/%d"
-"La folla ha spinto il percorso oltre il margine.","La folla ha spinto il percorso oltre il margine."
-"La pressione è rimasta sotto controllo.","La pressione è rimasta sotto controllo."
-"Chiudi il percorso e registra il risultato finale.","Chiudi il percorso e registra il risultato finale."
-"Pressione +1. Continua alla prossima arena con posta aumentata.","Pressione +1. Continua alla prossima arena con posta aumentata."
-"La folla osserva.","La folla osserva."
-"La folla pretende un altro rilancio.","La folla pretende un altro rilancio."
-"La folla resta in ascolto.","La folla resta in ascolto."
-"Stato del percorso: Gloria %d | Corruzione %d | %s","Stato del percorso: Gloria %d | Corruzione %d | %s"
-"Incasso sotto richiesta della folla: x%.2f","Incasso sotto richiesta della folla: x%.2f"
-"CICATRICE APPLICATA","CICATRICE APPLICATA"
-"Il patto viene giudicato...","Il patto viene giudicato..."
-"La folla ti guarda.","La folla ti guarda."
-"Registro: atto annotato.","Registro: atto annotato."
-"Arena del Sigillo","Arena del Sigillo"
-"Qui ogni firma pesa.","Qui ogni firma pesa."
-"SENTENZA","SENTENZA"
-"VINCI","VINCI"
-"SE FALLISCI: LA CICATRICE TI RESTA.","SE FALLISCI: LA CICATRICE TI RESTA."
-"IL PATTO E' SIGILLATO.","IL PATTO E' SIGILLATO."
-"La folla trattiene il fiato.","La folla trattiene il fiato."
-"RITO DI GIUDIZIO","RITO DI GIUDIZIO"
-"Il patto viene giudicato.","Il patto viene giudicato."
-"SCEGLI IL GESTO","SCEGLI IL GESTO"
-"UMILIATI","UMILIATI"
-"PROVOCA","PROVOCA"
-"Scommessa Arena","Scommessa Arena"
-"ARENA SPECIALE","ARENA SPECIALE"
-"FOCUS: Leggi prima la CONDANNA.","FOCUS: Leggi prima la CONDANNA."
-"Seed (opzionale)","Seed (opzionale)"
-"Es. 10331","Es. 10331"
-"APPLICA","APPLICA"
-"Stake","Stake"
-"CONDANNA - RADDOPPI O MUORI","CONDANNA - RADDOPPI O MUORI"
-"CONDIZIONE - SANGUE INTEGRO","CONDIZIONE - SANGUE INTEGRO"
-"PATTO - INCASSA E VAI","PATTO - INCASSA E VAI"
-"Selezione: -","Selezione: -"
-"SIGILLA","SIGILLA"
-"Disponibile dopo l'arena in corso.","Disponibile dopo l'arena in corso."
-"x1","x1"
-"Incassa ora o rilancia il rischio","Incassa ora o rilancia il rischio"
-"PRENDI LA QUIETANZA","PRENDI LA QUIETANZA"
-"RICEVI IL MARCHIO","RICEVI IL MARCHIO"
-"CONDANNA","CONDANNA"
-"NESSUN REWARD","NESSUN REWARD"
-"RADDOPPIA","RADDOPPIA"
-"DETTAGLIO CICATRICI","DETTAGLIO CICATRICI"
-"CHIUDI","CHIUDI"
-"VERDETTO","VERDETTO"
-"PATTI FIRMATI","PATTI FIRMATI"
-"ULTIMA VOCE","ULTIMA VOCE"
-"NUOVO PERCORSO","NUOVO PERCORSO"
-"NEXT BET","NEXT BET"
-"PROSSIMA SCOMMESSA","PROSSIMA SCOMMESSA"
-"TORNA AL MENU","TORNA AL MENU"
-"FAST: 12s","FAST: 12s"
-"CICATRICI","CICATRICI"
-"Nessuna cicatrice.","Nessuna cicatrice."
-"CIRCOLO SCOMMESSE","CIRCOLO SCOMMESSE"
-"INCASSA E VAI","INCASSA E VAI"
-"CONDANNA: ...","CONDANNA: ..."
-"CONDIZIONE: ...","CONDIZIONE: ..."
-"PATTO: ...","PATTO: ..."
-"SANGUE INTEGRO","SANGUE INTEGRO"
-"RADDOPPI O MUORI","RADDOPPI O MUORI"
-"Nessun patto aperto. Entra nell'arena e firma la prima scommessa.","Nessun patto aperto. Entra nell'arena e firma la prima scommessa."
-"Registro aggiornato. Puoi tornare nell'arena quando vuoi.","Registro aggiornato. Puoi tornare nell'arena quando vuoi."
-"Funzione disattiva in L3.","Funzione disattiva in L3."
-"Voci dure: +%d","Voci dure: +%d"
-"%s\\n\\nCome è stata ottenuta:\\n%s\\n\\n%s","%s\\n\\nCome è stata ottenuta:\\n%s\\n\\n%s"
-"Salvataggio non valido: schema del file mancante o corrotto.","Salvataggio non valido: schema del file mancante o corrotto."
-"Salvataggio non compatibile con questa versione.","Salvataggio non compatibile con questa versione."
-"Salvataggio incompleto: dati del percorso mancanti.","Salvataggio incompleto: dati del percorso mancanti."
-"Salvataggio non valido: schema Level 3 mancante.","Salvataggio non valido: schema Level 3 mancante."
-"Salvataggio non compatibile: schema Level 3 differente.","Salvataggio non compatibile: schema Level 3 differente."
-"Salvataggio legacy non supportato in L3.","Salvataggio legacy non supportato in L3."
-"Salvataggio incompleto: stato del percorso mancante.","Salvataggio incompleto: stato del percorso mancante."
-"Salvataggio non valido: dati Condanne non leggibili.","Salvataggio non valido: dati Condanne non leggibili."
-"Salvataggio non valido: formato Condanne non supportato.","Salvataggio non valido: formato Condanne non supportato."
-"Salvataggio non valido.","Salvataggio non valido."
-"Salvataggio non valido: %s.","Salvataggio non valido: %s."
-"In arrivo.","In arrivo."
-"Interfaccia non inizializzata.\nElementi mancanti:\n- %s\n\nTorna al menu e riavvia.","Interfaccia non inizializzata.\nElementi mancanti:\n- %s\n\nTorna al menu e riavvia."
-"[b]Effetto:[/b] %s","[b]Effetto:[/b] %s"
-"Nessuna scommessa attiva","Nessuna scommessa attiva"
-"PERCORSO FALLITO","PERCORSO FALLITO"
-"AGGIORNAMENTO DEL REGISTRO","AGGIORNAMENTO DEL REGISTRO"
-"Protocollo di classificazione completato.","Protocollo di classificazione completato."
-"Incasso registrato.","Incasso registrato."
-"Arena superata.","Arena superata."
-"Condanna registrata.","Condanna registrata."
-"Ricompensa applicata. Il registro resta aperto per la prossima scommessa.","Ricompensa applicata. Il registro resta aperto per la prossima scommessa."
-"Esito registrato. Puoi proseguire con la prossima scommessa.","Esito registrato. Puoi proseguire con la prossima scommessa."
-"Nessun premio assegnato. Il registro resta consultabile.","Nessun premio assegnato. Il registro resta consultabile."
-"nessuna annotazione registrata","nessuna annotazione registrata"
-"Stato: chiusura definitiva.","Stato: chiusura definitiva."
-"Stato: scegli se proseguire o tornare al menu.","Stato: scegli se proseguire o tornare al menu."
-"[center]Registro Arena - Lettura amministrativa[/center]","[center]Registro Arena - Lettura amministrativa[/center]"
-"incasso accettato","incasso accettato"
-"arena continuata","arena continuata"
-"percorso registrato","percorso registrato"
-"patto registrato","patto registrato"
-"condanna registrata","condanna registrata"
-"CONDANNA: %s","CONDANNA: %s"
-"SELEZIONE GESTO","SELEZIONE GESTO"
-"La folla osserva la tua scelta.","La folla osserva la tua scelta."
-"Arena speciale","Arena speciale"
-"Firma una via. Il Registro annota il prezzo.","Firma una via. Il Registro annota il prezzo."
-"Clausola non esposta.","Clausola non esposta."
-"Firma focus: %s | Clausola: %s","Firma focus: %s | Clausola: %s"
-"Cicatrice","Cicatrice"
-"  Effetto: %s","  Effetto: %s"
-"  Origine: %s","  Origine: %s"
-"[b]Cicatrici rilevanti:[/b]","[b]Cicatrici rilevanti:[/b]"
-"FINAL: %s","FINAL: %s"
-"ENDING ID: %s","ENDING ID: %s"
-"ICONA: %s","ICONA: %s"
-"[b]Registro Finale[/b]","[b]Registro Finale[/b]"
-"Corruzione","Corruzione"
-"Gloria","Gloria"
-"Cicatrici","Cicatrici"
-"Pattern","Pattern"
-"Fascicolo chiuso","Fascicolo chiuso"
-"Il registro è aperto.","Il registro è aperto."
-"Incassa ora o aumenta esposizione.","Incassa ora o aumenta esposizione."
-"La condanna chiude il ciclo senza premio.","La condanna chiude il ciclo senza premio."
-"Scegli un atto. La firma è irrevocabile.","Scegli un atto. La firma è irrevocabile."
-"Nessun dettaglio.","Nessun dettaglio."
-"+ %d dettagli nel registro.","+ %d dettagli nel registro."
-"SPINGI LA SORTE","SPINGI LA SORTE"
-"CONDIZIONE: %s","CONDIZIONE: %s"
-"PATTO: %s","PATTO: %s"
-"NOTA: %s","NOTA: %s"
-"INCASSO BLOCCATO: %s","INCASSO BLOCCATO: %s"
-"RADDOPPIO BLOCCATO: %s","RADDOPPIO BLOCCATO: %s"
-"CONTESTO: %s","CONTESTO: %s"
-"MODIFICA INCASSO: %s","MODIFICA INCASSO: %s"
-"Stato: in attesa di scelta.","Stato: in attesa di scelta."
-"Chiudi il percorso e apri il registro finale.","Chiudi il percorso e apri il registro finale."
-"Continua alla prossima arena con posta aumentata.","Continua alla prossima arena con posta aumentata."
-"Stato: richiesta incasso non disponibile.","Stato: richiesta incasso non disponibile."
-"Stato: richiesta condanna non disponibile.","Stato: richiesta condanna non disponibile."
-"Stato: richiesta rilancio non disponibile.","Stato: richiesta rilancio non disponibile."
-"Stato: richiesta non accettata. Scegli di nuovo.","Stato: richiesta non accettata. Scegli di nuovo."
-"POSTA VIVA: +%d Gloria","POSTA VIVA: +%d Gloria"
-"GLORIA: %d","GLORIA: %d"
-"CORRUZIONE: %d","CORRUZIONE: %d"
-"Ottieni +%d Gloria","Ottieni +%d Gloria"
-"Corruzione -%d","Corruzione -%d"
-"chiudi il registro","chiudi il registro"
-"Prossima posta +%d Gloria | Pressione +%d","Prossima posta +%d Gloria | Pressione +%d"
-"Perdi la posta +%d Gloria | il Registro chiude il percorso","Perdi la posta +%d Gloria | il Registro chiude il percorso"
-"FIRMA","FIRMA"
-"MOSTRA IL PATTO","MOSTRA IL PATTO"
-"APRI IL REGISTRO","APRI IL REGISTRO"
-"REGISTRO DELL'ARENA","REGISTRO DELL'ARENA"
-"Apertura del verbale","Apertura del verbale"
-"IL REGISTRO E' CHIUSO","IL REGISTRO E' CHIUSO"
-"La pietra attende una firma.","La pietra attende una firma."
-"Ogni patto lascia un segno.","Ogni patto lascia un segno."
-"APRI","APRI"
-"Apri il registro.","Apri il registro."
-"Il registro è chiuso. Aprilo per scegliere la via.","Il registro è chiuso. Aprilo per scegliere la via."
-"SCEGLI LA VIA","SCEGLI LA VIA"
-"Ogni firma apre una promessa e una condanna.","Ogni firma apre una promessa e una condanna."
-"CONDIZIONE","CONDIZIONE"
-"PATTO","PATTO"
-"registrato","registrato"
-"continuato","continuato"
-"Atto registrato: %s. Stato: %s.","Atto registrato: %s. Stato: %s."
-"PATTO FALLITO","PATTO FALLITO"
-"seleziona un'azione","seleziona un'azione"
-"scommessa rinunciata","scommessa rinunciata"
-"RIPROVA SCOMMESSA","RIPROVA SCOMMESSA"
-"Stato: scelta acquisita.","Stato: scelta acquisita."
-"Come è stata ottenuta:","Come è stata ottenuta:"
-"Interfaccia non inizializzata.","Interfaccia non inizializzata."
-"Elementi mancanti:","Elementi mancanti:"
-"Torna al menu e riavvia.","Torna al menu e riavvia."
-"PATTO SIGILLATO","PATTO SIGILLATO"
-"La pietra ha preso la firma.","La pietra ha preso la firma."
-"La gradinata attende il gesto.","La gradinata attende il gesto."
-"SEGNI","SEGNI"
-"Registro pulito: nessun segno inciso.","Registro pulito: nessun segno inciso."
-"ATTO DAVANTI ALLA GRADINATA","ATTO DAVANTI ALLA GRADINATA"
-"ABBASSA LO SGUARDO","ABBASSA LO SGUARDO"
-"SFIDA LA GRADINATA","SFIDA LA GRADINATA"
-"Il Registro annota misura.","Il Registro annota misura."
-"Il Registro annota esposizione.","Il Registro annota esposizione."
-"La gradinata pesa il tuo respiro.","La gradinata pesa il tuo respiro."
-"La gradinata si quieta: il Registro vede prudenza.","La gradinata si quieta: il Registro vede prudenza."
-"Trattieni il gesto. L'arena concede ancora margine.","Trattieni il gesto. L'arena concede ancora margine."
-"Non cercano vanto: aspettano se saprai durare.","Non cercano vanto: aspettano se saprai durare."
-"La folla resta sospesa tra misura e sfida.","La folla resta sospesa tra misura e sfida."
-"Ogni sguardo chiede se terrai il passo.","Ogni sguardo chiede se terrai il passo."
-"La gradinata batte ferro: vuole vederti oltre.","La gradinata batte ferro: vuole vederti oltre."
-"Il rischio sale e il Registro non distoglie gli occhi.","Il rischio sale e il Registro non distoglie gli occhi."
+Italiano,Italiano
+English,English
+Español,Español
+GALLICUS,GALLICUS
+ACTA ARENAE,ACTA ARENAE
+Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD),Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD)
+Luminosità: 1.00,Luminosità: 1.00
+(Placeholder),(Placeholder)
+Lingua selezionata: Italiano,Lingua selezionata: Italiano
+Volume: 100%,Volume: 100%
+SCOMMESSA,SCOMMESSA
+-,-
+PRESSIONE,PRESSIONE
+PRESSIONE %d/%d,PRESSIONE %d/%d
+Sotto controllo,Sotto controllo
+La folla si scalda,La folla si scalda
+Rischio alto,Rischio alto
+Fuori controllo,Fuori controllo
+Pressione -1.,Pressione -1.
+Pressione +1.,Pressione +1.
+Pressione +1. Aumenti posta e rischio.,Pressione +1. Aumenti posta e rischio.
+Pressione massima: %d/%d,Pressione massima: %d/%d
+La folla ha spinto il percorso oltre il margine.,La folla ha spinto il percorso oltre il margine.
+La pressione è rimasta sotto controllo.,La pressione è rimasta sotto controllo.
+Chiudi il percorso e registra il risultato finale.,Chiudi il percorso e registra il risultato finale.
+Pressione +1. Continua alla prossima arena con posta aumentata.,Pressione +1. Continua alla prossima arena con posta aumentata.
+La folla osserva.,La folla osserva.
+La folla pretende un altro rilancio.,La folla pretende un altro rilancio.
+La folla resta in ascolto.,La folla resta in ascolto.
+Stato del percorso: Gloria %d | Corruzione %d | %s,Stato del percorso: Gloria %d | Corruzione %d | %s
+Incasso sotto richiesta della folla: x%.2f,Incasso sotto richiesta della folla: x%.2f
+CICATRICE APPLICATA,CICATRICE APPLICATA
+Il patto viene giudicato...,Il patto viene giudicato...
+La folla ti guarda.,La folla ti guarda.
+Registro: atto annotato.,Registro: atto annotato.
+Arena del Sigillo,Arena del Sigillo
+Qui ogni firma pesa.,Qui ogni firma pesa.
+SENTENZA,SENTENZA
+VINCI,VINCI
+SE FALLISCI: LA CICATRICE TI RESTA.,SE FALLISCI: LA CICATRICE TI RESTA.
+IL PATTO E' SIGILLATO.,IL PATTO E' SIGILLATO.
+La folla trattiene il fiato.,La folla trattiene il fiato.
+RITO DI GIUDIZIO,RITO DI GIUDIZIO
+Il patto viene giudicato.,Il patto viene giudicato.
+SCEGLI IL GESTO,SCEGLI IL GESTO
+UMILIATI,UMILIATI
+PROVOCA,PROVOCA
+Scommessa Arena,Scommessa Arena
+ARENA SPECIALE,ARENA SPECIALE
+FOCUS: Leggi prima la CONDANNA.,FOCUS: Leggi prima la CONDANNA.
+Seed (opzionale),Seed (opzionale)
+Es. 10331,Es. 10331
+APPLICA,APPLICA
+Stake,Stake
+CONDANNA - RADDOPPI O MUORI,CONDANNA - RADDOPPI O MUORI
+CONDIZIONE - SANGUE INTEGRO,CONDIZIONE - SANGUE INTEGRO
+PATTO - INCASSA E VAI,PATTO - INCASSA E VAI
+Selezione: -,Selezione: -
+SIGILLA,SIGILLA
+Disponibile dopo l'arena in corso.,Disponibile dopo l'arena in corso.
+x1,x1
+Incassa ora o rilancia il rischio,Incassa ora o rilancia il rischio
+PRENDI LA QUIETANZA,PRENDI LA QUIETANZA
+RICEVI IL MARCHIO,RICEVI IL MARCHIO
+CONDANNA,CONDANNA
+NESSUN REWARD,NESSUN REWARD
+RADDOPPIA,RADDOPPIA
+DETTAGLIO CICATRICI,DETTAGLIO CICATRICI
+CHIUDI,CHIUDI
+VERDETTO,VERDETTO
+PATTI FIRMATI,PATTI FIRMATI
+ULTIMA VOCE,ULTIMA VOCE
+NUOVO PERCORSO,NUOVO PERCORSO
+NEXT BET,NEXT BET
+PROSSIMA SCOMMESSA,PROSSIMA SCOMMESSA
+TORNA AL MENU,TORNA AL MENU
+FAST: 12s,FAST: 12s
+CICATRICI,CICATRICI
+Nessuna cicatrice.,Nessuna cicatrice.
+CIRCOLO SCOMMESSE,CIRCOLO SCOMMESSE
+INCASSA E VAI,INCASSA E VAI
+CONDANNA: ...,CONDANNA: ...
+CONDIZIONE: ...,CONDIZIONE: ...
+PATTO: ...,PATTO: ...
+SANGUE INTEGRO,SANGUE INTEGRO
+RADDOPPI O MUORI,RADDOPPI O MUORI
+Nessun patto aperto. Entra nell'arena e firma la prima scommessa.,Nessun patto aperto. Entra nell'arena e firma la prima scommessa.
+Funzione disattiva in L3.,Funzione disattiva in L3.
+Voci dure: +%d,Voci dure: +%d
+%s\\n\\nCome è stata ottenuta:\\n%s\\n\\n%s,%s\\n\\nCome è stata ottenuta:\\n%s\\n\\n%s
+Salvataggio non valido: schema del file mancante o corrotto.,Salvataggio non valido: schema del file mancante o corrotto.
+Salvataggio non compatibile con questa versione.,Salvataggio non compatibile con questa versione.
+Salvataggio incompleto: dati del percorso mancanti.,Salvataggio incompleto: dati del percorso mancanti.
+Salvataggio non valido: schema Level 3 mancante.,Salvataggio non valido: schema Level 3 mancante.
+Salvataggio non compatibile: schema Level 3 differente.,Salvataggio non compatibile: schema Level 3 differente.
+Salvataggio legacy non supportato in L3.,Salvataggio legacy non supportato in L3.
+Salvataggio incompleto: stato del percorso mancante.,Salvataggio incompleto: stato del percorso mancante.
+Salvataggio non valido: dati Condanne non leggibili.,Salvataggio non valido: dati Condanne non leggibili.
+Salvataggio non valido: formato Condanne non supportato.,Salvataggio non valido: formato Condanne non supportato.
+Salvataggio non valido.,Salvataggio non valido.
+Salvataggio non valido: %s.,Salvataggio non valido: %s.
+In arrivo.,In arrivo.
+Interfaccia non inizializzata.\nElementi mancanti:\n- %s\n\nTorna al menu e riavvia.,Interfaccia non inizializzata.\nElementi mancanti:\n- %s\n\nTorna al menu e riavvia.
+[b]Effetto:[/b] %s,[b]Effetto:[/b] %s
+Nessuna scommessa attiva,Nessuna scommessa attiva
+PERCORSO FALLITO,PERCORSO FALLITO
+AGGIORNAMENTO DEL REGISTRO,AGGIORNAMENTO DEL REGISTRO
+Protocollo di classificazione completato.,Protocollo di classificazione completato.
+Incasso registrato.,Incasso registrato.
+Arena superata.,Arena superata.
+Condanna registrata.,Condanna registrata.
+Ricompensa applicata. Il registro resta aperto per la prossima scommessa.,Ricompensa applicata. Il registro resta aperto per la prossima scommessa.
+Esito registrato. Puoi proseguire con la prossima scommessa.,Esito registrato. Puoi proseguire con la prossima scommessa.
+Nessun premio assegnato. Il registro resta consultabile.,Nessun premio assegnato. Il registro resta consultabile.
+nessuna annotazione registrata,nessuna annotazione registrata
+Stato: chiusura definitiva.,Stato: chiusura definitiva.
+Stato: scegli se proseguire o tornare al menu.,Stato: scegli se proseguire o tornare al menu.
+[center]Registro Arena - Lettura amministrativa[/center],[center]Registro Arena - Lettura amministrativa[/center]
+incasso accettato,incasso accettato
+arena continuata,arena continuata
+percorso registrato,percorso registrato
+patto registrato,patto registrato
+condanna registrata,condanna registrata
+CONDANNA: %s,CONDANNA: %s
+SELEZIONE GESTO,SELEZIONE GESTO
+La folla osserva la tua scelta.,La folla osserva la tua scelta.
+Arena speciale,Arena speciale
+Firma una via. Il Registro annota il prezzo.,Firma una via. Il Registro annota il prezzo.
+Clausola non esposta.,Clausola non esposta.
+Firma focus: %s | Clausola: %s,Firma focus: %s | Clausola: %s
+Cicatrice,Cicatrice
+  Effetto: %s,  Effetto: %s
+  Origine: %s,  Origine: %s
+[b]Cicatrici rilevanti:[/b],[b]Cicatrici rilevanti:[/b]
+FINAL: %s,FINAL: %s
+ENDING ID: %s,ENDING ID: %s
+ICONA: %s,ICONA: %s
+[b]Registro Finale[/b],[b]Registro Finale[/b]
+Corruzione,Corruzione
+Gloria,Gloria
+Cicatrici,Cicatrici
+Pattern,Pattern
+Fascicolo chiuso,Fascicolo chiuso
+Il registro è aperto.,Il registro è aperto.
+Incassa ora o aumenta esposizione.,Incassa ora o aumenta esposizione.
+La condanna chiude il ciclo senza premio.,La condanna chiude il ciclo senza premio.
+Scegli un atto. La firma è irrevocabile.,Scegli un atto. La firma è irrevocabile.
+Nessun dettaglio.,Nessun dettaglio.
++ %d dettagli nel registro.,+ %d dettagli nel registro.
+SPINGI LA SORTE,SPINGI LA SORTE
+CONDIZIONE: %s,CONDIZIONE: %s
+PATTO: %s,PATTO: %s
+NOTA: %s,NOTA: %s
+INCASSO BLOCCATO: %s,INCASSO BLOCCATO: %s
+RADDOPPIO BLOCCATO: %s,RADDOPPIO BLOCCATO: %s
+CONTESTO: %s,CONTESTO: %s
+MODIFICA INCASSO: %s,MODIFICA INCASSO: %s
+Stato: in attesa di scelta.,Stato: in attesa di scelta.
+Chiudi il percorso e apri il registro finale.,Chiudi il percorso e apri il registro finale.
+Continua alla prossima arena con posta aumentata.,Continua alla prossima arena con posta aumentata.
+Stato: richiesta incasso non disponibile.,Stato: richiesta incasso non disponibile.
+Stato: richiesta condanna non disponibile.,Stato: richiesta condanna non disponibile.
+Stato: richiesta rilancio non disponibile.,Stato: richiesta rilancio non disponibile.
+Stato: richiesta non accettata. Scegli di nuovo.,Stato: richiesta non accettata. Scegli di nuovo.
+POSTA VIVA: +%d Gloria,POSTA VIVA: +%d Gloria
+GLORIA: %d,GLORIA: %d
+CORRUZIONE: %d,CORRUZIONE: %d
+Ottieni +%d Gloria,Ottieni +%d Gloria
+Corruzione -%d,Corruzione -%d
+chiudi il registro,chiudi il registro
+Prossima posta +%d Gloria | Pressione +%d,Prossima posta +%d Gloria | Pressione +%d
+Perdi la posta +%d Gloria | il Registro chiude il percorso,Perdi la posta +%d Gloria | il Registro chiude il percorso
+FIRMA,FIRMA
+MOSTRA IL PATTO,MOSTRA IL PATTO
+APRI IL REGISTRO,APRI IL REGISTRO
+REGISTRO DELL'ARENA,REGISTRO DELL'ARENA
+Apertura del verbale,Apertura del verbale
+IL REGISTRO E' CHIUSO,IL REGISTRO E' CHIUSO
+La pietra attende una firma.,La pietra attende una firma.
+Ogni patto lascia un segno.,Ogni patto lascia un segno.
+APRI,APRI
+Apri il registro.,Apri il registro.
+Il registro è chiuso. Aprilo per scegliere la via.,Il registro è chiuso. Aprilo per scegliere la via.
+SCEGLI LA VIA,SCEGLI LA VIA
+Ogni firma apre una promessa e una condanna.,Ogni firma apre una promessa e una condanna.
+CONDIZIONE,CONDIZIONE
+PATTO,PATTO
+registrato,registrato
+continuato,continuato
+Atto registrato: %s. Stato: %s.,Atto registrato: %s. Stato: %s.
+PATTO FALLITO,PATTO FALLITO
+seleziona un'azione,seleziona un'azione
+scommessa rinunciata,scommessa rinunciata
+RIPROVA SCOMMESSA,RIPROVA SCOMMESSA
+Stato: scelta acquisita.,Stato: scelta acquisita.
+Come è stata ottenuta:,Come è stata ottenuta:
+Interfaccia non inizializzata.,Interfaccia non inizializzata.
+Elementi mancanti:,Elementi mancanti:
+Torna al menu e riavvia.,Torna al menu e riavvia.
+PATTO SIGILLATO,PATTO SIGILLATO
+La pietra ha preso la firma.,La pietra ha preso la firma.
+La gradinata attende il gesto.,La gradinata attende il gesto.
+SEGNI,SEGNI
+Registro pulito: nessun segno inciso.,Registro pulito: nessun segno inciso.
+ATTO DAVANTI ALLA GRADINATA,ATTO DAVANTI ALLA GRADINATA
+ABBASSA LO SGUARDO,ABBASSA LO SGUARDO
+SFIDA LA GRADINATA,SFIDA LA GRADINATA
+Il Registro annota misura.,Il Registro annota misura.
+Il Registro annota esposizione.,Il Registro annota esposizione.
+La gradinata pesa il tuo respiro.,La gradinata pesa il tuo respiro.
+La gradinata si quieta: il Registro vede prudenza.,La gradinata si quieta: il Registro vede prudenza.
+Trattieni il gesto. L'arena concede ancora margine.,Trattieni il gesto. L'arena concede ancora margine.
+Non cercano vanto: aspettano se saprai durare.,Non cercano vanto: aspettano se saprai durare.
+La folla resta sospesa tra misura e sfida.,La folla resta sospesa tra misura e sfida.
+Ogni sguardo chiede se terrai il passo.,Ogni sguardo chiede se terrai il passo.
+La gradinata batte ferro: vuole vederti oltre.,La gradinata batte ferro: vuole vederti oltre.
+Il rischio sale e il Registro non distoglie gli occhi.,Il rischio sale e il Registro non distoglie gli occhi.
 "Se cedi ora, il silenzio pesera piu della ferita.","Se cedi ora, il silenzio peserà più della ferita."
-"Il tuo gesto li irrita. Ora vogliono il prezzo.","Il tuo gesto li irrita. Ora vogliono il prezzo."
-"Hai mostrato il fianco. Ti puniscono col silenzio.","Hai mostrato il fianco. Ti puniscono col silenzio."
-"Un gesto non basta. Vogliono vederti cedere.","Un gesto non basta. Vogliono vederti cedere."
-"Ti sei esposto. Ti vogliono spezzare.","Ti sei esposto. Ti vogliono spezzare."
+Il tuo gesto li irrita. Ora vogliono il prezzo.,Il tuo gesto li irrita. Ora vogliono il prezzo.
+Hai mostrato il fianco. Ti puniscono col silenzio.,Hai mostrato il fianco. Ti puniscono col silenzio.
+Un gesto non basta. Vogliono vederti cedere.,Un gesto non basta. Vogliono vederti cedere.
+Ti sei esposto. Ti vogliono spezzare.,Ti sei esposto. Ti vogliono spezzare.
 "Un gesto segnato, il debito resta.","Un gesto segnato, il debito resta."
-"Hai scelto come muoverti. Non cambia nulla.","Hai scelto come muoverti. Non cambia nulla."
-"Il gesto pesa poco. La folla resta ferma.","Il gesto pesa poco. La folla resta ferma."
-"Scelta fatta. Ti valutano senza voce.","Scelta fatta. Ti valutano senza voce."
-"Hai scelto il gesto. Ora spingono di più.","Hai scelto il gesto. Ora spingono di più."
-"La folla ti segue. Vogliono il prossimo strappo.","La folla ti segue. Vogliono il prossimo strappo."
-"Il gesto accende l'arena. Ti vogliono oltre.","Il gesto accende l'arena. Ti vogliono oltre."
-"Hai mosso la folla. Non fermarti ora.","Hai mosso la folla. Non fermarti ora."
-"Un gesto debole. Ora ti strappano il rispetto.","Un gesto debole. Ora ti strappano il rispetto."
-"Il gesto è sterile. Ti tengono in debito.","Il gesto è sterile. Ti tengono in debito."
+Il gesto è registrato. La pressione è cambiata.,Il gesto è registrato. La pressione è cambiata.
+Il gesto pesa poco. La folla resta ferma.,Il gesto pesa poco. La folla resta ferma.
+Scelta fatta. Ti valutano senza voce.,Scelta fatta. Ti valutano senza voce.
+Hai scelto il gesto. Ora spingono di più.,Hai scelto il gesto. Ora spingono di più.
+La folla ti segue. Vogliono il prossimo strappo.,La folla ti segue. Vogliono il prossimo strappo.
+Il gesto accende l'arena. Ti vogliono oltre.,Il gesto accende l'arena. Ti vogliono oltre.
+Hai mosso la folla. Non fermarti ora.,Hai mosso la folla. Non fermarti ora.
+Un gesto debole. Ora ti strappano il rispetto.,Un gesto debole. Ora ti strappano il rispetto.
+Il gesto è sterile. Ti tengono in debito.,Il gesto è sterile. Ti tengono in debito.
 "Il gesto li accende, ma chiedono il crollo.","Il gesto li accende, ma chiedono il crollo."
 Il Registro pesa il patto.,Il Registro pesa il patto.
-Colpisci tre volte il sigillo quando pulsa.,Colpisci tre volte il sigillo quando pulsa.
+Imprimi tre colpi sul sigillo.,Imprimi tre colpi sul sigillo.
 Tre colpi chiudono il verbale.,Tre colpi chiudono il verbale.
-COLPISCI IL SIGILLO A TEMPO,COLPISCI IL SIGILLO A TEMPO
+IMPRIMI IL SIGILLO: TRE COLPI,IMPRIMI IL SIGILLO: TRE COLPI
 COLPISCI,COLPISCI
 COLPISCI ANCORA,COLPISCI ANCORA
 SIGILLATO,SIGILLATO
@@ -287,17 +286,17 @@ FASCICOLO CHIUSO - ASCESA,FASCICOLO CHIUSO - ASCESA
 FASCICOLO CHIUSO - CONSUMO,FASCICOLO CHIUSO - CONSUMO
 FASCICOLO CHIUSO - PATTERN,FASCICOLO CHIUSO - PATTERN
 FASCICOLO CHIUSO,FASCICOLO CHIUSO
-"Il Registro conserva la traccia del percorso.","Il Registro conserva la traccia del percorso."
-"Il Registro chiude il fascicolo e classifica l'esito.","Il Registro chiude il fascicolo e classifica l'esito."
-"Hai lasciato l'arena con la posta riconosciuta.","Hai lasciato l'arena con la posta riconosciuta."
-"Il patto regge: il percorso puo proseguire.","Il patto regge: il percorso puo proseguire."
-"La condanna viene accettata e il percorso resta segnato.","La condanna viene accettata e il percorso resta segnato."
+Il Registro conserva la traccia del percorso.,Il Registro conserva la traccia del percorso.
+Il Registro chiude il fascicolo e classifica l'esito.,Il Registro chiude il fascicolo e classifica l'esito.
+Hai lasciato l'arena con la posta riconosciuta.,Hai lasciato l'arena con la posta riconosciuta.
+Il patto regge: il percorso puo proseguire.,Il patto regge: il percorso puo proseguire.
+La condanna viene accettata e il percorso resta segnato.,La condanna viene accettata e il percorso resta segnato.
 Pressione massima: %d/%d.,Pressione massima: %d/%d.
-"Patti e sblocchi sono stati aggiornati nell'Archivio.","Patti e sblocchi sono stati aggiornati nell'Archivio."
-"%d condanne archiviate; il dettaglio resta nell'Archivio.","%d condanne archiviate; il dettaglio resta nell'Archivio."
-"Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.","Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi."
-"Il dettaglio degli sblocchi resta consultabile nell'Archivio.","Il dettaglio degli sblocchi resta consultabile nell'Archivio."
-"Il Registro resta aperto: scegli se proseguire o lasciare l'arena.","Il Registro resta aperto: scegli se proseguire o lasciare l'arena."
+Patti e sblocchi sono stati aggiornati nell'Archivio.,Patti e sblocchi sono stati aggiornati nell'Archivio.
+%d condanne archiviate; il dettaglio resta nell'Archivio.,%d condanne archiviate; il dettaglio resta nell'Archivio.
+Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.,Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.
+Il dettaglio degli sblocchi resta consultabile nell'Archivio.,Il dettaglio degli sblocchi resta consultabile nell'Archivio.
+Il Registro resta aperto: scegli se proseguire o lasciare l'arena.,Il Registro resta aperto: scegli se proseguire o lasciare l'arena.
 rinunciato,rinunciato
 accettato,accettato
 %d condizioni registrate,%d condizioni registrate
@@ -305,18 +304,18 @@ I. APERTURA - CONSTATAZIONE,I. APERTURA - CONSTATAZIONE
 II. CORPO - LETTURA DEI PATTERN,II. CORPO - LETTURA DEI PATTERN
 III. FRATTURA,III. FRATTURA
 Stato finale: %s.,Stato finale: %s.
-"Il soggetto ha interrotto il ciclo prima della definizione.","Il soggetto ha interrotto il ciclo prima della definizione."
-"Il soggetto ha completato il ciclo operativo.","Il soggetto ha completato il ciclo operativo."
-"Il soggetto presenta un profilo registrabile.","Il soggetto presenta un profilo registrabile."
+Il soggetto ha interrotto il ciclo prima della definizione.,Il soggetto ha interrotto il ciclo prima della definizione.
+Il soggetto ha completato il ciclo operativo.,Il soggetto ha completato il ciclo operativo.
+Il soggetto presenta un profilo registrabile.,Il soggetto presenta un profilo registrabile.
 accettazione ricorrente di condizioni irreversibili,accettazione ricorrente di condizioni irreversibili
 rifiuto della chiusura quando disponibile,rifiuto della chiusura quando disponibile
 accumulo di Scar persistenti su più passaggi,accumulo di Scar persistenti su più passaggi
 reiterazione oltre l'utile con esposizione crescente,reiterazione oltre l'utile con esposizione crescente
 sacrificio di opzioni future registrato,sacrificio di opzioni future registrato
-"Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.","Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente."
+Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.,Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.
 "Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva.","Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva."
-"Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta.","Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta."
-"Stato registrato con parametri attivi. Chiusura finale non applicabile.","Stato registrato con parametri attivi. Chiusura finale non applicabile."
+Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta.,Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta.
+Stato registrato con parametri attivi. Chiusura finale non applicabile.,Stato registrato con parametri attivi. Chiusura finale non applicabile.
 classificazione non conclusiva,classificazione non conclusiva
 classificazione incompleta,classificazione incompleta
 registrato in sospensione,registrato in sospensione
@@ -329,51 +328,51 @@ consumo completo,consumo completo
 libertà registrata,libertà registrata
 caduta amministrativa,caduta amministrativa
 non definito,non definito
-"Fascicolo aggiornato. Valutazione sospesa.","Fascicolo aggiornato. Valutazione sospesa."
-"Atto registrato. Campione insufficiente.","Atto registrato. Campione insufficiente."
-"Dati acquisiti. Analisi in corso.","Dati acquisiti. Analisi in corso."
-"Aggiornamento completato. Nessuna conclusione emessa.","Aggiornamento completato. Nessuna conclusione emessa."
-"Il soggetto resta in osservazione.","Il soggetto resta in osservazione."
-"Archiviazione parziale. Raccolta incompleta.","Archiviazione parziale. Raccolta incompleta."
-"Evento conforme. Interpretazione rinviata.","Evento conforme. Interpretazione rinviata."
-"Nuova evidenza inserita. Profilo non definito.","Nuova evidenza inserita. Profilo non definito."
-"Registrazione valida. Sentenza non autorizzata.","Registrazione valida. Sentenza non autorizzata."
-"Traiettoria non stabilizzata. Attendere ulteriori eventi.","Traiettoria non stabilizzata. Attendere ulteriori eventi."
-"Documento acquisito. Il Registro non conclude.","Documento acquisito. Il Registro non conclude."
-"Pattern non consolidato. Prosecuzione richiesta.","Pattern non consolidato. Prosecuzione richiesta."
+Fascicolo aggiornato. Valutazione sospesa.,Fascicolo aggiornato. Valutazione sospesa.
+Atto registrato. Campione insufficiente.,Atto registrato. Campione insufficiente.
+Dati acquisiti. Analisi in corso.,Dati acquisiti. Analisi in corso.
+Aggiornamento completato. Nessuna conclusione emessa.,Aggiornamento completato. Nessuna conclusione emessa.
+Il soggetto resta in osservazione.,Il soggetto resta in osservazione.
+Archiviazione parziale. Raccolta incompleta.,Archiviazione parziale. Raccolta incompleta.
+Evento conforme. Interpretazione rinviata.,Evento conforme. Interpretazione rinviata.
+Nuova evidenza inserita. Profilo non definito.,Nuova evidenza inserita. Profilo non definito.
+Registrazione valida. Sentenza non autorizzata.,Registrazione valida. Sentenza non autorizzata.
+Traiettoria non stabilizzata. Attendere ulteriori eventi.,Traiettoria non stabilizzata. Attendere ulteriori eventi.
+Documento acquisito. Il Registro non conclude.,Documento acquisito. Il Registro non conclude.
+Pattern non consolidato. Prosecuzione richiesta.,Pattern non consolidato. Prosecuzione richiesta.
 fascicolo registrato,fascicolo registrato
-"Soglia di deviazione superata. Fascicolo chiuso.","Soglia di deviazione superata. Fascicolo chiuso."
-"Corruzione confermata. Archiviazione definitiva.","Corruzione confermata. Archiviazione definitiva."
-"Indice di compromissione: critico. Sentenza emessa.","Indice di compromissione: critico. Sentenza emessa."
-"Integrità del soggetto: insufficiente. Caso concluso.","Integrità del soggetto: insufficiente. Caso concluso."
-"Deriva irreversibile rilevata. Il Registro conclude.","Deriva irreversibile rilevata. Il Registro conclude."
-"Evidenza prevalente: debito. Fascicolo definito.","Evidenza prevalente: debito. Fascicolo definito."
-"Profilo compromesso. Non sono richiesti ulteriori dati.","Profilo compromesso. Non sono richiesti ulteriori dati."
-"Scostamento oltre limite. Atto finale registrato.","Scostamento oltre limite. Atto finale registrato."
-"Indice di gloria: eccedente. Fascicolo chiuso.","Indice di gloria: eccedente. Fascicolo chiuso."
-"Rilevanza confermata. Archiviazione definitiva.","Rilevanza confermata. Archiviazione definitiva."
-"Profilo di eccezione registrato. Sentenza emessa.","Profilo di eccezione registrato. Sentenza emessa."
-"Valore del soggetto: determinato. Caso concluso.","Valore del soggetto: determinato. Caso concluso."
-"Evidenza prevalente: ascesa. Il Registro conclude.","Evidenza prevalente: ascesa. Il Registro conclude."
-"Traccia storica sufficiente. Fascicolo definito.","Traccia storica sufficiente. Fascicolo definito."
-"Comportamento coerente con grandezza. Atto finale registrato.","Comportamento coerente con grandezza. Atto finale registrato."
-"Risultato consolidato. Non sono richiesti ulteriori dati.","Risultato consolidato. Non sono richiesti ulteriori dati."
-"Danno permanente rilevato. Fascicolo chiuso.","Danno permanente rilevato. Fascicolo chiuso."
-"Cicatrici critiche registrate. Archiviazione definitiva.","Cicatrici critiche registrate. Archiviazione definitiva."
-"Stato del soggetto: degradato. Sentenza emessa.","Stato del soggetto: degradato. Sentenza emessa."
-"Accumulo irreversibile. Caso concluso.","Accumulo irreversibile. Caso concluso."
-"Integrità fisica compromessa. Il Registro conclude.","Integrità fisica compromessa. Il Registro conclude."
-"Evidenza prevalente: consumo. Fascicolo definito.","Evidenza prevalente: consumo. Fascicolo definito."
-"Segni sufficienti. Non sono richiesti ulteriori dati.","Segni sufficienti. Non sono richiesti ulteriori dati."
-"Profilo stabilizzato su consumo. Atto finale registrato.","Profilo stabilizzato su consumo. Atto finale registrato."
-"Campione minimo raggiunto. Fascicolo chiuso.","Campione minimo raggiunto. Fascicolo chiuso."
-"Pattern confermato. Archiviazione definitiva.","Pattern confermato. Archiviazione definitiva."
-"Coerenza comportamentale stabilita. Sentenza emessa.","Coerenza comportamentale stabilita. Sentenza emessa."
-"Traiettoria consolidata. Caso concluso.","Traiettoria consolidata. Caso concluso."
-"Dati sufficienti per definizione. Il Registro conclude.","Dati sufficienti per definizione. Il Registro conclude."
-"Ripetizione significativa rilevata. Fascicolo definito.","Ripetizione significativa rilevata. Fascicolo definito."
-"Profilo determinato per frequenza. Atto finale registrato.","Profilo determinato per frequenza. Atto finale registrato."
-"Analisi completata. Non sono richiesti ulteriori dati.","Analisi completata. Non sono richiesti ulteriori dati."
+Soglia di deviazione superata. Fascicolo chiuso.,Soglia di deviazione superata. Fascicolo chiuso.
+Corruzione confermata. Archiviazione definitiva.,Corruzione confermata. Archiviazione definitiva.
+Indice di compromissione: critico. Sentenza emessa.,Indice di compromissione: critico. Sentenza emessa.
+Integrità del soggetto: insufficiente. Caso concluso.,Integrità del soggetto: insufficiente. Caso concluso.
+Deriva irreversibile rilevata. Il Registro conclude.,Deriva irreversibile rilevata. Il Registro conclude.
+Evidenza prevalente: debito. Fascicolo definito.,Evidenza prevalente: debito. Fascicolo definito.
+Profilo compromesso. Non sono richiesti ulteriori dati.,Profilo compromesso. Non sono richiesti ulteriori dati.
+Scostamento oltre limite. Atto finale registrato.,Scostamento oltre limite. Atto finale registrato.
+Indice di gloria: eccedente. Fascicolo chiuso.,Indice di gloria: eccedente. Fascicolo chiuso.
+Rilevanza confermata. Archiviazione definitiva.,Rilevanza confermata. Archiviazione definitiva.
+Profilo di eccezione registrato. Sentenza emessa.,Profilo di eccezione registrato. Sentenza emessa.
+Valore del soggetto: determinato. Caso concluso.,Valore del soggetto: determinato. Caso concluso.
+Evidenza prevalente: ascesa. Il Registro conclude.,Evidenza prevalente: ascesa. Il Registro conclude.
+Traccia storica sufficiente. Fascicolo definito.,Traccia storica sufficiente. Fascicolo definito.
+Comportamento coerente con grandezza. Atto finale registrato.,Comportamento coerente con grandezza. Atto finale registrato.
+Risultato consolidato. Non sono richiesti ulteriori dati.,Risultato consolidato. Non sono richiesti ulteriori dati.
+Danno permanente rilevato. Fascicolo chiuso.,Danno permanente rilevato. Fascicolo chiuso.
+Cicatrici critiche registrate. Archiviazione definitiva.,Cicatrici critiche registrate. Archiviazione definitiva.
+Stato del soggetto: degradato. Sentenza emessa.,Stato del soggetto: degradato. Sentenza emessa.
+Accumulo irreversibile. Caso concluso.,Accumulo irreversibile. Caso concluso.
+Integrità fisica compromessa. Il Registro conclude.,Integrità fisica compromessa. Il Registro conclude.
+Evidenza prevalente: consumo. Fascicolo definito.,Evidenza prevalente: consumo. Fascicolo definito.
+Segni sufficienti. Non sono richiesti ulteriori dati.,Segni sufficienti. Non sono richiesti ulteriori dati.
+Profilo stabilizzato su consumo. Atto finale registrato.,Profilo stabilizzato su consumo. Atto finale registrato.
+Campione minimo raggiunto. Fascicolo chiuso.,Campione minimo raggiunto. Fascicolo chiuso.
+Pattern confermato. Archiviazione definitiva.,Pattern confermato. Archiviazione definitiva.
+Coerenza comportamentale stabilita. Sentenza emessa.,Coerenza comportamentale stabilita. Sentenza emessa.
+Traiettoria consolidata. Caso concluso.,Traiettoria consolidata. Caso concluso.
+Dati sufficienti per definizione. Il Registro conclude.,Dati sufficienti per definizione. Il Registro conclude.
+Ripetizione significativa rilevata. Fascicolo definito.,Ripetizione significativa rilevata. Fascicolo definito.
+Profilo determinato per frequenza. Atto finale registrato.,Profilo determinato per frequenza. Atto finale registrato.
+Analisi completata. Non sono richiesti ulteriori dati.,Analisi completata. Non sono richiesti ulteriori dati.
 +%d altre,+%d altre
 Non mi fermero.,Non mi fermero.
 Ancora.,Ancora.
@@ -399,93 +398,235 @@ Registro: Compromissione.,Registro: Compromissione.
 Registro: Ascesa.,Registro: Ascesa.
 Registro: Consumo.,Registro: Consumo.
 Registro: Pattern.,Registro: Pattern.
-"Caduta finale. Hanno avuto il rischio.","Caduta finale. Hanno avuto il rischio."
-"Caduta nuda. Nessuno ti ricorda.","Caduta nuda. Nessuno ti ricorda."
-"Caduta secca. Il pubblico non reagisce.","Caduta secca. Il pubblico non reagisce."
-"Continui e li nutri. Vogliono il tuo errore.","Continui e li nutri. Vogliono il tuo errore."
-"Continui per orgoglio. Ti vogliono in ginocchio.","Continui per orgoglio. Ti vogliono in ginocchio."
-"Continui. La folla vuole il prossimo taglio.","Continui. La folla vuole il prossimo taglio."
+Caduta finale. Hanno avuto il rischio.,Caduta finale. Hanno avuto il rischio.
+Caduta nuda. Nessuno ti ricorda.,Caduta nuda. Nessuno ti ricorda.
+Caduta secca. Il pubblico non reagisce.,Caduta secca. Il pubblico non reagisce.
+Continui e li nutri. Vogliono il tuo errore.,Continui e li nutri. Vogliono il tuo errore.
+Continui per orgoglio. Ti vogliono in ginocchio.,Continui per orgoglio. Ti vogliono in ginocchio.
+Continui. La folla vuole il prossimo taglio.,Continui. La folla vuole il prossimo taglio.
 "Continui. Nessun applauso, solo attesa.","Continui. Nessun applauso, solo attesa."
-"Continui. Nessuno ti deve niente.","Continui. Nessuno ti deve niente."
-"Continui. Ora ti vogliono sanguinare.","Continui. Ora ti vogliono sanguinare."
-"Così finisci. La folla non ti piange.","Così finisci. La folla non ti piange."
-"È finita. Il pubblico prende il tuo nome.","È finita. Il pubblico prende il tuo nome."
-"È finita. Solo occhi fermi.","È finita. Solo occhi fermi."
-"Fine della corsa. Il silenzio resta.","Fine della corsa. Il silenzio resta."
-"Fine violenta. La folla ha ciò che voleva.","Fine violenta. La folla ha ciò che voleva."
-"Firma asciutta. Ti contano come errore.","Firma asciutta. Ti contano come errore."
-"Firma e alza il rischio. Ti chiedono il salto.","Firma e alza il rischio. Ti chiedono il salto."
-"Firma fatta. Aspettano il tuo crollo.","Firma fatta. Aspettano il tuo crollo."
-"Hai chiuso la mano. Il silenzio pesa.","Hai chiuso la mano. Il silenzio pesa."
-"Hai firmato forte. L'arena vuole vedere.","Hai firmato forte. L'arena vuole vedere."
-"Hai firmato male. Ora ti vogliono spezzato.","Hai firmato male. Ora ti vogliono spezzato."
-"Hai firmato troppo forte. Ora vogliono la tua rovina.","Hai firmato troppo forte. Ora vogliono la tua rovina."
-"Hai firmato. Nessuno ti dà tregua.","Hai firmato. Nessuno ti dà tregua."
-"Hai firmato. Ora non ti vogliono intero.","Hai firmato. Ora non ti vogliono intero."
-"Hai incassato per paura. Ora paghi doppio.","Hai incassato per paura. Ora paghi doppio."
-"Hai perso come volevano. Non ti lasciano il nome.","Hai perso come volevano. Non ti lasciano il nome."
-"Hai perso. L'arena resta accesa.","Hai perso. L'arena resta accesa."
-"Hai rifiutato l'uscita. Ti puniscono con occhi feroci.","Hai rifiutato l'uscita. Ti puniscono con occhi feroci."
-"Hai rilanciato. Ora vogliono il colpo finale.","Hai rilanciato. Ora vogliono il colpo finale."
-"Hai scelto di continuare. L'arena prende nota.","Hai scelto di continuare. L'arena prende nota."
-"Hai scelto di restare. Non chiamarla coraggio.","Hai scelto di restare. Non chiamarla coraggio."
-"Hai scelto l'uscita. La folla ti mette il conto.","Hai scelto l'uscita. La folla ti mette il conto."
-"Hai segnato il destino. Ti vogliono a terra.","Hai segnato il destino. Ti vogliono a terra."
-"Hai spento il delirio. Ora ti chiedono sangue.","Hai spento il delirio. Ora ti chiedono sangue."
-"Hai spento la corsa. La folla voleva il salto.","Hai spento la corsa. La folla voleva il salto."
-"Il brusio non concede riparo.","Il brusio non concede riparo."
-"Il delirio ti brucia addosso.","Il delirio ti brucia addosso."
-"Il patto accende la folla. Spingi ora.","Il patto accende la folla. Spingi ora."
-"Il patto è inciso. Ti misurano.","Il patto è inciso. Ti misurano."
-"Il patto ti lega. La folla annusa il sangue.","Il patto ti lega. La folla annusa il sangue."
+Continui. Nessuno ti deve niente.,Continui. Nessuno ti deve niente.
+Continui. Ora ti vogliono sanguinare.,Continui. Ora ti vogliono sanguinare.
+Così finisci. La folla non ti piange.,Così finisci. La folla non ti piange.
+È finita. Il pubblico prende il tuo nome.,È finita. Il pubblico prende il tuo nome.
+È finita. Solo occhi fermi.,È finita. Solo occhi fermi.
+Fine della corsa. Il silenzio resta.,Fine della corsa. Il silenzio resta.
+Fine violenta. La folla ha ciò che voleva.,Fine violenta. La folla ha ciò che voleva.
+Firma asciutta. Ti contano come errore.,Firma asciutta. Ti contano come errore.
+Firma e alza il rischio. Ti chiedono il salto.,Firma e alza il rischio. Ti chiedono il salto.
+Firma fatta. Aspettano il tuo crollo.,Firma fatta. Aspettano il tuo crollo.
+Hai chiuso la mano. Il silenzio pesa.,Hai chiuso la mano. Il silenzio pesa.
+Hai firmato forte. L'arena vuole vedere.,Hai firmato forte. L'arena vuole vedere.
+Hai firmato male. Ora ti vogliono spezzato.,Hai firmato male. Ora ti vogliono spezzato.
+Hai firmato troppo forte. Ora vogliono la tua rovina.,Hai firmato troppo forte. Ora vogliono la tua rovina.
+Hai firmato. Nessuno ti dà tregua.,Hai firmato. Nessuno ti dà tregua.
+Hai firmato. Ora non ti vogliono intero.,Hai firmato. Ora non ti vogliono intero.
+Hai incassato per paura. Ora paghi doppio.,Hai incassato per paura. Ora paghi doppio.
+Hai perso come volevano. Non ti lasciano il nome.,Hai perso come volevano. Non ti lasciano il nome.
+Hai perso. L'arena resta accesa.,Hai perso. L'arena resta accesa.
+Hai rifiutato l'uscita. Ti puniscono con occhi feroci.,Hai rifiutato l'uscita. Ti puniscono con occhi feroci.
+Hai rilanciato. Ora vogliono il colpo finale.,Hai rilanciato. Ora vogliono il colpo finale.
+Hai scelto di continuare. L'arena prende nota.,Hai scelto di continuare. L'arena prende nota.
+Hai scelto di restare. Non chiamarla coraggio.,Hai scelto di restare. Non chiamarla coraggio.
+Hai scelto l'uscita. La folla ti mette il conto.,Hai scelto l'uscita. La folla ti mette il conto.
+Hai segnato il destino. Ti vogliono a terra.,Hai segnato il destino. Ti vogliono a terra.
+Hai spento il delirio. Ora ti chiedono sangue.,Hai spento il delirio. Ora ti chiedono sangue.
+Hai spento la corsa. La folla voleva il salto.,Hai spento la corsa. La folla voleva il salto.
+Il brusio non concede riparo.,Il brusio non concede riparo.
+Il delirio ti brucia addosso.,Il delirio ti brucia addosso.
+Il patto accende la folla. Spingi ora.,Il patto accende la folla. Spingi ora.
+Il patto è inciso. Ti misurano.,Il patto è inciso. Ti misurano.
+Il patto ti lega. La folla annusa il sangue.,Il patto ti lega. La folla annusa il sangue.
 "Il pubblico calcola, non parteggia.","Il pubblico calcola, non parteggia."
-"Il Registro sente una folla senza indulgenza.","Il Registro sente una folla senza indulgenza."
-"Il silenzio pesa piu dell'acciaio.","Il silenzio pesa piu dell'acciaio."
+Il Registro sente una folla senza indulgenza.,Il Registro sente una folla senza indulgenza.
+Il silenzio pesa piu dell'acciaio.,Il silenzio pesa piu dell'acciaio.
 "Il tuo nome urla, ma il prezzo sale.","Il tuo nome urla, ma il prezzo sale."
-"Incassi e scappi. Non ti lasciano respirare.","Incassi e scappi. Non ti lasciano respirare."
-"Incassi e vai. Il giudizio resta.","Incassi e vai. Il giudizio resta."
-"Incassi mentre vogliono di più. Ti giudicano.","Incassi mentre vogliono di più. Ti giudicano."
-"Incasso facile. Il silenzio ti pesa addosso.","Incasso facile. Il silenzio ti pesa addosso."
-"Incasso preso. Il pubblico non si muove.","Incasso preso. Il pubblico non si muove."
-"L'arena ti pesa addosso.","L'arena ti pesa addosso."
-"La firma pesa. Il pubblico resta in giudizio.","La firma pesa. Il pubblico resta in giudizio."
+Incassi e scappi. Non ti lasciano respirare.,Incassi e scappi. Non ti lasciano respirare.
+Incassi e vai. Il giudizio resta.,Incassi e vai. Il giudizio resta.
+Incassi mentre vogliono di più. Ti giudicano.,Incassi mentre vogliono di più. Ti giudicano.
+Incasso facile. Il silenzio ti pesa addosso.,Incasso facile. Il silenzio ti pesa addosso.
+Incasso preso. Il pubblico non si muove.,Incasso preso. Il pubblico non si muove.
+L'arena ti pesa addosso.,L'arena ti pesa addosso.
+La firma pesa. Il pubblico resta in giudizio.,La firma pesa. Il pubblico resta in giudizio.
 "La folla chiama sangue, non prudenza.","La folla chiama sangue, non prudenza."
-"La folla in furia pretende una caduta registrata.","La folla in furia pretende una caduta registrata."
-"La folla ti vuole oltre. La firma è l'inizio.","La folla ti vuole oltre. La firma è l'inizio."
-"La gradinata rifiuta la tua uscita.","La gradinata rifiuta la tua uscita."
+La folla in furia pretende una caduta registrata.,La folla in furia pretende una caduta registrata.
+La folla ti vuole oltre. La firma è l'inizio.,La folla ti vuole oltre. La firma è l'inizio.
+La gradinata rifiuta la tua uscita.,La gradinata rifiuta la tua uscita.
 "Nessun calore, solo misura.","Nessun calore, solo misura."
 "Nessun grido, solo occhi fissi.","Nessun grido, solo occhi fissi."
 "Non applaudono, registrano.","Non applaudono, registrano."
-"Non cercano vittoria: cercano il prezzo.","Non cercano vittoria: cercano il prezzo."
-"Non ti credono degno di chiudere il patto.","Non ti credono degno di chiudere il patto."
-"Ogni colpo chiede di piu.","Ogni colpo chiede di piu."
-"Ogni mossa apre un conto.","Ogni mossa apre un conto."
-"Ogni passo indietro diventa accusa.","Ogni passo indietro diventa accusa."
-"Patto chiuso. L'arena ti osserva.","Patto chiuso. L'arena ti osserva."
+Non cercano vittoria: cercano il prezzo.,Non cercano vittoria: cercano il prezzo.
+Non ti credono degno di chiudere il patto.,Non ti credono degno di chiudere il patto.
+Ogni colpo chiede di piu.,Ogni colpo chiede di piu.
+Ogni mossa apre un conto.,Ogni mossa apre un conto.
+Ogni passo indietro diventa accusa.,Ogni passo indietro diventa accusa.
+Patto chiuso. L'arena ti osserva.,Patto chiuso. L'arena ti osserva.
 "Per loro sei garanzia, non campione.","Per loro sei garanzia, non campione."
-"Perduto. Il loro giudizio resta addosso.","Perduto. Il loro giudizio resta addosso."
-"Qui la cautela viene letta come debito.","Qui la cautela viene letta come debito."
-"Resti dentro. La folla pretende il tuo errore.","Resti dentro. La folla pretende il tuo errore."
-"Resti dentro. Ti chiedono l'eccesso.","Resti dentro. Ti chiedono l'eccesso."
-"Resti. Nessuno ti salva.","Resti. Nessuno ti salva."
-"Rimani. Il pubblico ti pesa addosso.","Rimani. Il pubblico ti pesa addosso."
+Perduto. Il loro giudizio resta addosso.,Perduto. Il loro giudizio resta addosso.
+Qui la cautela viene letta come debito.,Qui la cautela viene letta come debito.
+Resti dentro. La folla pretende il tuo errore.,Resti dentro. La folla pretende il tuo errore.
+Resti dentro. Ti chiedono l'eccesso.,Resti dentro. Ti chiedono l'eccesso.
+Resti. Nessuno ti salva.,Resti. Nessuno ti salva.
+Rimani. Il pubblico ti pesa addosso.,Rimani. Il pubblico ti pesa addosso.
 "Se esiti, la pressione ti stringe.","Se esiti, la pressione ti stringe."
 "Se rallenti, ti strappano la gloria.","Se rallenti, ti strappano la gloria."
-"Sei caduto. Hanno avuto il sangue.","Sei caduto. Hanno avuto il sangue."
-"Sei caduto. Ti volevano in ginocchio.","Sei caduto. Ti volevano in ginocchio."
-"Sei crollato. Hanno avuto il sacrificio.","Sei crollato. Hanno avuto il sacrificio."
-"Sei crollato. Nessun suono.","Sei crollato. Nessun suono."
-"Ti alzano in alto per pesare la caduta.","Ti alzano in alto per pesare la caduta."
+Sei caduto. Hanno avuto il sangue.,Sei caduto. Hanno avuto il sangue.
+Sei caduto. Ti volevano in ginocchio.,Sei caduto. Ti volevano in ginocchio.
+Sei crollato. Hanno avuto il sacrificio.,Sei crollato. Hanno avuto il sacrificio.
+Sei crollato. Nessun suono.,Sei crollato. Nessun suono.
+Ti alzano in alto per pesare la caduta.,Ti alzano in alto per pesare la caduta.
 "Ti concedono spazio, non rispetto.","Ti concedono spazio, non rispetto."
-"Ti fermi mentre urlano. Ora è delusione.","Ti fermi mentre urlano. Ora è delusione."
-"Ti fermi qui. Nessuno ti segue.","Ti fermi qui. Nessuno ti segue."
-"Ti osservano e aspettano l'errore.","Ti osservano e aspettano l'errore."
-"Ti seguono senza pieta ne favore.","Ti seguono senza pieta ne favore."
-"Ti sei fermato in alto. Ti lasciano cadere.","Ti sei fermato in alto. Ti lasciano cadere."
-"Ti sei fermato. Troppo presto per essere pulito.","Ti sei fermato. Troppo presto per essere pulito."
-"Ti sei tirato indietro. La folla non dimentica.","Ti sei tirato indietro. La folla non dimentica."
-"Ti spingi avanti. L'arena grida il rischio.","Ti spingi avanti. L'arena grida il rischio."
-"Ti spingono al gesto che lascia segno.","Ti spingono al gesto che lascia segno."
+Ti fermi mentre urlano. Ora è delusione.,Ti fermi mentre urlano. Ora è delusione.
+Ti fermi qui. Nessuno ti segue.,Ti fermi qui. Nessuno ti segue.
+Ti osservano e aspettano l'errore.,Ti osservano e aspettano l'errore.
+Ti seguono senza pieta ne favore.,Ti seguono senza pieta ne favore.
+Ti sei fermato in alto. Ti lasciano cadere.,Ti sei fermato in alto. Ti lasciano cadere.
+Ti sei fermato. Troppo presto per essere pulito.,Ti sei fermato. Troppo presto per essere pulito.
+Ti sei tirato indietro. La folla non dimentica.,Ti sei tirato indietro. La folla non dimentica.
+Ti spingi avanti. L'arena grida il rischio.,Ti spingi avanti. L'arena grida il rischio.
+Ti spingono al gesto che lascia segno.,Ti spingono al gesto che lascia segno.
 "Ti vogliono oltre il limite, senza ritorno.","Ti vogliono oltre il limite, senza ritorno."
 "Vogliono che tu rischi tutto, ora.","Vogliono che tu rischi tutto, ora."
-"Vogliono vedere il conto saldato in arena.","Vogliono vedere il conto saldato in arena."
+Vogliono vedere il conto saldato in arena.,Vogliono vedere il conto saldato in arena.
+Come e' stata ottenuta:,Come è stata ottenuta:
+"[center][i]Sigillo del Registro - la folla arretra, il verbale resta.[/i][/center]","[center][i]Sigillo del Registro - la folla arretra, il verbale resta.[/i][/center]"
+Condizione registrata.,Condizione registrata.
+Configurazione stabile.,Configurazione stabile.
+Oscillazione registrata.,Oscillazione registrata.
+Campionamento incompleto.,Campionamento incompleto.
+Deviazione contenuta.,Deviazione contenuta.
+Esito previsto.,Esito previsto.
+Deviazione improbabile.,Deviazione improbabile.
+VIA DELLA PRUDENZA,VIA DELLA PRUDENZA
+"Tieni il margine. Ricompensa bassa, pressione stabile.","Tieni il margine. Ricompensa bassa, pressione stabile."
+"Ricompensa contenuta: registri poco, ma tieni margine e pressione sotto controllo.","Ricompensa contenuta: registri poco, ma tieni margine e pressione sotto controllo."
+Vinci l'arena senza rilanciare la pressione.,Vinci l'arena senza rilanciare la pressione.
+"Hai scelto il margine.
+La folla non esulta, ma il Registro resta aperto.
+L'arena lascia comunque il segno.
+Effetto: cicatrice OSSA INCRINATE, le future scommesse restano rischiose.","Hai scelto il margine.
+La folla non esulta, ma il Registro resta aperto.
+L'arena lascia comunque il segno.
+Effetto: cicatrice OSSA INCRINATE, le future scommesse restano rischiose."
+Hai scelto il margine.,Hai scelto il margine.
+"La folla non esulta, ma il Registro resta aperto.","La folla non esulta, ma il Registro resta aperto."
+L'arena lascia comunque il segno.,L'arena lascia comunque il segno.
+"Effetto: cicatrice OSSA INCRINATE, le future scommesse restano rischiose.","Effetto: cicatrice OSSA INCRINATE, le future scommesse restano rischiose."
+VIA DELL'HYBRIS,VIA DELL'HYBRIS
+"Spingi oltre. Ritorno alto, margine nullo.","Spingi oltre. Ritorno alto, margine nullo."
+"Ricompensa alta: moltiplica la posta, ma ogni rilancio alza la pressione.","Ricompensa alta: moltiplica la posta, ma ogni rilancio alza la pressione."
+Vinci l'arena accettando che il fallimento chiuda il percorso.,Vinci l'arena accettando che il fallimento chiuda il percorso.
+"Hai promesso tutto.
+Non esiste margine.
+La folla trattiene il fiato.
+Effetto: MORTE IMMEDIATA, percorso terminato senza appello.","Hai promesso tutto.
+Non esiste margine.
+La folla trattiene il fiato.
+Effetto: MORTE IMMEDIATA, percorso terminato senza appello."
+Hai promesso tutto.,Hai promesso tutto.
+Non esiste margine.,Non esiste margine.
+"Effetto: MORTE IMMEDIATA, percorso terminato senza appello.","Effetto: MORTE IMMEDIATA, percorso terminato senza appello."
+Firmi e rinunci alla via facile. Il debito resta aperto.,Firmi e rinunci alla via facile. Il debito resta aperto.
+Vinci l'arena e non spezzare la promessa.,Vinci l'arena e non spezzare la promessa.
+"Il sigillo non si scioglie.
+Ogni passo stringe il debito.
+Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.","Il sigillo non si scioglie.
+Ogni passo stringe il debito.
+Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più."
+Il sigillo non si scioglie.,Il sigillo non si scioglie.
+Ogni passo stringe il debito.,Ogni passo stringe il debito.
+"Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.","Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più."
+Iscrivi il tuo nome nel registro rosso.,Iscrivi il tuo nome nel registro rosso.
+Vinci l'arena sapendo che ogni colpo ha un prezzo.,Vinci l'arena sapendo che ogni colpo ha un prezzo.
+"Il libro chiede sangue.
+Il tributo e inciso nella carne.
+Effetto: esposizione rituale +25 + incasso bloccato per 1 arena.","Il libro chiede sangue.
+Il tributo e inciso nella carne.
+Effetto: esposizione rituale +25 + incasso bloccato per 1 arena."
+Il libro chiede sangue.,Il libro chiede sangue.
+Il tributo e inciso nella carne.,Il tributo e inciso nella carne.
+Effetto: esposizione rituale +25 + incasso bloccato per 1 arena.,Effetto: esposizione rituale +25 + incasso bloccato per 1 arena.
+Offri la vittoria come carne alla folla.,Offri la vittoria come carne alla folla.
+Vinci l'arena e lascia il pubblico in estasi.,Vinci l'arena e lascia il pubblico in estasi.
+"La folla pretende spettacolo.
+Un passo falso diventa scherno.
+Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.","La folla pretende spettacolo.
+Un passo falso diventa scherno.
+Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure."
+La folla pretende spettacolo.,La folla pretende spettacolo.
+Un passo falso diventa scherno.,Un passo falso diventa scherno.
+"Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.","Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure."
+Rilanci oltre il respiro.,Rilanci oltre il respiro.
+Vinci l'arena con il cuore in gola.,Vinci l'arena con il cuore in gola.
+"Ogni colpo è l'ultimo.
+Il destino stringe il passo.
+Effetto: cicatrice GRAVE (non mortale), cammino compromesso.","Ogni colpo è l'ultimo.
+Il destino stringe il passo.
+Effetto: cicatrice GRAVE (non mortale), cammino compromesso."
+Ogni colpo è l'ultimo.,Ogni colpo è l'ultimo.
+Il destino stringe il passo.,Il destino stringe il passo.
+"Effetto: cicatrice GRAVE (non mortale), cammino compromesso.","Effetto: cicatrice GRAVE (non mortale), cammino compromesso."
+Accetti il verdetto scritto nel sangue.,Accetti il verdetto scritto nel sangue.
+"Il verdetto e sangue.
+Il tributo non si discute.
+Effetto: esposizione rituale +25 + incasso bloccato per 1 arena.","Il verdetto e sangue.
+Il tributo non si discute.
+Effetto: esposizione rituale +25 + incasso bloccato per 1 arena."
+Il verdetto e sangue.,Il verdetto e sangue.
+Il tributo non si discute.,Il tributo non si discute.
+Giuri e consegni il futuro.,Giuri e consegni il futuro.
+"Il giuramento stringe la catena.
+Ogni passo pesa il doppio.
+Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.","Il giuramento stringe la catena.
+Ogni passo pesa il doppio.
+Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più."
+Il giuramento stringe la catena.,Il giuramento stringe la catena.
+Ogni passo pesa il doppio.,Ogni passo pesa il doppio.
+Offri pietà come spettacolo.,Offri pietà come spettacolo.
+"La misericordia è una trappola.
+Il pubblico pretende il crollo.
+Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.","La misericordia è una trappola.
+Il pubblico pretende il crollo.
+Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure."
+La misericordia è una trappola.,La misericordia è una trappola.
+Il pubblico pretende il crollo.,Il pubblico pretende il crollo.
+"Paghi per tacere, firmi comunque.","Paghi per tacere, firmi comunque."
+Vinci l'arena senza cercare scuse.,Vinci l'arena senza cercare scuse.
+"Il silenzio costa più della parola.
+La catena non si allenta.
+Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.","Il silenzio costa più della parola.
+La catena non si allenta.
+Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più."
+Il silenzio costa più della parola.,Il silenzio costa più della parola.
+La catena non si allenta.,La catena non si allenta.
+Il pubblico è dalla tua parte. Sempre.,Il pubblico è dalla tua parte. Sempre.
+"Respiri corto.
+Ogni colpo è l'ultimo.
+Il destino pesa sulle ossa.
+Effetto: cicatrice GRAVE (non mortale), cammino compromesso.","Respiri corto.
+Ogni colpo è l'ultimo.
+Il destino pesa sulle ossa.
+Effetto: cicatrice GRAVE (non mortale), cammino compromesso."
+Respiri corto.,Respiri corto.
+Il destino pesa sulle ossa.,Il destino pesa sulle ossa.
+SIGILLO DI CERA,SIGILLO DI CERA
+"Il debito resta aperto, ma il Registro concede margine.","Il debito resta aperto, ma il Registro concede margine."
+LIBRO DI SANGUE,LIBRO DI SANGUE
+Il tributo alza la posta e sporca ogni vittoria.,Il tributo alza la posta e sporca ogni vittoria.
+BANCHETTO DELLA FOLLA,BANCHETTO DELLA FOLLA
+La folla paga in gloria e pretende spettacolo.,La folla paga in gloria e pretende spettacolo.
+ULTIMA PUNTATA,ULTIMA PUNTATA
+"Rilanci oltre il respiro: alto ritorno, margine fragile.","Rilanci oltre il respiro: alto ritorno, margine fragile."
+VERDETTO ROSSO,VERDETTO ROSSO
+Accetti che ogni colpo abbia costo amministrativo.,Accetti che ogni colpo abbia costo amministrativo.
+GIURAMENTO A CATENA,GIURAMENTO A CATENA
+"Patto stabile: meno caos, piu' debito.","Patto stabile: meno caos, piu' debito."
+ESCA DI MISERICORDIA,ESCA DI MISERICORDIA
+La pieta' diventa scena: il pubblico giudica la posa.,La pieta' diventa scena: il pubblico giudica la posa.
+TANGENTE DEL SILENZIO,TANGENTE DEL SILENZIO
+"Paghi per tacere: pressione piu' bassa, debito piu' saldo.","Paghi per tacere: pressione piu' bassa, debito piu' saldo."
+APPLAUSO GARANTITO,APPLAUSO GARANTITO
+"La promessa e' falsa, ma il rischio e' vero.","La promessa e' falsa, ma il rischio e' vero."
+L'arena dimentica. Il Registro no.,L'arena dimentica. Il Registro no.
+Il tuo passaggio è registrato.,Il tuo passaggio è registrato.
+RIPRENDI IL PERCORSO,RIPRENDI IL PERCORSO

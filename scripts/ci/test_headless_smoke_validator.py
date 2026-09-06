@@ -223,6 +223,10 @@ def main() -> int:
     if command[-2:] != ["--quit-after", "36000"]:
         return fail(f"expected --quit-after to use iteration budget 36000, got: {command[-2:]}")
 
+    exported_command = _build_runtime_command("Gallicus.exe", "empty-directory", 60, False, True)
+    if "--path" in exported_command or "empty-directory" in exported_command:
+        return fail(f"exported game must boot its embedded project without path overrides: {exported_command}")
+
     invalid_full_run_log = _build_full_run_log().replace("SMOKE:MILESTONE=RESOLVE_CLOSED\n", "")
     invalid_failures = validate_log_text(invalid_full_run_log, SCENARIO_FULL_RUN)
     if not any("SMOKE:MILESTONE=RESOLVE_CLOSED" in failure for failure in invalid_failures):

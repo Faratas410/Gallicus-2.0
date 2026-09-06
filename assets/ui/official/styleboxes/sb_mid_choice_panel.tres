@@ -1,14 +1,15 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/third_party/gowl_stonepixel/frame_panel.png" id="1_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/basalt_panel.png" id="1_panel"]
 
 [resource]
 texture = ExtResource("1_panel")
-texture_margin_left = 42.0
-texture_margin_top = 42.0
-texture_margin_right = 42.0
-texture_margin_bottom = 42.0
+texture_margin_left = 0.0
+texture_margin_top = 0.0
+texture_margin_right = 0.0
+texture_margin_bottom = 0.0
 content_margin_left = 26.0
 content_margin_top = 22.0
 content_margin_right = 26.0
 content_margin_bottom = 22.0
+modulate_color = Color(1, 1, 1, 1)

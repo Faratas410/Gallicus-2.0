@@ -2,9 +2,9 @@ extends Node2D
 
 # Level 3 canonical runtime keeps Arena as passive visual container.
 const ARENA_BG_VARIANT_PATHS: Array[String] = [
-	"res://assets/backgrounds/sfondo_arena_principale.png",
-	"res://assets/backgrounds/arena/variants/arena_bg_variant_01.png",
-	"res://assets/backgrounds/arena/variants/arena_bg_variant_02.png",
+	"res://assets/ui/generated/registry_chamber.png",
+	"res://assets/ui/generated/registry_chamber.png",
+	"res://assets/ui/generated/registry_chamber.png",
 ]
 
 var _arena_bg_variants: Array[Texture2D] = []

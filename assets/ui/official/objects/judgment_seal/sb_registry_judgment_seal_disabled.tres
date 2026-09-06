@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/official/objects/judgment_seal/registry_judgment_seal.png" id="1_seal"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/judgment_seal.png" id="1_seal"]
 
 [resource]
 texture = ExtResource("1_seal")
@@ -8,8 +8,8 @@ texture_margin_left = 0.0
 texture_margin_top = 0.0
 texture_margin_right = 0.0
 texture_margin_bottom = 0.0
-content_margin_left = 54.0
+content_margin_left = 86.0
 content_margin_top = 28.0
-content_margin_right = 54.0
+content_margin_right = 14.0
 content_margin_bottom = 28.0
-modulate_color = Color(0.42, 0.4, 0.38, 1)
+modulate_color = Color(0.48, 0.48, 0.46, 1)

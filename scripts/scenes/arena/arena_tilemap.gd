@@ -26,13 +26,13 @@ func _setup_tileset() -> void:
 	var new_tile_set: TileSet = TileSet.new()
 	new_tile_set.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
 
-	var ground_texture: Texture2D = load("res://assets/tiles/tile_ground_16.png") as Texture2D
+	var ground_texture: Texture2D = load("res://assets/ui/generated/basalt_panel.png") as Texture2D
 	if ground_texture == null:
-		push_error("Missing tile texture: res://assets/tiles/tile_ground_16.png")
+		push_error("Missing tile texture: res://assets/ui/generated/basalt_panel.png")
 		return
-	var wall_texture: Texture2D = load("res://assets/tiles/tile_wall_16.png") as Texture2D
+	var wall_texture: Texture2D = load("res://assets/ui/generated/bronze_plaque.png") as Texture2D
 	if wall_texture == null:
-		push_error("Missing tile texture: res://assets/tiles/tile_wall_16.png")
+		push_error("Missing tile texture: res://assets/ui/generated/bronze_plaque.png")
 		return
 
 	var ground_source: TileSetAtlasSource = _make_source(ground_texture)

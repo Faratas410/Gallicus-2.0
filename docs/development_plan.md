@@ -2,17 +2,23 @@
 
 ## Direzione
 
-La roadmap porta direttamente a Gallicus 1.0. Le fasi sono gate produttivi,
+La roadmap porta a Gallicus 1.0 pubblicato su Steam. Il ciclo di sviluppo
+con Astra e' in `docs/development_workflow.md`; preparazione store, build
+Steam e lancio seguono `docs/steam_release.md`. Le fasi sono gate produttivi,
 non versioni distribuibili. Una fase e' chiusa solo quando i suoi criteri sono
 verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+Aggiornato il 6 settembre 2026. Astra e' il modello di sviluppo di riferimento;
+questo aggiornamento documentale non chiude gate del gioco o della release.
+
 - Stage completato: **Foundation Reset**.
 - Stage completato: **Object-First Interaction Pass**.
 - Stage attivo: **Core Playable Candidate**.
 - Loop rituale: operativo e coperto da smoke.
-- Campagna completa: non ancora implementata.
+- Campagna: spine tecnica implementata localmente nella bonifica; durata,
+  anti-farming e messa in scena completa ancora da validare.
 - Pacchetto chiuso: **CP-01 - stabilita' e leggibilita' del loop esistente**.
 - Pacchetto tecnico chiuso: **CP-02 - accessibilita', save ed export interno**.
 - Pacchetto successivo: **CP-03 - validazione interna**, non autorizzato dal
@@ -26,8 +32,28 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 - Verifica canonica: OF-07, OF-08 e OF-09 chiusi dal checkpoint Linux
   `32152390171`; OF-10, OF-11 e lo stage Object-First chiusi dalla run lean
   `32238429965` sul commit `8449766`.
-- Runtime Windows headless: diagnostico bloccato da crash nativo prima del
-  bootstrap; le matrici Linux canoniche sono verdi.
+- Runtime Windows: bonifica e revisione menu verificate localmente con profili
+  isolati; i crash pre-bootstrap precedenti restano evidenza storica.
+- Ultima consegna locale: pass audiovisivo originale, 17 raster e 31 audio;
+  43 verifiche statiche, 12 passi import/runtime e 28 condizioni AV. Report
+  `docs/support/av_pass_2026-09-06.md`; export e hash in
+  `artifacts/exports/av_pass/delivery_manifest.json`. Il menu precedente resta
+  documentato in `docs/support/menu_identity_2026-09-05.md`.
+- Cache fredda Windows: un crash del motore, seguito da due import puliti
+  riusciti senza workaround. Causa non isolata: anomalia aperta nel report AV.
+- Questo candidato richiede nuovo checkpoint Linux e prove umane; non eredita
+  il signoff CP-02. Il prodotto resta `DEVELOPMENT`.
+- Steam: partner/AppID, stato store, review, data e prezzo non verificati.
+  La preparazione documentale puo' procedere; non equivale a pubblicazione.
+
+## Pass audiovisivo autorizzato del 6 settembre 2026
+
+L'utente richiede esplicitamente VFX/animazioni ImageGen, nuova soundtrack e
+SFX, poi verifica runtime/CI e ottimizzazione non opprimente. Il pacchetto
+integra i nuovi asset oltre al freeze operativo precedente, senza dichiarare
+chiusi CP-03, durata, Content Lock o Audiovisual Lock. Comprende 17 raster,
+31 asset audio originali, micro-sequenze piu' brevi e contratti AV nella CI.
+Prove e limiti del candidato sono raccolti in `docs/support/av_pass_2026-09-06.md`.
 
 ## Protocollo di consegna compatto
 
@@ -63,7 +89,8 @@ resta su `OF-11` fino al prossimo checkpoint programmato, `CP-03`.
   corrente;
 - per eccezione ad alto rischio: la suite lean parte subito se
   cambiano `RunManager`, `GameEvents`, save, contratti/run systems,
-  `project.godot` o il workflow;
+  `project.godot` o il codice/configurazione del workflow CI (non la sola
+  documentazione del metodo di sviluppo);
 - `workflow_dispatch` espone `lean` e `full`; il profilo completo resta
   manuale per `CP-03`, `CS-04`, Content Lock, Audiovisual Lock, Release Lock e
   per ogni modifica ad autorita' o save;
@@ -561,7 +588,12 @@ Status: **SIGNOFF TECNICO CHIUSO IL 2026-08-29; CP-03 NON AUTORIZZATO**.
 
 Dipendenza: `CP-03` chiuso con decisione go.
 
-Status: **LOCKED UNTIL CP-03**.
+Status: **IMPLEMENTATA LOCALMENTE, SIGNOFF VINCOLATO A CP-03**.
+
+La bonifica autorizzata del 4 settembre ha implementato la spine prevista.
+Le voci seguenti restano il piano di accettazione CS, non un invito a
+riscrivere sistemi gia' presenti. Dopo CP-03 confrontare l'implementazione
+con ogni gate e completare solo lacune e regressioni dimostrate.
 
 Obiettivo: rendere completabile la campagna canonica da Era 0 ad Assenza senza
 spostare autorita', alterare reward o mostrare al giocatore metriche interne.
@@ -651,7 +683,7 @@ mix, provenienza asset e verifica delle alternative reduced-motion.
 
 Dipendenza: tutti gli stage precedenti.
 
-Obiettivo: produrre una build Windows pubblicabile e verificata.
+Obiettivo: produrre una build Windows verificata e pronta per il lancio Steam.
 
 Deliverable:
 
@@ -661,25 +693,67 @@ Deliverable:
 - export Windows x64;
 - test clean install, clean profile e save migration;
 - release notes e known issues non bloccanti;
-- CI Linux e campagna manuale complete.
+- CI Linux e campagna manuale complete;
+- candidato Steam identificato e installazione dal client verificata;
+- pacchetto di lancio e responsabilita' secondo `docs/steam_release.md`.
 
 Gate:
 
-- `docs/release_checklist.md` interamente verde;
+- sezioni prodotto di `docs/release_checklist.md` interamente verdi;
 - almeno tre campagne complete su build candidate;
 - nessun Critical o Important irrisolto;
 - export avviabile fuori dall'editor;
 - stato finale: `SIGNED FOR GALLICUS 1.0`.
 
+## Percorso Steam
+
+Questa sequenza accompagna gli stage del gioco senza sostituirne i gate.
+
+| Quando | Consegna | Dipendenza |
+| --- | --- | --- |
+| Ora, durante CP-03 | stato partner/AppID, inventario diritti e bozze store | informazioni verificate; nessun nuovo sistema runtime |
+| Appena materiali e survey sono pronti | review store e Coming Soon | decisioni commerciali e azioni autorizzate dal titolare |
+| Dopo Content e Audiovisual Lock | candidato Steam e installazione dal client | build identificata, configurazione e prove di distribuzione |
+| Al Release Lock | review build e preparazione lancio | gate prodotto, stato portale e tempi minimi verificati |
+| Alla data confermata | pubblicazione e controllo build pubblica | signoff prodotto, approvazioni Steam e decisione del titolare |
+
+Owner della procedura: `docs/steam_release.md`. La firma del prodotto e
+`PUBLISHED ON STEAM` sono stati distinti. Una pagina Coming Soon non chiude
+CP-03; l'avvio dell'EXE locale non prova la distribuzione Steam.
+
 ## Prossimo step operativo
 
-`CP-01` e' chiuso dalla run lean Linux `32594244882` sul commit `047ed67`.
-I tre job canonici sono verdi; `CORE_CONTINUITY` verifica tre run consecutive e
-le tre linguette finali. I digest degli artifact runtime e visuali sono
-registrati nella scheda CP-01.
+1. Consolidare il candidato locale della bonifica e del menu gia' implementati,
+   con riferimento a `docs/support/menu_identity_2026-09-05.md`. Conservare
+   manifest, hash e stato dei file; l'utente revisiona, committa e pubblica
+   il codice da GitHub Desktop. Gli agenti non eseguono commit o push impliciti.
+2. Ottenere un nuovo checkpoint Linux `full` sul commit candidato, con gli
+   otto scenari e le prove visuali previste in `docs/testing.md`. Le run
+   storiche CP-01 e CP-02 conservano valore soltanto per i rispettivi commit.
+3. Condurre tre sessioni umane CP-03 da 20-30 minuti sulla build aggiornata,
+   registrare problemi e decisione go/no-go. Preparare le sessioni puo'
+   procedere durante la verifica Linux; chiudere il gate richiede entrambe
+   le evidenze, senza trasformare uno smoke in un playtest umano.
+4. Con decisione go, validare la spine gia' presente: durata, anti-farming,
+   contenuto e messa in scena; completare Campaign Spine, Content Lock,
+   Audiovisual Lock e Release Lock in ordine. Nessuna nuova espansione e'
+   autorizzata dal solo cambio di modello o da questo aggiornamento docs.
+5. Preparare intanto inventario asset/diritti e materiali store secondo il
+   percorso Steam. AppID, prezzo, data, attribuzioni e stato portale restano
+   dati da confermare, non valori da inventare. Il lancio segue tutti i gate.
 
-Il signoff tecnico `CP-02` e' chiuso sul commit `51eba5b`. Il prossimo gate
-ammissibile e' `CP-03`, composto da tre sessioni umane da 20-30 minuti e da una
-decisione go/no-go; non e' autorizzato automaticamente da queste evidenze.
-Media Vertical Slice, sistemi campagna ed espansione contenuti restano
-congelati fino alla chiusura esplicita di CP-03.
+## Bonifica autorizzata del 4 settembre 2026
+
+L'utente ha richiesto il fix completo dell'audit e la sostituzione delle
+immagini con ImageGen. La richiesta autorizza questo lavoro tecnico oltre al
+freeze precedente; non costituisce signoff CP-03, Campaign Spine, Content
+Lock o Audiovisual Lock. Implementati: ending/path corretti, firma persistente,
+isteresi, ramp, Silenzi, guardia terminale, tema originale con 15 raster,
+layout e localizzazione, import rigoroso e regressioni semantiche.
+Prove e file sono in `docs/support/bonifica_2026-09-04.md`.
+
+Il 5 settembre la revisione del menu ha portato i raster originali a 16 e
+corretto la ripresa; evidenze in `docs/support/menu_identity_2026-09-05.md`.
+Il prossimo passo corrente e' nella sezione precedente. Crediti e
+attribuzioni audio sono sospesi su richiesta durante lo sviluppo; il gate
+release resta aperto e deve essere risolto prima della pubblicazione.

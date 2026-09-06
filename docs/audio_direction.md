@@ -129,3 +129,56 @@ per uso reale, rinominate se adottate oppure rimosse dalle superfici finali.
 - impostazioni persistono correttamente;
 - mute SFX a `0` silenzia il bus senza modificare o sostituire i cue;
 - nessun path audio mancante o warning di import.
+
+## Assenza nella bonifica
+
+La richiesta ImageGen riguarda le immagini; musica e cue preesistenti non
+sono nuovi asset generati. Crediti e attribuzioni sono sospesi, non approvati
+per release. La bonifica esplicitamente richiesta autorizza l'integrazione
+tecnica del finale oltre al freeze precedente, senza chiudere il gate umano.
+
+Su REGISTRY_SILENCE/REGISTRY_ABSENCE MusicDirector ferma entrambe le tracce
+ed il crossfade. L'Assenza presenta un battito procedurale originale: doppio
+impulso grave ogni tre secondi, mono PCM16 24 kHz, nominale -20 dB, con rispetto
+di Master e SFX. Nessuna melodia o registrazione esterna. Ascolto, seam e mix
+su dispositivi reali restano gate umani aperti.
+
+## Pass originale del 6 settembre 2026
+
+L'utente autorizza VFX, animazioni, soundtrack e SFX nuovi oltre al freeze
+operativo precedente. Questo pass non chiude CP-03 o Audiovisual Lock.
+Il consumer corrente sostituisce tutte le registrazioni MP3 con la raccolta
+originale **Pietra e Aria**: cinque composizioni da 48 secondi, 25 cue materici
+e il battito terminale. Nessun campione o melodia esterna; sintesi offline
+riproducibile con `tools/generate_original_audio.py` (NumPy solo in produzione).
+Non e' audio generato da ImageGen o da un modello musicale.
+
+Manifest: `assets/audio/original/manifest.json`, con ricetta, seed, hash,
+formato, durata e livelli. Musica PCM16 stereo 22,05 kHz, SFX PCM16 mono
+44,1 kHz; il battito conserva doppio impulso e periodo di tre secondi a 24 kHz.
+Gli import Godot usano QOA; il WAV originale resta la sorgente di produzione.
+I nomi cue legacy rimangono alias di contratto, con nuovi suoni privi di
+semantica action/combat. I vecchi MP3 rimangono sorgenti storiche escluse
+esplicitamente dall'export; nessun consumer runtime li carica.
+
+Musica: timbri morbidi di corda e risonanza minerale, armonia aperta D/A,
+frasi rade, nessun drone subgrave o riser. Cinque stati usano lo stesso
+linguaggio e livello nominale -7 dB, con sorgenti a picco -12 dBFS. Il cambio
+stato alterna due player con crossfade di 2,2 s; rientrare nello stesso stato
+non riavvia la traccia. I loop hanno endpoint nulli e spazio tra le frasi.
+
+SFX: picco massimo -8 dBFS, hover -12 dBFS prima del gain per-cue. Pool di sei
+voci; hover/focus aggregato a intervalli minimi di 120 ms e senza sottrarre
+una voce attiva a un gesto. Mute applicato ai bus Music/SFX. Silenzio e Assenza
+fermano musica e code SFX; un evento di fase non riattiva la musica durante
+il Silenzio. Il battito usa ora un asset importato, senza sintesi nel frame
+terminale. Master e slider persistenti continuano a valere.
+
+Verifiche automatiche: `scripts/ci/test_av_asset_contract.py` e
+`scripts/ci/run_av_runtime_contract.py`. Ascolto su cuffie/speaker, livello
+percepito, fatigue lungo una campagna e crediti finali restano verifiche umane.
+
+Il mix conserva headroom anche nella somma conservativa di sei SFX e due
+tracce: il gain massimo nominale per-cue e' -10 dB. Il manifest dichiara
+l'assistenza Astra nella composizione delle ricette di sintesi; distinguerla
+dall'uso di un servizio neurale audio nel dossier di provenienza Steam.

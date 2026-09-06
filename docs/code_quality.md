@@ -5,6 +5,11 @@
 Finire il prodotto senza spostare autorita' o riscrivere sistemi funzionanti.
 Ogni patch dichiara obiettivo, zona, owner e prova di chiusura.
 
+Il ciclo operativo con Astra e' in `docs/development_workflow.md`. Il modello
+non modifica gli owner o i gate. La review finale verifica il comportamento
+dal punto di ingresso reale, oltre ai singoli helper, con evidenza legata
+alla build corrente. Il rischio determina le prove in `docs/testing.md`.
+
 ## Ownership
 
 - `RunManager`: flow, transizioni e decisioni di run.

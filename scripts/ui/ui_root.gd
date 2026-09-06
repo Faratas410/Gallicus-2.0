@@ -93,7 +93,7 @@ const SCARS_PANEL_BASE_HEIGHT: float = 72.0
 const SCARS_PANEL_ROW_HEIGHT: float = 24.0
 const SCARS_PANEL_MIN_HEIGHT: float = 102.0
 const SCARS_PANEL_MAX_HEIGHT: float = 168.0
-const ENDING_ICON_FALLBACK_PATH: String = "res://assets/ui/icons/icon_sentence.png"
+const ENDING_ICON_FALLBACK_PATH: String = "res://assets/ui/generated/registry_emblem.png"
 const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 	{"label": "Modals/BetModal", "fallback": "UI_RunRoot/Phase_INTRO"},
 	{"label": "Modals/PactSealedModal", "fallback": "UI_RunRoot/Phase_FIRST_REACTION"},
@@ -103,19 +103,19 @@ const _BOOT_FAIL_CONTRACT_PATHS: Array[Dictionary] = [
 const ENDING_UI_MAP: Dictionary = {
 	"ending_corruption": {
 		"title": "FASCICOLO CHIUSO - COMPROMISSIONE",
-		"icon": "res://assets/ui/icons/icon_sentence.png",
+		"icon": "res://assets/ui/generated/registry_emblem.png",
 	},
 	"ending_glory": {
 		"title": "FASCICOLO CHIUSO - ASCESA",
-		"icon": "res://assets/ui/icons/icon_payout.png",
+		"icon": "res://assets/ui/generated/registry_emblem.png",
 	},
 	"ending_scars": {
 		"title": "FASCICOLO CHIUSO - CONSUMO",
-		"icon": "res://assets/ui/icons/icon_token_16.png",
+		"icon": "res://assets/ui/generated/registry_emblem.png",
 	},
 	"ending_pattern": {
 		"title": "FASCICOLO CHIUSO - PATTERN",
-		"icon": "res://assets/ui/icons/icon_sentence.png",
+		"icon": "res://assets/ui/generated/registry_emblem.png",
 	},
 }
 const _PHASE_CONTAINER_PATHS: Array[String] = [
@@ -966,6 +966,11 @@ func show_countdown(seconds: int = 3) -> void:
 # Preconditions: RunManager emitted GameEvents.run_started; UI nodes are initialized.
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
 func _on_run_started() -> void:
+	var presentation: Dictionary = _run_manager_port.get_registry_presentation()
+	var fade: float = float(presentation.get("material_fade", 0.0))
+	# Fade only environmental surfaces; text and focus contrast remain constant.
+	for background: Node in find_children("*Backdrop", "TextureRect", true, false):
+		(background as TextureRect).self_modulate = Color(1.0 - fade, 1.0 - fade, 1.0 - fade, 1.0)
 	_reset_pact_tablet_state()
 	_reset_gesture_choice_state()
 	_reset_final_dossier_route_interaction()
@@ -1077,7 +1082,7 @@ func _clear_audience_context_overlay() -> void:
 func _on_register_annotation(payload: Dictionary) -> void:
 	if register_blocker == null or register_annotation_label == null:
 		return
-	var text: String = str(payload.get("text", "")).strip_edges()
+	var text: String = tr(str(payload.get("text", "")).strip_edges())
 	if text == "":
 		return
 	var duration: float = float(payload.get("duration", REGISTER_ANNOTATION_FALLBACK_SECONDS))
@@ -1118,7 +1123,7 @@ func _on_micro_interpretive_quick_cut_requested(payload: Dictionary) -> void:
 	quick_cut_label.visible = show_text
 	quick_cut_label_panel.visible = show_text
 	if show_text:
-		var text: String = str(payload.get("text", "")).strip_edges()
+		var text: String = tr(str(payload.get("text", "")).strip_edges())
 		if text.length() > 60:
 			text = text.substr(0, 60)
 		quick_cut_label.text = text
@@ -1265,6 +1270,9 @@ func _on_run_failed() -> void:
 		controls_hint_panel.visible = false
 
 func _on_run_ended(_reason: String, _summary: Dictionary) -> void:
+	if _reason == "REGISTRY_SILENCE" or _reason == "REGISTRY_ABSENCE":
+		_set_game_over_modal(false)
+		return
 	if game_over_modal == null:
 		return
 	if game_over_modal.visible:
@@ -1527,8 +1535,8 @@ func _apply_end_run_button_visual(button: Button, can_be_active: bool) -> void:
 	button.add_theme_stylebox_override("focus", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_FOCUS)
 	button.add_theme_stylebox_override("pressed", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_PRESSED)
 	button.add_theme_stylebox_override("disabled", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_DISABLED)
-	button.add_theme_color_override("font_color", Color(0.18, 0.12, 0.08, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(0.1, 0.06, 0.03, 1.0))
+	button.add_theme_color_override("font_color", Color(0.96, 0.92, 0.82, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(1, 0.96, 0.84, 1.0))
 	button.add_theme_color_override("font_pressed_color", Color(1.0, 0.93, 0.74, 1.0))
 	button.add_theme_color_override("font_disabled_color", Color(1.0, 0.92, 0.72, 1.0) if selected else Color(0.5, 0.46, 0.41, 0.86))
 
@@ -2048,7 +2056,7 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	var doom_short: String = str(payload.get("doom_short", ""))
 	var subtitle: String = "%s\n%s" % [
 		tr("Il Registro pesa il patto."),
-		tr("Colpisci tre volte il sigillo quando pulsa."),
+		tr("Imprimi tre colpi sul sigillo."),
 	]
 	if doom_short != "":
 		subtitle = "%s\n%s" % [
@@ -2093,7 +2101,7 @@ func _reset_resolution_ritual_interaction() -> void:
 	_resolve_ritual_started_msec = Time.get_ticks_msec()
 	_reset_judgment_seal_state()
 	if resolve_ritual_prompt != null:
-		resolve_ritual_prompt.text = tr("COLPISCI IL SIGILLO A TEMPO")
+		resolve_ritual_prompt.text = tr("IMPRIMI IL SIGILLO: TRE COLPI")
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.visible = true
 		resolve_ritual_strike_button.disabled = false
@@ -2125,11 +2133,11 @@ func _start_resolution_ritual_pulse() -> void:
 	if _is_reduced_motion():
 		return
 	_resolve_ritual_pulse_tween = create_tween()
-	_resolve_ritual_pulse_tween.set_loops()
+	_resolve_ritual_pulse_tween.set_loops(1)
 	_resolve_ritual_pulse_tween.set_trans(Tween.TRANS_SINE)
 	_resolve_ritual_pulse_tween.set_ease(Tween.EASE_IN_OUT)
-	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "modulate", Color(1.0, 0.9, 0.7, 1.0), 0.42)
-	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "modulate", Color.WHITE, 0.48)
+	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "modulate", Color(1.0, 0.97, 0.89, 1.0), 0.28)
+	_resolve_ritual_pulse_tween.tween_property(resolve_ritual_strike_button, "modulate", Color.WHITE, 0.32)
 
 func _is_resolution_ritual_on_beat() -> bool:
 	if _resolve_ritual_started_msec <= 0:
@@ -3509,6 +3517,9 @@ func _play_sign_feedback_sfx_if_available() -> void:
 	_play_sfx(&"cursor_select")
 
 func _play_sfx(cue: StringName) -> void:
+	var feedback: Node = get_tree().get_first_node_in_group("ritual_feedback")
+	if feedback != null:
+		feedback.call("play_cue", cue, get_viewport().gui_get_focus_owner())
 	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
 	if sfx_bus == null or not sfx_bus.has_method("play_cue"):
 		return
@@ -3728,6 +3739,21 @@ func _restore_panel_motion_base(panel: CanvasItem) -> void:
 	control.position = _get_panel_motion_base_position(control)
 	control.scale = Vector2.ONE
 
+func _track_presentation_tween(item: CanvasItem, tween: Tween, key: StringName) -> void:
+	_release_presentation_tween(item, key)
+	tween.bind_node(item)
+	item.set_meta(key, tween)
+	item.add_to_group("active_presentation_motion")
+	tween.finished.connect(_release_presentation_tween.bind(item, key))
+
+func _release_presentation_tween(item: CanvasItem, key: StringName) -> void:
+	if not is_instance_valid(item) or not item.has_meta(key):
+		return
+	var tween: Tween = item.get_meta(key) as Tween
+	if tween != null and tween.is_valid():
+		tween.kill()
+	item.remove_meta(key)
+
 func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -> void:
 	if panel == null:
 		return
@@ -3743,9 +3769,9 @@ func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -
 	var seconds: float = 0.18
 	match kind:
 		MOTION_KIND_RITUAL:
-			start_scale = Vector2(0.965, 0.965)
-			start_position = base_position + Vector2(0.0, 18.0)
-			seconds = 0.34
+			start_scale = Vector2(0.99, 0.99)
+			start_position = base_position + Vector2(0.0, 4.0)
+			seconds = 0.22
 		MOTION_KIND_ENDING:
 			start_scale = Vector2(0.975, 0.975)
 			seconds = 0.24
@@ -3755,6 +3781,7 @@ func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -
 	control.position = start_position
 	control.scale = start_scale
 	var tween: Tween = create_tween()
+	_track_presentation_tween(control, tween, &"panel_enter_tween")
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(control, "scale", Vector2.ONE, seconds)
@@ -3775,6 +3802,7 @@ func _play_backdrop_enter(modal: Control, kind: String = MOTION_KIND_STANDARD) -
 			var start_scale: Vector2 = base_scale * (Vector2(1.018, 1.018) if kind == MOTION_KIND_ENDING else Vector2(1.012, 1.012))
 			texture_backdrop.scale = start_scale
 			var backdrop_tween: Tween = create_tween()
+			_track_presentation_tween(texture_backdrop, backdrop_tween, &"backdrop_enter_tween")
 			backdrop_tween.set_trans(Tween.TRANS_SINE)
 			backdrop_tween.set_ease(Tween.EASE_OUT)
 			backdrop_tween.tween_property(texture_backdrop, "scale", base_scale, 1.15 if kind == MOTION_KIND_ENDING else 0.7)
@@ -3788,9 +3816,10 @@ func _play_backdrop_enter(modal: Control, kind: String = MOTION_KIND_STANDARD) -
 		shade.color.a = base_alpha
 		return
 	var color: Color = shade.color
-	color.a = clamp(base_alpha + (0.12 if kind == MOTION_KIND_ENDING else 0.08), 0.0, 0.86)
+	color.a = clamp(base_alpha + (0.03 if kind == MOTION_KIND_ENDING else 0.02), 0.0, 0.86)
 	shade.color = color
 	var shade_tween: Tween = create_tween()
+	_track_presentation_tween(shade, shade_tween, &"shade_enter_tween")
 	shade_tween.set_trans(Tween.TRANS_SINE)
 	shade_tween.set_ease(Tween.EASE_OUT)
 	shade_tween.tween_property(shade, "color:a", base_alpha, 0.9 if kind == MOTION_KIND_ENDING else 0.55)
@@ -3928,10 +3957,25 @@ func _focus_first_available(controls: Array) -> void:
 func _is_reduced_motion() -> bool:
 	return SaveManager != null and SaveManager.has_method("get_reduced_motion") and SaveManager.get_reduced_motion()
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_update_escalation_bar()
+
 func _on_settings_changed(payload: Dictionary) -> void:
+	_update_escalation_bar()
 	var reduced_motion: bool = bool(payload.get("reduced_motion", _is_reduced_motion()))
 	if not reduced_motion:
 		return
+	for item: Node in get_tree().get_nodes_in_group("active_presentation_motion"):
+		var canvas: CanvasItem = item as CanvasItem
+		for key: StringName in [&"panel_enter_tween", &"backdrop_enter_tween", &"shade_enter_tween"]:
+			_release_presentation_tween(canvas, key)
+		if canvas.has_meta(MOTION_BASE_POSITION_META):
+			_restore_panel_motion_base(canvas)
+		if canvas is Control and canvas.has_meta(BACKDROP_BASE_SCALE_META):
+			(canvas as Control).scale = canvas.get_meta(BACKDROP_BASE_SCALE_META) as Vector2
+		if canvas is ColorRect and canvas.has_meta(BACKDROP_SHADE_ALPHA_META):
+			(canvas as ColorRect).color.a = float(canvas.get_meta(BACKDROP_SHADE_ALPHA_META))
 	if _pressure_pulse_tween != null and _pressure_pulse_tween.is_valid():
 		_pressure_pulse_tween.kill()
 	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
@@ -4196,10 +4240,6 @@ func _get_arena_index() -> int:
 	if _run_manager_port != null:
 		return _run_manager_port.get_arena_index()
 	return 0
-
-
-
-
 
 
 

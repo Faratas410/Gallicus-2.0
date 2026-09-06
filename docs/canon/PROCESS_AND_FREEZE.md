@@ -81,10 +81,14 @@ Gallicus Level 3 introduce una distinzione strutturale tra:
 • Flexible Domain Zone (Controlled Freedom)
 • Tooling & Infrastructure Zone (High Freedom)
 
-L’obiettivo è aumentare la velocità operativa di Codex cloud
+L’obiettivo è aumentare la velocità operativa dello sviluppo locale con Astra
 senza compromettere autorità, determinismo e coerenza canonica.
 
 ---
+
+Il ciclo di lavoro corrente e' in `docs/development_workflow.md`; consegna
+locale e operazioni Git seguono `AGENTS.md`. Questo riferimento operativo
+non modifica le zone di autorita' o le regole canoniche seguenti.
 
 ## 1️⃣ CORE AUTHORITY ZONE — HARD FREEZE
 

@@ -16,6 +16,7 @@ extends Node
 @export var arena_scene: PackedScene
 
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
+const RegistryEvolutionScript = preload("res://scripts/systems/run/registry_evolution.gd")
 
 # RUN FLOW (contract)
 # MAIN_MENU -> RUN_INIT -> BET_PRESENT -> BET_COMMITTED
@@ -250,7 +251,7 @@ const AUDIENCE_CONTEXT_PHRASES: Dictionary = {
 		],
 		AUDIENCE_MOOD_COLD: [
 			"Un gesto segnato, il debito resta.",
-			"Hai scelto come muoverti. Non cambia nulla.",
+			"Il gesto è registrato. La pressione è cambiata.",
 			"Il gesto pesa poco. La folla resta ferma.",
 			"Scelta fatta. Ti valutano senza voce.",
 		],
@@ -402,10 +403,6 @@ const SPECIAL_ARENA_VERGOGNA: StringName = &"ARENA_VERGOGNA"
 const ESCALATION_MAX: int = 10
 const ESCALATION_HIGH_THRESHOLD: int = 6
 const SCAR_REFUSE_CASHOUT_THRESHOLD: int = 3
-const REGISTRY_SILENCE_ROLL_MAX: int = 50000
-const REGISTRY_SILENCE_PRESSURE_SCALE: float = 220.0
-const REGISTRY_SILENCE_MAX_BONUS: float = 0.010
-const REGISTRY_SILENCE_CHANCE_CAP: float = 0.020
 const UNLOCK_REGISTRY_PRECEDENT: StringName = &"registry_precedent"
 const LIBERTY_THRESHOLD: int = 8
 const MORAL_THRESHOLD: int = 8
@@ -752,7 +749,7 @@ var _save_continue_boundary: SaveContinueBoundary = SaveContinueBoundaryScript.n
 var _save_boundary: RunSaveBoundaryHelper = RunSaveBoundaryHelperScript.new()
 var _arena_theme_policy: RunArenaThemePolicy = RunArenaThemePolicyScript.new()
 var _ui_payload_factory: RunUiPayloadFactory = RunUiPayloadFactoryScript.new()
-var _register_state: RegisterState = RegisterState.new()
+var _register_state: RegisterState = null
 var _level3_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _boot_valid: bool = true
 var _sanity_ui_root: Node = null
@@ -780,7 +777,6 @@ var _phase_main_menu_handler: PhaseMainMenuHandler = PhaseMainMenuHandler.new()
 var _phase_handler_map: Dictionary = {}
 var _session_id: String = ""
 var _run_counter: int = 0
-var _quick_cut_era_first_seen_run: Dictionary = {}
 var _last_request: String = ""
 var _events_wired: bool = false
 var _last_phase_change_ms: int = 0
@@ -1198,6 +1194,9 @@ func _ready() -> void:
 	_registry_has_precedent = SaveManager.has_unlocked(UNLOCK_REGISTRY_PRECEDENT)
 	_registry_pressure = SaveManager.get_registry_pressure()
 	_registry_era = clampi(SaveManager.get_registry_era(), 0, 4)
+	if _registry_era < 4:
+		_register_state = RegisterState.new()
+	_ensure_input_map()
 	_start_smoke_timeout_timer()
 	call_deferred("_boot")
 
@@ -1305,8 +1304,6 @@ func _resolve_available_locale(target_locale: String) -> String:
 func _on_settings_changed(payload: Dictionary) -> void:
 	if payload.has("language"):
 		_apply_language(str(payload.get("language", SaveManager.get_language())))
-	_ensure_input_map()
-	call_deferred("_boot")
 
 func _boot() -> void:
 	await get_tree().process_frame
@@ -1416,6 +1413,9 @@ func _fail_flow(message: String) -> void:
 	_enter_end_run("INFRA_FAILURE")
 
 func request_new_game() -> void:
+	if not can_start_run():
+		GameEvents.run_ended.emit("REGISTRY_ABSENCE", {"classified_terminal": false, "terminal": true})
+		return
 	if _resolving_arena or _waiting_for_bet or _waiting_for_push_luck or _waiting_for_intermediate_choice:
 		print("RunManager: forcing new run while flow is active.")
 	_start_new_run()
@@ -1506,6 +1506,9 @@ func request_quit_to_menu() -> void:
 	_set_phase(RunPhase.MAIN_MENU, "request_show_main_menu")
 
 func request_load_continue() -> void:
+	if not can_start_run():
+		GameEvents.run_ended.emit("REGISTRY_ABSENCE", {"classified_terminal": false, "terminal": true})
+		return
 	_touch_request_activity("request_load_continue()")
 	if _phase != RunPhase.MAIN_MENU and _phase != RunPhase.NONE:
 		push_error("RunManager: request_load_continue in wrong phase %s\nSNAPSHOT:\n%s" % [_phase_to_name(_phase), _flow_snapshot("request_load_continue")])
@@ -1524,6 +1527,8 @@ func start_new_run() -> void:
 	request_new_game()
 
 func _start_new_run() -> void:
+	if not can_start_run():
+		return
 	_watchdog_enabled = true
 	_run_counter += 1
 	_flow_logger.set_run_id(_run_counter)
@@ -1818,25 +1823,15 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	_autosave_run_checkpoint(RunSaveFlowStepContractScript.INTERMEDIATE_CHOICE, bet_id)
 
 func _compute_registry_era_for_quick_cut() -> int:
-	match _register_state.flow_phase:
-		RegisterState.FLOW_PHASE_DERIVA:
-			return 2
-		RegisterState.FLOW_PHASE_MEMORIA, RegisterState.FLOW_PHASE_SOSPENSIONE:
-			return 3
-		_:
-			return 1
+	return _registry_era
 
 func _is_signature_fixed_for_quick_cut() -> bool:
-	return _register_state.flow_phase == RegisterState.FLOW_PHASE_SOSPENSIONE
+	return bool(SaveManager.get_registry_evolution().get("fixed", false))
 
 func _is_quick_cut_ramp_blocked(era: int) -> bool:
 	if era < 2:
 		return true
-	if not _quick_cut_era_first_seen_run.has(era):
-		_quick_cut_era_first_seen_run[era] = _run_counter
-	var first_seen_run: int = int(_quick_cut_era_first_seen_run.get(era, _run_counter))
-	var elapsed_runs: int = _run_counter - first_seen_run
-	return elapsed_runs < 2
+	return int(SaveManager.get_registry_evolution().get("ramp_runs", 0)) < 2
 
 func _roll_quick_cut_probability(era: int, signature_fixed: bool) -> bool:
 	var threshold: float = 0.0
@@ -1997,6 +1992,9 @@ func _build_level3_bet_offer() -> Array[Dictionary]:
 			"forced_archetype": _run_state.forced_next_pact_archetype,
 			"registry_has_precedent": _registry_has_precedent,
 			"registry_era": _registry_era,
+			"signature_risk_bias": float(SaveManager.get_registry_evolution().get("signature", {}).get("risk_bias", 0.0)),
+			"signature_fixed": bool(SaveManager.get_registry_evolution().get("fixed", false)),
+			"era_progress": _registry_effect_progress() / 3.0,
 			"level3_bet_behavior": LEVEL3_BET_BEHAVIOR,
 			"high_risk_behaviors": [BET_DOUBLE_OR_DIE_L3, BET_DEBT_CHAIN, BET_BLOOD_TAX, BET_LAST_BREATH],
 			"cash_out_behavior": BET_CASH_OUT,
@@ -2259,10 +2257,10 @@ func _reject_invalid_continue_payload(reason: String) -> void:
 		final_reason = "invalid_continue_payload"
 	_flow_log("continue_rejected", final_reason)
 	push_warning("RUN_SAVE_REJECTED: %s" % final_reason)
-	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("continue_rejected"):
-		GameEvents.continue_rejected.emit(final_reason)
 	_save_system.quarantine_run_set(final_reason)
 	_set_phase(RunPhase.MAIN_MENU, "continue_rejected_invalid_save")
+	if GameEvents != null and GameEvents.has_signal("continue_rejected"):
+		GameEvents.continue_rejected.emit(final_reason)
 
 func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
 	_waiting_for_bet = false
@@ -2852,6 +2850,9 @@ func _dispatch_phase_request(request_name: String, payload: Dictionary) -> Phase
 # Preconditions: RunManager exists (group "run_manager") and listens to GameEvents.request_new_run.
 # Postconditions: Active run state is reset and GameEvents.run_started is emitted.
 func _on_request_new_run() -> void:
+	if not can_start_run():
+		request_new_game()
+		return
 	var allowed_phases: Array[RunPhase] = [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET]
 	_route_guarded_phase_request("request_new_run", allowed_phases, _phase_main_menu_handler, {})
 	return
@@ -3705,32 +3706,35 @@ func _enter_game_over() -> void:
 		reason_label = "failed"
 	_save_system.clear_run()
 	_is_game_over = true
-	_run_state.provoke_armed = false
 	_run_state.run_is_over = true
-	var is_loss: bool = _run_state.run_end_reason != "CASH_OUT"
-	var first_run_completed: bool = SaveManager.has_unlocked(CONDANNA_RICORDATO)
-	_register_condanna(CONDANNA_RICORDATO)
-	if is_loss:
-		if not first_run_completed:
-			_register_condanna(CONDANNA_E_FINITA_COSI)
-		if _run_state.arena_index >= 2:
-			_register_condanna(CONDANNA_NON_ABBASTANZA)
-		if _run_state.bets_history.size() > 0:
-			_register_condanna(CONDANNA_NON_E_COLPA_LORO)
-		if _run_state.risky_choice_made_recently:
-			_register_condanna(CONDANNA_TROPPO_TARDI)
-		if _run_state.last_signed_pact_id != &"":
-			_register_condanna(CONDANNA_SAPEVO_COSA_STAVO_FACENDO)
-		if _run_state.bets_history.size() > 0:
-			_register_condanna(CONDANNA_ERA_IL_PREZZO)
-	if _run_state.run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
-		_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
+	_update_hidden_run_metrics()
+	_update_registry_meta_from_run()
+	if not _should_emit_registry_silence():
+		var is_loss: bool = _run_state.run_end_reason != "CASH_OUT"
+		var first_run_completed: bool = SaveManager.has_unlocked(CONDANNA_RICORDATO)
+		_register_condanna(CONDANNA_RICORDATO)
+		if is_loss:
+			if not first_run_completed:
+				_register_condanna(CONDANNA_E_FINITA_COSI)
+			if _run_state.arena_index >= 2:
+				_register_condanna(CONDANNA_NON_ABBASTANZA)
+			if _run_state.bets_history.size() > 0:
+				_register_condanna(CONDANNA_NON_E_COLPA_LORO)
+			if _run_state.risky_choice_made_recently:
+				_register_condanna(CONDANNA_TROPPO_TARDI)
+			if _run_state.last_signed_pact_id != &"":
+				_register_condanna(CONDANNA_SAPEVO_COSA_STAVO_FACENDO)
+			if _run_state.bets_history.size() > 0:
+				_register_condanna(CONDANNA_ERA_IL_PREZZO)
+		if _run_state.run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
+			_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
 	_waiting_for_bet = false
 	_set_runtime_gate_phase(RunPhase.GAME_OVER)
 	_update_arena_visual_only()
 	_emit_run_finale()
 	_emit_run_ended()
-	if _run_state.run_end_reason != "INFRA_FAILURE":
+	_run_state.provoke_armed = false
+	if _run_state.run_end_reason != "INFRA_FAILURE" and not _run_state.registry_silence_active:
 		_emit_run_failed()
 
 func _emit_run_failed() -> void:
@@ -3753,7 +3757,9 @@ func _emit_run_ended() -> void:
 	if emit_reason == "":
 		emit_reason = "unknown"
 	if _should_emit_registry_silence():
-		GameEvents.run_ended.emit(emit_reason, {})
+		var terminal: bool = _registry_era >= 4
+		GameEvents.run_ended.emit("REGISTRY_ABSENCE" if terminal else "REGISTRY_SILENCE", {"classified_terminal": false, "terminal": terminal})
+		GameEvents.set_gameplay_enabled(false)
 		return
 	var finale: Dictionary = _select_run_finale()
 	var summary: Dictionary = _build_run_summary(finale)
@@ -3804,27 +3810,48 @@ func _update_registry_meta_from_run() -> void:
 	if _registry_meta_committed_this_run:
 		return
 	_registry_meta_committed_this_run = true
+	if _run_state.run_end_reason == "INFRA_FAILURE" or not can_start_run():
+		return
 	var pressure_delta: float = float(_run_state.glory) * REGISTRY_PRESSURE_GLORY_WEIGHT
 	pressure_delta += float(_run_state.corruption) * REGISTRY_PRESSURE_CORRUPTION_WEIGHT
 	_registry_pressure = maxf(_registry_pressure + pressure_delta, 0.0)
-	# Era progression remains silence-driven by canon contract; no pressure->era remap here.
-	SaveManager.set_registry_state(_registry_pressure, _registry_era)
+	var trace: Dictionary = _finale_builder.build_path_trace_from_bet_history(_run_state.bets_history)
+	var choices: int = _run_state.bets_history.size()
+	var paths: Array[String] = []
+	var largest: int = 0
+	for path: String in ["prudence", "hubris", "violence", "penitence"]:
+		var count: int = int(trace.get("path_%s_count" % path, 0))
+		largest = maxi(largest, count)
+		if count > 0:
+			paths.append(path)
+	var risk: float = float(int(trace.path_hubris_count) + int(trace.path_violence_count) - int(trace.path_prudence_count) - int(trace.path_penitence_count)) / float(maxi(choices, 1))
+	var sample: Dictionary = {
+		"choices": choices, "paths": paths,
+		"signature": {"risk_bias": risk, "repetition_bias": float(largest) / float(maxi(choices, 1)), "scar_tolerance": clampf(float(_run_state.scars_history.size()) / float(maxi(_run_state.arena_index, 1)), 0.0, 1.0), "volatility": 1.0 - float(largest) / float(maxi(choices, 1))},
+		"observation": "%d:%d:%d:%d:%d:%d:%d" % [trace.path_prudence_count, trace.path_hubris_count, trace.path_violence_count, trace.path_penitence_count, _run_state.glory, _run_state.corruption, _run_state.push_luck_doubles],
+		"classification": String(_select_ending_identity()),
+	}
+	var evolution: Dictionary = RegistryEvolutionScript.advance(SaveManager.get_registry_evolution(), _registry_era, sample)
+	_registry_era = int(evolution.era)
+	_run_state.registry_silence_evaluated = true
+	_run_state.registry_silence_active = bool(evolution.silence)
+	SaveManager.commit_registry_evolution(_registry_pressure, _registry_era, evolution.state)
 
 func _should_emit_registry_silence() -> bool:
-	if _run_state.registry_silence_evaluated:
-		return _run_state.registry_silence_active
-	_run_state.registry_silence_evaluated = true
-	_run_state.registry_silence_active = false
-	if _register_state.flow_phase != RegisterState.FLOW_PHASE_SOSPENSIONE:
-		return false
-	# L3 determinism: use run-scoped RNG state (seeded from run seed), never time-seeded randomize().
-	var base_chance: float = 1.0 / float(REGISTRY_SILENCE_ROLL_MAX)
-	var pressure_ratio: float = clampf(_registry_pressure / REGISTRY_SILENCE_PRESSURE_SCALE, 0.0, 1.0)
-	var pressure_norm: float = pressure_ratio * pressure_ratio
-	var pressure_bonus: float = REGISTRY_SILENCE_MAX_BONUS * pressure_norm
-	var final_chance: float = minf(base_chance + pressure_bonus, REGISTRY_SILENCE_CHANCE_CAP)
-	_run_state.registry_silence_active = _level3_rng.randf() < final_chance
-	return _run_state.registry_silence_active
+	return _run_state.registry_silence_evaluated and _run_state.registry_silence_active
+
+func can_start_run() -> bool:
+	return SaveManager.get_registry_era() < 4
+
+func get_registry_presentation() -> Dictionary:
+	var evolution: Dictionary = SaveManager.get_registry_evolution()
+	return {"terminal": not can_start_run(), "material_fade": _registry_effect_progress() * 0.07, "definitive": bool(evolution.get("fixed", false))}
+
+func _registry_effect_progress() -> float:
+	if _registry_era <= 0:
+		return 0.0
+	var ramp: float = minf(float(int(SaveManager.get_registry_evolution().get("ramp_runs", 3)) + 1) / 3.0, 1.0)
+	return minf(float(_registry_era - 1) + ramp, 3.0)
 
 func _export_run_summary(finale: Dictionary) -> void:
 	var summary: Dictionary = _build_run_summary(finale)
@@ -3925,12 +3952,10 @@ func _pick_register_message(ending_key: String) -> String:
 		_:
 			return _pick_from_pool(REGISTER_POOL_FINAL_PATTERN)
 
-func _select_run_finale() -> Dictionary:
-	var scars_copy: Array = _run_state.scars_payload.duplicate(true)
+func _select_ending_identity() -> StringName:
 	var scar_count: int = _run_state.scars_history.size()
 	var ending_id: StringName = _run_state.forced_ending_id
 	var run_completed: bool = _run_state.level3_target_arenas > 0 and _run_state.arena_index >= _run_state.level3_target_arenas
-	_update_hidden_run_metrics()
 	if _registry_has_precedent and ending_id == &"THE_LIBERTY":
 		ending_id = &""
 	if ending_id == &"":
@@ -3962,7 +3987,13 @@ func _select_run_finale() -> Dictionary:
 				ending_id = &"THE_MARKED"
 			else:
 				ending_id = &"THE_BROKEN"
+	return ending_id
 
+func _select_run_finale() -> Dictionary:
+	_update_hidden_run_metrics()
+	var ending_id: StringName = _select_ending_identity()
+	var scars_copy: Array = _run_state.scars_payload.duplicate(true)
+	var run_completed: bool = _run_state.level3_target_arenas > 0 and _run_state.arena_index >= _run_state.level3_target_arenas
 	var bet_names: Array[String] = []
 	for bet_id: StringName in _run_state.level3_bets_used:
 		bet_names.append(_get_bet_display_name(String(bet_id)))
@@ -4338,6 +4369,8 @@ func _emit_register_annotation_from_scar(scar_id: StringName) -> void:
 	var payload: Dictionary = _register_state.record_scar_annotation(scar_id, _run_state.arena_index, _build_register_metrics())
 	if payload.is_empty():
 		return
+	if bool(SaveManager.get_registry_evolution().get("fixed", false)):
+		payload["text"] = "Condizione registrata."
 	GameEvents.register_annotation.emit(payload)
 
 func _emit_register_annotation_from_run_end(reason: String) -> void:
@@ -4346,6 +4379,8 @@ func _emit_register_annotation_from_run_end(reason: String) -> void:
 	var payload: Dictionary = _register_state.record_run_end_annotation(reason, _run_state.scars.size(), _build_register_metrics())
 	if payload.is_empty():
 		return
+	if bool(SaveManager.get_registry_evolution().get("fixed", false)):
+		payload["text"] = "Configurazione stabile."
 	GameEvents.register_annotation.emit(payload)
 
 func _build_register_metrics() -> Dictionary:
@@ -4467,5 +4502,3 @@ func _try_apply_cracked_bones_scar(bet_id: String, chain_level: int) -> void:
 		"Movimento rallentato e blocco meno efficace."
 	)
 	_add_scar(scar)
-
-

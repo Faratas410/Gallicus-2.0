@@ -25,7 +25,12 @@ func build_save_payload(run_state: RunState, runtime_fields: Dictionary) -> Dict
 	var scars_detail: Array[Dictionary] = []
 	if runtime_fields.has("scars_detail") and runtime_fields["scars_detail"] is Array:
 		scars_detail = (runtime_fields["scars_detail"] as Array).duplicate(true)
-	return _save_system.build_level3_run_payload(payload_state, run_payload, scars_detail)
+	var payload: Dictionary = _save_system.build_level3_run_payload(payload_state, run_payload, scars_detail)
+	# RunState.to_dict serializes scalar state/history, not runtime object arrays.
+	# Keep the already serialized arrays at the save boundary, including empty ones.
+	payload["run_state"]["scars"] = payload_state.scars.duplicate(true)
+	payload["run_state"]["pacts_log"] = payload_state.pacts_log.duplicate(true)
+	return payload
 
 
 func validate_continue_payload(payload: Dictionary) -> Dictionary:

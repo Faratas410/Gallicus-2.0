@@ -425,16 +425,13 @@ def _build_runtime_command(
     project_root: str,
     timeout_sec: int,
     use_xvfb: bool,
+    exported_game: bool = False,
 ) -> list[str]:
     quit_after_frames = max(timeout_sec * GODOT_QUIT_AFTER_ITERATIONS_PER_SECOND_BUDGET, 1)
-    command: list[str] = [
-        godot_bin,
-        "--headless",
-        "--path",
-        project_root,
-        "--quit-after",
-        str(quit_after_frames),
-    ]
+    command: list[str] = [godot_bin, "--headless"]
+    if not exported_game:
+        command += ["--path", project_root]
+    command += ["--quit-after", str(quit_after_frames)]
     if use_xvfb:
         command = ["xvfb-run", "-a"] + command
     return command
@@ -449,6 +446,7 @@ def run_smoke_runtime(
     log_path: Path,
     use_xvfb: bool,
     signoff_surface: str,
+    exported_game: bool = False,
 ) -> tuple[int, str]:
     env = os.environ.copy()
     env["GALLICUS_SMOKE"] = "1"
@@ -461,10 +459,11 @@ def run_smoke_runtime(
     env["GALLICUS_SMOKE_SEED"] = str(smoke_seed)
 
     command = _build_runtime_command(
-        godot_bin=godot_bin,
+        godot_bin=str(Path(godot_bin).resolve()) if exported_game else godot_bin,
         project_root=project_root,
         timeout_sec=timeout_sec,
         use_xvfb=use_xvfb,
+        exported_game=exported_game,
     )
     command_text = " ".join(command)
     print("[SMOKE] Running:", command_text)
@@ -485,6 +484,7 @@ def run_smoke_runtime(
         encoding="utf-8",
         errors="replace",
         env=env,
+        cwd=project_root if exported_game else None,
     )
     try:
         output, _ = process.communicate(timeout=hard_timeout_sec)
@@ -520,6 +520,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "--godot-bin",
         default="",
         help="Path to Godot binary. Required unless --validate-log-only is used.",
+    )
+    parser.add_argument(
+        "--exported-game",
+        action="store_true",
+        help="Run an exported game without editor path overrides; use --project-root as its working directory.",
     )
     parser.add_argument(
         "--timeout-sec",
@@ -597,6 +602,7 @@ def main() -> int:
             log_path=log_path,
             use_xvfb=bool(args.use_xvfb),
             signoff_surface=signoff_surface,
+            exported_game=bool(args.exported_game),
         )
         if runtime_exit_code != 0:
             fail_class, fail_reason, last_milestone = _classify_runtime_failure(

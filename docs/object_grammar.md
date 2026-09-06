@@ -170,3 +170,11 @@ Il primo blocco runtime e' push-your-luck:
 - rilancio come seconda incisione.
 
 Gli intenti, i segnali e il flow restano invariati.
+
+## Nuova grafica e chiusura della campagna
+
+Il tema ImageGen conserva intenti e gesti OF-01..10: superfici originali,
+stessi comandi e registrazioni. Nessuna CTA rivela la firma. Nel Silenzio:
+fine percorso -> superficie assente -> attesa -> nessun responso -> memoria
+persistita da RunManager. Il ritorno al menu e' un'utility. Nell'Assenza non
+esiste piu' un oggetto da interrogare o una CTA che riavvii la classificazione.

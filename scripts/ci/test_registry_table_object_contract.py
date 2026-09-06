@@ -9,6 +9,7 @@ import re
 import struct
 import wave
 from pathlib import Path
+from generated_art_contract import validate_family
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -69,16 +70,6 @@ def _node_block(scene: str, node_name: str) -> str:
     return match.group(0)
 
 
-def _png_header(path: Path) -> tuple[int, int, int]:
-    raw = path.read_bytes()
-    if raw[:8] != b"\x89PNG\r\n\x1a\n" or raw[12:16] != b"IHDR":
-        raise AssertionError(f"{path.name} must be a PNG with an IHDR header")
-    width, height, bit_depth, color_type = struct.unpack(">IIBB", raw[16:26])
-    if bit_depth != 8 or color_type != 6:
-        raise AssertionError(f"{path.name} must be 8-bit RGBA")
-    return width, height, color_type
-
-
 def _csv_value(locale: str, key: str) -> str:
     path = ROOT / f"assets/i18n/{locale}.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -90,47 +81,7 @@ def _csv_value(locale: str, key: str) -> str:
 
 
 def _assert_textures() -> None:
-    closed_size = _png_header(CLOSED_TEXTURE)[:2]
-    open_size = _png_header(OPEN_TEXTURE)[:2]
-    if closed_size != open_size:
-        raise AssertionError("closed and open Registry textures must share dimensions")
-    width, height = closed_size
-    if height <= 0 or not math.isclose(width / height, 1.5, rel_tol=0.002):
-        raise AssertionError(f"Registry table textures must be 3:2, got {width}x{height}")
-
-
-def _assert_style_geometry() -> None:
-    geometry: tuple[str, ...] | None = None
-    for state in CLOSED_STYLES:
-        path = STYLE_DIR / f"sb_registry_table_closed_{state}.tres"
-        text = _read(path)
-        if "res://assets/ui/official/objects/registry_table/registry_table_closed.png" not in text:
-            raise AssertionError(f"{path.name} must use registry_table_closed.png")
-        values = tuple(
-            re.findall(
-                r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-                text,
-                re.MULTILINE,
-            )
-        )
-        if len(values) != 8:
-            raise AssertionError(f"{path.name} must define stable texture/content margins")
-        if geometry is None:
-            geometry = values
-        elif values != geometry:
-            raise AssertionError(f"{path.name} changes Registry geometry between states")
-    open_style = _read(STYLE_DIR / "sb_registry_table_open.tres")
-    if "res://assets/ui/official/objects/registry_table/registry_table_open.png" not in open_style:
-        raise AssertionError("open Registry style must use registry_table_open.png")
-    open_geometry = tuple(
-        re.findall(
-            r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-            open_style,
-            re.MULTILINE,
-        )
-    )
-    if open_geometry != geometry:
-        raise AssertionError("open Registry style must preserve closed-state geometry")
+    validate_family("registry_table")
 
 
 def _assert_scene_binding() -> None:
@@ -242,7 +193,6 @@ def _assert_visual_qa_matrix() -> None:
 
 def main() -> int:
     _assert_textures()
-    _assert_style_geometry()
     _assert_scene_binding()
     _assert_runtime_contract()
     _assert_audio()

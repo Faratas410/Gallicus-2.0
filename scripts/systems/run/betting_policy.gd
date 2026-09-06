@@ -136,6 +136,11 @@ func _get_weight(bet: Dictionary, config: Dictionary) -> int:
 	var behavior_id: StringName = StringName(str(behavior_map.get(bet_id, bet_id)))
 	var cash_out_id: StringName = StringName(str(config.get("cash_out_behavior", "")))
 	var registry_era: int = clampi(int(config.get("registry_era", 0)), 0, 4)
+	# Memory changes offer ordering only; reward and outcome rules never consume it.
+	var bias: float = float(config.get("signature_risk_bias", 0.0))
+	var affinity: float = 1.0 if high_risk_behaviors.has(behavior_id) else -1.0
+	if registry_era > 0 and bool(config.get("signature_fixed", false)):
+		weight += int(round(maxf(bias * affinity, 0.0) * float(config.get("era_progress", 1.0)) * float(mini(registry_era, 3))))
 	if not bool(config.get("registry_has_precedent", false)):
 		if registry_era >= 4 and high_risk_behaviors.has(behavior_id):
 			return weight + 1

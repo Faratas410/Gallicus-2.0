@@ -12,6 +12,7 @@ La prima campagna completa deve durare indicativamente 2-4 ore.
 ## Forma del prodotto
 
 - Piattaforma di release: Windows x64.
+- Distribuzione di riferimento: Steam, con pagina store e build verificate.
 - Superficie automatica canonica: CI Linux.
 - Lingue di release: italiano, inglese e spagnolo.
 - Struttura: campagna finita attraverso Ere `0..4`.
@@ -53,24 +54,27 @@ Disponibile:
 - save/continue e impostazioni;
 - Archivio e segnali di riconoscimento;
 - smoke automatici per loop e route principali;
-- prime variazioni visuali legate al Registro.
+- tema originale ImageGen e prime variazioni ambientali;
+- firma, isteresi, Ere e Assenza persistenti verificate localmente.
 
 Da completare per 1.0:
 
 - stabilita', accessibilita' ed export del Core Playable Candidate;
-- firma comportamentale, coerenza e isteresi;
-- avanzamento reale delle Ere tramite Silenzio;
-- ramp, campagna terminale e blocco post-finale;
+- validazione umana di firma, Silenzi, ramp e ritmo della campagna;
+- checkpoint Linux della nuova spine e messa in scena completa;
 - contenuti e localizzazioni completi;
 - identita' audio, VFX e cinematiche in-engine;
-- accessibilita', export e QA pubblica.
+- accessibilita', export e QA pubblica;
+- preparazione store, configurazione Steam, review e lancio verificato.
 
 ## Priorita' operativa: Core Playable Candidate
 
 Prima di aggiungere altri sistemi della campagna, il loop singola-run esistente
 viene portato a una build interna completa, leggibile ed esportabile. Memoria,
 convergenza, Ere, Silenzi, cinematiche ed espansione contenuti restano congelati
-fino al playtest go/no-go di `CP-03`. Questo gate non e' una release intermedia
+fino al playtest go/no-go di `CP-03` nel piano originario. La richiesta
+esplicita di bonifica del 4 settembre autorizza spine tecnica e tema
+originale; il gate umano rimane necessario. Questo gate non e' una release intermedia
 e non riduce la promessa o la Definition of Done di Gallicus 1.0.
 
 La produzione segue cinque stage attivi verso 1.0: Core Playable Candidate,
@@ -94,7 +98,11 @@ che campagna e contenuto sono verificati.
 - power scaling tradizionale;
 - economy aggiuntive non canoniche;
 - modalita' endless o stagionale;
-- store page, trailer o marketing nella roadmap produttiva.
+- campagne marketing continuative non collegate a un deliverable di lancio.
+
+Pagina store, capsule, screenshot, trailer rappresentativo e pubblicazione
+Steam sono consegne del prodotto. Seguono `docs/steam_release.md` e possono
+essere preparati senza anticipare l'apertura degli stage runtime.
 
 ## Definition of Done 1.0
 
@@ -109,3 +117,8 @@ Gallicus 1.0 e' finito quando:
 - save, continue, settings, route finali e stato terminale sono affidabili;
 - export Windows, CI Linux e release checklist sono verdi;
 - non restano fatal error, path mancanti o blocker noti.
+
+La firma del prodotto precede il lancio. La consegna su Steam e' conclusa
+quando store e build hanno superato le rispettive review, la pubblicazione
+e' effettiva e la build pubblica e' stata installata e verificata dal client.
+Il workflow di sviluppo con Astra e' in `docs/development_workflow.md`.

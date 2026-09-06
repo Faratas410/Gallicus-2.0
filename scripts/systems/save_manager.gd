@@ -1,6 +1,7 @@
 extends Node
 
-const PROFILE_VERSION: int = 4
+const PROFILE_VERSION: int = 5
+const RegistryEvolutionScript = preload("res://scripts/systems/run/registry_evolution.gd")
 const PROFILE_PATH: String = "user://profile.save"
 const TMP_PATH: String = "%s.tmp" % PROFILE_PATH
 const BAK_PATH: String = "%s.bak" % PROFILE_PATH
@@ -194,10 +195,25 @@ func set_registry_state(pressure: float, era: int) -> void:
 	var sanitized_era: int = _sanitize_registry_era(era)
 	var current_pressure: float = float(_meta.get("registry_pressure", 0.0))
 	var current_era: int = int(_meta.get("registry_era", 0))
+	sanitized_era = maxi(current_era, sanitized_era)
 	if is_equal_approx(current_pressure, sanitized_pressure) and current_era == sanitized_era:
 		return
 	_meta["registry_pressure"] = sanitized_pressure
 	_meta["registry_era"] = sanitized_era
+	_profile_dirty = true
+	save_profile()
+
+func get_registry_evolution() -> Dictionary:
+	if not _profile_loaded:
+		load_profile()
+	return (_meta.get("registry_evolution", RegistryEvolutionScript.defaults()) as Dictionary).duplicate(true)
+
+func commit_registry_evolution(pressure: float, era: int, evolution: Dictionary) -> void:
+	if not _profile_loaded:
+		load_profile()
+	_meta["registry_pressure"] = _sanitize_registry_pressure(pressure)
+	_meta["registry_era"] = maxi(get_registry_era(), _sanitize_registry_era(era))
+	_meta["registry_evolution"] = RegistryEvolutionScript.sanitize(evolution)
 	_profile_dirty = true
 	save_profile()
 
@@ -351,6 +367,8 @@ func _migrate(data: Dictionary, from_version: int) -> Dictionary:
 				current = _migrate_v2_to_v3(current)
 			3:
 				current = _migrate_v3_to_v4(current)
+			4:
+				current = _migrate_v4_to_v5(current)
 			_:
 				break
 		working_version += 1
@@ -370,7 +388,7 @@ func _migrate_v3_to_v4(data: Dictionary) -> Dictionary:
 	settings_value["sfx_volume"] = float(settings_value.get("sfx_volume", DEFAULT_SFX_VOLUME))
 	settings_value["reduced_motion"] = bool(settings_value.get("reduced_motion", DEFAULT_REDUCED_MOTION))
 	migrated["settings"] = settings_value
-	migrated["version"] = PROFILE_VERSION
+	migrated["version"] = 4
 	return migrated
 
 func _get_default_settings() -> Dictionary:
@@ -385,10 +403,20 @@ func _get_default_settings() -> Dictionary:
 		"window_resolution": DEFAULT_WINDOW_RESOLUTION,
 	}
 
+func _migrate_v4_to_v5(data: Dictionary) -> Dictionary:
+	var migrated: Dictionary = data.duplicate(true)
+	var source_meta: Variant = migrated.get("meta", {})
+	var meta: Dictionary = source_meta.duplicate(true) if source_meta is Dictionary else {}
+	meta["registry_evolution"] = RegistryEvolutionScript.defaults()
+	migrated["meta"] = meta
+	migrated["version"] = PROFILE_VERSION
+	return migrated
+
 func _get_default_meta() -> Dictionary:
 	return {
 		"registry_pressure": 0.0,
 		"registry_era": 0,
+		"registry_evolution": RegistryEvolutionScript.defaults(),
 	}
 
 func _sanitize_language(value: String) -> String:
@@ -491,6 +519,10 @@ func _load_meta_from_profile(data: Dictionary) -> void:
 	else:
 		needs_save = true
 	var sanitized: Dictionary = _get_default_meta()
+	var evolution: Variant = meta_value.get("registry_evolution", {})
+	sanitized["registry_evolution"] = RegistryEvolutionScript.sanitize(evolution if evolution is Dictionary else {})
+	if evolution != sanitized["registry_evolution"]:
+		needs_save = true
 	if meta_value.has("registry_pressure"):
 		sanitized["registry_pressure"] = _sanitize_registry_pressure(float(meta_value.get("registry_pressure", 0.0)))
 	else:

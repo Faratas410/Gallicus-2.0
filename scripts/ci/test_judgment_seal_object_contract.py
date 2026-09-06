@@ -9,6 +9,7 @@ import struct
 import wave
 import zlib
 from pathlib import Path
+from generated_art_contract import validate_family
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,10 +35,10 @@ EXPECTED_COPY = {
         "en": "The Registry weighs the pact.",
         "es": "El Registro pesa el pacto.",
     },
-    "Colpisci tre volte il sigillo quando pulsa.": {
-        "it": "Colpisci tre volte il sigillo quando pulsa.",
-        "en": "Strike the seal three times when it pulses.",
-        "es": "Golpea el sello tres veces cuando pulse.",
+    "Imprimi tre colpi sul sigillo.": {
+        "it": "Imprimi tre colpi sul sigillo.",
+        "en": "Press the seal three times.",
+        "es": "Imprime tres golpes en el sello.",
     },
     "Tre colpi chiudono il verbale.": {
         "it": "Tre colpi chiudono il verbale.",
@@ -69,10 +70,10 @@ EXPECTED_COPY = {
         "en": "A gesture recorded; the debt remains.",
         "es": "Un gesto registrado; la deuda permanece.",
     },
-    "Hai scelto come muoverti. Non cambia nulla.": {
-        "it": "Hai scelto come muoverti. Non cambia nulla.",
-        "en": "You chose how to move. Nothing changes.",
-        "es": "Has elegido cómo moverte. Nada cambia.",
+    "Il gesto è registrato. La pressione è cambiata.": {
+        "it": "Il gesto è registrato. La pressione è cambiata.",
+        "en": "The gesture is recorded. The pressure has changed.",
+        "es": "El gesto queda registrado. La presión ha cambiado.",
     },
     "Il gesto pesa poco. La folla resta ferma.": {
         "it": "Il gesto pesa poco. La folla resta ferma.",
@@ -119,10 +120,10 @@ EXPECTED_COPY = {
         "en": "The gesture ignites them, but they demand your collapse.",
         "es": "El gesto los enciende, pero exigen tu caída.",
     },
-    "COLPISCI IL SIGILLO A TEMPO": {
-        "it": "COLPISCI IL SIGILLO A TEMPO",
-        "en": "STRIKE THE SEAL IN TIME",
-        "es": "GOLPEA EL SELLO A TIEMPO",
+    "IMPRIMI IL SIGILLO: TRE COLPI": {
+        "it": "IMPRIMI IL SIGILLO: TRE COLPI",
+        "en": "IMPRINT THE SEAL: THREE STRIKES",
+        "es": "IMPRIME EL SELLO: TRES GOLPES",
     },
     "COLPISCI": {"it": "COLPISCI", "en": "STRIKE", "es": "GOLPEA"},
     "COLPISCI ANCORA": {
@@ -178,66 +179,6 @@ def _node_block(scene: str, node_name: str) -> str:
     return match.group(0)
 
 
-def _paeth(left: int, up: int, upper_left: int) -> int:
-    estimate = left + up - upper_left
-    choices = (left, up, upper_left)
-    distances = tuple(abs(estimate - choice) for choice in choices)
-    return choices[distances.index(min(distances))]
-
-
-def _png_alpha(path: Path) -> tuple[int, int, bytes]:
-    raw = path.read_bytes()
-    if raw[:8] != b"\x89PNG\r\n\x1a\n":
-        raise AssertionError(f"{path.name} must be a PNG")
-    cursor = 8
-    idat = bytearray()
-    width = height = bit_depth = color_type = interlace = -1
-    while cursor < len(raw):
-        length = struct.unpack(">I", raw[cursor : cursor + 4])[0]
-        chunk_type = raw[cursor + 4 : cursor + 8]
-        payload = raw[cursor + 8 : cursor + 8 + length]
-        cursor += 12 + length
-        if chunk_type == b"IHDR":
-            width, height, bit_depth, color_type, _, _, interlace = struct.unpack(">IIBBBBB", payload)
-        elif chunk_type == b"IDAT":
-            idat.extend(payload)
-        elif chunk_type == b"IEND":
-            break
-    if bit_depth != 8 or color_type != 6 or interlace != 0:
-        raise AssertionError(f"{path.name} must be non-interlaced 8-bit RGBA")
-    decoded = zlib.decompress(bytes(idat))
-    stride = width * 4
-    previous = bytearray(stride)
-    alpha = bytearray()
-    offset = 0
-    for _ in range(height):
-        filter_type = decoded[offset]
-        offset += 1
-        source = decoded[offset : offset + stride]
-        offset += stride
-        row = bytearray(stride)
-        for index, value in enumerate(source):
-            left = row[index - 4] if index >= 4 else 0
-            up = previous[index]
-            upper_left = previous[index - 4] if index >= 4 else 0
-            if filter_type == 0:
-                result = value
-            elif filter_type == 1:
-                result = value + left
-            elif filter_type == 2:
-                result = value + up
-            elif filter_type == 3:
-                result = value + ((left + up) // 2)
-            elif filter_type == 4:
-                result = value + _paeth(left, up, upper_left)
-            else:
-                raise AssertionError(f"unsupported PNG filter {filter_type} in {path.name}")
-            row[index] = result & 0xFF
-        alpha.extend(row[3::4])
-        previous = row
-    return width, height, bytes(alpha)
-
-
 def _csv_value(locale: str, key: str) -> str:
     path = ROOT / f"assets/i18n/{locale}.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -249,42 +190,7 @@ def _csv_value(locale: str, key: str) -> str:
 
 
 def _assert_assets_and_states() -> None:
-    width, height, alpha = _png_alpha(TEXTURE)
-    if (width, height) != (1280, 512):
-        raise AssertionError("judgment seal must be 5:2 RGBA at 1280x512")
-    if any(alpha[index] != 0 for index in (0, width - 1, len(alpha) - width, len(alpha) - 1)):
-        raise AssertionError("judgment seal must have transparent corners")
-    mask = {index for index, value in enumerate(alpha) if value > 0}
-    xs = [index % width for index in mask]
-    ys = [index // width for index in mask]
-    width_coverage = (max(xs) - min(xs) + 1) / width
-    height_coverage = (max(ys) - min(ys) + 1) / height
-    alpha_coverage = len(mask) / (width * height)
-    if not 0.86 <= width_coverage <= 0.96 or not 0.78 <= height_coverage <= 0.92:
-        raise AssertionError(
-            f"judgment seal occupancy out of range: {width_coverage:.3f}x{height_coverage:.3f}"
-        )
-    if not 0.55 <= alpha_coverage <= 0.78:
-        raise AssertionError(f"judgment seal alpha coverage out of range: {alpha_coverage:.3f}")
-
-    geometry: tuple[str, ...] | None = None
-    for state in STATES:
-        style = _read(OBJECT_DIR / f"sb_registry_judgment_seal_{state}.tres")
-        if "registry_judgment_seal.png" not in style:
-            raise AssertionError(f"{state} style uses the wrong texture")
-        values = tuple(
-            re.findall(
-                r"^(?:texture_margin|content_margin)_(?:left|top|right|bottom) = (.+)$",
-                style,
-                re.MULTILINE,
-            )
-        )
-        if len(values) != 8 or any(float(value) != 0.0 for value in values[:4]):
-            raise AssertionError(f"{state} style must use zero texture margins")
-        if geometry is None:
-            geometry = values
-        elif values != geometry:
-            raise AssertionError("judgment seal states must share identical geometry")
+    validate_family("judgment_seal")
 
 
 def _assert_scene_binding() -> None:

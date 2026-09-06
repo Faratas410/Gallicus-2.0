@@ -431,31 +431,37 @@ Quick Cut remains interpretive-only.
 
 END OF SPECIFICATION
 
-## Runtime Alignment Addendum (Era Driver Contract)
+## Runtime Alignment Addendum (September 2026)
 
-This addendum seals runtime contract alignment for the current implementation.
+Profile v5 adds meta.registry_evolution; defaults and migration are in
+`docs/data_schema.md`. Pressure remains diagnostic history, not a random
+Silence roll or an era threshold. The former rare random roll is removed.
+RunManager derives each sample from completed pact history:
 
-- Persisted meta keys:
-  - `meta.registry_pressure` (float)
-  - `meta.registry_era` (int, bounded `0..4`)
-- Compatibility defaults when keys are missing:
-  - `registry_pressure = 0.0`
-  - `registry_era = 0`
-- Compatibility clamp rule:
-  - legacy `registry_era >= 5` is capped to `4`.
+- risk = (Hubris + Violence - Prudence - Penitence) / pact count;
+- repetition = largest path count / pact count;
+- scar tolerance = scar history count / arena count, clamped to 0..1;
+- volatility = 1 - repetition.
 
-Current implementation status:
-- `registry_pressure` is updated deterministically on run closure using Glory/Corruption weights.
-- `registry_era` is not remapped by pressure bands in the current runtime patch.
-- `registry_pressure` may influence Silence likelihood only indirectly at the authoritative silence decision point.
-- This influence is saturating and capped, remains internal/non-observable, and cannot guarantee Silence outcomes.
-- No direct `registry_pressure -> registry_era` mapping is allowed.
-- Era progression remains bound to silence-driven canon logic; if silence-driven mutation is not wired in runtime, era remains stable.
+Coherence weights are 0.40, 0.35, 0.25 and -0.20. The first sample seeds the
+signature; later smoothing is 0.30 liquid, 0.08 fixed. Entry requires >0.72
+for two runs; exit <0.40. Saturation requires all of: fixed signature; three
+stable samples (mean axis distance <0.16 + era*0.02); at least 8/7/6/5 runs in
+eras 0/1/2/3; three distinct fingerprints; three observed path families; three
+consecutive equal ending identities. Fingerprints contain path counts, glory,
+corruption and double count. Identical repetition alone cannot advance.
+These development parameters require human balance and anti-farming validation;
+accelerated fixtures do not certify a 2-4 hour campaign.
 
-Forbidden in current contract:
-- introducing an extra era band beyond the finite 0..4 domain.
-- pressure-threshold remap that bypasses silence-driven progression.
+Silence increments era once and resets era history and ramp. The next three
+runs expose strengths 1/3, 2/3, 1; Quick Cut is blocked in the first two.
+With fixed signature, bounded offer affinity applies only to selection
+weights within eligibility. Rewards, result odds and outcome values do not
+change. Optional ontological outcome compression is not implemented.
 
-
-
-
+Intermediate Silence shows black without classification; after two seconds
+menu return becomes available. Era 4 shows black and a slow original heartbeat,
+persists across restart, blocks new/continued runs and initializes no
+RegisterState. Non-classified movement and full audiovisual staging remain
+open production work. Linux checkpoint, human duration, anti-farming and
+audiovisual acceptance are still required; no release gate is closed here.

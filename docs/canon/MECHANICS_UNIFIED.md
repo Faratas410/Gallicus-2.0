@@ -1270,3 +1270,15 @@ Glory is displayed in HUD as a numeric value only (no explanatory gameplay logic
 - Era progression remains silence-driven by registry canon logic.
 - Era is never exposed in UI (no bars, no numeric meta surface).
 - Policy impact remains indirect (audience/condanna/tone bias), with no new phases, actions, or signals.
+
+## Ending reachability and campaign alignment (September 2026)
+
+Traces count Prudence, Hubris, Violence and Penitence separately; only unknown
+identifiers count as unknown. In data/ending_rules.gd Broken priority 109
+requires two recorded condanne and corruption >=5; Fall also requires three
+Violence pacts; Survivor requires glory <=7; Pet requires one cashout and at
+most one double. Provoke remains armed until classification has been emitted.
+Campaign parameters belong to docs/canon/REGISTRY_SYSTEM_SPEC.md. Signature
+and era may bias offer selection within eligibility, never payout or outcome
+odds. Silence takes precedence at run closure, grants no closing unlock and
+advances exactly one Era. Absence is final.

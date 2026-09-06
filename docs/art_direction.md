@@ -155,7 +155,8 @@ coprire testo o impedire un equivalente reduced-motion.
 - parchment fantasy, spellbook e wood UI nelle superfici finali;
 - gore esplicito usato come scorciatoia;
 - demoni, teschi o armi senza funzione canonica;
-- testo baked nelle immagini runtime;
+- testo gameplay o localizzabile baked nelle immagini runtime; il marchio
+  invariabile GALLICUS e' l'unica eccezione di identita';
 - asset pack incompatibili mescolati nella stessa schermata;
 - effetti RGB/glitch moderni come linguaggio principale.
 
@@ -167,3 +168,41 @@ coprire testo o impedire un equivalente reduced-motion.
 - asset runtime-ready e con licenza tracciata;
 - screenshot viewport-only delle schermate modificate;
 - nessun path o texture mancante.
+
+## Famiglia originale adottata nella bonifica
+
+La richiesta del 4 settembre 2026 adotta 15 raster ImageGen originali; manifest
+in `assets/ui/generated/manifest.json`. Una camera del Registro collega menu
+e rituali; basalto, bronzo, cera rossa e dossier di carta condividono materiali
+e luce. Le pagine del Registro usano testo osso su basalto scuro; il fascicolo
+aperto conserva inchiostro scuro su carta e linguette scure con testo chiaro.
+Corpo 16-18 px, note almeno 15 px, font incorporato di Godot. I pannelli interni
+sono vuoti: la superficie esterna basta a definire l'oggetto.
+
+Il menu usa solo il fondale originale con drift lento; torce, bandiere,
+nebbie e statue separate sono rimosse. La deriva ambientale e' graduale;
+testo e focus mantengono contrasto costante. Messa in scena completa delle
+Ere e montaggio finale restano gate audiovisivi, non certificati dalla
+campagna accelerata.
+
+## Identita del menu
+
+Il titolo usa `assets/ui/generated/gallicus_wordmark.png`: iscrizione originale
+ImageGen in pietra chiara e bronzo, RGBA trasparente, senza pannello di fondo.
+Il marchio e' invariabile in IT/EN/ES e ha nome accessibile GALLICUS; le frasi,
+i comandi e gli stati restano testo nativo. La famiglia comprende ora 16 PNG.
+Il titolo domina la gerarchia; segue una sola riga: "L'arena dimentica. Il
+Registro no." La schermata invita all'ingresso senza un riquadro Obiettivo.
+
+## VFX materici del 6 settembre 2026
+
+La texture originale `assets/ui/generated/ritual_dust.png` e' prodotta con
+ImageGen: polvere chiara di calcare e minuscoli granelli di bronzo, alpha reale.
+Il manifest registra il prompt integrale. Nessun alone magico, flash o fumo
+persistente. Il source rimane intatto; Godot limita l'import a 256 px.
+
+`scripts/ui/ritual_feedback.gd` presenta al massimo due sprite da 90-160 px,
+per 0,41 s, al bordo inferiore dell'oggetto: scala 0,92-1,06, salita di 5 px,
+alpha massima 0,42. Il movimento non sposta target, glyph o focus. Cambi fase,
+fine run e attivazione di Movimento ridotto cancellano subito il feedback.
+Gli effetti non intercettano input e non usano RNG di gameplay.

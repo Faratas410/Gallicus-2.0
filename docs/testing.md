@@ -61,7 +61,8 @@ python scripts/ci/run_testing_playbook.py --godot-bin ".\tools\godot\Godot_v4.6.
 Scrive log e summary in `artifacts/testing_playbook/`. Windows e' diagnostico;
 la superficie automatica canonica resta CI Linux.
 Quando e' fornito `--godot-bin`, il playbook esegue anche il contratto runtime
-CP-02 con directory utente temporanea prima degli smoke.
+CP-02 e le regressioni semantiche della bonifica in directory utente
+temporanee prima degli smoke.
 
 ## Static suite
 
@@ -97,7 +98,7 @@ Exit code 1 senza output significa nessun match.
 Per runtime, scene, asset o tooling smoke:
 
 ```powershell
-.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --headless --editor --path . --quit
+python scripts/ci/run_godot_import.py --godot-bin ".\tools\godot\Godot_v4.6.2-stable_win64_console.exe"
 ```
 
 Warning non fatali vanno classificati; parser error, missing resource e
@@ -109,6 +110,7 @@ Scenari:
 
 - `BET_PRESENT`
 - `FULL_RUN`
+- `KEYBOARD_FULL_RUN`
 - `ROUTE_CASHOUT`
 - `ROUTE_DOUBLE`
 - `ROUTE_CONDANNA`
@@ -321,6 +323,14 @@ commit manuale:
 - registrazione SHA-256, dimensione, log e commit sorgente;
 - controllo manuale di persistenza, mute SFX, focus e Reduced Motion.
 
+Per un EXE usare `scripts/ci/run_headless_smoke.py --exported-game`:
+`--godot-bin` indica l'eseguibile, `--project-root` una cartella vuota usata
+come working directory. Le build release non accettano il `--path` dell'editor.
+Usare sempre APPDATA temporaneo, log e summary separati dai salvataggi personali.
+`scripts/ci/inspect_export_assets.gd`, eseguito dal Godot editor con
+`--main-pack` sull'EXE e `--script` assoluto, carica ogni immagine del manifest
+e rifiuta raster importati estranei o vecchi file font nel pacchetto.
+
 L'EXE non deve dipendere dai CSV sorgente: nell'export Godot il bootstrap i18n
 carica le risorse importate `*.translation`. Qualsiasi warning per CSV mancanti
 nel log dell'eseguibile rende rosso lo smoke di export.
@@ -338,6 +348,22 @@ Il Release Lock richiede:
 
 ## Report finale
 
+L'evidenza segue il candidato: registrare HEAD, modifiche locali incluse,
+piattaforma, comandi, scenari realmente eseguiti e risultati. Per un export
+conservare manifest e hash; per una build Steam anche BuildID e branch.
+I signoff storici non si trasferiscono a un working tree modificato. Dopo
+una correzione rivalutare e ripetere le prove influenzate dalla modifica.
+
+Il ciclo di lavoro e' in `docs/development_workflow.md`. Una patch soltanto
+documentale richiede docs refs, mojibake e diff check, senza suite Godot o
+export. Il riferimento al "workflow" tra i percorsi ad alto rischio riguarda
+il codice/configurazione CI, non la sola descrizione del metodo di sviluppo.
+
+Per Steam il test dell'EXE standalone va integrato con installazione e avvio
+dal client, secondo `docs/steam_release.md`. I PNG generati vanno distinti
+da quelli effettivamente ispezionati; gli smoke non sostituiscono CP-03,
+le campagne umane o la valutazione del mix.
+
 Ogni patch dichiara:
 
 - test eseguiti e risultato;
@@ -346,3 +372,58 @@ Ogni patch dichiara:
 - export eseguito o non pertinente;
 - rischi residui;
 - stage della roadmap aggiornato o invariato.
+
+## Regressioni semantiche e cache fredda
+
+`run_godot_import.py` attende --import fino al completamento e rifiuta ogni
+ERROR anche con exit code zero. Il cold import usa una copia dei file correnti
+senza .godot; archiviare HEAD non include le modifiche ancora locali.
+`scripts/ci/run_audit_runtime_contract.py` esegue GDScript reale in profilo
+temporaneo: 14 witness ending, path attivi, v4->v5, valori malformati,
+isteresi, replay serializzato, ripetizione identica, campagna con patti reali,
+commit idempotente, risorse immutate, settings in partita e boot terminale.
+Non prova durata o non-farmabilita' percepita: serve il playtest umano.
+I contratti grafici validano manifest, dimensioni, binding e geometria;
+l'alpha dei vecchi asset non e' applicabile ai nuovi rettangoli RGB.
+
+La regressione menu del 5 settembre verifica anche il pulsante di ripresa:
+checkpoint scritto dal gioco, ripristino delle risorse e del seed, array scars
+e pacts_log preservati in JSON, file rimosso dopo la visualizzazione del menu,
+avviso persistente e azione di ripresa nascosta quando il file manca.
+
+## Accettazione audiovisiva originale
+
+Il playbook comprende `av_assets`: 31 WAV con hash, formati, headroom, assenza
+DC rilevante, endpoint nulli e budget inferiore a 24 MiB. Il contratto Godot
+`av_runtime_contract` verifica 28 condizioni: continuita' nello stesso stato,
+crossfade e limite voci, loop, mute, wiring UI-VFX, geometria stabile, riuso
+senza crescita di nodi, scadenza, Movimento ridotto e Silenzio.
+
+Il runner usa profili temporanei; una chiusura del test lascia drenare
+l'audio server prima di distruggere la scena. Errori di import e runtime
+restano bloccanti. Su Windows la sandbox puo' impedire la lettura dello store
+certificati: eseguire il test con i permessi necessari e profilo isolato;
+non aggiungere quell'errore a un'allowlist del gioco.
+
+La CI conserva tre job e i profili esistenti. Il nuovo contratto si esegue
+nel job runtime gia' presente; run superate dello stesso ref/profilo sono
+cancellate. Timeout esterni: 10 minuti statici, 15 runtime e 15 visuali.
+Le prove locali non chiudono il checkpoint Linux sul futuro commit manuale.
+I tempi frame headless sono diagnostica CPU/pacing, non una misura FPS GPU.
+Ascolto del mix e fatigue in una campagna restano prove umane.
+
+`tools/visual_qa_av_capture.tscn` estende la matrice canonica con 12 catture
+del sigillo, polvere attiva e Movimento ridotto, per 301 PNG locali in
+`artifacts/av_pass/screenshots`. Usare profilo isolato e driver grafico reale:
+`godot --path . --scene res://tools/visual_qa_av_capture.tscn --audio-driver Dummy --max-fps 60`.
+Il test sincronizza la lingua del profilo con quella della matrice prima di
+emettere settings_changed. Gli stati sono iniettati: le catture non sono un
+playtest e l'HUD di contesto puo' conservare il testo della fixture iniziale.
+Il job visuale canonico conserva 289 PNG e il suo budget; il contratto AV
+headless protegge separatamente wiring, durata e cancellazione degli effetti.
+
+Nel pass del 6 settembre un cold import Windows e' terminato con
+0xC0000005, senza diagnostica script; due copie nuove successive sono state
+importate correttamente senza modifiche agli asset o bypass degli errori.
+La causa resta aperta: conservare anche il log fallito, non presentare i
+tentativi successivi come una correzione. Il checkpoint Linux resta richiesto.

@@ -6,7 +6,12 @@
 - `RELEASE CANDIDATE`: contenuto e feature lock, QA finale in corso.
 - `SIGNED FOR GALLICUS 1.0`: tutti i gate sono verdi.
 
-Non esistono firme intermedie di prodotto.
+Non esistono firme intermedie di prodotto. La firma richiede le sezioni da
+Prodotto a Pacchetto e l'assenza dei Blocker sotto elencati; le evidenze
+successive devono riferirsi al candidato corrente. Le sezioni Steam
+seguenti tracciano separatamente la distribuzione secondo
+`docs/steam_release.md`: `SIGNED FOR GALLICUS 1.0` non significa pubblicato.
+`PUBLISHED ON STEAM` si registra solo dopo lancio e verifica pubblica.
 
 ## Prodotto
 
@@ -27,6 +32,12 @@ Non esistono firme intermedie di prodotto.
 - [ ] Utility e accessibilita' restano convenzionali.
 
 ## Sistemi
+
+Evidenza locale aggiuntiva del 6 settembre: pass AV originale, budget audio,
+pool VFX e audio limitati, Movimento ridotto e mute verificati. Vedere
+`docs/support/av_pass_2026-09-06.md`. Non chiude i gate qui sotto: checkpoint
+Linux del nuovo candidato, anomalia cold import Windows, ascolto e fatigue
+durante CP-03 rimangono da validare.
 
 - [ ] Firma comportamentale deterministica.
 - [ ] Coerenza, fissazione e isteresi verificate.
@@ -108,3 +119,57 @@ Impediscono la firma:
 - requisito accessibile privo di alternativa;
 - CI Linux o export Windows falliti;
 - Critical o Important aperto.
+
+## Evidenza successiva: bonifica locale
+
+`docs/support/bonifica_2026-09-04.md` descrive nuova spine, immagini e prove.
+Le firme Linux/export CP-02 restano riferite ai loro commit, non si trasferiscono
+al nuovo working tree. Restano aperti durata, tre campagne umane, anti-farming,
+messa in scena, mix, crediti/licenze e clean-install su altra macchina.
+Il prodotto rimane DEVELOPMENT.
+
+La revisione successiva e' in `docs/support/menu_identity_2026-09-05.md`:
+menu, ripresa, 16 raster e nuovo export verificati localmente. Il manifest
+`artifacts/exports/menu_identity/delivery_manifest.json` identifica quella
+build; non costituisce signoff Linux, umano o Steam. I warning noti di
+chiusura vanno classificati per il candidato, anche se tollerati dal validator.
+
+## Steam: preparazione e Coming Soon
+
+Stato portale al 6 settembre 2026: non verificato. Le caselle aperte indicano
+prove da acquisire, non assenza accertata di un account o di una pagina.
+
+- [ ] Partner, onboarding, AppID, fee e permessi verificati con il titolare.
+- [ ] Responsabile di pubblicazione e contatto supporto definiti.
+- [ ] Inventario dei contenuti distribuiti, fonti e diritti completo.
+- [ ] Content Survey verificato e completato, inclusi contenuti AI pertinenti.
+- [ ] Descrizioni IT/EN/ES, capsule e icone revisionate.
+- [ ] Screenshot di gameplay e trailer rappresentativi della build reale.
+- [ ] Requisiti, lingue e funzionalita' dichiarate verificati.
+- [ ] Prezzo proposto e finestra di uscita confermati dal titolare.
+- [ ] Review store conclusa; data Coming Soon pubblica registrata.
+
+## Steam: candidato e review build
+
+- [ ] Candidato collegato a commit, export manifest/hash e checkpoint Linux.
+- [ ] AppID, DepotID, BuildID, branch e launch configuration registrati.
+- [ ] Installazione Windows pulita dal client e avvio fuori dal repo verificati.
+- [ ] Lingue, input, audio, impostazioni e save/continue verificati dal client.
+- [ ] Aggiornamento, migrazione e persistenza terminale verificati.
+- [ ] Build su default controllata e review build conclusa.
+- [ ] Eventuali modifiche successive coperte da verifiche pertinenti.
+
+## Steam: pubblicazione e verifica successiva
+
+- [ ] Firma prodotto `SIGNED FOR GALLICUS 1.0` confermata sul candidato.
+- [ ] Checklist portale, approvazioni e attese applicabili verificate.
+- [ ] BuildID pubblico previsto, data e prezzo riconfermati.
+- [ ] Note di rilascio, known issues, supporto e piano hotfix pronti.
+- [ ] Ultima build stabile e compatibilita' save per ripristino documentate.
+- [ ] Pubblicazione esplicitamente autorizzata dal titolare ed eseguita.
+- [ ] Pagina pubblica e installazione dal client verificate dopo il lancio.
+- [ ] Stato `PUBLISHED ON STEAM`, data, BuildID ed evidenza registrati.
+
+Le procedure e i vincoli Steam sono in `docs/steam_release.md`; queste caselle
+non autorizzano operazioni esterne. La preparazione puo' proseguire con i
+playtest ancora aperti, la pubblicazione del gioco richiede tutti i gate.

@@ -2,18 +2,19 @@ extends Node
 
 const DEFAULT_VOLUME_DB: float = -10.0
 const SFX_BUS_NAME: String = "SFX"
-const POOL_SIZE: int = 8
+const POOL_SIZE: int = 6
+const HOVER_INTERVAL_MS: int = 120
 const CUE_VOLUME_DB: Dictionary = {
 	&"button_hover": -18.0,
 	&"button_click": -13.0,
 	&"cursor_move": -16.0,
 	&"cursor_select": -11.0,
-	&"player_damage": -9.0,
+	&"player_damage": -11.0,
 	&"enemy_hit": -12.0,
 	&"enemy_death": -10.0,
 	&"pickup": -12.0,
 	&"level_up": -11.0,
-	&"stage_complete": -9.0,
+	&"stage_complete": -11.0,
 	&"registry_receipt_take": -11.0,
 	&"registry_condemnation_mark": -10.5,
 	&"registry_second_incision": -11.0,
@@ -28,7 +29,7 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"registry_dossier_update": -11.0,
 	&"registry_dossier_close": -10.0,
 	&"registry_dossier_route": -11.0,
-	&"game_over": -8.0,
+	&"game_over": -10.0,
 }
 const SFX_PATHS: Dictionary = {
 	&"button_hover": "res://assets/audio/sfx/button_hover.wav",
@@ -62,6 +63,7 @@ var _streams: Dictionary = {}
 var _players: Array[AudioStreamPlayer] = []
 var _next_player_index: int = 0
 var _sfx_bus_index: int = -1
+var _last_hover_ms: int = -120
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -75,6 +77,7 @@ func _ready() -> void:
 		_players.append(player)
 	_preload_streams()
 	_apply_saved_sfx_volume()
+	GameEvents.run_ended.connect(_on_run_ended)
 	if GameEvents != null and GameEvents.has_signal("settings_changed"):
 		var settings_callable: Callable = Callable(self, "_on_settings_changed")
 		if not GameEvents.settings_changed.is_connected(settings_callable):
@@ -104,13 +107,31 @@ func _apply_sfx_volume_linear(value: float) -> void:
 	var volume_scale: float = clamp(value, 0.0, 1.0)
 	var db_value: float = -80.0 if volume_scale <= 0.001 else linear_to_db(volume_scale)
 	AudioServer.set_bus_volume_db(_sfx_bus_index, db_value)
+	AudioServer.set_bus_mute(_sfx_bus_index, volume_scale <= 0.001)
 
 func play_cue(cue: StringName, volume_db: float = INF) -> void:
+	var is_hover: bool = cue == &"button_hover" or cue == &"cursor_move"
+	if is_hover:
+		var now: int = Time.get_ticks_msec()
+		if now - _last_hover_ms < HOVER_INTERVAL_MS:
+			return
+		_last_hover_ms = now
 	if _players.is_empty():
 		return
 	var stream: AudioStream = _get_stream(cue)
 	if stream == null:
 		return
+	# Prefer an idle voice. Hover never steals an audible ritual confirmation.
+	var free_index: int = -1
+	for offset: int in range(_players.size()):
+		var index: int = (_next_player_index + offset) % _players.size()
+		if not _players[index].playing:
+			free_index = index
+			break
+	if free_index < 0 and is_hover:
+		return
+	if free_index >= 0:
+		_next_player_index = free_index
 	var player: AudioStreamPlayer = _players[_next_player_index]
 	_next_player_index = (_next_player_index + 1) % _players.size()
 	player.stop()
@@ -133,3 +154,8 @@ func _get_stream(cue: StringName) -> AudioStream:
 		return null
 	_streams[cue] = stream
 	return stream
+
+func _on_run_ended(reason: String, _summary: Dictionary) -> void:
+	if reason == "REGISTRY_SILENCE" or reason == "REGISTRY_ABSENCE":
+		for player: AudioStreamPlayer in _players:
+			player.stop()

@@ -4,22 +4,16 @@
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/ui/menu_ambience.gd" id="4_menu_ambience"]
-[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_base_1280x720.png" id="5_menu_base"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_chamber.png" id="5_menu_base"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="6"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_panel_main.tres" id="7"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_normal.tres" id="8"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_hover.tres" id="9"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres" id="10"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres" id="11"]
-[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_clouds_overlay.png" id="12_menu_clouds"]
-[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_light_overlay.png" id="13_menu_light"]
-[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_felix_rooster_statue_layer.png" id="14_menu_felix"]
-[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_fog_overlay.png" id="15_menu_fog"]
-[ext_resource type="Texture2D" path="res://assets/MainMenu/menu_banner_owl_layer.png" id="17_menu_banner"]
 [ext_resource type="Script" path="res://scripts/audio/music_director.gd" id="18_music_director"]
-[ext_resource type="StyleBox" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_track.tres" id="19_settings_slider_track"]
-[ext_resource type="StyleBox" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_fill.tres" id="20_settings_slider_fill"]
-[ext_resource type="Texture2D" path="res://assets/ui/third_party/rpg_ui_pack/extracted/settings/settings_slider_grabber.png" id="21_settings_slider_grabber"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_pressure_bar_bg.tres" id="19_settings_slider_track"]
+[ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_pressure_bar_fill.tres" id="20_settings_slider_fill"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_header.tres" id="22_settings_header"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_row.tres" id="23_settings_row"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_settings_field_normal.tres" id="24_settings_field_normal"]
@@ -31,6 +25,12 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_crossed.tres" id="30_arena_threshold_crossed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_disabled.tres" id="31_arena_threshold_disabled"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/generated/gallicus_wordmark.png" id="32_wordmark"]
+
+[ext_resource type="Script" path="res://scripts/ui/ritual_feedback.gd" id="33_feedback"]
+
+[sub_resource type="StyleBoxEmpty" id="MenuEmpty"]
+
 [sub_resource type="StyleBoxTexture" id="4"]
 texture = null
 texture_margin_left = 48.0
@@ -38,34 +38,10 @@ texture_margin_top = 48.0
 texture_margin_right = 48.0
 texture_margin_bottom = 48.0
 
-[sub_resource type="Shader" id="Shader_flag_cloth_wave"]
-code = "shader_type canvas_item;\nuniform float amplitude = 6.0;\nuniform float speed = 1.6;\nuniform float frequency = 7.0;\nuniform float edge_pin_power = 1.8;\n\nvoid vertex() {\n\tfloat wave = sin(UV.y * frequency + TIME * speed) * amplitude;\n\tfloat cloth_weight = pow(clamp(UV.x, 0.0, 1.0), edge_pin_power);\n\tVERTEX.x += wave * cloth_weight;\n}"
-
-[sub_resource type="Shader" id="Shader_menu_fog_layer"]
-code = "shader_type canvas_item;\nuniform float speed = 0.02;\nuniform float strength = 0.05;\n\nvoid fragment() {\n\tvec2 uv = UV;\n\tuv.x += TIME * speed;\n\tuv.y += sin((UV.x + TIME) * 4.0) * strength;\n\tCOLOR = texture(TEXTURE, uv);\n}"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_flag_cloth_wave"]
-shader = SubResource("Shader_flag_cloth_wave")
-shader_parameter/amplitude = 6.0
-shader_parameter/speed = 1.6
-shader_parameter/frequency = 7.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog_back"]
-shader = SubResource("Shader_menu_fog_layer")
-shader_parameter/speed = 0.004
-shader_parameter/strength = 0.03
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog_mid"]
-shader = SubResource("Shader_menu_fog_layer")
-shader_parameter/speed = 0.006
-shader_parameter/strength = 0.05
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog_front"]
-shader = SubResource("Shader_menu_fog_layer")
-shader_parameter/speed = 0.008
-shader_parameter/strength = 0.07
-
 [node name="Main" type="Node2D"]
+
+[node name="RitualFeedback" type="CanvasLayer" parent="."]
+script = ExtResource("33_feedback")
 
 [node name="RitualBackground" type="CanvasLayer" parent="."]
 layer = -1
@@ -96,8 +72,8 @@ bus = "Master"
 
 [node name="MusicDirector" type="Node" parent="."]
 script = ExtResource("18_music_director")
-menu_player_path = NodePath("MenuLayer/MenuThemePlayer")
-run_player_path = NodePath("RunThemePlayer")
+menu_player_path = NodePath("../MenuLayer/MenuThemePlayer")
+run_player_path = NodePath("../RunThemePlayer")
 
 [node name="BrightnessModulate" type="CanvasModulate" parent="."]
 color = Color(1, 1, 1, 1)
@@ -120,7 +96,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 0
 theme = ExtResource("6")
-texture_filter = 0
+texture_filter = 2
 script = ExtResource("3")
 
 [node name="MenuAmbience" type="Control" parent="MenuLayer/MainMenu"]
@@ -132,12 +108,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_menu_ambience")
-clouds_path = NodePath("CloudsLayer")
-fog_back_path = NodePath("FogLayer_Back")
-fog_mid_path = NodePath("FogLayer_Mid")
-fog_front_path = NodePath("FogLayer_Front")
-light_overlay_path = NodePath("LightOverlay")
-torch_flames_path = NodePath("TorchFlames")
 
 [node name="Base" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
 layout_mode = 1
@@ -148,122 +118,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("5_menu_base")
-texture_filter = 0
+texture_filter = 2
 stretch_mode = 5
-
-[node name="CloudsLayer" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-modulate = Color(0.9, 0.9, 0.9, 0.08)
-scale = Vector2(1, 0.8)
-texture = ExtResource("12_menu_clouds")
-texture_filter = 0
-stretch_mode = 5
-
-[node name="LightOverlay" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-modulate = Color(1, 1, 1, 0.24)
-texture = ExtResource("13_menu_light")
-texture_filter = 0
-stretch_mode = 5
-
-[node name="FelixStatue" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("14_menu_felix")
-texture_filter = 0
-stretch_mode = 5
-
-[node name="FlagRoot" type="Node2D" parent="MenuLayer/MainMenu/MenuAmbience"]
-position = Vector2(0, 0)
-
-[node name="Pole" type="Sprite2D" parent="MenuLayer/MainMenu/MenuAmbience/FlagRoot"]
-position = Vector2(1155, 40)
-centered = false
-texture = ExtResource("17_menu_banner")
-region_enabled = true
-region_rect = Rect2(1155, 40, 125, 680)
-texture_filter = 0
-
-[node name="FlagCloth" type="Sprite2D" parent="MenuLayer/MainMenu/MenuAmbience/FlagRoot"]
-material = SubResource("ShaderMaterial_flag_cloth_wave")
-position = Vector2(1000, 80)
-centered = false
-texture = ExtResource("17_menu_banner")
-region_enabled = true
-region_rect = Rect2(1000, 80, 200, 380)
-texture_filter = 0
-
-[node name="FogLayer_Back" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
-layout_mode = 1
-anchor_top = 0.81
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-material = SubResource("ShaderMaterial_fog_back")
-modulate = Color(0.93, 0.9, 0.94, 0.09)
-texture = ExtResource("15_menu_fog")
-texture_filter = 0
-stretch_mode = 5
-
-[node name="FogLayer_Mid" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
-layout_mode = 1
-anchor_top = 0.81
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-material = SubResource("ShaderMaterial_fog_mid")
-modulate = Color(0.92, 0.89, 0.93, 0.12)
-texture = ExtResource("15_menu_fog")
-texture_filter = 0
-stretch_mode = 5
-
-[node name="FogLayer_Front" type="TextureRect" parent="MenuLayer/MainMenu/MenuAmbience"]
-layout_mode = 1
-anchor_top = 0.81
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-material = SubResource("ShaderMaterial_fog_front")
-modulate = Color(0.91, 0.88, 0.92, 0.14)
-texture = ExtResource("15_menu_fog")
-texture_filter = 0
-stretch_mode = 5
-
-[node name="TorchFlames" type="Node2D" parent="MenuLayer/MainMenu/MenuAmbience"]
-position = Vector2(0, 0)
-
-[node name="TorchLeft" type="AnimatedSprite2D" parent="MenuLayer/MainMenu/MenuAmbience/TorchFlames"]
-position = Vector2(160, 534)
-speed_scale = 2.0
-texture_filter = 0
-
-[node name="TorchRight" type="AnimatedSprite2D" parent="MenuLayer/MainMenu/MenuAmbience/TorchFlames"]
-position = Vector2(1125, 534)
-speed_scale = 2.0
-texture_filter = 0
 
 [node name="CenterContainer" type="CenterContainer" parent="MenuLayer/MainMenu"]
 anchor_left = 0.0
@@ -274,47 +130,42 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="MenuVBox" type="VBoxContainer" parent="MenuLayer/MainMenu/CenterContainer"]
+custom_minimum_size = Vector2(740, 0)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 1
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
 [node name="TitlePanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(500, 82)
-theme_override_styles/panel = ExtResource("26_menu_title_stone")
+custom_minimum_size = Vector2(740, 247)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("MenuEmpty")
 
-[node name="TitleLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/TitlePanel"]
+[node name="TitleArtwork" type="TextureRect" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/TitlePanel"]
+mouse_filter = 2
+accessibility_name = "GALLICUS"
+texture = ExtResource("32_wordmark")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Tagline" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 30)
 horizontal_alignment = 1
 vertical_alignment = 1
-autowrap_mode = 2
-text = "GALLICUS"
-theme_override_colors/font_color = Color(0.86, 0.81, 0.69, 1)
-theme_override_colors/font_outline_color = Color(0.0352941, 0.0313726, 0.027451, 1)
-theme_override_constants/letter_spacing = 2
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 40
+autowrap_mode = 3
+text = "L'arena dimentica. Il Registro no."
+theme_override_colors/font_color = Color(0.94, 0.88, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.06, 0.04, 1)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
 
-[node name="ContinueButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(0, 48)
-text = "CONTINUA"
-theme_override_colors/font_disabled_color = Color(0.66, 0.61, 0.52, 0.72)
-theme_override_styles/normal = ExtResource("8")
-theme_override_styles/hover = ExtResource("9")
-theme_override_styles/pressed = ExtResource("10")
-theme_override_styles/disabled = ExtResource("11")
-
-[node name="ContinueHintPanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(520, 52)
-theme_override_styles/panel = ExtResource("7")
-
-[node name="ContinueHintLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/ContinueHintPanel"]
-visible = false
-horizontal_alignment = 1
-text = "Nessuna partita salvata."
-theme_override_font_sizes/font_size = 18
+[node name="ActionSpace" type="Control" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 16)
+mouse_filter = 2
 
 [node name="NewGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(480, 72)
+size_flags_horizontal = 4
 focus_mode = 2
 text = "ENTRA NELL'ARENA"
 theme_override_colors/font_color = Color(1, 0.94, 0.78, 1)
@@ -329,33 +180,63 @@ theme_override_styles/focus = ExtResource("28_arena_threshold_focus")
 theme_override_styles/pressed = ExtResource("29_arena_threshold_pressed")
 theme_override_styles/disabled = ExtResource("31_arena_threshold_disabled")
 
-[node name="LoadGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(0, 48)
-text = "CARICA PARTITA"
-theme_override_colors/font_disabled_color = Color(0.66, 0.61, 0.52, 0.66)
+[node name="ContinueButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(480, 48)
+size_flags_horizontal = 4
+text = "CONTINUA"
+theme_override_colors/font_disabled_color = Color(0.66, 0.61, 0.52, 0.72)
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
-[node name="AchievementsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(0, 48)
+[node name="ContinueHintPanel" type="PanelContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+visible = false
+custom_minimum_size = Vector2(600, 30)
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("MenuEmpty")
+
+[node name="ContinueHintLabel" type="Label" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/ContinueHintPanel"]
+autowrap_mode = 3
+visible = false
+horizontal_alignment = 1
+text = ""
+theme_override_colors/font_color = Color(0.94, 0.88, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.06, 0.04, 1)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 16
+
+[node name="LoadGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+visible = false
+text = "CARICA PARTITA"
+
+[node name="UtilitySpace" type="Control" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+custom_minimum_size = Vector2(0, 10)
+mouse_filter = 2
+
+[node name="UtilityRow" type="HBoxContainer" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="AchievementsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/UtilityRow"]
+custom_minimum_size = Vector2(152, 44)
 text = "ARCHIVIO"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
-[node name="SettingsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(0, 48)
+[node name="SettingsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/UtilityRow"]
+custom_minimum_size = Vector2(152, 44)
 text = "OPZIONI"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
 theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
-[node name="CreditsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-custom_minimum_size = Vector2(0, 48)
+[node name="CreditsButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox/UtilityRow"]
+custom_minimum_size = Vector2(152, 44)
 text = "CREDITI"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
@@ -367,6 +248,18 @@ visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 0
+
+[node name="UtilitySurface" type="Panel" parent="MenuLayer/MainMenu/AchievementsPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -478.0
+offset_top = -322.0
+offset_right = 478.0
+offset_bottom = 322.0
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("7")
 
 [node name="AchievementsCenter" type="CenterContainer" parent="MenuLayer/MainMenu/AchievementsPanel"]
 anchor_right = 1.0
@@ -467,6 +360,18 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 0
 
+[node name="UtilitySurface" type="Panel" parent="MenuLayer/MainMenu/CreditsPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -478.0
+offset_top = -322.0
+offset_right = 478.0
+offset_bottom = 322.0
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("7")
+
 [node name="CreditsCenter" type="CenterContainer" parent="MenuLayer/MainMenu/CreditsPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -502,6 +407,18 @@ visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 0
+
+[node name="UtilitySurface" type="Panel" parent="MenuLayer/MainMenu/SettingsPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -478.0
+offset_top = -322.0
+offset_right = 478.0
+offset_bottom = 322.0
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("7")
 
 [node name="SettingsCenter" type="CenterContainer" parent="MenuLayer/MainMenu/SettingsPanel"]
 anchor_right = 1.0
@@ -547,9 +464,6 @@ min_value = 0.6
 max_value = 1.4
 step = 0.05
 value = 1.0
-theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
 theme_override_styles/slider = ExtResource("19_settings_slider_track")
 theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
 theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
@@ -599,9 +513,6 @@ min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 1.0
-theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
 theme_override_styles/slider = ExtResource("19_settings_slider_track")
 theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
 theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
@@ -627,9 +538,6 @@ min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 0.75
-theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
 theme_override_styles/slider = ExtResource("19_settings_slider_track")
 theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
 theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")
@@ -655,9 +563,6 @@ min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 1.0
-theme_override_icons/grabber = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_highlight = ExtResource("21_settings_slider_grabber")
-theme_override_icons/grabber_disabled = ExtResource("21_settings_slider_grabber")
 theme_override_styles/slider = ExtResource("19_settings_slider_track")
 theme_override_styles/grabber_area = ExtResource("20_settings_slider_fill")
 theme_override_styles/grabber_area_highlight = ExtResource("20_settings_slider_fill")

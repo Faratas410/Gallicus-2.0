@@ -8,9 +8,9 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres" id="14"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres" id="15"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_panel_main.tres" id="16"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_arena_scommesse.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_chamber.png" id="17"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="18"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_registry_ritual.png" id="19_registry_ritual"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_chamber.png" id="19_registry_ritual"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_banner.tres" id="20_verdict_banner"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_detail.tres" id="21_verdict_detail"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_body.tres" id="22_verdict_body"]
@@ -69,6 +69,8 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_pressed.tres" id="76_final_dossier_tab_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_selected.tres" id="77_final_dossier_tab_selected"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/final_dossier/sb_registry_final_dossier_tab_disabled.tres" id="78_final_dossier_tab_disabled"]
+[ext_resource type="Script" path="res://scripts/ui/registry_terminal_view.gd" id="79_terminal_view"]
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = null
 texture_margin_left = 48.0
@@ -800,7 +802,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.94, 0.84, 0.62, 1)
 theme_override_font_sizes/font_size = 15
-text = "COLPISCI IL SIGILLO A TEMPO"
+text = "IMPRIMI IL SIGILLO: TRE COLPI"
 
 [node name="Btn_RESOLUTION_STRIKE" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
 theme_override_styles/normal = ExtResource("64_registry_judgment_seal_normal")
@@ -1247,7 +1249,7 @@ horizontal_alignment = 1
 text = "Il Registro è aperto: incassa ora o aumenta esposizione."
 
 [node name="Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-custom_minimum_size = Vector2(0, 74)
+custom_minimum_size = Vector2(0, 42)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
@@ -1272,7 +1274,7 @@ horizontal_alignment = 1
 text = "Condanna chiude il ciclo senza premio."
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTERPanel" type="PanelContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK"]
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 38)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
@@ -1308,7 +1310,7 @@ theme_override_colors/font_focus_color = Color(0.08, 0.055, 0.03, 1)
 theme_override_colors/font_pressed_color = Color(0.95, 0.91, 0.78, 1)
 theme_override_colors/font_disabled_color = Color(0.76, 0.73, 0.66, 1)
 theme_override_font_sizes/font_size = 17
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 104)
 size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
@@ -1321,10 +1323,10 @@ theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_0" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_0/Lbl_PUSH_YOUR_LUCK_CHOICE_0Panel"]
 visible = false
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1
 autowrap_mode = 2
-modulate = Color(0.75, 0.72, 0.6, 1)
+modulate = Color(1, 1, 1, 1)
 text = "Chiudi la posta corrente."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICE_1" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
@@ -1344,7 +1346,7 @@ theme_override_colors/font_focus_color = Color(1, 0.95, 0.84, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.82, 0.68, 1)
 theme_override_colors/font_disabled_color = Color(0.6, 0.56, 0.5, 1)
 theme_override_font_sizes/font_size = 17
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 104)
 size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
@@ -1356,10 +1358,10 @@ size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_CHOICE_1" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_1/Lbl_PUSH_YOUR_LUCK_CHOICE_1Panel"]
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1
 autowrap_mode = 2
-modulate = Color(0.75, 0.72, 0.6, 1)
+modulate = Color(1, 1, 1, 1)
 text = "Nessun premio. Registro chiuso."
 
 [node name="Box_PUSH_YOUR_LUCK_CHOICE_2" type="VBoxContainer" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES"]
@@ -1379,7 +1381,7 @@ theme_override_colors/font_focus_color = Color(1, 0.95, 0.72, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.84, 0.66, 1)
 theme_override_colors/font_disabled_color = Color(0.6, 0.56, 0.5, 1)
 theme_override_font_sizes/font_size = 17
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 104)
 size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
@@ -1392,10 +1394,10 @@ theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
 [node name="Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE" type="Label" parent="UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel"]
 visible = false
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1
 autowrap_mode = 2
-modulate = Color(0.75, 0.72, 0.6, 1)
+modulate = Color(1, 1, 1, 1)
 text = "Pressione +1. Aumenti posta e rischio."
 
 [node name="ScarsDetailPanel" type="Panel" parent="UI_RunRoot"]
@@ -1806,11 +1808,11 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -340.0
-offset_top = -84.0
+offset_top = -100.0
 offset_right = 340.0
-offset_bottom = -8.0
+offset_bottom = -16.0
 mouse_filter = 2
-custom_minimum_size = Vector2(680, 76)
+custom_minimum_size = Vector2(680, 84)
 
 [node name="PressureRailMargin" type="MarginContainer" parent="HUD/PressureRail"]
 anchor_right = 1.0
@@ -1836,7 +1838,7 @@ horizontal_alignment = 1
 text = "PRESSIONE 0/10"
 
 [node name="EscalationBar" type="ProgressBar" parent="HUD/PressureRail/PressureRailMargin/EscalationRow"]
-custom_minimum_size = Vector2(620, 18)
+custom_minimum_size = Vector2(620, 10)
 size_flags_horizontal = 3
 theme_override_styles/background = ExtResource("24_pressure_bar_bg")
 theme_override_styles/fill = ExtResource("25_pressure_bar_fill")
@@ -1921,3 +1923,6 @@ text = "Registro pulito: nessun segno inciso."
 
 
 
+
+[node name="RegistryTerminalView" type="CanvasLayer" parent="."]
+script = ExtResource("79_terminal_view")

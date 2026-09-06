@@ -23,6 +23,10 @@ on:
       - "scripts/systems/run/**"
       - "scripts/contracts/**"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.profile || 'lean' }}
+  cancel-in-progress: true
+
 env:
   GODOT_VERSION: "4.6.2-stable"
   GODOT_BIN_NAME: "Godot_v4.6.2-stable_linux.x86_64"
@@ -31,6 +35,7 @@ env:
 
 jobs:
   static_contracts:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,6 +59,7 @@ jobs:
           if-no-files-found: ignore
 
   runtime_routes:
+    timeout-minutes: 15
     needs: static_contracts
     runs-on: ubuntu-latest
     steps:
@@ -77,13 +83,15 @@ jobs:
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           LOG_DIR=artifacts/runtime_routes
           mkdir -p "$LOG_DIR"
-          xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit > "$LOG_DIR/import.log" 2>&1
+          python3 scripts/ci/run_godot_import.py --godot-bin "$GODOT_BIN" > "$LOG_DIR/import.log" 2>&1
           tail -n 200 "$LOG_DIR/import.log" || true
 
       - name: Run isolated CP-02 persistence contract
         run: |
           set -euo pipefail
           python3 scripts/ci/run_cp02_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
+          python3 scripts/ci/run_audit_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
+          python3 scripts/ci/run_av_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
 
       - name: Run route bundle
         run: |
@@ -135,6 +143,7 @@ jobs:
           if-no-files-found: error
 
   visual_stage:
+    timeout-minutes: 15
     needs: static_contracts
     runs-on: ubuntu-latest
     steps:
@@ -156,7 +165,7 @@ jobs:
         run: |
           set -euo pipefail
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
-          xvfb-run -a "$GODOT_BIN" --headless --editor --path "." --quit
+          python3 scripts/ci/run_godot_import.py --godot-bin "$GODOT_BIN"
 
       - name: Capture stage or full visual QA
         run: |

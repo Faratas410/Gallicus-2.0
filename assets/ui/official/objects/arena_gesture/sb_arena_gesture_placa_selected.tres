@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/official/objects/arena_gesture/arena_gesture_tile_placa.png" id="1_tile"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/gesture_placa.png" id="1_tile"]
 
 [resource]
 texture = ExtResource("1_tile")
@@ -9,7 +9,7 @@ texture_margin_top = 0.0
 texture_margin_right = 0.0
 texture_margin_bottom = 0.0
 content_margin_left = 28.0
-content_margin_top = 30.0
+content_margin_top = 112.0
 content_margin_right = 28.0
 content_margin_bottom = 30.0
-modulate_color = Color(0.9, 0.88, 0.68, 1)
+modulate_color = Color(1.25, 1.18, 1.04, 1)

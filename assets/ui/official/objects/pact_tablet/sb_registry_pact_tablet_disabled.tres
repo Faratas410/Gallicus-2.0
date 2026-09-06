@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/official/objects/pact_tablet/registry_pact_tablet_sealed.png" id="1_pact"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/pact_tablet.png" id="1_pact"]
 
 [resource]
 texture = ExtResource("1_pact")
@@ -12,4 +12,4 @@ content_margin_left = 48.0
 content_margin_top = 24.0
 content_margin_right = 48.0
 content_margin_bottom = 24.0
-modulate_color = Color(0.43, 0.42, 0.4, 1)
+modulate_color = Color(0.48, 0.48, 0.46, 1)

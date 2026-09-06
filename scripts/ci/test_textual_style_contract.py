@@ -134,6 +134,8 @@ def test_active_docs_reference_glossary_contract() -> None:
 
 
 if __name__ == "__main__":
+    from generated_art_contract import validate_theme
+    validate_theme()
     test_i18n_player_facing_copy_uses_clear_ritual_terms()
     test_copy_surfaces_use_clear_ritual_terms()
     test_required_textual_contract_tokens_are_present()

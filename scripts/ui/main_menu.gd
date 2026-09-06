@@ -22,11 +22,11 @@ const SETTINGS_ROW_STYLE: StyleBox = preload("res://assets/ui/official/styleboxe
 const SETTINGS_FOCUS_STYLE: StyleBox = preload("res://assets/ui/official/styleboxes/sb_settings_field_hover.tres")
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
-@onready var menu_center: CenterContainer = get_node("CenterContainer") as CenterContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
 @onready var credits_panel: Control = get_node("CreditsPanel") as Control
 @onready var settings_panel: Control = get_node("SettingsPanel") as Control
-@onready var title_label: Label = get_node("CenterContainer/MenuVBox/TitlePanel/TitleLabel") as Label
+@onready var title_artwork: TextureRect = get_node("CenterContainer/MenuVBox/TitlePanel/TitleArtwork") as TextureRect
+@onready var tagline_label: Label = get_node("CenterContainer/MenuVBox/Tagline") as Label
 @onready var settings_title: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsTitlePanel/SettingsTitle") as Label
 @onready var brightness_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsRightColumn/BrightnessLabelPanel/BrightnessLabel") as Label
 @onready var language_label: Label = get_node("SettingsPanel/SettingsCenter/SettingsVBox/SettingsColumns/SettingsLeftColumn/LanguageLabelPanel/LanguageLabel") as Label
@@ -40,9 +40,9 @@ const SETTINGS_FOCUS_STYLE: StyleBox = preload("res://assets/ui/official/stylebo
 @onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintPanel/ContinueHintLabel") as Label
 @onready var new_game_button: Button = get_node("CenterContainer/MenuVBox/NewGameButton") as Button
 @onready var load_game_button: Button = get_node("CenterContainer/MenuVBox/LoadGameButton") as Button
-@onready var achievements_button: Button = get_node("CenterContainer/MenuVBox/AchievementsButton") as Button
-@onready var settings_button: Button = get_node("CenterContainer/MenuVBox/SettingsButton") as Button
-@onready var credits_button: Button = get_node("CenterContainer/MenuVBox/CreditsButton") as Button
+@onready var achievements_button: Button = get_node("CenterContainer/MenuVBox/UtilityRow/AchievementsButton") as Button
+@onready var settings_button: Button = get_node("CenterContainer/MenuVBox/UtilityRow/SettingsButton") as Button
+@onready var credits_button: Button = get_node("CenterContainer/MenuVBox/UtilityRow/CreditsButton") as Button
 @onready var condanne_tab_button: Button = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox/CondanneTabButton") as Button
 @onready var museo_tab_button: Button = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox/MuseoTabButton") as Button
 @onready var condanne_container: Control = get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneContainer") as Control
@@ -75,8 +75,6 @@ const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
 const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
 const CONDANNA_UNLOCKED_ALPHA: float = 1.0
 const CONDANNA_LOCKED_ALPHA: float = 0.35
-const MENU_IDLE_BOB_AMPLITUDE: float = 2.0
-const MENU_IDLE_BOB_SPEED: float = 1.25
 const MENU_TITLE_PULSE_SPEED: float = 1.8
 const MENU_TITLE_PULSE_BASE: float = 0.95
 const MENU_TITLE_PULSE_AMPLITUDE: float = 0.05
@@ -88,8 +86,8 @@ const SETTINGS_RESOLUTIONS: Array[String] = [
 	"1920x1080",
 ]
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
-const MENU_EMPTY_RUN_HINT: String = "Obiettivo: firma un patto, supera i riti del Registro, poi incassa o rischia fino al fascicolo finale."
-const MENU_RETURNED_RUN_HINT: String = "Registro aggiornato. Puoi tornare nell'arena quando vuoi."
+const MENU_TAGLINE: String = "L'arena dimentica. Il Registro no."
+const MENU_RETURNED_RUN_HINT: String = "Il tuo passaggio è registrato."
 
 static var _i18n_bootstrap_done: bool = false
 var _language_fallback_logged: bool = false
@@ -104,7 +102,6 @@ var _menu_next_step_hint: String = ""
 var _menu_idle_time: float = 0.0
 var _menu_buttons: Array[Button] = []
 var _menu_button_tweens: Dictionary = {}
-var _menu_center_base_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	_ensure_i18n_loaded()
@@ -121,8 +118,6 @@ func _ready() -> void:
 	_cache_menu_buttons()
 	_wire_menu_button_animations()
 	_wire_menu_button_sfx()
-	if menu_center != null:
-		_menu_center_base_position = menu_center.position
 	continue_button.pressed.connect(_on_continue_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	achievements_button.pressed.connect(_on_achievements_pressed)
@@ -264,8 +259,6 @@ func _show_achievements() -> void:
 		_build_condanne_list()
 	_cache_menu_buttons()
 	_wire_menu_button_animations()
-	if menu_center != null:
-		_menu_center_base_position = menu_center.position
 	_build_museo_list()
 	_set_achievements_tab(ACHIEVEMENTS_TAB_CONDANNE)
 	_refresh_condanne_visuals()
@@ -287,6 +280,7 @@ func _show_settings() -> void:
 
 func _disable_unavailable_buttons() -> void:
 	load_game_button.disabled = true
+	load_game_button.visible = false
 	load_game_button.tooltip_text = tr("Funzione disattiva in L3.")
 
 func _build_condanne_list() -> void:
@@ -423,18 +417,20 @@ func _on_condanna_mouse_exited() -> void:
 	condanna_tooltip.visible = false
 
 func _refresh_continue_button() -> void:
+	var can_start: bool = _run_manager_port != null and _run_manager_port.can_start_run()
+	new_game_button.disabled = not can_start
 	var has_run_save: bool = SaveManager.has_run_save()
+	has_run_save = has_run_save and can_start
 	continue_button.disabled = not has_run_save
 	continue_button.visible = has_run_save
 	var has_menu_hint: bool = _menu_next_step_hint != ""
-	continue_hint_panel.visible = not has_run_save or has_menu_hint
-	continue_hint_label.visible = not has_run_save or has_menu_hint
+	continue_hint_panel.visible = has_menu_hint
+	continue_hint_label.visible = has_menu_hint
 	if has_menu_hint:
 		continue_hint_label.text = _menu_next_step_hint
 		_menu_next_step_hint = ""
 		return
-	if not has_run_save:
-		continue_hint_label.text = tr(MENU_EMPTY_RUN_HINT)
+	continue_hint_label.text = ""
 
 func _format_continue_reject_reason(reason: String) -> String:
 	if reason == "missing_run_save":
@@ -468,28 +464,29 @@ func _format_continue_reject_reason(reason: String) -> String:
 	return tr("Salvataggio non valido: %s.") % reason
 
 func _on_continue_rejected(reason: String) -> void:
-	_refresh_continue_button()
-	continue_hint_label.text = _format_continue_reject_reason(reason)
-	continue_hint_panel.visible = true
-	continue_hint_label.visible = true
+	_menu_next_step_hint = _format_continue_reject_reason(reason)
+	visible = true
+	_show_menu()
 
 func _on_continue_pressed() -> void:
 	if continue_button.disabled:
 		return
-	if Engine.has_singleton("GameEvents") and GameEvents != null and GameEvents.has_signal("request_continue_run"):
+	if GameEvents != null and GameEvents.has_signal("request_continue_run"):
 		if _run_manager_port == null or not _run_manager_port.has_manager():
 			continue_hint_label.text = tr("In arrivo.")
 			continue_hint_panel.visible = true
 			continue_hint_label.visible = true
 			return
-		GameEvents.request_continue_run.emit()
 		_hide_menu()
+		GameEvents.request_continue_run.emit()
 	else:
 		continue_hint_label.text = tr("In arrivo.")
 		continue_hint_panel.visible = true
 		continue_hint_label.visible = true
 
 func _on_new_game_pressed() -> void:
+	if _run_manager_port == null or not _run_manager_port.can_start_run():
+		return
 	# FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 	# Preconditions: GameEvents autoload is available and exposes request_new_run.
 	# Postconditions: RunManager receives intent; menu hides to unblock gameplay.
@@ -640,7 +637,7 @@ func _apply_brightness(value: float) -> void:
 			overlay_color = Color(1.0, 1.0, 1.0, overlay_alpha)
 		brightness_overlay.color = overlay_color
 	if brightness_value != null:
-		brightness_value.text = tr("Luminosita': %.2f") % value
+		brightness_value.text = tr("Luminosità: %.2f") % value
 
 func _on_language_selected(index: int) -> void:
 	if _suppress_settings_events:
@@ -760,10 +757,10 @@ func _notification(what: int) -> void:
 		_refresh_localized_ui()
 
 func _refresh_localized_ui() -> void:
-	if title_label != null:
-		title_label.text = tr("GALLICUS")
+	if tagline_label != null:
+		tagline_label.text = tr(MENU_TAGLINE)
 	if continue_button != null:
-		continue_button.text = tr("CONTINUA")
+		continue_button.text = tr("RIPRENDI IL PERCORSO")
 	if new_game_button != null:
 		new_game_button.text = tr("ENTRA NELL'ARENA")
 	if load_game_button != null:
@@ -777,7 +774,7 @@ func _refresh_localized_ui() -> void:
 	if settings_title != null:
 		settings_title.text = tr("OPZIONI")
 	if brightness_label != null:
-		brightness_label.text = tr("LUMINOSITA'")
+		brightness_label.text = tr("LUMINOSITÀ")
 	if language_label != null:
 		language_label.text = tr("LINGUA")
 	if volume_label != null:
@@ -870,24 +867,21 @@ func _on_settings_closed() -> void:
 	_show_menu()
 
 func _process(delta: float) -> void:
+	if not is_visible_in_tree():
+		return
 	if SaveManager != null and SaveManager.get_reduced_motion():
 		_reset_menu_motion_if_reduced()
 		return
 	_menu_idle_time += delta
-	if title_label != null:
+	if title_artwork != null:
 		var pulse: float = MENU_TITLE_PULSE_BASE + (sin(_menu_idle_time * MENU_TITLE_PULSE_SPEED) * MENU_TITLE_PULSE_AMPLITUDE)
-		title_label.modulate = Color(pulse, pulse, pulse, 1.0)
-	if menu_center != null and menu_vbox != null and menu_vbox.visible:
-		var bob_y: float = sin(_menu_idle_time * MENU_IDLE_BOB_SPEED) * MENU_IDLE_BOB_AMPLITUDE
-		menu_center.position = _menu_center_base_position + Vector2(0.0, bob_y)
+		title_artwork.modulate = Color(pulse, pulse, pulse, 1.0)
 
 func _reset_menu_motion_if_reduced() -> void:
 	if SaveManager == null or not SaveManager.get_reduced_motion():
 		return
-	if title_label != null:
-		title_label.modulate = Color.WHITE
-	if menu_center != null:
-		menu_center.position = _menu_center_base_position
+	if title_artwork != null:
+		title_artwork.modulate = Color.WHITE
 	for button: Button in _menu_buttons:
 		if button != null:
 			button.scale = Vector2.ONE
@@ -1010,8 +1004,10 @@ func _on_menu_button_pressed(button: Button) -> void:
 	_play_sfx(&"button_click")
 
 func _play_sfx(cue: StringName) -> void:
+	var feedback: Node = get_tree().get_first_node_in_group("ritual_feedback")
+	if feedback != null:
+		feedback.call("play_cue", cue, get_viewport().gui_get_focus_owner())
 	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
 	if sfx_bus == null or not sfx_bus.has_method("play_cue"):
 		return
 	sfx_bus.call("play_cue", cue)
-

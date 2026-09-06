@@ -100,3 +100,29 @@ Una patch visibile richiede:
 - controllo focus tastiera;
 - controllo reduced motion se tocca animazioni;
 - static test UI pertinenti.
+
+## Geometrie della bonifica
+
+- Menu: marchio largo 740 px, frase senza cornice, soglia da 480x72 px,
+  ripresa disponibile solo con save valido e utility in una riga da 480 px.
+  Gli avvisi di salvataggio hanno una riga dedicata e wrapping. La colonna
+  resta ferma; solo luce del marchio e fondale hanno moto ambientale.
+- Registro: tavola 900x540, due blocchi unificati e firma per pagina.
+- Push Your Luck: tre oggetti alti 104 px, note da 15 px e spazio riservato
+  sotto ciascun comando. Nessuna cornice aggiuntiva nei pannelli testuali.
+- Pressione: rail largo 680 px, 16 px sopra il bordo inferiore; tutti i figli,
+  inclusa la descrizione della fascia, devono rientrare nel viewport.
+- Fascicolo: geometria 1120x640 invariata; nessun pannello scuro dietro
+  l'inchiostro, testo chiaro sulle linguette.
+- Assenza: nero full viewport sopra HUD, menu e luminosita', senza CTA.
+
+La matrice Opzioni cambia lingua attraverso il selettore reale e ripristina
+lingua, risoluzione e reduced motion al termine.
+
+## Presentazione leggera del 6 settembre 2026
+
+Il pass audiovisivo mantiene fermi hit area e focus. La polvere VFX compare
+sul bordo dell'oggetto, senza overlay opaco o testo coperto; due sprite al
+massimo, invisibili dopo 0,41 s. Il titolo di lettura del Registro e' fermo,
+le entrate rituali sono ridotte a 4 px. Movimento ridotto cancella subito i
+VFX attivi. Limiti e accettazione in `docs/art_direction.md` e `docs/testing.md`.

@@ -1,15 +1,15 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/third_party/gowl_stonepixel/button_bordered_normal.png" id="1_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/bronze_plaque.png" id="1_button"]
 
 [resource]
 texture = ExtResource("1_button")
-texture_margin_left = 14.0
-texture_margin_top = 9.0
-texture_margin_right = 14.0
-texture_margin_bottom = 9.0
+texture_margin_left = 0.0
+texture_margin_top = 0.0
+texture_margin_right = 0.0
+texture_margin_bottom = 0.0
 content_margin_left = 18.0
 content_margin_top = 12.0
 content_margin_right = 18.0
 content_margin_bottom = 12.0
-modulate_color = Color(0.48, 0.48, 0.48, 0.74)
+modulate_color = Color(0.50, 0.50, 0.47, 1)

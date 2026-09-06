@@ -146,14 +146,12 @@ conflitto questo canon prevale.
 - Overlaps with: docs/support/repo_map.md.
 
 ## Scope
-- Patch type: Foundation only (no scene-wide texture replacement in this patch).
-- Source-of-truth UI asset folder for adopted runtime main-menu atlas source: `res://assets/MainMenu/`.
-- `res://assets/ui/third_party/gowl_stonepixel/` is the primary runtime UI source pack for overhaul work. It is the tracked, runtime-safe subset imported from StonePixel 1.2.
-- Preserve existing StonePixel slices in `res://assets/ui/third_party/gowl_stonepixel/`; do not reslice the full source pack unless an explicit asset task requires it.
-- `res://assets/ui/official_source/` remains a legacy/raw external reference pack for already-adopted assets; it is not the default source for new overhaul surfaces.
-- `res://assets/ui/third_party/rpg_ui_pack/` contains purchased RPG UI Pack candidate/reference material; it is not authoritative runtime UI until a later explicit wiring patch adopts specific assets.
-- Authoritative theme resource: `res://assets/ui/theme/official_theme.tres`.
-- Authoritative UI font wrapper: `res://assets/ui/fonts/italiana_regular_font.tres`.
+- Original raster source: `res://assets/ui/generated/`, with generation manifest.
+- Previous MainMenu, StonePixel, RPG UI and official_source graphics are
+  retired from runtime and export, retained only as source history.
+- Authoritative theme: `res://assets/ui/theme/official_theme.tres`.
+- Font wrappers use `res://assets/ui/fonts/engine_sans.tres`, Godot's embedded
+  fallback; purchased font files are not runtime dependencies.
 
 ## Run flow payload contract (INTERMEDIATE_CHOICE)
 - `RunManager` remains sole authority for phase progression and emits `RunUiPayload` for `INTERMEDIATE_CHOICE`.
@@ -175,115 +173,46 @@ conflitto questo canon prevale.
     - `ending_scars` -> `FASCICOLO CHIUSO - CONSUMO`
     - `ending_pattern` -> `FASCICOLO CHIUSO - PATTERN`
     - fallback titolo `FASCICOLO CHIUSO`
-  - Ending icons currently use the tracked fallback `res://assets/ui/icons/icon_condition.png`; dedicated ending icons are deferred until real assets exist.
+  - Ending icons use `res://assets/ui/generated/registry_emblem.png`; the caption carries the ending identity.
 - UI must derive END_RUN `Next Bet` visibility/enabled state **only** from `meta.next_bet_enabled` (reactive rule, no local gameplay decision).
 - UI must not infer ending category locally: `meta.register_ending_key` is RunManager authority.
 - UI must not unlock achievements or perform meta-save side effects: achievements wiring is a RunManager -> meta-system side effect only.
 
 ## Non-negotiable visual rules
-1. **Base UI scale**: active UI theme assets are texture-backed resources selected from the tracked StonePixel runtime subset and must render pixel-crisp at game resolution.
-2. **Font rule**: `Italiana-Regular.ttf` is the only official UI font source.
-3. **No mixed style**: legacy and official widgets must not be mixed inside a single finalized screen once replacement patches start.
+1. Original basalt, bronze, wax and paper materials form one visual family.
+2. Gameplay and localized text are rendered by Godot. The invariant GALLICUS
+   title wordmark is the sole baked brand exception; font and focus remain readable.
+3. Legacy and original assets must not be mixed in a finalized runtime screen.
 
 ## Import standard (UI PNG)
-The active source pack is tracked at:
-- `res://assets/ui/third_party/gowl_stonepixel/` for adopted StonePixel 1.2 runtime slices.
-- `res://assets/ui/official_source/Wooden_UI_png/` for legacy/raw reference material and assets already adopted before the StonePixel-first policy.
-- `res://assets/ui/third_party/rpg_ui_pack/` is staged third-party source/reference material only. Keep imports versioned for tracked PNG/TTF files, but do not treat examples as runtime scene authority.
-- Runtime adoption exception: settings sliders may use extracted, isolated derivatives under `res://assets/ui/third_party/rpg_ui_pack/extracted/settings/`; these are visual-only controls and do not redefine the global UI theme.
-- StonePixel adoption rule: prefer the tracked `gowl_stonepixel` PNGs as-is. If a missing state requires returning to the full StonePixel 1.2 source, import the smallest needed PNG and document the source mapping instead of hand-slicing by eye.
-
-For UI pixel-art textures that are adopted into runtime resources, keep the generated `.png.import` sidecar versioned with the source `.png`. The `.godot/` import cache remains ignored and must not be used as a contract surface.
-
-For source UI textures adopted in future replacement patches, preserve these import settings:
-- `flags/filter=false` (nearest, no blur)
-- `flags/mipmaps=false` (no mipmaps)
-- `compress/mode=0`
-- `compress/high_quality=false`
-- `compress/lossy_quality=0.7`
-
-Stop-condition note (active): version `.png.import` sidecars only for tracked source assets that are intended to remain runtime-loadable. Do not keep import sidecars for deleted or archive-only legacy PNGs.
+Track PNG and .png.import together. Generated raster sources are full-frame
+RGB rectangles; the title wordmark alone preserves its generated RGBA alpha.
+All are filtered linearly by controls; no old pixel-art/alpha rule
+applies. Object StyleBoxTexture margins are zero and states preserve content
+geometry. The .godot cache stays ignored. Provenance and dimensions are
+checked by `scripts/ci/generated_art_contract.py`.
 
 ## Resolution/stretch baseline (UI hardening)
 - Project display baseline keeps the existing canonical 16:9 internal viewport (`1280x720`) with `window/stretch/mode="viewport"` and `window/stretch/aspect="keep"` to prevent cross-screen distortion.
 - Runtime root UI controls in `res://scenes/Main.tscn` and `res://scenes/UI.tscn` must remain full-rect (`anchor_left/top=0`, `anchor_right/bottom=1`) with expand/fill size flags where applicable for menu/run root containers.
 - `res://scenes/UI.tscn` includes an always-on fallback `ColorRect` background at root level to avoid white-screen output when higher UI layers are hidden.
 
-## Theme assignment point (single authority)
-- Chosen authority: **ProjectSettings -> GUI -> Theme -> Custom** (`project.godot`, `[gui] theme/custom`).
-- Patch decision (active): **assigned** at ProjectSettings level via `project.godot` `[gui] theme/custom="res://assets/ui/theme/official_theme.tres"`.
-- Rationale: establish a single fallback theme authority for controls without altering runtime flow authority; per-scene/per-node overrides remain allowed as localized exceptions during migration.
-- Runtime visual baseline: `res://assets/ui/theme/official_theme.tres` defines non-empty stylebox entries for `Button` states (`normal`, `hover`, `pressed`, `disabled`) and `PanelContainer.panel` using official stylebox resources.
-- Runtime scenes `res://scenes/UI.tscn` and `res://scenes/ui/BettingCircle.tscn` remove local `theme_override_styles/*`, `theme_override_fonts/*`, `theme_override_constants/*`, and `theme_override_colors/*` assignments so controls inherit global theme authority by default.
-- Pilot redundancy trim: in `res://scenes/Main.tscn`, main menu buttons `ContinueButton`, `NewGameButton`, and `LoadGameButton` now inherit global `Button` styleboxes from `project.godot` theme authority instead of duplicating identical local `theme_override_styles/*`.
+## Theme assignment point (single resource)
+Menu and run scene roots assign official_theme.tres explicitly; children
+inherit one resource. No global theme/custom loads imported textures before
+a cold editor import. Native property names are required, such as
+Label/colors/font_color and Button/styles/normal; theme_types dictionaries
+are not supported Theme serialization.
 
-## Replacement mapping tracker
+Outer panels have explicit material StyleBoxes. Nested PanelContainers use
+StyleBoxEmpty to avoid repeated frames and dark boxes behind dossier text.
+Utilities use native focus, slider handles and dropdown behavior. Object
+bindings stay in assets/ui/official/objects and target the generated family.
 
-### Buttons (Main Menu pilot)
-- Active StonePixel assets:
-  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_normal.png` via `res://assets/ui/official/styleboxes/sb_button_primary_normal.tres`
-  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_hover.png` via `res://assets/ui/official/styleboxes/sb_button_primary_hover.tres`
-  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_hover.png` via `res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres`
-  - `res://assets/ui/third_party/gowl_stonepixel/button_bordered_normal.png` via `res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres`
-- Applied through global theme/stylebox references, not runtime logic.
-- Legacy references replaced: primary buttons no longer depend on the previous atlas button slices.
-
-### Panels / Background boxes (Main Menu pilot)
-- Active StonePixel asset:
-  - `res://assets/ui/third_party/gowl_stonepixel/panel_plain.png` via `res://assets/ui/official/styleboxes/sb_panel_main.tres`
-- Applied through the shared panel stylebox so existing scenes inherit the visual pass.
-- Runtime backgrounds are intentionally out of scope for the StonePixel source-pack policy.
-
-### Banners / Dividers
-- Official assets selected: _TBD_
-- Legacy references to replace: _TBD_
-- Notes: _TBD_
-
-### Checkboxes / Sliders
-- Official assets selected: _TBD_
-- Legacy references to replace: _TBD_
-- Notes: _TBD_
-
-### Icons (if used)
-- Official assets selected: _TBD_
-- Legacy references to replace: _TBD_
-- Notes: _TBD_
-
-### Gallicus-special widgets (bet/choice UI, etc.)
-- Active StonePixel assets:
-  - `res://assets/ui/third_party/gowl_stonepixel/frame_panel.png` for ritual panels outside the OF-05 Registry table.
-  - `res://assets/ui/third_party/gowl_stonepixel/panel_plain.png` for register tablets, scars bodies, verdict bodies, and small plates.
-  - `res://assets/ui/third_party/gowl_stonepixel/title_plate.png` for title/banners where a compact stone title surface is needed.
-  - `res://assets/ui/third_party/gowl_stonepixel/bar_stone.png`, `bar_dark.png`, and `bar_knob.png` for pressure and slider-style surfaces.
-- Dedicated object-first assets:
-  - `res://assets/ui/official/objects/registry_table/registry_table_closed.png` and
-    `registry_table_open.png` provide the closed/open OF-05 Registry surface.
-  - `res://assets/ui/official/objects/promise_signature/registry_promise_signature_blank.png`
-    and `registry_promise_signature_signed.png` provide the OF-06 promise and
-    registered-signature states inside the open Registry leaves.
-- Legacy/residue naming still present during migration:
-  - `res://scenes/ui/BettingCircle.tscn` keeps book-era node names such as
-    `BookFrame`, `SpellbookBg`, and `ClosedBookBg`, but those PanelContainers now
-    bind the dedicated Registry table resources.
-- Legacy references replaced: `Spellbook & Tabs` PNG assets and the generic
-  StonePixel register slab are no longer part of the active BettingCircle surface.
-- Notes: runtime behavior remains UI-presentational; RunManager flow authority is unchanged.
-
-## Visual binding audit baseline (placeholder policy)
-- Runtime scene audit baseline uses a single known-good placeholder texture resource `res://assets/ui/icons/icon_condition.png` when `TextureRect` bindings are null in active UI scenes.
-- Placeholder assignment is scene-local and diagnostic only; it does not introduce additional theme authority and does not alter runtime flow logic.
-- `TextureRect.texture` placeholders must be real `Texture2D` resources (PNG/AtlasTexture), never `StyleBox*`.
-
-## Search checklist (where UI assets can hide)
-- `.tscn`: `TextureRect` / `NinePatchRect` texture paths.
-- Scene-local theme overrides inside `.tscn` files.
-- `.tres`: `StyleBoxTexture` / `StyleBoxFlat` and other style resources.
-- Scripts with explicit texture loading (`load(...)`, `preload(...)`).
-
-## References used
-- `res://assets/ui/icons/icon_condition.png`
-- `res://assets/ui/official_source/Italiana-Regular.ttf`
-- `res://assets/ui/official_source/Wooden_UI_png/README.md`
+## Visual binding audit baseline
+Active texture bindings must resolve to original textures. Do not fill a
+missing texture with an unrelated diagnostic icon. Retired optional menu
+overlays are removed, not represented by empty animated sprites.
 
 ## SOURCE: legacy:ui_audio_map
 
@@ -375,7 +304,7 @@ Current MP3 files under `res://assets/audio/`:
 
 
 ## Run/HUD sprite-backed overlay labels (Patch 2 scope)
-- Runtime scene `res://scenes/UI.tscn` keeps button sprite states from Patch 1 and extends sprite-backed presentation to high-visibility runtime overlays by wrapping labels in `PanelContainer` nodes using existing official atlas styleboxes already present in the scene (`StyleBoxTexture_1`).
+- Runtime scene `res://scenes/UI.tscn` keeps object states and wraps high-visibility overlays in PanelContainer nodes using the original shared material family.
 - Wrapped runtime labels: arena resolution, audience context, register annotation, arena theme title/subtitle, countdown, and fast-countdown.
 - Binding contract: `res://scripts/ui/ui_root.gd` remains the only authority for toggling these nodes; when a wrapped label visibility changes, the matching wrapper panel visibility must change in the same branch.
 - HUD includes a sprite-backed `GloryPanel` with numeric `GloryValueLabel` at `HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/...`; UI updates it reactively from RunManager-emitted state payloads without adding gameplay authority to UI.
@@ -406,9 +335,10 @@ Current MP3 files under `res://assets/audio/`:
 
 Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are removed from active runtime path (no enemy combat HUD authority).
 - Runtime enforcement note (Level 3): player HP UI reactive wiring is removed from active runtime path (no `health_changed`/`get_health` bindings in UIRoot).
-- Main menu visual ambience contract: `res://scenes/Main.tscn` includes `MenuLayer/MainMenu/MenuAmbience` with visual-only layered textures (`Base`, `CloudsLayer`, `LightOverlay`, `FelixStatue`, `FlagRoot/Pole`, `FlagRoot/FlagCloth`, `FogLayer_Back`, `FogLayer_Mid`, `FogLayer_Front`, `TorchFlames`) driven by `res://scripts/ui/menu_ambience.gd`; no GameEvents wiring and no flow authority changes are allowed in this node.
-- Flag motion contract: only `FlagRoot/FlagCloth` receives wind deformation material; `FlagRoot/Pole` remains static.
-- Fog placement and top-band contract: menu fog layers remain constrained to the lower ambience band (no sky coverage), while the upper CloudsLayer remains static on X and uses only slow, low-amplitude tint variation. Rapid or high-contrast strobing is forbidden.
+- MenuAmbience contains only the original Base chamber with slow drift
+  controlled by menu_ambience.gd. It listens to settings_changed solely to
+  disable motion; it has no flow authority. Legacy fog, torch, flag and
+  statue nodes are removed.
 - CP-02 accessibility contract: `settings_changed` keeps its single additive
   dictionary payload and includes `sfx_volume` and `reduced_motion`; no new
   signal or flow authority is introduced.
@@ -446,7 +376,7 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   `request_place_bet` intent.
 - Each page renders one unified `RichTextLabel` contract block (`Rtl_Left_Contract`, `Rtl_Right_Contract`) containing title, subtitle, condanna, condition, and pact copy.
 - Local fragmented render paths (`Lbl_*_Title`, `Rtl_*_Bet`, `Rtl_*_Explain`) are retired because they create scrollbars, duplicated spacing, and overlay-like text drift.
-- Contract text is styled as dark ink on pale limestone. White overlay text is reserved for global labels/buttons, not pact body copy.
+- Contract text uses warm bone on dark basalt; the paper dossier uses dark ink. Body copy must retain contrast in every state.
 - Scope guard: this is presentation-only. BettingCircle still consumes prepared offer payloads and does not own bet selection authority beyond emitting the existing sign intent.
 
 ## BettingCircle promise signature contract (OF-06)
@@ -472,7 +402,7 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Runtime scene: `res://scenes/UI.tscn`; technical input node:
   `Btn_FIRST_REACTION_NEXT`.
 - The button is presented as a sealed basalt, bronze and red-wax pact tablet
-  using a text-free 5:2 RGBA texture. The CTA remains Godot-rendered as
+  using a text-free 5:2 RGB texture. The CTA remains Godot-rendered as
   `MOSTRA IL PATTO`, `SHOW THE PACT` and `MUESTRA EL PACTO`.
 - States are normal, focus, pressed, validated and disabled. They share
   identical margins and geometry; validation must not scale or move the
@@ -538,8 +468,8 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 - Runtime scene: `res://scenes/UI.tscn`; `Panel_END_RUN` is presented as a
   fixed `1120x640` dossier, not as a generic modal card.
-- The dossier uses the same text-free 7:4 alpha silhouette for open, updated
-  and closed. `meta.register_final=false` maps to updated;
+- The dossier keeps a fixed rectangular control across open, updated
+  and closed; original paper and closed Registry textures replace alpha silhouettes. `meta.register_final=false` maps to updated;
   `meta.register_final=true` maps to closed. The UI does not infer either
   state from outcome copy.
 - `EndRunRouteTabs` contains fixed `304x64` text-free tabs for
@@ -555,3 +485,43 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   is translated at the UI boundary. `RunManager` payloads remain unchanged.
 - Scope guard: presentation only. `RunManager` remains the owner of final
   classification and route flow; `GameEvents` remains the intent bus.
+
+## Silence and Absence presentation
+
+REGISTRY_SILENCE and REGISTRY_ABSENCE suppress the normal END_RUN dossier.
+The reactive view covers HUD/menu with black. Intermediate Silence offers
+menu return after two seconds. Absence has no CTA, era name, classification
+or postgame; RunManager independently rejects restart/Continue. Environment
+fade never reduces text or focus contrast. The ritual instruction is
+IMPRIMI IL SIGILLO: TRE COLPI, with no timing-based outcome promise.
+
+## Menu identity revision
+
+GALLICUS is the principal visual element, using the transparent original
+wordmark `res://assets/ui/generated/gallicus_wordmark.png` at 740x247.
+The localized tagline is "L'arena dimentica. Il Registro no." No objective
+panel appears on an empty profile. The 480x72 arena threshold keeps the same
+intent, sound and states. Resume appears only with a valid save; the obsolete
+unavailable Load button stays hidden. Archive, Settings and Credits occupy
+one smaller utility row. Save errors remain readable native text. Menu hit
+areas do not bob with the title light pulse; reduced motion stops that pulse.
+
+Resume emits the GameEvents autoload intent after hiding the menu. A rejected
+resume restores the menu with the specific save reason after quarantine.
+Autoloads are not tested with Engine.has_singleton. Resume visibility follows
+the saved-run availability; errors must not be overwritten by return copy.
+
+### Audiovisual presentation pass - 2026-09-06
+
+The explicitly requested audiovisual pass retains the presentational-only
+Motion Contract and all gameplay ownership. `RitualFeedback` is a local
+CanvasLayer under Main, called by the existing UI cue methods. It uses two
+reusable, input-transparent sprites, never gameplay state or randomness.
+Effects expire after 0.41 seconds and clear on phase/end/reduced-motion events.
+Persistent style states, labels and focus remain the accessible feedback.
+
+Reading headers are steady. The judgment prompt pulses once, not indefinitely.
+Ritual panel enter: scale 0.99, travel 4 px, duration 0.22 seconds. Registry
+open timings and soundtrack ownership are documented in
+`docs/cinematic_direction.md` and `docs/audio_direction.md`. No new flow delay,
+save schema, outcome rule or input authority is introduced by this pass.

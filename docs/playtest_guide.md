@@ -18,11 +18,16 @@ Verifica convergenza, Ere, Silenzi, contenuto e finale terminale.
 
 Usa export Windows su installazione pulita e copre checklist completa.
 
+Per il candidato Steam installare anche dal client, fuori dal repository,
+secondo `docs/steam_release.md`. Verificare avvio, aggiornamento e ripresa
+dei save sulla build effettivamente distribuita.
+
 ## Setup
 
 Annotare:
 
 - build/commit;
+- manifest/hash dell'export, modifiche locali incluse e, su Steam, BuildID e branch;
 - tipo sessione;
 - piattaforma e risoluzione;
 - lingua;
@@ -33,6 +38,10 @@ Annotare:
 - ora inizio/fine.
 
 ## Regola moderatore
+
+Le tre sessioni brevi CP-03 e le tre campagne complete di Release Lock
+sono prove distinte. Smoke accelerati e osservazioni dell'agente non contano
+come sessioni umane; la durata va misurata sulle prime campagne delle persone.
 
 Non spiegare il gioco durante il primo tentativo. Se la persona si blocca:
 

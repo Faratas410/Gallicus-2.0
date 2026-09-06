@@ -1,15 +1,15 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/official/objects/registry_table/registry_table_closed.png" id="1_table"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_closed.png" id="1_table"]
 
 [resource]
 texture = ExtResource("1_table")
-texture_margin_left = 96.0
-texture_margin_top = 82.0
-texture_margin_right = 96.0
-texture_margin_bottom = 82.0
+texture_margin_left = 0.0
+texture_margin_top = 0.0
+texture_margin_right = 0.0
+texture_margin_bottom = 0.0
 content_margin_left = 48.0
 content_margin_top = 40.0
 content_margin_right = 48.0
 content_margin_bottom = 40.0
-modulate_color = Color(1, 0.94, 0.72, 1)
+modulate_color = Color(1.25, 1.18, 1.04, 1)

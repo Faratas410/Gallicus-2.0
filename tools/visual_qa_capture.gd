@@ -211,6 +211,7 @@ func _run() -> void:
 	await _finish_capture_run()
 
 func _capture_accessibility_settings_matrix() -> void:
+	var previous_resolution: String = SaveManager.get_window_resolution()
 	var main_menu: Node = get_tree().root.get_node_or_null(MAIN_MENU_PATH)
 	var settings_panel: Control = get_tree().root.get_node_or_null(SETTINGS_PANEL_PATH) as Control
 	var sfx_slider: HSlider = get_tree().root.get_node_or_null(SETTINGS_SFX_SLIDER_PATH) as HSlider
@@ -227,14 +228,14 @@ func _capture_accessibility_settings_matrix() -> void:
 	main_menu.call("_on_settings_pressed")
 	await _settle(12)
 	for locale: String in ACCESSIBILITY_SETTINGS_LOCALES:
-		SaveManager.set_language(locale)
-		TranslationServer.set_locale(locale)
-		main_menu.call("_refresh_localized_ui")
+		_select_settings_locale(main_menu, locale)
 		await _settle(8)
 		for viewport_size: Vector2i in ACCESSIBILITY_SETTINGS_VIEWPORT_SIZES:
 			DisplayServer.window_set_size(viewport_size)
 			get_tree().root.content_scale_size = viewport_size
 			get_tree().root.size = viewport_size
+			SaveManager.set_window_resolution("%dx%d" % [viewport_size.x, viewport_size.y])
+			main_menu.call("_select_resolution", SaveManager.get_window_resolution())
 			await _settle(20)
 			var prefix: String = "09_settings_%s_%dx%d" % [locale, viewport_size.x, viewport_size.y]
 
@@ -256,15 +257,27 @@ func _capture_accessibility_settings_matrix() -> void:
 
 	reduced_motion_toggle.set_pressed_no_signal(previous_reduced_motion)
 	main_menu.call("_on_reduced_motion_toggled", previous_reduced_motion)
-	SaveManager.set_language(previous_locale)
-	TranslationServer.set_locale(previous_locale)
-	main_menu.call("_refresh_localized_ui")
+	SaveManager.set_window_resolution(previous_resolution)
+	main_menu.call("_select_resolution", previous_resolution)
+	_select_settings_locale(main_menu, previous_locale)
 	main_menu.call("_on_settings_back_pressed")
 	main_menu.set_process(previous_processing)
 	DisplayServer.window_set_size(previous_size)
 	get_tree().root.content_scale_size = previous_content_scale_size
 	get_tree().root.size = previous_size
 	await _settle(8)
+
+func _select_settings_locale(main_menu: Node, locale: String) -> void:
+	var selector: OptionButton = main_menu.get("language_option") as OptionButton
+	if selector == null:
+		_failures.append("Settings language selector missing")
+		return
+	for index: int in range(selector.item_count):
+		if str(selector.get_item_metadata(index)) == locale:
+			selector.select(index)
+			selector.item_selected.emit(index)
+			return
+	_failures.append("Settings locale unavailable: %s" % locale)
 
 func _finish_capture_run() -> void:
 	await _cleanup_capture_scene()

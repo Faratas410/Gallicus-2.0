@@ -575,3 +575,18 @@ Normalization policy:
 - Compatibility rule: if keys are missing in existing profiles, runtime defaults are applied (`0.0`, `0`) and persisted on next profile save.
 - Migration clamp rule for compatibility: `registry_era` is bounded to `0..4` (legacy values >=5 cap to 4).
 - No new phase routing, no new GameEvents contract, no UI authority changes.
+
+## Finite campaign closure and terminal guard (September 2026)
+
+RunManager alone samples completed histories, commits evolution once and
+chooses Silence at the existing closure boundary. `registry_evolution.gd`
+is a pure RefCounted helper, never a manager or event/persistence owner.
+SaveManager writes profile v5. Ending identity selection is separate from
+report construction; signature evaluation does not mutate resources or odds.
+REGISTRY_SILENCE/REGISTRY_ABSENCE reuse GameEvents.run_ended with
+`{classified_terminal: false, terminal: bool}`. These closures emit no
+run_failed, run_finale_selected, closing annotation or closing unlock.
+The reactive terminal view cannot advance eras. Era 4 rejects new/continued
+runs, survives restart and does not instantiate RegisterState. No UI reset,
+extra era or hidden cycle exists. Settings apply settings only: input setup
+belongs to _ready, and settings must never defer another _boot.

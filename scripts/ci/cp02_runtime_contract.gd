@@ -51,7 +51,7 @@ func _run_contract() -> void:
 	_expect(is_equal_approx(float(reloaded_profile.call("get_sfx_volume")), 0.42), "SFX round-trip failed")
 	_expect(bool(reloaded_profile.call("get_reduced_motion")), "reduced-motion round-trip failed")
 	var saved_profile: Dictionary = _read_json_dictionary("user://profile.save")
-	_expect(int(saved_profile.get("version", 0)) == 4, "migrated profile was not persisted as v4")
+	_expect(int(saved_profile.get("version", 0)) == SaveManagerScript.PROFILE_VERSION, "migrated profile was not persisted at current version")
 
 	var save_system: SaveSystem = SaveSystemScript.new()
 	save_system.clear_run()

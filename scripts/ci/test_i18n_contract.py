@@ -8,6 +8,7 @@ and every CSV must expose the same key set as the default Italian source.
 from __future__ import annotations
 
 import csv
+import json
 import re
 from pathlib import Path
 
@@ -41,8 +42,8 @@ def _csv_keys(path: Path) -> list[str]:
     for line_index, row in enumerate(rows[1:], start=2):
         if len(row) != 2:
             raise AssertionError(f"{path}:{line_index} must have exactly 2 columns")
-        key = row[0].strip()
-        if not key:
+        key = row[0]
+        if not key.strip():
             raise AssertionError(f"{path}:{line_index} has empty key")
         keys.append(key)
     if len(keys) != len(set(keys)):
@@ -68,6 +69,17 @@ def main() -> int:
 
     default_keys = _csv_keys(DEFAULT_CSV)
     default_key_set = set(default_keys)
+    # Check the keys the UI actually requests, not only agreement between CSVs.
+    for source_path in (ROOT / "scripts").rglob("*.gd"):
+        if "ci" in source_path.parts:
+            continue
+        source = source_path.read_text(encoding="utf-8")
+        for match in re.finditer(r'\btr\(("(?:[^"\\]|\\.)*")\)', source):
+            key = json.loads(match.group(1))
+            if not key or key == "I    II    III":
+                continue
+            if key not in default_key_set:
+                raise AssertionError(f"{source_path.relative_to(ROOT)}: uncatalogued tr key {key!r}")
     for locale, path in registry.items():
         keys = _csv_keys(path)
         key_set = set(keys)

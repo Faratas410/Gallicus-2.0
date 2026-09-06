@@ -102,3 +102,12 @@ Verificare wrapping, font, accenti, apostrofi e assenza di mojibake.
 - cataloghi IT/EN/ES completi;
 - nessun overflow alle risoluzioni target;
 - nessuna informazione critica esclusivamente cromatica o sonora.
+
+## Regressioni della bonifica
+
+Cambiare impostazioni non richiama piu' il bootstrap durante una partita.
+Le stringhe letterali tr(...) sono controllate contro i CSV; luminosita' e
+nuove annotazioni hanno chiavi IT/EN/ES. I testi restano nativi Godot sopra
+le immagini originali. La deriva delle Ere non oscura testo e focus.
+Il Silenzio intermedio offre ritorno al menu dopo due secondi; l'Assenza
+terminale non offre un riavvio del Registro.

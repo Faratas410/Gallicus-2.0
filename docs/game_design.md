@@ -96,3 +96,10 @@ La progressione persistente riguarda conoscenza e classificazione:
 - I cambi player-facing compilano la scheda object-first.
 - I cambi UI visibili richiedono QA visuale.
 - I cambi alla campagna richiedono save, determinismo e playtest completo.
+
+## Stato della spine tecnica
+
+La bonifica implementa firma persistente, isteresi, ramp, Silenzi ed Assenza
+con guardia al riavvio. Il Registro conserva una lettura delle scelte fino a
+cessare la classificazione. La prova accelerata verifica raggiungibilita',
+non ritmo o durata target; messa in scena e anti-farming richiedono playtest.

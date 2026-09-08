@@ -105,3 +105,62 @@ conserva testo, stati e focus senza introdurre attese VFX.
 Entrata pannelli, backdrop e shade tengono un solo tween per superficie.
 Movimento ridotto interrompe anche una transizione gia' iniziata e ripristina
 subito geometria e alpha, senza un successivo rimbalzo al frame finale.
+
+## Prologo - implementazione autorizzata dell'8 settembre 2026
+
+Richiesta dell'utente: valutare un'apertura che renda comprensibile la lore.
+Raccomandazione: prologo in-engine di circa 8 secondi, centrato sulla premessa
+del Registro. L'utente ha approvato proposta e correzioni dell'audit.
+Controller locale: `scripts/ui/opening_prologue.gd`, sotto Main.
+
+| Tempo | Immagine e funzione | Copy IT proposto |
+| --- | --- | --- |
+| 0-3 s | Soglia dell'arena, avvicinamento minimo; chiarisce il luogo | Ogni rischio accettato lascia un segno. |
+| 3-6 s | Registro chiuso, dettaglio di cera e bronzo; chiarisce cosa permane | Il Registro conserva le tue scelte. |
+| 6-8 s | Dissolvenza nella schermata esistente; controllo al primo gesto | APRI IL REGISTRO, come controllo nativo gia' presente |
+
+Bozza EN: "Every accepted risk leaves a mark." / "The Registry preserves your
+choices." Bozza ES: "Cada riesgo aceptado deja una marca." / "El Registro
+conserva tus decisiones." Il copy deriva dalla premessa in
+`docs/canon/LORE_UNIFIED.md`; non introduce giudizi morali, personaggi guida,
+nuove regole, rivelazioni su Felix o anticipazioni del finale.
+
+Riutilizzare registry_chamber e registry_closed come base; eventuali dettagli
+ImageGen devono mantenere camera, luce, pietra e bronzo del tema approvato.
+Il testo resta nativo e localizzato. Bastano ambiente, cue di soglia e musica
+del Registro: niente voce narrante o nuova traccia obbligatoria. Un solo cue
+per l'ingresso, evitando di duplicare quello del pulsante del menu.
+
+Contratto implementato: solo avvio della prima campagna,
+mai ripresa di un save o ripetizione a ogni run; skip visibile e da tastiera
+dopo 0,5 s anche alla prima visione; restituzione del focus ad APRI IL REGISTRO;
+nessun blocco in caso di skip, cambio lingua, resize o chiusura. Movimento
+ridotto conserva le due frasi e il tempo di lettura su immagini ferme:
+la dissolvenza ridotta a un secondo della vecchia bozza MV non basta se si
+aggiunge questo testo. Nessuna nuova fase autoritativa o salvataggio intermedio.
+
+Prova di valore in CP-03: dopo il prologo, il player sa dire dove si trova,
+cosa conserva il Registro e quale gesto deve fare. Se non migliora queste
+risposte, rivedere il copy prima di aggiungere durata o spiegazioni.
+
+Il primo ingresso esplicito dal menu prepara la presentazione; run_started
+la mostra dopo l'avvio autoritativo. L'overlay intercetta input durante gli
+otto secondi, senza ritardare un intento di gameplay. Escape, Invio o click
+su SALTA terminano dopo 0,5 s e restituiscono il focus al Registro. Ritorno
+al menu, Continue e run_ended annullano overlay e processing. Il cambio
+lingua aggiorna le frasi, il resize mantiene gli anchor. Movimento ridotto
+mantiene otto secondi e immagini ferme, senza dissolvenza.
+
+La preferenza booleana settings.opening_prologue_seen, default false,
+persistita da SaveManager al primo avvio, evita replay anche se si esce
+prima di firmare. Nessuna fase cinematica nel run save. Profili preesistenti
+con save, pressione, Era o campioni di campagna bypassano il prologo.
+Nessun timer o processing del prologo resta attivo dopo la chiusura.
+
+Scheda object-first: intento = comprendere la soglia; oggetto = arena e
+Registro chiuso; materiale = pietra, bronzo, cera; gesto = attraversare poi
+aprire; feedback = due frasi, immagini e score esistente; registrazione =
+solo preferenza di presentazione vista. RunManager conserva decisioni e
+campagna; skip e testo fermo sono i fallback accessibili. Prove: ingresso,
+skip anticipato respinto, Escape, fine automatica, resize, lingua, reduced
+motion, ripresa e nessun replay, documentate nel report di coerenza.

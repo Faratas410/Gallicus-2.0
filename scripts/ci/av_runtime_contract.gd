@@ -20,6 +20,8 @@ func _run() -> void:
 	current_scene = scene
 	await process_frame
 	await create_timer(0.25).timeout
+	await _verify_presentation(scene)
+	await _verify_music_route(scene)
 	var music: Node = scene.get_node("MusicDirector")
 	var players: Array = music.get("_players")
 	_expect(players.size() == 2, "music must use exactly two voices")
@@ -103,3 +105,157 @@ func _run() -> void:
 	await create_timer(0.15).timeout
 	print("AV_RUNTIME_CONTRACT_OK" if not _failed else "AV_RUNTIME_CONTRACT_FAILED")
 	quit(1 if _failed else 0)
+
+func _verify_presentation(scene: Node) -> void:
+	var menu: Node = scene.get_node("MenuLayer/MainMenu")
+	var intro: Node = scene.get_node("OpeningPrologue")
+	var terminal: Node = scene.get_node("UI/RegistryTerminalView")
+	var ui: Node = scene.get_node("UI")
+	# This goes through the actual button handler and RunManager, not a phase mock.
+	menu.get("new_game_button").pressed.emit()
+	await process_frame
+	_expect(intro.get("_active"), "first menu entry did not start prologue")
+	root.get_node("SaveManager").call("load_profile")
+	_expect(root.get_node("SaveManager").call("has_seen_opening_prologue"), "prologue preference did not survive profile reload")
+	var event: InputEventAction = InputEventAction.new()
+	event.action = "ui_accept"
+	event.pressed = true
+	Input.parse_input_event(event)
+	await process_frame
+	_expect(intro.get("_active"), "prologue skipped before 0.5 seconds")
+	await create_timer(0.6).timeout
+	event = InputEventAction.new()
+	event.action = "ui_cancel"
+	event.pressed = true
+	Input.parse_input_event(event)
+	await process_frame
+	_expect(not intro.get("_active") and not intro.is_processing(), "Escape failed to stop prologue")
+	var open_button: Button = scene.get_node("UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book")
+	_expect(root.gui_get_focus_owner() == open_button, "skip did not restore registry focus")
+	_expect(scene.get_node("MusicDirector").get("_active_key") == "safe", "real registry entry score incorrect")
+	intro.call("prepare_first_entry")
+	_expect(not intro.get("_armed"), "later entry rearmed prologue")
+	# Full playback with reduced motion retains both captions and reading time.
+	root.get_node("SaveManager").call("set_reduced_motion", true)
+	intro.set("_armed", true)
+	intro.call("_on_run_started")
+	await create_timer(3.3).timeout
+	_expect(intro.get("_active") and int(intro.get("_beat")) == 1, "reduced motion removed second caption or reading time")
+	_expect(intro.get("_image").scale == Vector2.ONE, "reduced motion moved prologue image")
+	menu.call("_on_language_selected", 1)
+	await create_timer(0.1).timeout
+	_expect(intro.get("_caption").text == "The Registry preserves your choices.", "prologue locale switch stale")
+	await create_timer(4.9).timeout
+	_expect(not intro.get("_active") and root.gui_get_focus_owner() == open_button, "automatic prologue completion blocked input")
+	menu.call("_on_language_selected", 0)
+	ui.set("_scars_detail_text", "A long scar record.\n".repeat(80))
+	ui.call("_show_scars_detail")
+	await process_frame
+	_expect(ui.get("scars_detail_panel").is_visible_in_tree(), "scar detail binding invalid")
+	_expect(ui.get("scars_detail_text").get_v_scroll_bar().size.x >= 8.0, "scar scrollbar has no usable width")
+	_expect(ui.get("scars_detail_text").get_v_scroll_bar().max_value > ui.get("scars_detail_text").size.y, "long scar record cannot scroll")
+	_expect(root.gui_get_focus_owner() == ui.get("scars_detail_close"), "scar detail close lacks focus")
+	event = InputEventAction.new()
+	event.action = "ui_down"
+	event.pressed = true
+	Input.parse_input_event(event)
+	await process_frame
+	_expect(root.gui_get_focus_owner() == ui.get("scars_detail_text"), "directional navigation escaped scar detail")
+	ui.get("scars_detail_close").pressed.emit()
+	_expect(not ui.get("scars_detail_panel").visible, "scar close button failed")
+	_expect(open_button.is_visible_in_tree(), "scar detail destroyed underlying registry screen")
+	ui.call("_show_scar_popup", {"name":"TEST", "effect_text":"Test scar effect"})
+	_expect(ui.get("scar_popup_panel").is_visible_in_tree(), "scar notification binding invalid")
+	await create_timer(3.8).timeout
+	_expect(not ui.get("scar_popup_panel").visible, "reduced-motion scar notification never expires")
+	for dimensions: Vector2i in [Vector2i(1280,720), Vector2i(1920,1080)]:
+		root.size = dimensions
+		terminal.call("_show_surface", false)
+		await create_timer(2.1).timeout
+		var button: Button = terminal.get("_return_button")
+		_expect(button.is_visible_in_tree() and root.get_visible_rect().encloses(button.get_global_rect()), "Silence return outside viewport")
+		_expect(root.gui_get_focus_owner() == button, "Silence return lacks keyboard focus")
+		button.pressed.emit()
+		_expect(not terminal.get("_black").visible, "Silence return button failed")
+	root.size = Vector2i(1280,720)
+	root.get_node("SaveManager").call("set_reduced_motion", false)
+	menu.call("_show_menu")
+	menu.call("_on_language_selected", 1)
+	menu.call("_show_achievements")
+	menu.call("_on_museo_tab_pressed")
+	await process_frame
+	_expect(menu.get("museo_tab_button").button_pressed and not menu.get("museo_tab_button").disabled, "archive selection is not an enabled pressed tab")
+	var all_pacts_localized: bool = true
+	for pact: StringName in menu.get("_run_manager_port").get_available_level3_pacts():
+		var source_title: String = menu.call("_get_pact_display_name", pact)
+		all_pacts_localized = all_pacts_localized and TranslationServer.translate(source_title) != source_title
+	_expect(all_pacts_localized, "one or more museum pact titles have no translation")
+	_expect(menu.get("condanna_entries")[&"CONDANNA_NON_MI_FERMERO"].text == "- I will not stop.", "sentence title was not localized")
+	menu.call("_on_condanna_mouse_entered", preload("res://data/condanne.gd").defaults()[0])
+	await process_frame
+	menu.call("_place_condanna_tooltip", root.get_visible_rect().size - Vector2(2, 2))
+	await process_frame
+	_expect(root.get_visible_rect().encloses(menu.get("condanna_tooltip").get_global_rect()), "translated archive tooltip leaves viewport at lower edge")
+	menu.call("_on_condanna_mouse_exited")
+	menu.call("_on_language_selected", 0)
+	menu.call("_show_menu")
+
+func _press_route(scene: Node, suffix: String) -> void:
+	var deadline: int = Time.get_ticks_msec() + 5000
+	while Time.get_ticks_msec() < deadline:
+		var button: Button = scene.find_child(suffix, true, false) as Button
+		if button != null and button.is_visible_in_tree() and not button.disabled:
+			button.pressed.emit()
+			await process_frame
+			return
+		await process_frame
+	_expect(false, "real route button unavailable: " + suffix)
+
+func _expect_score(scene: Node, key: String, step: String) -> void:
+	var music: Node = scene.get_node("MusicDirector")
+	var player: AudioStreamPlayer = music.get("_players")[int(music.get("_active"))]
+	_expect(music.get("_active_key") == key and player.playing and player.stream.resource_path == music.TRACKS[key], "real score mismatch at " + step)
+
+func _verify_music_route(scene: Node) -> void:
+	# Only seed and outcome are stabilized. Every ritual uses its real UI handler.
+	OS.set_environment("GALLICUS_SMOKE", "1")
+	OS.set_environment("GALLICUS_SMOKE_SEED", "1782373819")
+	await _press_route(scene, "NewGameButton")
+	OS.unset_environment("GALLICUS_SMOKE")
+	OS.unset_environment("GALLICUS_SMOKE_SEED")
+	_expect_score(scene, "safe", "registry")
+	await _press_route(scene, "Btn_Open_Book")
+	await create_timer(1.2).timeout
+	var circle: Node = scene.get_node("UI/UI_RunRoot/BettingCircle")
+	var side: String = "Right" if str(circle.call("_offer_id_at", 0)) == "BET_DOUBLE_OR_DIE" else "Left"
+	await _press_route(scene, "Btn_Sign_" + side)
+	await create_timer(0.3).timeout
+	_expect_score(scene, "tense", "sealed pact")
+	# Resume from a real persisted checkpoint must bypass the opening overlay.
+	root.get_node("GameEvents").request_show_main_menu.emit()
+	await process_frame
+	await _press_route(scene, "ContinueButton")
+	await create_timer(0.3).timeout
+	_expect(not scene.get_node("OpeningPrologue").get("_active"), "resume replayed prologue")
+	_expect_score(scene, "tense", "resumed pact")
+	await _press_route(scene, "Btn_FIRST_REACTION_NEXT")
+	await _press_route(scene, "Btn_MID_CHOICE_SELECT_0")
+	await create_timer(0.3).timeout
+	_expect_score(scene, "tense", "judgment")
+	OS.set_environment("GALLICUS_SMOKE", "1")
+	OS.set_environment("GALLICUS_SMOKE_SCENARIO", "FULL_RUN")
+	for index: int in range(3):
+		await _press_route(scene, "Btn_RESOLUTION_STRIKE")
+		await create_timer(0.35).timeout
+	var deadline: int = Time.get_ticks_msec() + 5000
+	while not scene.get_node("UI/UI_RunRoot/Phase_PUSH_YOUR_LUCK").visible and Time.get_ticks_msec() < deadline:
+		await process_frame
+	OS.unset_environment("GALLICUS_SMOKE")
+	OS.unset_environment("GALLICUS_SMOKE_SCENARIO")
+	_expect_score(scene, "climax", "push your luck")
+	await _press_route(scene, "Btn_PUSH_YOUR_LUCK_CONDANNA")
+	await create_timer(0.3).timeout
+	_expect_score(scene, "ending", "dossier")
+	root.get_node("GameEvents").request_show_main_menu.emit()
+	await process_frame
+	_expect_score(scene, "menu", "return to menu")

@@ -2278,6 +2278,7 @@ func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
 			if resolved_bet == &"":
 				_reject_invalid_continue_payload("invalid_run_save_flow_step_missing_bet_id:%s" % String(flow_step))
 				return
+			_set_phase(RunPhase.BET_COMMITTED, "resume_signed_pact")
 			_start_pact_sealed_ritual(resolved_bet)
 		RunSaveFlowStepContractScript.INTERMEDIATE_CHOICE:
 			if resolved_bet == &"":

@@ -46,6 +46,9 @@ func _ready() -> void:
 		_streams[key] = stream
 	GameEvents.run_phase_changed.connect(_on_run_phase_changed)
 	GameEvents.run_started.connect(_on_run_started)
+	GameEvents.betting_opened.connect(_on_score_section.bind("safe"))
+	GameEvents.pact_sealed_opened.connect(_on_score_section.bind("tense"))
+	GameEvents.resolve_ritual_opened.connect(_on_ritual_opened)
 	GameEvents.request_show_main_menu.connect(_on_request_show_main_menu)
 	GameEvents.run_ended.connect(_on_registry_run_ended)
 	GameEvents.settings_changed.connect(_on_settings_changed)
@@ -53,18 +56,26 @@ func _ready() -> void:
 	if _port.can_start_run():
 		_transition("menu")
 
-func _phase_key(phase: int) -> String:
-	match phase:
-		RunPhaseContractScript.MAIN_MENU: return "menu"
-		RunPhaseContractScript.BET_COMMITTED, RunPhaseContractScript.INTERMEDIATE_CHOICE: return "tense"
-		RunPhaseContractScript.PUSH_YOUR_LUCK: return "climax"
-		RunPhaseContractScript.GAME_OVER: return "ending"
-		_: return "safe"
-
+# The phase bus carries runtime gates (PREP/LIVE/GAME_OVER), not ritual steps.
+# Existing presentation events carry the musical section within each gate.
 func _on_run_phase_changed(phase: int) -> void:
-	if _registry_silent or not _port.can_start_run():
-		return
-	_transition(_phase_key(phase))
+	if phase == RunPhaseContractScript.GAME_OVER:
+		_on_score_section("ending")
+
+func _on_score_section(key: String) -> void:
+	if not _registry_silent and _port.can_start_run():
+		_transition(key)
+
+func _on_ritual_opened(_payload: Dictionary) -> void:
+	_on_score_section("tense")
+
+func apply_run_ui_payload(payload: RunUiPayload) -> void:
+	match payload.phase:
+		RunPhaseContractScript.MAIN_MENU: _on_score_section("menu")
+		RunPhaseContractScript.BET_PRESENT, RunPhaseContractScript.NEXT_BET: _on_score_section("safe")
+		RunPhaseContractScript.BET_COMMITTED, RunPhaseContractScript.INTERMEDIATE_CHOICE: _on_score_section("tense")
+		RunPhaseContractScript.PUSH_YOUR_LUCK: _on_score_section("climax")
+		RunPhaseContractScript.GAME_OVER: _on_score_section("ending")
 
 func _on_run_started() -> void:
 	_registry_silent = false

@@ -161,3 +161,13 @@ non deve perdere gli array preparati da RunManager prima della scrittura.
 Il test semantico attraversa scrittura JSON, lettura e pulsante di ripresa.
 In caso di rigetto, quarantena e ritorno a MAIN_MENU precedono l'evento
 `continue_rejected`, cosi' il menu legge il save aggiornato e conserva la causa.
+
+## Preferenza di apertura
+
+`settings.opening_prologue_seen`: boolean, default false, owner SaveManager.
+Il caricamento di profili v5 senza il campo applica false e lo salva; valori
+non booleani sono normalizzati a false. mark_opening_prologue_seen registra
+true al primo ingresso presentato. Nessuna modifica ai checkpoint della run,
+alla progressione o alla firma. I profili con campagna gia' avviata vengono
+esclusi dalla presentazione tramite i dati esistenti. La regressione AV
+ricarica il profilo e controlla che la preferenza sia persistita.

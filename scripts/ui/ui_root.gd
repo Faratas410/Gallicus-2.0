@@ -410,7 +410,7 @@ var _lbl_intro_body_stake: Label = null
 var _lbl_intro_footer: Label = null
 
 var scar_popup_panel: Control = null
-var scar_popup: Label = null
+var scar_popup: RichTextLabel = null
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -663,9 +663,14 @@ func _bind_scene_nodes() -> void:
 	push_luck_double_note = get_node_or_null("UI_RunRoot/Phase_PUSH_YOUR_LUCK/Panel_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK/Box_PUSH_YOUR_LUCK_CHOICES/Box_PUSH_YOUR_LUCK_CHOICE_2/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICEPanel/Lbl_PUSH_YOUR_LUCK_FOOTER_CHOICE") as Label
 
 	# End run
+	scar_popup_panel = get_node_or_null("HUD/ScarPopupPanel") as Control
+	if scar_popup_panel != null:
+		scar_popup_panel.add_theme_stylebox_override("panel", preload("res://assets/ui/official/styleboxes/sb_panel_main.tres"))
+	scar_popup = get_node_or_null("HUD/ScarPopupPanel/ScarPopupMargin/ScarPopupTextPanel/ScarPopup") as RichTextLabel
 	scars_detail_panel = get_node_or_null("UI_RunRoot/ScarsDetailPanel") as Control
 	scars_detail_text = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel/ScarsDetailText") as RichTextLabel
 	scars_detail_close = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailClose") as Button
+	scars_detail_panel.visibility_changed.connect(_sync_scars_detail_blocker)
 	game_over_modal = get_node_or_null("UI_RunRoot/Phase_END_RUN") as Control
 	game_over_panel = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN") as Control
 	verdict_header = get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Lbl_END_RUN_TITLE") as Label
@@ -850,25 +855,18 @@ func _show_scar_popup(scar: Dictionary) -> void:
 	scar_popup.text = "\n".join(text_lines)
 	if scar_popup_panel == null:
 		return
-	scar_popup_panel.visible = true
-	if _is_reduced_motion():
-		scar_popup_panel.modulate.a = 1.0
-		scar_popup_panel.scale = Vector2.ONE
-		return
-	scar_popup_panel.modulate.a = 0.0
-	scar_popup_panel.scale = Vector2(0.96, 0.96)
 	if _scar_popup_tween != null and _scar_popup_tween.is_valid():
 		_scar_popup_tween.kill()
+	scar_popup_panel.visible = true
+	scar_popup_panel.scale = Vector2.ONE
+	scar_popup_panel.modulate.a = 1.0 if _is_reduced_motion() else 0.0
 	_scar_popup_tween = create_tween()
-	_scar_popup_tween.set_trans(Tween.TRANS_QUAD)
-	_scar_popup_tween.set_ease(Tween.EASE_OUT)
-	_scar_popup_tween.tween_property(scar_popup_panel, "modulate:a", 1.0, 0.15)
-	_scar_popup_tween.parallel().tween_property(scar_popup_panel, "scale", Vector2(1.02, 1.02), 0.15)
-	_scar_popup_tween.tween_interval(1.0)
-	_scar_popup_tween.set_ease(Tween.EASE_IN)
-	_scar_popup_tween.tween_property(scar_popup_panel, "modulate:a", 0.0, 0.25)
-	_scar_popup_tween.parallel().tween_property(scar_popup_panel, "scale", Vector2(0.98, 0.98), 0.25)
-	_scar_popup_tween.tween_callback(Callable(self, "_hide_scar_popup"))
+	if not _is_reduced_motion():
+		_scar_popup_tween.tween_property(scar_popup_panel, "modulate:a", 1.0, 0.15)
+	_scar_popup_tween.tween_interval(3.5)
+	if not _is_reduced_motion():
+		_scar_popup_tween.tween_property(scar_popup_panel, "modulate:a", 0.0, 0.25)
+	_scar_popup_tween.tween_callback(_hide_scar_popup)
 
 func _hide_scar_popup() -> void:
 	if scar_popup_panel != null:
@@ -1397,16 +1395,8 @@ func _refresh_verdict_panel() -> void:
 		else:
 			verdict_outcome.text = tr("Condanna registrata.")
 	if verdict_icon != null:
-		if _last_register_final:
-			var icon_path: String = _last_ending_icon_path
-			if icon_path == "" or not ResourceLoader.exists(icon_path, "Texture2D"):
-				icon_path = ENDING_ICON_FALLBACK_PATH
-			var icon_texture: Texture2D = ResourceLoader.load(icon_path, "Texture2D") as Texture2D
-			verdict_icon.texture = icon_texture
-			verdict_icon.visible = icon_texture != null
-		else:
-			verdict_icon.texture = null
-			verdict_icon.visible = false
+		verdict_icon.texture = null
+		verdict_icon.hide()
 	if verdict_sentence_label != null:
 		verdict_sentence_label.text = _build_smart_register_summary()
 	if verdict_charge_label != null:
@@ -2279,6 +2269,9 @@ func _on_intermediate_choice_opened() -> void:
 func apply_run_ui_payload(payload: RunUiPayload) -> void:
 	if payload == null:
 		return
+	var score: Node = get_node_or_null("../MusicDirector")
+	if score != null:
+		score.apply_run_ui_payload(payload)
 	var target_phase: int = payload.phase
 	if payload.show_mid_choice and target_phase != RunPhaseContract.INTERMEDIATE_CHOICE:
 		target_phase = RunPhaseContract.INTERMEDIATE_CHOICE
@@ -2488,16 +2481,20 @@ func _refresh_scars_ui(scars: Array) -> void:
 	_refresh_modal_dimmer()
 
 func _on_scars_panel_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) or event.is_action_pressed("ui_accept"):
 		_show_scars_detail()
+		get_viewport().set_input_as_handled()
 
 func _show_scars_detail() -> void:
 	if scars_detail_panel == null or scars_detail_text == null:
 		return
 	if _scars_detail_text == "":
 		return
-	show_modal(scars_detail_panel)
+	scars_detail_panel.show()
+	scars_detail_panel.move_to_front()
 	scars_detail_text.text = _scars_detail_text
+	scars_detail_text.scroll_to_line(0)
+	scars_detail_close.grab_focus()
 	_set_scars_detail_modal(true)
 
 func _hide_scars_detail() -> void:
@@ -2505,6 +2502,8 @@ func _hide_scars_detail() -> void:
 		return
 	scars_detail_panel.visible = false
 	_set_scars_detail_modal(false)
+	if scars_panel != null and scars_panel.is_visible_in_tree():
+		scars_panel.grab_focus()
 
 func _on_scars_detail_closed() -> void:
 	_play_sfx(&"button_click")
@@ -4182,6 +4181,9 @@ func _reset_fast_countdown() -> void:
 			fast_countdown_panel.visible = false
 
 func _unhandled_input(event: InputEvent) -> void:
+	if scars_detail_panel != null and scars_detail_panel.visible:
+		get_viewport().set_input_as_handled()
+		return
 	if _controls_first_run_active and (not _has_seen_controls) and controls_hint_panel != null and controls_hint_panel.visible:
 		var should_dismiss: bool = false
 		if event is InputEventKey and event.pressed and not event.echo:
@@ -4294,3 +4296,31 @@ func _get_arena_index() -> int:
 
 
 
+
+func _sync_scars_detail_blocker() -> void:
+	get_node("UI_RunRoot/ScarsDetailBlocker").visible = scars_detail_panel.visible
+
+func _input(event: InputEvent) -> void:
+	if scars_detail_panel == null or not scars_detail_panel.is_visible_in_tree():
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_hide_scars_detail()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_focus_next") or event.is_action_pressed("ui_focus_prev"):
+		if scars_detail_close.has_focus():
+			scars_detail_text.grab_focus()
+		else:
+			scars_detail_close.grab_focus()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_up") or event.is_action_pressed("ui_down") or event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right"):
+		scars_detail_text.grab_focus()
+		var scroll: VScrollBar = scars_detail_text.get_v_scroll_bar()
+		if event.is_action_pressed("ui_up"):
+			scroll.value -= 32.0
+		elif event.is_action_pressed("ui_down"):
+			scroll.value += 32.0
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_accept"):
+		if scars_detail_close.has_focus():
+			_on_scars_detail_closed()
+		get_viewport().set_input_as_handled()

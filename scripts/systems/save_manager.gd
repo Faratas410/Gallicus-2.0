@@ -168,6 +168,18 @@ func get_reduced_motion() -> bool:
 		load_profile()
 	return bool(_settings.get("reduced_motion", DEFAULT_REDUCED_MOTION))
 
+func has_seen_opening_prologue() -> bool:
+	if not _profile_loaded:
+		load_profile()
+	return bool(_settings.get("opening_prologue_seen", false))
+
+func mark_opening_prologue_seen() -> void:
+	if has_seen_opening_prologue():
+		return
+	_settings["opening_prologue_seen"] = true
+	_profile_dirty = true
+	save_profile()
+
 func get_fullscreen() -> bool:
 	if not _profile_loaded:
 		load_profile()
@@ -399,6 +411,7 @@ func _get_default_settings() -> Dictionary:
 		"music_volume": DEFAULT_MUSIC_VOLUME,
 		"sfx_volume": DEFAULT_SFX_VOLUME,
 		"reduced_motion": DEFAULT_REDUCED_MOTION,
+		"opening_prologue_seen": false,
 		"fullscreen": DEFAULT_FULLSCREEN,
 		"window_resolution": DEFAULT_WINDOW_RESOLUTION,
 	}
@@ -480,6 +493,10 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 	if settings_value.has("reduced_motion"):
 		sanitized["reduced_motion"] = bool(settings_value.get("reduced_motion", DEFAULT_REDUCED_MOTION))
 	else:
+		needs_save = true
+	var intro_seen: Variant = settings_value.get("opening_prologue_seen", false)
+	sanitized["opening_prologue_seen"] = intro_seen is bool and intro_seen
+	if not settings_value.has("opening_prologue_seen") or not intro_seen is bool:
 		needs_save = true
 	if settings_value.has("fullscreen"):
 		sanitized["fullscreen"] = bool(settings_value.get("fullscreen", DEFAULT_FULLSCREEN))

@@ -590,3 +590,12 @@ The reactive terminal view cannot advance eras. Era 4 rejects new/continued
 runs, survives restart and does not instantiate RegisterState. No UI reset,
 extra era or hidden cycle exists. Settings apply settings only: input setup
 belongs to _ready, and settings must never defer another _boot.
+
+## Signed pact resume correction - 2026-09-08
+
+When resuming the BET_SIGNED checkpoint, RunManager restores BET_COMMITTED
+before opening the sealed-pact ritual. The existing pact-advance request
+accepts only this phase. Restoring the view while leaving MAIN_MENU active
+would ignore the player's action until the ritual timeout. Checkpoint names,
+payload shape and authority remain unchanged. The AV integration regression
+resumes via the menu and advances through the actual pact button.

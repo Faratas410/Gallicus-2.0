@@ -20,6 +20,58 @@ border_color = Color(1, 0.86, 0.55, 1)
 
 [sub_resource type="StyleBoxEmpty" id="empty"]
 
+[sub_resource type="Gradient" id="bronze_gradient"]
+offsets = PackedFloat32Array(0, 0.65, 0.8, 0.83, 1)
+colors = PackedColorArray(0.96, 0.84, 0.54, 1, 0.58, 0.39, 0.17, 1, 0.28, 0.18, 0.08, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="bronze_knob"]
+gradient = SubResource("bronze_gradient")
+width = 24
+height = 24
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="ring_gradient"]
+offsets = PackedFloat32Array(0, 0.55, 0.6, 0.8, 0.83, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0, 0.65, 0.48, 0.25, 1, 0.65, 0.48, 0.25, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="bronze_ring"]
+gradient = SubResource("ring_gradient")
+width = 24
+height = 24
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="scroll_thumb"]
+bg_color = Color(0.60, 0.43, 0.23, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
+content_margin_left = 4.0
+content_margin_right = 4.0
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="scroll_thumb_active"]
+bg_color = Color(0.92, 0.77, 0.46, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
+content_margin_left = 4.0
+content_margin_right = 4.0
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxEmpty" id="scroll_track"]
+content_margin_left = 4.0
+content_margin_right = 4.0
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+
 [resource]
 default_font = ExtResource("font")
 default_font_size = 18
@@ -97,3 +149,24 @@ HSlider/styles/grabber_area = ExtResource("fill")
 HSlider/styles/grabber_area_highlight = ExtResource("fill")
 TitleLabel/base_type = &"Label"
 TitleLabel/font_sizes/font_size = 24
+PopupMenu/styles/hover = ExtResource("hover")
+PopupMenu/icons/radio_checked = SubResource("bronze_knob")
+PopupMenu/icons/radio_unchecked = SubResource("bronze_ring")
+PopupMenu/icons/checked = SubResource("bronze_knob")
+PopupMenu/icons/unchecked = SubResource("bronze_ring")
+PopupMenu/constants/v_separation = 10
+OptionButton/colors/icon_normal_color = Color(0.86, 0.71, 0.44, 1)
+OptionButton/colors/icon_hover_color = Color(1, 0.86, 0.55, 1)
+OptionButton/colors/icon_pressed_color = Color(1, 0.86, 0.55, 1)
+HSlider/icons/grabber = SubResource("bronze_knob")
+HSlider/icons/grabber_highlight = SubResource("bronze_knob")
+HSlider/icons/grabber_disabled = SubResource("bronze_ring")
+OptionButton/constants/modulate_arrow = 1
+VScrollBar/styles/scroll = SubResource("scroll_track")
+VScrollBar/styles/grabber = SubResource("scroll_thumb")
+VScrollBar/styles/grabber_highlight = SubResource("scroll_thumb_active")
+VScrollBar/styles/grabber_pressed = SubResource("scroll_thumb_active")
+HScrollBar/styles/scroll = SubResource("scroll_track")
+HScrollBar/styles/grabber = SubResource("scroll_thumb")
+HScrollBar/styles/grabber_highlight = SubResource("scroll_thumb_active")
+HScrollBar/styles/grabber_pressed = SubResource("scroll_thumb_active")

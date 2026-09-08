@@ -525,3 +525,20 @@ Ritual panel enter: scale 0.99, travel 4 px, duration 0.22 seconds. Registry
 open timings and soundtrack ownership are documented in
 `docs/cinematic_direction.md` and `docs/audio_direction.md`. No new flow delay,
 save schema, outcome rule or input authority is introduced by this pass.
+
+### Screen consistency and opening presentation - 2026-09-08
+
+The approved opening is a local Main presentation layer, eight seconds,
+with native IT/EN/ES captions and skip after 0.5 seconds. RunManager starts
+the valid run before presentation; no cinematic phase or intermediate run
+save is introduced. A SaveManager presentation preference prevents repeat
+viewing, including across restarts. Continue never arms it. Reduced motion
+retains both captions and reading time. Completion restores registry focus;
+menu, resume and end cancel it. See `docs/cinematic_direction.md`.
+
+Scar detail is a secondary overlay, not a replacement phase/modal. Closing
+it preserves the underlying ritual. Its text scrolls, focus remains in the
+detail, Escape closes it. Scar notices expire in both motion settings.
+Silence return is anchored within the viewport; Absence offers no return.
+Music consumes the same existing RunUiPayload as UI plus emitted ritual
+events; runtime gate IDs do not stand in for semantic UI phases.

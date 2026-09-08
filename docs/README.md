@@ -42,8 +42,10 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Autorita'
 
-Ultima evidenza locale: `docs/support/av_pass_2026-09-06.md`, con inventario
-dei file, verifiche AV, build Windows e limiti ancora aperti verso Steam.
+Ultima implementazione di coerenza e prologo:
+`docs/support/consistency_fix_2026-09-08.md`. L'audit precedente
+`docs/support/screen_audit_2026-09-08.md` conserva i difetti e le prove del
+candidato precedente. I report non sostituiscono checkpoint Linux o CP-03.
 
 - `docs/canon/` contiene le regole canoniche e prevale sui documenti operativi.
 - `docs/contracts/` contiene superfici tecniche controllate anche dalla CI.

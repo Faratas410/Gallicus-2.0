@@ -226,13 +226,13 @@ size_flags_vertical = 0
 visible = false
 z_index = 111
 anchor_left = 0.5
-anchor_top = 0.32
+anchor_top = 0.0
 anchor_right = 0.5
-anchor_bottom = 0.32
+anchor_bottom = 0.0
 offset_left = -260.0
-offset_top = -24.0
+offset_top = 12.0
 offset_right = 260.0
-offset_bottom = 24.0
+offset_bottom = 60.0
 
 [node name="ScarPopupMargin" type="MarginContainer" parent="HUD/ScarPopupPanel"]
 anchor_right = 1.0
@@ -1400,9 +1400,17 @@ autowrap_mode = 2
 modulate = Color(1, 1, 1, 1)
 text = "Pressione +1. Aumenti posta e rischio."
 
+[node name="ScarsDetailBlocker" type="ColorRect" parent="UI_RunRoot"]
+visible = false
+z_index = 120
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.5)
+mouse_filter = 0
+
 [node name="ScarsDetailPanel" type="Panel" parent="UI_RunRoot"]
 visible = false
-z_index = 95
+z_index = 121
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -1431,10 +1439,12 @@ text = "DETTAGLIO CICATRICI"
 
 [node name="ScarsDetailTextPanel" type="PanelContainer" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="ScarsDetailText" type="Label" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel"]
+[node name="ScarsDetailText" type="RichTextLabel" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel"]
 autowrap_mode = 2
-clip_text = true
+scroll_active = true
+focus_mode = 2
 text = ""
 
 [node name="ScarsDetailClose" type="Button" parent="UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox"]
@@ -1856,6 +1866,7 @@ horizontal_alignment = 1
 text = "Sotto controllo"
 
 [node name="ScarsPanel" type="Panel" parent="HUD"]
+focus_mode = 2
 mouse_filter = 1
 z_index = 80
 theme_override_styles/panel = ExtResource("32_scars_dossier")

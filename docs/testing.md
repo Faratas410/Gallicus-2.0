@@ -427,3 +427,53 @@ Nel pass del 6 settembre un cold import Windows e' terminato con
 importate correttamente senza modifiche agli asset o bypass degli errori.
 La causa resta aperta: conservare anche il log fallito, non presentare i
 tentativi successivi come una correzione. Il checkpoint Linux resta richiesto.
+
+## Audit di coerenza nel percorso - 8 settembre 2026
+
+`tools/audit_screen_capture.tscn` salva screenshot, stili effettivi e stato
+dei player in `artifacts/screen_audit_2026-09-08/`. Il flag utente `--linear`
+salta le matrici e i loro riposizionamenti, registra il bus Music e prova
+anche due superfici cicatrici con testo campione dichiarato. La riuscita
+della cattura non equivale al superamento dell'audit: i target assenti sono
+respinti nel manifest e il report conserva i difetti funzionali.
+
+Usare APPDATA isolata prima del lancio, con risoluzione del path bloccante:
+
+```powershell
+$ErrorActionPreference = 'Stop'
+New-Item -ItemType Directory -Force artifacts/screen_audit_2026-09-08/profile | Out-Null
+$env:APPDATA = (Resolve-Path artifacts/screen_audit_2026-09-08/profile).Path
+./tools/godot/Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/audit_screen_capture.tscn --audio-driver Dummy --max-fps 60
+# Usare un altro profilo vuoto per la prova lineare:
+./tools/godot/Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/audit_screen_capture.tscn --audio-driver Dummy --max-fps 60 -- --linear
+```
+
+Queste prove sono locali. Il collegamento musica-flow deve essere verificato
+attraversando i gesti: chiamare direttamente MusicDirector non basta.
+Il ritorno dal Silenzio richiede un rettangolo dentro il viewport, oltre
+alla proprieta visible. Vedere `docs/support/screen_audit_2026-09-08.md`.
+
+## Regressione di coerenza e prologo
+
+Il contratto AV integra l'ingresso dal pulsante reale, skip e scadenza del
+prologo, movimento ridotto con tempo di lettura, cambio lingua tramite
+impostazioni, preferenza persistente, ripresa da checkpoint e sequenza dei
+brani fino al fascicolo. Verifica rettangolo/focus/azione del ritorno dal
+Silenzio a 720p e 1080p, dettaglio Cicatrici scrollabile e preservazione della
+fase sottostante, scadenza notifica anche senza animazioni. La CI richiama
+lo stesso contratto gia' presente nel job runtime; nessun job duplicato.
+
+Il capture di audit accetta `--audit-dir=res://artifacts/<directory>` per
+conservare il prima. La matrice estesa include utility e popup nativi nelle
+tre lingue e due risoluzioni. Il percorso `--linear` asserisce lo score
+attivo e la presenza dei target Cicatrici; registra il bus Music. Controllare
+anche gli inventari e il contenuto delle immagini, non solo exit code.
+Le nuove catture del prologo sono distinte dalla matrice canonica di 289
+oggetti; quest'ultima mantiene conteggio e budget CI originali.
+
+La variante `--prologue-only` produce 24 fixture di layout (2 frasi x 3 lingue
+x 2 risoluzioni x 2 preferenze di movimento) e un inventario separato. Nel
+percorso lineare si attende anche un tempo reale di assestamento: il numero
+di frame da solo dipende dalla frequenza del display e puo' catturare una
+dissolvenza intermedia. I test AV provano inoltre larghezza delle scrollbar,
+traduzione dinamica dell'Archivio e focus confinato anche con le frecce.

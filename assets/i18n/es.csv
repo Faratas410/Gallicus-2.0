@@ -630,3 +630,108 @@ APPLAUSO GARANTITO,APLAUSO GARANTIZADO
 L'arena dimentica. Il Registro no.,La arena olvida. El Registro no.
 Il tuo passaggio è registrato.,Tu paso queda registrado.
 RIPRENDI IL PERCORSO,RETOMA TU CAMINO
+CREDITS_BODY,"GALLICUS
+
+Un juego sobre el riesgo y las huellas que deja.
+
+Gracias a quienes participan en las pruebas."
+PATTI DISPONIBILI,PACTOS DISPONIBLES
+Ogni rischio accettato lascia un segno.,Cada riesgo aceptado deja una marca.
+Il Registro conserva le tue scelte.,El Registro conserva tus decisiones.
+SALTA,SALTAR
+Hai rifiutato l'incasso quando potevi fermarti.,Rechazaste cobrar cuando podías detenerte.
+"Il pubblico aveva gia contato le monete.
+Tu hai chiuso il pugno.","El público ya había contado las monedas.
+Tú cerraste el puño."
+Hai rifiutato l'incasso piu di una volta nella stessa run.,Rechazaste cobrar más de una vez en el mismo recorrido.
+"La folla ha smesso di gridare.
+Ha iniziato a guardare.","La multitud dejó de gritar.
+Empezó a observar."
+Hai continuato a rilanciare quando il rischio era ormai evidente.,Seguiste subiendo la apuesta cuando el riesgo ya era evidente.
+"Non era piu una scommessa.
+Era una dimostrazione.","Ya no era una apuesta.
+Era una demostración."
+Hai rilanciato e perso la run subito dopo.,Subiste la apuesta y perdiste el recorrido justo después.
+"Il silenzio dell'arena
+e durato piu del previsto.","El silencio de la arena
+duró más de lo previsto."
+Hai firmato il tuo primo patto.,Firmaste tu primer pacto.
+Nessuno ti ha forzato la mano.,Nadie te obligó.
+Hai firmato un patto che ti ha condotto alla morte.,Firmaste un pacto que te llevó a la muerte.
+"La sentenza era scritta.
+Hai solo aggiunto il nome.","La sentencia estaba escrita.
+Solo añadiste tu nombre."
+Hai scelto una condanna senza ricevere alcun reward.,Elegiste una condena sin recibir ninguna recompensa.
+"La folla non ha capito.
+Tu si.","La multitud no lo entendió.
+Tú sí."
+Hai perso la run a causa diretta di un patto firmato.,Perdiste el recorrido como consecuencia directa de un pacto firmado.
+Non e stata sfortuna.,No fue mala suerte.
+Hai continuato una run nonostante le tue condizioni critiche.,Continuaste un recorrido pese a tu estado crítico.
+Il corpo era gia un avviso.,Tu cuerpo ya era una advertencia.
+Hai evitato la morte per un soffio.,Evitaste la muerte por muy poco.
+"Il pubblico ha sospirato.
+Tu no.","El público suspiró.
+Tú no."
+Hai incassato dopo una sequenza di scelte rischiose.,Cobraste tras una serie de decisiones arriesgadas.
+"La saggezza arriva tardi.
+Ma arriva.","La sabiduría llega tarde.
+Pero llega."
+Hai incassato con un livello di rischio estremamente alto.,Cobraste con un nivel de riesgo extremadamente alto.
+Questa volta.,Esta vez.
+Hai perso la tua prima run.,Perdiste tu primer recorrido.
+L'arena non fa sconti ai nuovi.,La arena no hace concesiones a los recién llegados.
+Hai perso la run vicino a una soglia decisiva.,Perdiste el recorrido cerca de un umbral decisivo.
+La folla aveva gia deciso.,La multitud ya había decidido.
+Hai preso una decisione rischiosa un attimo prima della fine.,Tomaste una decisión arriesgada justo antes del final.
+"Un secondo prima
+sarebbe bastato.","Un segundo antes
+habría bastado."
+Hai perso la run senza errori meccanici evidenti.,Perdiste el recorrido sin errores mecánicos evidentes.
+Nessuno ha barato.,Nadie hizo trampas.
+Hai completato una run.,Completaste un recorrido.
+L'arena non dimentica.,La arena no olvida.
+Hai attirato l'attenzione totale della folla.,Atrajiste toda la atención de la multitud.
+Non eri piu solo.,Ya no estabas solo.
+Il pubblico ha iniziato a riconoscerti.,El público empezó a reconocerte.
+Ora sanno chi sei.,Ahora saben quién eres.
+Sei tornato all'arena dopo una sconfitta.,Volviste a la arena después de una derrota.
+L'arena e ancora li.,La arena sigue ahí.
+Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,El Registro cerró el expediente por compromiso.
+"La deviazione ha superato la soglia.
+Il Registro ha emesso chiusura definitiva.","La desviación superó el umbral.
+El Registro ordenó el cierre definitivo."
+Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,El Registro cerró el expediente por ascenso.
+"L'evidenza di ascesa e risultata prevalente.
+Il fascicolo e stato definito.","Las pruebas de ascenso prevalecieron.
+El expediente quedó resuelto."
+Il Registro ha chiuso il fascicolo per consumo (ending_scars).,El Registro cerró el expediente por desgaste.
+"L'accumulo di consumo e stato ritenuto definitivo.
+Il Registro ha concluso l'atto.","El desgaste acumulado se consideró definitivo.
+El Registro concluyó el acta."
+Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,El Registro cerró el expediente por un patrón consolidado.
+"La ripetizione e risultata sufficiente.
+La classificazione e stata archiviata.","La repetición fue suficiente.
+La clasificación quedó archivada."
+CATENA DI DEBITO,CADENA DE DEUDA
+DECIMA DI SANGUE,DIEZMO DE SANGRE
+PIACERE AL PUBBLICO,COMPLACER AL PÚBLICO
+ULTIMO RESPIRO,ÚLTIMO ALIENTO
+CAMBIALE DI SANGUE,PAGARÉ DE SANGRE
+PEGNO DI CARNE,PRENDA DE CARNE
+USURA SACRA,USURA SAGRADA
+CONFISCA,CONFISCACIÓN
+VANTO A LAMA,ALARDES DE ACERO
+SPECCHIO ROTTO,ESPEJO ROTO
+CORONA DI POLVERE,CORONA DE POLVO
+OCCHI SU DI TE,OJOS SOBRE TI
+DIECI SECONDI,DIEZ SEGUNDOS
+ULTIMO BATTITO,ÚLTIMO LATIDO
+RESPIRO RUBATO,ALIENTO ROBADO
+ORA CORTA,HORA BREVE
+NESSUNA PERDITA,NINGUNA PÉRDIDA
+APPLAUDE SENZA RISCHIO,APLAUSOS SIN RIESGO
+PAGAMENTO DOPO,PAGO DESPUÉS
+Arena del Debito,Arena de la Deuda
+Arena del Silenzio,Arena del Silencio
+Arena del Sangue,Arena de la Sangre

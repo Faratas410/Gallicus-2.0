@@ -126,3 +126,21 @@ sul bordo dell'oggetto, senza overlay opaco o testo coperto; due sprite al
 massimo, invisibili dopo 0,41 s. Il titolo di lettura del Registro e' fermo,
 le entrate rituali sono ridotte a 4 px. Movimento ridotto cancella subito i
 VFX attivi. Limiti e accettazione in `docs/art_direction.md` e `docs/testing.md`.
+
+## Chiusura della coerenza UI - 8 settembre 2026
+
+Archivio e Crediti usano la stessa superficie utility senza cornici interne
+ridondanti; titoli 24 px, corpo 18 px. Crediti: colonna 640 px e corpo con
+altezza minima 220 px; ritorni utility 280x52 centrati. Tab Archivio sempre
+navigabili, selezione come stato premuto, mai disabled. Le voci non ancora
+registrate restano leggibili (alpha 0,78). Il Museo non espone livelli interni.
+Popup, radio, slider e scrollbar ereditano bronzo e focus dal tema ufficiale.
+Le forme geometriche dei controlli sono risorse native, senza nuovi raster.
+
+Cicatrici: dettaglio 440x360, testo scrollabile, CHIUDI sempre accessibile;
+overlay sopra la fase attiva, blocker separato, Escape e focus confinato al
+dettaglio. La chiusura conserva il rito sottostante. Notifica non modale con
+superficie basaltica, lettura 3,5 s e scadenza anche con movimento ridotto.
+Il fascicolo usa il sigillo gia' nel materiale: niente badge decorativo
+duplicato con fondo nero. Silenzio: ritorno 320x52 centrato in basso, offset
+relativi agli anchor; Assenza conserva superficie senza CTA.

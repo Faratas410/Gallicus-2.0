@@ -22,8 +22,10 @@ func _ready() -> void:
 	_return_button.theme = preload("res://assets/ui/theme/official_theme.tres")
 	_black.add_child(_return_button)
 	_return_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	_return_button.position = Vector2(-160, -88)
-	_return_button.size = Vector2(320, 52)
+	_return_button.offset_left = -160.0
+	_return_button.offset_right = 160.0
+	_return_button.offset_top = -88.0
+	_return_button.offset_bottom = -36.0
 	_return_button.text = tr("TORNA AL MENU")
 	_return_button.pressed.connect(_return_to_menu)
 	_heartbeat = AudioStreamPlayer.new()

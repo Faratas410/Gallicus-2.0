@@ -630,3 +630,108 @@ APPLAUSO GARANTITO,APPLAUSO GARANTITO
 L'arena dimentica. Il Registro no.,L'arena dimentica. Il Registro no.
 Il tuo passaggio è registrato.,Il tuo passaggio è registrato.
 RIPRENDI IL PERCORSO,RIPRENDI IL PERCORSO
+CREDITS_BODY,"GALLICUS
+
+Un gioco sul rischio e sulle tracce che lascia.
+
+Grazie a chi partecipa al playtest."
+PATTI DISPONIBILI,PATTI DISPONIBILI
+Ogni rischio accettato lascia un segno.,Ogni rischio accettato lascia un segno.
+Il Registro conserva le tue scelte.,Il Registro conserva le tue scelte.
+SALTA,SALTA
+Hai rifiutato l'incasso quando potevi fermarti.,Hai rifiutato l'incasso quando potevi fermarti.
+"Il pubblico aveva gia contato le monete.
+Tu hai chiuso il pugno.","Il pubblico aveva già contato le monete.
+Tu hai chiuso il pugno."
+Hai rifiutato l'incasso piu di una volta nella stessa run.,Hai rifiutato l'incasso più di una volta nella stessa run.
+"La folla ha smesso di gridare.
+Ha iniziato a guardare.","La folla ha smesso di gridare.
+Ha iniziato a guardare."
+Hai continuato a rilanciare quando il rischio era ormai evidente.,Hai continuato a rilanciare quando il rischio era ormai evidente.
+"Non era piu una scommessa.
+Era una dimostrazione.","Non era più una scommessa.
+Era una dimostrazione."
+Hai rilanciato e perso la run subito dopo.,Hai rilanciato e perso la run subito dopo.
+"Il silenzio dell'arena
+e durato piu del previsto.","Il silenzio dell'arena
+è durato più del previsto."
+Hai firmato il tuo primo patto.,Hai firmato il tuo primo patto.
+Nessuno ti ha forzato la mano.,Nessuno ti ha forzato la mano.
+Hai firmato un patto che ti ha condotto alla morte.,Hai firmato un patto che ti ha condotto alla morte.
+"La sentenza era scritta.
+Hai solo aggiunto il nome.","La sentenza era scritta.
+Hai solo aggiunto il nome."
+Hai scelto una condanna senza ricevere alcun reward.,Hai scelto una condanna senza ricevere alcuna ricompensa.
+"La folla non ha capito.
+Tu si.","La folla non ha capito.
+Tu sì."
+Hai perso la run a causa diretta di un patto firmato.,Hai perso la run a causa diretta di un patto firmato.
+Non e stata sfortuna.,Non è stata sfortuna.
+Hai continuato una run nonostante le tue condizioni critiche.,Hai continuato una run nonostante le tue condizioni critiche.
+Il corpo era gia un avviso.,Il corpo era già un avviso.
+Hai evitato la morte per un soffio.,Hai evitato la morte per un soffio.
+"Il pubblico ha sospirato.
+Tu no.","Il pubblico ha sospirato.
+Tu no."
+Hai incassato dopo una sequenza di scelte rischiose.,Hai incassato dopo una sequenza di scelte rischiose.
+"La saggezza arriva tardi.
+Ma arriva.","La saggezza arriva tardi.
+Ma arriva."
+Hai incassato con un livello di rischio estremamente alto.,Hai incassato con un livello di rischio estremamente alto.
+Questa volta.,Questa volta.
+Hai perso la tua prima run.,Hai perso la tua prima run.
+L'arena non fa sconti ai nuovi.,L'arena non fa sconti ai nuovi.
+Hai perso la run vicino a una soglia decisiva.,Hai perso la run vicino a una soglia decisiva.
+La folla aveva gia deciso.,La folla aveva già deciso.
+Hai preso una decisione rischiosa un attimo prima della fine.,Hai preso una decisione rischiosa un attimo prima della fine.
+"Un secondo prima
+sarebbe bastato.","Un secondo prima
+sarebbe bastato."
+Hai perso la run senza errori meccanici evidenti.,Hai perso la run senza errori meccanici evidenti.
+Nessuno ha barato.,Nessuno ha barato.
+Hai completato una run.,Hai completato una run.
+L'arena non dimentica.,L'arena non dimentica.
+Hai attirato l'attenzione totale della folla.,Hai attirato l'attenzione totale della folla.
+Non eri piu solo.,Non eri più solo.
+Il pubblico ha iniziato a riconoscerti.,Il pubblico ha iniziato a riconoscerti.
+Ora sanno chi sei.,Ora sanno chi sei.
+Sei tornato all'arena dopo una sconfitta.,Sei tornato all'arena dopo una sconfitta.
+L'arena e ancora li.,L'arena è ancora lì.
+Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,Il Registro ha chiuso il fascicolo per compromissione.
+"La deviazione ha superato la soglia.
+Il Registro ha emesso chiusura definitiva.","La deviazione ha superato la soglia.
+Il Registro ha emesso chiusura definitiva."
+Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,Il Registro ha chiuso il fascicolo per ascesa.
+"L'evidenza di ascesa e risultata prevalente.
+Il fascicolo e stato definito.","L'evidenza di ascesa è risultata prevalente.
+Il fascicolo è stato definito."
+Il Registro ha chiuso il fascicolo per consumo (ending_scars).,Il Registro ha chiuso il fascicolo per consumo.
+"L'accumulo di consumo e stato ritenuto definitivo.
+Il Registro ha concluso l'atto.","L'accumulo di consumo è stato ritenuto definitivo.
+Il Registro ha concluso l'atto."
+Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,Il Registro ha chiuso il fascicolo per pattern consolidato.
+"La ripetizione e risultata sufficiente.
+La classificazione e stata archiviata.","La ripetizione è risultata sufficiente.
+La classificazione e stata archiviata."
+CATENA DI DEBITO,CATENA DI DEBITO
+DECIMA DI SANGUE,DECIMA DI SANGUE
+PIACERE AL PUBBLICO,PIACERE AL PUBBLICO
+ULTIMO RESPIRO,ULTIMO RESPIRO
+CAMBIALE DI SANGUE,CAMBIALE DI SANGUE
+PEGNO DI CARNE,PEGNO DI CARNE
+USURA SACRA,USURA SACRA
+CONFISCA,CONFISCA
+VANTO A LAMA,VANTO A LAMA
+SPECCHIO ROTTO,SPECCHIO ROTTO
+CORONA DI POLVERE,CORONA DI POLVERE
+OCCHI SU DI TE,OCCHI SU DI TE
+DIECI SECONDI,DIECI SECONDI
+ULTIMO BATTITO,ULTIMO BATTITO
+RESPIRO RUBATO,RESPIRO RUBATO
+ORA CORTA,ORA CORTA
+NESSUNA PERDITA,NESSUNA PERDITA
+APPLAUDE SENZA RISCHIO,APPLAUDE SENZA RISCHIO
+PAGAMENTO DOPO,PAGAMENTO DOPO
+Arena del Debito,Arena del Debito
+Arena del Silenzio,Arena del Silenzio
+Arena del Sangue,Arena del Sangue

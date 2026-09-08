@@ -10,8 +10,8 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
-Aggiornato il 6 settembre 2026. Astra e' il modello di sviluppo di riferimento;
-questo aggiornamento documentale non chiude gate del gioco o della release.
+Aggiornato l'8 settembre 2026. Astra e' il modello di sviluppo di riferimento;
+questa consegna locale non chiude gate umani o Linux del gioco e della release.
 
 - Stage completato: **Foundation Reset**.
 - Stage completato: **Object-First Interaction Pass**.
@@ -34,11 +34,12 @@ questo aggiornamento documentale non chiude gate del gioco o della release.
   `32238429965` sul commit `8449766`.
 - Runtime Windows: bonifica e revisione menu verificate localmente con profili
   isolati; i crash pre-bootstrap precedenti restano evidenza storica.
-- Ultima consegna locale: pass audiovisivo originale, 17 raster e 31 audio;
-  43 verifiche statiche, 12 passi import/runtime e 28 condizioni AV. Report
-  `docs/support/av_pass_2026-09-06.md`; export e hash in
-  `artifacts/exports/av_pass/delivery_manifest.json`. Il menu precedente resta
-  documentato in `docs/support/menu_identity_2026-09-05.md`.
+- Ultima consegna locale: coerenza UI/audio, ripresa del patto e prologo.
+  17 raster e 31 audio originali riutilizzati; playbook di 55 passi e
+  regressione AV di 66 condizioni, inclusi ingresso e ripresa reali.
+  Report: `docs/support/consistency_fix_2026-09-08.md`; manifest ed EXE in
+  `artifacts/exports/consistency_fix_2026-09-08/`. Il pass AV precedente resta
+  documentato in `docs/support/av_pass_2026-09-06.md`.
 - Cache fredda Windows: un crash del motore, seguito da due import puliti
   riusciti senza workaround. Causa non isolata: anomalia aperta nel report AV.
 - Questo candidato richiede nuovo checkpoint Linux e prove umane; non eredita
@@ -47,6 +48,15 @@ questo aggiornamento documentale non chiude gate del gioco o della release.
   La preparazione documentale puo' procedere; non equivale a pubblicazione.
 
 ## Pass audiovisivo autorizzato del 6 settembre 2026
+
+L'utente ha approvato le correzioni dell'audit e il prologo di otto secondi.
+Il pacchetto locale corregge ritorno dal Silenzio, Cicatrici, score collegato
+al payload effettivo, utility e testo IT/EN/ES. La prova AV include ingresso
+reale, ripresa e controllo dei brani; report e consegna verificata in
+`docs/support/consistency_fix_2026-09-08.md`. L'audit precedente rimane in
+`docs/support/screen_audit_2026-09-08.md`. Nessun signoff umano o Linux viene
+chiuso dal solo lavoro locale. Prossimo passo: checkpoint Linux del candidato
+che l'utente committera', poi CP-03 con ascolto e comprensione del prologo.
 
 L'utente richiede esplicitamente VFX/animazioni ImageGen, nuova soundtrack e
 SFX, poi verifica runtime/CI e ottimizzazione non opprimente. Il pacchetto
@@ -723,8 +733,8 @@ CP-03; l'avvio dell'EXE locale non prova la distribuzione Steam.
 
 ## Prossimo step operativo
 
-1. Consolidare il candidato locale della bonifica e del menu gia' implementati,
-   con riferimento a `docs/support/menu_identity_2026-09-05.md`. Conservare
+1. Revisionare il candidato locale di coerenza, ripresa e prologo,
+   con riferimento a `docs/support/consistency_fix_2026-09-08.md`. Conservare
    manifest, hash e stato dei file; l'utente revisiona, committa e pubblica
    il codice da GitHub Desktop. Gli agenti non eseguono commit o push impliciti.
 2. Ottenere un nuovo checkpoint Linux `full` sul commit candidato, con gli

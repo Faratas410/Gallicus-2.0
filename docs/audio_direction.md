@@ -182,3 +182,35 @@ Il mix conserva headroom anche nella somma conservativa di sei SFX e due
 tracce: il gain massimo nominale per-cue e' -10 dB. Il manifest dichiara
 l'assistenza Astra nella composizione delle ricette di sintesi; distinguerla
 dall'uso di un servizio neurale audio nel dossier di provenienza Steam.
+
+## Verifica del collegamento al flow - 8 settembre 2026
+
+Il percorso lineare strumentato ha riprodotto Atrium al menu, Registry da
+apertura del Registro fino al push-your-luck e Dossier all'esito. Inscription
+e Threshold non erano stati attivati. Il director del candidato confrontava gli ID delle
+fasi canoniche, mentre run_phase_changed e' emesso dal gate PREP/LIVE/GAME_OVER
+(0/1/2). Il consumer cadeva quindi su safe durante le azioni rituali.
+
+Evidenza e registrazione del bus Music sono in
+`artifacts/screen_audit_2026-09-08/`; il report e' in
+`docs/support/screen_audit_2026-09-08.md`. Le 28 condizioni del contratto AV
+continuano a passare: provano player e crossfade invocati direttamente,
+non il collegamento completo agli eventi reali. Era la lacuna del candidato
+precedente, corretta nel pass seguente.
+
+Correzione implementata nel pass di coerenza: gli eventi realmente emessi
+betting_opened, pact_sealed_opened e resolve_ritual_opened selezionano la
+sezione. INTERMEDIATE_CHOICE e PUSH_YOUR_LUCK arrivano invece nel RunUiPayload
+esistente: UI inoltra lo stesso payload a MusicDirector, senza nuovo bus,
+segnali duplicati o decisioni di flow. PREP/LIVE non sovrascrivono la sezione.
+Il gate GAME_OVER seleziona Dossier; menu, Silenzio e Assenza conservano le
+guardie e i due player con crossfade di 2,2 s. Il segnale dichiarato
+push_luck_opened non viene emesso dal percorso attivo: non usarlo come prova.
+
+Il contratto AV attraversa ora menu, firma, ripresa, gesto, tre colpi,
+rilancio e fascicolo e controlla stream attivo e playback. Il capture lineare
+ripete il percorso e registra il bus Music; nessuna invocazione diretta del
+director nelle asserzioni di integrazione. Le precedenti prove di crossfade
+rimangono test di componente. Evidenze correnti in
+`docs/support/consistency_fix_2026-09-08.md`.
+La ramp sonora delle Ere e la fatigue all'ascolto restano prove umane aperte.

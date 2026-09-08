@@ -29,7 +29,7 @@ TAB_STATES = ("normal", "focus", "pressed", "selected", "disabled")
 ROUTES = {
     "NUOVO PERCORSO": {"it": "NUOVO PERCORSO", "en": "NEW PATH", "es": "NUEVO RECORRIDO"},
     "PROSSIMA SCOMMESSA": {"it": "PROSSIMA SCOMMESSA", "en": "NEXT BET", "es": "SIGUIENTE APUESTA"},
-    "TORNA AL MENU": {"it": "TORNA AL MENU", "en": "Back to Menu", "es": "VOLVER AL MENU"},
+    "TORNA AL MENU": {"it": "TORNA AL MENU", "en": "BACK TO MENU", "es": "VOLVER AL MENU"},
 }
 
 

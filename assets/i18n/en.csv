@@ -3,13 +3,13 @@ CONTINUA,Continue
 Nessuna partita salvata.,No saved game.
 ENTRA NELL'ARENA,ENTER THE ARENA
 CARICA PARTITA,Load Game
-ARCHIVIO,Archive
-OPZIONI,Options
-CREDITI,Credits
+ARCHIVIO,ARCHIVE
+OPZIONI,OPTIONS
+CREDITI,CREDITS
 ARCHIVIO DELLE CONDANNE,Archive of Sentences
 Registro consultivo. Nessuna ricompensa.,Consultation log. No rewards.
-CONDANNE,Sentences
-MUSEO,Museum
+CONDANNE,SENTENCES
+MUSEO,MUSEUM
 PATTI DISPONIBILI (LIVELLO 3),Available Pacts (Level 3)
 - Nessun patto disponibile.,- No pacts available.
 ARENE TEMATICHE,Themed Arenas
@@ -21,14 +21,14 @@ SBLOCCATE,Unlocked
 BLOCCATE,Locked
 LUMINOSITÀ,BRIGHTNESS
 Luminosità: %.2f,Brightness: %.2f
-LINGUA,Language
+LINGUA,LANGUAGE
 Lingua selezionata: %s,Selected language: %s
-VOLUME MASTER,Master Volume
-VOLUME MUSICA,Music Volume
-VOLUME EFFETTI,SFX Volume
-SCHERMO INTERO,Fullscreen
-MOVIMENTO RIDOTTO,Reduced Motion
-RISOLUZIONE,Resolution
+VOLUME MASTER,MASTER VOLUME
+VOLUME MUSICA,MUSIC VOLUME
+VOLUME EFFETTI,SFX VOLUME
+SCHERMO INTERO,FULLSCREEN
+MOVIMENTO RIDOTTO,REDUCED MOTION
+RISOLUZIONE,RESOLUTION
 Risoluzione: %s,Resolution: %s
 Volume: %d%%,Volume: %d%%
 Musica: %d%%,Music: %d%%
@@ -112,7 +112,7 @@ ULTIMA VOCE,LAST ENTRY
 NUOVO PERCORSO,NEW PATH
 NEXT BET,NEXT BET
 PROSSIMA SCOMMESSA,NEXT BET
-TORNA AL MENU,Back to Menu
+TORNA AL MENU,BACK TO MENU
 FAST: 12s,FAST: 12s
 CICATRICI,SCARS
 Nessuna cicatrice.,No scars.
@@ -630,3 +630,108 @@ APPLAUSO GARANTITO,GUARANTEED APPLAUSE
 L'arena dimentica. Il Registro no.,The arena forgets. The Registry does not.
 Il tuo passaggio è registrato.,Your passage is recorded.
 RIPRENDI IL PERCORSO,RESUME YOUR PATH
+CREDITS_BODY,"GALLICUS
+
+A game about risk and the traces it leaves.
+
+Thank you to everyone taking part in the playtest."
+PATTI DISPONIBILI,AVAILABLE PACTS
+Ogni rischio accettato lascia un segno.,Every accepted risk leaves a mark.
+Il Registro conserva le tue scelte.,The Registry preserves your choices.
+SALTA,SKIP
+Hai rifiutato l'incasso quando potevi fermarti.,You refused to cash out when you could have stopped.
+"Il pubblico aveva gia contato le monete.
+Tu hai chiuso il pugno.","The crowd had already counted the coins.
+You closed your fist."
+Hai rifiutato l'incasso piu di una volta nella stessa run.,You refused to cash out more than once in the same run.
+"La folla ha smesso di gridare.
+Ha iniziato a guardare.","The crowd stopped shouting.
+It started watching."
+Hai continuato a rilanciare quando il rischio era ormai evidente.,You kept raising the stakes when the risk was already clear.
+"Non era piu una scommessa.
+Era una dimostrazione.","It was no longer a wager.
+It was a demonstration."
+Hai rilanciato e perso la run subito dopo.,You raised the stakes and lost the run immediately afterward.
+"Il silenzio dell'arena
+e durato piu del previsto.","The silence in the arena
+lasted longer than expected."
+Hai firmato il tuo primo patto.,You signed your first pact.
+Nessuno ti ha forzato la mano.,No one forced your hand.
+Hai firmato un patto che ti ha condotto alla morte.,You signed a pact that led to your death.
+"La sentenza era scritta.
+Hai solo aggiunto il nome.","The sentence was written.
+You only added your name."
+Hai scelto una condanna senza ricevere alcun reward.,You chose a sentence without receiving any reward.
+"La folla non ha capito.
+Tu si.","The crowd did not understand.
+You did."
+Hai perso la run a causa diretta di un patto firmato.,You lost the run as a direct result of a signed pact.
+Non e stata sfortuna.,It was not bad luck.
+Hai continuato una run nonostante le tue condizioni critiche.,You continued a run despite your critical condition.
+Il corpo era gia un avviso.,Your body was already a warning.
+Hai evitato la morte per un soffio.,You narrowly escaped death.
+"Il pubblico ha sospirato.
+Tu no.","The crowd sighed.
+You did not."
+Hai incassato dopo una sequenza di scelte rischiose.,You cashed out after a series of risky choices.
+"La saggezza arriva tardi.
+Ma arriva.","Wisdom comes late.
+But it comes."
+Hai incassato con un livello di rischio estremamente alto.,You cashed out at an extremely high level of risk.
+Questa volta.,This time.
+Hai perso la tua prima run.,You lost your first run.
+L'arena non fa sconti ai nuovi.,The arena makes no allowances for newcomers.
+Hai perso la run vicino a una soglia decisiva.,You lost the run close to a decisive threshold.
+La folla aveva gia deciso.,The crowd had already decided.
+Hai preso una decisione rischiosa un attimo prima della fine.,You made a risky decision just before the end.
+"Un secondo prima
+sarebbe bastato.","One second earlier
+would have been enough."
+Hai perso la run senza errori meccanici evidenti.,You lost the run without any obvious mechanical mistakes.
+Nessuno ha barato.,No one cheated.
+Hai completato una run.,You completed a run.
+L'arena non dimentica.,The arena does not forget.
+Hai attirato l'attenzione totale della folla.,You drew the full attention of the crowd.
+Non eri piu solo.,You were no longer alone.
+Il pubblico ha iniziato a riconoscerti.,The crowd began to recognize you.
+Ora sanno chi sei.,Now they know who you are.
+Sei tornato all'arena dopo una sconfitta.,You returned to the arena after a defeat.
+L'arena e ancora li.,The arena is still there.
+Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,The Registry closed the dossier for compromise.
+"La deviazione ha superato la soglia.
+Il Registro ha emesso chiusura definitiva.","The deviation exceeded the threshold.
+The Registry ordered final closure."
+Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,The Registry closed the dossier for ascension.
+"L'evidenza di ascesa e risultata prevalente.
+Il fascicolo e stato definito.","The evidence of ascension prevailed.
+The dossier was settled."
+Il Registro ha chiuso il fascicolo per consumo (ending_scars).,The Registry closed the dossier for exhaustion.
+"L'accumulo di consumo e stato ritenuto definitivo.
+Il Registro ha concluso l'atto.","The accumulated wear was deemed final.
+The Registry concluded the record."
+Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,The Registry closed the dossier for an established pattern.
+"La ripetizione e risultata sufficiente.
+La classificazione e stata archiviata.","The repetition was sufficient.
+The classification was archived."
+CATENA DI DEBITO,CHAIN OF DEBT
+DECIMA DI SANGUE,BLOOD TITHE
+PIACERE AL PUBBLICO,PLEASE THE CROWD
+ULTIMO RESPIRO,LAST BREATH
+CAMBIALE DI SANGUE,BLOOD NOTE
+PEGNO DI CARNE,PLEDGE OF FLESH
+USURA SACRA,SACRED USURY
+CONFISCA,CONFISCATION
+VANTO A LAMA,A BLADED BOAST
+SPECCHIO ROTTO,BROKEN MIRROR
+CORONA DI POLVERE,CROWN OF DUST
+OCCHI SU DI TE,EYES ON YOU
+DIECI SECONDI,TEN SECONDS
+ULTIMO BATTITO,LAST HEARTBEAT
+RESPIRO RUBATO,STOLEN BREATH
+ORA CORTA,SHORT HOUR
+NESSUNA PERDITA,NO LOSS
+APPLAUDE SENZA RISCHIO,APPLAUSE WITHOUT RISK
+PAGAMENTO DOPO,PAYMENT LATER
+Arena del Debito,Debt Arena
+Arena del Silenzio,Silence Arena
+Arena del Sangue,Blood Arena

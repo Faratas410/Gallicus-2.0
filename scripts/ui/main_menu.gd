@@ -74,7 +74,7 @@ const SETTINGS_FOCUS_STYLE: StyleBox = preload("res://assets/ui/official/stylebo
 const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
 const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
 const CONDANNA_UNLOCKED_ALPHA: float = 1.0
-const CONDANNA_LOCKED_ALPHA: float = 0.35
+const CONDANNA_LOCKED_ALPHA: float = 0.78
 const MENU_TITLE_PULSE_SPEED: float = 1.8
 const MENU_TITLE_PULSE_BASE: float = 0.95
 const MENU_TITLE_PULSE_AMPLITUDE: float = 0.05
@@ -288,8 +288,9 @@ func _build_condanne_list() -> void:
 		return
 	var condanne: Array[CondannaData] = CondannaDataScript.defaults()
 	for condanna in condanne:
-		var entry_panel: PanelContainer = _create_condanna_entry_panel("- %s" % condanna.title)
+		var entry_panel: PanelContainer = _create_condanna_entry_panel("- %s" % tr(condanna.title))
 		var entry_label: Label = entry_panel.get_child(0) as Label
+		entry_label.set_meta("source_title", condanna.title)
 		condanna_entries[condanna.id] = entry_label
 		_apply_condanna_style(condanna.id, entry_label)
 		entry_label.mouse_entered.connect(_on_condanna_mouse_entered.bind(condanna))
@@ -322,13 +323,13 @@ func _build_museo_list() -> void:
 		harsh_count = _run_manager_port.get_crowd_line_count_harsh()
 	var base_total: int = base_count if base_count > 0 else 60
 	var harsh_total: int = harsh_count if harsh_count > 0 else 15
-	_add_museo_header(tr("PATTI DISPONIBILI (LIVELLO 3)"))
+	_add_museo_header(tr("PATTI DISPONIBILI"))
 	if pact_ids.is_empty():
 		_add_museo_item(tr("- Nessun patto disponibile."))
 	else:
 		for pact_id in pact_ids:
 			var pact_title: String = _get_pact_display_name(pact_id)
-			_add_museo_item("- %s" % pact_title)
+			_add_museo_item("- %s" % tr(pact_title))
 	_add_museo_header(tr("ARENE TEMATICHE"))
 	if arena_themes.is_empty():
 		_add_museo_item(tr("- Nessuna arena disponibile."))
@@ -338,7 +339,7 @@ func _build_museo_list() -> void:
 			var theme_title: String = str(theme_data.get("title", ""))
 			if theme_title == "":
 				theme_title = str(theme_id)
-			_add_museo_item("- %s" % theme_title)
+			_add_museo_item("- %s" % tr(theme_title))
 	_add_museo_header(tr("VOCI DEL PUBBLICO"))
 	_add_museo_item(tr("Voci base: %d") % base_total)
 	var harsh_status: String = tr("SBLOCCATE") if harsh_unlocked else tr("BLOCCATE")
@@ -373,8 +374,10 @@ func _set_achievements_tab(tab_id: StringName) -> void:
 	var show_condanne: bool = tab_id == ACHIEVEMENTS_TAB_CONDANNE
 	condanne_container.visible = show_condanne
 	museo_container.visible = not show_condanne
-	condanne_tab_button.disabled = show_condanne
-	museo_tab_button.disabled = not show_condanne
+	condanne_tab_button.toggle_mode = true
+	museo_tab_button.toggle_mode = true
+	condanne_tab_button.set_pressed_no_signal(show_condanne)
+	museo_tab_button.set_pressed_no_signal(not show_condanne)
 	if not show_condanne:
 		condanna_tooltip.visible = false
 
@@ -390,6 +393,7 @@ func _refresh_condanne_visuals() -> void:
 func _apply_condanna_style(condanna_id: StringName, entry_label: Label) -> void:
 	if entry_label == null:
 		return
+	entry_label.text = "- %s" % tr(str(entry_label.get_meta("source_title", "")))
 	var unlocked: bool = SaveManager.has_unlocked(condanna_id)
 	var alpha: float = CONDANNA_UNLOCKED_ALPHA if unlocked else CONDANNA_LOCKED_ALPHA
 	entry_label.modulate = Color(1.0, 1.0, 1.0, alpha)
@@ -403,15 +407,24 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
 	var tooltip_label_text: String = "%s\n\n%s\n%s\n\n%s" % [
-		condanna.title,
+		tr(condanna.title),
 		tr("Come e' stata ottenuta:"),
-		condanna.condition_text,
-		condanna.lore_text
+		tr(condanna.condition_text),
+		tr(condanna.lore_text)
 	]
 	tooltip_label.text = tooltip_label_text
 	condanna_tooltip.visible = true
 	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
-	condanna_tooltip.global_position = mouse_pos + Vector2(16, 16)
+	call_deferred("_place_condanna_tooltip", mouse_pos)
+
+func _place_condanna_tooltip(anchor: Vector2) -> void:
+	condanna_tooltip.reset_size()
+	var viewport_size: Vector2 = get_viewport_rect().size
+	var desired: Vector2 = anchor + Vector2(16, 16)
+	condanna_tooltip.position = Vector2(
+		clampf(desired.x, 16.0, maxf(16.0, viewport_size.x - condanna_tooltip.size.x - 16.0)),
+		clampf(desired.y, 16.0, maxf(16.0, viewport_size.y - condanna_tooltip.size.y - 16.0))
+	)
 
 func _on_condanna_mouse_exited() -> void:
 	condanna_tooltip.visible = false
@@ -495,6 +508,7 @@ func _on_new_game_pressed() -> void:
 	if GameEvents != null and GameEvents.has_signal("request_new_run"):
 		_play_sfx(&"arena_threshold_cross")
 		_set_arena_threshold_crossed_state(true)
+		get_node("../../OpeningPrologue").prepare_first_entry()
 		GameEvents.request_new_run.emit()
 		_hide_menu()
 	else:
@@ -508,9 +522,11 @@ func _on_achievements_pressed() -> void:
 
 func _on_condanne_tab_pressed() -> void:
 	_set_achievements_tab(ACHIEVEMENTS_TAB_CONDANNE)
+	condanne_tab_button.grab_focus()
 
 func _on_museo_tab_pressed() -> void:
 	_set_achievements_tab(ACHIEVEMENTS_TAB_MUSEO)
+	museo_tab_button.grab_focus()
 
 func _on_back_pressed() -> void:
 	_show_menu()
@@ -757,6 +773,10 @@ func _notification(what: int) -> void:
 		_refresh_localized_ui()
 
 func _refresh_localized_ui() -> void:
+	_refresh_condanne_visuals()
+	if achievements_panel != null and achievements_panel.visible:
+		_build_museo_list()
+	get_node("CreditsPanel/CreditsCenter/CreditsVBox/CreditsBodyPanel/CreditsBody").text = tr("CREDITS_BODY")
 	if tagline_label != null:
 		tagline_label.text = tr(MENU_TAGLINE)
 	if continue_button != null:

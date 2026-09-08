@@ -187,3 +187,21 @@ Il richiamo luminoso ora e' breve: l'istruzione del rito diventa
 "Imprimi tre colpi sul sigillo." (EN: "Press the seal three times.";
 ES: "Imprime tres golpes en el sello."). Non si richiede di attendere una
 pulsazione continua. Restano tre attivazioni e gli stessi intenti/esiti.
+
+## Apertura e utility - 8 settembre 2026
+
+Il prologo approvato usa due frasi native IT/EN/ES: "Ogni rischio accettato
+lascia un segno." e "Il Registro conserva le tue scelte." Nessuna guida,
+spiegazione del finale o regola aggiunta. Traduzioni e durata sono in
+`docs/cinematic_direction.md`. Titoli e comandi utility sono maiuscoli;
+frasi narrative e valori delle impostazioni restano in forma naturale.
+Crediti usa il titolo GALLICUS e ringrazia i partecipanti al playtest, con
+corpo tradotto. Nomi e attribuzioni definitive restano sospesi per richiesta
+dell'utente e devono essere completati prima della pubblicazione.
+
+L'Archivio localizza anche i nomi dinamici di tutti i patti disponibili,
+le arene, le condizioni e le righe lore delle condanne. Settanta chiavi
+mancanti sono aggiunte ai tre cataloghi, senza cambiare gli ID o le regole.
+I codici ending interni restano nelle chiavi sorgente e non vengono mostrati
+nel testo localizzato delle condizioni. I titoli delle voci gia' costruite
+si aggiornano al cambio lingua, senza conservare il testo iniziale italiano.

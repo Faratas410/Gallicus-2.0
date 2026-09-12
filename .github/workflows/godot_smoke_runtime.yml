@@ -92,6 +92,7 @@ jobs:
           python3 scripts/ci/run_cp02_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
           python3 scripts/ci/run_audit_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
           python3 scripts/ci/run_av_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
+          python3 scripts/ci/run_campaign_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME" --output-dir artifacts/runtime_routes/campaign
 
       - name: Run route bundle
         run: |

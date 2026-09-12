@@ -242,7 +242,7 @@ Era 4 is terminal and non-reversible.
 
 Final state includes:
 
-- Determined movement of non-classified subjects
+- Non-classified subjects are not embodied as human figures
 - No identifiable protagonist
 - Absence of structural commentary
 - Terminal black frame
@@ -250,6 +250,11 @@ Final state includes:
 - End
 
 System remains finite and closed.
+
+User clarification, 2026-09-12: humans do not exist in the narrative.
+"Subjects" never authorizes a human cast. The current terminal staging
+presents the empty arena before black; it does not invent replacement
+characters or a departure story.
 
 No post-final replay state may reinitialize the Register.
 
@@ -465,3 +470,15 @@ persists across restart, blocks new/continued runs and initializes no
 RegisterState. Non-classified movement and full audiovisual staging remain
 open production work. Linux checkpoint, human duration, anti-farming and
 audiovisual acceptance are still required; no release gate is closed here.
+
+## Pre-human completion addendum - 2026-09-12
+
+The campaign's authoritative ending sample and displayed dossier now share
+one closure identity, selected before closing acknowledgments add unlocks.
+No weights, thresholds, rewards, eligibility rules or odds change. The real UI
+journey reaches four Silences, resumes the four existing checkpoints and
+verifies terminal persistence. The former missing non-classified departure
+is staged in the existing arena before terminal black and heartbeat; reboot
+does not replay it. Only credits and exit remain available. Technical evidence
+is in `docs/support/campaign_completion_2026-09-12.md`; human duration, perceived
+non-farmability and the candidate-specific Linux checkpoint remain open.

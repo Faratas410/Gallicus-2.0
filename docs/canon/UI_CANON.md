@@ -542,3 +542,24 @@ detail, Escape closes it. Scar notices expire in both motion settings.
 Silence return is anchored within the viewport; Absence offers no return.
 Music consumes the same existing RunUiPayload as UI plus emitted ritual
 events; runtime gate IDs do not stand in for semantic UI phases.
+
+## Pre-human campaign presentation - 2026-09-12
+
+Archive consultation pairs available pact titles with existing localized
+catalogue descriptions and removes technical crowd-line counts. It does not
+expose hidden signature or era data. Environmental fading is reapplied when
+reactive payloads restore a saved phase; text and focus keep their contrast.
+Absence has a six-second unclassified departure, then black, heartbeat and
+credits/exit utilities. Input cannot reach the covered dossier. Reduced motion
+keeps the same reading interval with a still image. Terminal boot goes directly
+to black; no presentation control can restart the Registry.
+
+## Administrative character dialogue - 2026-09-12
+
+The sealed-pact body presents a labelled two-line exchange between named
+Owls. The public-gesture header preserves its audience line and adds two
+speaker-labelled lines. Existing buttons, focus, timings and geometry stay
+unchanged. No extra modal or response tree is introduced. Archive entries
+describe the same three Owls before the pact catalogue. The UI localizes
+source keys from RunManager's read-only query; Silence and Absence return
+no character lines. Language changes refresh the current exchange in place.

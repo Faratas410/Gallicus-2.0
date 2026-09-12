@@ -291,6 +291,16 @@ func _finish_capture_run() -> void:
 		get_tree().quit(1)
 
 func _cleanup_capture_scene() -> void:
+	# The capture may inherit Main itself. Stop audio before tree shutdown so
+	# the audio server can release playback resources while frames still run.
+	if _main != null and is_instance_valid(_main):
+		var music: Node = _main.get_node_or_null("MusicDirector")
+		if music != null:
+			music.call("_on_registry_run_ended", "REGISTRY_SILENCE", {})
+		for player: Node in _main.find_children("*", "AudioStreamPlayer", true, false):
+			(player as AudioStreamPlayer).stop()
+	get_node("/root/SfxBus").call("_on_run_ended", "REGISTRY_SILENCE", {})
+	await get_tree().create_timer(0.3, true, false, true).timeout
 	if _main != null and _main != self and is_instance_valid(_main):
 		_main.queue_free()
 		_main = null

@@ -235,6 +235,7 @@ var _last_verdict_sentence: String = ""
 var _last_verdict_charge: String = ""
 var _last_verdict_crowd_line: String = ""
 var _last_verdict_crowd_line_key: String = ""
+var _character_audience_source: String = ""
 var _last_verdict_pacts: Array[String] = []
 var _last_verdict_condanne: Array[String] = []
 var _final_dossier_state: StringName = FINAL_DOSSIER_STATE_OPEN
@@ -963,12 +964,15 @@ func show_countdown(seconds: int = 3) -> void:
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: RunManager emitted GameEvents.run_started; UI nodes are initialized.
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
-func _on_run_started() -> void:
+func _apply_campaign_environment() -> void:
 	var presentation: Dictionary = _run_manager_port.get_registry_presentation()
 	var fade: float = float(presentation.get("material_fade", 0.0))
 	# Fade only environmental surfaces; text and focus contrast remain constant.
 	for background: Node in find_children("*Backdrop", "TextureRect", true, false):
 		(background as TextureRect).self_modulate = Color(1.0 - fade, 1.0 - fade, 1.0 - fade, 1.0)
+
+func _on_run_started() -> void:
+	_apply_campaign_environment()
 	_reset_pact_tablet_state()
 	_reset_gesture_choice_state()
 	_reset_final_dossier_route_interaction()
@@ -1964,6 +1968,24 @@ func _on_bet_ui_closed() -> void:
 func _on_bet_selected(bet_id: String) -> void:
 	_selected_bet_id = bet_id
 
+func _character_exchange(context: String) -> String:
+	var localized: PackedStringArray = []
+	for line: String in _run_manager_port.get_character_dialogue(context):
+		localized.append(tr(line))
+	return "\n".join(localized)
+
+func _apply_character_pact_text() -> void:
+	var exchange: String = _character_exchange("pact")
+	if pact_sealed_subtitle != null and exchange != "":
+		pact_sealed_subtitle.text = tr("Voci dei Gufi") + "\n" + exchange
+
+func _apply_character_gesture_text() -> void:
+	var exchange: String = _character_exchange("gesture")
+	if intermediate_choice_audience_label != null and exchange != "":
+		var audience: String = tr(_character_audience_source)
+		intermediate_choice_audience_label.text = (audience + "\n" if audience != "" else "") + exchange
+		intermediate_choice_audience_label.show()
+
 func _on_pact_sealed_opened() -> void:
 	_reset_sign_feedback()
 	_reset_pact_tablet_state()
@@ -1975,6 +1997,7 @@ func _on_pact_sealed_opened() -> void:
 			tr("La pietra ha preso la firma."),
 			tr("La gradinata attende il gesto."),
 		]
+		_apply_character_pact_text()
 		_force_label_readable(pact_sealed_subtitle)
 	if pact_sealed_advance_button != null:
 		pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
@@ -2240,6 +2263,7 @@ func _show_post_bet_payload(payload: Dictionary) -> void:
 				"La pietra ha preso la firma.\nLa gradinata attende il gesto."
 			))
 			pact_sealed_subtitle.text = _translate_multiline_copy(pact_subtitle)
+			_apply_character_pact_text()
 			_force_label_readable(pact_sealed_subtitle)
 		if pact_sealed_advance_button != null:
 			pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
@@ -2269,6 +2293,7 @@ func _on_intermediate_choice_opened() -> void:
 func apply_run_ui_payload(payload: RunUiPayload) -> void:
 	if payload == null:
 		return
+	_apply_campaign_environment()
 	var score: Node = get_node_or_null("../MusicDirector")
 	if score != null:
 		score.apply_run_ui_payload(payload)
@@ -2297,11 +2322,13 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		if audience_line == "" and parts.size() > 0:
 			audience_line = parts[0].strip_edges()
 		title = parts[parts.size() - 1].strip_edges()
+	_character_audience_source = audience_line
 	audience_line = tr(audience_line) if audience_line != "" else ""
 	title = tr(title) if title != "" else tr("ATTO DAVANTI ALLA GRADINATA")
 	if intermediate_choice_audience_label != null:
 		intermediate_choice_audience_label.text = audience_line
 		intermediate_choice_audience_label.visible = audience_line != ""
+		_apply_character_gesture_text()
 	if intermediate_choice_label != null:
 		intermediate_choice_label.text = title
 	_set_intermediate_choice_modal(true)
@@ -3962,6 +3989,10 @@ func _notification(what: int) -> void:
 
 func _on_settings_changed(payload: Dictionary) -> void:
 	_update_escalation_bar()
+	if pact_sealed_modal != null and pact_sealed_modal.visible:
+		_apply_character_pact_text()
+	if intermediate_choice_panel != null and intermediate_choice_panel.visible:
+		_apply_character_gesture_text()
 	var reduced_motion: bool = bool(payload.get("reduced_motion", _is_reduced_motion()))
 	if not reduced_motion:
 		return

@@ -19,9 +19,12 @@ def main() -> int:
         (base / "appdata/Godot/app_userdata/Gallicus/logs").mkdir(parents=True)
         (base / "xdg_data").mkdir()
         result = subprocess.run([str(Path(args.godot_bin).resolve()), "--headless", "--path", str(ROOT), "--script", "res://scripts/ci/av_runtime_contract.gd"], cwd=ROOT, env=env, capture_output=True, text=True, timeout=90)
-    output = result.stdout + result.stderr
+        env["APPDATA"] = str(base / "characters_appdata")
+        env["XDG_DATA_HOME"] = str(base / "characters_xdg")
+        characters = subprocess.run([str(Path(args.godot_bin).resolve()), "--headless", "--audio-driver", "Dummy", "--path", str(ROOT), "--script", "res://scripts/ci/character_runtime_contract.gd"], cwd=ROOT, env=env, capture_output=True, text=True, timeout=45)
+    output = result.stdout + result.stderr + characters.stdout + characters.stderr
     print(output, end="")
-    return 0 if result.returncode == 0 and "AV_RUNTIME_CONTRACT_OK" in output and "ERROR:" not in output else 1
+    return 0 if result.returncode == 0 and characters.returncode == 0 and "AV_RUNTIME_CONTRACT_OK" in output and "CHARACTER_RUNTIME_CONTRACT_OK" in output and "ERROR:" not in output else 1
 
 if __name__ == "__main__":
     raise SystemExit(main())

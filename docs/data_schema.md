@@ -1,5 +1,22 @@
 # Gallicus Data Schema
 
+## Checkpoint completion - 12 settembre 2026
+
+Le versioni dei contenitori restano invariate. BET_OFFER viene scritto anche al primo ingresso nel
+Registro; INTERMEDIATE_CHOICE all'apertura del gesto pubblico, prima della
+scelta. Gli altri checkpoint mantengono i rispettivi confini. L'identita' di
+chiusura condivisa fra campagna e fascicolo e' una cache di RunManager, azzerata
+a nuova run/load e mai salvata come nuovo campo. Il congedo terminale non
+richiede checkpoint: meta.registry_era=4 e' gia' persistita prima di mostrarlo.
+
+RunState.scar_rng_state resta un int64 nel runtime, ma to_dict lo scrive come
+stringa decimale: JSON.parse_string tratta i numeri come float64 e poteva
+perdere i bit bassi, cambiando le cicatrici dopo Continue. from_dict accetta
+sia la nuova stringa sia il numero legacy. I bit gia' persi in un vecchio save
+non sono recuperabili; il caricamento conserva il valore legacy disponibile.
+Il contratto verifica stati positivi/negativi oltre 2^53 e sedici estrazioni
+successive identiche prima/dopo il round-trip JSON.
+
 ## Principio
 
 I dati devono essere strutturati, deterministici e consumati da un owner chiaro.

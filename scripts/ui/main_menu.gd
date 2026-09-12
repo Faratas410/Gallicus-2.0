@@ -13,6 +13,8 @@ extends Control
 
 const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
+const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
+const ArenaCharacters = preload("res://scripts/content/arena_characters.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
 const LanguagesScript = preload("res://assets/i18n/languages.gd")
 const ARENA_THRESHOLD_STYLE_CROSSED: StyleBox = preload("res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_crossed.tres")
@@ -313,23 +315,21 @@ func _build_museo_list() -> void:
 	var pact_ids: Array[StringName] = []
 	var arena_themes: Array[StringName] = []
 	var harsh_unlocked: bool = false
-	var base_count: int = 0
-	var harsh_count: int = 0
 	if _run_manager_port != null:
 		pact_ids = _run_manager_port.get_available_level3_pacts()
 		arena_themes = _run_manager_port.get_available_arena_themes()
 		harsh_unlocked = _run_manager_port.is_harsh_crowd_unlocked()
-		base_count = _run_manager_port.get_crowd_line_count_base()
-		harsh_count = _run_manager_port.get_crowd_line_count_harsh()
-	var base_total: int = base_count if base_count > 0 else 60
-	var harsh_total: int = harsh_count if harsh_count > 0 else 15
+	_add_museo_item(tr("Il fascicolo conserva gli esiti. Qui ritrovi i vincoli delle promesse disponibili."))
+	_add_museo_header(tr("GUFI DELL’ARENA"))
+	for character: Dictionary in ArenaCharacters.CHARACTERS:
+		_add_museo_item("%s — %s\n%s" % [str(character.name), tr(str(character.role)), tr(str(character.description))])
 	_add_museo_header(tr("PATTI DISPONIBILI"))
 	if pact_ids.is_empty():
 		_add_museo_item(tr("- Nessun patto disponibile."))
 	else:
 		for pact_id in pact_ids:
 			var pact_title: String = _get_pact_display_name(pact_id)
-			_add_museo_item("- %s" % tr(pact_title))
+			_add_museo_item("%s\n%s" % [tr(pact_title), tr(BetCatalogScript.get_level3_display_subtitle(pact_id))])
 	_add_museo_header(tr("ARENE TEMATICHE"))
 	if arena_themes.is_empty():
 		_add_museo_item(tr("- Nessuna arena disponibile."))
@@ -341,11 +341,7 @@ func _build_museo_list() -> void:
 				theme_title = str(theme_id)
 			_add_museo_item("- %s" % tr(theme_title))
 	_add_museo_header(tr("VOCI DEL PUBBLICO"))
-	_add_museo_item(tr("Voci base: %d") % base_total)
-	var harsh_status: String = tr("SBLOCCATE") if harsh_unlocked else tr("BLOCCATE")
-	_add_museo_item(tr("Voci dure: %s") % harsh_status)
-	if harsh_unlocked:
-		_add_museo_item(tr("Voci dure: +%d") % harsh_total)
+	_add_museo_item(tr("La gradinata ricorda l'esposizione. Le sue voci si sono fatte piu' dure.") if harsh_unlocked else tr("La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro."))
 
 func _add_museo_header(text: String) -> void:
 	var entry_panel: PanelContainer = _create_museo_entry_panel(text)

@@ -10,8 +10,22 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
-Aggiornato l'8 settembre 2026. Astra e' il modello di sviluppo di riferimento;
+Integrazione richiesta: tre Gufi caratteristici, dialoghi brevi nel rito e
+schede nell'Archivio. Pacchetto e prove locali in
+`docs/support/character_voices_2026-09-12.md`; nessuna nuova fase o schema save.
+
+Aggiornato il 12 settembre 2026. Astra e' il modello di sviluppo di riferimento;
 questa consegna locale non chiude gate umani o Linux del gioco e della release.
+
+Consegna corrente: **Campaign Coherence & Pre-Human Completion Pass**, richiesta
+esplicitamente dall'utente oltre ai freeze storici. Spine percorsa tramite UI
+reale fino all'Assenza, quattro checkpoint, identita' di chiusura coerente,
+Archivio leggibile, ramp sonora e congedo terminale. Report e limiti in
+questa consegna includono la correzione dell'epilogo: arena vuota, senza
+esseri umani, coerente con la precisazione dell'utente. Dettagli in
+`docs/support/campaign_completion_2026-09-12.md`. Prossimo passo sul prodotto:
+checkpoint Linux del candidato committato manualmente e sessioni umane sulla
+build consegnata; nessuna nuova espansione runtime necessaria a questo pass.
 
 - Stage completato: **Foundation Reset**.
 - Stage completato: **Object-First Interaction Pass**.
@@ -34,13 +48,13 @@ questa consegna locale non chiude gate umani o Linux del gioco e della release.
   `32238429965` sul commit `8449766`.
 - Runtime Windows: bonifica e revisione menu verificate localmente con profili
   isolati; i crash pre-bootstrap precedenti restano evidenza storica.
-- Ultima consegna locale: coerenza UI/audio, ripresa del patto e prologo.
+- Consegna precedente (8 settembre): coerenza UI/audio, ripresa del patto e prologo.
   17 raster e 31 audio originali riutilizzati; playbook di 55 passi e
   regressione AV di 66 condizioni, inclusi ingresso e ripresa reali.
   Report: `docs/support/consistency_fix_2026-09-08.md`; manifest ed EXE in
   `artifacts/exports/consistency_fix_2026-09-08/`. Il pass AV precedente resta
   documentato in `docs/support/av_pass_2026-09-06.md`.
-- Cache fredda Windows: un crash del motore, seguito da due import puliti
+- Cache fredda Windows nel pass precedente: un crash del motore, seguito da due import puliti
   riusciti senza workaround. Causa non isolata: anomalia aperta nel report AV.
 - Questo candidato richiede nuovo checkpoint Linux e prove umane; non eredita
   il signoff CP-02. Il prodotto resta `DEVELOPMENT`.

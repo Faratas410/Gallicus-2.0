@@ -9,6 +9,7 @@ import os
 import platform
 import re
 import subprocess
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -476,26 +477,32 @@ def run_smoke_runtime(
         f"SMOKE:RUNTIME_CMD={command_text}",
     ]
 
-    process = subprocess.Popen(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        env=env,
-        cwd=project_root if exported_game else None,
-    )
-    try:
-        output, _ = process.communicate(timeout=hard_timeout_sec)
-        exit_code = process.returncode
-    except subprocess.TimeoutExpired:
-        process.kill()
-        runtime_output, _ = process.communicate()
-        exit_code = 124
-        runtime_output += "\nSMOKE:TIMEOUT_HARD_KILL\n"
-    else:
-        runtime_output = output
+    # Every route has a fresh profile: prior smoke unlocks must not alter
+    # offered pacts, and diagnostics must never write the player's save.
+    with tempfile.TemporaryDirectory(prefix="gallicus_route_") as profile:
+        env["APPDATA"] = str(Path(profile) / "appdata")
+        env["XDG_DATA_HOME"] = str(Path(profile) / "xdg_data")
+        prefix_lines.append("SMOKE:PROFILE=isolated_fresh")
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+            cwd=project_root if exported_game else None,
+        )
+        try:
+            output, _ = process.communicate(timeout=hard_timeout_sec)
+            exit_code = process.returncode
+        except subprocess.TimeoutExpired:
+            process.kill()
+            runtime_output, _ = process.communicate()
+            exit_code = 124
+            runtime_output += "\nSMOKE:TIMEOUT_HARD_KILL\n"
+        else:
+            runtime_output = output
 
     output = "\n".join(prefix_lines) + "\n" + runtime_output
     log_path.parent.mkdir(parents=True, exist_ok=True)

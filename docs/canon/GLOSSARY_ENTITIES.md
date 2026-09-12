@@ -75,6 +75,14 @@ Appears in: Lore / Meta
 
 Related: The Register, Registry Precedent State, Felix Gallicus
 
+### Nerio, Vessa, Orvo
+
+Tre Gufi dell'amministrazione, non umani: Nerio e' scrivano, Vessa cura le
+quote, Orvo e' banditore. I nomi restano invariati nelle traduzioni. Parlano
+fra colleghi in scambi circoscritti e sono descritti nell'Archivio; nessuno
+personifica il Registro. Autorita': `docs/canon/LORE_UNIFIED.md`, sezione
+"Presenze dell'amministrazione".
+
 ## Registry: Silence
 
 Type: State

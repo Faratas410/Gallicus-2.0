@@ -7,6 +7,17 @@ un narratore moderno: annota, pesa, confronta, convalida e conclude.
 
 La durezza nasce dalla procedura e dall'irreversibilita', non da gore o insulti.
 
+La voce dei Gufi e' distinta: brevi scambi fra Nerio (precisione della copia),
+Vessa (margine commerciale) e Orvo (attenzione della gradinata). Sono colleghi
+dell'amministrazione, non esseri umani o narratori del Registro. Dodici scambi
+di due battute, nei due contesti patto/gesto e nelle varianti distese/compresse,
+sono localizzati in IT/EN/ES insieme a ruoli e schede. I nomi non si traducono.
+La firma resta attestata dal titolo del patto; il corpo ospita "Voci dei Gufi".
+Nel gesto la riga della gradinata resta sopra lo scambio. Nessuna voce nei
+Silenzi o nell'Assenza; nessuna battuta di Felix. Il catalogo e' in
+`scripts/content/arena_characters.gd` e il dettaglio in
+`docs/support/character_voices_2026-09-12.md`.
+
 ## Lessico player-facing
 
 - `percorso`, `ciclo`, `fascicolo` al posto del termine tecnico `run`;
@@ -205,3 +216,13 @@ mancanti sono aggiunte ai tre cataloghi, senza cambiare gli ID o le regole.
 I codici ending interni restano nelle chiavi sorgente e non vengono mostrati
 nel testo localizzato delle condizioni. I titoli delle voci gia' costruite
 si aggiornano al cambio lingua, senza conservare il testo iniziale italiano.
+
+## Pass di campagna - 12 settembre 2026
+
+L'Archivio affianca ai titoli dei patti disponibili il sottotitolo del catalogo
+IT/EN/ES. Sostituisce il conteggio delle battute con il rapporto fra pubblico,
+gesto e responso: conoscere il contenuto deve aiutare a riconoscere un vincolo.
+Non aggiunge sblocchi o rivela firma/Ere. Il fascicolo e la convergenza usano
+la medesima identita' calcolata prima delle annotazioni di chiusura. Il finale
+non aggiunge copy narrativo: dopo il congedo restano CREDITI e ESCI DAL GIOCO.
+Prove e matrice in `docs/support/campaign_completion_2026-09-12.md`.

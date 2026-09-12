@@ -25,6 +25,7 @@ var _fade_tween: Tween
 var _music_bus_index: int = -1
 var _registry_silent: bool = false
 var _port: RunManagerUiPort
+var _campaign_attenuation: float = 0.0
 
 func _ready() -> void:
 	_port = RunManagerUiPort.new(get_tree())
@@ -99,7 +100,13 @@ func _on_registry_run_ended(reason: String, _summary: Dictionary) -> void:
 	_active_key = ""
 
 func _transition(key: String) -> void:
+	# Use the same gradual environmental presentation as the chamber. Never
+	# change the SFX bus: critical gestures keep their original intelligibility.
+	_campaign_attenuation = float(_port.get_registry_presentation().get("material_fade", 0.0)) * 28.0
+	var target_db: float = TARGET_DB - _campaign_attenuation
 	if key == _active_key and _players[_active].playing:
+		if _fade_tween == null or not _fade_tween.is_running():
+			_players[_active].volume_db = target_db
 		return
 	_kill_fade()
 	# Alternate players for every change, including transitions within a run.
@@ -113,7 +120,7 @@ func _transition(key: String) -> void:
 	_active_key = key
 	_fade_tween = create_tween()
 	_fade_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_fade_tween.tween_property(incoming, "volume_db", TARGET_DB, fade_seconds)
+	_fade_tween.tween_property(incoming, "volume_db", target_db, fade_seconds)
 	_fade_tween.parallel().tween_property(outgoing, "volume_db", SILENT_DB, fade_seconds)
 	_fade_tween.tween_callback(outgoing.stop)
 

@@ -789,6 +789,7 @@ var _registry_has_precedent: bool = false
 var _registry_pressure: float = 0.0
 var _registry_era: int = 0
 var _registry_meta_committed_this_run: bool = false
+var _closure_ending_id: StringName = &""
 var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke: SmokeDriver = null
 var _smoke_timeout_deadline_msec: int = -1
@@ -1139,6 +1140,14 @@ func _drive_smoke_full_run_pyl_request() -> void:
 func _get_smoke_selected_bet_id() -> String:
 	if _run_state.level3_current_offer.is_empty():
 		return ""
+	# The cashout route must choose an offered non-terminal pact when possible.
+	# With real scar penalties, blindly choosing Double or Die can end the
+	# witness before it exercises cashout. Outcomes and offers remain natural.
+	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "ROUTE_CASHOUT":
+		for offer: Dictionary in _run_state.level3_current_offer:
+			var id: String = str(offer.get("id", ""))
+			if id != "" and id != BET_DOUBLE_OR_DIE:
+				return id
 	var first_offer: Variant = _run_state.level3_current_offer[0]
 	if first_offer is Dictionary:
 		return str((first_offer as Dictionary).get("id", ""))
@@ -1553,6 +1562,7 @@ func _start_level3_run() -> void:
 	_meta_unlock_emitted_this_run = false
 	_end_run_meta_emitted = false
 	_registry_meta_committed_this_run = false
+	_closure_ending_id = &""
 	_run_state.registry_silence_evaluated = false
 	_run_state.registry_silence_active = false
 	_is_game_over = false
@@ -1647,6 +1657,7 @@ func _start_level3_run() -> void:
 	start_arena()
 	if not _waiting_for_bet:
 		_open_level3_bet_ui()
+	_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
 
 func start_arena() -> void:
 	if _run_state.run_is_over or _is_game_over:
@@ -2180,6 +2191,8 @@ func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void
 	_save_system.save_run_payload(_save_continue_boundary.build_save_payload(_run_state, runtime_fields))
 
 func _apply_run_save_payload(payload: Dictionary) -> bool:
+	_closure_ending_id = &""
+	_registry_meta_committed_this_run = false
 	_last_save_reject_reason = ""
 	var result: Dictionary = _save_continue_boundary.apply_payload_to_state(_run_state, payload)
 	if not bool(result.get("ok", false)):
@@ -3239,6 +3252,7 @@ func _open_intermediate_choice(bet_id: StringName) -> void:
 	_waiting_for_intermediate_choice = true
 	_smoke_mark("INTERMEDIATE_CHOICE")
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
+	_autosave_run_checkpoint(RunSaveFlowStepContractScript.INTERMEDIATE_CHOICE, bet_id)
 
 func _enter_mid_choice() -> void:
 	_emit_ui(_build_intermediate_choice_ui_payload())
@@ -3709,6 +3723,9 @@ func _enter_game_over() -> void:
 	_is_game_over = true
 	_run_state.run_is_over = true
 	_update_hidden_run_metrics()
+	# Classify completed evidence once, before closure acknowledgments add
+	# archival entries. Campaign convergence and the dossier use this identity.
+	_closure_ending_id = _select_ending_identity()
 	_update_registry_meta_from_run()
 	if not _should_emit_registry_silence():
 		var is_loss: bool = _run_state.run_end_reason != "CASH_OUT"
@@ -3848,6 +3865,12 @@ func get_registry_presentation() -> Dictionary:
 	var evolution: Dictionary = SaveManager.get_registry_evolution()
 	return {"terminal": not can_start_run(), "material_fade": _registry_effect_progress() * 0.07, "definitive": bool(evolution.get("fixed", false))}
 
+func get_character_dialogue(context: String) -> Array[String]:
+	# Pure presentation query. Reopening the same checkpoint preserves the exchange.
+	var catalog = preload("res://scripts/content/arena_characters.gd")
+	var silent: bool = not can_start_run() or _run_state.registry_silence_active
+	return catalog.lines(context, posmod(_run_state.run_seed, 3) + _run_state.arena_index, _registry_effect_progress() >= 2.0, silent)
+
 func _registry_effect_progress() -> float:
 	if _registry_era <= 0:
 		return 0.0
@@ -3954,6 +3977,8 @@ func _pick_register_message(ending_key: String) -> String:
 			return _pick_from_pool(REGISTER_POOL_FINAL_PATTERN)
 
 func _select_ending_identity() -> StringName:
+	if _closure_ending_id != &"":
+		return _closure_ending_id
 	var scar_count: int = _run_state.scars_history.size()
 	var ending_id: StringName = _run_state.forced_ending_id
 	var run_completed: bool = _run_state.level3_target_arenas > 0 and _run_state.arena_index >= _run_state.level3_target_arenas
@@ -4104,17 +4129,12 @@ func _count_scars_with_tag(tag: StringName) -> int:
 	return count
 
 func get_available_level3_pacts() -> Array[StringName]:
-	var available: Array[StringName] = []
-	for bet_value: Dictionary in LEVEL3_BETS:
-		var bet: Dictionary = bet_value as Dictionary
-		var bet_id: StringName = StringName(str(bet.get("id", "")))
-		if bet_id == &"":
-			continue
-		if _is_level3_bet_unlocked(bet_id):
-			available.append(bet_id)
-	return available
+	# The active offer builder uses this catalogue, not legacy unlock gates.
+	return BetCatalogScript.level3_active_bet_ids()
 
 func get_level3_pact_title(pact_id: StringName) -> String:
+	if BetCatalogScript.level3_active_bet_ids().has(pact_id):
+		return BetCatalogScript.get_level3_display_title(pact_id)
 	for bet_value: Dictionary in LEVEL3_BETS:
 		var bet: Dictionary = bet_value as Dictionary
 		var bet_id: StringName = StringName(str(bet.get("id", "")))

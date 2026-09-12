@@ -279,7 +279,8 @@ func to_dict() -> Dictionary:
 		"scar_double_count": scar_double_count,
 		"scar_pact_count": scar_pact_count,
 		"volatility": volatility,
-		"scar_rng_state": scar_rng_state,
+		# Godot JSON numbers round through float64; preserve all 64 RNG bits.
+		"scar_rng_state": str(scar_rng_state),
 		"scar_roll_index": scar_roll_index,
 		"last_pact_corruption_arena_index": last_pact_corruption_arena_index,
 		"last_pact_corruption_bet_id": String(last_pact_corruption_bet_id),
@@ -418,6 +419,5 @@ func _normalize_risk_profile_id(profile_id: StringName) -> StringName:
 			return &"VOLATILE_RECORD"
 		_:
 			return profile_id
-
 
 

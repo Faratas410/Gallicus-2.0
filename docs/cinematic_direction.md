@@ -164,3 +164,26 @@ solo preferenza di presentazione vista. RunManager conserva decisioni e
 campagna; skip e testo fermo sono i fallback accessibili. Prove: ingresso,
 skip anticipato respinto, Escape, fine automatica, resize, lingua, reduced
 motion, ripresa e nessun replay, documentate nel report di coerenza.
+
+## Congedo terminale - 12 settembre 2026
+
+La richiesta di completamento pre-umano autorizza la messa in scena mancante.
+L'Assenza presenta sei secondi nella stessa arena vuota, senza esseri umani,
+protagonista, commento o oggetto da interrogare. Il
+quadro termina nel nero con il battito esistente. Movimento ridotto conserva
+il quadro fermo e i sei secondi, senza dissolvenza. Nessun input opera sul
+fascicolo coperto. Sul nero sono disponibili soltanto crediti e uscita.
+
+Il profilo terminale e' scritto da RunManager prima del congedo. Un riavvio
+apre direttamente il nero; richieste duplicate non ripetono la sequenza.
+Nessuna preferenza cinematica o nuova fase salvata. La UI non emette nuove
+richieste di gameplay; l'uscita e il dialogo crediti sono utility locali.
+
+Scheda object-first: intento = cessazione della consultazione; oggetto =
+assenza del Registro; gesto = nessuno; feedback = arena priva di responso,
+nero e battito; registrazione = solo stato terminale gia' commesso.
+Fallback = quadro fermo, focus confinato, crediti/uscita testuali.
+
+Correzione dell'utente: la trama non contiene esseri umani. Il riferimento
+ai soggetti non classificati non autorizza un cast umano. La prima immagine
+con figure umane era un'interpretazione errata ed e' stata sostituita.

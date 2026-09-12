@@ -137,6 +137,15 @@
       "path": "res://assets/ui/generated/ritual_dust.png",
       "tool": "built-in image_gen",
       "date": "2026-09-06"
+    },
+    {
+      "name": "registry_departure",
+      "path": "res://assets/ui/generated/registry_departure.png",
+      "source": "exec-7693efdf-c772-4db5-a672-d1f543ca2148.png",
+      "tool": "built-in image_gen",
+      "date": "2026-09-12",
+      "prompt": "Use case: precise-object-edit. Asset type: final production background for the Gallicus game's terminal epilogue. Remove ALL five human figures from this image, including their cast shadows, and naturally reconstruct the empty sand and stone behind them. The story has no humans: no people, humanoids, human silhouettes, faces, bodies, statues, or replacement creatures anywhere. Preserve the entire existing camera, perspective, Roman-inspired stone architecture, foreground ledge, books, chains, lighting, palette, texture detail and composition. The final arena must be entirely empty and quiet. Do not add objects, symbols, words, UI, mist or other effects. Deliver a complete opaque landscape image, with the original framing. Change only the five figures and their associated shadows; preserve everything else.",
+      "sha256": "2909e736f281344598416c3305d3b1116298aa6d6d4aea2c6631bdd1178e132c"
     }
   ]
 }

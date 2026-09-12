@@ -121,7 +121,9 @@ Le transizioni usano una ramp di tre run: nessun cambio visuale istantaneo.
 
 ## Personaggi e presenza
 
-- Il soggetto e' implicito attraverso mani, segni, respiro e punto di vista.
+- Nella trama non esistono esseri umani. L'architettura e il lessico rituale
+  non autorizzano figure o anatomie umane, neppure anonime o sullo sfondo.
+- Il soggetto e' implicito attraverso segni, respiro e punto di vista.
 - Felix resta precedente d'archivio e non appare come avatar.
 - I Gufi sono apparato e presenza amministrativa, non mascotte o menu.
 - La folla si manifesta con massa, suono, ombre e reazione, non con ritratti
@@ -206,3 +208,16 @@ per 0,41 s, al bordo inferiore dell'oggetto: scala 0,92-1,06, salita di 5 px,
 alpha massima 0,42. Il movimento non sposta target, glyph o focus. Cambi fase,
 fine run e attivazione di Movimento ridotto cancellano subito il feedback.
 Gli effetti non intercettano input e non usano RNG di gameplay.
+
+## Congedo del Registro - 12 settembre 2026
+
+registry_departure e' il diciottesimo raster originale: derivazione ImageGen
+della stessa registry_chamber, con arena vuota e senza figure umane o
+oggetti amministrativi sul primo piano. PNG opaco copiato senza ritocchi;
+provenienza e hash nel manifest degli asset. Il solo quadro aggiunto serve
+il congedo terminale di sei secondi; non introduce un'altra famiglia visiva.
+La presentazione usa un avvicinamento minimo e dissolvenza; Movimento ridotto
+conserva il fermo immagine. Non e' un video. La prima variante con figure
+umane era un errore interpretativo, corretto su indicazione dell'utente:
+non e' parte della trama e non entra nella build corrente. Il quadro finale
+mostra la cessazione della consultazione attraverso lo spazio vuoto.

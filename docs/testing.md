@@ -2,6 +2,18 @@
 
 ## Principio
 
+Il contratto AV comprende `scripts/ci/character_runtime_contract.gd`: tre
+Gufi, dodici scambi, localizzazione, selezione deterministica senza mutazioni,
+soppressione terminale/Silenzio e ingombri alle due risoluzioni. Con renderer
+e `--capture-dir=<directory>` produce 72 viste di dialogo e sei dell'Archivio.
+Le immagini devono essere ispezionate: la sola geometria non prova visibilita'.
+
+Ogni invocazione di `run_headless_smoke.py` usa un profilo temporaneo nuovo
+tramite APPDATA/XDG_DATA_HOME, anche nell'export. Gli sblocchi dello scenario
+precedente non devono cambiare le offerte di quello successivo; i salvataggi
+personali non vengono usati. CORE_CONTINUITY conserva il proprio profilo
+all'interno dello stesso processo. Il validator prova l'isolamento fra invocazioni.
+
 La verifica cresce con il rischio della patch:
 
 1. controlli statici e path;
@@ -477,3 +489,32 @@ percorso lineare si attende anche un tempo reale di assestamento: il numero
 di frame da solo dipende dalla frequenza del display e puo' catturare una
 dissolvenza intermedia. I test AV provano inoltre larghezza delle scrollbar,
 traduzione dinamica dell'Archivio e focus confinato anche con le frecce.
+
+## Campaign completion pass - 12 settembre 2026
+
+`scripts/ci/run_campaign_runtime_contract.py --godot-bin <Godot>` percorre
+la UI reale da profilo isolato fino all'Assenza, senza inserire storie o esiti.
+Controlla quattro checkpoint, risorse al resume, identita' campione/fascicolo,
+quattro Silenzi e avvio terminale in un secondo processo. Il playbook e il job
+runtime Linux eseguono lo stesso contratto; il budget dei tre job resta invariato.
+`--visual` aggiunge catture della viewport sul renderer reale. Il tempo e'
+accelerato: non e' una misura di durata umana. La policy usa chiusure col marchio;
+le altre route restano nel bundle di otto smoke.
+La campagna deve produrre anche eventi di cicatrice reali. Il contratto
+semantico verifica che ogni costo dichiarato abbia un ID nel catalogo, che
+RunManager lo inserisca e che ciascun tipo influenzi il rischio avverso.
+Lo smoke ROUTE_CASHOUT preferisce, fra le offerte reali, un patto diverso da
+Raddoppia o Muori: dopo il ripristino delle cicatrici la vecchia scelta cieca
+poteva morire prima di esercitare la Quietanza. Seed, esiti, offerte e
+validator restano invariati; questa preferenza appartiene solo al driver smoke.
+
+`tools/campaign_review_capture.gd`, eseguito con `--script` e driver grafico
+reale, produce fixture IT/EN/ES a 720p e 1080p: Archivio, Silenzio, congedo,
+Movimento ridotto, nero terminale e crediti. Le fixture sono distinte dal
+percorso reale e dalla matrice canonica di 289 PNG. Usare APPDATA isolata.
+
+`scripts/ci/check_cold_import.py --godot-bin <Godot>` importa tre copie dei
+file correnti senza cache, conservando hash e log di ogni tentativo. Su Windows
+Godot richiede accesso allo store certificati: una prova che fallisce per i
+permessi della sandbox non si sana con retry o allowlist. Ripetere su copie
+indipendenti con i permessi necessari e riportare entrambe le serie.

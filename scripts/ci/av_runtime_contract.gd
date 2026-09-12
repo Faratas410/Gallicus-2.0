@@ -231,6 +231,8 @@ func _verify_music_route(scene: Node) -> void:
 	await _press_route(scene, "Btn_Sign_" + side)
 	await create_timer(0.3).timeout
 	_expect_score(scene, "tense", "sealed pact")
+	var character_before: String = str(scene.get_node("UI").get("pact_sealed_subtitle").text)
+	_expect(character_before.contains("Nerio:") or character_before.contains("Vessa:") or character_before.contains("Orvo:"), "real pact route omitted character dialogue")
 	# Resume from a real persisted checkpoint must bypass the opening overlay.
 	root.get_node("GameEvents").request_show_main_menu.emit()
 	await process_frame
@@ -238,6 +240,7 @@ func _verify_music_route(scene: Node) -> void:
 	await create_timer(0.3).timeout
 	_expect(not scene.get_node("OpeningPrologue").get("_active"), "resume replayed prologue")
 	_expect_score(scene, "tense", "resumed pact")
+	_expect(str(scene.get_node("UI").get("pact_sealed_subtitle").text) == character_before, "Continue changed the character exchange")
 	await _press_route(scene, "Btn_FIRST_REACTION_NEXT")
 	await _press_route(scene, "Btn_MID_CHOICE_SELECT_0")
 	await create_timer(0.3).timeout

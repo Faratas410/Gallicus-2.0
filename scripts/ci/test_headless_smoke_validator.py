@@ -3,6 +3,11 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+import tempfile
+from unittest.mock import patch, Mock
+
 from run_headless_smoke import (
     CANONICAL_SMOKE_SEED,
     SCENARIO_ROUTE_CASHOUT,
@@ -23,7 +28,30 @@ from run_headless_smoke import (
     SIGNOFF_SURFACE_CANONICAL_CI_LINUX,
     SIGNOFF_SURFACE_LOCAL_DIAGNOSTIC,
     validate_log_text,
+    run_smoke_runtime,
 )
+
+def check_profile_isolation() -> None:
+    profiles = []
+    def start_process(*args, **kwargs):
+        env = kwargs["env"]
+        profile = Path(env["APPDATA"])
+        marker = profile / "prior_unlock"
+        assert not marker.exists(), "previous scenario leaked an unlock"
+        profile.mkdir(parents=True)
+        marker.write_text("unlocked")
+        profiles.append(profile)
+        return Mock(returncode=0, communicate=Mock(return_value=("SMOKE:BOOT_OK\n", None)))
+    with tempfile.TemporaryDirectory() as folder:
+        parent = Path(folder) / "personal"
+        parent.mkdir()
+        sentinel = parent / "profile.save"
+        sentinel.write_text("personal save")
+        with patch.dict(os.environ, {"APPDATA":str(parent), "XDG_DATA_HOME":str(parent)}), patch("run_headless_smoke.platform.system", return_value="test"), patch("run_headless_smoke.subprocess.Popen", side_effect=start_process):
+            for index in range(2):
+                run_smoke_runtime(SCENARIO_FULL_RUN, "godot", ".", 1, 2, Path(folder) / f"{index}.log", False, SIGNOFF_SURFACE_LOCAL_DIAGNOSTIC)
+        assert sentinel.read_text() == "personal save"
+        assert profiles[0] != profiles[1] and all(not p.exists() for p in profiles)
 
 
 def fail(message: str) -> int:
@@ -142,6 +170,7 @@ def _build_keyboard_full_run_log() -> str:
 
 
 def main() -> int:
+    check_profile_isolation()
     if CANONICAL_SMOKE_SEED <= 0:
         return fail(f"expected a positive canonical smoke seed, got: {CANONICAL_SMOKE_SEED}")
     if _resolve_smoke_seed(SIGNOFF_SURFACE_CANONICAL_CI_LINUX, "999") != CANONICAL_SMOKE_SEED:

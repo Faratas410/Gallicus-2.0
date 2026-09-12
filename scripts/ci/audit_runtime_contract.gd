@@ -19,6 +19,8 @@ func _run() -> void:
 	_check_endings()
 	_check_evolution()
 	_check_migration()
+	_check_scar_rng_roundtrip()
+	_check_scar_consequences()
 	await _check_terminal()
 	if not _failed:
 		print("AUDIT_RUNTIME_CONTRACT_OK")
@@ -65,6 +67,39 @@ func _check_endings() -> void:
 
 func _sample(index: int, diverse: bool = true) -> Dictionary:
 	return {"choices":4, "signature":{"risk_bias":1.0,"repetition_bias":1.0,"scar_tolerance":0.6,"volatility":0.0}, "paths":[["hubris","violence","penitence"][index % 3]] if diverse else ["hubris"], "observation":str(index % 3) if diverse else "same", "classification":"THE_BROKEN"}
+
+func _check_scar_rng_roundtrip() -> void:
+	for initial: int in [9223372036854775806, -9223372036854775807, 12345]:
+		var state := RunState.new()
+		state.scar_rng_state = initial
+		state.scar_roll_index = 27
+		var loaded := RunState.new()
+		loaded.from_dict(JSON.parse_string(JSON.stringify(state.to_dict())))
+		_expect(loaded.scar_rng_state == initial and loaded.scar_roll_index == 27, "64-bit scar RNG lost precision in JSON")
+		var uninterrupted := RandomNumberGenerator.new()
+		var resumed_rng := RandomNumberGenerator.new()
+		uninterrupted.state = state.scar_rng_state
+		resumed_rng.state = loaded.scar_rng_state
+		for draw: int in range(16):
+			_expect(uninterrupted.randi() == resumed_rng.randi(), "scar sequence changed after JSON reload")
+	var legacy := RunState.new()
+	legacy.from_dict({"scar_rng_state":12345})
+	_expect(legacy.scar_rng_state == 12345, "legacy numeric RNG save rejected")
+
+func _check_scar_consequences() -> void:
+	var outcome := RunOutcomeSystem.new()
+	var scars := ScarCatalog.new()
+	for behavior: StringName in [&"CASH_OUT", &"DEBT_CHAIN", &"BLOOD_TAX", &"CROW_PLEASER", &"LAST_BREATH"]:
+		var consequence: Dictionary = outcome.build_level3_loss_consequence(behavior, behavior, &"", false, 0, 0)
+		_expect(not scars.get_scar(consequence.scar_id).is_empty(), "promised loss scar is absent from catalog: " + str(behavior))
+	var rng := RandomNumberGenerator.new()
+	var no_scars: Array[StringName] = []
+	var profiles: Array[Dictionary] = []
+	var base: Dictionary = outcome.resolve_level3_arena(rng, 42, 0, no_scars, &"", profiles)
+	for scar: Dictionary in scars.list_scars():
+		var active: Array[StringName] = [scar.id]
+		var affected: Dictionary = outcome.resolve_level3_arena(rng, 42, 0, active, &"", profiles)
+		_expect(float(affected.failure_chance) > float(base.failure_chance), "active scar has no promised adverse effect: " + str(scar.id))
 
 func _check_evolution() -> void:
 	var malformed: Dictionary = Evolution.sanitize({"signature":{"risk_bias":{},"volatility":NAN},"samples":[],"ramp_runs":INF})
@@ -124,6 +159,7 @@ func _check_terminal() -> void:
 	var manager: Node = scene.get_node("RunManager")
 	await _check_contract_readability(scene)
 	await _check_menu_continue(scene)
+	_check_applied_loss_scars(scene.get_node("RunManager"))
 	var save: Node = root.get_node("SaveManager")
 	var events: Node = root.get_node("GameEvents")
 	var ended: Array = []
@@ -139,7 +175,7 @@ func _check_terminal() -> void:
 	for index: int in range(100):
 		var run := RunState.new()
 		run.bets_history.assign([Catalog.BET_P3_CROWD_FEAST, Catalog.BET_P3_CROWD_FEAST, Catalog.BET_P3_LIE_APPLAUSE, Catalog.BET_P3_CROWD_FEAST, Catalog.BET_P3_LIE_APPLAUSE] if index < 2 else [Catalog.BET_P3_CROWD_FEAST, Catalog.BET_P3_CROWD_FEAST, Catalog.BET_P3_LIE_APPLAUSE, Catalog.BET_P3_BLOOD_LEDGER, Catalog.BET_P3_CHAIN_OATH])
-		run.scars_history.assign([&"SCAR_DEBT_BRAND", &"SCAR_CRACKED_BONES"])
+		run.scars_history.assign([&"DEBT_BRAND", &"CRACKED_BONES"])
 		run.condanne_this_run.assign([&"CONDANNA_FIRMATO", &"CONDANNA_RICORDATO"])
 		run.arena_index = 5
 		run.glory = 8 + index % 3
@@ -190,6 +226,15 @@ func _check_terminal() -> void:
 	# Let the audio server release playback references after freeing the scene.
 	await create_timer(0.3).timeout
 
+func _check_applied_loss_scars(manager: Node) -> void:
+	manager.request_new_game()
+	for bet: Dictionary in Catalog.level3_active_bets():
+		var id: StringName = bet.id
+		var applied: Array = manager.call("_handle_level3_loss_ritual", id, null)
+		for scar: StringName in applied:
+			_expect(manager.call("_has_scar", scar), "loss reported a scar it did not apply: " + str(id))
+	manager.request_quit_to_menu()
+
 func _check_menu_continue(scene: Node) -> void:
 	var boundary := SaveContinueBoundary.new()
 	var fixture := RunState.new()
@@ -231,6 +276,10 @@ func _check_menu_continue(scene: Node) -> void:
 	print("AUDIT_MENU_CONTINUE_OK")
 
 func _check_contract_readability(scene: Node) -> void:
+	_expect(scene.get_node("RunManager").get_available_level3_pacts() == Catalog.level3_active_bet_ids(), "archive differs from the actual offer catalogue")
+	for pact: StringName in scene.get_node("RunManager").get_available_level3_pacts():
+		_expect(Catalog.level3_active_bet_ids().has(pact), "archive lists a retired pact")
+		_expect(Catalog.get_level3_display_subtitle(pact) != "", "archive pact has no readable meaning")
 	var registry: Control = scene.get_node("UI/UI_RunRoot/BettingCircle")
 	var label: RichTextLabel = registry.get_node("CenterContainer/BookFrame/LeftPage/Content/Rtl_Left_Contract")
 	var old_locale: String = TranslationServer.get_locale()

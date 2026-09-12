@@ -155,3 +155,16 @@ Gli MP3 precedenti sono esclusi dal preset. Il controllo pack carica anche
 31 stream originali e rifiuta MP3 residui. Produzione originale e rimozione
 delle dipendenze audio precedenti non sostituiscono il completamento dei
 nomi da accreditare o il controllo finale di provenienza del pacchetto.
+
+## Congedo del Registro - 12 settembre 2026
+
+registry_departure e' il diciottesimo raster originale: derivazione ImageGen
+della stessa registry_chamber, con arena vuota e senza figure umane o
+oggetti amministrativi sul primo piano. PNG opaco copiato senza ritocchi;
+provenienza e hash nel manifest degli asset. Il solo quadro aggiunto serve
+il congedo terminale di sei secondi; non introduce un'altra famiglia visiva.
+La presentazione usa un avvicinamento minimo e dissolvenza; Movimento ridotto
+conserva il fermo immagine. Non e' un video. La variante con figure umane
+e' stata sostituita con un edit ImageGen che le rimuove insieme alle ombre:
+la trama non contiene esseri umani. Il manifest conserva il nuovo prompt,
+source e SHA-256; nessuna variante scartata entra nel pacchetto.

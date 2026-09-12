@@ -599,3 +599,30 @@ accepts only this phase. Restoring the view while leaving MAIN_MENU active
 would ignore the player's action until the ritual timeout. Checkpoint names,
 payload shape and authority remain unchanged. The AV integration regression
 resumes via the menu and advances through the actual pact button.
+
+## Campaign closure and checkpoints - 2026-09-12
+
+The first offered pair writes BET_OFFER. Entering the public gesture writes
+INTERMEDIATE_CHOICE before the choice; resume therefore does not replay the
+acknowledged pact. Existing checkpoint identities and phase authority are unchanged.
+The optional scar_rng_state field is now written as a decimal string to
+preserve its 64 bits through JSON; the reader also accepts legacy numbers.
+Envelope versions and runtime int64 semantics are unchanged.
+RunManager snapshots the ending identity from completed evidence before
+closure acknowledgments add archival unlocks. Evolution and the dossier use
+that same identity. The local closure cache is reset on new run and load;
+it is not a new save field. Silence still emits no classificatory payload.
+Terminal presentation is reactive and cannot restart classification; reboot
+restores the final black surface directly, with credits and exit utilities.
+
+Loss consequences and arena modifiers use the existing ScarCatalog identities
+(`CRACKED_BONES`, `OPEN_WOUND`, `DEBT_BRAND`, `SHAME_MARK`, `RUSTED_ARMOR`,
+`ONE_EYE`). The obsolete `SCAR_` value prefix prevented consequence insertion
+and matching active modifiers. Removing that prefix restores the declared
+costs; coefficients, catalog definitions and save identities do not change.
+
+Character dialogue is a pure RunManager query through RunManagerUiPort.
+Selection uses the saved run seed modulo three plus arena index; the existing
+environmental progress selects concise variants from progress 2.0 onward.
+It consumes no RNG, changes no state and adds no save field. Terminal state
+and active Silence suppress all exchanges. Only presentation consumers use it.

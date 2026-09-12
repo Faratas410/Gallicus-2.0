@@ -12,6 +12,32 @@ This document is authoritative for its category.
 No other file may redefine these concepts.
 All changes to systems described here must update this document in the same PR.
 
+## Presenze dell'amministrazione - 12 settembre 2026
+
+Su richiesta dell'utente, tre Gufi dell'Arena ricevono identita' e brevi
+dialoghi. Nella trama non esistono esseri umani. Queste presenze appartengono
+all'amministrazione materiale; nessuno parla a nome del Registro.
+
+- **Nerio, Gufo scrivano:** allinea le copie con il bordo dell'ala; attenzione
+  al foglio e alla raschiatura, indifferenza per l'intenzione. Frasi precise.
+- **Vessa, Gufo delle quote:** piumaggio composto, attenzione allo spazio
+  ancora vendibile. Traduce anche il disagio in margine commerciale.
+- **Orvo, Gufo banditore:** ciuffi rivolti a colleghi e gradinata; prova i
+  richiami prima di pronunciarli. L'attenzione del pubblico e' il suo mestiere.
+
+Gli scambi avvengono fra colleghi attorno alla firma gia' apposta e al gesto
+pubblico ancora da compiere. Non assegnano parole al giocatore, non giudicano
+gli esiti e non raccontano cosmologia, Ere o come ottenere il Silenzio.
+Non aggiungono missioni, alleanze, ricompense o risposte selezionabili.
+Felix non compare, non parla e non riceve una biografia.
+
+Quando l'ambiente si rarefa', gli stessi rapporti di lavoro diventano piu'
+compressi. Durante Silenzio e Assenza non viene prodotto alcun dialogo.
+Le schede nell'Archivio descrivono abitudini osservabili; non sono collezionabili
+o biografie sbloccate. Il catalogo implementativo e' in
+`scripts/content/arena_characters.gd`; matrice e prove in
+`docs/support/character_voices_2026-09-12.md`.
+
 
 ## Index
 

@@ -214,3 +214,13 @@ director nelle asserzioni di integrazione. Le precedenti prove di crossfade
 rimangono test di componente. Evidenze correnti in
 `docs/support/consistency_fix_2026-09-08.md`.
 La ramp sonora delle Ere e la fatigue all'ascolto restano prove umane aperte.
+
+## Ramp condivisa - 12 settembre 2026
+
+MusicDirector usa material_fade del port reattivo anche per il livello delle
+composizioni: attenuazione aggiuntiva = material_fade * 28 dB, da zero a
+5,88 dB. La ramp resta di tre percorsi e non espone l'Era. Brani e crossfade
+sono quelli esistenti; nessuna modifica al bus o al gain dei gesti. Lo stesso
+valore si applica al Continue, senza riavviare una traccia gia' attiva.
+Silenzi e Assenza arrestano lo score; il battito inizia sul nero dopo il
+congedo, immediatamente sul boot terminale. Ascolto e fatigue restano umani.

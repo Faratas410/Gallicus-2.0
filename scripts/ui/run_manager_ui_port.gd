@@ -26,6 +26,11 @@ func get_registry_presentation() -> Dictionary:
 	var manager: Node = _get_manager()
 	return manager.get_registry_presentation() if manager != null else {}
 
+func get_character_dialogue(context: String) -> Array[String]:
+	var manager: Node = _get_manager()
+	var empty: Array[String] = []
+	return manager.get_character_dialogue(context) if manager != null else empty
+
 func is_visual_only() -> bool:
 	var manager: Node = _get_manager()
 	if manager == null:

@@ -42,6 +42,12 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Autorita'
 
+Personaggi e dialoghi: `docs/support/character_voices_2026-09-12.md`.
+Nerio, Vessa e Orvo sono Gufi dell'amministrazione, con scambi e schede IT/EN/ES.
+
+Pass end-to-end corrente: `docs/support/campaign_completion_2026-09-12.md`.
+Include boot, campagna reale, quattro checkpoint, epilogo e build pre-umana.
+
 Ultima implementazione di coerenza e prologo:
 `docs/support/consistency_fix_2026-09-08.md`. L'audit precedente
 `docs/support/screen_audit_2026-09-08.md` conserva i difetti e le prove del

@@ -31,6 +31,7 @@ signal pact_sealed_closed
 signal resolve_ritual_opened(payload: Dictionary)
 signal resolve_ritual_closed
 signal request_ritual_advance(kind: String)
+signal request_dismiss_campaign_dialogue(id: String)
 signal micro_interpretive_quick_cut_requested(payload: Dictionary)
 signal intermediate_choice_opened
 signal push_luck_opened(payload: Dictionary)
@@ -72,5 +73,4 @@ func set_gameplay_enabled(enabled: bool) -> void:
 		return
 	gameplay_enabled = enabled
 	gameplay_enabled_changed.emit(enabled)
-
 

@@ -18,6 +18,7 @@ Source alignment: `docs/canon/RUN_ARCHITECTURE_CANON.md` (GameEvents required fo
 | --- | ---: | --- |
 | `request_new_run` | 0 | MainMenu -> RunManager intent |
 | `request_continue_run` | 0 | MainMenu -> RunManager intent |
+| `request_dismiss_campaign_dialogue` | 1 | Illustrated view -> RunManager; acknowledge current dialogue id only |
 | `request_place_bet` | 2 | UI -> RunManager intent |
 | `bet_ui_opened` | 1 | RunManager -> UI |
 | `bet_placed` | 3 | RunManager -> UI |

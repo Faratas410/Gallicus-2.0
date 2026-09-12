@@ -221,3 +221,14 @@ conserva il fermo immagine. Non e' un video. La prima variante con figure
 umane era un errore interpretativo, corretto su indicazione dell'utente:
 non e' parte della trama e non entra nella build corrente. Il quadro finale
 mostra la cessazione della consultazione attraverso lo spazio vuoto.
+
+## Ritratti e terminale rituale - 12 settembre 2026
+
+Il pass richiesto introduce art originali pittoriche per Nerio, Rugo e Dima:
+anatomia aviana, sagoma leggibile, luce calda laterale, nessun essere umano.
+Il Registro assume la forma di un terminale antico in basalto e bronzo, vetro
+scuro con segnale ambrato e ingresso per tavolette. Nessun volto o ologramma.
+I ritratti 2:3 sono asset senza testo; nomi, stato e dialogo sono resi da Godot.
+Le superfici rituali restano materiali, collegate all'apparato del terminale.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

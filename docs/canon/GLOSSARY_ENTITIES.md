@@ -79,9 +79,18 @@ Related: The Register, Registry Precedent State, Felix Gallicus
 
 Tre Gufi dell'amministrazione, non umani: Nerio e' scrivano, Vessa cura le
 quote, Orvo e' banditore. I nomi restano invariati nelle traduzioni. Parlano
-fra colleghi in scambi circoscritti e sono descritti nell'Archivio; nessuno
+fra colleghi e con gli abitanti dell'arena in scambi circoscritti e sono descritti nell'Archivio; nessuno
 personifica il Registro. Autorita': `docs/canon/LORE_UNIFIED.md`, sezione
-"Presenze dell'amministrazione".
+"Presenze dell'arena".
+
+### Rugo e Dima
+
+Rugo e' un gallo della soglia, con una tacca nella cresta e un richiamo
+misurato. Dima e' una gallina della gradinata: riconosce i passi e conserva
+memoria dei posti occupati. Sono presenze dell'Arena senza incarichi
+amministrativi, non compagni controllabili o portatori di bonus. Hanno
+scambi con i Gufi e fra loro, oltre a schede nell'Archivio. Autorita':
+`docs/canon/LORE_UNIFIED.md`, sezione "Presenze dell'arena".
 
 ## Registry: Silence
 
@@ -249,3 +258,12 @@ Type: Registry state band
 One-liner: Banda di stato amministrativo finita del Registro (`0..4`, con `4` = Absence).
 
 Details: Progressione monotona e non esposta al player; influenza policy di tono/classificazione senza nuove fasi o azioni utente.
+
+## Forma del Registro - 12 settembre 2026
+
+Terminale rituale impersonale: manifestazione fisica del sistema
+amministrativo, con vetro ambrato, basalto, bronzo e ingresso per tavolette.
+Non e' una persona o un'IA senziente. Nella finestra illustrata il ruolo
+«Terminale rituale · stato» distingue l'emissione dalla voce dei personaggi.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

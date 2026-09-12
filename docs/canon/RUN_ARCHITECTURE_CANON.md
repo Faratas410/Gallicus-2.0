@@ -622,7 +622,25 @@ and matching active modifiers. Removing that prefix restores the declared
 costs; coefficients, catalog definitions and save identities do not change.
 
 Character dialogue is a pure RunManager query through RunManagerUiPort.
-Selection uses the saved run seed modulo three plus arena index; the existing
+Selection uses the saved run seed modulo the context pool size plus arena index; the existing
 environmental progress selects concise variants from progress 2.0 onward.
 It consumes no RNG, changes no state and adds no save field. Terminal state
 and active Silence suppress all exchanges. Only presentation consumers use it.
+
+## Illustrated campaign dialogue - 2026-09-12
+
+RunManager.get_campaign_dialogue supplies an immutable presentation payload
+only at arena 1 / BET_PRESENT, after the existing BET_OFFER checkpoint.
+The eligible id is entry at era 0 with zero completed samples, middle from
+era 2, departure from era 3. Later stages take precedence. Already seen
+scenes, active Silence and era 4 yield no payload. No RNG or outcome changes.
+OpeningPrologue reacts after run_started or a successful Continue; no new
+phase is introduced. request_dismiss_campaign_dialogue(id) reaches RunManager,
+which validates the eligible id and persists acknowledgment through SaveManager.
+Menu interruption is not acknowledgment; Continue reopens an unfinished scene
+from its beginning. Completed or skipped scenes do not repeat.
+The terminal departure after Absence remains six seconds of unclassified
+environment, black and heartbeat; the dialogue belongs to the final stretch
+before that boundary, not to terminal state.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

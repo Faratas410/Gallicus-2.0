@@ -14,6 +14,7 @@ var finale_id: String = ""
 var capture_dir: String = ""
 var captured: Dictionary = {}
 var catalog_scars_applied: int = 0
+var dialogues_seen: Dictionary = {}
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -81,6 +82,16 @@ func _run() -> void:
 			await create_timer(0.6).timeout
 			var run: RunState = manager.get("_run_state")
 			var step: String = str(run.run_save_flow_step)
+			var conversation: Node = scene.get_node("OpeningPrologue")
+			if conversation.get("_active"):
+				var dialogue_id: String = str(conversation.get("_payload").id)
+				if not dialogues_seen.has(dialogue_id):
+					dialogues_seen[dialogue_id] = index + 1
+					await _capture("dialogue_" + dialogue_id)
+				elif int(dialogues_seen[dialogue_id]) != index + 1:
+					_fail("completed campaign dialogue repeated: " + dialogue_id)
+				_press("AdvanceDialogue")
+				continue
 			if index == 4 and step in ["BET_OFFER", "BET_SIGNED", "INTERMEDIATE_CHOICE", "PUSH_LUCK"] and not resumed.has(step):
 				var before: Dictionary = run.to_dict()
 				root.get_node("GameEvents").request_show_main_menu.emit()
@@ -143,6 +154,8 @@ func _run() -> void:
 	if save.get_registry_era() != 4: _fail("natural UI campaign did not reach Absence")
 	if resumed.size() != 4: _fail("missing checkpoint resumes: " + str(resumed))
 	if catalog_scars_applied == 0: _fail("natural losses produced no catalog scars")
+	if dialogues_seen.size() != 3: _fail("missing illustrated campaign stages: " + str(dialogues_seen))
+	print("CAMPAIGN_DIALOGUES=", JSON.stringify(dialogues_seen))
 	if save.get_registry_era() == 4:
 		var terminal: Node = scene.get_node("UI/RegistryTerminalView")
 		await create_timer(2.5).timeout

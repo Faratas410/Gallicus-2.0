@@ -116,7 +116,7 @@ func _verify_presentation(scene: Node) -> void:
 	await process_frame
 	_expect(intro.get("_active"), "first menu entry did not start prologue")
 	root.get_node("SaveManager").call("load_profile")
-	_expect(root.get_node("SaveManager").call("has_seen_opening_prologue"), "prologue preference did not survive profile reload")
+	_expect(not root.get_node("SaveManager").call("has_seen_opening_prologue"), "unfinished dialogue marked as seen")
 	var event: InputEventAction = InputEventAction.new()
 	event.action = "ui_accept"
 	event.pressed = true
@@ -133,20 +133,24 @@ func _verify_presentation(scene: Node) -> void:
 	var open_button: Button = scene.get_node("UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book")
 	_expect(root.gui_get_focus_owner() == open_button, "skip did not restore registry focus")
 	_expect(scene.get_node("MusicDirector").get("_active_key") == "safe", "real registry entry score incorrect")
-	intro.call("prepare_first_entry")
-	_expect(not intro.get("_armed"), "later entry rearmed prologue")
-	# Full playback with reduced motion retains both captions and reading time.
+	intro.call("_try_open")
+	_expect(not intro.get("_active"), "completed entry dialogue replayed")
+	# Manual reading retains the beat and switches language in place.
 	root.get_node("SaveManager").call("set_reduced_motion", true)
-	intro.set("_armed", true)
-	intro.call("_on_run_started")
-	await create_timer(3.3).timeout
-	_expect(intro.get("_active") and int(intro.get("_beat")) == 1, "reduced motion removed second caption or reading time")
+	var settings: Dictionary = root.get_node("SaveManager").get("_settings")
+	settings["opening_prologue_seen"] = false
+	settings["campaign_dialogues_seen"] = []
+	intro.call("_try_open")
+	await create_timer(0.6).timeout
+	intro.get("_next").pressed.emit()
+	await create_timer(1.0).timeout
+	_expect(intro.get("_active") and int(intro.get("_beat")) == 1, "dialogue advanced without reader input")
 	_expect(intro.get("_image").scale == Vector2.ONE, "reduced motion moved prologue image")
 	menu.call("_on_language_selected", 1)
 	await create_timer(0.1).timeout
-	_expect(intro.get("_caption").text == "The Registry preserves your choices.", "prologue locale switch stale")
-	await create_timer(4.9).timeout
-	_expect(not intro.get("_active") and root.gui_get_focus_owner() == open_button, "automatic prologue completion blocked input")
+	_expect(intro.get("_caption").text == "ENTRY OPEN\nNo promise inscribed.", "dialogue locale switch stale")
+	intro.get("_skip").pressed.emit()
+	_expect(not intro.get("_active") and root.gui_get_focus_owner() == open_button, "dialogue completion blocked input")
 	menu.call("_on_language_selected", 0)
 	ui.set("_scars_detail_text", "A long scar record.\n".repeat(80))
 	ui.call("_show_scars_detail")
@@ -232,7 +236,8 @@ func _verify_music_route(scene: Node) -> void:
 	await create_timer(0.3).timeout
 	_expect_score(scene, "tense", "sealed pact")
 	var character_before: String = str(scene.get_node("UI").get("pact_sealed_subtitle").text)
-	_expect(character_before.contains("Nerio:") or character_before.contains("Vessa:") or character_before.contains("Orvo:"), "real pact route omitted character dialogue")
+	var character_lines: Array[String] = scene.get_node("RunManager").get_character_dialogue("pact")
+	_expect(character_lines.size() == 2 and character_before.contains(TranslationServer.translate(character_lines[0])), "real pact route omitted character dialogue")
 	# Resume from a real persisted checkpoint must bypass the opening overlay.
 	root.get_node("GameEvents").request_show_main_menu.emit()
 	await process_frame

@@ -1977,7 +1977,7 @@ func _character_exchange(context: String) -> String:
 func _apply_character_pact_text() -> void:
 	var exchange: String = _character_exchange("pact")
 	if pact_sealed_subtitle != null and exchange != "":
-		pact_sealed_subtitle.text = tr("Voci dei Gufi") + "\n" + exchange
+		pact_sealed_subtitle.text = tr("Voci dell’arena") + "\n" + exchange
 
 func _apply_character_gesture_text() -> void:
 	var exchange: String = _character_exchange("gesture")

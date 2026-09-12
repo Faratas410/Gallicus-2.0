@@ -188,3 +188,15 @@ true al primo ingresso presentato. Nessuna modifica ai checkpoint della run,
 alla progressione o alla firma. I profili con campagna gia' avviata vengono
 esclusi dalla presentazione tramite i dati esistenti. La regressione AV
 ricarica il profilo e controlla che la preferenza sia persistita.
+
+## Presa visione dei dialoghi - 12 settembre 2026
+
+Profilo v5: settings.campaign_dialogues_seen e' una lista additiva di id
+entry/middle/departure, deduplicata e sanitizzata; default vuoto, valori
+ignoti o non stringa scartati. opening_prologue_seen=true sui vecchi profili
+vale come entry gia' vista. La visione viene scritta solo al completamento
+o skip esplicito; un'uscita interrompe e consente di ricominciare la scena.
+Run save e versioni non cambiano. Il checkpoint BET_OFFER sottostante resta
+valido e non salva una fase narrativa separata o il singolo indice di battuta.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

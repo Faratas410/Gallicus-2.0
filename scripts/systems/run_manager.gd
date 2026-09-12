@@ -1013,7 +1013,7 @@ func _run_smoke_keyboard_full_run_driver() -> void:
 		if focus_name == "NONE":
 			_smoke_keyboard_input(KEY_TAB, focus_name)
 			return
-		if focus_name == "Btn_Open_Book" or focus_name.begins_with("Btn_Select") or focus_name.begins_with("Btn_Sign"):
+		if focus_name == "AdvanceDialogue" or focus_name == "Btn_Open_Book" or focus_name.begins_with("Btn_Select") or focus_name.begins_with("Btn_Sign"):
 			_smoke_keyboard_input(KEY_ENTER, focus_name)
 			return
 		_smoke_keyboard_input(KEY_TAB, focus_name)
@@ -1221,6 +1221,7 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"betting_opened", &"_on_betting_opened", false],
 		[&"request_new_run", &"_on_request_new_run", true],
 		[&"request_ritual_advance", &"_on_request_ritual_advance", true],
+		[&"request_dismiss_campaign_dialogue", &"_on_request_dismiss_campaign_dialogue", false],
 		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
 		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
 		[&"request_mid_choice_select", &"_on_request_mid_choice_select", true],
@@ -3868,8 +3869,33 @@ func get_registry_presentation() -> Dictionary:
 func get_character_dialogue(context: String) -> Array[String]:
 	# Pure presentation query. Reopening the same checkpoint preserves the exchange.
 	var catalog = preload("res://scripts/content/arena_characters.gd")
+	var variants: int = catalog.variant_count(context)
+	if variants == 0:
+		return []
 	var silent: bool = not can_start_run() or _run_state.registry_silence_active
-	return catalog.lines(context, posmod(_run_state.run_seed, 3) + _run_state.arena_index, _registry_effect_progress() >= 2.0, silent)
+	return catalog.lines(context, posmod(_run_state.run_seed, variants) + _run_state.arena_index, _registry_effect_progress() >= 2.0, silent)
+
+func get_campaign_dialogue() -> Dictionary:
+	# Presentation at a persisted entry checkpoint; no new gameplay phase.
+	if not can_start_run() or _run_state.registry_silence_active or _phase != RunPhase.BET_PRESENT or _run_state.arena_index != 1:
+		return {}
+	var id: String = ""
+	if _registry_era >= 3:
+		id = "departure"
+	elif _registry_era >= 2:
+		id = "middle"
+	elif _registry_era == 0 and int(SaveManager.get_registry_evolution().get("samples", 0)) == 0:
+		id = "entry"
+	if id == "" or SaveManager.has_seen_campaign_dialogue(id):
+		return {}
+	var catalog = preload("res://scripts/content/campaign_dialogues.gd")
+	var payload: Dictionary = catalog.SEQUENCES[id].duplicate(true)
+	payload["id"] = id
+	return payload
+
+func _on_request_dismiss_campaign_dialogue(id: String) -> void:
+	if str(get_campaign_dialogue().get("id", "")) == id and id != "":
+		SaveManager.mark_campaign_dialogue_seen(id)
 
 func _registry_effect_progress() -> float:
 	if _registry_era <= 0:

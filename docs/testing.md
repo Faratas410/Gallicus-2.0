@@ -3,9 +3,10 @@
 ## Principio
 
 Il contratto AV comprende `scripts/ci/character_runtime_contract.gd`: tre
-Gufi, dodici scambi, localizzazione, selezione deterministica senza mutazioni,
+Gufi, un gallo, una gallina e venti scambi, localizzazione, selezione deterministica senza mutazioni,
 soppressione terminale/Silenzio e ingombri alle due risoluzioni. Con renderer
-e `--capture-dir=<directory>` produce 72 viste di dialogo e sei dell'Archivio.
+e `--capture-dir=<directory>` produce 120 viste di dialogo e 18 dell'Archivio
+(sei iniziali e dodici scorse fino alle schede di Rugo e Dima).
 Le immagini devono essere ispezionate: la sola geometria non prova visibilita'.
 
 Ogni invocazione di `run_headless_smoke.py` usa un profilo temporaneo nuovo
@@ -518,3 +519,15 @@ file correnti senza cache, conservando hash e log di ogni tentativo. Su Windows
 Godot richiede accesso allo store certificati: una prova che fallisce per i
 permessi della sandbox non si sana con retry o allowlist. Ripetere su copie
 indipendenti con i permessi necessari e riportare entrambe le serie.
+
+## Dialoghi illustrati - 12 settembre 2026
+
+Il runner AV esegue anche illustrated_dialogue_contract.gd in un profilo
+isolato. Verifica menu -> scena, blocco input iniziale, Enter/mouse, skip,
+chiusura, disk reload e Continue, id sanitizzati, tre stadi, IT/EN/ES, 720p/1080p,
+geometria e soppressione Silenzio/Assenza. Con renderer produce 108 catture.
+La campagna naturale deve incontrare entry/middle/departure una volta ciascuna
+e attraversarne le battute; lo smoke tastiera deve avanzare la nuova finestra.
+Le prove storiche del prologo automatico sono sostituite da lettura manuale.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

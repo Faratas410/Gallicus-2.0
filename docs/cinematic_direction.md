@@ -3,8 +3,8 @@
 ## Funzione
 
 Le cinematiche collegano cambi di stato che una singola schermata non puo'
-esprimere. Non sostituiscono gameplay, non spiegano il canon e non trasformano
-Gallicus in una narrazione a personaggi.
+esprimere. Non sostituiscono gameplay e non spiegano la cosmologia. Il pass
+autorizzato del 12 settembre aggiunge conversazioni illustrate circoscritte.
 
 Devono essere brevi, in-engine e object-first.
 
@@ -17,7 +17,7 @@ stato prima -> oggetto -> trasformazione -> stato dopo -> controllo restituito
 ```
 
 - l'oggetto resta il soggetto della ripresa;
-- il punto di vista rimane quello della persona nell'arena;
+- il punto di vista rimane quello del soggetto nell'arena;
 - nessuna sequenza introduce un personaggio guida;
 - input e focus tornano in modo prevedibile;
 - una variante reduced-motion conserva informazione e timing.
@@ -26,9 +26,12 @@ stato prima -> oggetto -> trasformazione -> stato dopo -> controllo restituito
 
 ### Apertura
 
+La finestra illustrata a lettura manuale sostituisce il prologo automatico
+descritto nelle reference storiche sotto. Specifica corrente in `docs/support/illustrated_dialogues_2026-09-12.md`.
+
 - soglia dell'arena;
 - primo contatto con il Registro;
-- durata breve e skippabile dopo la prima visione;
+- lettura manuale, skippabile anche alla prima visione dopo 0,5 secondi;
 - nessuna esposizione testuale lunga.
 
 La reference operativa del gate `MV-03` e' in
@@ -106,7 +109,7 @@ Entrata pannelli, backdrop e shade tengono un solo tween per superficie.
 Movimento ridotto interrompe anche una transizione gia' iniziata e ripristina
 subito geometria e alpha, senza un successivo rimbalzo al frame finale.
 
-## Prologo - implementazione autorizzata dell'8 settembre 2026
+## Prologo dell'8 settembre 2026 - storico, sostituito il 12 settembre
 
 Richiesta dell'utente: valutare un'apertura che renda comprensibile la lore.
 Raccomandazione: prologo in-engine di circa 8 secondi, centrato sulla premessa

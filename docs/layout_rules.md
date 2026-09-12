@@ -144,3 +144,12 @@ superficie basaltica, lettura 3,5 s e scadenza anche con movimento ridotto.
 Il fascicolo usa il sigillo gia' nel materiale: niente badge decorativo
 duplicato con fondo nero. Silenzio: ritorno 320x52 centrato in basso, offset
 relativi agli anchor; Assenza conserva superficie senza CTA.
+
+## Finestra di conversazione - 12 settembre 2026
+
+Stage 1160x620 centrato, ritratto 400x600 a sinistra, testo a destra su pannello
+scuro 768x430. Corpo 24 px, nome 34 px, ruolo 18 px; font identici a 720p e
+1080p. Due azioni accessibili: avanzamento e skip. Nessuna scelta di risposta.
+La finestra copre il rito e ne intercetta tutti gli input finche' viene chiusa.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

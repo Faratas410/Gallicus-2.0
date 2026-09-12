@@ -168,3 +168,13 @@ conserva il fermo immagine. Non e' un video. La variante con figure umane
 e' stata sostituita con un edit ImageGen che le rimuove insieme alle ombre:
 la trama non contiene esseri umani. Il manifest conserva il nuovo prompt,
 source e SHA-256; nessuna variante scartata entra nel pacchetto.
+
+## Art per le conversazioni - 12 settembre 2026
+
+Quattro nuovi PNG 1024x1536 in assets/ui/generated, prefisso dialogue_, usati
+dal catalogo campaign_dialogues e da OpeningPrologue. Fonte: built-in image_gen,
+art originali senza reference esterne, prompt e SHA256 nel manifest degli asset.
+Import Godot ed export devono includere i quattro ritratti; il testo e' live
+IT/EN/ES. Il Registro e' una macchina impersonale, gli altri soggetti sono uccelli.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

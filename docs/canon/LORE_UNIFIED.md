@@ -12,11 +12,14 @@ This document is authoritative for its category.
 No other file may redefine these concepts.
 All changes to systems described here must update this document in the same PR.
 
-## Presenze dell'amministrazione - 12 settembre 2026
+## Presenze dell'arena - 12 settembre 2026
 
-Su richiesta dell'utente, tre Gufi dell'Arena ricevono identita' e brevi
-dialoghi. Nella trama non esistono esseri umani. Queste presenze appartengono
-all'amministrazione materiale; nessuno parla a nome del Registro.
+Su richiesta dell'utente, tre Gufi, un gallo e una gallina dell'Arena ricevono
+identita' e brevi dialoghi. Nella trama non esistono esseri umani. I Gufi
+appartengono all'amministrazione materiale; Rugo e Dima abitano la soglia e
+la gradinata, senza incarichi amministrativi. Nessuno parla a nome del Registro.
+La specie non assegna automaticamente un ruolo a ogni abitante e non
+stabilisce la specie del giocatore o di Felix.
 
 - **Nerio, Gufo scrivano:** allinea le copie con il bordo dell'ala; attenzione
   al foglio e alla raschiatura, indifferenza per l'intenzione. Frasi precise.
@@ -25,18 +28,23 @@ all'amministrazione materiale; nessuno parla a nome del Registro.
 - **Orvo, Gufo banditore:** ciuffi rivolti a colleghi e gradinata; prova i
   richiami prima di pronunciarli. L'attenzione del pubblico e' il suo mestiere.
 
-Gli scambi avvengono fra colleghi attorno alla firma gia' apposta e al gesto
+- **Rugo, Gallo della soglia:** cresta con una tacca, cura ripetuta della stessa
+  penna del petto; prima copriva gli annunci, ora sceglie quando usare la voce.
+- **Dima, Gallina della gradinata:** tiene una zampa sul posto accanto, riconosce
+  i passi e ricorda chi sedeva dove l'amministrazione vede spazio vendibile.
+
+Gli scambi avvengono fra abitanti e amministratori attorno alla firma gia' apposta e al gesto
 pubblico ancora da compiere. Non assegnano parole al giocatore, non giudicano
 gli esiti e non raccontano cosmologia, Ere o come ottenere il Silenzio.
 Non aggiungono missioni, alleanze, ricompense o risposte selezionabili.
 Felix non compare, non parla e non riceve una biografia.
 
-Quando l'ambiente si rarefa', gli stessi rapporti di lavoro diventano piu'
+Quando l'ambiente si rarefa', gli stessi rapporti diventano piu'
 compressi. Durante Silenzio e Assenza non viene prodotto alcun dialogo.
 Le schede nell'Archivio descrivono abitudini osservabili; non sono collezionabili
 o biografie sbloccate. Il catalogo implementativo e' in
 `scripts/content/arena_characters.gd`; matrice e prove in
-`docs/support/character_voices_2026-09-12.md`.
+`docs/support/arena_cast_2026-09-12.md`.
 
 
 ## Index
@@ -1309,3 +1317,22 @@ Nel contratto attuale, due forze contribuiscono alla pressione del Registro:
 
 Il Registro non presenta questo stato al soggetto.
 L'effetto resta interno: tono, severita' e rigidita' classificatoria cambiano in modo progressivo e impersonale.
+
+## Terminale e conversazioni illustrate - 12 settembre 2026
+
+Su richiesta esplicita dell'utente, il Registro ha una forma materiale di
+terminale rituale impersonale: basalto, bronzo, vetro scuro, contatti ceramici
+e ingresso per tavolette. Elabora atti e conserva tracce; non ha coscienza,
+volonta', volto, voce o personalita'. Le righe di stato sono emissioni
+amministrative, non battute di un'IA. Tavola, cera e sigilli restano le sue
+superfici di ingresso e attestazione.
+
+Nerio, Rugo e Dima hanno ritratti e tre brevi conversazioni: primo ingresso,
+ritorno dopo il secondo Silenzio e ingresso nell'ultima Era dopo il terzo.
+I nomi delle Ere restano interni. Il congedo dialogato precede il quarto
+Silenzio e non prevede il momento della cessazione. Durante Silenzio e
+Assenza nessuno parla e il terminale non produce stati. Felix resta assente.
+La scena finale scioglie il gesto di Dima, che lascia libero il posto, e il
+richiamo di Rugo, che rimane senza chiamare. Nessuna missione o scelta morale.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

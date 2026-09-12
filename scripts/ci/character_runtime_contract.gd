@@ -26,7 +26,9 @@ func _run() -> void:
 	var menu: Node = scene.get_node("MenuLayer/MainMenu")
 	root.get_node("SaveManager").set_reduced_motion(true)
 	var state: RunState = manager.get("_run_state")
-	_check(Characters.CHARACTERS.size() == 3, "expected three owl characters")
+	_check(Characters.CHARACTERS.size() == 5, "expected three owls, a rooster and a hen")
+	_check(manager.get_character_dialogue("unknown").is_empty(), "unknown context has dialogue")
+	var heard: Dictionary = {}
 	for context: String in ["pact", "gesture"]:
 		_check(Characters.lines(context, 0, false, true).is_empty(), "terminal has dialogue")
 	for language: int in range(3):
@@ -41,7 +43,7 @@ func _run() -> void:
 				menu.hide()
 				ui.show()
 				manager.set("_registry_era", 3 if worn else 0)
-				for variant: int in range(3):
+				for variant: int in range(Characters.variant_count("pact")):
 					state.run_seed = variant + 300
 					var before: Dictionary = state.to_dict()
 					for context: String in ["pact", "gesture"]:
@@ -49,6 +51,7 @@ func _run() -> void:
 						_check(lines.size() == 2, "missing exchange")
 						_check(lines == manager.get_character_dialogue(context) and state.to_dict() == before, "dialogue query changed state or selection")
 						for line: String in lines:
+							heard[line.get_slice(":", 0)] = true
 							if language > 0: _check(TranslationServer.translate(line) != line, "untranslated line: " + line)
 						if context == "pact":
 							ui.call("show_phase", RunPhaseContract.BET_COMMITTED)
@@ -76,15 +79,39 @@ func _run() -> void:
 			if capture_dir != "":
 				await RenderingServer.frame_post_draw
 				root.get_texture().get_image().save_png(capture_dir.path_join("archive_%s_%dx%d.png" % [TranslationServer.get_locale(), size.x, size.y]))
+			var archive: VBoxContainer = menu.get("museo_vbox")
+			var scroll: ScrollContainer = archive.get_parent()
+			for character: Dictionary in Characters.CHARACTERS:
+				var found: bool = false
+				for entry: Node in archive.get_children():
+					if entry.get_child_count() == 0 or not entry.get_child(0) is Label:
+						continue
+					var biography: Label = entry.get_child(0)
+					if not biography.text.begins_with(character.name + " — "):
+						continue
+					found = true
+					scroll.ensure_control_visible(entry)
+					await process_frame
+					await process_frame
+					_check(biography.get_line_count() * biography.get_line_height() <= biography.size.y + 1.0, "clipped biography: " + character.name)
+					_check(scroll.get_global_rect().encloses(biography.get_global_rect()), "unreachable biography: " + character.name)
+					if capture_dir != "" and character.id in ["rugo", "dima"]:
+						await RenderingServer.frame_post_draw
+						root.get_texture().get_image().save_png(capture_dir.path_join("archive_%s_%s_%dx%d.png" % [character.id, TranslationServer.get_locale(), size.x, size.y]))
+				_check(found, "missing archive character: " + character.name)
+			scroll.scroll_vertical = 0
 			menu.call("_show_menu")
 	state.registry_silence_active = true
 	_check(manager.get_character_dialogue("pact").is_empty(), "Silence has dialogue")
 	state.registry_silence_active = false
+	for character: Dictionary in Characters.CHARACTERS:
+		_check(heard.has(character.name), "unreachable speaker: " + character.name)
 	var music: Node = scene.get_node("MusicDirector")
 	music.call("_kill_fade")
 	for player: AudioStreamPlayer in music.get("_players"): player.stop()
 	root.get_node("SfxBus").call("_on_run_ended", "REGISTRY_ABSENCE", {})
-	await create_timer(0.3).timeout
+	# Drain the modal reading timers before releasing their button references.
+	await create_timer(1.5).timeout
 	scene.queue_free()
 	await create_timer(0.3).timeout
 	if not failed: print("CHARACTER_RUNTIME_CONTRACT_OK")

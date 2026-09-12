@@ -9,14 +9,16 @@ La durezza nasce dalla procedura e dall'irreversibilita', non da gore o insulti.
 
 La voce dei Gufi e' distinta: brevi scambi fra Nerio (precisione della copia),
 Vessa (margine commerciale) e Orvo (attenzione della gradinata). Sono colleghi
-dell'amministrazione, non esseri umani o narratori del Registro. Dodici scambi
+dell'amministrazione. Rugo, gallo della soglia, misura il richiamo; Dima,
+gallina della gradinata, ricorda gli occupanti dei posti. Nessuno e' umano
+o narratore del Registro. Venti scambi
 di due battute, nei due contesti patto/gesto e nelle varianti distese/compresse,
 sono localizzati in IT/EN/ES insieme a ruoli e schede. I nomi non si traducono.
-La firma resta attestata dal titolo del patto; il corpo ospita "Voci dei Gufi".
+La firma resta attestata dal titolo del patto; il corpo ospita "Voci dell’arena".
 Nel gesto la riga della gradinata resta sopra lo scambio. Nessuna voce nei
 Silenzi o nell'Assenza; nessuna battuta di Felix. Il catalogo e' in
 `scripts/content/arena_characters.gd` e il dettaglio in
-`docs/support/character_voices_2026-09-12.md`.
+`docs/support/arena_cast_2026-09-12.md`.
 
 ## Lessico player-facing
 
@@ -226,3 +228,15 @@ Non aggiunge sblocchi o rivela firma/Ere. Il fascicolo e la convergenza usano
 la medesima identita' calcolata prima delle annotazioni di chiusura. Il finale
 non aggiunge copy narrativo: dopo il congedo restano CREDITI e ESCI DAL GIOCO.
 Prove e matrice in `docs/support/campaign_completion_2026-09-12.md`.
+
+## Conversazioni illustrate - 12 settembre 2026
+
+Tre scene di sei battute nel catalogo scripts/content/campaign_dialogues.gd:
+«La prima copia», «La stessa riga», «Il posto accanto». I tre interlocutori
+ritratti sono Nerio, Rugo e Dima; il terminale ha due inserti marcati come stato.
+Le scene accompagnano inizio, meta' e ultimo tratto della campagna. Dima passa
+dal tenere un posto al lasciarlo libero; Rugo dal richiamo alla presenza quieta.
+Le battute brevi gia' presenti su patto/gesto restano distinte dalle scene.
+Nessun testo del giocatore o di Felix, nessuna risposta morale o strategica.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

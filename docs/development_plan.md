@@ -10,9 +10,12 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
-Integrazione richiesta: tre Gufi caratteristici, dialoghi brevi nel rito e
-schede nell'Archivio. Pacchetto e prove locali in
-`docs/support/character_voices_2026-09-12.md`; nessuna nuova fase o schema save.
+Consegna corrente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
+come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+Integrazione richiesta: tre Gufi, il gallo Rugo e la gallina Dima, dialoghi
+brevi nel rito e schede nell'Archivio. Pacchetto e prove locali in
+`docs/support/arena_cast_2026-09-12.md`; nessuna nuova fase o schema save.
 
 Aggiornato il 12 settembre 2026. Astra e' il modello di sviluppo di riferimento;
 questa consegna locale non chiude gate umani o Linux del gioco e della release.

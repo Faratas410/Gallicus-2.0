@@ -42,8 +42,12 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Autorita'
 
-Personaggi e dialoghi: `docs/support/character_voices_2026-09-12.md`.
-Nerio, Vessa e Orvo sono Gufi dell'amministrazione, con scambi e schede IT/EN/ES.
+Consegna corrente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
+come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+Personaggi e dialoghi: `docs/support/arena_cast_2026-09-12.md`.
+Ai Gufi Nerio, Vessa e Orvo si aggiungono il gallo Rugo e la gallina Dima,
+con scambi e schede IT/EN/ES.
 
 Pass end-to-end corrente: `docs/support/campaign_completion_2026-09-12.md`.
 Include boot, campagna reale, quattro checkpoint, epilogo e build pre-umana.

@@ -320,7 +320,7 @@ func _build_museo_list() -> void:
 		arena_themes = _run_manager_port.get_available_arena_themes()
 		harsh_unlocked = _run_manager_port.is_harsh_crowd_unlocked()
 	_add_museo_item(tr("Il fascicolo conserva gli esiti. Qui ritrovi i vincoli delle promesse disponibili."))
-	_add_museo_header(tr("GUFI DELL’ARENA"))
+	_add_museo_header(tr("PRESENZE DELL’ARENA"))
 	for character: Dictionary in ArenaCharacters.CHARACTERS:
 		_add_museo_item("%s — %s\n%s" % [str(character.name), tr(str(character.role)), tr(str(character.description))])
 	_add_museo_header(tr("PATTI DISPONIBILI"))
@@ -504,7 +504,6 @@ func _on_new_game_pressed() -> void:
 	if GameEvents != null and GameEvents.has_signal("request_new_run"):
 		_play_sfx(&"arena_threshold_cross")
 		_set_arena_threshold_crossed_state(true)
-		get_node("../../OpeningPrologue").prepare_first_entry()
 		GameEvents.request_new_run.emit()
 		_hide_menu()
 	else:

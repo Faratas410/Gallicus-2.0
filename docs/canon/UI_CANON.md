@@ -554,12 +554,27 @@ credits/exit utilities. Input cannot reach the covered dossier. Reduced motion
 keeps the same reading interval with a still image. Terminal boot goes directly
 to black; no presentation control can restart the Registry.
 
-## Administrative character dialogue - 2026-09-12
+## Arena character dialogue - 2026-09-12
 
 The sealed-pact body presents a labelled two-line exchange between named
-Owls. The public-gesture header preserves its audience line and adds two
+arena inhabitants (three Owls, Rugo the rooster and Dima the hen). The public-gesture header preserves its audience line and adds two
 speaker-labelled lines. Existing buttons, focus, timings and geometry stay
 unchanged. No extra modal or response tree is introduced. Archive entries
-describe the same three Owls before the pact catalogue. The UI localizes
+describe the same five characters before the pact catalogue. The UI localizes
 source keys from RunManager's read-only query; Silence and Absence return
 no character lines. Language changes refresh the current exchange in place.
+
+## Illustrated conversations - 2026-09-12
+
+The user-requested conversation surface replaces the automatic opening captions.
+RunManager selects entry/middle/departure; the UI renders its six live localized
+beats with portrait left, speaker/role/body right and manual reading controls.
+Enter advances, Escape skips, mouse activates the displayed controls and
+Tab/arrows remain within them. Initial input guard is 0.5 seconds; subsequent
+debounce is 0.18 seconds. The entire covered ritual input is consumed.
+There is no automatic advance, typewriter or timed disappearance. Reduced
+motion retains the static art and manual timing. Language changes preserve
+beat index. Closing returns focus to Btn_Open_Book; menu cancellation hides
+the surface without marking it seen. Silence and Absence have no conversation.
+
+Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

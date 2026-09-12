@@ -146,6 +146,46 @@
       "date": "2026-09-12",
       "prompt": "Use case: precise-object-edit. Asset type: final production background for the Gallicus game's terminal epilogue. Remove ALL five human figures from this image, including their cast shadows, and naturally reconstruct the empty sand and stone behind them. The story has no humans: no people, humanoids, human silhouettes, faces, bodies, statues, or replacement creatures anywhere. Preserve the entire existing camera, perspective, Roman-inspired stone architecture, foreground ledge, books, chains, lighting, palette, texture detail and composition. The final arena must be entirely empty and quiet. Do not add objects, symbols, words, UI, mist or other effects. Deliver a complete opaque landscape image, with the original framing. Change only the five figures and their associated shadows; preserve everything else.",
       "sha256": "2909e736f281344598416c3305d3b1116298aa6d6d4aea2c6631bdd1178e132c"
+    },
+    {
+      "name": "dialogue_nerio",
+      "path": "res://assets/ui/generated/dialogue_nerio.png",
+      "source": "exec-7866d990-5d7c-443d-a269-bb349a3e409f.png",
+      "prompt": "Use case: stylized-concept. Production portrait art for original game Gallicus, severe Roman administrative arena inhabited by birds, no humans. Painterly graphic-novel rendering, bold readable silhouette, sculpted feather planes, restrained ochre bronze charcoal ivory and dark wax-red, dramatic warm rim light, mature somber mood, no comedy, original visual design. Single subject full upper-body three-quarter portrait facing slightly RIGHT, crest or ear tufts completely within image, composition occupies central 80%, vertical 2:3 image. Opaque nearly black warm background, no scene clutter, no letters, text, logo or UI. No human face, no human hands, wings remain anatomically avian. Portrait will sit on the LEFT of a game conversation window. Subject: Nerio the owl scribe, lean barn/eagle owl with pale facial disc and tired amber eyes, two controlled small ear tufts, slate and bone feathers, narrow weathered bronze collar with a small dark red wax seal, folded left wing aligning a plain thin wax tablet against his breast. Precise and reserved pose; a material official, not a wizard. No magic, no crown.",
+      "tool": "built-in image_gen",
+      "date": "2026-09-12",
+      "sha256": "0f45965028a22676d7107beae265bfea0a2c73d211fe9a05d117c91a0cf8cd43",
+      "role": "Portrait for illustrated campaign dialogue; original generated art, no external reference."
+    },
+    {
+      "name": "dialogue_rugo",
+      "path": "res://assets/ui/generated/dialogue_rugo.png",
+      "source": "exec-00a7b004-8910-4bc0-a8be-b63b32b1c8c1.png",
+      "prompt": "Use case: stylized-concept. Production portrait art for original game Gallicus, severe Roman administrative arena inhabited by birds, no humans. Painterly graphic-novel rendering, bold readable silhouette, sculpted feather planes, restrained ochre bronze charcoal ivory and dark wax-red, dramatic warm rim light, mature somber mood, no comedy, original visual design. Single subject full upper-body three-quarter portrait facing slightly RIGHT, crest or ear tufts completely within image, composition occupies central 80%, vertical 2:3 image. Opaque nearly black warm background, no scene clutter, no letters, text, logo or UI. No human face, no human hands, wings remain anatomically avian. Portrait will sit on the LEFT of a game conversation window. Subject: Rugo the rooster at the arena threshold. Dark russet and soot plumage, distinctive deep notch cut out of the top edge of his red comb, long weathered golden neck feathers, one wing resting against the same breast feather he habitually smooths. Proud posture made quiet by restraint, sharp watchful eye, old worn bronze shoulder clasp. Fully bird head and avian body, no armor suit, no weapon.",
+      "tool": "built-in image_gen",
+      "date": "2026-09-12",
+      "sha256": "44e649a8b9549992c981075d8601d82e41e492554bf819b5d837f0c0842874f8",
+      "role": "Portrait for illustrated campaign dialogue; original generated art, no external reference."
+    },
+    {
+      "name": "dialogue_dima",
+      "path": "res://assets/ui/generated/dialogue_dima.png",
+      "source": "exec-31850761-f384-461c-a01f-2a500e34d39b.png",
+      "prompt": "Use case: stylized-concept. Production portrait art for original game Gallicus, severe Roman administrative arena inhabited by birds, no humans. Painterly graphic-novel rendering, bold readable silhouette, sculpted feather planes, restrained ochre bronze charcoal ivory and dark wax-red, dramatic warm rim light, mature somber mood, no comedy, original visual design. Single subject full upper-body three-quarter portrait facing slightly RIGHT, crest or ear tufts completely within image, composition occupies central 80%, vertical 2:3 image. Opaque nearly black warm background, no scene clutter, no letters, text, logo or UI. No human face, no human hands, wings remain anatomically avian. Portrait will sit on the LEFT of a game conversation window. Subject: Dima the hen from the stone stands. Compact ash-brown hen, small muted red comb, cream flecked breast, alert dark eye, one folded wing held close and a subtle inclination of head as if recognizing someone's footsteps. Plain faded charcoal cloth draped at back with small bronze fastening, not a human dress. Steady watchful presence with specificity and dignity, no maternal caricature.",
+      "tool": "built-in image_gen",
+      "date": "2026-09-12",
+      "sha256": "ee928ec3b372486a8a524082ed31ebb2acb0d5c13c0377db9ed8a374a3732630",
+      "role": "Portrait for illustrated campaign dialogue; original generated art, no external reference."
+    },
+    {
+      "name": "dialogue_registry_terminal",
+      "path": "res://assets/ui/generated/dialogue_registry_terminal.png",
+      "source": "exec-09c95e9d-8c59-4bd9-9d2a-1ae0ff2b296c.png",
+      "prompt": "Use case: stylized-concept. Production environment/object portrait for original Gallicus game. An impersonal ritual calculating terminal in a Roman basalt archive, a monumental black basalt and oxidized bronze computing shrine with a dark convex glass display, thin dim amber horizontal light marks without letters, ceramic contact keys and narrow wax-tablet input slot, plain physical gears only partly visible behind smoked glass. As if Roman registry administrators built a calculating machine, ancient industrial archaeology, not a contemporary PC. It has no face, eyes, mouth, limbs, personhood, magic or sentience cues. Painterly graphic-novel rendering, charcoal, bronze, bone, muted wax-red, amber screen, severe subdued warm light. Vertical 2:3 isolated single machine centered fills 85%, dark warm near-black background, front three-quarter angle facing RIGHT. No readable text, no symbols, no logos, no humans, no cyberpunk neon, no hologram. This object appears left of live dialogue/status text in a game.",
+      "tool": "built-in image_gen",
+      "date": "2026-09-12",
+      "sha256": "66516874bb087da70b72e3ceddde2f19b917d2566ad8370a9b6685ca7a9b898a",
+      "role": "Portrait for illustrated campaign dialogue; original generated art, no external reference."
     }
   ]
 }

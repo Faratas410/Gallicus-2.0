@@ -3,6 +3,12 @@ class_name BettingCircleUI
 
 const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
+const CONTRACT_TITLE_SIZE: int = 20
+const CONTRACT_HEADING_SIZE: int = 14
+const CONTRACT_TITLE_COLOR: Color = Color(0.93, 0.80, 0.52)
+const CONTRACT_HOLDS_COLOR: Color = Color(0.80, 0.68, 0.40)
+const CONTRACT_BREAKS_COLOR: Color = Color(0.86, 0.42, 0.33)
+const CONTRACT_NOTE_COLOR: Color = Color(0.74, 0.70, 0.62)
 const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
@@ -130,7 +136,7 @@ func _refresh_localized_text() -> void:
 	if right_sign_label != null:
 		right_sign_label.text = tr("FIRMA")
 	if intro_text != null:
-		intro_text.text = tr("IL REGISTRO E' CHIUSO")
+		intro_text.text = tr("IL REGISTRO È CHIUSO")
 	if intro_body != null:
 		intro_body.text = "%s\n%s" % [
 			tr("La pietra attende una firma."),
@@ -730,35 +736,53 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 	return {}
 
 func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String) -> String:
+	# Three levels only (docs/direction.md): title, the deal, then what holds and
+	# what breaks. Size and colour carry hierarchy because the book font has no
+	# bold or italic face.
 	var lines: Array[String] = []
 	var title_text: String = tr(title.strip_edges())
 	if title_text != "":
-		lines.append("[center][b]%s[/b][/center]" % _escape_bbcode(title_text))
+		lines.append("[center][font_size=%d][color=#%s]%s[/color][/font_size][/center]" % [CONTRACT_TITLE_SIZE, CONTRACT_TITLE_COLOR.to_html(false), _escape_bbcode(title_text)])
 	var subtitle_text: String = tr(subtitle.strip_edges())
 	if subtitle_text != "":
-		lines.append("[center][i]%s[/i][/center]" % _escape_bbcode(subtitle_text))
-	_append_contract_section(lines, tr("CONDANNA"), doom_text, true)
-	_append_contract_section(lines, tr("CONDIZIONE"), condition_text, false)
-	_append_contract_section(lines, tr("PATTO"), pact_text, false)
+		lines.append("[center]%s[/center]" % _escape_bbcode(subtitle_text))
+	var holds: Array[String] = _translated_lines(condition_text)
+	if not holds.is_empty():
+		lines.append(_contract_heading(tr("SE IL PATTO REGGE"), CONTRACT_HOLDS_COLOR))
+		lines.append(_escape_bbcode(" ".join(holds)))
+	var breaks: Array[String] = _translated_lines(doom_text)
+	if not breaks.is_empty():
+		lines.append(_contract_heading(tr("SE IL PATTO CEDE"), CONTRACT_BREAKS_COLOR))
+		# The catalog closes every doom block with its mechanical effect.
+		lines.append(_escape_bbcode(_strip_effect_prefix(breaks[breaks.size() - 1])))
+		if breaks.size() > 1:
+			lines.append("[color=#%s]%s[/color]" % [CONTRACT_NOTE_COLOR.to_html(false), _escape_bbcode(breaks[0])])
+	var pact_lines: Array[String] = _translated_lines(pact_text)
+	if not pact_lines.is_empty():
+		lines.append("\n[center][color=#%s]%s[/color][/center]" % [CONTRACT_NOTE_COLOR.to_html(false), _escape_bbcode(" ".join(pact_lines))])
 	if lines.is_empty():
 		return EMPTY_PAGE_BODY
 	return "\n".join(lines)
 
-func _append_contract_section(lines: Array[String], section_title: String, body_text: String, emphasize_effect: bool) -> void:
-	var body: String = tr(body_text.strip_edges())
-	if body == "":
-		return
-	var section_lines: Array[String] = ["[b]%s[/b]" % _escape_bbcode(section_title)]
-	var body_lines: PackedStringArray = body.split("\n", false)
-	for raw_line: String in body_lines:
+func _contract_heading(text: String, color: Color) -> String:
+	return "\n[font_size=%d][color=#%s]%s[/color][/font_size]" % [CONTRACT_HEADING_SIZE, color.to_html(false), _escape_bbcode(text)]
+
+func _translated_lines(source: String) -> Array[String]:
+	var result: Array[String] = []
+	for raw_line: String in tr(source.strip_edges()).split("\n", false):
 		var line: String = tr(raw_line.strip_edges())
-		if line == "":
-			continue
-		if emphasize_effect and line.begins_with("Effetto:"):
-			section_lines.append("[b]%s[/b]" % _escape_bbcode(line))
-		else:
-			section_lines.append(_escape_bbcode(line))
-	lines.append("\n".join(section_lines))
+		if line != "":
+			result.append(line)
+	return result
+
+func _strip_effect_prefix(line: String) -> String:
+	# "Effetto: ...", "Effect: ...", "Efecto: ..." -> the effect alone.
+	var colon: int = line.find(":")
+	if colon > 0 and colon <= 8:
+		var effect: String = line.substr(colon + 1).strip_edges()
+		if effect != "":
+			return effect.left(1).to_upper() + effect.substr(1)
+	return line
 
 func _escape_bbcode(value: String) -> String:
 	# Godot 4.6 does not expose String.escape_bbcode(); escaping the opening

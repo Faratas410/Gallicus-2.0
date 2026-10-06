@@ -12,7 +12,10 @@ var _exit_button: Button
 var _credits_button: Button
 var _credits: AcceptDialog
 var _elapsed: float = 0.0
+var _status_label: Label
+var _status_key: String = ""
 const DEPARTURE_SECONDS: float = 6.0
+const STATUS_COLOR: Color = Color(0.93, 0.66, 0.30, 1.0)
 
 func _ready() -> void:
 	layer = 150
@@ -24,6 +27,19 @@ func _ready() -> void:
 	_black.focus_mode = Control.FOCUS_ALL
 	add_child(_black)
 	_build_departure()
+	_status_label = Label.new()
+	_status_label.name = "SilenceStatus"
+	_status_label.theme = preload("res://assets/ui/theme/official_theme.tres")
+	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_status_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_status_label.add_theme_color_override("font_color", STATUS_COLOR)
+	_status_label.add_theme_font_size_override("font_size", 22)
+	_status_label.add_theme_constant_override("line_spacing", 10)
+	_status_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_black.add_child(_status_label)
+	_status_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_status_label.offset_bottom = -120.0
+	_status_label.hide()
 	_return_button = Button.new()
 	_return_button.name = "ReturnToMenu"
 	_return_button.theme = preload("res://assets/ui/theme/official_theme.tres")
@@ -72,8 +88,9 @@ func _restore_terminal() -> void:
 	if not _port.can_start_run():
 		_show_surface(true, false)
 
-func _on_run_ended(reason: String, _summary: Dictionary) -> void:
+func _on_run_ended(reason: String, summary: Dictionary) -> void:
 	if reason == "REGISTRY_SILENCE" or reason == "REGISTRY_ABSENCE":
+		_status_key = str(summary.get("registry_status", "")) if reason == "REGISTRY_SILENCE" else ""
 		_show_surface(reason == "REGISTRY_ABSENCE")
 
 func _show_surface(terminal: bool, show_departure: bool = true) -> void:
@@ -89,6 +106,7 @@ func _show_surface(terminal: bool, show_departure: bool = true) -> void:
 	_departure.hide()
 	set_process_input(true)
 	_black.grab_focus()
+	_status_label.hide()
 	if terminal:
 		if show_departure:
 			_elapsed = 0.0
@@ -98,7 +116,22 @@ func _show_surface(terminal: bool, show_departure: bool = true) -> void:
 		else:
 			_finish_departure()
 		return
+	_show_status()
 	_return_delay.start()
+
+func _show_status() -> void:
+	# The Registry's only words during a Silence: one status line on the glass.
+	if _status_key == "":
+		return
+	_status_label.text = tr(_status_key)
+	_status_label.show()
+	if SaveManager.get_reduced_motion():
+		_status_label.modulate.a = 1.0
+		return
+	_status_label.modulate.a = 0.0
+	var tween: Tween = create_tween()
+	tween.tween_interval(0.6)
+	tween.tween_property(_status_label, "modulate:a", 1.0, 1.2)
 
 func _offer_return() -> void:
 	if _terminal or not _black.visible:
@@ -111,6 +144,8 @@ func _hide_surface() -> void:
 	if _terminal:
 		return
 	_return_delay.stop()
+	_status_key = ""
+	_status_label.hide()
 	_black.hide()
 	set_process_input(false)
 	_heartbeat.stop()
@@ -144,6 +179,8 @@ func _make_utility(node_name: String, label: String, left: float, right: float) 
 	return button
 
 func _refresh_text() -> void:
+	if _status_key != "":
+		_status_label.text = tr(_status_key)
 	_return_button.text = tr("TORNA AL MENU")
 	_exit_button.text = tr("ESCI DAL GIOCO")
 	_credits_button.text = tr("CREDITI")

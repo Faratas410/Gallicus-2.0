@@ -11,10 +11,10 @@ Registro consultivo. Nessuna ricompensa.,Registro consultivo. Sin recompensa.
 CONDANNE,CONDENAS
 MUSEO,MUSEO
 PATTI DISPONIBILI (LIVELLO 3),PACTOS DISPONIBLES (NIVEL 3)
-- Nessun patto disponibile.,- Ningun pacto disponible.
+- Nessun patto disponibile.,- Ningún pacto disponible.
 ARENE TEMATICHE,ARENAS TEMATICAS
 - Nessuna arena disponibile.,- Ninguna arena disponible.
-VOCI DEL PUBBLICO,VOCES DEL PUBLICO
+VOCI DEL PUBBLICO,VOCES DEL PÚBLICO
 Voci base: %d,Voces base: %d
 Voci dure: %s,Voces duras: %s
 SBLOCCATE,DESBLOQUEADAS
@@ -28,8 +28,8 @@ VOLUME MUSICA,VOLUMEN MUSICA
 VOLUME EFFETTI,VOLUMEN EFECTOS
 SCHERMO INTERO,PANTALLA COMPLETA
 MOVIMENTO RIDOTTO,MOVIMIENTO REDUCIDO
-RISOLUZIONE,RESOLUCION
-Risoluzione: %s,Resolucion: %s
+RISOLUZIONE,RESOLUCIÓN
+Risoluzione: %s,Resolución: %s
 Volume: %d%%,Volumen: %d%%
 Musica: %d%%,Musica: %d%%
 Effetti: %d%%,Efectos: %d%%
@@ -42,7 +42,7 @@ English,Ingles
 Español,Español
 GALLICUS,GALLICUS
 ACTA ARENAE,ACTA ARENAE
-Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD),Juego: Gallicus\nDiseno/Direccion: (TBD)\nCodigo: (TBD)\nArte: (TBD)\nAudio: (TBD)\nAgradecimientos: (TBD)
+Game: Gallicus\nDesign/Direction: (TBD)\nCode: (TBD)\nArt: (TBD)\nAudio: (TBD)\nSpecial Thanks: (TBD),Juego: Gallicus\nDiseño/Dirección: (TBD)\nCódigo: (TBD)\nArte: (TBD)\nAudio: (TBD)\nAgradecimientos: (TBD)
 Luminosità: 1.00,Brillo: 1.00
 (Placeholder),(Placeholder)
 Lingua selezionata: Italiano,Idioma seleccionado: Italiano
@@ -50,34 +50,34 @@ Volume: 100%,Volumen: 100%
 SCOMMESSA,APUESTA
 -,-
 PRESSIONE,PRESIÓN
-PRESSIONE %d/%d,PRESION %d/%d
+PRESSIONE %d/%d,PRESIÓN %d/%d
 Sotto controllo,Bajo control
 La folla si scalda,La multitud se calienta
 Rischio alto,Riesgo alto
 Fuori controllo,Fuera de control
 Pressione -1.,Presión -1.
 Pressione +1.,Presión +1.
-Pressione +1. Aumenti posta e rischio.,Presion +1. Subes la apuesta y el riesgo.
-Pressione massima: %d/%d,Presion maxima: %d/%d
+Pressione +1. Aumenti posta e rischio.,Presión +1. Subes la apuesta y el riesgo.
+Pressione massima: %d/%d,Presión máxima: %d/%d
 La folla ha spinto il percorso oltre il margine.,La multitud empujó el recorrido más allá del margen.
 La pressione è rimasta sotto controllo.,La presión se mantuvo bajo control.
 Chiudi il percorso e registra il risultato finale.,Cierra el recorrido y registra el resultado final.
-Pressione +1. Continua alla prossima arena con posta aumentata.,Presion +1. Continua a la siguiente arena con apuesta aumentada.
+Pressione +1. Continua alla prossima arena con posta aumentata.,Presión +1. Continúa a la siguiente arena con apuesta aumentada.
 La folla osserva.,La multitud observa.
 La folla pretende un altro rilancio.,La multitud exige otro aumento.
 La folla resta in ascolto.,La multitud sigue atenta.
 Stato del percorso: Gloria %d | Corruzione %d | %s,Estado del recorrido: Gloria %d | Corrupción %d | %s
 Incasso sotto richiesta della folla: x%.2f,Cobro bajo demanda de la multitud: x%.2f
 CICATRICE APPLICATA,CICATRIZ APLICADA
-Il patto viene giudicato...,El pacto esta siendo juzgado...
+Il patto viene giudicato...,El pacto está siendo juzgado...
 La folla ti guarda.,La multitud te observa.
 Registro: atto annotato.,Registro: acto anotado.
 Arena del Sigillo,Arena del Sello
-Qui ogni firma pesa.,Aqui cada firma pesa.
+Qui ogni firma pesa.,Aquí cada firma pesa.
 SENTENZA,SENTENCIA
 VINCI,GANA
 SE FALLISCI: LA CICATRICE TI RESTA.,SI FALLAS: LA CICATRIZ PERMANECE.
-IL PATTO E' SIGILLATO.,EL PACTO ESTA SELLADO.
+IL PATTO È SIGILLATO.,EL PACTO ESTÁ SELLADO.
 La folla trattiene il fiato.,La multitud contiene el aliento.
 RITO DI GIUDIZIO,RITO DE JUICIO
 Il patto viene giudicato.,El pacto es juzgado.
@@ -91,10 +91,10 @@ Seed (opzionale),Semilla (opcional)
 Es. 10331,Ej. 10331
 APPLICA,APLICAR
 Stake,Apuesta
-CONDANNA - RADDOPPI O MUORI,SENTENCIA - DOBLA O MUERE
-CONDIZIONE - SANGUE INTEGRO,CONDICION - SANGRE INTACTA
+CONDANNA - TUTTO O NIENTE,SENTENCIA - TODO O NADA
+CONDIZIONE - SANGUE INTEGRO,CONDICIÓN - SANGRE INTACTA
 PATTO - INCASSA E VAI,PACTO - COBRA Y SIGUE
-Selezione: -,Seleccion: -
+Selezione: -,Selección: -
 SIGILLA,SELLAR
 Disponibile dopo l'arena in corso.,Disponible tras la arena actual.
 x1,x1
@@ -108,27 +108,27 @@ DETTAGLIO CICATRICI,DETALLE DE CICATRICES
 CHIUDI,CERRAR
 VERDETTO,VEREDICTO
 PATTI FIRMATI,PACTOS FIRMADOS
-ULTIMA VOCE,ULTIMA VOZ
+ULTIMA VOCE,ÚLTIMA VOZ
 NUOVO PERCORSO,NUEVO RECORRIDO
 NEXT BET,SIGUIENTE APUESTA
 PROSSIMA SCOMMESSA,SIGUIENTE APUESTA
-TORNA AL MENU,VOLVER AL MENU
-FAST: 12s,RAPIDO: 12s
+TORNA AL MENU,VOLVER AL MENÚ
+FAST: 12s,RÁPIDO: 12s
 CICATRICI,CICATRICES
 Nessuna cicatrice.,Ninguna cicatriz.
 CIRCOLO SCOMMESSE,CIRCULO DE APUESTAS
 INCASSA E VAI,COBRA Y SIGUE
 CONDANNA: ...,SENTENCIA: ...
-CONDIZIONE: ...,CONDICION: ...
+CONDIZIONE: ...,CONDICIÓN: ...
 PATTO: ...,PACTO: ...
 SANGUE INTEGRO,SANGRE INTACTA
-RADDOPPI O MUORI,DOBLA O MUERE
-Nessun patto aperto. Entra nell'arena e firma la prima scommessa.,Ningun pacto abierto. Entra en la arena y firma la primera apuesta.
+TUTTO O NIENTE,TODO O NADA
+Nessun patto aperto. Entra nell'arena e firma la prima scommessa.,Ningún pacto abierto. Entra en la arena y firma la primera apuesta.
 Funzione disattiva in L3.,Desactivado en L3.
 Voci dure: +%d,Voces duras: +%d
 %s\\n\\nCome è stata ottenuta:\\n%s\\n\\n%s,%s\\n\\nCómo se obtuvo:\\n%s\\n\\n%s
 Salvataggio non valido: schema del file mancante o corrotto.,Guardado no valido: esquema de archivo ausente o corrupto.
-Salvataggio non compatibile con questa versione.,El guardado no es compatible con esta version.
+Salvataggio non compatibile con questa versione.,El guardado no es compatible con esta versión.
 Salvataggio incompleto: dati del percorso mancanti.,Guardado incompleto: faltan datos del recorrido.
 Salvataggio non valido: schema Level 3 mancante.,Guardado no valido: falta esquema Level 3.
 Salvataggio non compatibile: schema Level 3 differente.,Guardado incompatible: esquema Level 3 diferente.
@@ -138,20 +138,20 @@ Salvataggio non valido: dati Condanne non leggibili.,Guardado no valido: datos d
 Salvataggio non valido: formato Condanne non supportato.,Guardado no valido: formato de Condenas no soportado.
 Salvataggio non valido.,Guardado no valido.
 Salvataggio non valido: %s.,Guardado no valido: %s.
-In arrivo.,Proximamente.
+In arrivo.,Próximamente.
 Interfaccia non inizializzata.\nElementi mancanti:\n- %s\n\nTorna al menu e riavvia.,Interfaz no inicializada.\nElementos faltantes:\n- %s\n\nVuelve al menu y reinicia.
 [b]Effetto:[/b] %s,[b]Efecto:[/b] %s
 Nessuna scommessa attiva,Ninguna apuesta activa
 PERCORSO FALLITO,RECORRIDO FALLIDO
-AGGIORNAMENTO DEL REGISTRO,ACTUALIZACION DEL REGISTRO
-Protocollo di classificazione completato.,Protocolo de clasificacion completado.
+AGGIORNAMENTO DEL REGISTRO,ACTUALIZACIÓN DEL REGISTRO
+Protocollo di classificazione completato.,Protocolo de clasificación completado.
 Incasso registrato.,Cobro registrado.
 Arena superata.,Arena superada.
 Condanna registrata.,Condena registrada.
 Ricompensa applicata. Il registro resta aperto per la prossima scommessa.,Recompensa aplicada. El registro sigue abierto para la siguiente apuesta.
 Esito registrato. Puoi proseguire con la prossima scommessa.,Resultado registrado. Puedes continuar con la siguiente apuesta.
 Nessun premio assegnato. Il registro resta consultabile.,Sin premio asignado. El registro sigue consultable.
-nessuna annotazione registrata,ninguna anotacion registrada
+nessuna annotazione registrata,ninguna anotación registrada
 Stato: chiusura definitiva.,Estado: cierre definitivo.
 Stato: scegli se proseguire o tornare al menu.,Estado: elige si continuar o volver al menu.
 [center]Registro Arena - Lettura amministrativa[/center],[center]Registro de Arena - Lectura administrativa[/center]
@@ -161,12 +161,12 @@ percorso registrato,recorrido registrado
 patto registrato,pacto registrado
 condanna registrata,condena registrada
 CONDANNA: %s,CONDENA: %s
-SELEZIONE GESTO,SELECCION DE GESTO
+SELEZIONE GESTO,SELECCIÓN DE GESTO
 La folla osserva la tua scelta.,La multitud observa tu elección.
 Arena speciale,Arena especial
-Firma una via. Il Registro annota il prezzo.,Firma una via. El Registro anota el precio.
-Clausola non esposta.,Clausula no expuesta.
-Firma focus: %s | Clausola: %s,Foco de firma: %s | Clausula: %s
+Firma una via. Il Registro annota il prezzo.,Firma una vía. El Registro anota el precio.
+Clausola non esposta.,Cláusula no expuesta.
+Firma focus: %s | Clausola: %s,Foco de firma: %s | Cláusula: %s
 Cicatrice,Cicatriz
   Effetto: %s,  Efecto: %s
   Origine: %s,  Origen: %s
@@ -175,63 +175,63 @@ FINAL: %s,FINAL: %s
 ENDING ID: %s,ID FINAL: %s
 ICONA: %s,ICONO: %s
 [b]Registro Finale[/b],[b]Registro Final[/b]
-Corruzione,Corrupcion
+Corruzione,Corrupción
 Gloria,Gloria
 Cicatrici,Cicatrices
 Pattern,Patron
 Fascicolo chiuso,Expediente cerrado
 Il registro è aperto.,El registro está abierto.
-Incassa ora o aumenta esposizione.,Cobra ahora o aumenta exposicion.
+Incassa ora o aumenta esposizione.,Cobra ahora o aumenta exposición.
 La condanna chiude il ciclo senza premio.,La condena cierra el ciclo sin premio.
 Scegli un atto. La firma è irrevocabile.,Elige un acto. La firma es irrevocable.
 Nessun dettaglio.,Sin detalles.
 + %d dettagli nel registro.,+ %d detalles en el registro.
 SPINGI LA SORTE,TIENTA LA SUERTE
-CONDIZIONE: %s,CONDICION: %s
+CONDIZIONE: %s,CONDICIÓN: %s
 PATTO: %s,PACTO: %s
 NOTA: %s,NOTA: %s
 INCASSO BLOCCATO: %s,COBRO BLOQUEADO: %s
 RADDOPPIO BLOCCATO: %s,DOBLAR BLOQUEADO: %s
 CONTESTO: %s,CONTEXTO: %s
 MODIFICA INCASSO: %s,MODIFICADOR DE COBRO: %s
-Stato: in attesa di scelta.,Estado: esperando eleccion.
+Stato: in attesa di scelta.,Estado: esperando elección.
 Chiudi il percorso e apri il registro finale.,Cierra el recorrido y abre el registro final.
-Continua alla prossima arena con posta aumentata.,Continua a la siguiente arena con apuesta aumentada.
+Continua alla prossima arena con posta aumentata.,Continúa a la siguiente arena con apuesta aumentada.
 Stato: richiesta incasso non disponibile.,Estado: solicitud de cobro no disponible.
 Stato: richiesta condanna non disponibile.,Estado: solicitud de condena no disponible.
 Stato: richiesta rilancio non disponibile.,Estado: solicitud de relance no disponible.
 Stato: richiesta non accettata. Scegli di nuovo.,Estado: solicitud no aceptada. Elige de nuevo.
 POSTA VIVA: +%d Gloria,APUESTA VIVA: +%d Gloria
 GLORIA: %d,GLORIA: %d
-CORRUZIONE: %d,CORRUPCION: %d
+CORRUZIONE: %d,CORRUPCIÓN: %d
 Ottieni +%d Gloria,Obtienes +%d Gloria
-Corruzione -%d,Corrupcion -%d
+Corruzione -%d,Corrupción -%d
 chiudi il registro,cierra el registro
-Prossima posta +%d Gloria | Pressione +%d,Proxima apuesta +%d Gloria | Presion +%d
-Perdi la posta +%d Gloria | il Registro chiude il percorso,Pierdes la apuesta de +%d Gloria | el Registro cierra el recorrido
+Prossima posta: +%d Gloria. Pressione +%d.,Próxima apuesta: +%d Gloria. Presión +%d.
+Perdi la posta di +%d Gloria. Il percorso si chiude.,Pierdes la apuesta de +%d Gloria. El recorrido se cierra.
 FIRMA,FIRMAR
 MOSTRA IL PATTO,MUESTRA EL PACTO
 APRI IL REGISTRO,ABRE EL REGISTRO
 REGISTRO DELL'ARENA,REGISTRO DE LA ARENA
 Apertura del verbale,APERTURA DEL ACTA
-IL REGISTRO E' CHIUSO,EL REGISTRO ESTÁ CERRADO
+IL REGISTRO È CHIUSO,EL REGISTRO ESTÁ CERRADO
 La pietra attende una firma.,La piedra espera una firma.
 Ogni patto lascia un segno.,Cada pacto deja una marca.
 APRI,ABRIR
 Apri il registro.,Abre el registro.
 Il registro è chiuso. Aprilo per scegliere la via.,El registro está cerrado. Ábrelo para elegir la vía.
-SCEGLI LA VIA,ELIGE LA VIA
+SCEGLI LA VIA,ELIGE LA VÍA
 Ogni firma apre una promessa e una condanna.,Cada firma abre una promesa y una condena.
-CONDIZIONE,CONDICION
+CONDIZIONE,CONDICIÓN
 PATTO,PACTO
 registrato,registrado
 continuato,continuado
 Atto registrato: %s. Stato: %s.,Acto registrado: %s. Estado: %s.
 PATTO FALLITO,PACTO FALLIDO
-seleziona un'azione,selecciona una accion
+seleziona un'azione,selecciona una acción
 scommessa rinunciata,apuesta rechazada
 RIPROVA SCOMMESSA,REINTENTAR APUESTA
-Stato: scelta acquisita.,Estado: eleccion recibida.
+Stato: scelta acquisita.,Estado: elección recibida.
 Come è stata ottenuta:,Cómo se obtuvo:
 Interfaccia non inizializzata.,Interfaz no inicializada.
 Elementi mancanti:,Elementos faltantes:
@@ -277,10 +277,10 @@ IMPRIMI IL SIGILLO: TRE COLPI,IMPRIME EL SELLO: TRES GOLPES
 COLPISCI,GOLPEA
 COLPISCI ANCORA,GOLPEA DE NUEVO
 SIGILLATO,SELLADO
-PRIMO COLPO - VERDETTO INCISO,PRIMER GOLPE - VEREDICTO INCISO
-SECONDO COLPO - CONDANNA INCISA,SEGUNDO GOLPE - SENTENCIA INCISA
+PRIMO COLPO - CERA IMPRESSA,PRIMER GOLPE - CERA IMPRESA
+SECONDO COLPO - VERDETTO INCISO,SEGUNDO GOLPE - VEREDICTO INCISO
 TERZO COLPO - SIGILLO CHIUSO,TERCER GOLPE - SELLO CERRADO
-VERBALE INCISO - IL REGISTRO PUO AVANZARE,ACTA INCISA - EL REGISTRO PUEDE AVANZAR
+VERBALE INCISO - IL REGISTRO PUÒ AVANZARE,ACTA INCISA - EL REGISTRO PUEDE AVANZAR
 FASCICOLO CHIUSO - COMPROMISSIONE,EXPEDIENTE CERRADO - COMPROMISO
 FASCICOLO CHIUSO - ASCESA,EXPEDIENTE CERRADO - ASCENSO
 FASCICOLO CHIUSO - CONSUMO,EXPEDIENTE CERRADO - DESGASTE
@@ -289,9 +289,9 @@ FASCICOLO CHIUSO,EXPEDIENTE CERRADO
 Il Registro conserva la traccia del percorso.,El Registro conserva la huella del recorrido.
 Il Registro chiude il fascicolo e classifica l'esito.,El Registro cierra el expediente y clasifica el resultado.
 Hai lasciato l'arena con la posta riconosciuta.,Has dejado la arena con la apuesta reconocida.
-Il patto regge: il percorso puo proseguire.,El pacto se mantiene: el recorrido puede continuar.
+Il patto regge: il percorso può proseguire.,El pacto se mantiene: el recorrido puede continuar.
 La condanna viene accettata e il percorso resta segnato.,La condena se acepta y el recorrido queda marcado.
-Pressione massima: %d/%d.,Presion maxima: %d/%d.
+Pressione massima: %d/%d.,Presión máxima: %d/%d.
 Patti e sblocchi sono stati aggiornati nell'Archivio.,Los pactos y desbloqueos se han actualizado en el Archivo.
 %d condanne archiviate; il dettaglio resta nell'Archivio.,%d condenas archivadas; el detalle permanece en el Archivo.
 Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.,No hay pactos adicionales que listar: consulta el Archivo para los desbloqueos.
@@ -300,55 +300,55 @@ Il Registro resta aperto: scegli se proseguire o lasciare l'arena.,El Registro p
 rinunciato,rechazado
 accettato,aceptado
 %d condizioni registrate,%d condiciones registradas
-I. APERTURA - CONSTATAZIONE,I. APERTURA - CONSTATACION
+I. APERTURA - CONSTATAZIONE,I. APERTURA - CONSTATACIÓN
 II. CORPO - LETTURA DEI PATTERN,II. CUERPO - LECTURA DE PATRONES
 III. FRATTURA,III. FRACTURA
 Stato finale: %s.,Estado final: %s.
-Il soggetto ha interrotto il ciclo prima della definizione.,El sujeto interrumpio el ciclo antes de la clasificacion.
+Il soggetto ha interrotto il ciclo prima della definizione.,El sujeto interrumpio el ciclo antes de la clasificación.
 Il soggetto ha completato il ciclo operativo.,El sujeto completo el ciclo operativo.
 Il soggetto presenta un profilo registrabile.,El sujeto presenta un perfil registrable.
-accettazione ricorrente di condizioni irreversibili,aceptacion recurrente de condiciones irreversibles
-rifiuto della chiusura quando disponibile,rechazo del cierre cuando esta disponible
-accumulo di Scar persistenti su più passaggi,acumulacion de Cicatrices persistentes en varias etapas
-reiterazione oltre l'utile con esposizione crescente,reiteracion mas alla de lo util con exposicion creciente
+accettazione ricorrente di condizioni irreversibili,aceptación recurrente de condiciones irreversibles
+rifiuto della chiusura quando disponibile,rechazo del cierre cuando está disponible
+accumulo di Scar persistenti su più passaggi,acumulación de Cicatrices persistentes en varias etapas
+reiterazione oltre l'utile con esposizione crescente,reiteración más alla de lo útil con exposición creciente
 sacrificio di opzioni future registrato,sacrificio de opciones futuras registrado
-Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.,El perfil observado supera los umbrales operativos previstos; la clasificacion se mantiene coherente.
-"Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva.","El perfil observado no encaja por completo en las clases disponibles. Clasificacion coherente, pero no concluyente."
-Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta.,Precedente detectado en la memoria historica. Aplicabilidad indeterminable; clasificacion incompleta.
+Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.,El perfil observado supera los umbrales operativos previstos; la clasificación se mantiene coherente.
+"Il profilo osservato non rientra pienamente nelle classi disponibili. Classificazione coerente, ma non conclusiva.","El perfil observado no encaja por completo en las clases disponibles. Clasificación coherente, pero no concluyente."
+Precedente rilevato in memoria storica. Applicabilità non determinabile; classificazione incompleta.,Precedente detectado en la memoria historica. Aplicabilidad indeterminable; clasificación incompleta.
 Stato registrato con parametri attivi. Chiusura finale non applicabile.,Estado registrado con parametros activos. El cierre final no es aplicable.
-classificazione non conclusiva,clasificacion no concluyente
-classificazione incompleta,clasificacion incompleta
-registrato in sospensione,registrado en suspension
-interruzione immediata,interrupcion inmediata
+classificazione non conclusiva,clasificación no concluyente
+classificazione incompleta,clasificación incompleta
+registrato in sospensione,registrado en suspensión
+interruzione immediata,interrupción inmediata
 segnato,marcado
 compromesso,comprometido
 in debito attivo,deuda activa
-conforme al pubblico,conforme al publico
+conforme al pubblico,conforme al público
 consumo completo,desgaste completo
 libertà registrata,libertad registrada
 caduta amministrativa,caida administrativa
 non definito,no definido
-Fascicolo aggiornato. Valutazione sospesa.,Expediente actualizado. Evaluacion suspendida.
+Fascicolo aggiornato. Valutazione sospesa.,Expediente actualizado. Evaluación suspendida.
 Atto registrato. Campione insufficiente.,Acto registrado. Muestra insuficiente.
-Dati acquisiti. Analisi in corso.,Datos adquiridos. Analisis en curso.
-Aggiornamento completato. Nessuna conclusione emessa.,Actualizacion completada. No se ha emitido ninguna conclusion.
-Il soggetto resta in osservazione.,El sujeto permanece en observacion.
-Archiviazione parziale. Raccolta incompleta.,Archivo parcial. Recopilacion incompleta.
-Evento conforme. Interpretazione rinviata.,Evento conforme. Interpretacion aplazada.
+Dati acquisiti. Analisi in corso.,Datos adquiridos. Análisis en curso.
+Aggiornamento completato. Nessuna conclusione emessa.,Actualización completada. No se ha emitido ninguna conclusión.
+Il soggetto resta in osservazione.,El sujeto permanece en observación.
+Archiviazione parziale. Raccolta incompleta.,Archivo parcial. Recopilación incompleta.
+Evento conforme. Interpretazione rinviata.,Evento conforme. Interpretación aplazada.
 Nuova evidenza inserita. Profilo non definito.,Nueva evidencia incorporada. Perfil no definido.
 Registrazione valida. Sentenza non autorizzata.,Registro valido. Sentencia no autorizada.
 Traiettoria non stabilizzata. Attendere ulteriori eventi.,Trayectoria no estabilizada. Esperar nuevos eventos.
 Documento acquisito. Il Registro non conclude.,Documento adquirido. El Registro no concluye.
-Pattern non consolidato. Prosecuzione richiesta.,Patron no consolidado. Continuacion requerida.
+Pattern non consolidato. Prosecuzione richiesta.,Patron no consolidado. Continuación requerida.
 fascicolo registrato,expediente registrado
-Soglia di deviazione superata. Fascicolo chiuso.,Umbral de desviacion superado. Expediente cerrado.
-Corruzione confermata. Archiviazione definitiva.,Corrupcion confirmada. Archivo definitivo.
+Soglia di deviazione superata. Fascicolo chiuso.,Umbral de desviación superado. Expediente cerrado.
+Corruzione confermata. Archiviazione definitiva.,Corrupción confirmada. Archivo definitivo.
 Indice di compromissione: critico. Sentenza emessa.,Indice de compromiso: critico. Sentencia emitida.
 Integrità del soggetto: insufficiente. Caso concluso.,Integridad del sujeto: insuficiente. Caso concluido.
 Deriva irreversibile rilevata. Il Registro conclude.,Deriva irreversible detectada. El Registro concluye.
 Evidenza prevalente: debito. Fascicolo definito.,Evidencia predominante: deuda. Expediente definido.
-Profilo compromesso. Non sono richiesti ulteriori dati.,Perfil comprometido. No se requieren mas datos.
-Scostamento oltre limite. Atto finale registrato.,Desviacion fuera del limite. Acto final registrado.
+Profilo compromesso. Non sono richiesti ulteriori dati.,Perfil comprometido. No se requieren más datos.
+Scostamento oltre limite. Atto finale registrato.,Desviación fuera del límite. Acto final registrado.
 Indice di gloria: eccedente. Fascicolo chiuso.,Indice de gloria: excedente. Expediente cerrado.
 Rilevanza confermata. Archiviazione definitiva.,Relevancia confirmada. Archivo definitivo.
 Profilo di eccezione registrato. Sentenza emessa.,Perfil excepcional registrado. Sentencia emitida.
@@ -356,25 +356,25 @@ Valore del soggetto: determinato. Caso concluso.,Valor del sujeto: determinado. 
 Evidenza prevalente: ascesa. Il Registro conclude.,Evidencia predominante: ascenso. El Registro concluye.
 Traccia storica sufficiente. Fascicolo definito.,Registro historico suficiente. Expediente definido.
 Comportamento coerente con grandezza. Atto finale registrato.,Conducta coherente con grandeza. Acto final registrado.
-Risultato consolidato. Non sono richiesti ulteriori dati.,Resultado consolidado. No se requieren mas datos.
+Risultato consolidato. Non sono richiesti ulteriori dati.,Resultado consolidado. No se requieren más datos.
 Danno permanente rilevato. Fascicolo chiuso.,Dano permanente detectado. Expediente cerrado.
 Cicatrici critiche registrate. Archiviazione definitiva.,Cicatrices criticas registradas. Archivo definitivo.
 Stato del soggetto: degradato. Sentenza emessa.,Estado del sujeto: degradado. Sentencia emitida.
-Accumulo irreversibile. Caso concluso.,Acumulacion irreversible. Caso concluido.
+Accumulo irreversibile. Caso concluso.,Acumulación irreversible. Caso concluido.
 Integrità fisica compromessa. Il Registro conclude.,Integridad fisica comprometida. El Registro concluye.
 Evidenza prevalente: consumo. Fascicolo definito.,Evidencia predominante: desgaste. Expediente definido.
-Segni sufficienti. Non sono richiesti ulteriori dati.,Marcas suficientes. No se requieren mas datos.
+Segni sufficienti. Non sono richiesti ulteriori dati.,Marcas suficientes. No se requieren más datos.
 Profilo stabilizzato su consumo. Atto finale registrato.,Perfil estabilizado en el desgaste. Acto final registrado.
-Campione minimo raggiunto. Fascicolo chiuso.,Muestra minima alcanzada. Expediente cerrado.
+Campione minimo raggiunto. Fascicolo chiuso.,Muestra mínima alcanzada. Expediente cerrado.
 Pattern confermato. Archiviazione definitiva.,Patron confirmado. Archivo definitivo.
 Coerenza comportamentale stabilita. Sentenza emessa.,Coherencia de conducta establecida. Sentencia emitida.
 Traiettoria consolidata. Caso concluso.,Trayectoria consolidada. Caso concluido.
-Dati sufficienti per definizione. Il Registro conclude.,Datos suficientes para la clasificacion. El Registro concluye.
-Ripetizione significativa rilevata. Fascicolo definito.,Repeticion significativa detectada. Expediente definido.
+Dati sufficienti per definizione. Il Registro conclude.,Datos suficientes para la clasificación. El Registro concluye.
+Ripetizione significativa rilevata. Fascicolo definito.,Repetición significativa detectada. Expediente definido.
 Profilo determinato per frequenza. Atto finale registrato.,Perfil determinado por frecuencia. Acto final registrado.
-Analisi completata. Non sono richiesti ulteriori dati.,Analisis completado. No se requieren mas datos.
-+%d altre,+%d mas
-Non mi fermero.,No me detendre.
+Analisi completata. Non sono richiesti ulteriori dati.,Análisis completado. No se requieren más datos.
++%d altre,+%d más
+Non mi fermerò.,No me detendré.
 Ancora.,Otra vez.
 Finche regge.,Mientras aguante.
 Non dovevo provarci.,No debi intentarlo.
@@ -386,14 +386,14 @@ So come finisce.,Se como termina.
 Non oggi.,Hoy no.
 Ho visto abbastanza.,He visto suficiente.
 Mi sono fermato.,Me detuve.
-E finita cosi.,Asi termino.
+È finita così.,Así terminó.
 Non abbastanza.,No fue suficiente.
 Troppo tardi.,Demasiado tarde.
 Non e colpa loro.,No es culpa suya.
 Ricordato.,Recordado.
 Visto dal pubblico.,Visto por la grada.
 Il tuo nome.,Tu nombre.
-Non sara l'ultima.,No sera la ultima.
+Non sarà l'ultima.,No será la última.
 Registro: Compromissione.,Registro: Compromiso.
 Registro: Ascesa.,Registro: Ascenso.
 Registro: Consumo.,Registro: Desgaste.
@@ -407,7 +407,7 @@ Continui. La folla vuole il prossimo taglio.,Continuas. La grada quiere el sigui
 "Continui. Nessun applauso, solo attesa.","Continuas. Sin aplausos, solo espera."
 Continui. Nessuno ti deve niente.,Continuas. Nadie te debe nada.
 Continui. Ora ti vogliono sanguinare.,Continuas. Ahora quieren verte sangrar.
-Così finisci. La folla non ti piange.,Asi terminas. La grada no te llora.
+Così finisci. La folla non ti piange.,Así terminas. La grada no te llora.
 È finita. Il pubblico prende il tuo nome.,Se acabo. La grada toma tu nombre.
 È finita. Solo occhi fermi.,Se acabo. Solo quedan miradas fijas.
 Fine della corsa. Il silenzio resta.,Fin de la carrera. El silencio permanece.
@@ -435,40 +435,40 @@ Hai spento la corsa. La folla voleva il salto.,Has detenido la carrera. La grada
 Il brusio non concede riparo.,El murmullo no ofrece refugio.
 Il delirio ti brucia addosso.,El delirio te quema por dentro.
 Il patto accende la folla. Spingi ora.,El pacto enciende a la grada. Empuja ahora.
-Il patto è inciso. Ti misurano.,El pacto esta grabado. Te miden.
+Il patto è inciso. Ti misurano.,El pacto está grabado. Te miden.
 Il patto ti lega. La folla annusa il sangue.,El pacto te ata. La grada huele la sangre.
 "Il pubblico calcola, non parteggia.",La grada calcula; no toma partido.
 Il Registro sente una folla senza indulgenza.,El Registro oye a una grada sin indulgencia.
-Il silenzio pesa piu dell'acciaio.,El silencio pesa mas que el acero.
+Il silenzio pesa più dell'acciaio.,El silencio pesa más que el acero.
 "Il tuo nome urla, ma il prezzo sale.","Tu nombre ruge, pero el precio sube."
 Incassi e scappi. Non ti lasciano respirare.,Cobras y huyes. No te dejan respirar.
 Incassi e vai. Il giudizio resta.,Cobras y te vas. El juicio permanece.
-Incassi mentre vogliono di più. Ti giudicano.,Cobras mientras quieren mas. Te juzgan.
-Incasso facile. Il silenzio ti pesa addosso.,Cobro facil. El silencio pesa sobre ti.
+Incassi mentre vogliono di più. Ti giudicano.,Cobras mientras quieren más. Te juzgan.
+Incasso facile. Il silenzio ti pesa addosso.,Cobro fácil. El silencio pesa sobre ti.
 Incasso preso. Il pubblico non si muove.,Cobro aceptado. La grada no se mueve.
 L'arena ti pesa addosso.,La arena pesa sobre ti.
 La firma pesa. Il pubblico resta in giudizio.,La firma pesa. La grada sigue juzgando.
 "La folla chiama sangue, non prudenza.","La grada pide sangre, no prudencia."
 La folla in furia pretende una caduta registrata.,La grada furiosa exige una caida registrada.
-La folla ti vuole oltre. La firma è l'inizio.,La grada te quiere mas alla. La firma es solo el principio.
+La folla ti vuole oltre. La firma è l'inizio.,La grada te quiere más alla. La firma es solo el principio.
 La gradinata rifiuta la tua uscita.,La grada rechaza tu salida.
 "Nessun calore, solo misura.","Sin calor, solo medida."
 "Nessun grido, solo occhi fissi.","Sin gritos, solo miradas fijas."
 "Non applaudono, registrano.",No aplauden; registran.
 Non cercano vittoria: cercano il prezzo.,No buscan la victoria: buscan el precio.
 Non ti credono degno di chiudere il patto.,No te consideran digno de cerrar el pacto.
-Ogni colpo chiede di piu.,Cada golpe exige mas.
+Ogni colpo chiede di più.,Cada golpe exige más.
 Ogni mossa apre un conto.,Cada movimiento abre una cuenta.
-Ogni passo indietro diventa accusa.,Cada paso atras se convierte en acusacion.
+Ogni passo indietro diventa accusa.,Cada paso atras se convierte en acusación.
 Patto chiuso. L'arena ti osserva.,Pacto cerrado. La arena te observa.
 "Per loro sei garanzia, non campione.","Para ellos eres garantia, no campeon."
 Perduto. Il loro giudizio resta addosso.,Perdido. Su juicio se te queda pegado.
-Qui la cautela viene letta come debito.,Aqui la cautela se interpreta como deuda.
+Qui la cautela viene letta come debito.,Aquí la cautela se interpreta como deuda.
 Resti dentro. La folla pretende il tuo errore.,Te quedas dentro. La grada exige tu error.
 Resti dentro. Ti chiedono l'eccesso.,Te quedas dentro. Te exigen el exceso.
 Resti. Nessuno ti salva.,Te quedas. Nadie te salva.
 Rimani. Il pubblico ti pesa addosso.,Permaneces. La grada pesa sobre ti.
-"Se esiti, la pressione ti stringe.","Si dudas, la presion se cierra sobre ti."
+"Se esiti, la pressione ti stringe.","Si dudas, la presión se cierra sobre ti."
 "Se rallenti, ti strappano la gloria.","Si aflojas, te arrancan la gloria."
 Sei caduto. Hanno avuto il sangue.,Has caido. Han obtenido la sangre.
 Sei caduto. Ti volevano in ginocchio.,Has caido. Te querian de rodillas.
@@ -476,16 +476,16 @@ Sei crollato. Hanno avuto il sacrificio.,Te has derrumbado. Han obtenido el sacr
 Sei crollato. Nessun suono.,Te has derrumbado. Ni un sonido.
 Ti alzano in alto per pesare la caduta.,Te elevan para medir la caida.
 "Ti concedono spazio, non rispetto.","Te conceden espacio, no respeto."
-Ti fermi mentre urlano. Ora è delusione.,Te detienes mientras rugen. Ahora llega la decepcion.
-Ti fermi qui. Nessuno ti segue.,Te detienes aqui. Nadie te sigue.
+Ti fermi mentre urlano. Ora è delusione.,Te detienes mientras rugen. Ahora llega la decepción.
+Ti fermi qui. Nessuno ti segue.,Te detienes aquí. Nadie te sigue.
 Ti osservano e aspettano l'errore.,Te observan y esperan el error.
-Ti seguono senza pieta ne favore.,Te siguen sin piedad ni favor.
+Ti seguono senza pietà né favore.,Te siguen sin piedad ni favor.
 Ti sei fermato in alto. Ti lasciano cadere.,Te has detenido en lo alto. Te dejan caer.
 Ti sei fermato. Troppo presto per essere pulito.,Te has detenido. Demasiado pronto para quedar limpio.
 Ti sei tirato indietro. La folla non dimentica.,Te has echado atras. La grada no olvida.
 Ti spingi avanti. L'arena grida il rischio.,Sigues adelante. La arena grita por el riesgo.
 Ti spingono al gesto che lascia segno.,Te empujan hacia el gesto que deja marca.
-"Ti vogliono oltre il limite, senza ritorno.","Te quieren mas alla del limite, sin retorno."
+"Ti vogliono oltre il limite, senza ritorno.","Te quieren más alla del límite, sin retorno."
 "Vogliono che tu rischi tutto, ora.","Quieren que lo arriesgues todo, ahora."
 Vogliono vedere il conto saldato in arena.,Quieren ver la cuenta saldada en la arena.
 Come e' stata ottenuta:,Cómo se obtuvo:
@@ -504,14 +504,14 @@ Vinci l'arena senza rilanciare la pressione.,Vence en la arena sin aumentar la p
 "Hai scelto il margine.
 La folla non esulta, ma il Registro resta aperto.
 L'arena lascia comunque il segno.
-Effetto: cicatrice OSSA INCRINATE, le future scommesse restano rischiose.","Elegiste el margen.
+Effetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.","Elegiste el margen.
 La grada no aclama, pero el Registro sigue abierto.
 La arena deja su marca.
 Efecto: cicatriz HUESOS AGRIETADOS; las próximas apuestas siguen siendo arriesgadas."
 Hai scelto il margine.,Elegiste el margen.
 "La folla non esulta, ma il Registro resta aperto.","La grada no aclama, pero el Registro sigue abierto."
 L'arena lascia comunque il segno.,La arena deja su marca.
-"Effetto: cicatrice OSSA INCRINATE, le future scommesse restano rischiose.",Efecto: cicatriz HUESOS AGRIETADOS; las próximas apuestas siguen siendo arriesgadas.
+"Effetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",Efecto: cicatriz HUESOS AGRIETADOS; las próximas apuestas siguen siendo arriesgadas.
 VIA DELL'HYBRIS,VÍA DE LA HYBRIS
 "Spingi oltre. Ritorno alto, margine nullo.","Ve más allá. Retorno alto, margen nulo."
 "Ricompensa alta: moltiplica la posta, ma ogni rilancio alza la pressione.","Recompensa alta: multiplica la apuesta, pero cada doble aumenta la presión."
@@ -519,13 +519,13 @@ Vinci l'arena accettando che il fallimento chiuda il percorso.,Vence en la arena
 "Hai promesso tutto.
 Non esiste margine.
 La folla trattiene il fiato.
-Effetto: MORTE IMMEDIATA, percorso terminato senza appello.","Lo prometiste todo.
+Effetto: il percorso si chiude senza appello.","Lo prometiste todo.
 No hay margen.
 La grada contiene el aliento.
-Efecto: MUERTE INMEDIATA; el recorrido termina sin apelación."
+Efecto: el recorrido se cierra sin apelación."
 Hai promesso tutto.,Lo prometiste todo.
 Non esiste margine.,No hay margen.
-"Effetto: MORTE IMMEDIATA, percorso terminato senza appello.",Efecto: MUERTE INMEDIATA; el recorrido termina sin apelación.
+Effetto: il percorso si chiude senza appello.,Efecto: el recorrido se cierra sin apelación.
 Firmi e rinunci alla via facile. Il debito resta aperto.,Firmas y renuncias a la vía fácil. La deuda sigue abierta.
 Vinci l'arena e non spezzare la promessa.,Vence en la arena sin romper la promesa.
 "Il sigillo non si scioglie.
@@ -539,13 +539,13 @@ Ogni passo stringe il debito.,Cada paso estrecha la deuda.
 Iscrivi il tuo nome nel registro rosso.,Inscribe tu nombre en el registro rojo.
 Vinci l'arena sapendo che ogni colpo ha un prezzo.,Vence en la arena sabiendo que cada golpe tiene un precio.
 "Il libro chiede sangue.
-Il tributo e inciso nella carne.
-Effetto: esposizione rituale +25 + incasso bloccato per 1 arena.","El libro exige sangre.
+Il tributo è inciso nella carne.
+Effetto: il Registro annota un'esposizione grave e la quietanza resta chiusa per un'arena.","El libro exige sangre.
 El tributo queda grabado en la carne.
-Efecto: exposición ritual +25; cobro bloqueado durante 1 arena."
+Efecto: el Registro anota una exposición grave y el recibo queda cerrado durante una arena."
 Il libro chiede sangue.,El libro exige sangre.
-Il tributo e inciso nella carne.,El tributo queda grabado en la carne.
-Effetto: esposizione rituale +25 + incasso bloccato per 1 arena.,Efecto: exposición ritual +25; cobro bloqueado durante 1 arena.
+Il tributo è inciso nella carne.,El tributo queda grabado en la carne.
+Effetto: il Registro annota un'esposizione grave e la quietanza resta chiusa per un'arena.,Efecto: el Registro anota una exposición grave y el recibo queda cerrado durante una arena.
 Offri la vittoria come carne alla folla.,Ofrece la victoria como carne a la grada.
 Vinci l'arena e lascia il pubblico in estasi.,Vence en la arena y deja a la grada en éxtasis.
 "La folla pretende spettacolo.
@@ -560,19 +560,19 @@ Rilanci oltre il respiro.,Apuesta más allá de tu último aliento.
 Vinci l'arena con il cuore in gola.,Vence en la arena con el corazón en un puño.
 "Ogni colpo è l'ultimo.
 Il destino stringe il passo.
-Effetto: cicatrice GRAVE (non mortale), cammino compromesso.","Cada golpe es el último.
+Effetto: cicatrice GRAVE, cammino compromesso.","Cada golpe es el último.
 El destino estrecha el paso.
-Efecto: cicatriz GRAVE (no mortal); recorrido comprometido."
+Efecto: cicatriz GRAVE; recorrido comprometido."
 Ogni colpo è l'ultimo.,Cada golpe es el último.
 Il destino stringe il passo.,El destino estrecha el paso.
-"Effetto: cicatrice GRAVE (non mortale), cammino compromesso.",Efecto: cicatriz GRAVE (no mortal); recorrido comprometido.
+"Effetto: cicatrice GRAVE, cammino compromesso.",Efecto: cicatriz GRAVE; recorrido comprometido.
 Accetti il verdetto scritto nel sangue.,Acepta el veredicto escrito con sangre.
-"Il verdetto e sangue.
+"Il verdetto è sangue.
 Il tributo non si discute.
-Effetto: esposizione rituale +25 + incasso bloccato per 1 arena.","El veredicto es sangre.
+Effetto: il Registro annota un'esposizione grave e la quietanza resta chiusa per un'arena.","El veredicto es sangre.
 El tributo no se discute.
-Efecto: exposición ritual +25; cobro bloqueado durante 1 arena."
-Il verdetto e sangue.,El veredicto es sangre.
+Efecto: el Registro anota una exposición grave y el recibo queda cerrado durante una arena."
+Il verdetto è sangue.,El veredicto es sangre.
 Il tributo non si discute.,El tributo no se discute.
 Giuri e consegni il futuro.,Jura y entrega el futuro.
 "Il giuramento stringe la catena.
@@ -603,10 +603,10 @@ Il pubblico è dalla tua parte. Sempre.,La grada está de tu parte. Siempre.
 "Respiri corto.
 Ogni colpo è l'ultimo.
 Il destino pesa sulle ossa.
-Effetto: cicatrice GRAVE (non mortale), cammino compromesso.","Te falta el aliento.
+Effetto: cicatrice GRAVE, cammino compromesso.","Te falta el aliento.
 Cada golpe es el último.
 El destino pesa sobre tus huesos.
-Efecto: cicatriz GRAVE (no mortal); recorrido comprometido."
+Efecto: cicatriz GRAVE; recorrido comprometido."
 Respiri corto.,Te falta el aliento.
 Il destino pesa sulle ossa.,El destino pesa sobre tus huesos.
 SIGILLO DI CERA,SELLO DE CERA
@@ -620,13 +620,13 @@ ULTIMA PUNTATA,ÚLTIMA APUESTA
 VERDETTO ROSSO,VEREDICTO ROJO
 Accetti che ogni colpo abbia costo amministrativo.,Acepta el coste administrativo de cada golpe.
 GIURAMENTO A CATENA,JURAMENTO ENCADENADO
-"Patto stabile: meno caos, piu' debito.","Pacto estable: menos caos, más deuda."
+"Patto stabile: meno caos, più debito.","Pacto estable: menos caos, más deuda."
 ESCA DI MISERICORDIA,CEBO DE MISERICORDIA
-La pieta' diventa scena: il pubblico giudica la posa.,La piedad se vuelve escena: la grada juzga la pose.
+La pietà diventa scena: il pubblico giudica la posa.,La piedad se vuelve escena: la grada juzga la pose.
 TANGENTE DEL SILENZIO,SOBORNO DEL SILENCIO
-"Paghi per tacere: pressione piu' bassa, debito piu' saldo.","Paga por callar: menos presión, deuda más firme."
+"Paghi per tacere: pressione più bassa, debito più saldo.","Paga por callar: menos presión, deuda más firme."
 APPLAUSO GARANTITO,APLAUSO GARANTIZADO
-"La promessa e' falsa, ma il rischio e' vero.","La promesa es falsa, pero el riesgo es real."
+"La promessa è falsa, ma il rischio è vero.","La promesa es falsa, pero el riesgo es real."
 L'arena dimentica. Il Registro no.,La arena olvida. El Registro no.
 Il tuo passaggio è registrato.,Tu paso queda registrado.
 RIPRENDI IL PERCORSO,RETOMA TU CAMINO
@@ -651,13 +651,13 @@ Hai continuato a rilanciare quando il rischio era ormai evidente.,Seguiste subie
 "Non era piu una scommessa.
 Era una dimostrazione.","Ya no era una apuesta.
 Era una demostración."
-Hai rilanciato e perso la run subito dopo.,Subiste la apuesta y perdiste el recorrido justo después.
+Hai rilanciato e perso il percorso subito dopo.,Subiste la apuesta y perdiste el recorrido justo después.
 "Il silenzio dell'arena
 e durato piu del previsto.","El silencio de la arena
 duró más de lo previsto."
 Hai firmato il tuo primo patto.,Firmaste tu primer pacto.
 Nessuno ti ha forzato la mano.,Nadie te obligó.
-Hai firmato un patto che ti ha condotto alla morte.,Firmaste un pacto que te llevó a la muerte.
+Hai firmato un patto che ha chiuso il percorso.,Firmaste un pacto que cerró el recorrido.
 "La sentenza era scritta.
 Hai solo aggiunto il nome.","La sentencia estaba escrita.
 Solo añadiste tu nombre."
@@ -665,11 +665,11 @@ Hai scelto una condanna senza ricevere alcun reward.,Elegiste una condena sin re
 "La folla non ha capito.
 Tu si.","La multitud no lo entendió.
 Tú sí."
-Hai perso la run a causa diretta di un patto firmato.,Perdiste el recorrido como consecuencia directa de un pacto firmado.
+Hai perso il percorso a causa diretta di un patto firmato.,Perdiste el recorrido como consecuencia directa de un pacto firmado.
 Non e stata sfortuna.,No fue mala suerte.
 Hai continuato una run nonostante le tue condizioni critiche.,Continuaste un recorrido pese a tu estado crítico.
 Il corpo era gia un avviso.,Tu cuerpo ya era una advertencia.
-Hai evitato la morte per un soffio.,Evitaste la muerte por muy poco.
+Hai evitato la chiusura per un soffio.,Evitaste el cierre por muy poco.
 "Il pubblico ha sospirato.
 Tu no.","El público suspiró.
 Tú no."
@@ -681,13 +681,13 @@ Hai incassato con un livello di rischio estremamente alto.,Cobraste con un nivel
 Questa volta.,Esta vez.
 Hai perso la tua prima run.,Perdiste tu primer recorrido.
 L'arena non fa sconti ai nuovi.,La arena no hace concesiones a los recién llegados.
-Hai perso la run vicino a una soglia decisiva.,Perdiste el recorrido cerca de un umbral decisivo.
+Hai perso il percorso vicino a una soglia decisiva.,Perdiste el recorrido cerca de un umbral decisivo.
 La folla aveva gia deciso.,La multitud ya había decidido.
 Hai preso una decisione rischiosa un attimo prima della fine.,Tomaste una decisión arriesgada justo antes del final.
 "Un secondo prima
 sarebbe bastato.","Un segundo antes
 habría bastado."
-Hai perso la run senza errori meccanici evidenti.,Perdiste el recorrido sin errores mecánicos evidentes.
+Hai perso il percorso senza errori meccanici evidenti.,Perdiste el recorrido sin errores mecánicos evidentes.
 Nessuno ha barato.,Nadie hizo trampas.
 Hai completato una run.,Completaste un recorrido.
 L'arena non dimentica.,La arena no olvida.
@@ -711,7 +711,7 @@ Il Registro ha concluso l'atto.","El desgaste acumulado se consideró definitivo
 El Registro concluyó el acta."
 Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,El Registro cerró el expediente por un patrón consolidado.
 "La ripetizione e risultata sufficiente.
-La classificazione e stata archiviata.","La repetición fue suficiente.
+La classificazione è stata archiviata.","La repetición fue suficiente.
 La clasificación quedó archivada."
 CATENA DI DEBITO,CADENA DE DEUDA
 DECIMA DI SANGUE,DIEZMO DE SANGRE
@@ -736,7 +736,7 @@ Arena del Debito,Arena de la Deuda
 Arena del Silenzio,Arena del Silencio
 Arena del Sangue,Arena de la Sangre
 Il fascicolo conserva gli esiti. Qui ritrovi i vincoli delle promesse disponibili.,El expediente conserva los resultados. Aquí puedes consultar los vínculos de las promesas disponibles.
-La gradinata ricorda l'esposizione. Le sue voci si sono fatte piu' dure.,La grada recuerda la exposición. Sus voces se han vuelto más duras.
+La gradinata ricorda l'esposizione. Le sue voci si sono fatte più dure.,La grada recuerda la exposición. Sus voces se han vuelto más duras.
 La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro.,La grada acompaña los gestos. Sus voces no son el dictamen del Registro.
 ESCI DAL GIOCO,SALIR DEL JUEGO
 Gufo scrivano,Búho escribano
@@ -815,7 +815,7 @@ Ho sostituito la tavoletta. Il solco torna nello stesso punto.,He sustituido la 
 Io conto i posti che non si riempiono.,Yo cuento los asientos que no se llenan.
 Il posto accanto,El asiento de al lado
 Ho allineato anche l’ultima pila. Non resta nulla fuori margine.,También he alineado la última pila. No queda nada fuera del margen.
-Eppure dalla soglia entra ancora aria.,"Y aun así, por el umbral sigue entrando aire."
+Eppure dalla soglia entra ancora aria.,"Y aún así, por el umbral sigue entrando aire."
 Il posto accanto lo lascio libero.,Dejo libre el asiento de al lado.
 Non lo tieni più?,¿Ya no lo guardas?
 Non serve occuparlo.,No hace falta ocuparlo.
@@ -823,3 +823,24 @@ Allora resto qui. Senza chiamare.,Entonces me quedo aquí. Sin llamar.
 ASCOLTA,ESCUCHA
 TORNA AL RITO,VUELVE AL RITO
 SALTA DIALOGO,OMITIR DIÁLOGO
+Gloria %d,Gloria %d
+Arena %d,Arena %d
+La quietanza si apre dall'arena %d.,El recibo se abre desde la arena %d.
+Decima di Sangue: quietanza bloccata ancora per %d arena.,Diezmo de Sangre: el recibo sigue bloqueado %d arena más.
+Hai placato la folla: raddoppio bloccato.,Calmaste a la grada: doblar está bloqueado.
+Ultima arena: prendi la quietanza.,Última arena: toma el recibo.
+Arena del Disprezzo: quietanza vietata.,Arena del Desprecio: el recibo está prohibido.
+SE IL PATTO REGGE,SI EL PACTO RESISTE
+SE IL PATTO CEDE,SI EL PACTO CEDE
+Nessun patto firmato.,Ningún pacto firmado.
+Gloria del percorso: %d,Gloria del recorrido: %d
+Segni: %d,Marcas: %d
+NUOVE VOCI D'ARCHIVIO,NUEVAS ENTRADAS DEL ARCHIVO
+Se il patto cede: %s,Si el pacto cede: %s
+"CASO ANALOGO RILEVATO.
+PRECEDENTE: FELIX GALLICUS.","CASO ANÁLOGO DETECTADO.
+PRECEDENTE: FELIX GALLICUS."
+"PRECEDENTE: FELIX GALLICUS.
+FASCICOLO ANCORA APERTO.","PRECEDENTE: FELIX GALLICUS.
+EXPEDIENTE AÚN ABIERTO."
+NESSUNA ULTERIORE DECISIONE RILEVANTE.,NINGUNA DECISIÓN RELEVANTE MÁS.

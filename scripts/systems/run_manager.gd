@@ -187,10 +187,10 @@ const AUDIENCE_PHRASES: Dictionary = {
 	],
 	"COLD": [
 		"Ti osservano e aspettano l'errore.",
-		"Il silenzio pesa piu dell'acciaio.",
+		"Il silenzio pesa più dell'acciaio.",
 		"Non applaudono, registrano.",
 		"Nessun calore, solo misura.",
-		"Ti seguono senza pieta ne favore.",
+		"Ti seguono senza pietà né favore.",
 		"Ogni mossa apre un conto.",
 		"Nessun grido, solo occhi fissi.",
 		"Ti concedono spazio, non rispetto.",
@@ -199,7 +199,7 @@ const AUDIENCE_PHRASES: Dictionary = {
 	],
 	"DELIRIUM": [
 		"Ti vogliono oltre il limite, senza ritorno.",
-		"Ogni colpo chiede di piu.",
+		"Ogni colpo chiede di più.",
 		"Non cercano vittoria: cercano il prezzo.",
 		"Ti spingono al gesto che lascia segno.",
 		"Se rallenti, ti strappano la gloria.",
@@ -2474,7 +2474,7 @@ func _apply_special_arena_post_resolution(result: ArenaResult, failed: bool) -> 
 	if _run_state.special_arena_id == SPECIAL_ARENA_ASH and not _run_state.run_is_over and not _is_game_over:
 		_apply_special_arena_ash_reward(result, failed)
 	if _run_state.special_arena_id == SPECIAL_ARENA_DISPREZZO:
-		_run_state.special_arena_cashout_lock_reason = "Arena del Disprezzo: incasso vietato."
+		_run_state.special_arena_cashout_lock_reason = "Arena del Disprezzo: quietanza vietata."
 	if _run_state.special_arena_id == SPECIAL_ARENA_VERGOGNA:
 		_run_state.audience_score = clampi(_run_state.audience_score - 1, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
 	_run_state.special_arena_active = false
@@ -3494,18 +3494,18 @@ func _get_cashout_lock_reason() -> String:
 	if _run_state.arena_index >= _run_state.level3_target_arenas and _run_state.level3_target_arenas > 0:
 		return ""
 	if _run_state.special_arena_cashout_lock_reason != "":
-		return _run_state.special_arena_cashout_lock_reason
+		return tr(_run_state.special_arena_cashout_lock_reason)
 	if _run_state.cashout_lock_remaining > 0:
-		return "Decima di Sangue: incasso bloccato (%d arena)" % _run_state.cashout_lock_remaining
+		return tr("Decima di Sangue: quietanza bloccata ancora per %d arena.") % _run_state.cashout_lock_remaining
 	if _run_state.arena_index < _run_state.level3_min_cashout_arenas:
-		return "Incasso disponibile dopo Arena %d" % _run_state.level3_min_cashout_arenas
+		return tr("La quietanza si apre dall'arena %d.") % _run_state.level3_min_cashout_arenas
 	return ""
 
 func _get_double_lock_reason() -> String:
 	if _run_state.intermediate_double_disabled_once:
-		return "Hai placato la folla: raddoppio bloccato."
+		return tr("Hai placato la folla: raddoppio bloccato.")
 	if _run_state.arena_index >= _run_state.level3_target_arenas and _run_state.level3_target_arenas > 0:
-		return "Fine run: incassa ora"
+		return tr("Ultima arena: prendi la quietanza.")
 	return ""
 
 func _update_audience_after_arena(result: ArenaResult) -> void:
@@ -3777,13 +3777,24 @@ func _emit_run_ended() -> void:
 		emit_reason = "unknown"
 	if _should_emit_registry_silence():
 		var terminal: bool = _registry_era >= 4
-		GameEvents.run_ended.emit("REGISTRY_ABSENCE" if terminal else "REGISTRY_SILENCE", {"classified_terminal": false, "terminal": terminal})
+		GameEvents.run_ended.emit("REGISTRY_ABSENCE" if terminal else "REGISTRY_SILENCE", {"classified_terminal": false, "terminal": terminal, "registry_status": "" if terminal else _registry_silence_status_line()})
 		GameEvents.set_gameplay_enabled(false)
 		return
 	var finale: Dictionary = _select_run_finale()
 	var summary: Dictionary = _build_run_summary(finale)
 	GameEvents.run_ended.emit(emit_reason, summary)
 	_emit_register_annotation_from_run_end(emit_reason)
+
+func _registry_silence_status_line() -> String:
+	# The first imperfection cites the precedent (LORE_UNIFIED, Felix Gallicus);
+	# later Silences compress. A status line, never a verdict or an Era name.
+	match _registry_era:
+		1:
+			return "CASO ANALOGO RILEVATO.\nPRECEDENTE: FELIX GALLICUS."
+		2:
+			return "PRECEDENTE: FELIX GALLICUS.\nFASCICOLO ANCORA APERTO."
+		_:
+			return "NESSUNA ULTERIORE DECISIONE RILEVANTE."
 
 func _register_run_end(reason: String) -> void:
 	if reason == "":
@@ -4202,6 +4213,10 @@ func get_arena() -> Node:
 
 func get_arena_index() -> int:
 	return int(run.get("arena_index", 0))
+
+func get_run_glory() -> int:
+	# Read-only presentation query for the HUD rail.
+	return maxi(_run_state.glory, 0) if _run_state != null else 0
 
 func is_live() -> bool:
 	return _gameplay_phase == RunPhase.LIVE

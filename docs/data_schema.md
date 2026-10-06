@@ -164,7 +164,8 @@ Il getter restituisce copia profonda. RunManager commette evoluzione, ramp
 ed Era una sola volta per chiusura con scrittura atomica del profilo. Le API
 non possono diminuire un'Era persistita. Era 4 e' anche il flag terminale.
 `run_ended` riusa il Dictionary esistente: REGISTRY_SILENCE/REGISTRY_ABSENCE
-espongono `classified_terminal=false` e `terminal`. La proiezione UI
+espongono `classified_terminal=false`, `terminal` e `registry_status`
+(chiave di una riga di stato del terminale, vuota nell'Assenza). La proiezione UI
 `get_registry_presentation()` espone terminal, material_fade e definitive,
 mai gli assi o il numero dell'Era.
 

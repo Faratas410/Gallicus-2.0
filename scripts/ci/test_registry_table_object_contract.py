@@ -30,19 +30,19 @@ EXPECTED_COPY = {
         "APRI IL REGISTRO": "APRI IL REGISTRO",
         "REGISTRO DELL'ARENA": "REGISTRO DELL'ARENA",
         "Apertura del verbale": "Apertura del verbale",
-        "IL REGISTRO E' CHIUSO": "IL REGISTRO E' CHIUSO",
+        "IL REGISTRO È CHIUSO": "IL REGISTRO È CHIUSO",
     },
     "en": {
         "APRI IL REGISTRO": "OPEN THE REGISTRY",
         "REGISTRO DELL'ARENA": "ARENA REGISTRY",
         "Apertura del verbale": "OPENING THE RECORD",
-        "IL REGISTRO E' CHIUSO": "THE REGISTRY IS CLOSED",
+        "IL REGISTRO È CHIUSO": "THE REGISTRY IS CLOSED",
     },
     "es": {
         "APRI IL REGISTRO": "ABRE EL REGISTRO",
         "REGISTRO DELL'ARENA": "REGISTRO DE LA ARENA",
         "Apertura del verbale": "APERTURA DEL ACTA",
-        "IL REGISTRO E' CHIUSO": "EL REGISTRO ESTÁ CERRADO",
+        "IL REGISTRO È CHIUSO": "EL REGISTRO ESTÁ CERRADO",
     },
 }
 

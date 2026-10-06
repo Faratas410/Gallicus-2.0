@@ -341,7 +341,7 @@ func _build_museo_list() -> void:
 				theme_title = str(theme_id)
 			_add_museo_item("- %s" % tr(theme_title))
 	_add_museo_header(tr("VOCI DEL PUBBLICO"))
-	_add_museo_item(tr("La gradinata ricorda l'esposizione. Le sue voci si sono fatte piu' dure.") if harsh_unlocked else tr("La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro."))
+	_add_museo_item(tr("La gradinata ricorda l'esposizione. Le sue voci si sono fatte più dure.") if harsh_unlocked else tr("La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro."))
 
 func _add_museo_header(text: String) -> void:
 	var entry_panel: PanelContainer = _create_museo_entry_panel(text)

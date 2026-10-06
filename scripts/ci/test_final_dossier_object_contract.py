@@ -29,7 +29,7 @@ TAB_STATES = ("normal", "focus", "pressed", "selected", "disabled")
 ROUTES = {
     "NUOVO PERCORSO": {"it": "NUOVO PERCORSO", "en": "NEW PATH", "es": "NUEVO RECORRIDO"},
     "PROSSIMA SCOMMESSA": {"it": "PROSSIMA SCOMMESSA", "en": "NEXT BET", "es": "SIGUIENTE APUESTA"},
-    "TORNA AL MENU": {"it": "TORNA AL MENU", "en": "BACK TO MENU", "es": "VOLVER AL MENU"},
+    "TORNA AL MENU": {"it": "TORNA AL MENU", "en": "BACK TO MENU", "es": "VOLVER AL MENÚ"},
 }
 
 
@@ -78,12 +78,12 @@ def _assert_scene_and_runtime() -> None:
     if "custom_minimum_size = Vector2(1120, 640)" not in panel:
         raise AssertionError("Panel_END_RUN must be the fixed 1120x640 dossier")
     route_row = _node_block(scene, "EndRunRouteTabs")
-    if "custom_minimum_size = Vector2(940, 64)" not in route_row or "alignment = 1" not in route_row:
-        raise AssertionError("END_RUN route row must preserve the 940x64 geometry")
+    if "custom_minimum_size = Vector2(864, 64)" not in route_row or "alignment = 1" not in route_row:
+        raise AssertionError("END_RUN route row must preserve the 864x64 geometry")
     for button_name in ("Btn_END_RUN_RESTART", "Btn_END_RUN_NEXT_BET", "Btn_END_RUN_QUIT"):
         block = _node_block(scene, button_name)
         for token in (
-            "custom_minimum_size = Vector2(304, 64)",
+            "custom_minimum_size = Vector2(280, 64)",
             'theme_override_styles/normal = ExtResource("74_final_dossier_tab_normal")',
             'theme_override_styles/hover = ExtResource("75_final_dossier_tab_focus")',
             'theme_override_styles/pressed = ExtResource("76_final_dossier_tab_pressed")',
@@ -92,7 +92,7 @@ def _assert_scene_and_runtime() -> None:
             if token not in block:
                 raise AssertionError(f"{button_name} missing dossier binding: {token}")
         if "size_flags_horizontal" in block:
-            raise AssertionError(f"{button_name} must remain fixed at 304x64")
+            raise AssertionError(f"{button_name} must remain fixed at 280x64")
 
     if "END_RUN_BUTTON_READY_SCALE" in ui:
         raise AssertionError("END_RUN route tabs must not use hover/focus scale")

@@ -41,6 +41,11 @@ const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.30
 const RESOLUTION_RITUAL_STRIKES_REQUIRED: int = 3
 const RESOLUTION_RITUAL_BEAT_SECONDS: float = 0.9
 const RESOLUTION_RITUAL_HIT_WINDOW_SECONDS: float = 0.18
+# Centres of the three bronze sockets under the wax, as fractions of the seal texture.
+const JUDGMENT_SEAL_SOCKET_ANCHORS: Array[Vector2] = [Vector2(0.081, 0.73), Vector2(0.148, 0.73), Vector2(0.214, 0.73)]
+const JUDGMENT_SEAL_PIP_RADIUS: float = 6.0
+const JUDGMENT_SEAL_PIP_WAX: Color = Color(0.66, 0.17, 0.12, 1.0)
+const JUDGMENT_SEAL_PIP_WAX_ON_BEAT: Color = Color(0.82, 0.24, 0.14, 1.0)
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres"
@@ -89,7 +94,7 @@ const FINAL_DOSSIER_WATCHDOG_SECONDS: float = 1.5
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
-const SCARS_PANEL_BASE_HEIGHT: float = 72.0
+const SCARS_PANEL_BASE_HEIGHT: float = 92.0
 const SCARS_PANEL_ROW_HEIGHT: float = 24.0
 const SCARS_PANEL_MIN_HEIGHT: float = 102.0
 const SCARS_PANEL_MAX_HEIGHT: float = 168.0
@@ -185,6 +190,7 @@ var _button_style_primary_pressed: StyleBox = null
 var _button_style_primary_disabled: StyleBox = null
 
 var _glory: int = 0
+var _last_finale_glory: int = 0
 var _escalation_level: int = 0
 var _escalation_max: int = 0
 var _selected_bet_id: StringName = &""
@@ -345,7 +351,7 @@ var resolve_ritual_title: Label = null
 var resolve_ritual_subtitle: Label = null
 var resolve_ritual_prompt: Label = null
 var resolve_ritual_strike_button: Button = null
-var resolve_ritual_strike_marks: Array[Label] = []
+var resolve_ritual_seal_pips: Array[Panel] = []
 var pact_sealed_advance_button: Button = null
 var resolve_ritual_advance_button: Button = null
 var _pact_tablet_locked: bool = false
@@ -633,11 +639,7 @@ func _bind_scene_nodes() -> void:
 	resolve_ritual_subtitle = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
 	resolve_ritual_prompt = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_RITUAL_PROMPTPanel/Lbl_RESOLUTION_RITUAL_PROMPT") as Label
 	resolve_ritual_strike_button = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE") as Button
-	resolve_ritual_strike_marks = [
-		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark1") as Label,
-		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark2") as Label,
-		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark3") as Label,
-	]
+	resolve_ritual_seal_pips = _build_judgment_seal_pips(resolve_ritual_strike_button)
 	resolve_ritual_advance_button = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_NEXT") as Button
 
 	# Mid choice
@@ -749,6 +751,7 @@ func show_phase(phase: int) -> void:
 	_apply_visual_tier(_active_visual_tier)
 	_set_silence_overlay_active(_silence_overlay_active)
 	_refresh_modal_dimmer()
+	_update_escalation_bar()
 
 func _validate_ui_boot() -> bool:
 	var errors: Array[String] = []
@@ -1194,6 +1197,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	else:
 		_last_finale_stats = {}
 	var finale_meta: Dictionary = payload.get("meta", {}) as Dictionary
+	_last_finale_glory = int(payload.get("glory", 0))
 	_last_register_message_key = str(finale_meta.get("register_message", ""))
 	_last_register_message = tr(_last_register_message_key)
 	_last_register_final = bool(finale_meta.get("register_final", false))
@@ -1319,9 +1323,13 @@ func _format_verdict_list(values: Array[String]) -> String:
 	return "\n".join(lines)
 
 func _format_verdict_pacts_list(values: Array[String]) -> String:
+	# The player reads the promises they signed, not a count of conditions.
 	if values.is_empty():
-		return fmt_register_line(tr("rinunciato"), tr("continuato"))
-	return fmt_register_line(tr("accettato"), tr("%d condizioni registrate") % values.size())
+		return tr("Nessun patto firmato.")
+	var titles: Array[String] = []
+	for value: String in values:
+		titles.append(tr(BetCatalog.get_level3_display_title(StringName(value))))
+	return _format_verdict_list(titles)
 
 func _build_smart_register_summary() -> String:
 	var pact_count: int = _last_verdict_pacts.size()
@@ -1333,16 +1341,17 @@ func _build_smart_register_summary() -> String:
 	elif _last_verdict_outcome == &"CASHOUT":
 		outcome_line = tr("Hai lasciato l'arena con la posta riconosciuta.")
 	elif _last_verdict_outcome == &"WIN":
-		outcome_line = tr("Il patto regge: il percorso puo proseguire.")
+		outcome_line = tr("Il patto regge: il percorso può proseguire.")
 	else:
 		outcome_line = tr("La condanna viene accettata e il percorso resta segnato.")
-	var pressure_line: String = tr("Pressione massima: %d/%d.") % [pressure_peak, _get_pressure_max(_escalation_max)]
-	var unlock_line: String = tr("Patti e sblocchi sono stati aggiornati nell'Archivio.")
-	if condanna_count > 0:
-		unlock_line = tr("%d condanne archiviate; il dettaglio resta nell'Archivio.") % condanna_count
-	if pact_count > 0:
-		return "%s\n%s %s" % [outcome_line, pressure_line, unlock_line]
-	return "%s\n%s %s" % [outcome_line, pressure_line, tr("Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.")]
+	# What the player wants from a dossier: what was earned, what was paid,
+	# how close the crowd came. Archive unlocks stay in their own column.
+	var stakes: Array[String] = [
+		tr("Gloria del percorso: %d") % maxi(_last_finale_glory, 0),
+		tr("Segni: %d") % _last_finale_scars.size(),
+		tr("Pressione massima: %d/%d") % [pressure_peak, _get_pressure_max(_escalation_max)],
+	]
+	return "%s\n%s" % [outcome_line, "  ·  ".join(stakes)]
 
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
@@ -1380,7 +1389,7 @@ func _refresh_verdict_panel() -> void:
 		pacts_title.text = tr("PATTI FIRMATI")
 	var condanne_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE/Lbl_END_RUN_CONDANNE_TITLEPanel/Lbl_END_RUN_CONDANNE_TITLE") as Label
 	if condanne_title != null:
-		condanne_title.text = tr("CONDANNE")
+		condanne_title.text = tr("NUOVE VOCI D'ARCHIVIO")
 	var crowd_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel/Lbl_END_RUN_CROWD_TITLE") as Label
 	if crowd_title != null:
 		crowd_title.text = tr("ULTIMA VOCE")
@@ -1691,11 +1700,21 @@ func _update_escalation_bar() -> void:
 	if escalation_label != null:
 		escalation_label.text = _format_pressure_label(clamped_level, safe_max)
 	if pressure_state_label != null:
-		pressure_state_label.text = _get_pressure_state_text(clamped_level)
+		pressure_state_label.text = _format_run_status_line(clamped_level)
 	if escalation_bar != null:
 		escalation_bar.max_value = float(safe_max)
 		escalation_bar.value = float(clamped_level)
 		_apply_pressure_bar_color(_get_pressure_color(clamped_level))
+
+func _format_run_status_line(pressure_level: int) -> String:
+	# One persistent place for the run's stakes: mood, earned Glory and arena.
+	var parts: Array[String] = [_get_pressure_state_text(pressure_level)]
+	if _run_manager_port != null and _run_manager_port.has_manager():
+		var arena_index: int = _run_manager_port.get_arena_index()
+		if arena_index > 0:
+			parts.append(tr("Gloria %d") % _run_manager_port.get_run_glory())
+			parts.append(tr("Arena %d") % arena_index)
+	return "  ·  ".join(parts)
 
 func _get_pressure_max(max_value: int) -> int:
 	return maxi(max_value, 10)
@@ -2072,15 +2091,22 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 		tr("Imprimi tre colpi sul sigillo."),
 	]
 	if doom_short != "":
-		subtitle = "%s\n%s" % [
-			tr("CONDANNA: %s") % doom_short,
-			tr("Tre colpi chiudono il verbale."),
-		]
+		# The seal prompt already asks for three strikes: the body keeps only the stake.
+		subtitle = tr("Se il patto cede: %s") % _localize_doom_effect(doom_short)
 	enqueue_post_bet_message({
 		"kind": "resolve_ritual",
 		"title": tr("RITO DI GIUDIZIO"),
 		"subtitle": subtitle,
 	})
+
+func _localize_doom_effect(doom_short: String) -> String:
+	# RunManager sends the catalog effect without its "Effetto:" prefix; the
+	# catalog key keeps the prefix, so translate the full line and strip it here.
+	var line: String = tr("Effetto: %s" % doom_short.strip_edges())
+	var colon: int = line.find(":")
+	if colon > 0 and colon <= 8:
+		line = line.substr(colon + 1).strip_edges()
+	return line
 
 func _on_resolve_ritual_closed() -> void:
 	_reset_judgment_seal_state()
@@ -2122,11 +2148,9 @@ func _reset_resolution_ritual_interaction() -> void:
 	if resolve_ritual_advance_button != null:
 		resolve_ritual_advance_button.visible = false
 		resolve_ritual_advance_button.disabled = true
-	for mark: Label in resolve_ritual_strike_marks:
-		if mark == null:
-			continue
-		mark.modulate = Color(0.34, 0.33, 0.31, 1.0)
-		mark.scale = Vector2.ONE
+	for pip: Panel in resolve_ritual_seal_pips:
+		pip.visible = false
+		pip.scale = Vector2.ONE
 	_start_resolution_ritual_pulse()
 
 func _stop_resolution_ritual_interaction() -> void:
@@ -2162,15 +2186,20 @@ func _is_resolution_ritual_on_beat() -> bool:
 
 func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 	var mark_index: int = _resolve_ritual_strike_count - 1
-	if mark_index >= 0 and mark_index < resolve_ritual_strike_marks.size():
-		var mark: Label = resolve_ritual_strike_marks[mark_index]
-		if mark != null:
-			mark.modulate = Color(0.98, 0.82, 0.46, 1.0) if on_beat else Color(0.76, 0.68, 0.5, 1.0)
-			mark.scale = Vector2.ONE if _is_reduced_motion() else (Vector2(1.18, 1.18) if on_beat else Vector2(1.08, 1.08))
+	if mark_index >= 0 and mark_index < resolve_ritual_seal_pips.size():
+		var pip: Panel = resolve_ritual_seal_pips[mark_index]
+		_fill_judgment_seal_pip(pip, on_beat)
+		if pip != null and not _is_reduced_motion():
+			# The drop settles into its socket; the seal itself never moves.
+			pip.scale = Vector2(1.6, 1.6)
+			var drop := create_tween()
+			drop.set_trans(Tween.TRANS_BACK)
+			drop.set_ease(Tween.EASE_OUT)
+			drop.tween_property(pip, "scale", Vector2.ONE, 0.18)
 	if resolve_ritual_prompt != null:
 		var prompts: Array[String] = [
-			tr("PRIMO COLPO - VERDETTO INCISO"),
-			tr("SECONDO COLPO - CONDANNA INCISA"),
+			tr("PRIMO COLPO - CERA IMPRESSA"),
+			tr("SECONDO COLPO - VERDETTO INCISO"),
 			tr("TERZO COLPO - SIGILLO CHIUSO"),
 		]
 		resolve_ritual_prompt.text = prompts[mini(_resolve_ritual_strike_count - 1, prompts.size() - 1)]
@@ -2178,11 +2207,49 @@ func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 		resolve_ritual_strike_button.text = tr("COLPISCI ANCORA") if _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED else tr("SIGILLATO")
 		_set_judgment_seal_state(_resolve_ritual_strike_count)
 
+func _build_judgment_seal_pips(seal: Button) -> Array[Panel]:
+	# Wax drops pressed into the seal's bronze sockets: one per strike, so the
+	# count lives on the object instead of a separate row of marks.
+	var pips: Array[Panel] = []
+	if seal == null:
+		return pips
+	for anchor_point: Vector2 in JUDGMENT_SEAL_SOCKET_ANCHORS:
+		var pip := Panel.new()
+		pip.name = "SealPip%d" % (pips.size() + 1)
+		pip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pip.focus_mode = Control.FOCUS_NONE
+		pip.anchor_left = anchor_point.x
+		pip.anchor_right = anchor_point.x
+		pip.anchor_top = anchor_point.y
+		pip.anchor_bottom = anchor_point.y
+		pip.offset_left = -JUDGMENT_SEAL_PIP_RADIUS
+		pip.offset_right = JUDGMENT_SEAL_PIP_RADIUS
+		pip.offset_top = -JUDGMENT_SEAL_PIP_RADIUS
+		pip.offset_bottom = JUDGMENT_SEAL_PIP_RADIUS
+		pip.pivot_offset = Vector2(JUDGMENT_SEAL_PIP_RADIUS, JUDGMENT_SEAL_PIP_RADIUS)
+		pip.visible = false
+		seal.add_child(pip)
+		pips.append(pip)
+	return pips
+
+func _fill_judgment_seal_pip(pip: Panel, on_beat: bool) -> void:
+	if pip == null:
+		return
+	var wax := StyleBoxFlat.new()
+	wax.bg_color = JUDGMENT_SEAL_PIP_WAX_ON_BEAT if on_beat else JUDGMENT_SEAL_PIP_WAX
+	wax.border_color = Color(0.32, 0.08, 0.06, 1.0)
+	wax.set_border_width_all(1)
+	wax.set_corner_radius_all(int(JUDGMENT_SEAL_PIP_RADIUS))
+	wax.anti_aliasing = true
+	pip.add_theme_stylebox_override("panel", wax)
+	pip.scale = Vector2.ONE
+	pip.visible = true
+
 func _complete_resolution_ritual_interaction() -> void:
 	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
 		_resolve_ritual_pulse_tween.kill()
 	if resolve_ritual_prompt != null:
-		resolve_ritual_prompt.text = tr("VERBALE INCISO - IL REGISTRO PUO AVANZARE")
+		resolve_ritual_prompt.text = tr("VERBALE INCISO - IL REGISTRO PUÒ AVANZARE")
 	_set_judgment_seal_state(RESOLUTION_RITUAL_STRIKES_REQUIRED)
 	_judgment_seal_locked = true
 	if resolve_ritual_strike_button != null:
@@ -2668,13 +2735,13 @@ func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: in
 	return " | ".join(parts)
 
 func _format_double_note(double_next_stake_glory: int, double_pressure_delta: int) -> String:
-	return tr("Prossima posta +%d Gloria | Pressione +%d") % [
+	return tr("Prossima posta: +%d Gloria. Pressione +%d.") % [
 		maxi(double_next_stake_glory, 0),
 		maxi(double_pressure_delta, 1),
 	]
 
 func _format_condanna_note(stake_glory: int) -> String:
-	return tr("Perdi la posta +%d Gloria | il Registro chiude il percorso") % maxi(stake_glory, 0)
+	return tr("Perdi la posta di +%d Gloria. Il percorso si chiude.") % maxi(stake_glory, 0)
 
 func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:

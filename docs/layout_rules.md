@@ -47,10 +47,12 @@ Il testo secondario non deve competere con il gesto principale.
 - **END_RUN:** fascicolo, esito, memoria e route disponibili.
 
 Il fascicolo END_RUN usa un controllo fisso `1120x640`. La safe area interna
-mantiene il titolo sotto la cerniera, tre colonne compatte per patti,
-condanne e ultima voce, e una riga centrata `940x64`. Le linguette restano
-`304x64` anche quando `PROSSIMA SCOMMESSA` non e' disponibile; non si
-espandono e non cambiano scala tra focus, selected e disabled.
+parte dopo il dorso (150 px a sinistra, 94 px a destra) e mantiene il titolo
+sotto la cerniera, una riga di posta (Gloria, segni, pressione massima), tre
+colonne compatte per patti firmati, nuove voci d'Archivio e ultima voce, e una
+riga centrata `864x64`. Le linguette restano `280x64` anche quando
+`PROSSIMA SCOMMESSA` non e' disponibile; non si espandono e non cambiano scala
+tra focus, selected e disabled. Nessun testo o comando tocca il dorso.
 - **Archivio:** consultazione, non griglia di achievement generica.
 - **Assenza:** nessun residuo del normale HUD.
 

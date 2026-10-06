@@ -8,20 +8,22 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Ordine di lettura
 
-1. `docs/design_skeleton.md` - promessa di prodotto, stato reale e Definition of Done.
-2. `docs/development_plan.md` - roadmap sequenziale verso 1.0 e prossimo step.
-3. `docs/development_workflow.md` - ciclo di sviluppo con Astra e consegna locale.
-4. `docs/game_design.md` - esperienza, loop e campagna completa.
-5. `docs/object_grammar.md` - grammatica obbligatoria per le azioni gameplay.
-6. `docs/testing.md` - verifiche statiche, runtime, visuali e manuali.
-7. `docs/code_quality.md` - ownership e disciplina prima di cambiare runtime.
-8. Documento di dominio pertinente; `docs/steam_release.md` per la distribuzione.
-9. Canon owner pertinente, se la patch cambia una regola o un contratto.
+1. `docs/direction.md` - anima, voci, lessico unico e regole di stile UI.
+2. `docs/design_skeleton.md` - promessa di prodotto, stato reale e Definition of Done.
+3. `docs/development_plan.md` - roadmap sequenziale verso 1.0 e prossimo step.
+4. `docs/development_workflow.md` - ciclo di sviluppo con Astra e consegna locale.
+5. `docs/game_design.md` - esperienza, loop e campagna completa.
+6. `docs/object_grammar.md` - grammatica obbligatoria per le azioni gameplay.
+7. `docs/testing.md` - verifiche statiche, runtime, visuali e manuali.
+8. `docs/code_quality.md` - ownership e disciplina prima di cambiare runtime.
+9. Documento di dominio pertinente; `docs/steam_release.md` per la distribuzione.
+10. Canon owner pertinente, se la patch cambia una regola o un contratto.
 
 ## Owner documentali
 
 | Domanda | Owner |
 | --- | --- |
+| Che anima ha il gioco e come deve sentirsi? | `docs/direction.md` |
 | Che gioco stiamo finendo? | `docs/design_skeleton.md` |
 | Qual e' il prossimo blocco implementabile? | `docs/development_plan.md` |
 | Come lavora Astra e come consegna? | `docs/development_workflow.md` |
@@ -41,6 +43,9 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 | Quali rischi di tono vanno controllati? | `docs/ethics_and_representation.md` |
 
 ## Autorita'
+
+Rework di prodotto del 6 ottobre 2026: direzione in `docs/direction.md`,
+gap e piano in `docs/support/rework_audit_2026-10-06.md`.
 
 Consegna corrente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
 come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.

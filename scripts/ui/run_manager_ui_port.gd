@@ -53,6 +53,12 @@ func get_arena_index() -> int:
 		return 0
 	return int(manager.get_arena_index())
 
+func get_run_glory() -> int:
+	var manager: Node = _get_manager()
+	if manager == null:
+		return 0
+	return int(manager.get_run_glory())
+
 func has_lying_pact_reveal(pact_id: StringName) -> bool:
 	var manager: Node = _get_manager()
 	if manager == null:

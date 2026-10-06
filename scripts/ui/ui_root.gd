@@ -41,6 +41,11 @@ const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.30
 const RESOLUTION_RITUAL_STRIKES_REQUIRED: int = 3
 const RESOLUTION_RITUAL_BEAT_SECONDS: float = 0.9
 const RESOLUTION_RITUAL_HIT_WINDOW_SECONDS: float = 0.18
+# Centres of the three bronze sockets under the wax, as fractions of the seal texture.
+const JUDGMENT_SEAL_SOCKET_ANCHORS: Array[Vector2] = [Vector2(0.081, 0.73), Vector2(0.148, 0.73), Vector2(0.214, 0.73)]
+const JUDGMENT_SEAL_PIP_RADIUS: float = 6.0
+const JUDGMENT_SEAL_PIP_WAX: Color = Color(0.66, 0.17, 0.12, 1.0)
+const JUDGMENT_SEAL_PIP_WAX_ON_BEAT: Color = Color(0.82, 0.24, 0.14, 1.0)
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres"
@@ -346,7 +351,7 @@ var resolve_ritual_title: Label = null
 var resolve_ritual_subtitle: Label = null
 var resolve_ritual_prompt: Label = null
 var resolve_ritual_strike_button: Button = null
-var resolve_ritual_strike_marks: Array[Label] = []
+var resolve_ritual_seal_pips: Array[Panel] = []
 var pact_sealed_advance_button: Button = null
 var resolve_ritual_advance_button: Button = null
 var _pact_tablet_locked: bool = false
@@ -634,11 +639,7 @@ func _bind_scene_nodes() -> void:
 	resolve_ritual_subtitle = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_BODYPanel/Lbl_RESOLUTION_BODY") as Label
 	resolve_ritual_prompt = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Lbl_RESOLUTION_RITUAL_PROMPTPanel/Lbl_RESOLUTION_RITUAL_PROMPT") as Label
 	resolve_ritual_strike_button = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_STRIKE") as Button
-	resolve_ritual_strike_marks = [
-		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark1") as Label,
-		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark2") as Label,
-		get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow/ResolutionStrikeMark3") as Label,
-	]
+	resolve_ritual_seal_pips = _build_judgment_seal_pips(resolve_ritual_strike_button)
 	resolve_ritual_advance_button = get_node_or_null("UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/Btn_RESOLUTION_NEXT") as Button
 
 	# Mid choice
@@ -2147,11 +2148,9 @@ func _reset_resolution_ritual_interaction() -> void:
 	if resolve_ritual_advance_button != null:
 		resolve_ritual_advance_button.visible = false
 		resolve_ritual_advance_button.disabled = true
-	for mark: Label in resolve_ritual_strike_marks:
-		if mark == null:
-			continue
-		mark.modulate = Color(0.34, 0.33, 0.31, 1.0)
-		mark.scale = Vector2.ONE
+	for pip: Panel in resolve_ritual_seal_pips:
+		pip.visible = false
+		pip.scale = Vector2.ONE
 	_start_resolution_ritual_pulse()
 
 func _stop_resolution_ritual_interaction() -> void:
@@ -2187,11 +2186,16 @@ func _is_resolution_ritual_on_beat() -> bool:
 
 func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 	var mark_index: int = _resolve_ritual_strike_count - 1
-	if mark_index >= 0 and mark_index < resolve_ritual_strike_marks.size():
-		var mark: Label = resolve_ritual_strike_marks[mark_index]
-		if mark != null:
-			mark.modulate = Color(0.98, 0.82, 0.46, 1.0) if on_beat else Color(0.76, 0.68, 0.5, 1.0)
-			mark.scale = Vector2.ONE if _is_reduced_motion() else (Vector2(1.18, 1.18) if on_beat else Vector2(1.08, 1.08))
+	if mark_index >= 0 and mark_index < resolve_ritual_seal_pips.size():
+		var pip: Panel = resolve_ritual_seal_pips[mark_index]
+		_fill_judgment_seal_pip(pip, on_beat)
+		if pip != null and not _is_reduced_motion():
+			# The drop settles into its socket; the seal itself never moves.
+			pip.scale = Vector2(1.6, 1.6)
+			var drop := create_tween()
+			drop.set_trans(Tween.TRANS_BACK)
+			drop.set_ease(Tween.EASE_OUT)
+			drop.tween_property(pip, "scale", Vector2.ONE, 0.18)
 	if resolve_ritual_prompt != null:
 		var prompts: Array[String] = [
 			tr("PRIMO COLPO - CERA IMPRESSA"),
@@ -2202,6 +2206,44 @@ func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.text = tr("COLPISCI ANCORA") if _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED else tr("SIGILLATO")
 		_set_judgment_seal_state(_resolve_ritual_strike_count)
+
+func _build_judgment_seal_pips(seal: Button) -> Array[Panel]:
+	# Wax drops pressed into the seal's bronze sockets: one per strike, so the
+	# count lives on the object instead of a separate row of marks.
+	var pips: Array[Panel] = []
+	if seal == null:
+		return pips
+	for anchor_point: Vector2 in JUDGMENT_SEAL_SOCKET_ANCHORS:
+		var pip := Panel.new()
+		pip.name = "SealPip%d" % (pips.size() + 1)
+		pip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pip.focus_mode = Control.FOCUS_NONE
+		pip.anchor_left = anchor_point.x
+		pip.anchor_right = anchor_point.x
+		pip.anchor_top = anchor_point.y
+		pip.anchor_bottom = anchor_point.y
+		pip.offset_left = -JUDGMENT_SEAL_PIP_RADIUS
+		pip.offset_right = JUDGMENT_SEAL_PIP_RADIUS
+		pip.offset_top = -JUDGMENT_SEAL_PIP_RADIUS
+		pip.offset_bottom = JUDGMENT_SEAL_PIP_RADIUS
+		pip.pivot_offset = Vector2(JUDGMENT_SEAL_PIP_RADIUS, JUDGMENT_SEAL_PIP_RADIUS)
+		pip.visible = false
+		seal.add_child(pip)
+		pips.append(pip)
+	return pips
+
+func _fill_judgment_seal_pip(pip: Panel, on_beat: bool) -> void:
+	if pip == null:
+		return
+	var wax := StyleBoxFlat.new()
+	wax.bg_color = JUDGMENT_SEAL_PIP_WAX_ON_BEAT if on_beat else JUDGMENT_SEAL_PIP_WAX
+	wax.border_color = Color(0.32, 0.08, 0.06, 1.0)
+	wax.set_border_width_all(1)
+	wax.set_corner_radius_all(int(JUDGMENT_SEAL_PIP_RADIUS))
+	wax.anti_aliasing = true
+	pip.add_theme_stylebox_override("panel", wax)
+	pip.scale = Vector2.ONE
+	pip.visible = true
 
 func _complete_resolution_ritual_interaction() -> void:
 	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():

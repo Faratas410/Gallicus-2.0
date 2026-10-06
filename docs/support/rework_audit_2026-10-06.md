@@ -122,6 +122,6 @@ della campagna, bilanciamento di soglie e probabilita', anti-farming percepito.
 | Posta visibile | fatto | rail: umore, Gloria e arena; motivi di blocco tradotti |
 | Tavola del Registro | fatto | `scripts/ui/betting_circle_ui.gd` |
 | Fascicolo | fatto | Gloria, segni, pressione, patti per titolo, nuove voci d'Archivio; area fuori dal dorso |
-| Ritmo | parziale | rito con una sola riga di posta; riconoscimento del patto invariato |
+| Ritmo | parziale | rito con una sola riga di posta; a ogni colpo una goccia di cera riempie un alloggio del sigillo e la riga I/II/III, che usciva dal pannello, e' rimossa. `MOSTRA IL PATTO` resta un input per arena: saltarlo tocca il flusso di fase e va deciso dopo il playtest umano |
 | Precedente | fatto | riga di stato del terminale nei tre Silenzi |
 

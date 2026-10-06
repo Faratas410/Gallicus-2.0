@@ -453,6 +453,10 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - States are normal, focus, pressed, strike_1, strike_2, resolved and disabled.
   They share identical margins and geometry; no strike may scale or move the
   target.
+- Each activation fills one of the three bronze sockets under the wax with a
+  Godot-drawn wax drop (`SealPip1..3`, children of `Btn_RESOLUTION_STRIKE`,
+  mouse-transparent). The count lives on the seal; there is no separate row
+  of marks. Reduced motion shows the drop without the settle tween.
 - The first two activations expose strike_1 and strike_2 and play
   `registry_judgment_seal_strike`. The third activation exposes resolved,
   applies the local lock, plays `registry_judgment_seal_resolve` and emits the

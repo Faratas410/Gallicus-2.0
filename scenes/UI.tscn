@@ -819,35 +819,6 @@ custom_minimum_size = Vector2(360, 144)
 size_flags_horizontal = 4
 text = "COLPISCI"
 
-[node name="ResolutionStrikeRow" type="HBoxContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
-custom_minimum_size = Vector2(0, 28)
-size_flags_horizontal = 4
-theme_override_constants/separation = 14
-
-[node name="ResolutionStrikeMark1" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow"]
-custom_minimum_size = Vector2(42, 24)
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_colors/font_color = Color(0.34, 0.33, 0.31, 1)
-theme_override_font_sizes/font_size = 20
-text = "I"
-
-[node name="ResolutionStrikeMark2" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow"]
-custom_minimum_size = Vector2(42, 24)
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_colors/font_color = Color(0.34, 0.33, 0.31, 1)
-theme_override_font_sizes/font_size = 20
-text = "II"
-
-[node name="ResolutionStrikeMark3" type="Label" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION/ResolutionStrikeRow"]
-custom_minimum_size = Vector2(42, 24)
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_colors/font_color = Color(0.34, 0.33, 0.31, 1)
-theme_override_font_sizes/font_size = 20
-text = "III"
-
 [node name="Btn_RESOLUTION_NEXT" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
 theme_override_styles/normal = ExtResource("12")
 theme_override_styles/hover = ExtResource("13")

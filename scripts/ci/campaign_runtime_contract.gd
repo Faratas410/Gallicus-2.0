@@ -69,6 +69,7 @@ func _run() -> void:
 		closed = false
 		finale_id = ""
 		var era_before: int = save.get_registry_era()
+		var samples_before: int = int(save.get_registry_evolution().samples)
 		OS.set_environment("GALLICUS_SMOKE", "1")
 		OS.set_environment("GALLICUS_SMOKE_SEED", str(1782373819 + index * 7919))
 		if not _press("NewGameButton"):
@@ -130,15 +131,21 @@ func _run() -> void:
 				continue
 			if _press("Btn_FIRST_REACTION_NEXT") or _press("Btn_MID_CHOICE_SELECT_0") or _press("Btn_RESOLUTION_STRIKE"):
 				continue
-			if not _press("Btn_PUSH_YOUR_LUCK_CONDANNA"):
-				if not _press("Btn_PUSH_YOUR_LUCK_CASHOUT"):
-					_press("Btn_PUSH_YOUR_LUCK_DOUBLE")
+			# Real percorsi: rilancia until the third arena, then take the
+			# quietanza; the marchio is pressed only when the quietanza is blocked.
+			var live: RunState = manager.get("_run_state")
+			if live.arena_index < 3 and _press("Btn_PUSH_YOUR_LUCK_DOUBLE"):
+				continue
+			if not _press("Btn_PUSH_YOUR_LUCK_CASHOUT"):
+				if not _press("Btn_PUSH_YOUR_LUCK_DOUBLE"):
+					_press("Btn_PUSH_YOUR_LUCK_CONDANNA")
 		if failed: break
 		if not closed:
 			_fail("journey stalled at " + str(manager.get("_phase")))
 			break
 		var state: Dictionary = save.get_registry_evolution()
-		if reason not in ["REGISTRY_SILENCE", "REGISTRY_ABSENCE"] and finale_id != str(state.last_class):
+		var counted: bool = int(state.samples) != samples_before
+		if counted and reason not in ["REGISTRY_SILENCE", "REGISTRY_ABSENCE"] and finale_id != str(state.last_class):
 			_fail("campaign classified a different ending from the dossier")
 		rows.append({"run":index + 1, "reason":reason, "era":save.get_registry_era(), "evolution":state})
 		print("CAMPAIGN_RUN ", JSON.stringify(rows.back()))

@@ -5,12 +5,6 @@ const SCAR_OPEN_WOUND_ID: StringName = &"OPEN_WOUND"
 const SCAR_CRACKED_BONES_ID: StringName = &"CRACKED_BONES"
 const SCAR_BLOOD_TAG: StringName = &"BLOOD"
 
-func apply_success(run_state: RunState, context: Dictionary) -> void:
-	var glory_per_success: int = int(context.get("glory_per_success", 0))
-	var glory_multiplier: int = int(context.get("glory_multiplier", 1))
-	var increment: int = glory_per_success * glory_multiplier
-	run_state.glory = maxi(run_state.glory + increment, 0)
-
 func apply_failure(run_state: RunState, context: Dictionary) -> void:
 	var corruption_delta: int = int(context.get("corruption_delta", 0))
 	if corruption_delta <= 0:

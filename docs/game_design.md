@@ -12,11 +12,14 @@ accettare per rimandare o forzare una definizione.
 1. Oltrepassare la soglia dell'arena.
 2. Aprire il Registro e leggere due offerte.
 3. Indicare e firmare una promessa.
-4. Riconoscere il patto sigillato.
+4. Riconoscere il patto sigillato (solo nel primo percorso, poi passa da solo).
 5. Compiere un gesto davanti alla gradinata.
-6. Colpire il sigillo e ottenere un responso.
-7. Prendere una quietanza, accettare un marchio o incidere un rilancio.
+6. Colpire il sigillo e ottenere un responso: la posta cresce se regge, cala se cede.
+7. Incassare la posta o rilanciare; il marchio resta quando la quietanza e' bloccata.
 8. Chiudere, aggiornare o proseguire il fascicolo.
+
+Regole della posta e dei patti: `docs/canon/MECHANICS_UNIFIED.md`, sezione
+"Loop rivisto (ottobre 2026)".
 
 ## Loop di campagna
 

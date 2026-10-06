@@ -499,8 +499,11 @@ Controlla quattro checkpoint, risorse al resume, identita' campione/fascicolo,
 quattro Silenzi e avvio terminale in un secondo processo. Il playbook e il job
 runtime Linux eseguono lo stesso contratto; il budget dei tre job resta invariato.
 `--visual` aggiunge catture della viewport sul renderer reale. Il tempo e'
-accelerato: non e' una misura di durata umana. La policy usa chiusure col marchio;
-le altre route restano nel bundle di otto smoke.
+accelerato: non e' una misura di durata umana. Dal loop rivisto (ottobre 2026)
+la policy gioca percorsi veri: rilancia fino alla terza arena, poi prende la
+quietanza; il marchio solo se la quietanza e' bloccata. Il controllo campione /
+fascicolo vale per i percorsi che contano come evidenza. Lo smoke da tastiera
+chiude con la quietanza. Le altre route restano nel bundle di otto smoke.
 La campagna deve produrre anche eventi di cicatrice reali. Il contratto
 semantico verifica che ogni costo dichiarato abbia un ID nel catalogo, che
 RunManager lo inserisca e che ciascun tipo influenzi il rischio avverso.

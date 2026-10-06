@@ -482,3 +482,35 @@ is staged in the existing arena before terminal black and heartbeat; reboot
 does not replay it. Only credits and exit remain available. Technical evidence
 is in `docs/support/campaign_completion_2026-09-12.md`; human duration, perceived
 non-farmability and the candidate-specific Linux checkpoint remain open.
+
+## Evidenza e chiusura delle Ere (ottobre 2026)
+
+Decisione di Marco del 6 ottobre 2026, dopo la revisione del loop
+(`docs/support/game_loop_review_2026-10-06.md`): la simulazione nel motore
+mostrava che la firma si fissava solo con percorsi di un'arena, quindi
+l'Assenza si raggiungeva soltanto chiudendo col marchio all'arena 1 per circa
+170 percorsi, e mai giocando fino alla quietanza. Questa sezione sostituisce le
+formule di campione dell'addendum di settembre.
+
+- **Evidenza:** un percorso conta per la firma solo se ha prodotto almeno due
+  responsi del sigillo (`REGISTRY_EVIDENCE_MIN_ARENAS = 2`). Chiudere subito, col
+  marchio o con la quietanza, non avvicina il Silenzio.
+- **Decisioni lette:** a ogni firma il patto scelto e' confrontato con la pagina
+  lasciata: famiglia piu' rischiosa = esposizione, meno rischiosa = misura,
+  stessa famiglia = nessuna lettura (ordine Prudenza, Penitenza, Violenza,
+  Hybris). Il gesto conta come esposizione (sfida) o misura (sguardo basso).
+- **Campione:** risk = (esposizioni - misure) / decisioni; repetition = decisione
+  prevalente / decisioni; volatility = 1 - repetition; scar tolerance invariata.
+  Pesi di coerenza, soglie di fissazione, isteresi e saturazione restano quelli
+  dell'addendum di settembre. Le famiglie dei percorsi e le impronte restano
+  derivate dalla storia dei patti.
+- **Chiusura per esaurimento:** se la firma non si stabilizza, l'Era si chiude
+  comunque dopo 12/11/10/9 percorsi di evidenza nelle Ere 0/1/2/3
+  (`ERA_EVIDENCE_CEILING = 12`). La ripetizione stessa e' una definizione: anche
+  un soggetto indeciso viene infine scritto. Una firma coerente chiude prima
+  (minimo 8/7/6/5 come ora).
+
+Il Silenzio resta senza contatori visibili e senza ricompense (§16): non si
+puo' anticipare abbandonando i percorsi, e la sua distanza dipende da quanto e
+come si gioca. Campagna attesa: 26-42 percorsi di evidenza. Durata reale e
+percezione di non-farmabilita' restano da validare con sessioni umane.

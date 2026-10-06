@@ -646,3 +646,20 @@ environment, black and heartbeat; the dialogue belongs to the final stretch
 before that boundary, not to terminal state.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+## Loop rivisto - 2026-10-06
+
+Fasi, segnali e checkpoint non cambiano. RunManager resta l'unica autorita':
+
+- `RunState` salva `stake_glory`, `risky_decisions` e `safe_decisions`; i save
+  precedenti li leggono a zero.
+- `level3_target_arenas` vale `PERCORSO_MAX_ARENAS` (7) e la quietanza non ha
+  piu' una soglia minima d'arena. Le run salvate prima mantengono il loro valore.
+- Dopo il primo percorso concluso con almeno un responso, RunManager scrive
+  `settings.rite_learned` nel profilo e da allora apre la tavoletta del patto con
+  l'avanzamento gia' richiesto: `pact_sealed_closed` arriva dopo
+  `PACT_SEALED_SECONDS` senza input. La UI nasconde `Btn_FIRST_REACTION_NEXT` e un
+  solo `Btn_RESOLUTION_STRIKE` vale tre colpi; `request_ritual_advance` resta il
+  solo canale verso RunManager.
+- Regole di posta e firma: `docs/canon/MECHANICS_UNIFIED.md` ("Loop rivisto") e
+  `docs/canon/REGISTRY_SYSTEM_SPEC.md` ("Evidenza e chiusura delle Ere").

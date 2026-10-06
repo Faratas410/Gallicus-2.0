@@ -261,7 +261,8 @@ func _verify_music_route(scene: Node) -> void:
 	OS.unset_environment("GALLICUS_SMOKE")
 	OS.unset_environment("GALLICUS_SMOKE_SCENARIO")
 	_expect_score(scene, "climax", "push your luck")
-	await _press_route(scene, "Btn_PUSH_YOUR_LUCK_CONDANNA")
+	# The quietanza is open after every response; the marchio appears only when it is blocked.
+	await _press_route(scene, "Btn_PUSH_YOUR_LUCK_CASHOUT")
 	await create_timer(0.3).timeout
 	_expect_score(scene, "ending", "dossier")
 	root.get_node("GameEvents").request_show_main_menu.emit()

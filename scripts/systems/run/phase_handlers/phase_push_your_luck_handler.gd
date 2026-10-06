@@ -5,7 +5,7 @@ func build_choice_copy(_run_state: RunState, inputs: Dictionary = {}) -> Diction
 	var bet_name: String = str(inputs.get("bet_name", ""))
 	return {
 		"title": "SPINGI LA SORTE - %s" % bet_name,
-		"body": "Il Registro resta aperto: incassa, ricevi il marchio o rilancia.",
+		"body": "Il Registro resta aperto: incassa la posta o rilancia.",
 		"choices": ["cashout", "condanna", "double"],
 	}
 

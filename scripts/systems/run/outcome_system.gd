@@ -32,9 +32,10 @@ func resolve_level3_arena(
 	escalation_level: int,
 	active_scar_ids: Array[StringName],
 	risk_profile: StringName,
-	risk_profiles: Array[Dictionary]
+	risk_profiles: Array[Dictionary],
+	pact_win_mod: float = 0.0
 ) -> Dictionary:
-	var base_win: float = 0.66
+	var base_win: float = 0.66 + pact_win_mod
 	var base_failure: float = 0.4
 	var pressure_mod: float = 0.0
 	var escalation_penalty: float = get_escalation_win_penalty(escalation_level)
@@ -198,32 +199,6 @@ func build_level3_loss_consequence(
 		"reset_reward_tier": true,
 		"reset_escalation": true,
 	}
-
-func compute_level3_reward_glory(
-	behavior_id: StringName,
-	reward_tier: int,
-	cashout_modifier: float
-) -> int:
-	var tier: int = maxi(reward_tier, 1)
-	match behavior_id:
-		BET_CASH_OUT:
-			var reward: int = tier
-			if cashout_modifier < 1.0:
-				reward = int(floor(float(reward) * cashout_modifier))
-				reward = maxi(reward, 0)
-			return reward
-		BET_DOUBLE_OR_DIE:
-			return 2 * tier
-		BET_DEBT_CHAIN:
-			return tier
-		BET_BLOOD_TAX:
-			return 2 * tier
-		BET_CROW_PLEASER:
-			return tier
-		BET_LAST_BREATH:
-			return 2 * tier
-		_:
-			return 0
 
 func get_escalation_win_penalty(escalation_level: int) -> float:
 	var penalty: float = 0.0

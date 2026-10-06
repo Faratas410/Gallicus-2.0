@@ -85,6 +85,11 @@ var run_start_time_msec: int = 0
 var run_save_flow_step: StringName = &""
 var run_save_flow_bet_id: StringName = &""
 var glory: int = 0
+# Gloria in posta: grows with each held seal, banked only by the quietanza.
+var stake_glory: int = 0
+# Pact and gesture decisions read as exposure or restraint for the campaign signature.
+var risky_decisions: int = 0
+var safe_decisions: int = 0
 var corruption: int = 0
 var scar_double_count: int = 0
 var scar_pact_count: int = 0
@@ -182,6 +187,9 @@ func reset() -> void:
 	run_save_flow_step = &""
 	run_save_flow_bet_id = &""
 	glory = 0
+	stake_glory = 0
+	risky_decisions = 0
+	safe_decisions = 0
 	corruption = 0
 	scar_double_count = 0
 	scar_pact_count = 0
@@ -275,6 +283,9 @@ func to_dict() -> Dictionary:
 		"run_save_flow_step": String(run_save_flow_step),
 		"run_save_flow_bet_id": String(run_save_flow_bet_id),
 		"glory": glory,
+		"stake_glory": stake_glory,
+		"risky_decisions": risky_decisions,
+		"safe_decisions": safe_decisions,
 		"corruption": corruption,
 		"scar_double_count": scar_double_count,
 		"scar_pact_count": scar_pact_count,
@@ -369,6 +380,9 @@ func from_dict(d: Dictionary) -> void:
 	run_save_flow_step = StringName(str(d.get("run_save_flow_step", "")))
 	run_save_flow_bet_id = StringName(str(d.get("run_save_flow_bet_id", "")))
 	glory = int(d.get("glory", 0))
+	stake_glory = maxi(int(d.get("stake_glory", 0)), 0)
+	risky_decisions = maxi(int(d.get("risky_decisions", 0)), 0)
+	safe_decisions = maxi(int(d.get("safe_decisions", 0)), 0)
 	corruption = int(d.get("corruption", 0))
 	scar_double_count = int(d.get("scar_double_count", 0))
 	scar_pact_count = int(d.get("scar_pact_count", 0))

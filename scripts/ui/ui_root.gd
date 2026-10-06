@@ -1712,8 +1712,12 @@ func _format_run_status_line(pressure_level: int) -> String:
 	if _run_manager_port != null and _run_manager_port.has_manager():
 		var arena_index: int = _run_manager_port.get_arena_index()
 		if arena_index > 0:
-			parts.append(tr("Gloria %d") % _run_manager_port.get_run_glory())
-			parts.append(tr("Arena %d") % arena_index)
+			parts.append(tr("In posta %d Gloria") % _run_manager_port.get_run_stake())
+			var arena_limit: int = _run_manager_port.get_arena_limit()
+			if arena_limit > 0:
+				parts.append(tr("Arena %d di %d") % [arena_index, arena_limit])
+			else:
+				parts.append(tr("Arena %d") % arena_index)
 	return "  ·  ".join(parts)
 
 func _get_pressure_max(max_value: int) -> int:
@@ -2020,6 +2024,8 @@ func _on_pact_sealed_opened() -> void:
 		_force_label_readable(pact_sealed_subtitle)
 	if pact_sealed_advance_button != null:
 		pact_sealed_advance_button.text = tr("MOSTRA IL PATTO")
+		# After the first percorso the Registry passes the tablet by itself.
+		pact_sealed_advance_button.visible = not (_run_manager_port != null and _run_manager_port.has_manager() and _run_manager_port.is_rite_learned())
 	_set_pact_sealed_modal(true)
 	_refresh_modal_dimmer()
 
@@ -2128,19 +2134,29 @@ func _on_resolve_ritual_strike_pressed() -> void:
 	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
 		return
 	var on_beat: bool = _is_resolution_ritual_on_beat()
-	_resolve_ritual_strike_count += 1
-	_apply_resolution_ritual_strike_feedback(on_beat)
+	# Once the rite is learned a single strike presses all three drops.
+	for _drop: int in range(_resolution_strikes_per_press()):
+		_resolve_ritual_strike_count += 1
+		_apply_resolution_ritual_strike_feedback(on_beat)
 	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
 		_complete_resolution_ritual_interaction()
 	else:
 		_play_sfx(&"registry_judgment_seal_strike")
+
+func _resolution_strikes_per_press() -> int:
+	if _run_manager_port != null and _run_manager_port.has_manager() and _run_manager_port.is_rite_learned():
+		return RESOLUTION_RITUAL_STRIKES_REQUIRED
+	return 1
 
 func _reset_resolution_ritual_interaction() -> void:
 	_resolve_ritual_strike_count = 0
 	_resolve_ritual_started_msec = Time.get_ticks_msec()
 	_reset_judgment_seal_state()
 	if resolve_ritual_prompt != null:
-		resolve_ritual_prompt.text = tr("IMPRIMI IL SIGILLO: TRE COLPI")
+		if _resolution_strikes_per_press() >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
+			resolve_ritual_prompt.text = tr("IMPRIMI IL SIGILLO: UN COLPO")
+		else:
+			resolve_ritual_prompt.text = tr("IMPRIMI IL SIGILLO: TRE COLPI")
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.visible = true
 		resolve_ritual_strike_button.disabled = false
@@ -2419,13 +2435,13 @@ func _refresh_gesture_choice_copy() -> void:
 	if intermediate_choice_placa_button != null:
 		intermediate_choice_placa_button.text = "%s\n%s\n%s" % [
 			tr("ABBASSA LO SGUARDO"),
-			tr("Pressione -1."),
+			tr("Pressione -1. Se il patto regge, posta -1."),
 			tr("Il Registro annota misura."),
 		]
 	if intermediate_choice_provoca_button != null:
 		intermediate_choice_provoca_button.text = "%s\n%s\n%s" % [
 			tr("SFIDA LA GRADINATA"),
-			tr("Pressione +1."),
+			tr("Pressione +1. Se il patto regge, posta +2."),
 			tr("Il Registro annota esposizione."),
 		]
 
@@ -2716,11 +2732,10 @@ func _compact_push_luck_detail_line(line: String) -> String:
 
 func _format_push_luck_receipt_text(meta: Dictionary) -> String:
 	var stake_glory: int = maxi(int(meta.get("stake_glory", 0)), 0)
-	var current_glory: int = maxi(int(meta.get("current_glory", _glory)), 0)
 	var current_corruption: int = maxi(int(meta.get("current_corruption", 0)), 0)
+	# Gloria is banked only by the quietanza, so the live posta is the run's value.
 	var lines: Array[String] = [
 		tr("POSTA VIVA: +%d Gloria") % stake_glory,
-		tr("GLORIA: %d") % current_glory,
 		tr("CORRUZIONE: %d") % current_corruption,
 		_format_pressure_label(_escalation_level, _escalation_max),
 	]
@@ -2735,7 +2750,7 @@ func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: in
 	return " | ".join(parts)
 
 func _format_double_note(double_next_stake_glory: int, double_pressure_delta: int) -> String:
-	return tr("Prossima posta: +%d Gloria. Pressione +%d.") % [
+	return tr("La posta di %d Gloria resta in gioco. Pressione +%d.") % [
 		maxi(double_next_stake_glory, 0),
 		maxi(double_pressure_delta, 1),
 	]
@@ -2818,9 +2833,12 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 		else:
 			push_luck_cashout_note.text = _format_cashout_note(cashout_glory_delta, cashout_corruption_delta)
 			push_luck_cashout_note.visible = true
+	# The marchio is the way out only when the crowd or a pact blocks the quietanza.
+	if push_luck_condanna_button != null:
+		push_luck_condanna_button.visible = cashout_locked
 	if push_luck_condanna_note != null:
 		push_luck_condanna_note.text = _format_condanna_note(stake_glory)
-		push_luck_condanna_note.visible = true
+		push_luck_condanna_note.visible = cashout_locked
 	if push_luck_double_button != null:
 		push_luck_double_button.disabled = double_locked
 		if double_locked and double_reason != "":

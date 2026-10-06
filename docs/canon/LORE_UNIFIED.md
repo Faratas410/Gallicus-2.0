@@ -47,6 +47,17 @@ o biografie sbloccate. Il catalogo implementativo e' in
 `docs/support/arena_cast_2026-09-12.md`.
 
 
+## Precedente e Silenzi - 6 ottobre 2026
+
+Il nome del gioco entra in scena nella forma prevista dalla sezione Felix
+Gallicus: al primo Silenzio, che e' la prima imperfezione visibile del
+Registro, il terminale mostra soltanto "CASO ANALOGO RILEVATO. PRECEDENTE:
+FELIX GALLICUS." Il secondo Silenzio ripete il precedente con "FASCICOLO
+ANCORA APERTO."; il terzo comprime in "NESSUNA ULTERIORE DECISIONE
+RILEVANTE." Nessuna spiegazione, biografia o istruzione; nessuna riga
+nell'Assenza. Il posto vuoto che Dima tiene sulla gradinata resta allusione,
+mai dichiarazione. Direzione complessiva in `docs/direction.md`.
+
 ## Index
 
 - [SOURCE: the_register](#source-docstheregistermd)

@@ -418,7 +418,7 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   added.
 
 ## Post-bet ritual subtitle contract (Patch L3: remove post-bet text layer)
-- `Phase_FIRST_REACTION` (`IL PATTO E' SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
+- `Phase_FIRST_REACTION` (`IL PATTO È SIGILLATO.`) uses a fixed title and an empty subtitle payload; no per-bet subtitle selection layer is active in UI runtime.
 - Resolve ritual overlay container `Phase_RESOLUTION` (`RITO DI GIUDIZIO`) keeps the existing condanna subtitle behavior unchanged.
 - Scope guard: this contract removes only legacy post-bet copy selection (`POST_BET_TEXTS`) and does not alter phase/event sequencing authority.
 
@@ -472,7 +472,7 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   and closed; original paper and closed Registry textures replace alpha silhouettes. `meta.register_final=false` maps to updated;
   `meta.register_final=true` maps to closed. The UI does not infer either
   state from outcome copy.
-- `EndRunRouteTabs` contains fixed `304x64` text-free tabs for
+- `EndRunRouteTabs` contains fixed `280x64` text-free tabs (row `864x64`) for
   `NUOVO PERCORSO`, `PROSSIMA SCOMMESSA` and `TORNA AL MENU`. Normal, focus,
   pressed, selected and disabled share identical geometry and never scale.
 - `meta.next_bet_enabled` remains the sole owner of next-bet visibility and

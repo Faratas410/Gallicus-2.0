@@ -239,7 +239,7 @@ italiano in EN/ES.
 Dal pacchetto OF-10 aggiunge 36 catture `08_dossier_*`: IT/EN/ES, entrambe
 le risoluzioni, open, updated, closed, focus, selected e disabled. Il
 Il profilo `full` OF-11 richiede 271 catture complessive, inclusa
-`08_end_run.png`; si controllano rapporto 7:4, linguette fisse 304x64,
+`08_end_run.png`; si controllano rapporto 7:4, linguette fisse 280x64,
 wrapping, contrasto e assenza di fallback italiano nel copy dinamico.
 CP-02 aggiunge 18 catture `09_settings_*`: IT/EN/ES, 1280x720 e 1920x1080,
 stato standard, focus SFX e Reduced Motion attivo. Il lean CP-02 produce solo

@@ -584,7 +584,9 @@ is a pure RefCounted helper, never a manager or event/persistence owner.
 SaveManager writes profile v5. Ending identity selection is separate from
 report construction; signature evaluation does not mutate resources or odds.
 REGISTRY_SILENCE/REGISTRY_ABSENCE reuse GameEvents.run_ended with
-`{classified_terminal: false, terminal: bool}`. These closures emit no
+`{classified_terminal: false, terminal: bool, registry_status: String}`.
+`registry_status` is a localization key chosen by RunManager for the
+Silence surface (empty for Absence); it never names or numbers an Era. These closures emit no
 run_failed, run_finale_selected, closing annotation or closing unlock.
 The reactive terminal view cannot advance eras. Era 4 rejects new/continued
 runs, survives restart and does not instantiate RegisterState. No UI reset,

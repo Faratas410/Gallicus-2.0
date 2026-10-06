@@ -1520,9 +1520,9 @@ theme_override_styles/panel = ExtResource("71_final_dossier_open")
 [node name="Box_END_RUN" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 88.0
+offset_left = 150.0
 offset_top = 82.0
-offset_right = -88.0
+offset_right = -94.0
 offset_bottom = -54.0
 theme_override_constants/separation = 7
 
@@ -1709,13 +1709,13 @@ autowrap_mode = 2
 text = ""
 
 [node name="EndRunRouteTabs" type="HBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]
-custom_minimum_size = Vector2(940, 64)
+custom_minimum_size = Vector2(864, 64)
 size_flags_horizontal = 4
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Btn_END_RUN_RESTART" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs"]
-custom_minimum_size = Vector2(304, 64)
+custom_minimum_size = Vector2(280, 64)
 theme_override_colors/font_color = Color(0.22, 0.16, 0.11, 1)
 theme_override_colors/font_hover_color = Color(0.12, 0.08, 0.04, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.92, 0.7, 1)
@@ -1730,7 +1730,7 @@ text = "NUOVO PERCORSO"
 
 [node name="Btn_END_RUN_NEXT_BET" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs"]
 visible = false
-custom_minimum_size = Vector2(304, 64)
+custom_minimum_size = Vector2(280, 64)
 theme_override_colors/font_color = Color(0.22, 0.16, 0.11, 1)
 theme_override_colors/font_hover_color = Color(0.12, 0.08, 0.04, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.92, 0.7, 1)
@@ -1744,7 +1744,7 @@ theme_override_styles/disabled = ExtResource("78_final_dossier_tab_disabled")
 text = "PROSSIMA SCOMMESSA"
 
 [node name="Btn_END_RUN_QUIT" type="Button" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/EndRunRouteTabs"]
-custom_minimum_size = Vector2(304, 64)
+custom_minimum_size = Vector2(280, 64)
 theme_override_colors/font_color = Color(0.22, 0.16, 0.11, 1)
 theme_override_colors/font_hover_color = Color(0.12, 0.08, 0.04, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.92, 0.7, 1)
@@ -1904,7 +1904,7 @@ text = "SEGNI"
 size_flags_horizontal = 3
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
-vertical_scroll_mode = 2
+vertical_scroll_mode = 1
 
 [node name="ScarsEntries" type="VBoxContainer" parent="HUD/ScarsPanel/ScarsVBox/ScarsScroll"]
 anchor_right = 1.0

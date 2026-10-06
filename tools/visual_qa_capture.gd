@@ -1031,7 +1031,7 @@ func _capture_second_incision_matrix() -> void:
 
 			ui_root.call("_set_second_incision_sealed_state", false)
 			button.disabled = false
-			note.text = tr("Prossima posta +%d Gloria | Pressione +%d") % [2, 1]
+			note.text = tr("Prossima posta: +%d Gloria. Pressione +%d.") % [2, 1]
 			note.visible = true
 			button.release_focus()
 			ui_root.call("_apply_push_luck_button_visual", button)
@@ -1051,7 +1051,7 @@ func _capture_second_incision_matrix() -> void:
 
 			ui_root.call("_set_second_incision_sealed_state", true)
 			button.disabled = true
-			note.text = tr("Prossima posta +%d Gloria | Pressione +%d") % [2, 1]
+			note.text = tr("Prossima posta: +%d Gloria. Pressione +%d.") % [2, 1]
 			note.visible = true
 			ui_root.call("_apply_push_luck_button_visual", button)
 			await _capture("%s_sealed" % prefix, viewport_size)

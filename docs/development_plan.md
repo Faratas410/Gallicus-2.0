@@ -10,6 +10,14 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+Rework di prodotto del 6 ottobre 2026, richiesto dall'utente: direzione unica
+in `docs/direction.md`, audit e piano in
+`docs/support/rework_audit_2026-10-06.md`. Primo pacchetto implementato:
+lessico IT/EN/ES, Gloria e arena nel rail, tavola del Registro a tre livelli,
+fascicolo con posta e patti per titolo, citazione del precedente Felix
+Gallicus nei Silenzi. Nessuna regola, soglia o probabilita' cambiata; il
+ritmo della campagna e la durata restano gate umani.
+
 Consegna corrente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
 come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.
 

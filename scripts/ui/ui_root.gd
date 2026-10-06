@@ -89,7 +89,7 @@ const FINAL_DOSSIER_WATCHDOG_SECONDS: float = 1.5
 const CondannaDataScript = preload("res://data/condanne.gd")
 const VerdictLinesScript = preload("res://data/verdict_lines.gd")
 const RunUiPayloadScript = preload("res://scripts/ui/run_ui_payload.gd")
-const SCARS_PANEL_BASE_HEIGHT: float = 72.0
+const SCARS_PANEL_BASE_HEIGHT: float = 92.0
 const SCARS_PANEL_ROW_HEIGHT: float = 24.0
 const SCARS_PANEL_MIN_HEIGHT: float = 102.0
 const SCARS_PANEL_MAX_HEIGHT: float = 168.0
@@ -185,6 +185,7 @@ var _button_style_primary_pressed: StyleBox = null
 var _button_style_primary_disabled: StyleBox = null
 
 var _glory: int = 0
+var _last_finale_glory: int = 0
 var _escalation_level: int = 0
 var _escalation_max: int = 0
 var _selected_bet_id: StringName = &""
@@ -749,6 +750,7 @@ func show_phase(phase: int) -> void:
 	_apply_visual_tier(_active_visual_tier)
 	_set_silence_overlay_active(_silence_overlay_active)
 	_refresh_modal_dimmer()
+	_update_escalation_bar()
 
 func _validate_ui_boot() -> bool:
 	var errors: Array[String] = []
@@ -1194,6 +1196,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	else:
 		_last_finale_stats = {}
 	var finale_meta: Dictionary = payload.get("meta", {}) as Dictionary
+	_last_finale_glory = int(payload.get("glory", 0))
 	_last_register_message_key = str(finale_meta.get("register_message", ""))
 	_last_register_message = tr(_last_register_message_key)
 	_last_register_final = bool(finale_meta.get("register_final", false))
@@ -1319,9 +1322,13 @@ func _format_verdict_list(values: Array[String]) -> String:
 	return "\n".join(lines)
 
 func _format_verdict_pacts_list(values: Array[String]) -> String:
+	# The player reads the promises they signed, not a count of conditions.
 	if values.is_empty():
-		return fmt_register_line(tr("rinunciato"), tr("continuato"))
-	return fmt_register_line(tr("accettato"), tr("%d condizioni registrate") % values.size())
+		return tr("Nessun patto firmato.")
+	var titles: Array[String] = []
+	for value: String in values:
+		titles.append(tr(BetCatalog.get_level3_display_title(StringName(value))))
+	return _format_verdict_list(titles)
 
 func _build_smart_register_summary() -> String:
 	var pact_count: int = _last_verdict_pacts.size()
@@ -1333,16 +1340,17 @@ func _build_smart_register_summary() -> String:
 	elif _last_verdict_outcome == &"CASHOUT":
 		outcome_line = tr("Hai lasciato l'arena con la posta riconosciuta.")
 	elif _last_verdict_outcome == &"WIN":
-		outcome_line = tr("Il patto regge: il percorso puo proseguire.")
+		outcome_line = tr("Il patto regge: il percorso può proseguire.")
 	else:
 		outcome_line = tr("La condanna viene accettata e il percorso resta segnato.")
-	var pressure_line: String = tr("Pressione massima: %d/%d.") % [pressure_peak, _get_pressure_max(_escalation_max)]
-	var unlock_line: String = tr("Patti e sblocchi sono stati aggiornati nell'Archivio.")
-	if condanna_count > 0:
-		unlock_line = tr("%d condanne archiviate; il dettaglio resta nell'Archivio.") % condanna_count
-	if pact_count > 0:
-		return "%s\n%s %s" % [outcome_line, pressure_line, unlock_line]
-	return "%s\n%s %s" % [outcome_line, pressure_line, tr("Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.")]
+	# What the player wants from a dossier: what was earned, what was paid,
+	# how close the crowd came. Archive unlocks stay in their own column.
+	var stakes: Array[String] = [
+		tr("Gloria del percorso: %d") % maxi(_last_finale_glory, 0),
+		tr("Segni: %d") % _last_finale_scars.size(),
+		tr("Pressione massima: %d/%d") % [pressure_peak, _get_pressure_max(_escalation_max)],
+	]
+	return "%s\n%s" % [outcome_line, "  ·  ".join(stakes)]
 
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
@@ -1380,7 +1388,7 @@ func _refresh_verdict_panel() -> void:
 		pacts_title.text = tr("PATTI FIRMATI")
 	var condanne_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CONDANNE/Lbl_END_RUN_CONDANNE_TITLEPanel/Lbl_END_RUN_CONDANNE_TITLE") as Label
 	if condanne_title != null:
-		condanne_title.text = tr("CONDANNE")
+		condanne_title.text = tr("NUOVE VOCI D'ARCHIVIO")
 	var crowd_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel/Lbl_END_RUN_CROWD_TITLE") as Label
 	if crowd_title != null:
 		crowd_title.text = tr("ULTIMA VOCE")
@@ -1691,11 +1699,21 @@ func _update_escalation_bar() -> void:
 	if escalation_label != null:
 		escalation_label.text = _format_pressure_label(clamped_level, safe_max)
 	if pressure_state_label != null:
-		pressure_state_label.text = _get_pressure_state_text(clamped_level)
+		pressure_state_label.text = _format_run_status_line(clamped_level)
 	if escalation_bar != null:
 		escalation_bar.max_value = float(safe_max)
 		escalation_bar.value = float(clamped_level)
 		_apply_pressure_bar_color(_get_pressure_color(clamped_level))
+
+func _format_run_status_line(pressure_level: int) -> String:
+	# One persistent place for the run's stakes: mood, earned Glory and arena.
+	var parts: Array[String] = [_get_pressure_state_text(pressure_level)]
+	if _run_manager_port != null and _run_manager_port.has_manager():
+		var arena_index: int = _run_manager_port.get_arena_index()
+		if arena_index > 0:
+			parts.append(tr("Gloria %d") % _run_manager_port.get_run_glory())
+			parts.append(tr("Arena %d") % arena_index)
+	return "  ·  ".join(parts)
 
 func _get_pressure_max(max_value: int) -> int:
 	return maxi(max_value, 10)
@@ -2072,15 +2090,22 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 		tr("Imprimi tre colpi sul sigillo."),
 	]
 	if doom_short != "":
-		subtitle = "%s\n%s" % [
-			tr("CONDANNA: %s") % doom_short,
-			tr("Tre colpi chiudono il verbale."),
-		]
+		# The seal prompt already asks for three strikes: the body keeps only the stake.
+		subtitle = tr("Se il patto cede: %s") % _localize_doom_effect(doom_short)
 	enqueue_post_bet_message({
 		"kind": "resolve_ritual",
 		"title": tr("RITO DI GIUDIZIO"),
 		"subtitle": subtitle,
 	})
+
+func _localize_doom_effect(doom_short: String) -> String:
+	# RunManager sends the catalog effect without its "Effetto:" prefix; the
+	# catalog key keeps the prefix, so translate the full line and strip it here.
+	var line: String = tr("Effetto: %s" % doom_short.strip_edges())
+	var colon: int = line.find(":")
+	if colon > 0 and colon <= 8:
+		line = line.substr(colon + 1).strip_edges()
+	return line
 
 func _on_resolve_ritual_closed() -> void:
 	_reset_judgment_seal_state()
@@ -2169,8 +2194,8 @@ func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 			mark.scale = Vector2.ONE if _is_reduced_motion() else (Vector2(1.18, 1.18) if on_beat else Vector2(1.08, 1.08))
 	if resolve_ritual_prompt != null:
 		var prompts: Array[String] = [
-			tr("PRIMO COLPO - VERDETTO INCISO"),
-			tr("SECONDO COLPO - CONDANNA INCISA"),
+			tr("PRIMO COLPO - CERA IMPRESSA"),
+			tr("SECONDO COLPO - VERDETTO INCISO"),
 			tr("TERZO COLPO - SIGILLO CHIUSO"),
 		]
 		resolve_ritual_prompt.text = prompts[mini(_resolve_ritual_strike_count - 1, prompts.size() - 1)]
@@ -2182,7 +2207,7 @@ func _complete_resolution_ritual_interaction() -> void:
 	if _resolve_ritual_pulse_tween != null and _resolve_ritual_pulse_tween.is_valid():
 		_resolve_ritual_pulse_tween.kill()
 	if resolve_ritual_prompt != null:
-		resolve_ritual_prompt.text = tr("VERBALE INCISO - IL REGISTRO PUO AVANZARE")
+		resolve_ritual_prompt.text = tr("VERBALE INCISO - IL REGISTRO PUÒ AVANZARE")
 	_set_judgment_seal_state(RESOLUTION_RITUAL_STRIKES_REQUIRED)
 	_judgment_seal_locked = true
 	if resolve_ritual_strike_button != null:
@@ -2668,13 +2693,13 @@ func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: in
 	return " | ".join(parts)
 
 func _format_double_note(double_next_stake_glory: int, double_pressure_delta: int) -> String:
-	return tr("Prossima posta +%d Gloria | Pressione +%d") % [
+	return tr("Prossima posta: +%d Gloria. Pressione +%d.") % [
 		maxi(double_next_stake_glory, 0),
 		maxi(double_pressure_delta, 1),
 	]
 
 func _format_condanna_note(stake_glory: int) -> String:
-	return tr("Perdi la posta +%d Gloria | il Registro chiude il percorso") % maxi(stake_glory, 0)
+	return tr("Perdi la posta di +%d Gloria. Il percorso si chiude.") % maxi(stake_glory, 0)
 
 func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_panel == null:

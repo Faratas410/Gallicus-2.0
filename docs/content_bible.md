@@ -22,6 +22,8 @@ Silenzi o nell'Assenza; nessuna battuta di Felix. Il catalogo e' in
 
 ## Lessico player-facing
 
+Il lessico unico e le parole escluse sono definiti in `docs/direction.md`.
+
 - `percorso`, `ciclo`, `fascicolo` al posto del termine tecnico `run`;
 - `pressione` al posto di `escalation`;
 - `incassa`, `rilancia`, `condanna`, `segno`, `patto`, `Registro`;
@@ -66,7 +68,10 @@ dell'oggetto, non dentro un bottone troppo lungo.
 - Rito: oggetto, colpo richiesto e stato del verbale.
 - Push-your-luck: tre conseguenze confrontabili.
 - Fascicolo: esito, evidenza raccolta e route disponibile.
-- Silenzio: assenza di responso, non spiegazione dell'Era.
+- Silenzio: assenza di responso, non spiegazione dell'Era. Il terminale
+  mostra una sola riga di stato (precedente Felix al primo Silenzio).
+- Fascicolo: esito, Gloria del percorso, segni, pressione massima, patti
+  firmati per titolo e nuove voci d'Archivio.
 - Assenza: nessuna frase classificatoria finale.
 
 ## Contenuti di campagna
@@ -153,8 +158,8 @@ Le Ere non vengono nominate nella UI e le transizioni restano graduali.
 - Il rito usa `COLPISCI`, `STRIKE`, `GOLPEA` come CTA breve sul sigillo.
 - Il prompt resta amministrativo: colpire il sigillo a tempo, non vincere un
   minigioco.
-- I tre messaggi sono progressivi e materiali: verdetto inciso, condanna
-  incisa, sigillo chiuso.
+- I tre messaggi sono progressivi e materiali: cera impressa, verdetto
+  inciso, sigillo chiuso. Nessuno anticipa una condanna prima del responso.
 - Il Registro registra l'avanzamento del verbale, non commenta l'abilita' del
   giocatore.
 - La riga contestuale della folla ricevuta dal payload viene localizzata al

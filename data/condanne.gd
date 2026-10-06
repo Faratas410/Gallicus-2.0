@@ -25,7 +25,7 @@ static func defaults() -> Array[CondannaData]:
 	var entries: Array[CondannaData] = []
 	entries.append(make(
 		&"CONDANNA_NON_MI_FERMERO",
-		"Non mi fermero.",
+		"Non mi fermerò.",
 		"Hai rifiutato l'incasso quando potevi fermarti.",
 		"Il pubblico aveva gia contato le monete.\nTu hai chiuso il pugno."
 	))
@@ -44,7 +44,7 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_NON_DOVEVO_PROVARCI",
 		"Non dovevo provarci.",
-		"Hai rilanciato e perso la run subito dopo.",
+		"Hai rilanciato e perso il percorso subito dopo.",
 		"Il silenzio dell'arena\ne durato piu del previsto."
 	))
 	entries.append(make(
@@ -56,7 +56,7 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_SAPEVO_COSA_STAVO_FACENDO",
 		"Sapevo cosa stavo facendo.",
-		"Hai firmato un patto che ti ha condotto alla morte.",
+		"Hai firmato un patto che ha chiuso il percorso.",
 		"La sentenza era scritta.\nHai solo aggiunto il nome."
 	))
 	entries.append(make(
@@ -68,7 +68,7 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_ERA_IL_PREZZO",
 		"Era il prezzo.",
-		"Hai perso la run a causa diretta di un patto firmato.",
+		"Hai perso il percorso a causa diretta di un patto firmato.",
 		"Non e stata sfortuna."
 	))
 	entries.append(make(
@@ -80,7 +80,7 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_NON_OGGI",
 		"Non oggi.",
-		"Hai evitato la morte per un soffio.",
+		"Hai evitato la chiusura per un soffio.",
 		"Il pubblico ha sospirato.\nTu no."
 	))
 	entries.append(make(
@@ -97,14 +97,14 @@ static func defaults() -> Array[CondannaData]:
 	))
 	entries.append(make(
 		&"CONDANNA_E_FINITA_COSI",
-		"E finita cosi.",
+		"È finita così.",
 		"Hai perso la tua prima run.",
 		"L'arena non fa sconti ai nuovi."
 	))
 	entries.append(make(
 		&"CONDANNA_NON_ABBASTANZA",
 		"Non abbastanza.",
-		"Hai perso la run vicino a una soglia decisiva.",
+		"Hai perso il percorso vicino a una soglia decisiva.",
 		"La folla aveva gia deciso."
 	))
 	entries.append(make(
@@ -116,7 +116,7 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_NON_E_COLPA_LORO",
 		"Non e colpa loro.",
-		"Hai perso la run senza errori meccanici evidenti.",
+		"Hai perso il percorso senza errori meccanici evidenti.",
 		"Nessuno ha barato."
 	))
 	entries.append(make(
@@ -139,7 +139,7 @@ static func defaults() -> Array[CondannaData]:
 	))
 	entries.append(make(
 		&"CONDANNA_NON_SARA_L_ULTIMA",
-		"Non sara l'ultima.",
+		"Non sarà l'ultima.",
 		"Sei tornato all'arena dopo una sconfitta.",
 		"L'arena e ancora li."
 	))
@@ -166,6 +166,6 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_REGISTRO_PATTERN",
 		"Registro: Pattern.",
 		"Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).",
-		"La ripetizione e risultata sufficiente.\nLa classificazione e stata archiviata."
+		"La ripetizione e risultata sufficiente.\nLa classificazione è stata archiviata."
 	))
 	return entries

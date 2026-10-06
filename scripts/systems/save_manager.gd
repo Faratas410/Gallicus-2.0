@@ -180,6 +180,18 @@ func mark_opening_prologue_seen() -> void:
 	_profile_dirty = true
 	save_profile()
 
+func has_learned_rite() -> bool:
+	if not _profile_loaded:
+		load_profile()
+	return bool(_settings.get("rite_learned", false))
+
+func mark_rite_learned() -> void:
+	if has_learned_rite():
+		return
+	_settings["rite_learned"] = true
+	_profile_dirty = true
+	save_profile()
+
 func has_seen_campaign_dialogue(id: String) -> bool:
 	if not _profile_loaded:
 		load_profile()
@@ -437,6 +449,7 @@ func _get_default_settings() -> Dictionary:
 		"reduced_motion": DEFAULT_REDUCED_MOTION,
 		"opening_prologue_seen": false,
 		"campaign_dialogues_seen": [],
+		"rite_learned": false,
 		"fullscreen": DEFAULT_FULLSCREEN,
 		"window_resolution": DEFAULT_WINDOW_RESOLUTION,
 	}
@@ -526,6 +539,10 @@ func _load_settings_from_profile(data: Dictionary) -> void:
 	var dialogues: Variant = settings_value.get("campaign_dialogues_seen", [])
 	sanitized["campaign_dialogues_seen"] = _sanitize_campaign_dialogues(dialogues)
 	if not settings_value.has("campaign_dialogues_seen") or dialogues != sanitized["campaign_dialogues_seen"]:
+		needs_save = true
+	var rite_learned: Variant = settings_value.get("rite_learned", false)
+	sanitized["rite_learned"] = rite_learned is bool and rite_learned
+	if not settings_value.has("rite_learned") or not rite_learned is bool:
 		needs_save = true
 	if settings_value.has("fullscreen"):
 		sanitized["fullscreen"] = bool(settings_value.get("fullscreen", DEFAULT_FULLSCREEN))

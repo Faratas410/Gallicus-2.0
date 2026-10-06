@@ -45,7 +45,9 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 ## Autorita'
 
 Rework di prodotto del 6 ottobre 2026: direzione in `docs/direction.md`,
-gap e piano in `docs/support/rework_audit_2026-10-06.md`.
+gap e piano in `docs/support/rework_audit_2026-10-06.md`. Revisione del game
+loop dello stesso giorno (posta, quietanza, patti, gesto, campagna, ritmo):
+`docs/support/game_loop_review_2026-10-06.md`.
 
 Consegna corrente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
 come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.

@@ -403,7 +403,8 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   `Btn_FIRST_REACTION_NEXT`.
 - The button is presented as a sealed basalt, bronze and red-wax pact tablet
   using a text-free 5:2 RGB texture. The CTA remains Godot-rendered as
-  `MOSTRA IL PATTO`, `SHOW THE PACT` and `MUESTRA EL PACTO`.
+  `MOSTRA IL PATTO`, `SHOW THE PACT` and `MUESTRA EL PACTO`. The CTA appears
+  only in the first percorso; afterwards the tablet passes by itself.
 - States are normal, focus, pressed, validated and disabled. They share
   identical margins and geometry; validation must not scale or move the
   target.
@@ -497,7 +498,10 @@ The reactive view covers HUD/menu with black. Intermediate Silence offers
 menu return after two seconds. Absence has no CTA, era name, classification
 or postgame; RunManager independently rejects restart/Continue. Environment
 fade never reduces text or focus contrast. The ritual instruction is
-IMPRIMI IL SIGILLO: TRE COLPI, with no timing-based outcome promise.
+IMPRIMI IL SIGILLO: TRE COLPI, with no timing-based outcome promise. From the
+second percorso (`rite_learned`) it reads IMPRIMI IL SIGILLO: UN COLPO and one
+strike fills the three wax sockets; the sealed pact tablet stays on screen for
+the ritual time without its CTA (loop review, October 2026).
 
 ## Menu identity revision
 

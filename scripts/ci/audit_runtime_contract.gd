@@ -113,9 +113,16 @@ func _check_evolution() -> void:
 	reversal.signature = {"risk_bias":-1.0,"repetition_bias":0.0,"scar_tolerance":0.0,"volatility":1.0}
 	var resisted: Dictionary = Evolution.advance(second.state, 0, reversal)
 	_expect(bool(resisted.state.fixed) and float(resisted.state.signature.risk_bias) > 0.7, "fixed signature must resist immediate reversal")
-	for index: int in range(80):
-		state = Evolution.advance(state, 0, _sample(index, false)).state
-	_expect(int(state.era_runs) == 80, "constant strategy alone advanced the era")
+	# A constant strategy never settles the signature; it only closes the Era by
+	# exhaustion once the evidence ceiling is reached (loop review, October 2026).
+	for index: int in range(Evolution.ERA_EVIDENCE_CEILING - 1):
+		var constant: Dictionary = Evolution.advance(state, 0, _sample(index, false))
+		_expect(not bool(constant.silence), "constant strategy alone advanced the era")
+		state = constant.state
+	_expect(int(state.era_runs) == Evolution.ERA_EVIDENCE_CEILING - 1, "constant strategy lost evidence")
+	var exhausted: Dictionary = Evolution.advance(state, 0, _sample(Evolution.ERA_EVIDENCE_CEILING, false))
+	_expect(bool(exhausted.silence) and int(exhausted.era) == 1, "evidence ceiling did not close the era")
+	state = Evolution.defaults()
 	var era: int = 0
 	state = Evolution.defaults()
 	var transitions: int = 0
@@ -170,6 +177,18 @@ func _check_terminal() -> void:
 	events.settings_changed.emit({"language":"en","sfx_volume":0.5})
 	await create_timer(0.1).timeout
 	_expect(int(manager.get("_phase")) == phase_before, "changing settings rebooted the active run")
+	# A percorso closed after one response is not evidence for the Registry.
+	var quick := RunState.new()
+	quick.bets_history.assign([Catalog.BET_P3_CROWD_FEAST])
+	quick.arena_index = 1
+	quick.arenas_cleared = 1
+	quick.risky_decisions = 2
+	quick.run_end_reason = "CONDANNA"
+	var evolution_before: Dictionary = save.get_registry_evolution()
+	manager.set("_run_state", quick)
+	manager.set("_registry_meta_committed_this_run", false)
+	manager.call("_update_registry_meta_from_run")
+	_expect(save.get_registry_evolution() == evolution_before, "a one-response percorso advanced the campaign")
 	# Use real catalog histories through the authoritative sample construction.
 	var silences: int = 0
 	for index: int in range(100):
@@ -178,6 +197,9 @@ func _check_terminal() -> void:
 		run.scars_history.assign([&"DEBT_BRAND", &"CRACKED_BONES"])
 		run.condanne_this_run.assign([&"CONDANNA_FIRMATO", &"CONDANNA_RICORDATO"])
 		run.arena_index = 5
+		run.arenas_cleared = 5
+		run.risky_decisions = 4
+		run.safe_decisions = 1
 		run.glory = 8 + index % 3
 		run.corruption = 8
 		run.run_end_reason = "CONDANNA"

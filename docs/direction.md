@@ -60,24 +60,35 @@ e si percepisce solo attraverso materiali, suono, tono e voci.
 
 ## Loop
 
-Arena (circa 15-25 secondi):
+Arena (circa 10-15 secondi dopo il primo percorso):
 
 ```text
 apri il Registro -> firma una promessa -> gesto davanti alla gradinata
--> imprimi il sigillo -> responso -> incassa / accetta il marchio / raddoppia
+-> imprimi il sigillo -> responso -> incassa la posta / rilancia
 ```
 
-Percorso (alcuni minuti): una o piu' scommesse fino a incasso, marchio o
-chiusura del Registro, poi il fascicolo dice cosa e' rimasto scritto.
+Ogni sigillo che regge aggiunge Gloria alla **posta**; uno che cede ne toglie
+meta' (tutta, per l'Hybris) e lascia i costi del patto. Dopo ogni responso il
+giocatore sceglie fra incassare e rilanciare: e' la domanda dell'arena, posta
+ogni volta. Le famiglie dei patti dicono a parole quanto spesso il sigillo
+regge e quanto rende; il gesto scambia Pressione con posta.
 
-Campagna (2-4 ore): percorsi ripetuti formano la firma; quando la lettura si
-stabilizza arriva un Silenzio e il Registro cambia materia. Dopo quattro
-Silenzi resta l'Assenza.
+Percorso (alcuni minuti): al massimo sette arene, limite visibile. Finisce con
+la quietanza, con il marchio quando la folla blocca l'incasso, o quando un
+patto chiude senza appello; poi il fascicolo dice cosa e' rimasto scritto.
+
+Campagna (2-4 ore): i percorsi giocati davvero (almeno due responsi) formano la
+firma; quando la lettura si stabilizza, o quando l'Era ha raccolto abbastanza
+prove, arriva un Silenzio e il Registro cambia materia. Dopo quattro Silenzi
+resta l'Assenza. Chiudere subito non avvicina la fine.
 
 Regola di ritmo: **un gesto per schermata, nessuna schermata senza decisione o
 rivelazione**. Le conferme che non aggiungono informazione si tolgono; le
-sequenze ripetute ogni arena devono accorciarsi dopo che il giocatore le ha
-viste.
+sequenze ripetute ogni arena si accorciano dopo il primo percorso (la
+tavoletta del patto passa da sola, il sigillo vuole un colpo).
+
+Regole e numeri: `docs/canon/MECHANICS_UNIFIED.md`, sezione "Loop rivisto
+(ottobre 2026)". Revisione: `docs/support/game_loop_review_2026-10-06.md`.
 
 ## Regole di stile UI
 
@@ -101,9 +112,9 @@ Valgono per ogni superficie gameplay e utility.
 7. **Comando = verbo del gesto.** `FIRMA`, `COLPISCI`, `PRENDI LA QUIETANZA`,
    `RICEVI IL MARCHIO`, `RADDOPPIA`. Non `CONTINUA` o `CONFERMA` quando esiste
    un gesto specifico.
-8. **Un posto per ogni informazione persistente.** Gloria e Pressione stanno
-   nel rail in basso; i Segni nel riquadro in alto a destra; nessuna delle due
-   si ripete nei pannelli.
+8. **Un posto per ogni informazione persistente.** Posta, Pressione e arena
+   (su sette) stanno nel rail in basso; i Segni nel riquadro in alto a destra.
+   La ricevuta della quietanza ripete la posta solo come importo da incassare.
 
 ## Lessico unico
 

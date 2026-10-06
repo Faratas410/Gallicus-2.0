@@ -844,3 +844,17 @@ PRECEDENT: FELIX GALLICUS."
 FASCICOLO ANCORA APERTO.","PRECEDENT: FELIX GALLICUS.
 FILE STILL OPEN."
 NESSUNA ULTERIORE DECISIONE RILEVANTE.,NO FURTHER RELEVANT DECISIONS.
+In posta %d Gloria,%d Glory at stake
+Arena %d di %d,Arena %d of %d
+La posta di %d Gloria resta in gioco. Pressione +%d.,The %d Glory stake stays in play. Pressure +%d.
+"Pressione -1. Se il patto regge, posta -1.","Pressure -1. If the pact holds, stake -1."
+"Pressione +1. Se il patto regge, posta +2.","Pressure +1. If the pact holds, stake +2."
+IMPRIMI IL SIGILLO: UN COLPO,IMPRINT THE SEAL: ONE STRIKE
+Regge spesso,Holds often
+Regge a volte,Holds sometimes
+Regge di rado,Rarely holds
+%s: +%d Gloria in posta.,%s: +%d Glory to the stake.
+%s: la posta raddoppia.,%s: the stake doubles.
+Perdi metà della posta.,You lose half the stake.
+Perdi tutta la posta.,You lose the whole stake.
+Il Registro resta aperto: incassa la posta o rilancia.,The Registry stays open: bank the stake or raise.

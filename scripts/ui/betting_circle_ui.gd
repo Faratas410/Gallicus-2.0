@@ -710,7 +710,7 @@ func _map_offer_for_display(source_offer: Dictionary) -> Dictionary:
 		"id": bet_id,
 		"source": source_offer.duplicate(true),
 		"name": title if title != "" else EMPTY_PAGE_TITLE,
-		"contract": _format_contract_body(title if title != "" else EMPTY_PAGE_TITLE, subtitle, doom_text, condition_text, pact_text),
+		"contract": _format_contract_body(title if title != "" else EMPTY_PAGE_TITLE, subtitle, doom_text, condition_text, pact_text, bet_id, int(source_offer.get("stake_gain", -1))),
 	}
 
 func _rebuild_options_from_catalog() -> void:
@@ -735,7 +735,7 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 			return bet_data
 	return {}
 
-func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String) -> String:
+func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String, bet_id: StringName = &"", stake_gain: int = -1) -> String:
 	# Three levels only (docs/direction.md): title, the deal, then what holds and
 	# what breaks. Size and colour carry hierarchy because the book font has no
 	# bold or italic face.
@@ -747,6 +747,10 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 	if subtitle_text != "":
 		lines.append("[center]%s[/center]" % _escape_bbcode(subtitle_text))
 	var holds: Array[String] = _translated_lines(condition_text)
+	var stake_terms: Dictionary = _stake_terms(bet_id, stake_gain)
+	if not stake_terms.is_empty():
+		# The family's odds and stake replace the generic condition sentence.
+		holds = [str(stake_terms.holds)]
 	if not holds.is_empty():
 		lines.append(_contract_heading(tr("SE IL PATTO REGGE"), CONTRACT_HOLDS_COLOR))
 		lines.append(_escape_bbcode(" ".join(holds)))
@@ -754,15 +758,38 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 	if not breaks.is_empty():
 		lines.append(_contract_heading(tr("SE IL PATTO CEDE"), CONTRACT_BREAKS_COLOR))
 		# The catalog closes every doom block with its mechanical effect.
-		lines.append(_escape_bbcode(_strip_effect_prefix(breaks[breaks.size() - 1])))
+		var effect_line: String = _strip_effect_prefix(breaks[breaks.size() - 1])
+		if not stake_terms.is_empty():
+			effect_line = "%s %s" % [str(stake_terms.breaks), effect_line]
+		lines.append(_escape_bbcode(effect_line))
 		if breaks.size() > 1:
 			lines.append("[color=#%s]%s[/color]" % [CONTRACT_NOTE_COLOR.to_html(false), _escape_bbcode(breaks[0])])
 	var pact_lines: Array[String] = _translated_lines(pact_text)
+	if not stake_terms.is_empty():
+		# The old reward blurb would contradict the stake line above.
+		pact_lines = []
 	if not pact_lines.is_empty():
 		lines.append("\n[center][color=#%s]%s[/color][/center]" % [CONTRACT_NOTE_COLOR.to_html(false), _escape_bbcode(" ".join(pact_lines))])
 	if lines.is_empty():
 		return EMPTY_PAGE_BODY
 	return "\n".join(lines)
+
+func _stake_terms(bet_id: StringName, stake_gain: int = -1) -> Dictionary:
+	if bet_id == &"":
+		return {}
+	var profile: Dictionary = BetCatalog.get_pact_family_profile(bet_id)
+	var odds: String = tr(str(profile.get("odds", "")))
+	# RunManager sends the gain for the current arena; the catalog base covers previews.
+	var gain: int = stake_gain if stake_gain >= 0 else int(profile.get("stake_gain", 0))
+	var holds: String = tr("%s: +%d Gloria in posta.") % [odds, gain]
+	if bet_id == BetCatalog.BET_DOUBLE_OR_DIE:
+		holds = tr("%s: la posta raddoppia.") % odds
+	if int(profile.get("pressure_relief", 0)) > 0:
+		holds = "%s %s" % [holds, tr("Pressione -1.")]
+	var breaks: String = tr("Perdi metà della posta.")
+	if StringName(str(profile.get("stake_loss", ""))) == BetCatalog.STAKE_LOSS_ALL:
+		breaks = tr("Perdi tutta la posta.")
+	return {"holds": holds, "breaks": breaks}
 
 func _contract_heading(text: String, color: Color) -> String:
 	return "\n[font_size=%d][color=#%s]%s[/color][/font_size]" % [CONTRACT_HEADING_SIZE, color.to_html(false), _escape_bbcode(text)]

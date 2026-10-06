@@ -679,9 +679,10 @@ Regole canoniche L3 nel segmento PUSH_YOUR_LUCK:
 - Escalation Threshold Events: superamento soglie escalation (3/5/7) attiva eventi one-shot run-scoped (condanne + incremento corruzione) sotto sola autorita RunManager.
 - Player-facing pressure balance: la fascia media deve restare giocabile. La pressione aumenta il rischio in modo progressivo, ma non deve trasformare automaticamente `3-6/10` in una condanna quasi certa.
 - Push Your Luck preview: il rischio mostrato per il prossimo rilancio deve usare lo stesso delta del runtime (`+1`, oppure `+1` piu echo da `provoca` se presente), non una stima pessimistica separata.
-- Posta = Gloria incassabile dalla scommessa corrente. E un valore calcolato da RunManager per il payload Push Your Luck e non viene salvato come nuova economia.
-- Incassa converte la Posta in Gloria, applica eventuale riduzione di Corruzione derivata dalle regole runtime esistenti, e chiude il Registro.
-- Raddoppia aumenta la Posta futura, mantiene la Posta corrente a rischio, e incrementa la Pressione secondo il delta runtime esposto nel payload.
+- Posta = Gloria accumulata dai sigilli che reggono nel percorso corrente (`RunState.stake_glory`, salvata con la run). Non e' una nuova economia: e' la Gloria non ancora incassata. Regole in "Loop rivisto (ottobre 2026)".
+- Incassa converte la Posta in Gloria, applica eventuale riduzione di Corruzione derivata dalle regole runtime esistenti, e chiude il Registro. La quietanza e' aperta dopo ogni responso, salvo blocco della folla o di un patto.
+- Raddoppia lascia la Posta in gioco, porta all'arena successiva e incrementa la Pressione secondo il delta runtime esposto nel payload. All'ultima arena del percorso il raddoppio e' chiuso.
+- Il marchio chiude il percorso perdendo la Posta; la UI lo propone solo quando la quietanza e' bloccata.
 
 Checkpoint:
 - Double → AUTOSAVE RUN_FLOW_BET_OFFER e ritorno a ARENA_SETUP
@@ -1232,14 +1233,9 @@ No UI exposure is allowed.
 Run runtime keeps an internal per-run integer `glory` (default `0`) in `RunState`.
 It is reset at new-run creation and serialized in run save/load payloads with the run state.
 
-`glory` is incremented only by RunManager on successful arena resolution outcomes:
-
-- `glory += GLORY_PER_SUCCESS * glory_multiplier`
-- `GLORY_PER_SUCCESS = 1`
-- `glory_multiplier` starts at `1` and increases only on push-your-luck `double/continue`
-  according to the authoritative RunManager step table (`1, 2, 4, 7, 11`).
-
-Glory is displayed in HUD as a numeric value only (no explanatory gameplay logic in UI).
+`glory` is incremented only by RunManager when the quietanza banks the posta
+(`stake_glory`), see "Loop rivisto (ottobre 2026)". The HUD rail shows the live
+posta and the arena out of the visible limit; the dossier shows banked Gloria.
 
 
 ### Invariants
@@ -1282,3 +1278,42 @@ Campaign parameters belong to docs/canon/REGISTRY_SYSTEM_SPEC.md. Signature
 and era may bias offer selection within eligibility, never payout or outcome
 odds. Silence takes precedence at run closure, grants no closing unlock and
 advances exactly one Era. Absence is final.
+
+## Loop rivisto (ottobre 2026)
+
+Revisione decisa da Marco il 6 ottobre 2026 dopo
+`docs/support/game_loop_review_2026-10-06.md`. Sostituisce le regole precedenti
+su posta, soglia della quietanza e lunghezza nascosta del percorso.
+
+- **Percorso:** al massimo `PERCORSO_MAX_ARENAS = 7` arene, limite visibile nel
+  rail (`Arena 3 di 7`). Non esiste piu' un numero di arene estratto e nascosto.
+- **Posta:** ogni sigillo che regge aggiunge alla posta il guadagno della
+  famiglia del patto, +1 per ogni arena gia' superata nel percorso
+  (`STAKE_DEPTH_BONUS`), piu' l'effetto del gesto. La pagina del Registro stampa
+  il guadagno dell'arena corrente. Un sigillo che cede toglie meta'
+  della posta (Hybris: tutta) oltre alle conseguenze del comportamento del patto
+  (segno, Corruzione, blocco della quietanza). `Raddoppia o muori` che regge
+  raddoppia la posta; se cede chiude il percorso senza nulla.
+- **Famiglie dei patti** (`BetCatalog.PACT_FAMILY_PROFILES`):
+
+  | Famiglia | Sigillo | Posta se regge | Se cede |
+  | --- | --- | --- | --- |
+  | Prudenza | regge spesso (+0,12) | +2 | meta' posta |
+  | Penitenza | regge spesso (+0,06) | +2, Pressione -1 | meta' posta |
+  | Violenza | regge a volte (0) | +4 | meta' posta |
+  | Hybris | regge di rado (-0,12) | +6 | tutta la posta |
+
+  Il modificatore si somma alla probabilita' base del sigillo prima delle
+  penalita' di Pressione, segni e profilo d'arena. La pagina del Registro lo
+  dice a parole, mai in percentuale.
+- **Gesto:** `ABBASSA LO SGUARDO` porta Pressione -1 e posta -1 se il patto
+  regge (minimo +1); `SFIDA LA GRADINATA` porta Pressione +1 e posta +2.
+- **Quietanza:** Gloria incassata = posta (ridotta dal modificatore della folla)
+  piu' il bonus di Pressione esistente. Aperta dopo ogni responso.
+- **Marchio:** visibile solo quando la quietanza e' bloccata; chiude il percorso
+  e perde la posta.
+- **Ritmo:** dopo il primo percorso concluso (`rite_learned` nel profilo) la
+  tavoletta del patto passa da sola dopo `PACT_SEALED_SECONDS` e un solo colpo
+  imprime i tre alloggi del sigillo. Fasi, segnali e checkpoint restano gli stessi.
+- **Firma:** si legge sulle decisioni davvero aperte; vedi
+  `docs/canon/REGISTRY_SYSTEM_SPEC.md`, sezione "Evidenza e chiusura delle Ere".

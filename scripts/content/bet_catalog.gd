@@ -691,6 +691,26 @@ static func get_path_tag_for_bet_id(bet_id: StringName) -> StringName:
 			return tag
 	return PATH_UNKNOWN
 
+# Each pact family carries a readable risk: how often the seal holds, how much
+# Gloria a held seal adds to the posta and how much of the posta a broken seal
+# takes. Pact behaviors keep their own scars and Registry costs on top of this.
+const STAKE_LOSS_HALF: StringName = &"HALF"
+const STAKE_LOSS_ALL: StringName = &"ALL"
+const PACT_FAMILY_PROFILES: Dictionary = {
+	PATH_PRUDENCE: {"rank": 0, "win_mod": 0.12, "stake_gain": 2, "stake_loss": STAKE_LOSS_HALF, "odds": "Regge spesso", "pressure_relief": 0},
+	PATH_PENITENCE: {"rank": 1, "win_mod": 0.06, "stake_gain": 2, "stake_loss": STAKE_LOSS_HALF, "odds": "Regge spesso", "pressure_relief": 1},
+	PATH_VIOLENCE: {"rank": 2, "win_mod": 0.0, "stake_gain": 4, "stake_loss": STAKE_LOSS_HALF, "odds": "Regge a volte", "pressure_relief": 0},
+	PATH_HUBRIS: {"rank": 3, "win_mod": -0.12, "stake_gain": 6, "stake_loss": STAKE_LOSS_ALL, "odds": "Regge di rado", "pressure_relief": 0},
+}
+
+static func get_pact_family_profile(bet_id: StringName) -> Dictionary:
+	var tag: StringName = get_path_tag_for_bet_id(bet_id)
+	if not PACT_FAMILY_PROFILES.has(tag):
+		tag = PATH_VIOLENCE
+	var profile: Dictionary = (PACT_FAMILY_PROFILES[tag] as Dictionary).duplicate(true)
+	profile["path_tag"] = tag
+	return profile
+
 static func get_level3_path_tag(bet_id: StringName) -> StringName:
 	# Deprecated alias for one sprint: use get_path_tag_for_bet_id().
 	return get_path_tag_for_bet_id(bet_id)

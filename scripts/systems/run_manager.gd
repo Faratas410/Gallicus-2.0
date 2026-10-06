@@ -112,9 +112,6 @@ const SCAR_PACT_BASE_MIN: float = 0.25
 const SCAR_PACT_BASE_MAX: float = 0.55
 const SCAR_PACT_STEP: float = 0.05
 const SCAR_VOLATILITY_SHIFT_CAP: int = 3
-const GLORY_PER_SUCCESS: int = 1
-const GLORY_MULT_BASE: int = 1
-const GLORY_MULT_STEPS: Array[int] = [1, 2, 4, 7, 11]
 
 const CONDANNA_NON_MI_FERMERO: StringName = &"CONDANNA_NON_MI_FERMERO"
 const CONDANNA_ANCORA: StringName = &"CONDANNA_ANCORA"
@@ -401,6 +398,14 @@ const SPECIAL_ARENA_ASH: StringName = &"ARENA_OF_ASH"
 const SPECIAL_ARENA_DISPREZZO: StringName = &"ARENA_DISPREZZO"
 const SPECIAL_ARENA_VERGOGNA: StringName = &"ARENA_VERGOGNA"
 const ESCALATION_MAX: int = 10
+# Loop 2026-10: a percorso has a visible limit, the posta grows with each held
+# seal and the quietanza is open after every response.
+const PERCORSO_MAX_ARENAS: int = 7
+const STAKE_GESTURE_CHALLENGE_BONUS: int = 2
+const STAKE_GESTURE_BOW_PENALTY: int = 1
+const STAKE_DEPTH_BONUS: int = 1
+# Percorsi shorter than this many responses are not evidence for the Registry.
+const REGISTRY_EVIDENCE_MIN_ARENAS: int = 2
 const ESCALATION_HIGH_THRESHOLD: int = 6
 const SCAR_REFUSE_CASHOUT_THRESHOLD: int = 3
 const UNLOCK_REGISTRY_PRECEDENT: StringName = &"registry_precedent"
@@ -790,7 +795,6 @@ var _registry_pressure: float = 0.0
 var _registry_era: int = 0
 var _registry_meta_committed_this_run: bool = false
 var _closure_ending_id: StringName = &""
-var _glory_multiplier: int = GLORY_MULT_BASE
 var _smoke: SmokeDriver = null
 var _smoke_timeout_deadline_msec: int = -1
 var _smoke_driver_active: bool = false
@@ -1025,7 +1029,9 @@ func _run_smoke_keyboard_full_run_driver() -> void:
 		_smoke_keyboard_accept_or_focus(focus_owner, focus_name)
 		return
 	if _phase == RunPhase.PUSH_YOUR_LUCK:
-		if focus_name == "Btn_PUSH_YOUR_LUCK_CONDANNA":
+		# The quietanza closes the percorso; the marchio is only offered when it is blocked.
+		var closing_button: BaseButton = focus_owner as BaseButton
+		if (focus_name == "Btn_PUSH_YOUR_LUCK_CASHOUT" or focus_name == "Btn_PUSH_YOUR_LUCK_CONDANNA") and closing_button != null and not closing_button.disabled:
 			_smoke_keyboard_input(KEY_ENTER, focus_name)
 			return
 		_smoke_keyboard_input(KEY_TAB, focus_name)
@@ -1606,7 +1612,6 @@ func _start_level3_run() -> void:
 
 	_run_state = RunState.new()
 	_run_state.reset()
-	_glory_multiplier = GLORY_MULT_BASE
 	_run_state.run_seed = _get_run_seed_value()
 	if _is_smoke_mode():
 		print("SMOKE:RUN_SEED=%d" % _run_state.run_seed)
@@ -1641,8 +1646,8 @@ func _start_level3_run() -> void:
 	_runstate_kernel.enforce_invariants(_run_state)
 	_emit_escalation_changed()
 	_level3_rng.seed = _run_state.run_seed
-	_run_state.level3_target_arenas = _level3_rng.randi_range(5, 8)
-	_run_state.level3_min_cashout_arenas = 5
+	_run_state.level3_target_arenas = PERCORSO_MAX_ARENAS
+	_run_state.level3_min_cashout_arenas = 1
 	_run_state.special_arena_index = _pick_special_arena_index(_run_state.level3_target_arenas)
 
 	_reset_scars()
@@ -1700,6 +1705,7 @@ func _confirm_pact_with_bet_id(bet_id: StringName) -> void:
 		_register_condanna(CONDANNA_FIRMATO)
 		_register_condanna(CONDANNA_FIRMATO)
 		_register_condanna(CONDANNA_FIRMATO)
+	_record_pact_decision(bet_id)
 	_run_state.current_bet_id = String(bet_id)
 	_run_state.last_selected_bet_id = bet_id
 	_run_state.level3_bets_used.append(bet_id)
@@ -1724,7 +1730,7 @@ func _start_pact_sealed_ritual(bet_id: StringName) -> void:
 	_close_audience_context_line()
 	_flow_log("pact_sealed_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_smoke_mark("PACT_SEALED_OPENED")
-	_ritual_advance_pact_requested = false
+	_ritual_advance_pact_requested = is_rite_learned() and not _is_keyboard_full_run_smoke()
 	GameEvents.pact_sealed_opened.emit()
 	if _is_smoke_mode() and not _is_keyboard_full_run_smoke():
 		_ritual_advance_pact_requested = true
@@ -1814,7 +1820,10 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	if failed:
 		_apply_intermediate_loss_penalty_if_needed()
 		scars_applied = _handle_level3_loss_ritual(bet_id, result)
+		if not (_run_state.run_is_over or _is_game_over):
+			_apply_broken_seal_to_stake(bet_id)
 	else:
+		_add_held_seal_to_stake(bet_id)
 		_run_state.last_action_was_rilancio = false
 		_run_state.risky_choice_made_recently = false
 		_resolve_ritual_reward_applied = false
@@ -1978,6 +1987,9 @@ func _open_level3_bet_ui() -> void:
 	_update_arena_visual_only()
 	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
+	for offer_entry: Dictionary in offer:
+		# The Registry page prints what a held seal would add in this arena.
+		offer_entry["stake_gain"] = _stake_gain_for(StringName(str(offer_entry.get("id", ""))))
 	_run_state.level3_current_offer = offer.duplicate(true)
 	var offer_payload: Dictionary = _betting_payload_factory.build_bet_offer_payload({"offer": offer})
 	var emitted_offer: Array[Dictionary] = offer_payload.get("offer", []) as Array[Dictionary]
@@ -2160,17 +2172,6 @@ func _compute_volatility_shift() -> int:
 	var amplitude: int = mini(_run_state.volatility, SCAR_VOLATILITY_SHIFT_CAP)
 	return direction * amplitude
 
-func _apply_glory_on_success() -> void:
-	_runstate_kernel.apply_success(_run_state, {
-		"glory_per_success": GLORY_PER_SUCCESS,
-		"glory_multiplier": _glory_multiplier,
-	})
-
-func _update_glory_multiplier_from_doubles(double_count: int) -> void:
-	var safe_count: int = maxi(double_count, 0)
-	var idx: int = mini(safe_count, GLORY_MULT_STEPS.size() - 1)
-	_glory_multiplier = GLORY_MULT_STEPS[idx]
-
 func _autosave_run_checkpoint(flow_step: StringName, bet_id: StringName) -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
@@ -2243,13 +2244,11 @@ func _apply_run_save_payload(payload: Dictionary) -> bool:
 			return false
 	_runstate_kernel.enforce_invariants(_run_state)
 	_initialize_scar_rng_state()
-	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
 
 	run["upgrades"] = {}
 
 	if _run_state.level3_target_arenas <= 0:
-		_level3_rng.seed = _run_state.run_seed
-		_run_state.level3_target_arenas = _level3_rng.randi_range(5, 8)
+		_run_state.level3_target_arenas = PERCORSO_MAX_ARENAS
 	if _run_state.special_arena_index <= 0 and _run_state.level3_target_arenas > 0:
 		_run_state.special_arena_index = _pick_special_arena_index(_run_state.level3_target_arenas)
 
@@ -2603,7 +2602,8 @@ func _resolve_level3_arena() -> ArenaResult:
 		adjusted_escalation,
 		_get_active_scar_ids(),
 		_run_state.risk_profile,
-		LEVEL3_RISK_PROFILES
+		LEVEL3_RISK_PROFILES,
+		float(BetCatalogScript.get_pact_family_profile(_run_state.active_bet_id).get("win_mod", 0.0))
 	)
 	result.won = bool(payload.get("won", false))
 	result.condemnation_flag = bool(payload.get("condemnation_flag", false))
@@ -2661,27 +2661,6 @@ func _handle_level3_loss_ritual(bet_id: StringName, _result: ArenaResult) -> Arr
 	_emit_escalation_changed()
 	_resolve_ritual_reward_applied = true
 	return scars_applied
-
-func _apply_level3_reward(bet_id: StringName, reward_tier: int) -> void:
-	var reward_glory: int = _compute_level3_reward_glory_preview(bet_id, reward_tier, _get_audience_cashout_modifier())
-	if reward_glory > 0:
-		_run_state.glory = maxi(_run_state.glory + reward_glory, 0)
-
-func _compute_level3_reward_glory_preview(bet_id: StringName, reward_tier: int, cashout_modifier: float) -> int:
-	var behavior_id: StringName = _get_level3_bet_behavior(bet_id)
-	return _outcome_system.compute_level3_reward_glory(behavior_id, reward_tier, cashout_modifier)
-
-func _compute_success_glory_preview_for_double_count(double_count: int) -> int:
-	var safe_count: int = maxi(double_count, 0)
-	var idx: int = mini(safe_count, GLORY_MULT_STEPS.size() - 1)
-	return GLORY_PER_SUCCESS * int(GLORY_MULT_STEPS[idx])
-
-func _compute_pending_stake_glory(bet_id: StringName, reward_tier: int, cashout_modifier: float, double_count: int) -> int:
-	if bet_id == &"" or _resolve_ritual_reward_applied:
-		return 0
-	var success_glory: int = _compute_success_glory_preview_for_double_count(double_count)
-	var pact_glory: int = _compute_level3_reward_glory_preview(bet_id, reward_tier, cashout_modifier)
-	return maxi(success_glory + pact_glory, 0)
 
 func _apply_level3_scar(scar_id: StringName, origin: String) -> void:
 	var scar_def: Dictionary = _get_scar_def(scar_id)
@@ -2990,9 +2969,13 @@ func _apply_intermediate_choice(choice_id: String) -> void:
 	match normalized_choice:
 		"placa":
 			escalation_delta = -1
+			_run_state.intermediate_bonus_tier = -STAKE_GESTURE_BOW_PENALTY
+			_run_state.safe_decisions += 1
 			_run_state.intermediate_choice_note = "Gesto: Umiliati."
 		"provoca":
 			escalation_delta = 1
+			_run_state.intermediate_bonus_tier = STAKE_GESTURE_CHALLENGE_BONUS
+			_run_state.risky_decisions += 1
 			_run_state.intermediate_choice_note = "Gesto: Provoca."
 		_:
 			_run_state.intermediate_choice_note = ""
@@ -3025,8 +3008,8 @@ func _take_payout() -> void:
 	if lock_reason != "":
 		_refresh_push_luck_choice(StringName(_run_state.current_bet_id))
 		return
-	var bet_id_name: StringName = StringName(_run_state.current_bet_id)
-	var bonus_tier: int = _consume_intermediate_choice_bonus()
+	var cashout_glory: int = _compute_cashout_glory()
+	_consume_intermediate_choice_bonus()
 	_consume_signature_echo_bonus()
 	_apply_audience_pressure_delta(-2)
 	_waiting_for_push_luck = false
@@ -3035,16 +3018,14 @@ func _take_payout() -> void:
 	_update_arena_visual_only()
 	GameEvents.push_luck_closed.emit()
 	_emit_audience_context_line(AUDIENCE_CONTEXT_CASH_OUT)
-	if bet_id_name != &"" and not _resolve_ritual_reward_applied:
-		_apply_glory_on_success()
-		_apply_level3_reward(bet_id_name, _run_state.level3_reward_tier + bonus_tier)
+	# The quietanza banks the posta; the crowd's mood and the pressure endured
+	# shape the receipt (see _compute_cashout_glory).
 	var cashout_bonus: Dictionary = _compute_cashout_reward_bonus()
 	var corruption_relief: int = int(cashout_bonus.get("corruption_relief", 0))
-	var glory_bonus: int = int(cashout_bonus.get("glory_bonus", 0))
 	if corruption_relief > 0:
 		_relieve_corruption(corruption_relief)
-	if glory_bonus > 0:
-		_run_state.glory = maxi(_run_state.glory + glory_bonus, 0)
+	_run_state.glory = maxi(_run_state.glory + cashout_glory, 0)
+	_run_state.stake_glory = 0
 	_resolve_ritual_reward_applied = false
 	_run_state.level3_cashouts += 1
 	_run_state.cashouts += 1
@@ -3070,6 +3051,8 @@ func _handle_push_luck_condanna() -> void:
 	_consume_intermediate_choice_bonus()
 	_consume_signature_echo_bonus()
 	_apply_audience_pressure_delta(-1)
+	# The marchio closes the percorso and the posta is lost with it.
+	_run_state.stake_glory = 0
 	_waiting_for_push_luck = false
 	_run_state.last_action_was_rilancio = false
 	_update_arena_visual_only()
@@ -3122,7 +3105,6 @@ func _push_your_luck() -> void:
 	_try_apply_double_scar_pool(next_doubles_count)
 	_run_state.level3_doubles = next_doubles_count
 	_run_state.doubles += 1
-	_update_glory_multiplier_from_doubles(_run_state.level3_doubles)
 	_run_state.level3_max_escalation = maxi(_run_state.level3_max_escalation, _run_state.escalation_level)
 	_run_state.max_escalation = maxi(_run_state.max_escalation, _run_state.escalation_level)
 	_emit_escalation_changed()
@@ -3347,10 +3329,8 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 	var current_corruption: int = clampi(int(run.get("corruption", _run_state.corruption)), 0, CORRUPTION_MAX)
 	var cashout_bonus: Dictionary = _compute_cashout_reward_bonus()
 	var cashout_corruption_delta: int = int(cashout_bonus.get("corruption_relief", 0))
-	var cashout_bonus_glory: int = int(cashout_bonus.get("glory_bonus", 0))
-	var cashout_reward_tier: int = maxi(_run_state.level3_reward_tier + _run_state.intermediate_bonus_tier, 1)
-	var stake_glory: int = _compute_pending_stake_glory(bet_id, cashout_reward_tier, cashout_modifier, _run_state.level3_doubles)
-	var double_next_stake_glory: int = _compute_pending_stake_glory(bet_id, next_reward_tier, cashout_modifier, _run_state.level3_doubles + 1)
+	var stake_glory: int = maxi(_run_state.stake_glory, 0)
+	var double_next_stake_glory: int = stake_glory
 	var double_pressure_delta: int = 1 + pending_echo_bonus
 	return _betting_payload_factory.build_pyl_offer_payload({
 		"bet_id": String(bet_id),
@@ -3375,11 +3355,59 @@ func _build_push_luck_payload(bet_id: StringName) -> Dictionary:
 		"current_glory": _run_state.glory,
 		"current_corruption": current_corruption,
 		"stake_glory": stake_glory,
-		"cashout_glory_delta": stake_glory + cashout_bonus_glory,
+		"cashout_glory_delta": _compute_cashout_glory(),
 		"cashout_corruption_delta": cashout_corruption_delta,
 		"double_next_stake_glory": double_next_stake_glory,
 		"double_pressure_delta": double_pressure_delta,
 	})
+
+func _compute_cashout_glory() -> int:
+	var modifier: float = float(_build_audience_reward_text().get("cashout_modifier", 1.0))
+	var banked: int = maxi(_run_state.stake_glory, 0)
+	if modifier < 1.0:
+		banked = int(floor(float(banked) * modifier))
+	var bonus: Dictionary = _compute_cashout_reward_bonus()
+	return maxi(banked + int(bonus.get("glory_bonus", 0)), 0)
+
+func _stake_gain_for(bet_id: StringName) -> int:
+	# Deeper arenas are worth more: +1 Gloria for every arena already crossed.
+	var profile: Dictionary = BetCatalogScript.get_pact_family_profile(bet_id)
+	return int(profile.get("stake_gain", 1)) + maxi(_run_state.arena_index - 1, 0) * STAKE_DEPTH_BONUS
+
+func _add_held_seal_to_stake(bet_id: StringName) -> void:
+	var profile: Dictionary = BetCatalogScript.get_pact_family_profile(bet_id)
+	var gain: int = maxi(_stake_gain_for(bet_id) + _run_state.intermediate_bonus_tier, 1)
+	if bet_id == BET_DOUBLE_OR_DIE_L3:
+		# Raddoppia o muori: a held seal doubles what is already in posta.
+		gain = maxi(gain, _run_state.stake_glory)
+	_run_state.stake_glory = maxi(_run_state.stake_glory + gain, 0)
+	var relief: int = int(profile.get("pressure_relief", 0))
+	if relief > 0 and _run_state.escalation_level > 0:
+		_run_state.escalation_level = maxi(_run_state.escalation_level - relief, 0)
+	# The rail reads the posta when the pressure state is refreshed.
+	_emit_escalation_changed()
+
+func _apply_broken_seal_to_stake(bet_id: StringName) -> void:
+	var profile: Dictionary = BetCatalogScript.get_pact_family_profile(bet_id)
+	if StringName(str(profile.get("stake_loss", ""))) == BetCatalogScript.STAKE_LOSS_ALL:
+		_run_state.stake_glory = 0
+	else:
+		_run_state.stake_glory = floori(float(maxi(_run_state.stake_glory, 0)) / 2.0)
+	_emit_escalation_changed()
+
+func _record_pact_decision(bet_id: StringName) -> void:
+	# The signature reads exposure against the page the player left unsigned.
+	var chosen_rank: int = int(BetCatalogScript.get_pact_family_profile(bet_id).get("rank", 0))
+	for offer_value: Dictionary in _run_state.level3_current_offer.slice(0, 2):
+		var other_id: StringName = StringName(str(offer_value.get("id", "")))
+		if other_id == &"" or other_id == bet_id:
+			continue
+		var other_rank: int = int(BetCatalogScript.get_pact_family_profile(other_id).get("rank", 0))
+		if chosen_rank > other_rank:
+			_run_state.risky_decisions += 1
+		elif chosen_rank < other_rank:
+			_run_state.safe_decisions += 1
+		return
 
 func _compute_cashout_reward_bonus() -> Dictionary:
 	var pressure: int = clampi(_run_state.audience_pressure, 0, AUDIENCE_PRESSURE_MAX)
@@ -3497,8 +3525,6 @@ func _get_cashout_lock_reason() -> String:
 		return tr(_run_state.special_arena_cashout_lock_reason)
 	if _run_state.cashout_lock_remaining > 0:
 		return tr("Decima di Sangue: quietanza bloccata ancora per %d arena.") % _run_state.cashout_lock_remaining
-	if _run_state.arena_index < _run_state.level3_min_cashout_arenas:
-		return tr("La quietanza si apre dall'arena %d.") % _run_state.level3_min_cashout_arenas
 	return ""
 
 func _get_double_lock_reason() -> String:
@@ -3842,22 +3868,32 @@ func _update_registry_meta_from_run() -> void:
 	_registry_meta_committed_this_run = true
 	if _run_state.run_end_reason == "INFRA_FAILURE" or not can_start_run():
 		return
+	if _run_state.arenas_cleared >= 1:
+		SaveManager.mark_rite_learned()
 	var pressure_delta: float = float(_run_state.glory) * REGISTRY_PRESSURE_GLORY_WEIGHT
 	pressure_delta += float(_run_state.corruption) * REGISTRY_PRESSURE_CORRUPTION_WEIGHT
 	_registry_pressure = maxf(_registry_pressure + pressure_delta, 0.0)
 	var trace: Dictionary = _finale_builder.build_path_trace_from_bet_history(_run_state.bets_history)
 	var choices: int = _run_state.bets_history.size()
 	var paths: Array[String] = []
-	var largest: int = 0
 	for path: String in ["prudence", "hubris", "violence", "penitence"]:
 		var count: int = int(trace.get("path_%s_count" % path, 0))
-		largest = maxi(largest, count)
 		if count > 0:
 			paths.append(path)
-	var risk: float = float(int(trace.path_hubris_count) + int(trace.path_violence_count) - int(trace.path_prudence_count) - int(trace.path_penitence_count)) / float(maxi(choices, 1))
+	# The signature reads the decisions that were really open: which page was
+	# signed against the other one and which gesture was made. A percorso closed
+	# before two responses is not evidence, so quitting at once cannot advance
+	# the campaign.
+	var risky: int = _run_state.risky_decisions
+	var safe: int = _run_state.safe_decisions
+	var decisions: int = risky + safe
+	var dominant: int = maxi(risky, safe)
+	var risk: float = float(risky - safe) / float(maxi(decisions, 1))
+	if _run_state.arenas_cleared < REGISTRY_EVIDENCE_MIN_ARENAS or decisions <= 0:
+		choices = 0
 	var sample: Dictionary = {
 		"choices": choices, "paths": paths,
-		"signature": {"risk_bias": risk, "repetition_bias": float(largest) / float(maxi(choices, 1)), "scar_tolerance": clampf(float(_run_state.scars_history.size()) / float(maxi(_run_state.arena_index, 1)), 0.0, 1.0), "volatility": 1.0 - float(largest) / float(maxi(choices, 1))},
+		"signature": {"risk_bias": risk, "repetition_bias": float(dominant) / float(maxi(decisions, 1)), "scar_tolerance": clampf(float(_run_state.scars_history.size()) / float(maxi(_run_state.arena_index, 1)), 0.0, 1.0), "volatility": 1.0 - float(dominant) / float(maxi(decisions, 1))},
 		"observation": "%d:%d:%d:%d:%d:%d:%d" % [trace.path_prudence_count, trace.path_hubris_count, trace.path_violence_count, trace.path_penitence_count, _run_state.glory, _run_state.corruption, _run_state.push_luck_doubles],
 		"classification": String(_select_ending_identity()),
 	}
@@ -4217,6 +4253,16 @@ func get_arena_index() -> int:
 func get_run_glory() -> int:
 	# Read-only presentation query for the HUD rail.
 	return maxi(_run_state.glory, 0) if _run_state != null else 0
+
+func get_run_stake() -> int:
+	return maxi(_run_state.stake_glory, 0) if _run_state != null else 0
+
+func get_arena_limit() -> int:
+	return maxi(_run_state.level3_target_arenas, 0) if _run_state != null else 0
+
+func is_rite_learned() -> bool:
+	# After the first percorso the tablet passes by itself and the seal takes one strike.
+	return SaveManager.has_learned_rite()
 
 func is_live() -> bool:
 	return _gameplay_phase == RunPhase.LIVE

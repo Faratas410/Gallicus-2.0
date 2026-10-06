@@ -2,6 +2,7 @@ extends RefCounted
 
 # Pure campaign calculation. RunManager alone commits this result and ends runs.
 const AXES: Array[String] = ["risk_bias", "repetition_bias", "scar_tolerance", "volatility"]
+const ERA_EVIDENCE_CEILING: int = 12
 
 static func defaults() -> Dictionary:
 	return {"signature": {"risk_bias": 0.0, "repetition_bias": 0.0, "scar_tolerance": 0.0, "volatility": 0.0}, "fixed": false, "entry_streak": 0, "stable_streak": 0, "samples": 0, "era_runs": 0, "ramp_runs": 3, "paths_seen": [], "observations": [], "last_class": "", "convergence": 0}
@@ -70,7 +71,11 @@ static func advance(previous: Dictionary, era: int, sample: Dictionary) -> Dicti
 	# A stable strategy alone is insufficient: different observed histories must
 	# converge to the same interpretation after the transition ramp has completed.
 	var saturated: bool = state.observations.size() >= 3 and state.paths_seen.size() >= 3 and int(state.convergence) >= 3
-	if bool(state.fixed) and int(state.stable_streak) >= 3 and int(state.era_runs) >= 8 - mini(era, 3) and saturated:
+	var settled: bool = bool(state.fixed) and int(state.stable_streak) >= 3 and int(state.era_runs) >= 8 - mini(era, 3) and saturated
+	# Repetition itself is a definition: an undecided subject is still closed
+	# once the Era has gathered enough evidence, so every play style ends.
+	var exhausted: bool = int(state.era_runs) >= ERA_EVIDENCE_CEILING - mini(era, 3)
+	if settled or exhausted:
 		result.silence = true
 		result.era = mini(era + 1, 4)
 		state.era_runs = 0

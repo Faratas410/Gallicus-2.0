@@ -59,6 +59,24 @@ func get_run_glory() -> int:
 		return 0
 	return int(manager.get_run_glory())
 
+func get_run_stake() -> int:
+	var manager: Node = _get_manager()
+	if manager == null:
+		return 0
+	return int(manager.get_run_stake())
+
+func get_arena_limit() -> int:
+	var manager: Node = _get_manager()
+	if manager == null:
+		return 0
+	return int(manager.get_arena_limit())
+
+func is_rite_learned() -> bool:
+	var manager: Node = _get_manager()
+	if manager == null:
+		return false
+	return bool(manager.is_rite_learned())
+
 func has_lying_pact_reveal(pact_id: StringName) -> bool:
 	var manager: Node = _get_manager()
 	if manager == null:

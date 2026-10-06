@@ -59,11 +59,11 @@ def main() -> int:
             return fail(f"RunManager missing PYL counter key: {key}")
 
     for token in [
-        "func _compute_pending_stake_glory",
-        "func _compute_success_glory_preview_for_double_count",
+        "func _add_held_seal_to_stake",
+        "func _apply_broken_seal_to_stake",
+        "func _compute_cashout_glory",
         "func _format_push_luck_receipt_text",
         "POSTA VIVA: +%d Gloria",
-        "GLORIA: %d",
         "CORRUZIONE: %d",
         "func _format_cashout_note",
         "func _format_double_note",
@@ -93,9 +93,9 @@ def main() -> int:
             return fail(f"UI_CANON.md missing PYL counter doc token: {token}")
 
     for token in [
-        "Posta = Gloria incassabile dalla scommessa corrente",
+        "Posta = Gloria accumulata dai sigilli che reggono",
         "Incassa converte la Posta in Gloria",
-        "Raddoppia aumenta la Posta futura",
+        "Raddoppia lascia la Posta in gioco",
     ]:
         if token not in mechanics:
             return fail(f"MECHANICS_UNIFIED.md missing PYL counter mechanics token: {token}")

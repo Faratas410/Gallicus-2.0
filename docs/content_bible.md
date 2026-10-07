@@ -11,7 +11,7 @@ La voce dei Gufi e' distinta: brevi scambi fra Nerio (precisione della copia),
 Vessa (margine commerciale) e Orvo (attenzione della gradinata). Sono colleghi
 dell'amministrazione. Rugo, gallo della soglia, misura il richiamo; Dima,
 gallina della gradinata, ricorda gli occupanti dei posti. Nessuno e' umano
-o narratore del Registro. Venti scambi
+o narratore del Registro. Trentadue scambi
 di due battute, nei due contesti patto/gesto e nelle varianti distese/compresse,
 sono localizzati in IT/EN/ES insieme a ruoli e schede. I nomi non si traducono.
 La firma resta attestata dal titolo del patto; il corpo ospita "Voci dell’arena".
@@ -152,6 +152,19 @@ Le Ere non vengono nominate nella UI e le transizioni restano graduali.
   `DESAFÍA A LA GRADA` e registra esposizione/exposure/exposición.
 - Le reazioni della gradinata restano osservazioni del payload, non giudizi o
   tutorial del Registro, e sono complete nelle tre lingue di release.
+- Negli scambi (ottobre 2026) il titolo dice cosa sta per fare la folla in una
+  frase concreta (`La gradinata vuole sangue.`, `raccoglie la sabbia`,
+  `si annoia`, `trattiene il fiato`) e ogni risposta stampa il proprio prezzo
+  con unita' (`Favore +1, Pressione +1.`). Favore e' EN `Favour`, ES `Favor`.
+  Trionfo e rivolta: `LA GRADINATA TI PORTA`, `LA GRADINATA SI RIVOLTA`.
+
+### Banco di Vessa
+
+- Vessa (margine commerciale) tiene il conto: voce d'ufficio, mai giudizio.
+  Titolo `BANCO DI VESSA`, comandi `COMPRA IL FAVORE`, `PAGA LA PRESSIONE`,
+  `ASSICURA LA POSTA`. Denari: EN `Denarii`, ES `Denarios`; conto: EN
+  `Account`, ES `Cuenta`; banco: EN `Vessa's counter`, ES `Mostrador de Vessa`.
+- Le note dicono la cifra con l'unita' (`Quietanza versata: Denari +3.`).
 
 ### Colpo sul sigillo
 
@@ -176,7 +189,8 @@ Le Ere non vengono nominate nella UI e le transizioni restano graduali.
 
 ## Copy e classificazioni corrette nella bonifica
 
-Il rito richiede `IMPRIMI IL SIGILLO: TRE COLPI`; la CTA resta `COLPISCI`.
+Il rito chiede `IMPRIMI IL SIGILLO`; la CTA resta `COLPISCI`, poi
+`COLPISCI ANCORA` accanto a `ALZA LA MANO` quando il sigillo regge.
 Nessuna frase promette un effetto del timing sul risultato. Il gesto pubblico
 dichiara `Il gesto è registrato. La pressione è cambiata.` senza negare la
 conseguenza della scelta. La firma fissata usa `Condizione registrata.` e
@@ -201,10 +215,11 @@ Le tre nuove frasi sono localizzate in IT/EN/ES; il marchio non si traduce.
 
 ## Copy del sigillo - 6 settembre 2026
 
-Il richiamo luminoso ora e' breve: l'istruzione del rito diventa
-"Imprimi tre colpi sul sigillo." (EN: "Press the seal three times.";
-ES: "Imprime tres golpes en el sello."). Non si richiede di attendere una
-pulsazione continua. Restano tre attivazioni e gli stessi intenti/esiti.
+Il richiamo luminoso ora e' breve. Dall'ottobre 2026 l'istruzione del rito e'
+"Ogni colpo mette alla prova la cera." (EN: "Every strike tests the wax.";
+ES: "Cada golpe pone a prueba la cera."): ogni colpo e' una prova e il
+giocatore sceglie se colpire ancora (vedi "Arena attiva" in
+`docs/canon/MECHANICS_UNIFIED.md`).
 
 ## Apertura e utility - 8 settembre 2026
 
@@ -245,3 +260,34 @@ Le battute brevi gia' presenti su patto/gesto restano distinte dalle scene.
 Nessun testo del giocatore o di Felix, nessuna risposta morale o strategica.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+## Racconti - 7 ottobre 2026
+
+Su richiesta dell'utente ("aggiungi un po' di lore e racconti"), cinque scene
+di sei battute si aggiungono alle tre conversazioni illustrate, nello stesso
+catalogo e con gli stessi ritratti (Nerio, Rugo, Dima e il terminale). Con il
+bando di Orvo ("Perche' continuare?") diventano otto e ognuna e' il premio di
+un gradino della scala dei bandi; tre raccontano il posto vuoto:
+
+| Id | Titolo | Gradino | Cosa racconta |
+| --- | --- | --- | --- |
+| `ledger` | Il conto di Vessa | 1 | il conto dei Denari e il debito ricordato alla gradinata |
+| `sand` | La sabbia nelle tasche | 2 | perche' la gradinata lancia sabbia o monete |
+| `seat_kept` | Il posto tenuto | 3 | chi sedeva accanto a Dima chiudeva ogni bando e se n'e' andato senza chiusura |
+| `call` | Il richiamo | 4 | Orvo che prova i richiami, la tacca di Rugo |
+| `seats` | I posti in vendita | 5 | il righello di Vessa si ferma al posto accanto a Dima |
+| `footstep` | Il passo | 6 | Dima sente un passo nuovo uguale al suo |
+| `scraping` | La riga che resta | 7 | la riga che Nerio non riesce a raschiare |
+| `slope` | La stessa pendenza | 8 | la copia del soggetto e quella riga hanno la stessa pendenza; il terminale: "CONFRONTO IN CORSO / Corrispondenza parziale." |
+
+Il riquadro del bando e il fascicolo dicono il titolo del racconto in palio
+(`In palio il racconto «%s».`), cosi' il prossimo racconto e' la ragione per
+chiudere il prossimo bando.
+
+Vessa e Orvo non hanno ritratto: se ne parla, non parlano. I racconti danno
+corpo ai sistemi gia' presenti (conto, sabbia, favore, posti) senza spiegarne
+le regole, senza nominare Felix, le Ere o il Silenzio e senza parole del
+giocatore. "Un nome e un fascicolo aperto" resta allusione: il nome arriva
+solo dal terminale al primo Silenzio. Le dodici nuove voci dell'arena (tre per
+contesto, distese e compresse) toccano gli stessi temi: conto, tasche piene,
+terza fila venduta, folla che paga chi la regge.

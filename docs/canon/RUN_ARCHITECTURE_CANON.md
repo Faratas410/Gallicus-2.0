@@ -658,8 +658,37 @@ Fasi, segnali e checkpoint non cambiano. RunManager resta l'unica autorita':
 - Dopo il primo percorso concluso con almeno un responso, RunManager scrive
   `settings.rite_learned` nel profilo e da allora apre la tavoletta del patto con
   l'avanzamento gia' richiesto: `pact_sealed_closed` arriva dopo
-  `PACT_SEALED_SECONDS` senza input. La UI nasconde `Btn_FIRST_REACTION_NEXT` e un
-  solo `Btn_RESOLUTION_STRIKE` vale tre colpi; `request_ritual_advance` resta il
+  `PACT_SEALED_SECONDS` senza input. La UI nasconde `Btn_FIRST_REACTION_NEXT`; `request_ritual_advance` resta il
   solo canale verso RunManager.
+- Arena attiva (ottobre 2026): durante il rito di giudizio
+  `request_ritual_advance("strike")` chiede un colpo e RunManager risponde con
+  `seal_strike_resolved`; `request_ritual_advance("resolve")` (`ALZA LA MANO`,
+  `Btn_RESOLUTION_NEXT`) chiude il sigillo con cio' che ha retto. Un sigillo
+  incrinato o pieno si chiude da solo dopo `SEAL_VERDICT_HOLD_SECONDS`.
+  `request_ritual_advance("show_scar")` salva un sigillo incrinato quando
+  RunManager lo offre (`can_show_scar`).
+  Scambi con la gradinata: `INTERMEDIATE_CHOICE` accoglie tre
+  `request_mid_choice_select` di fila; dopo ognuno RunManager applica il
+  prezzo, emette `crowd_favor_changed` e un nuovo payload della fase (con
+  `meta.exchange`), oppure, al terzo, apre il rito di giudizio. Il checkpoint
+  `INTERMEDIATE_CHOICE` viene riscritto dopo ogni scambio.
+  `RunState.crowd_intent`, `crowd_exchange_index`, `crowd_arena_challenges`,
+  `crowd_exchange_challenges`, `crowd_exchange_bows`, `crowd_triumphs`,
+  `crowd_riots` e `scar_shown_this_run` sono salvati; i save precedenti li
+  leggono vuoti.
+  La fase resta la stessa e il checkpoint di ripresa ripete il primo colpo con
+  lo stesso seme.
+- Economia di fondo (ottobre 2026): in `BET_PRESENT`, a Registro chiuso,
+  `request_banco_purchase(item_id)` compra al banco di Vessa; RunManager
+  scrive il conto nel profilo (`SaveManager.set_ledger_denari`), riscrive il
+  checkpoint `BET_OFFER` ed emette `ledger_changed`. `RunState.banco_insured`,
+  `ledger_earned` e `ledger_lost` sono salvati con il percorso.
+- Bando e catena (ottobre 2026): RunManager apre il bando dopo il conto a ogni
+  nuovo percorso, ne controlla la scadenza in `start_arena` e lo chiude prima
+  della quietanza in `_settle_ledger_at_run_end`. Il profilo salva
+  `bando_step` (0-99, sanificato) e `bando_acclaim`; il percorso salva
+  `bando_quota`, `bando_deadline`, `bando_status` e `seal_chain`, letti vuoti
+  dai save precedenti (un percorso senza bando chiude come prima). La UI riceve
+  `bando_changed` e legge `get_bando_view()` dal port.
 - Regole di posta e firma: `docs/canon/MECHANICS_UNIFIED.md` ("Loop rivisto") e
   `docs/canon/REGISTRY_SYSTEM_SPEC.md` ("Evidenza e chiusura delle Ere").

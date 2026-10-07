@@ -18,7 +18,30 @@ fascicolo con posta e patti per titolo, citazione del precedente Felix
 Gallicus nei Silenzi. Nessuna regola, soglia o probabilita' cambiata; il
 ritmo della campagna e la durata restano gate umani.
 
-Consegna corrente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
+Arena attiva, 6 ottobre 2026, dopo il playtest "troppo passivo": il sigillo si
+colpisce a rischio colpo per colpo, un Segno puo' salvare un sigillo una volta
+per percorso, le attese sono piu' corte e i gesti hanno impatto. Il gesto e'
+diventato tre scambi con la gradinata, che mostra cosa sta per fare, e il
+favore della folla e' visibile e pesa su sigillo e quietanza. Diagnosi, scelta
+e simulazioni in `docs/support/arena_attiva_2026-10-06.md`. Prossimo passo:
+playtest umano su lettura degli scambi, peso del favore e ritmo dell'arena.
+Economia di fondo, 7 ottobre 2026: i Denari di Vessa passano da un percorso
+all'altro, premiano quietanza e trionfi, puniscono rivolte e cadute, e si
+spendono al banco prima di aprire il Registro.
+
+Racconti, 7 ottobre 2026 (otto con il bando): cinque scene illustrate in piu' (conto di Vessa,
+sabbia, richiamo, posti in vendita, riga che resta) fra la prima copia e la
+meta' della campagna, e dodici nuove voci dell'arena; canone in
+`docs/canon/LORE_UNIFIED.md`, copy in `docs/content_bible.md`. Pannelli e libro
+del Registro restano ancorati al centro (UI_CANON, Motion Contract).
+
+Bando, scala e catena, 7 ottobre 2026 ("Perche' scommettere? Perche'
+continuare?"): ogni percorso ha un bando di Gloria da chiudere entro un'arena,
+la scala dei bandi paga gli otto racconti (tre sul posto vuoto) e tre pagine di
+patti, i sigilli retti di fila moltiplicano la posta. Canone in
+`docs/canon/MECHANICS_UNIFIED.md`, numeri in `docs/support/motivazione_2026-10-07.md`.
+
+Consegna precedente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
 come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.
 
 Integrazione richiesta: tre Gufi, il gallo Rugo e la gallina Dima, dialoghi

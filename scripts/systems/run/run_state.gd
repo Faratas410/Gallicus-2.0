@@ -90,6 +90,29 @@ var stake_glory: int = 0
 # Pact and gesture decisions read as exposure or restraint for the campaign signature.
 var risky_decisions: int = 0
 var safe_decisions: int = 0
+# Scambi con la gradinata: the crowd's shown intent and the exchange reached in
+# this arena ("" and 0 outside the gesture), plus the percorso's tallies.
+var crowd_intent: String = ""
+var crowd_exchange_index: int = 0
+var crowd_arena_challenges: int = 0
+var crowd_exchange_challenges: int = 0
+var crowd_exchange_bows: int = 0
+var crowd_triumphs: int = 0
+var crowd_riots: int = 0
+# Vessa's banco: an insured posta for the next broken seal, and the Denari
+# this percorso paid into or took from the persistent ledger.
+var banco_insured: bool = false
+var ledger_earned: int = 0
+var ledger_lost: int = 0
+# Orvo's bando for this percorso: bank at least `bando_quota` Gloria by arena
+# `bando_deadline`. Status: open, closed, lapsed (deadline passed), missed.
+var bando_quota: int = 0
+var bando_deadline: int = 0
+var bando_status: String = ""
+# The chain: seals held in a row this percorso; a broken seal resets it.
+var seal_chain: int = 0
+# A Segno can be shown to the stands once per percorso to save a cracking seal.
+var scar_shown_this_run: bool = false
 var corruption: int = 0
 var scar_double_count: int = 0
 var scar_pact_count: int = 0
@@ -190,6 +213,21 @@ func reset() -> void:
 	stake_glory = 0
 	risky_decisions = 0
 	safe_decisions = 0
+	crowd_intent = ""
+	crowd_exchange_index = 0
+	crowd_arena_challenges = 0
+	crowd_exchange_challenges = 0
+	crowd_exchange_bows = 0
+	crowd_triumphs = 0
+	crowd_riots = 0
+	banco_insured = false
+	ledger_earned = 0
+	ledger_lost = 0
+	bando_quota = 0
+	bando_deadline = 0
+	bando_status = ""
+	seal_chain = 0
+	scar_shown_this_run = false
 	corruption = 0
 	scar_double_count = 0
 	scar_pact_count = 0
@@ -286,6 +324,21 @@ func to_dict() -> Dictionary:
 		"stake_glory": stake_glory,
 		"risky_decisions": risky_decisions,
 		"safe_decisions": safe_decisions,
+		"crowd_intent": crowd_intent,
+		"crowd_exchange_index": crowd_exchange_index,
+		"crowd_arena_challenges": crowd_arena_challenges,
+		"crowd_exchange_challenges": crowd_exchange_challenges,
+		"crowd_exchange_bows": crowd_exchange_bows,
+		"crowd_triumphs": crowd_triumphs,
+		"crowd_riots": crowd_riots,
+		"banco_insured": banco_insured,
+		"ledger_earned": ledger_earned,
+		"ledger_lost": ledger_lost,
+		"bando_quota": bando_quota,
+		"bando_deadline": bando_deadline,
+		"bando_status": bando_status,
+		"seal_chain": seal_chain,
+		"scar_shown_this_run": scar_shown_this_run,
 		"corruption": corruption,
 		"scar_double_count": scar_double_count,
 		"scar_pact_count": scar_pact_count,
@@ -383,6 +436,23 @@ func from_dict(d: Dictionary) -> void:
 	stake_glory = maxi(int(d.get("stake_glory", 0)), 0)
 	risky_decisions = maxi(int(d.get("risky_decisions", 0)), 0)
 	safe_decisions = maxi(int(d.get("safe_decisions", 0)), 0)
+	crowd_intent = str(d.get("crowd_intent", "")).left(16)
+	crowd_exchange_index = maxi(int(d.get("crowd_exchange_index", 0)), 0)
+	crowd_arena_challenges = maxi(int(d.get("crowd_arena_challenges", 0)), 0)
+	crowd_exchange_challenges = maxi(int(d.get("crowd_exchange_challenges", 0)), 0)
+	crowd_exchange_bows = maxi(int(d.get("crowd_exchange_bows", 0)), 0)
+	crowd_triumphs = maxi(int(d.get("crowd_triumphs", 0)), 0)
+	crowd_riots = maxi(int(d.get("crowd_riots", 0)), 0)
+	banco_insured = bool(d.get("banco_insured", false))
+	ledger_earned = maxi(int(d.get("ledger_earned", 0)), 0)
+	ledger_lost = maxi(int(d.get("ledger_lost", 0)), 0)
+	bando_quota = maxi(int(d.get("bando_quota", 0)), 0)
+	bando_deadline = maxi(int(d.get("bando_deadline", 0)), 0)
+	bando_status = str(d.get("bando_status", ""))
+	if bando_status not in ["", "open", "closed", "lapsed", "missed"]:
+		bando_status = ""
+	seal_chain = maxi(int(d.get("seal_chain", 0)), 0)
+	scar_shown_this_run = bool(d.get("scar_shown_this_run", false))
 	corruption = int(d.get("corruption", 0))
 	scar_double_count = int(d.get("scar_double_count", 0))
 	scar_pact_count = int(d.get("scar_pact_count", 0))

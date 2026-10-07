@@ -266,10 +266,54 @@ def _assert_visual_qa() -> None:
             raise AssertionError(f"visual QA gesture matrix missing token: {token}")
 
 
+def _assert_crowd_exchanges() -> None:
+    """Scambi con la gradinata: three priced exchanges and a visible favour."""
+    run_manager = _read(RUN_MANAGER)
+    for token in (
+        "const CROWD_EXCHANGES_PER_ARENA: int = 3",
+        "func _resolve_crowd_exchange(choice_id: String) -> void:",
+        "func get_crowd_exchange_view() -> Dictionary:",
+        "GameEvents.crowd_favor_changed.emit(",
+        '"exchange": get_crowd_exchange_view(),',
+        "float(_run_state.audience_score) * CROWD_FAVOR_SEAL_STEP",
+    ):
+        if token not in run_manager:
+            raise AssertionError(f"crowd exchange authority missing: {token}")
+    if "signal crowd_favor_changed(payload: Dictionary)" not in _read(GAME_EVENTS):
+        raise AssertionError("GameEvents must declare crowd_favor_changed")
+    ui = _read(UI_ROOT)
+    if '{"signal": &"crowd_favor_changed", "handler": &"_on_crowd_favor_changed"}' not in ui:
+        raise AssertionError("UI must render crowd_favor_changed")
+    favor = _function_body(ui, "_on_crowd_favor_changed")
+    if "audience_score" in favor or "RunManager." in favor:
+        raise AssertionError("favour panel must only render the payload")
+    copy = _function_body(ui, "_refresh_gesture_choice_copy")
+    for token in ('"placa_text"', '"provoca_text"'):
+        if token not in copy:
+            raise AssertionError(f"gesture tiles must print the exchange price: {token}")
+    scene = _read(SCENE)
+    for node in ("CrowdFavorPanel", "CrowdFavorBar", "CrowdFavorBody", "CrowdFavorNote"):
+        _node_block(scene, node)
+    for key in (
+        "La gradinata vuole sangue.",
+        "La gradinata raccoglie la sabbia.",
+        "La gradinata si annoia.",
+        "La gradinata trattiene il fiato.",
+        "Scambio %d di %d:",
+        "Favore %+d.",
+        "LA GRADINATA TI PORTA: posta +2.",
+        "LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.",
+    ):
+        for locale in ("it", "en", "es"):
+            if not _csv_value(locale, key):
+                raise AssertionError(f"{locale} missing crowd exchange copy: {key!r}")
+
+
 def main() -> int:
     _assert_assets_and_states()
     _assert_scene_and_copy()
     _assert_runtime()
+    _assert_crowd_exchanges()
     _assert_audio()
     _assert_visual_qa()
     print("[OK][ARENA_GESTURE_OBJECT_CONTRACT] OF-08 arena gesture contract passed")

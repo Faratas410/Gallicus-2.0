@@ -55,6 +55,18 @@ const DIALOGUES: Dictionary = {
     [
       "Vessa: Quel posto è libero, Dima.",
       "Dima: So chi ci sedeva."
+    ],
+    [
+      "Vessa: Il conto è aperto.",
+      "Nerio: Copio la cifra, non il motivo."
+    ],
+    [
+      "Orvo: La prima fila ha le tasche piene.",
+      "Vessa: Di sabbia o di monete?"
+    ],
+    [
+      "Dima: Hanno venduto la terza fila.",
+      "Vessa: Il tuo posto no. Per ora."
     ]
   ],
   "gesture": [
@@ -77,6 +89,18 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: Ti ho sentito dalla pietra.",
       "Rugo: Il passo è rimasto quello."
+    ],
+    [
+      "Orvo: Guarda come ti studiano.",
+      "Rugo: Prima di gridare, la gradinata pesa."
+    ],
+    [
+      "Vessa: La folla paga chi la regge.",
+      "Orvo: E presenta il conto a chi la perde."
+    ],
+    [
+      "Dima: Sento la sabbia nelle tasche.",
+      "Rugo: Allora non è ancora il momento."
     ]
   ],
   "pact_worn": [
@@ -99,6 +123,18 @@ const DIALOGUES: Dictionary = {
     [
       "Vessa: Sempre quel posto?",
       "Dima: Sempre quello."
+    ],
+    [
+      "Vessa: Il conto.",
+      "Nerio: Copiato."
+    ],
+    [
+      "Orvo: Tasche piene.",
+      "Vessa: Monete, spero."
+    ],
+    [
+      "Dima: La terza fila.",
+      "Vessa: Venduta."
     ]
   ],
   "gesture_worn": [
@@ -121,6 +157,18 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: Lo stesso passo.",
       "Rugo: Lo senti ancora."
+    ],
+    [
+      "Orvo: Ti pesano.",
+      "Rugo: Lo so."
+    ],
+    [
+      "Vessa: Paga chi regge.",
+      "Orvo: Sempre."
+    ],
+    [
+      "Dima: La sabbia.",
+      "Rugo: Non ancora."
     ]
   ]
 }

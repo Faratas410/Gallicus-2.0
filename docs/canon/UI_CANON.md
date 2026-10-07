@@ -323,6 +323,8 @@ Current MP3 files under `res://assets/audio/`:
   - Motion helpers in `res://scripts/ui/ui_root.gd` are local UI helpers and must not block outbound gameplay intents.
   - Button intent handlers must not `await` animation before emitting `request_*` signals.
   - Standard modal motion kinds are `standard`, `ritual`, and `ending`; ritual motion is reserved for pact, resolve, intermediate choice, Push Your Luck, and END_RUN surfaces.
+  - The `BettingCircle` instance in `scenes/UI.tscn` declares full-rect anchors (`layout_mode = 3`) and `betting_circle_ui.gd` re-applies `PRESET_FULL_RECT` in `_ready`: without them the exported (binary) scene reset the instance to zero size and the Registry book opened in the top-left corner (Windows build of 2026-10-07; guarded by `test_ui_motion_contract.py`).
+  - Panel, book and page motion moves anchored surfaces through their declared offsets, never through a cached absolute `position` (fix of 2026-10-07 for panels reported off centre): a layout pass, a window change or an interrupted tween cannot strand a panel away from the centre.
 - Betting-circle book reveal is player-confirmed: the closed-book intro exposes only `APRI`, and the open animation remains presentational-only with no `GameEvents` emission.
 - Betting-circle open pages do not use idle bob/page drift. Pact text reveal is handled as a presentational writing animation (`visible_characters`) after the book opens; sign buttons remain disabled until the writing reveal completes.
   - Shake/glitch/flash remain bounded to existing ritual or quick-cut feedback surfaces, not generic hover states.
@@ -458,16 +460,85 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   Godot-drawn wax drop (`SealPip1..3`, children of `Btn_RESOLUTION_STRIKE`,
   mouse-transparent). The count lives on the seal; there is no separate row
   of marks. Reduced motion shows the drop without the settle tween.
-- The first two activations expose strike_1 and strike_2 and play
-  `registry_judgment_seal_strike`. The third activation exposes resolved,
-  applies the local lock, plays `registry_judgment_seal_resolve` and emits the
-  unchanged `request_ritual_advance("resolve")` intent. No presentation
-  `await` may delay the intent.
+- Each activation applies the local lock, plays
+  `registry_judgment_seal_strike` and emits `request_ritual_advance("strike")`.
+  RunManager answers with `seal_strike_resolved`: a held drop is red wax, a
+  cracked drop is dark. When the seal holds and can take another strike, the
+  CTA reads `COLPISCI ANCORA` and `Btn_RESOLUTION_NEXT` reads `ALZA LA MANO`,
+  which plays `registry_judgment_seal_resolve` and emits
+  `request_ritual_advance("resolve")`. A cracked or full seal plays the resolve
+  cue and waits for RunManager to close it. When RunManager offers
+  `can_show_scar`, the seal reads `LASCIA CEDERE` (emits `resolve`) and
+  `Btn_RESOLUTION_NEXT` reads `MOSTRA UN SEGNO` (emits `show_scar`). No presentation
+  `await` may delay an intent.
 - Opening, close, phase change, failed emission, recovery and watchdog restore
   the intact state and clear the local lock.
-- Scope guard: presentation only. `RunManager` remains the sole owner of
-  judgment, outcome and flow; no signal, payload, save field, manager or
-  transition is added.
+- Scope guard: `RunManager` remains the sole owner of judgment, outcome and
+  flow; the UI never decides whether a strike holds (Arena attiva, October 2026).
+
+## Crowd exchanges and favour panel (October 2026)
+
+- The gesture panel hosts three exchanges per arena. Its title reads
+  `Scambio N di 3:` followed by what the crowd is about to do (from
+  `meta.exchange.line`); each tile keeps its name and Registry note and prints
+  the exact price of that answer (`placa_text`, `provoca_text`). After each
+  answer RunManager sends the next exchange as a new payload: the tiles unlock
+  after the normal modal read delay, which is the beat between exchanges.
+- `HUD/CrowdFavorPanel`, top left, mirrors the Segni box: title
+  `LA GRADINATA`, a favour bar from -5 to +5 (`CrowdFavorBar`, pressure-bar
+  styles), the favour with its band as body (`Favore +2. Ben disposta: ...`)
+  and the last price paid as note. A triumph or a riot replaces the note with
+  `LA GRADINATA TI PORTA: posta +2.` or
+  `LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.` It is hidden outside a
+  percorso and in ending mode.
+- Reactive only: it renders `crowd_favor_changed` and never computes favour.
+
+## Vessa's banco and the ledger (October 2026)
+
+- The closed Registry hosts `BancoPanel` under `APRI IL REGISTRO`: title
+  `BANCO DI VESSA  ·  Conto N Denari`, three buttons (`Btn_Banco_favor`,
+  `Btn_Banco_pressure`, `Btn_Banco_insure`) reading title, effect and price, and
+  a note with the last ledger movement. In debt or without funds the buttons
+  are disabled and the note says why.
+- The HUD rail adds `Conto N Denari` after the posta. Coins burst from the rail
+  when the account grows; a loss shakes and flashes ash.
+- Reactive only: both render `ledger_changed`; a press emits
+  `request_banco_purchase(item_id)` and nothing else.
+
+## Orvo's bando and the chain (October 2026)
+
+- `HUD/BandoPanel`, bottom left (250 px wide, same dossier style as the Segni
+  box): title `BANDO DI ORVO`, a bar of the posta against the quota
+  (`BandoBar`, pressure-bar styles), the body by status
+  (`%d di %d Gloria entro l'arena %d.`, `Bando chiuso: Denari +%d e un gradino.`,
+  `Bando scaduto: nessun gradino.`, `Bando mancato: nessun gradino.`) and a note
+  with the ladder (`Gradino %d di %d.` plus the racconto or pacts at stake).
+  Closing the bando bursts coins and flashes; a lapsed bando shakes the panel.
+  It is hidden outside a percorso and in ending mode.
+- On the closed Registry the intro reads `IL BANDO DI ORVO` with
+  `Incassa %d Gloria entro l'arena %d.` and the reward; the seal panel reads
+  `Gradino %d di %d`.
+- The dossier adds a third line: the bando closed or missed, then the next
+  bando and the racconto at stake.
+- The chain appears in the rail as the worth of the next held seal
+  (`Catena x1,5`, decimal point in English) and in the seal text
+  (`Catena %d: posta %s.`) from the second held arena seal on.
+- Reactive only: everything renders `bando_changed` and the seal payload
+  (`chain`, `chain_multiplier`); the UI never computes quota, step or chain.
+
+## Impact feedback (October 2026)
+
+- `scripts/ui/impact_feedback.gd` gives the player's gestures weight: a brief
+  shake of the whole UI layer (`CanvasLayer.offset`), a full-screen flash
+  (`ImpactFlash`) and one-shot wax, ash, bone or sand bursts.
+- Triggers: pact signing (`bet_placed`), the gesture buttons (placa is light,
+  provoca is strong), each seal strike (held strikes grow stronger, a crack
+  shakes hardest and bursts ash, a shown Segno flashes bone) and the favour
+  (a rise flashes sand, a fall shakes; a triumph flashes bone and bursts sand
+  from the panel, a riot shakes hard, flashes ash and bursts ash).
+- Presentation only: it runs after RunManager has answered and never changes
+  flow, outcome or the seal geometry. Reduced motion disables the shake, keeps
+  the flash at 40% and a quarter of the particles.
 
 ## Final dossier contract (OF-10/OF-11)
 
@@ -498,10 +569,10 @@ The reactive view covers HUD/menu with black. Intermediate Silence offers
 menu return after two seconds. Absence has no CTA, era name, classification
 or postgame; RunManager independently rejects restart/Continue. Environment
 fade never reduces text or focus contrast. The ritual instruction is
-IMPRIMI IL SIGILLO: TRE COLPI, with no timing-based outcome promise. From the
-second percorso (`rite_learned`) it reads IMPRIMI IL SIGILLO: UN COLPO and one
-strike fills the three wax sockets; the sealed pact tablet stays on screen for
-the ritual time without its CTA (loop review, October 2026).
+IMPRIMI IL SIGILLO, with no timing-based outcome promise; every strike is
+answered on the seal (Arena attiva, October 2026). From the second percorso
+(`rite_learned`) the sealed pact tablet stays on screen for the ritual time
+without its CTA (loop review, October 2026).
 
 ## Menu identity revision
 

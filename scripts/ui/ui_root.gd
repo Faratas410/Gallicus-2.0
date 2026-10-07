@@ -13,8 +13,8 @@ extends CanvasLayer
 
 
 const FAST_SELECTION_SECONDS: int = 12
-const MIN_MODAL_READ_TIME_SEC: float = 1.25
-const SENTENCE_BANNER_SECONDS: float = 1.2
+const MIN_MODAL_READ_TIME_SEC: float = 0.5
+const SENTENCE_BANNER_SECONDS: float = 0.8
 const REGISTER_ANNOTATION_FALLBACK_SECONDS: float = 1.2
 const FADE_IN_SEC: float = 0.22
 const FADE_OUT_SEC: float = 0.18
@@ -26,18 +26,18 @@ const SIGN_PREVIEW_SCALE: float = 1.015
 const MOTION_KIND_STANDARD: String = "standard"
 const MOTION_KIND_RITUAL: String = "ritual"
 const MOTION_KIND_ENDING: String = "ending"
-const MOTION_BASE_POSITION_META: StringName = &"motion_base_position"
+const MOTION_BASE_OFFSETS_META: StringName = &"motion_base_offsets"
 const BACKDROP_BASE_SCALE_META: StringName = &"backdrop_base_scale"
 const BACKDROP_SHADE_ALPHA_META: StringName = &"backdrop_shade_alpha"
 const PUSH_LUCK_DETAILS_MAX_LINES: int = 3
 const PUSH_LUCK_DETAIL_MAX_CHARS: int = 72
 const QUICK_CUT_MAX_SECONDS: float = 1.5
-const VERDICT_REVEAL_STEP_SECONDS: float = 0.34
+const VERDICT_REVEAL_STEP_SECONDS: float = 0.22
 const VERDICT_REVEAL_HOLD_SECONDS: float = 0.12
-const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.38
-const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.44
-const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.36
-const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.30
+const VERDICT_STAGE_SUBTITLE_DELAY_SECONDS: float = 0.24
+const VERDICT_STAGE_BODY_DELAY_SECONDS: float = 0.26
+const VERDICT_STAGE_DETAILS_DELAY_SECONDS: float = 0.22
+const VERDICT_STAGE_BUTTONS_DELAY_SECONDS: float = 0.18
 const RESOLUTION_RITUAL_STRIKES_REQUIRED: int = 3
 const RESOLUTION_RITUAL_BEAT_SECONDS: float = 0.9
 const RESOLUTION_RITUAL_HIT_WINDOW_SECONDS: float = 0.18
@@ -45,11 +45,18 @@ const RESOLUTION_RITUAL_HIT_WINDOW_SECONDS: float = 0.18
 const JUDGMENT_SEAL_SOCKET_ANCHORS: Array[Vector2] = [Vector2(0.081, 0.73), Vector2(0.148, 0.73), Vector2(0.214, 0.73)]
 const JUDGMENT_SEAL_PIP_RADIUS: float = 6.0
 const JUDGMENT_SEAL_PIP_WAX: Color = Color(0.66, 0.17, 0.12, 1.0)
+const JUDGMENT_SEAL_PIP_CRACKED: Color = Color(0.16, 0.13, 0.11, 1.0)
 const JUDGMENT_SEAL_PIP_WAX_ON_BEAT: Color = Color(0.82, 0.24, 0.14, 1.0)
 const BUTTON_STYLE_PRIMARY_NORMAL_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_normal.tres"
 const BUTTON_STYLE_PRIMARY_HOVER_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_hover.tres"
 const BUTTON_STYLE_PRIMARY_PRESSED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres"
 const BUTTON_STYLE_PRIMARY_DISABLED_PATH: String = "res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres"
+const ImpactFeedbackScript = preload("res://scripts/ui/impact_feedback.gd")
+const IMPACT_WAX: Color = Color(0.72, 0.16, 0.1, 1.0)
+const IMPACT_ASH: Color = Color(0.2, 0.17, 0.15, 1.0)
+const IMPACT_BONE: Color = Color(0.93, 0.87, 0.74, 1.0)
+const IMPACT_SAND: Color = Color(0.82, 0.68, 0.45, 1.0)
+const IMPACT_COIN: Color = Color(0.93, 0.74, 0.32, 1.0)
 const RECEIPT_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/receipt/sb_registry_receipt_pressed.tres")
 const RECEIPT_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/receipt/sb_registry_receipt_disabled.tres")
 const RECEIPT_TAKEN_META: StringName = &"registry_receipt_taken"
@@ -157,6 +164,11 @@ const _GAME_EVENT_WIRING_GUARDED: Array[Dictionary] = [
 	{"signal": &"pact_sealed_closed", "handler": &"_on_pact_sealed_closed"},
 	{"signal": &"resolve_ritual_opened", "handler": &"_on_resolve_ritual_opened"},
 	{"signal": &"resolve_ritual_closed", "handler": &"_on_resolve_ritual_closed"},
+	{"signal": &"seal_strike_resolved", "handler": &"_on_seal_strike_resolved"},
+	{"signal": &"crowd_favor_changed", "handler": &"_on_crowd_favor_changed"},
+	{"signal": &"ledger_changed", "handler": &"_on_ledger_changed"},
+	{"signal": &"bando_changed", "handler": &"_on_bando_changed"},
+	{"signal": &"bet_placed", "handler": &"_on_bet_placed_impact"},
 	{"signal": &"push_luck_opened", "handler": &"_on_push_luck_opened"},
 	{"signal": &"push_luck_closed", "handler": &"_on_push_luck_closed"},
 	{"signal": &"scars_updated", "handler": &"_on_scars_updated"},
@@ -302,6 +314,17 @@ var countdown_label: Label = null
 var countdown_panel: Control = null
 
 var scars_panel: Control = null
+var crowd_favor_panel: Control = null
+var _gesture_exchange: Dictionary = {}
+var _ledger_denari: int = 0
+var crowd_favor_bar: ProgressBar = null
+var crowd_favor_body: Label = null
+var crowd_favor_note: Label = null
+var bando_panel: Control = null
+var bando_bar: ProgressBar = null
+var bando_body: Label = null
+var bando_note: Label = null
+var _bando_view: Dictionary = {}
 var scars_label: Label = null
 var scars_detail_panel: Control = null
 var scars_detail_text: RichTextLabel = null
@@ -357,6 +380,9 @@ var resolve_ritual_advance_button: Button = null
 var _pact_tablet_locked: bool = false
 var _pact_tablet_request_sequence_id: int = 0
 var _resolve_ritual_strike_count: int = 0
+var _resolve_ritual_strike_on_beat: bool = false
+var _seal_awaiting_scar_choice: bool = false
+var _impact: Node = null
 var _resolve_ritual_started_msec: int = 0
 var _resolve_ritual_pulse_tween: Tween = null
 var _resolve_ritual_hit_tween: Tween = null
@@ -423,6 +449,10 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_run_manager_port = RunManagerUiPort.new(get_tree())
 	_bind_scene_nodes()
+	_impact = ImpactFeedbackScript.new()
+	_impact.name = "ImpactFeedback"
+	add_child(_impact)
+	_impact.setup(self, Callable(self, "_is_reduced_motion"))
 	if GameEvents != null and GameEvents.has_signal("settings_changed"):
 		var settings_callable: Callable = Callable(self, "_on_settings_changed")
 		if not GameEvents.settings_changed.is_connected(settings_callable):
@@ -596,6 +626,14 @@ func _bind_scene_nodes() -> void:
 	escalation_bar = get_node_or_null("HUD/PressureRail/PressureRailMargin/EscalationRow/EscalationBar") as Range
 	pressure_state_label = get_node_or_null("HUD/PressureRail/PressureRailMargin/EscalationRow/PressureStateLabelPanel/PressureStateLabel") as Label
 	scars_panel = get_node_or_null("HUD/ScarsPanel") as Control
+	crowd_favor_panel = get_node_or_null("HUD/CrowdFavorPanel") as Control
+	crowd_favor_bar = get_node_or_null("HUD/CrowdFavorPanel/CrowdFavorVBox/CrowdFavorBar") as ProgressBar
+	crowd_favor_body = get_node_or_null("HUD/CrowdFavorPanel/CrowdFavorVBox/CrowdFavorBody") as Label
+	crowd_favor_note = get_node_or_null("HUD/CrowdFavorPanel/CrowdFavorVBox/CrowdFavorNote") as Label
+	bando_panel = get_node_or_null("HUD/BandoPanel") as Control
+	bando_bar = get_node_or_null("HUD/BandoPanel/BandoVBox/BandoBar") as ProgressBar
+	bando_body = get_node_or_null("HUD/BandoPanel/BandoVBox/BandoBody") as Label
+	bando_note = get_node_or_null("HUD/BandoPanel/BandoVBox/BandoNote") as Label
 	scars_label = get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll/ScarsEntries/ScarsLabelPanel/ScarsLabel") as Label
 	audience_context_panel = get_node_or_null("HUD/AudienceContextLabelPanel") as Control
 	audience_context_label = get_node_or_null("HUD/AudienceContextLabelPanel/AudienceContextLabel") as Label
@@ -975,6 +1013,7 @@ func _apply_campaign_environment() -> void:
 		(background as TextureRect).self_modulate = Color(1.0 - fade, 1.0 - fade, 1.0 - fade, 1.0)
 
 func _on_run_started() -> void:
+	_set_crowd_favor_visible(false)
 	_apply_campaign_environment()
 	_reset_pact_tablet_state()
 	_reset_gesture_choice_state()
@@ -1276,6 +1315,8 @@ func _on_run_failed() -> void:
 		controls_hint_panel.visible = false
 
 func _on_run_ended(_reason: String, _summary: Dictionary) -> void:
+	_set_crowd_favor_visible(false)
+	_set_bando_visible(false)
 	if _reason == "REGISTRY_SILENCE" or _reason == "REGISTRY_ABSENCE":
 		_set_game_over_modal(false)
 		return
@@ -1351,7 +1392,27 @@ func _build_smart_register_summary() -> String:
 		tr("Segni: %d") % _last_finale_scars.size(),
 		tr("Pressione massima: %d/%d") % [pressure_peak, _get_pressure_max(_escalation_max)],
 	]
-	return "%s\n%s" % [outcome_line, "  ·  ".join(stakes)]
+	var bando_line: String = _dossier_bando_line()
+	if bando_line == "":
+		return "%s\n%s" % [outcome_line, "  ·  ".join(stakes)]
+	return "%s\n%s\n%s" % [outcome_line, "  ·  ".join(stakes), bando_line]
+
+func _dossier_bando_line() -> String:
+	# The dossier closes on what comes next: the bando's outcome and the next quota.
+	var status: String = str(_bando_view.get("status", ""))
+	if status == "":
+		return ""
+	var parts: Array[String] = []
+	if status == "closed":
+		parts.append(tr("Bando chiuso: gradino %d di %d.") % [int(_bando_view.get("step", 0)), int(_bando_view.get("steps", 0))])
+	else:
+		parts.append(tr("Bando mancato: %d Gloria entro l'arena %d.") % [int(_bando_view.get("quota", 0)), int(_bando_view.get("deadline", 0))])
+	if not bool(_bando_view.get("ladder_complete", false)):
+		parts.append(tr("Prossimo bando: %d Gloria entro l'arena %d.") % [int(_bando_view.get("next_quota", 0)), int(_bando_view.get("next_deadline", 0))])
+		var tale: String = str(_bando_view.get("prize_tale", ""))
+		if tale != "":
+			parts.append(tr("In palio il racconto «%s».") % tr(tale))
+	return " ".join(parts)
 
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
@@ -1713,6 +1774,10 @@ func _format_run_status_line(pressure_level: int) -> String:
 		var arena_index: int = _run_manager_port.get_arena_index()
 		if arena_index > 0:
 			parts.append(tr("In posta %d Gloria") % _run_manager_port.get_run_stake())
+			var chain_multiplier: float = _run_manager_port.get_seal_chain_multiplier()
+			if chain_multiplier > 1.0:
+				parts.append(tr("Catena %s") % _chain_multiplier_text(chain_multiplier))
+			parts.append(tr("Conto %d Denari") % _ledger_denari)
 			var arena_limit: int = _run_manager_port.get_arena_limit()
 			if arena_limit > 0:
 				parts.append(tr("Arena %d di %d") % [arena_index, arena_limit])
@@ -2094,10 +2159,10 @@ func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	var doom_short: String = str(payload.get("doom_short", ""))
 	var subtitle: String = "%s\n%s" % [
 		tr("Il Registro pesa il patto."),
-		tr("Imprimi tre colpi sul sigillo."),
+		tr("Ogni colpo mette alla prova la cera."),
 	]
 	if doom_short != "":
-		# The seal prompt already asks for three strikes: the body keeps only the stake.
+		# The seal prompt already explains the strikes: the body keeps only the stake.
 		subtitle = tr("Se il patto cede: %s") % _localize_doom_effect(doom_short)
 	enqueue_post_bet_message({
 		"kind": "resolve_ritual",
@@ -2122,41 +2187,279 @@ func _on_resolve_ritual_closed() -> void:
 	_refresh_modal_dimmer()
 
 func _on_resolve_ritual_next_pressed() -> void:
-	if resolve_ritual_modal != null and resolve_ritual_modal.visible:
-		_on_resolve_ritual_strike_pressed()
+	# ALZA LA MANO: keep what the seal has held and let the Registry advance.
+	if resolve_ritual_modal == null or not resolve_ritual_modal.visible:
 		return
+	if _judgment_seal_locked or _resolve_ritual_strike_count <= 0:
+		return
+	if _seal_awaiting_scar_choice:
+		# MOSTRA UN SEGNO: the body pays so the seal can hold.
+		_seal_awaiting_scar_choice = false
+		_judgment_seal_locked = true
+		_set_seal_choice_buttons_enabled(false)
+		if not _emit_game_event_signal_if_available(&"request_ritual_advance", ["show_scar"]):
+			_recover_judgment_seal_request_lock()
+		return
+	_complete_resolution_ritual_interaction()
 
 func _on_resolve_ritual_strike_pressed() -> void:
 	if resolve_ritual_modal == null or not resolve_ritual_modal.visible:
 		return
 	if _judgment_seal_locked:
 		return
+	if _seal_awaiting_scar_choice:
+		# LASCIA CEDERE: the cracked seal gives way with its normal cost.
+		_seal_awaiting_scar_choice = false
+		_complete_resolution_ritual_interaction()
+		return
 	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
 		return
-	var on_beat: bool = _is_resolution_ritual_on_beat()
-	# Once the rite is learned a single strike presses all three drops.
-	for _drop: int in range(_resolution_strikes_per_press()):
-		_resolve_ritual_strike_count += 1
-		_apply_resolution_ritual_strike_feedback(on_beat)
-	if _resolve_ritual_strike_count >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
-		_complete_resolution_ritual_interaction()
-	else:
-		_play_sfx(&"registry_judgment_seal_strike")
+	# RunManager tests the wax and answers through seal_strike_resolved.
+	_resolve_ritual_strike_on_beat = _is_resolution_ritual_on_beat()
+	_judgment_seal_locked = true
+	_set_seal_choice_buttons_enabled(false)
+	_play_sfx(&"registry_judgment_seal_strike")
+	if not _emit_game_event_signal_if_available(&"request_ritual_advance", ["strike"]):
+		_recover_judgment_seal_request_lock()
 
-func _resolution_strikes_per_press() -> int:
-	if _run_manager_port != null and _run_manager_port.has_manager() and _run_manager_port.is_rite_learned():
-		return RESOLUTION_RITUAL_STRIKES_REQUIRED
-	return 1
+func _on_crowd_favor_changed(payload: Dictionary) -> void:
+	# The rail reads the posta too: a triumph adds to it.
+	_update_escalation_bar()
+	var favor: int = int(payload.get("favor", 0))
+	var event: String = str(payload.get("event", ""))
+	var note: String = str(payload.get("note", ""))
+	if crowd_favor_bar != null:
+		var previous: float = crowd_favor_bar.value
+		if _impact != null:
+			_impact.slide(crowd_favor_bar, "value", float(favor), 0.25)
+		else:
+			crowd_favor_bar.value = float(favor)
+		if _impact != null and event == "":
+			if float(favor) > previous:
+				_impact.flash(IMPACT_SAND, 0.08, 0.3)
+			elif float(favor) < previous:
+				_impact.shake(5.0, 0.18)
+	if crowd_favor_body != null:
+		crowd_favor_body.text = "%s %s" % [tr("Favore %+d.") % favor, tr(_crowd_favor_band_text(favor))]
+	if crowd_favor_note != null:
+		if event == "triumph":
+			crowd_favor_note.text = tr("LA GRADINATA TI PORTA: posta +2.")
+		elif event == "riot":
+			crowd_favor_note.text = tr("LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.")
+		else:
+			crowd_favor_note.text = tr(note) if note != "" else ""
+	if _impact != null:
+		if event == "triumph":
+			_impact.flash(IMPACT_BONE, 0.22, 0.5)
+			_impact_at_control(crowd_favor_panel, IMPACT_SAND, 40, 4.0)
+		elif event == "riot":
+			_impact.shake(14.0, 0.4)
+			_impact.flash(IMPACT_ASH, 0.25, 0.5)
+			_impact_at_control(crowd_favor_panel, IMPACT_ASH, 36, 0.0)
+	_set_crowd_favor_visible(true)
+
+func _on_ledger_changed(payload: Dictionary) -> void:
+	# Vessa's account lives in the rail; coins fly in, debt shakes the stand.
+	_ledger_denari = int(payload.get("denari", 0))
+	_update_escalation_bar()
+	var delta: int = int(payload.get("delta", 0))
+	if _impact == null or delta == 0:
+		return
+	if delta > 0:
+		_impact_at_control(pressure_state_label, IMPACT_COIN, 10 + 4 * delta, 3.0)
+	else:
+		_impact.shake(6.0 + 2.0 * float(absi(delta)), 0.25)
+		_impact.flash(IMPACT_ASH, 0.12, 0.3)
+
+func _on_bando_changed(payload: Dictionary) -> void:
+	# Orvo's quota lives in its own panel, bottom left: posta against the quota.
+	_bando_view = payload.duplicate()
+	_render_bando_panel()
+	var note: String = str(payload.get("note", ""))
+	if note == "BANDO CHIUSO" and _impact != null:
+		_impact.flash(IMPACT_BONE, 0.2, 0.45)
+		_impact_at_control(bando_panel, IMPACT_COIN, 36, 4.0)
+	elif note != "" and _impact != null:
+		_impact.shake(6.0, 0.2)
+	var status: String = str(payload.get("status", ""))
+	_set_bando_visible(status == "open" or status == "lapsed")
+
+func _render_bando_panel() -> void:
+	if _bando_view.is_empty():
+		return
+	var status: String = str(_bando_view.get("status", ""))
+	var quota: int = maxi(int(_bando_view.get("quota", 0)), 1)
+	var posta: int = int(_bando_view.get("posta", 0))
+	if bando_bar != null:
+		bando_bar.max_value = float(quota)
+		bando_bar.value = float(quota if status == "closed" else mini(posta, quota))
+	if bando_body != null:
+		match status:
+			"closed":
+				bando_body.text = tr("Bando chiuso: Denari +%d e un gradino.") % int(_bando_view.get("denari", 0))
+			"lapsed":
+				bando_body.text = tr("Bando scaduto: nessun gradino.")
+			"missed":
+				bando_body.text = tr("Bando mancato: nessun gradino.")
+			_:
+				bando_body.text = tr("%d di %d Gloria entro l'arena %d.") % [posta, quota, int(_bando_view.get("deadline", 0))]
+	if bando_note != null:
+		bando_note.text = _bando_ladder_text(_bando_view)
+
+func _bando_ladder_text(view: Dictionary) -> String:
+	var steps: int = int(view.get("steps", 12))
+	var step: int = int(view.get("step", 0))
+	if bool(view.get("ladder_complete", false)):
+		return tr("Scala completa: %d gradini.") % steps
+	var lines: Array[String] = [tr("Gradino %d di %d.") % [mini(step + 1, steps), steps]]
+	var tale: String = str(view.get("prize_tale", ""))
+	if tale != "":
+		lines.append(tr("In palio il racconto «%s».") % tr(tale))
+	if bool(view.get("prize_pacts", false)):
+		lines.append(tr("In palio nuovi patti nel Registro."))
+	return " ".join(lines)
+
+func _set_bando_visible(visible_now: bool) -> void:
+	if bando_panel != null:
+		bando_panel.visible = visible_now and not _ending_mode_active
+
+func _crowd_favor_band_text(favor: int) -> String:
+	if favor <= -3:
+		return "Ostile: blocca la quietanza."
+	if favor <= 0:
+		return "Fredda: la quietanza rende meno."
+	if favor <= 2:
+		return "Ben disposta: il sigillo regge un po' di più."
+	return "Ti acclama: il sigillo regge di più."
+
+func _set_crowd_favor_visible(visible_now: bool) -> void:
+	if crowd_favor_panel != null:
+		crowd_favor_panel.visible = visible_now and not _ending_mode_active
+
+func _chain_multiplier_text(multiplier: float) -> String:
+	var digits: String = "%d" % roundi(multiplier) if is_equal_approx(multiplier, roundf(multiplier)) else "%.1f" % multiplier
+	if not TranslationServer.get_locale().begins_with("en"):
+		digits = digits.replace(".", ",")
+	return "x" + digits
+
+func _on_seal_strike_resolved(payload: Dictionary) -> void:
+	if resolve_ritual_modal == null or not resolve_ritual_modal.visible:
+		return
+	_resolve_ritual_strike_count = clampi(int(payload.get("strike", _resolve_ritual_strike_count + 1)), 1, RESOLUTION_RITUAL_STRIKES_REQUIRED)
+	var held: bool = bool(payload.get("held", false))
+	_apply_resolution_ritual_strike_feedback(_resolve_ritual_strike_on_beat, held)
+	_play_seal_impact(held, bool(payload.get("scar_shown", false)))
+	var held_gain: int = int(payload.get("held_gain", 0))
+	var held_line: String = tr("Il sigillo regge: +%d Gloria in posta.") % held_gain
+	var chain: int = int(payload.get("chain", 0))
+	if held and chain >= 2:
+		held_line += " " + tr("Catena %d: posta %s.") % [chain, _chain_multiplier_text(float(payload.get("chain_multiplier", 1.0)))]
+	if not held and bool(payload.get("can_show_scar", false)):
+		_seal_awaiting_scar_choice = true
+		_judgment_seal_locked = false
+		_set_resolve_ritual_body("%s\n%s" % [
+			tr("La cera si incrina."),
+			tr("Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso."),
+		])
+		if resolve_ritual_prompt != null:
+			resolve_ritual_prompt.text = tr("LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE")
+		_set_seal_choice_buttons_enabled(true)
+		if resolve_ritual_strike_button != null:
+			resolve_ritual_strike_button.text = tr("LASCIA CEDERE")
+		if resolve_ritual_advance_button != null:
+			resolve_ritual_advance_button.text = tr("MOSTRA UN SEGNO")
+		return
+	if bool(payload.get("scar_shown", false)):
+		_apply_resolution_ritual_strike_feedback(_resolve_ritual_strike_on_beat, true)
+	if held and bool(payload.get("can_strike_again", false)):
+		_judgment_seal_locked = false
+		_set_resolve_ritual_body("%s\n%s" % [
+			held_line,
+			tr("Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.") % [
+				tr(str(payload.get("next_odds", ""))).to_lower(),
+				int(payload.get("next_gain", 0)),
+			],
+		])
+		if resolve_ritual_prompt != null:
+			resolve_ritual_prompt.text = tr("IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO")
+		_set_seal_choice_buttons_enabled(true)
+		return
+	# A cracked or full seal closes itself: RunManager advances after a short hold.
+	_judgment_seal_locked = true
+	_set_seal_choice_buttons_enabled(false)
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.text = tr("SIGILLATO")
+	if resolve_ritual_advance_button != null:
+		resolve_ritual_advance_button.visible = false
+	if held:
+		_set_resolve_ritual_body(held_line)
+		if resolve_ritual_prompt != null:
+			if bool(payload.get("scar_shown", false)):
+				resolve_ritual_prompt.text = tr("IL SEGNO SALVA IL SIGILLO - IL CORPO PAGA")
+			else:
+				resolve_ritual_prompt.text = tr("SIGILLO PIENO - IL REGISTRO PUÒ AVANZARE")
+				_set_judgment_seal_state(RESOLUTION_RITUAL_STRIKES_REQUIRED)
+	elif resolve_ritual_prompt != null:
+		resolve_ritual_prompt.text = tr("LA CERA SI INCRINA - IL SIGILLO CEDE")
+	_play_sfx(&"registry_judgment_seal_resolve")
+
+func _play_seal_impact(held: bool, scar_shown: bool) -> void:
+	# Each strike lands harder than the last; a crack hits hardest.
+	if _impact == null:
+		return
+	var at: Vector2 = _seal_impact_point()
+	if scar_shown:
+		_impact.shake(10.0, 0.3)
+		_impact.flash(IMPACT_BONE, 0.22, 0.4)
+		_impact.burst(at, IMPACT_BONE, 26, 420.0)
+	elif held:
+		var weight: float = float(_resolve_ritual_strike_count)
+		_impact.shake(4.0 + weight * 3.0, 0.16 + weight * 0.04)
+		_impact.flash(IMPACT_BONE, 0.06 + weight * 0.03, 0.22)
+		_impact.burst(at, IMPACT_WAX, 14 + _resolve_ritual_strike_count * 8, 320.0 + weight * 80.0)
+	else:
+		_impact.shake(16.0, 0.4)
+		_impact.flash(IMPACT_WAX, 0.3, 0.5)
+		_impact.burst(at, IMPACT_ASH, 40, 520.0, false)
+
+func _seal_impact_point() -> Vector2:
+	var index: int = clampi(_resolve_ritual_strike_count - 1, 0, maxi(resolve_ritual_seal_pips.size() - 1, 0))
+	if index < resolve_ritual_seal_pips.size() and resolve_ritual_seal_pips[index] != null:
+		return resolve_ritual_seal_pips[index].get_global_rect().get_center()
+	if resolve_ritual_strike_button != null:
+		return resolve_ritual_strike_button.get_global_rect().get_center()
+	return get_viewport().get_visible_rect().size * 0.5
+
+func _impact_at_control(control: Control, color: Color, amount: int, strength: float) -> void:
+	if _impact == null or control == null:
+		return
+	_impact.shake(strength, 0.2)
+	_impact.burst(control.get_global_rect().get_center(), color, amount, 360.0)
+
+func _on_bet_placed_impact(_bet_id: String, _stake: int, _odds: float) -> void:
+	# The signature presses into the wax: a stamp, not a click.
+	if _impact == null:
+		return
+	_impact.shake(9.0, 0.22)
+	_impact.flash(IMPACT_WAX, 0.12, 0.3)
+	_impact.burst(get_viewport().get_visible_rect().size * Vector2(0.5, 0.75), IMPACT_WAX, 24, 380.0)
+
+func _set_seal_choice_buttons_enabled(enabled: bool) -> void:
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.disabled = not enabled
+		resolve_ritual_strike_button.text = tr("COLPISCI ANCORA") if _resolve_ritual_strike_count > 0 else tr("COLPISCI")
+	if resolve_ritual_advance_button != null:
+		resolve_ritual_advance_button.text = tr("ALZA LA MANO")
+		resolve_ritual_advance_button.visible = _resolve_ritual_strike_count > 0
+		resolve_ritual_advance_button.disabled = not enabled or _resolve_ritual_strike_count <= 0
 
 func _reset_resolution_ritual_interaction() -> void:
 	_resolve_ritual_strike_count = 0
+	_seal_awaiting_scar_choice = false
 	_resolve_ritual_started_msec = Time.get_ticks_msec()
 	_reset_judgment_seal_state()
 	if resolve_ritual_prompt != null:
-		if _resolution_strikes_per_press() >= RESOLUTION_RITUAL_STRIKES_REQUIRED:
-			resolve_ritual_prompt.text = tr("IMPRIMI IL SIGILLO: UN COLPO")
-		else:
-			resolve_ritual_prompt.text = tr("IMPRIMI IL SIGILLO: TRE COLPI")
+		resolve_ritual_prompt.text = tr("IMPRIMI IL SIGILLO")
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.visible = true
 		resolve_ritual_strike_button.disabled = false
@@ -2200,11 +2503,11 @@ func _is_resolution_ritual_on_beat() -> bool:
 	var beat_distance: float = minf(beat_position, RESOLUTION_RITUAL_BEAT_SECONDS - beat_position)
 	return beat_distance <= RESOLUTION_RITUAL_HIT_WINDOW_SECONDS
 
-func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
+func _apply_resolution_ritual_strike_feedback(on_beat: bool, held: bool = true) -> void:
 	var mark_index: int = _resolve_ritual_strike_count - 1
 	if mark_index >= 0 and mark_index < resolve_ritual_seal_pips.size():
 		var pip: Panel = resolve_ritual_seal_pips[mark_index]
-		_fill_judgment_seal_pip(pip, on_beat)
+		_fill_judgment_seal_pip(pip, on_beat, held)
 		if pip != null and not _is_reduced_motion():
 			# The drop settles into its socket; the seal itself never moves.
 			pip.scale = Vector2(1.6, 1.6)
@@ -2212,13 +2515,6 @@ func _apply_resolution_ritual_strike_feedback(on_beat: bool) -> void:
 			drop.set_trans(Tween.TRANS_BACK)
 			drop.set_ease(Tween.EASE_OUT)
 			drop.tween_property(pip, "scale", Vector2.ONE, 0.18)
-	if resolve_ritual_prompt != null:
-		var prompts: Array[String] = [
-			tr("PRIMO COLPO - CERA IMPRESSA"),
-			tr("SECONDO COLPO - VERDETTO INCISO"),
-			tr("TERZO COLPO - SIGILLO CHIUSO"),
-		]
-		resolve_ritual_prompt.text = prompts[mini(_resolve_ritual_strike_count - 1, prompts.size() - 1)]
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.text = tr("COLPISCI ANCORA") if _resolve_ritual_strike_count < RESOLUTION_RITUAL_STRIKES_REQUIRED else tr("SIGILLATO")
 		_set_judgment_seal_state(_resolve_ritual_strike_count)
@@ -2248,11 +2544,13 @@ func _build_judgment_seal_pips(seal: Button) -> Array[Panel]:
 		pips.append(pip)
 	return pips
 
-func _fill_judgment_seal_pip(pip: Panel, on_beat: bool) -> void:
+func _fill_judgment_seal_pip(pip: Panel, on_beat: bool, held: bool = true) -> void:
 	if pip == null:
 		return
 	var wax := StyleBoxFlat.new()
 	wax.bg_color = JUDGMENT_SEAL_PIP_WAX_ON_BEAT if on_beat else JUDGMENT_SEAL_PIP_WAX
+	if not held:
+		wax.bg_color = JUDGMENT_SEAL_PIP_CRACKED
 	wax.border_color = Color(0.32, 0.08, 0.06, 1.0)
 	wax.set_border_width_all(1)
 	wax.set_corner_radius_all(int(JUDGMENT_SEAL_PIP_RADIUS))
@@ -2266,7 +2564,6 @@ func _complete_resolution_ritual_interaction() -> void:
 		_resolve_ritual_pulse_tween.kill()
 	if resolve_ritual_prompt != null:
 		resolve_ritual_prompt.text = tr("VERBALE INCISO - IL REGISTRO PUÒ AVANZARE")
-	_set_judgment_seal_state(RESOLUTION_RITUAL_STRIKES_REQUIRED)
 	_judgment_seal_locked = true
 	if resolve_ritual_strike_button != null:
 		resolve_ritual_strike_button.disabled = true
@@ -2295,7 +2592,12 @@ func _recover_judgment_seal_request_if_still_open(request_id: int) -> void:
 	_recover_judgment_seal_request_lock()
 
 func _recover_judgment_seal_request_lock() -> void:
-	_reset_resolution_ritual_interaction()
+	if _resolve_ritual_strike_count <= 0:
+		_reset_resolution_ritual_interaction()
+		return
+	# The seal already answered: give the choice back instead of wiping the wax.
+	_judgment_seal_locked = false
+	_set_seal_choice_buttons_enabled(true)
 
 func _reset_judgment_seal_state() -> void:
 	_judgment_seal_request_sequence_id += 1
@@ -2412,8 +2714,18 @@ func _apply_intermediate_choice_payload(payload: RunUiPayload) -> void:
 		intermediate_choice_audience_label.text = audience_line
 		intermediate_choice_audience_label.visible = audience_line != ""
 		_apply_character_gesture_text()
+	# Scambi con la gradinata: the title shows what the crowd is about to do,
+	# the tiles the exact price of each answer (RunManager decides both).
+	_gesture_exchange = payload.meta.get("exchange", {}) as Dictionary
 	if intermediate_choice_label != null:
-		intermediate_choice_label.text = title
+		var exchange_line: String = str(_gesture_exchange.get("line", ""))
+		if exchange_line != "":
+			intermediate_choice_label.text = "%s %s" % [
+				tr("Scambio %d di %d:") % [int(_gesture_exchange.get("exchange", 1)), int(_gesture_exchange.get("total", 1))],
+				tr(exchange_line),
+			]
+		else:
+			intermediate_choice_label.text = title
 	_set_intermediate_choice_modal(true)
 	var choice_buttons: Array[Button] = []
 	if intermediate_choice_placa_button != null:
@@ -2435,13 +2747,13 @@ func _refresh_gesture_choice_copy() -> void:
 	if intermediate_choice_placa_button != null:
 		intermediate_choice_placa_button.text = "%s\n%s\n%s" % [
 			tr("ABBASSA LO SGUARDO"),
-			tr("Pressione -1. Se il patto regge, posta -1."),
+			tr(str(_gesture_exchange.get("placa_text", "Favore -1."))),
 			tr("Il Registro annota misura."),
 		]
 	if intermediate_choice_provoca_button != null:
 		intermediate_choice_provoca_button.text = "%s\n%s\n%s" % [
 			tr("SFIDA LA GRADINATA"),
-			tr("Pressione +1. Se il patto regge, posta +2."),
+			tr(str(_gesture_exchange.get("provoca_text", "Favore +1, Pressione +1."))),
 			tr("Il Registro annota esposizione."),
 		]
 
@@ -2916,6 +3228,7 @@ func _on_intermediate_choice_placa_pressed() -> void:
 		false
 	)
 	_play_sfx(&"arena_gesture_placa")
+	_impact_at_control(intermediate_choice_placa_button, IMPACT_SAND, 10, 3.0)
 	if not _emit_game_event_signal_if_available(&"request_mid_choice_select", [0]):
 		_recover_gesture_choice_request_lock()
 		return
@@ -2935,6 +3248,7 @@ func _on_intermediate_choice_provoca_pressed() -> void:
 		false
 	)
 	_play_sfx(&"arena_gesture_provoca")
+	_impact_at_control(intermediate_choice_provoca_button, IMPACT_WAX, 26, 10.0)
 	if not _emit_game_event_signal_if_available(&"request_mid_choice_select", [1]):
 		_recover_gesture_choice_request_lock()
 		return
@@ -3836,18 +4150,32 @@ func _on_modal_fade_out_complete(panel: CanvasItem, modal: Control) -> void:
 			_current_modal = null
 	_refresh_modal_dimmer()
 
-func _get_panel_motion_base_position(control: Control) -> Vector2:
+func _get_panel_motion_base_offsets(control: Control) -> Vector4:
+	# Panels are anchored to the screen centre: keep their declared offsets, never an
+	# absolute position, so a layout pass or window change cannot strand them.
 	if control == null:
-		return Vector2.ZERO
-	if not control.has_meta(MOTION_BASE_POSITION_META):
-		control.set_meta(MOTION_BASE_POSITION_META, control.position)
-	return control.get_meta(MOTION_BASE_POSITION_META) as Vector2
+		return Vector4.ZERO
+	if not control.has_meta(MOTION_BASE_OFFSETS_META):
+		control.set_meta(
+			MOTION_BASE_OFFSETS_META,
+			Vector4(control.offset_left, control.offset_top, control.offset_right, control.offset_bottom)
+		)
+	return control.get_meta(MOTION_BASE_OFFSETS_META) as Vector4
+
+func _set_panel_motion_shift(control: Control, shift_y: float) -> void:
+	if not is_instance_valid(control):
+		return
+	var base: Vector4 = _get_panel_motion_base_offsets(control)
+	control.offset_left = base.x
+	control.offset_top = base.y + shift_y
+	control.offset_right = base.z
+	control.offset_bottom = base.w + shift_y
 
 func _restore_panel_motion_base(panel: CanvasItem) -> void:
 	var control: Control = panel as Control
 	if control == null:
 		return
-	control.position = _get_panel_motion_base_position(control)
+	_set_panel_motion_shift(control, 0.0)
 	control.scale = Vector2.ONE
 
 func _track_presentation_tween(item: CanvasItem, tween: Tween, key: StringName) -> void:
@@ -3874,29 +4202,29 @@ func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -
 	if _is_reduced_motion():
 		_restore_panel_motion_base(control)
 		return
-	var base_position: Vector2 = _get_panel_motion_base_position(control)
 	var start_scale: Vector2 = Vector2(0.985, 0.985)
-	var start_position: Vector2 = base_position
+	var start_shift: float = 0.0
 	var seconds: float = 0.18
 	match kind:
 		MOTION_KIND_RITUAL:
 			start_scale = Vector2(0.99, 0.99)
-			start_position = base_position + Vector2(0.0, 4.0)
+			start_shift = 4.0
 			seconds = 0.22
 		MOTION_KIND_ENDING:
 			start_scale = Vector2(0.975, 0.975)
 			seconds = 0.24
 		_:
 			pass
+	_set_panel_motion_shift(control, start_shift)
 	control.pivot_offset = control.size * 0.5
-	control.position = start_position
 	control.scale = start_scale
 	var tween: Tween = create_tween()
 	_track_presentation_tween(control, tween, &"panel_enter_tween")
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(control, "scale", Vector2.ONE, seconds)
-	tween.parallel().tween_property(control, "position", base_position, seconds)
+	if start_shift != 0.0:
+		tween.parallel().tween_method(func(value: float) -> void: _set_panel_motion_shift(control, value), start_shift, 0.0, seconds)
 
 func _play_backdrop_enter(modal: Control, kind: String = MOTION_KIND_STANDARD) -> void:
 	if modal == null:
@@ -4085,7 +4413,7 @@ func _on_settings_changed(payload: Dictionary) -> void:
 		var canvas: CanvasItem = item as CanvasItem
 		for key: StringName in [&"panel_enter_tween", &"backdrop_enter_tween", &"shade_enter_tween"]:
 			_release_presentation_tween(canvas, key)
-		if canvas.has_meta(MOTION_BASE_POSITION_META):
+		if canvas.has_meta(MOTION_BASE_OFFSETS_META):
 			_restore_panel_motion_base(canvas)
 		if canvas is Control and canvas.has_meta(BACKDROP_BASE_SCALE_META):
 			(canvas as Control).scale = canvas.get_meta(BACKDROP_BASE_SCALE_META) as Vector2

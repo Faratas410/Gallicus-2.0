@@ -271,15 +271,10 @@ Un gesto debole. Ora ti strappano il rispetto.,A weak gesture. Now they tear awa
 Il gesto è sterile. Ti tengono in debito.,The gesture is barren. They keep you in debt.
 "Il gesto li accende, ma chiedono il crollo.","The gesture ignites them, but they demand your collapse."
 Il Registro pesa il patto.,The Registry weighs the pact.
-Imprimi tre colpi sul sigillo.,Press the seal three times.
 Tre colpi chiudono il verbale.,Three strikes close the record.
-IMPRIMI IL SIGILLO: TRE COLPI,IMPRINT THE SEAL: THREE STRIKES
 COLPISCI,STRIKE
 COLPISCI ANCORA,STRIKE AGAIN
 SIGILLATO,SEALED
-PRIMO COLPO - CERA IMPRESSA,FIRST STRIKE - WAX PRESSED
-SECONDO COLPO - VERDETTO INCISO,SECOND STRIKE - VERDICT CARVED
-TERZO COLPO - SIGILLO CHIUSO,THIRD STRIKE - SEAL CLOSED
 VERBALE INCISO - IL REGISTRO PUÒ AVANZARE,RECORD CARVED - THE REGISTRY MAY ADVANCE
 FASCICOLO CHIUSO - COMPROMISSIONE,CASE FILE CLOSED - COMPROMISE
 FASCICOLO CHIUSO - ASCESA,CASE FILE CLOSED - ASCENT
@@ -847,9 +842,6 @@ NESSUNA ULTERIORE DECISIONE RILEVANTE.,NO FURTHER RELEVANT DECISIONS.
 In posta %d Gloria,%d Glory at stake
 Arena %d di %d,Arena %d of %d
 La posta di %d Gloria resta in gioco. Pressione +%d.,The %d Glory stake stays in play. Pressure +%d.
-"Pressione -1. Se il patto regge, posta -1.","Pressure -1. If the pact holds, stake -1."
-"Pressione +1. Se il patto regge, posta +2.","Pressure +1. If the pact holds, stake +2."
-IMPRIMI IL SIGILLO: UN COLPO,IMPRINT THE SEAL: ONE STRIKE
 Regge spesso,Holds often
 Regge a volte,Holds sometimes
 Regge di rado,Rarely holds
@@ -858,3 +850,170 @@ Regge di rado,Rarely holds
 Perdi metà della posta.,You lose half the stake.
 Perdi tutta la posta.,You lose the whole stake.
 Il Registro resta aperto: incassa la posta o rilancia.,The Registry stays open: bank the stake or raise.
+Ogni colpo mette alla prova la cera.,Every strike tests the wax.
+IMPRIMI IL SIGILLO,IMPRINT THE SEAL
+ALZA LA MANO,RAISE YOUR HAND
+IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO,THE SEAL HOLDS - STRIKE AGAIN OR RAISE YOUR HAND
+SIGILLO PIENO - IL REGISTRO PUÒ AVANZARE,SEAL FULL - THE REGISTRY MAY ADVANCE
+LA CERA SI INCRINA - IL SIGILLO CEDE,THE WAX CRACKS - THE SEAL GIVES WAY
+Il sigillo regge: +%d Gloria in posta.,The seal holds: +%d Glory to the stake.
+"Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Another strike: %s, +%d more Glory. If the wax cracks, the pact gives way."
+La cera si incrina.,The wax cracks.
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Show a Mark to the stands: the seal holds, but the body pays with a new mark. Once per path."
+LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,THE WAX CRACKS - SHOW A MARK OR LET IT GIVE WAY
+LASCIA CEDERE,LET IT GIVE WAY
+MOSTRA UN SEGNO,SHOW A MARK
+IL SEGNO SALVA IL SIGILLO - IL CORPO PAGA,THE MARK SAVES THE SEAL - THE BODY PAYS
+Segno mostrato alla gradinata,Mark shown to the stands
+La gradinata vuole sangue.,The stands want blood.
+La gradinata raccoglie la sabbia.,The stands are gathering sand.
+La gradinata si annoia.,The stands are getting bored.
+La gradinata trattiene il fiato.,The stands hold their breath.
+Favore -1.,Favour -1.
+Favore -2.,Favour -2.
+"Favore +1, Pressione +1. Se il patto regge, posta +1.","Favour +1, Pressure +1. If the pact holds, stake +1."
+Ti ripari: non cambia nulla.,You take cover: nothing changes.
+"Favore +2, ma la sabbia lascia un Segno.","Favour +2, but the sand leaves a Mark."
+"Favore +2, Pressione +1: l'occhio è già perduto.","Favour +2, Pressure +1: the eye is already lost."
+"Favore +1, Pressione +1.","Favour +1, Pressure +1."
+"Favore +1, Pressione -1.","Favour +1, Pressure -1."
+"Favore -2, Pressione +1. Se il patto regge, posta +1.","Favour -2, Pressure +1. If the pact holds, stake +1."
+Il sigillo ha retto: la gradinata approva.,The seal held: the stands approve.
+Il sigillo ha ceduto: la gradinata si raffredda.,The seal gave way: the stands cool.
+LA GRADINATA,THE STANDS
+Favore %+d.,Favour %+d.
+Ostile: blocca la quietanza.,Hostile: it blocks the receipt.
+Fredda: la quietanza rende meno.,Cold: the receipt pays less.
+Ben disposta: il sigillo regge un po' di più.,Well disposed: the seal holds a little more often.
+Ti acclama: il sigillo regge di più.,Cheering you: the seal holds more often.
+LA GRADINATA TI PORTA: posta +2.,THE STANDS CARRY YOU: stake +2.
+"LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.","THE STANDS TURN ON YOU: a Mark, Pressure +1."
+Scambio %d di %d:,Exchange %d of %d:
+Rivolta della gradinata,The stands turned
+Sabbia della gradinata,Sand from the stands
+BANCO DI VESSA,VESSA'S COUNTER
+Conto %d Denari,Account %d Denarii
+%d Denari,%d Denarii
+COMPRA IL FAVORE,BUY FAVOUR
+PAGA LA PRESSIONE,PAY OFF PRESSURE
+ASSICURA LA POSTA,INSURE THE STAKE
+Favore +2.,Favour +2.
+Pressione -2.,Pressure -2.
+"Se il sigillo cede, la posta resta.","If the seal breaks, the stake stays."
+In debito: il banco è chiuso finché una quietanza non salda il conto.,In debt: the counter stays closed until a receipt settles the account.
+La posta di questa arena è assicurata.,This arena's stake is insured.
+La gradinata lancia monete: Denari +%d.,The stands throw coins: Denarii +%d.
+La rivolta costa: Denari -%d.,The riot costs: Denarii -%d.
+Quietanza versata: Denari +%d.,Receipt deposited: Denarii +%d.
+Vessa iscrive il debito: Denari -%d.,Vessa records the debt: Denarii -%d.
+Banco di Vessa: Denari -%d.,Vessa's counter: Denarii -%d.
+Vessa ricorda il debito: Pressione +1.,Vessa remembers the debt: Pressure +1.
+La polizza di Vessa salva la posta.,Vessa's policy saves the stake.
+Comprato al banco: Favore +2.,Bought at the counter: Favour +2.
+Debito con Vessa,Debt with Vessa
+Il conto di Vessa,Vessa's account
+"Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine.",Vessa has opened an account in your name. I copy the figures; she decides the margin.
+Un conto? Una volta qui si pagava con la voce.,An account? Here we used to pay with our voices.
+La voce non si archivia. I Denari sì.,A voice cannot be filed. Denarii can.
+E quando il conto scende sotto zero?,And when the account drops below zero?
+"Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena.","Vessa never forgets a debt. She reminds the stands of it, every arena."
+Allora anche la gradinata tiene un conto. Il suo non si scrive.,Then the stands keep an account too. Theirs is never written down.
+La sabbia nelle tasche,Sand in their pockets
+Hai visto la prima fila? Ha le tasche piene di sabbia.,Have you seen the front row? Their pockets are full of sand.
+"Una volta la sabbia restava giù, sotto i passi. Copriva i segni.","Sand used to stay down there, under the footsteps. It covered the marks."
+Ora la raccolgono. La lanciano quando un patto non piace.,Now they gather it. They throw it when a pact displeases them.
+E quando piace?,And when it pleases them?
+Monete. Vessa le conta prima che tocchino terra.,Coins. Vessa counts them before they touch the ground.
+"Sabbia o monete, il corpo le ricorda tutte e due.","Sand or coins, the body remembers both."
+Il richiamo,The call
+"Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia.",Orvo rehearses his calls under his breath before he goes up. I hear him from the threshold.
+Tu non provavi mai.,You never rehearsed.
+"Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni.","I just called, over everyone. The notch in my crest dates from those days."
+Sul foglio la tacca non c’è. C’è solo l’annuncio accettato.,The notch is not on the page. Only the accepted announcement is.
+Allora scrivi questo: oggi ho scelto di tacere.,Then write this: today I chose to keep quiet.
+Un gallo che tace non è un atto. Non lo copio.,A rooster keeping quiet is not an act. I do not copy it.
+I posti in vendita,Seats for sale
+Vessa è passata con il righello. Vuole vendere anche la terza fila.,Vessa came by with her ruler. She wants to sell the third row too.
+"Ha misurato. Lo spazio libero rende, se lo si iscrive.","She measured. Empty space pays, once it is entered."
+Ogni posto ha un passo. Io li riconosco tutti.,Every seat has its footstep. I recognise them all.
+Anche quello accanto a te?,Even the one next to you?
+Quello non si misura. L’ho detto a Vessa: il righello si ferma lì.,That one is not measured. I told Vessa: the ruler stops there.
+"Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco.","I copied the measure up to your seat. Beyond it, the page stays blank."
+La riga che resta,The line that stays
+Ogni sera raschio le copie sbagliate. La cera torna liscia.,Every evening I scrape the wrong copies. The wax comes back smooth.
+"COPIA RESPINTA
+Riga già iscritta.","COPY REJECTED
+Line already entered."
+Una riga non va via. Ho consumato tre lame.,One line will not come off. I have worn out three blades.
+Che cosa dice?,What does it say?
+Un nome e un fascicolo aperto. Il resto non è di mia competenza.,A name and an open case file. The rest is not my concern.
+Lasciala dov’è. Anch’io lascio il posto com’è.,Leave it where it is. I leave the seat as it is too.
+Vessa: Il conto è aperto.,Vessa: The account is open.
+"Nerio: Copio la cifra, non il motivo.","Nerio: I copy the figure, not the reason."
+Orvo: La prima fila ha le tasche piene.,Orvo: The front row has full pockets.
+Vessa: Di sabbia o di monete?,Vessa: Of sand or of coins?
+Dima: Hanno venduto la terza fila.,Dima: They sold the third row.
+Vessa: Il tuo posto no. Per ora.,Vessa: Not your seat. For now.
+Orvo: Guarda come ti studiano.,Orvo: Look how they study you.
+"Rugo: Prima di gridare, la gradinata pesa.","Rugo: Before it shouts, the crowd weighs you."
+Vessa: La folla paga chi la regge.,Vessa: The crowd pays whoever holds it.
+Orvo: E presenta il conto a chi la perde.,Orvo: And bills whoever loses it.
+Dima: Sento la sabbia nelle tasche.,Dima: I can hear the sand in their pockets.
+Rugo: Allora non è ancora il momento.,Rugo: Then it is not time yet.
+Vessa: Il conto.,Vessa: The account.
+Nerio: Copiato.,Nerio: Copied.
+Orvo: Tasche piene.,Orvo: Full pockets.
+"Vessa: Monete, spero.","Vessa: Coins, I hope."
+Dima: La terza fila.,Dima: The third row.
+Vessa: Venduta.,Vessa: Sold.
+Orvo: Ti pesano.,Orvo: They are weighing you.
+Rugo: Lo so.,Rugo: I know.
+Vessa: Paga chi regge.,Vessa: It pays whoever holds.
+Orvo: Sempre.,Orvo: Always.
+Dima: La sabbia.,Dima: The sand.
+Rugo: Non ancora.,Rugo: Not yet.
+Il posto tenuto,The kept seat
+"Ogni volta che la gradinata si riempie, tieni la zampa su quel posto.","Every time the stands fill up, you keep your claw on that seat."
+"Finché si riempie. Poi la tolgo, e nessuno si siede.","Until they fill up. Then I lift it, and nobody sits down."
+Chi ci sedeva?,Who used to sit there?
+Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.,Someone who closed every bando. Orvo could barely announce the next one in time.
+Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura.,The case file for that seat is still open. I never copied its closing.
+"Perché non c’è stata. Si è alzato, e il posto è rimasto caldo.","Because there was none. Whoever it was stood up, and the seat stayed warm."
+Il passo,The footstep
+Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo.,Today I heard a footstep on the stone. It stopped where theirs used to stop.
+Il nuovo?,The new one?
+"Il nuovo. Stessa pausa prima della soglia, stesso piede avanti.","The new one. Same pause before the threshold, same foot forward."
+Due soggetti non hanno lo stesso passo. Il Registro li distingue.,No two subjects share a footstep. The Registry tells them apart.
+Il Registro distingue le righe. Io sento la pietra.,The Registry tells lines apart. I listen to the stone.
+"Allora lascia la zampa dov’è, ancora per un po’.","Then keep your claw where it is, a little longer."
+La stessa pendenza,The same slant
+Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.,I set your copy beside that line. They share the same slant.
+"CONFRONTO IN CORSO
+Corrispondenza parziale.","COMPARISON IN PROGRESS
+Partial match."
+"Che vuol dire, parziale?",What does partial mean?
+Che il Registro sta cercando dove finisce l’una e comincia l’altra.,That the Registry is looking for where one ends and the other begins.
+Il posto è sempre lì. Non aspetta te. Lo tengo io.,The seat is still there. It is not waiting for you. I am keeping it.
+Lo annoto. Non so ancora in quale fascicolo.,I will note it. I do not know yet in which case file.
+BANDO DI ORVO,ORVO'S BANDO
+IL BANDO DI ORVO,ORVO'S BANDO
+%d di %d Gloria entro l'arena %d.,%d of %d Glory by arena %d.
+Bando chiuso: Denari +%d e un gradino.,Bando closed: Denarii +%d and one step.
+Scala completa: %d gradini.,Ladder complete: %d steps.
+Gradino %d di %d.,Step %d of %d.
+Gradino %d di %d,Step %d of %d
+In palio il racconto «%s».,Prize: the tale “%s”.
+In palio nuovi patti nel Registro.,Prize: new pacts in the Registry.
+Incassa %d Gloria entro l'arena %d.,Bank %d Glory by arena %d.
+Chiudilo: Denari +%d e un gradino.,Close it: Denarii +%d and one step.
+Bando chiuso: gradino %d di %d.,Bando closed: step %d of %d.
+Bando mancato: %d Gloria entro l'arena %d.,Bando missed: %d Glory by arena %d.
+Prossimo bando: %d Gloria entro l'arena %d.,Next bando: %d Glory by arena %d.
+Il bando è scaduto.,The bando has expired.
+BANDO CHIUSO,BANDO CLOSED
+Bando chiuso: Denari +%d.,Bando closed: Denarii +%d.
+La gradinata ricorda il bando: Favore +2.,The stands remember the bando: Favour +2.
+Catena %d: posta %s.,Chain %d: stake %s.
+Catena %s,Chain %s
+Bando scaduto: nessun gradino.,Bando expired: no rung.
+Bando mancato: nessun gradino.,Bando missed: no rung.

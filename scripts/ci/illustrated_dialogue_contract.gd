@@ -34,12 +34,24 @@ func _input_action(action: String) -> void:
 
 func _new_entry(id: String) -> void:
 	root.get_node("GameEvents").request_show_main_menu.emit()
-	var era: int = {"entry":0, "middle":2, "departure":3}[id]
-	save.commit_registry_evolution(0.0, era, Evolution.defaults())
+	var era: int = {"entry":0, "middle":2, "departure":3}.get(id, 1)
+	var evolution: Dictionary = Evolution.defaults()
+	var earlier_tales: Array[String] = []
+	save.set_bando_step(0)
+	for tale: Dictionary in Catalog.TALES:
+		if tale.id == id:
+			# A racconto is the prize of its bando step.
+			save.set_bando_step(int(tale.step))
+			evolution["samples"] = 1
+			break
+		earlier_tales.append(str(tale.id))
+	if not Catalog.SEQUENCES.has(id) or ["entry", "middle", "departure"].has(id):
+		earlier_tales = []
+	save.commit_registry_evolution(0.0, era, evolution)
 	manager.set("_registry_era", era)
 	var settings: Dictionary = save.get("_settings")
 	settings["opening_prologue_seen"] = false
-	settings["campaign_dialogues_seen"] = []
+	settings["campaign_dialogues_seen"] = earlier_tales
 	scene.get_node("MenuLayer/MainMenu").get("new_game_button").pressed.emit()
 	await process_frame
 	await process_frame
@@ -87,7 +99,12 @@ func _run() -> void:
 		for dimensions: Vector2i in [Vector2i(1280, 720), Vector2i(1920, 1080)]:
 			root.size = dimensions
 			root.content_scale_size = dimensions
-			for id: String in ["entry", "middle", "departure"]:
+			var scenes: Array[String] = ["entry", "middle", "departure"]
+			if dimensions.x == 1280:
+				# Racconti share the fixed stage; one size per language is enough.
+				for tale: Dictionary in Catalog.TALES:
+					scenes.append(str(tale.id))
+			for id: String in scenes:
 				await _new_entry(id)
 				var before: Dictionary = manager.get("_run_state").to_dict()
 				for index: int in range(Catalog.SEQUENCES[id].lines.size()):
@@ -117,6 +134,27 @@ func _run() -> void:
 					else: await _input_action("ui_accept")
 				_check(not view.get("_active") and save.has_seen_campaign_dialogue(id), "last beat did not close and persist: " + id)
 				_check(root.gui_get_focus_owner().name == "Btn_Open_Book", "focus not restored")
+	# Racconti wait their turn: one per percorso, never after the farewell.
+	save.commit_registry_evolution(0.0, 1, Evolution.defaults().merged({"samples": 20}, true))
+	manager.set("_registry_era", 1)
+	save.get("_settings")["campaign_dialogues_seen"] = []
+	save.set_bando_step(0)
+	_check(manager.get_campaign_dialogue().is_empty(), "a tale came without a closed bando")
+	save.set_bando_step(12)
+	_check(str(manager.get_campaign_dialogue().get("id", "")) == "ledger", "first tale not offered first")
+	var all_tales: Array[String] = []
+	for tale: Dictionary in Catalog.TALES:
+		all_tales.append(str(tale.id))
+	save.get("_settings")["campaign_dialogues_seen"] = all_tales
+	_check(manager.get_campaign_dialogue().is_empty(), "a heard tale replayed")
+	save.get("_settings")["campaign_dialogues_seen"] = []
+	save.commit_registry_evolution(0.0, 3, Evolution.defaults().merged({"samples": 20}, true))
+	manager.set("_registry_era", 3)
+	save.get("_settings")["campaign_dialogues_seen"] = ["departure"]
+	_check(manager.get_campaign_dialogue().is_empty(), "a tale followed the farewell")
+	save.commit_registry_evolution(0.0, 0, Evolution.defaults())
+	save.set_bando_step(0)
+	manager.set("_registry_era", 0)
 	# Every scene is suppressed by Silence and by permanent Absence.
 	manager.get("_run_state").registry_silence_active = true
 	_check(manager.get_campaign_dialogue().is_empty(), "Silence contains a dialogue")

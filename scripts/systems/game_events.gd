@@ -30,6 +30,11 @@ signal pact_sealed_opened
 signal pact_sealed_closed
 signal resolve_ritual_opened(payload: Dictionary)
 signal resolve_ritual_closed
+signal seal_strike_resolved(payload: Dictionary)
+signal crowd_favor_changed(payload: Dictionary)
+signal ledger_changed(payload: Dictionary)
+signal request_banco_purchase(item_id: String)
+signal bando_changed(payload: Dictionary)
 signal request_ritual_advance(kind: String)
 signal request_dismiss_campaign_dialogue(id: String)
 signal micro_interpretive_quick_cut_requested(payload: Dictionary)

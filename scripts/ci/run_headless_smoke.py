@@ -399,15 +399,17 @@ def validate_log_text(log_text: str, scenario: str) -> list[str]:
                 )
 
     if scenario == SCENARIO_KEYBOARD_FULL_RUN:
-        for token, expected_count in (
-            ("SMOKE:KEYBOARD key=Enter focus=Btn_FIRST_REACTION_NEXT", 1),
-            ("SMOKE:KEYBOARD key=Enter focus=Btn_RESOLUTION_STRIKE", 3),
-        ):
-            actual_count = log_text.count(token)
-            if actual_count != expected_count:
-                failures.append(
-                    f"keyboard full run expected {expected_count} occurrences of {token}, got {actual_count}"
-                )
+        first_reaction_token = "SMOKE:KEYBOARD key=Enter focus=Btn_FIRST_REACTION_NEXT"
+        if log_text.count(first_reaction_token) != 1:
+            failures.append(
+                f"keyboard full run expected 1 occurrences of {first_reaction_token}, "
+                f"got {log_text.count(first_reaction_token)}"
+            )
+        # The seal answers every strike: it can crack on the first, second or third.
+        strike_token = "SMOKE:KEYBOARD key=Enter focus=Btn_RESOLUTION_STRIKE"
+        strike_count = log_text.count(strike_token)
+        if not 1 <= strike_count <= 3:
+            failures.append(f"keyboard full run expected 1-3 occurrences of {strike_token}, got {strike_count}")
         if "SMOKE:REQ=" in log_text:
             failures.append("keyboard full run must not use direct smoke intent requests")
 

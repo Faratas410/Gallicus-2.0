@@ -47,9 +47,23 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 Rework di prodotto del 6 ottobre 2026: direzione in `docs/direction.md`,
 gap e piano in `docs/support/rework_audit_2026-10-06.md`. Revisione del game
 loop dello stesso giorno (posta, quietanza, patti, gesto, campagna, ritmo):
-`docs/support/game_loop_review_2026-10-06.md`.
+`docs/support/game_loop_review_2026-10-06.md`. Arena attiva (sigillo a colpi,
+scambi con la gradinata e favore), dopo il playtest "troppo passivo":
+`docs/support/arena_attiva_2026-10-06.md`.
 
-Consegna corrente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
+Racconti, 7 ottobre 2026 (otto con il bando): cinque scene illustrate in piu' (conto di Vessa,
+sabbia, richiamo, posti in vendita, riga che resta) fra la prima copia e la
+meta' della campagna, e dodici nuove voci dell'arena; canone in
+`docs/canon/LORE_UNIFIED.md`, copy in `docs/content_bible.md`. Pannelli e libro
+del Registro restano ancorati al centro (UI_CANON, Motion Contract).
+
+Bando, scala e catena, 7 ottobre 2026 ("Perche' scommettere? Perche'
+continuare?"): ogni percorso ha un bando di Gloria da chiudere entro un'arena,
+la scala dei bandi paga gli otto racconti (tre sul posto vuoto) e tre pagine di
+patti, i sigilli retti di fila moltiplicano la posta. Canone in
+`docs/canon/MECHANICS_UNIFIED.md`, numeri in `docs/support/motivazione_2026-10-07.md`.
+
+Consegna precedente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
 come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.
 
 Personaggi e dialoghi: `docs/support/arena_cast_2026-09-12.md`.

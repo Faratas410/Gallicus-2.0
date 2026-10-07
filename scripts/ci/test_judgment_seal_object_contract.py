@@ -35,10 +35,10 @@ EXPECTED_COPY = {
         "en": "The Registry weighs the pact.",
         "es": "El Registro pesa el pacto.",
     },
-    "Imprimi tre colpi sul sigillo.": {
-        "it": "Imprimi tre colpi sul sigillo.",
-        "en": "Press the seal three times.",
-        "es": "Imprime tres golpes en el sello.",
+    "Ogni colpo mette alla prova la cera.": {
+        "it": "Ogni colpo mette alla prova la cera.",
+        "en": "Every strike tests the wax.",
+        "es": "Cada golpe pone a prueba la cera.",
     },
     "Tre colpi chiudono il verbale.": {
         "it": "Tre colpi chiudono il verbale.",
@@ -120,11 +120,12 @@ EXPECTED_COPY = {
         "en": "The gesture ignites them, but they demand your collapse.",
         "es": "El gesto los enciende, pero exigen tu caída.",
     },
-    "IMPRIMI IL SIGILLO: TRE COLPI": {
-        "it": "IMPRIMI IL SIGILLO: TRE COLPI",
-        "en": "IMPRINT THE SEAL: THREE STRIKES",
-        "es": "IMPRIME EL SELLO: TRES GOLPES",
+    "IMPRIMI IL SIGILLO": {
+        "it": "IMPRIMI IL SIGILLO",
+        "en": "IMPRINT THE SEAL",
+        "es": "IMPRIME EL SELLO",
     },
+    "ALZA LA MANO": {"it": "ALZA LA MANO", "en": "RAISE YOUR HAND", "es": "LEVANTA LA MANO"},
     "COLPISCI": {"it": "COLPISCI", "en": "STRIKE", "es": "GOLPEA"},
     "COLPISCI ANCORA": {
         "it": "COLPISCI ANCORA",
@@ -132,20 +133,15 @@ EXPECTED_COPY = {
         "es": "GOLPEA DE NUEVO",
     },
     "SIGILLATO": {"it": "SIGILLATO", "en": "SEALED", "es": "SELLADO"},
-    "PRIMO COLPO - CERA IMPRESSA": {
-        "it": "PRIMO COLPO - CERA IMPRESSA",
-        "en": "FIRST STRIKE - WAX PRESSED",
-        "es": "PRIMER GOLPE - CERA IMPRESA",
+    "IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO": {
+        "it": "IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO",
+        "en": "THE SEAL HOLDS - STRIKE AGAIN OR RAISE YOUR HAND",
+        "es": "EL SELLO RESISTE - GOLPEA DE NUEVO O LEVANTA LA MANO",
     },
-    "SECONDO COLPO - VERDETTO INCISO": {
-        "it": "SECONDO COLPO - VERDETTO INCISO",
-        "en": "SECOND STRIKE - VERDICT CARVED",
-        "es": "SEGUNDO GOLPE - VEREDICTO INCISO",
-    },
-    "TERZO COLPO - SIGILLO CHIUSO": {
-        "it": "TERZO COLPO - SIGILLO CHIUSO",
-        "en": "THIRD STRIKE - SEAL CLOSED",
-        "es": "TERCER GOLPE - SELLO CERRADO",
+    "LA CERA SI INCRINA - IL SIGILLO CEDE": {
+        "it": "LA CERA SI INCRINA - IL SIGILLO CEDE",
+        "en": "THE WAX CRACKS - THE SEAL GIVES WAY",
+        "es": "LA CERA SE AGRIETA - EL SELLO CEDE",
     },
     "VERBALE INCISO - IL REGISTRO PUÒ AVANZARE": {
         "it": "VERBALE INCISO - IL REGISTRO PUÒ AVANZARE",
@@ -215,6 +211,8 @@ def _assert_scene_binding() -> None:
 def _assert_runtime() -> None:
     ui = _read(UI_ROOT)
     strike = _function_body(ui, "_on_resolve_ritual_strike_pressed")
+    answered = _function_body(ui, "_on_seal_strike_resolved")
+    raise_hand = _function_body(ui, "_on_resolve_ritual_next_pressed")
     complete = _function_body(ui, "_complete_resolution_ritual_interaction")
     reset = _function_body(ui, "_reset_resolution_ritual_interaction")
     audience_context = _function_body(ui, "_on_audience_context_line_emitted")
@@ -224,16 +222,22 @@ def _assert_runtime() -> None:
     if "tr(_pending_resolution_context_line.strip_edges())" not in resolution_body:
         raise AssertionError("judgment audience context must be localized when the ritual body is rendered")
     for forbidden in ("await ", "RunManager.", 'get_node_or_null("/root/RunManager")', "_on_request_ritual_advance("):
-        if forbidden in strike or forbidden in complete:
+        if forbidden in strike or forbidden in complete or forbidden in answered:
             raise AssertionError(f"resolve ritual UI handler contains forbidden runtime token: {forbidden}")
+    # Each strike is a request: RunManager tests the wax and answers with
+    # seal_strike_resolved; the UI never decides whether the seal holds.
     ordered = (
-        "_apply_resolution_ritual_strike_feedback(on_beat)",
-        "_complete_resolution_ritual_interaction()",
+        "_judgment_seal_locked = true",
+        '_emit_game_event_signal_if_available(&"request_ritual_advance", ["strike"])',
     )
     if not all(token in strike for token in ordered) or strike.index(ordered[0]) > strike.index(ordered[1]):
-        raise AssertionError("strike handler must apply object state before completion")
+        raise AssertionError("strike handler must lock the seal before requesting a strike")
+    for token in ("_apply_resolution_ritual_strike_feedback(", '"can_strike_again"', '"held"'):
+        if token not in answered:
+            raise AssertionError(f"seal_strike_resolved handler missing token: {token}")
+    if "_complete_resolution_ritual_interaction()" not in raise_hand:
+        raise AssertionError("ALZA LA MANO must close the seal through the completion handler")
     for token in (
-        "_set_judgment_seal_state(RESOLUTION_RITUAL_STRIKES_REQUIRED)",
         "_judgment_seal_locked = true",
         '_play_sfx(&"registry_judgment_seal_resolve")',
         '_emit_game_event_signal_if_available(&"request_ritual_advance", ["resolve"])',
@@ -293,6 +297,8 @@ def _assert_public_contracts() -> None:
     events = _read(GAME_EVENTS)
     run_manager = _read(RUN_MANAGER)
     marker = _read(MARKER)
+    if "signal seal_strike_resolved(payload: Dictionary)" not in events:
+        raise AssertionError("GameEvents seal_strike_resolved contract changed")
     if "signal request_ritual_advance(kind: String)" not in events:
         raise AssertionError("GameEvents request_ritual_advance contract changed")
     if "func _on_request_ritual_advance(kind: String) -> void:" not in run_manager:

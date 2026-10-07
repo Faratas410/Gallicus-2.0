@@ -89,6 +89,8 @@ STATIC_STEPS: tuple[tuple[str, list[str]], ...] = (
     ("promise_signature_object", _python_script("scripts/ci/test_promise_signature_object_contract.py")),
     ("pact_tablet_object", _python_script("scripts/ci/test_pact_tablet_object_contract.py")),
     ("arena_gesture_object", _python_script("scripts/ci/test_arena_gesture_object_contract.py")),
+    ("ledger_economy", _python_script("scripts/ci/test_ledger_economy_contract.py")),
+    ("bando_ladder", _python_script("scripts/ci/test_bando_ladder_contract.py")),
     ("judgment_seal_object", _python_script("scripts/ci/test_judgment_seal_object_contract.py")),
     ("final_dossier_object", _python_script("scripts/ci/test_final_dossier_object_contract.py")),
     ("object_first_stage", _python_script("scripts/ci/test_object_first_stage_contract.py")),

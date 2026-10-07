@@ -123,6 +123,18 @@ def test_ui_motion_contract() -> None:
         if token not in betting_scene:
             raise AssertionError(f"BettingCircle.tscn missing closed-book animation token: {token}")
 
+    ui_scene = (ROOT / "scenes" / "UI.tscn").read_text(encoding="utf-8")
+    instance = re.search(r'\[node name="BettingCircle" parent="UI_RunRoot" instance=[^\]]*\]\n(.*?)(?=\n\[|\Z)', ui_scene, re.S)
+    if not instance:
+        raise AssertionError("UI.tscn must instance BettingCircle under UI_RunRoot")
+    # Without explicit anchors the exported (binary) scene resets the instance to
+    # zero size and the Registry book opens in the top-left corner.
+    for token in ["layout_mode = 3", "anchor_right = 1.0", "anchor_bottom = 1.0"]:
+        if token not in instance.group(1):
+            raise AssertionError(f"BettingCircle instance must declare full-rect anchors: {token}")
+    if "set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)" not in betting_circle:
+        raise AssertionError("betting_circle_ui.gd must re-apply its full-rect layout at runtime")
+
     for token in [
         "Motion Contract",
         "presentational-only",

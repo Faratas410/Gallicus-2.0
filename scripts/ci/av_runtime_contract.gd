@@ -247,8 +247,10 @@ func _verify_music_route(scene: Node) -> void:
 	_expect_score(scene, "tense", "resumed pact")
 	_expect(str(scene.get_node("UI").get("pact_sealed_subtitle").text) == character_before, "Continue changed the character exchange")
 	await _press_route(scene, "Btn_FIRST_REACTION_NEXT")
-	await _press_route(scene, "Btn_MID_CHOICE_SELECT_0")
-	await create_timer(0.3).timeout
+	# The gesture is three exchanges with the stands; each answer unlocks the next.
+	for exchange: int in range(3):
+		await _press_route(scene, "Btn_MID_CHOICE_SELECT_0")
+		await create_timer(0.3).timeout
 	_expect_score(scene, "tense", "judgment")
 	OS.set_environment("GALLICUS_SMOKE", "1")
 	OS.set_environment("GALLICUS_SMOKE_SCENARIO", "FULL_RUN")

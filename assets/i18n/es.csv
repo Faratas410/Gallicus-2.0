@@ -271,15 +271,10 @@ Un gesto debole. Ora ti strappano il rispetto.,Un gesto débil. Ahora te arranca
 Il gesto è sterile. Ti tengono in debito.,El gesto es estéril. Te mantienen en deuda.
 "Il gesto li accende, ma chiedono il crollo.","El gesto los enciende, pero exigen tu caída."
 Il Registro pesa il patto.,El Registro pesa el pacto.
-Imprimi tre colpi sul sigillo.,Imprime tres golpes en el sello.
 Tre colpi chiudono il verbale.,Tres golpes cierran el acta.
-IMPRIMI IL SIGILLO: TRE COLPI,IMPRIME EL SELLO: TRES GOLPES
 COLPISCI,GOLPEA
 COLPISCI ANCORA,GOLPEA DE NUEVO
 SIGILLATO,SELLADO
-PRIMO COLPO - CERA IMPRESSA,PRIMER GOLPE - CERA IMPRESA
-SECONDO COLPO - VERDETTO INCISO,SEGUNDO GOLPE - VEREDICTO INCISO
-TERZO COLPO - SIGILLO CHIUSO,TERCER GOLPE - SELLO CERRADO
 VERBALE INCISO - IL REGISTRO PUÒ AVANZARE,ACTA INCISA - EL REGISTRO PUEDE AVANZAR
 FASCICOLO CHIUSO - COMPROMISSIONE,EXPEDIENTE CERRADO - COMPROMISO
 FASCICOLO CHIUSO - ASCESA,EXPEDIENTE CERRADO - ASCENSO
@@ -847,9 +842,6 @@ NESSUNA ULTERIORE DECISIONE RILEVANTE.,NINGUNA DECISIÓN RELEVANTE MÁS.
 In posta %d Gloria,%d Gloria en juego
 Arena %d di %d,Arena %d de %d
 La posta di %d Gloria resta in gioco. Pressione +%d.,La apuesta de %d Gloria sigue en juego. Presión +%d.
-"Pressione -1. Se il patto regge, posta -1.","Presión -1. Si el pacto aguanta, apuesta -1."
-"Pressione +1. Se il patto regge, posta +2.","Presión +1. Si el pacto aguanta, apuesta +2."
-IMPRIMI IL SIGILLO: UN COLPO,IMPRIME EL SELLO: UN GOLPE
 Regge spesso,Aguanta a menudo
 Regge a volte,Aguanta a veces
 Regge di rado,Rara vez aguanta
@@ -858,3 +850,170 @@ Regge di rado,Rara vez aguanta
 Perdi metà della posta.,Pierdes la mitad de la apuesta.
 Perdi tutta la posta.,Pierdes toda la apuesta.
 Il Registro resta aperto: incassa la posta o rilancia.,El Registro sigue abierto: cobra la apuesta o sube.
+Ogni colpo mette alla prova la cera.,Cada golpe pone a prueba la cera.
+IMPRIMI IL SIGILLO,IMPRIME EL SELLO
+ALZA LA MANO,LEVANTA LA MANO
+IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO,EL SELLO RESISTE - GOLPEA DE NUEVO O LEVANTA LA MANO
+SIGILLO PIENO - IL REGISTRO PUÒ AVANZARE,SELLO LLENO - EL REGISTRO PUEDE AVANZAR
+LA CERA SI INCRINA - IL SIGILLO CEDE,LA CERA SE AGRIETA - EL SELLO CEDE
+Il sigillo regge: +%d Gloria in posta.,El sello resiste: +%d de Gloria en juego.
+"Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Otro golpe: %s, +%d de Gloria más. Si la cera se agrieta, el pacto cede."
+La cera si incrina.,La cera se agrieta.
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Muestra una Marca a las gradas: el sello resiste, pero el cuerpo paga con una nueva marca. Una vez por recorrido."
+LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,LA CERA SE AGRIETA - MUESTRA UNA MARCA O DEJA QUE CEDA
+LASCIA CEDERE,DEJA QUE CEDA
+MOSTRA UN SEGNO,MUESTRA UNA MARCA
+IL SEGNO SALVA IL SIGILLO - IL CORPO PAGA,LA MARCA SALVA EL SELLO - EL CUERPO PAGA
+Segno mostrato alla gradinata,Marca mostrada a las gradas
+La gradinata vuole sangue.,La grada quiere sangre.
+La gradinata raccoglie la sabbia.,La grada recoge la arena.
+La gradinata si annoia.,La grada se aburre.
+La gradinata trattiene il fiato.,La grada contiene el aliento.
+Favore -1.,Favor -1.
+Favore -2.,Favor -2.
+"Favore +1, Pressione +1. Se il patto regge, posta +1.","Favor +1, Presión +1. Si el pacto resiste, apuesta +1."
+Ti ripari: non cambia nulla.,Te cubres: nada cambia.
+"Favore +2, ma la sabbia lascia un Segno.","Favor +2, pero la arena deja una Marca."
+"Favore +2, Pressione +1: l'occhio è già perduto.","Favor +2, Presión +1: el ojo ya está perdido."
+"Favore +1, Pressione +1.","Favor +1, Presión +1."
+"Favore +1, Pressione -1.","Favor +1, Presión -1."
+"Favore -2, Pressione +1. Se il patto regge, posta +1.","Favor -2, Presión +1. Si el pacto resiste, apuesta +1."
+Il sigillo ha retto: la gradinata approva.,El sello resistió: la grada aprueba.
+Il sigillo ha ceduto: la gradinata si raffredda.,El sello cedió: la grada se enfría.
+LA GRADINATA,LA GRADA
+Favore %+d.,Favor %+d.
+Ostile: blocca la quietanza.,Hostil: bloquea el finiquito.
+Fredda: la quietanza rende meno.,Fría: el finiquito rinde menos.
+Ben disposta: il sigillo regge un po' di più.,Bien dispuesta: el sello resiste un poco más.
+Ti acclama: il sigillo regge di più.,Te aclama: el sello resiste más.
+LA GRADINATA TI PORTA: posta +2.,LA GRADA TE LLEVA: apuesta +2.
+"LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.","LA GRADA SE REBELA: una Marca, Presión +1."
+Scambio %d di %d:,Intercambio %d de %d:
+Rivolta della gradinata,Rebelión de la grada
+Sabbia della gradinata,Arena de la grada
+BANCO DI VESSA,MOSTRADOR DE VESSA
+Conto %d Denari,Cuenta %d Denarios
+%d Denari,%d Denarios
+COMPRA IL FAVORE,COMPRA EL FAVOR
+PAGA LA PRESSIONE,PAGA LA PRESIÓN
+ASSICURA LA POSTA,ASEGURA LA APUESTA
+Favore +2.,Favor +2.
+Pressione -2.,Presión -2.
+"Se il sigillo cede, la posta resta.","Si el sello cede, la apuesta se queda."
+In debito: il banco è chiuso finché una quietanza non salda il conto.,En deuda: el mostrador sigue cerrado hasta que un finiquito salde la cuenta.
+La posta di questa arena è assicurata.,La apuesta de esta arena está asegurada.
+La gradinata lancia monete: Denari +%d.,La grada lanza monedas: Denarios +%d.
+La rivolta costa: Denari -%d.,La rebelión cuesta: Denarios -%d.
+Quietanza versata: Denari +%d.,Finiquito ingresado: Denarios +%d.
+Vessa iscrive il debito: Denari -%d.,Vessa anota la deuda: Denarios -%d.
+Banco di Vessa: Denari -%d.,Mostrador de Vessa: Denarios -%d.
+Vessa ricorda il debito: Pressione +1.,Vessa recuerda la deuda: Presión +1.
+La polizza di Vessa salva la posta.,La póliza de Vessa salva la apuesta.
+Comprato al banco: Favore +2.,Comprado en el mostrador: Favor +2.
+Debito con Vessa,Deuda con Vessa
+Il conto di Vessa,La cuenta de Vessa
+"Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine.",Vessa ha abierto una cuenta a tu nombre. Yo copio las cifras; ella decide el margen.
+Un conto? Una volta qui si pagava con la voce.,¿Una cuenta? Aquí antes se pagaba con la voz.
+La voce non si archivia. I Denari sì.,La voz no se archiva. Los denarios sí.
+E quando il conto scende sotto zero?,¿Y cuando la cuenta baja de cero?
+"Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena.",Vessa no olvida una deuda. Se la recuerda a la grada en cada arena.
+Allora anche la gradinata tiene un conto. Il suo non si scrive.,Entonces la grada también lleva una cuenta. La suya no se escribe.
+La sabbia nelle tasche,Arena en los bolsillos
+Hai visto la prima fila? Ha le tasche piene di sabbia.,¿Has visto la primera fila? Tiene los bolsillos llenos de arena.
+"Una volta la sabbia restava giù, sotto i passi. Copriva i segni.","Antes la arena se quedaba abajo, bajo los pasos. Cubría las marcas."
+Ora la raccolgono. La lanciano quando un patto non piace.,Ahora la recogen. La lanzan cuando un pacto no les gusta.
+E quando piace?,¿Y cuando les gusta?
+Monete. Vessa le conta prima che tocchino terra.,Monedas. Vessa las cuenta antes de que toquen el suelo.
+"Sabbia o monete, il corpo le ricorda tutte e due.","Arena o monedas, el cuerpo recuerda las dos."
+Il richiamo,La llamada
+"Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia.",Orvo ensaya sus llamadas en voz baja antes de subir. Lo oigo desde el umbral.
+Tu non provavi mai.,Tú nunca ensayabas.
+"Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni.","Yo solo llamaba, por encima de todos. La muesca de mi cresta es de aquellos días."
+Sul foglio la tacca non c’è. C’è solo l’annuncio accettato.,La muesca no está en la hoja. Solo está el anuncio aceptado.
+Allora scrivi questo: oggi ho scelto di tacere.,Entonces escribe esto: hoy he elegido callar.
+Un gallo che tace non è un atto. Non lo copio.,Un gallo que calla no es un acto. No lo copio.
+I posti in vendita,Asientos en venta
+Vessa è passata con il righello. Vuole vendere anche la terza fila.,Vessa pasó con su regla. Quiere vender también la tercera fila.
+"Ha misurato. Lo spazio libero rende, se lo si iscrive.","Ha medido. El espacio libre rinde, si se inscribe."
+Ogni posto ha un passo. Io li riconosco tutti.,Cada asiento tiene su paso. Los reconozco todos.
+Anche quello accanto a te?,¿También el que está a tu lado?
+Quello non si misura. L’ho detto a Vessa: il righello si ferma lì.,Ese no se mide. Se lo dije a Vessa: la regla se detiene ahí.
+"Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco.","He copiado la medida hasta tu asiento. Más allá, la hoja queda en blanco."
+La riga che resta,La línea que queda
+Ogni sera raschio le copie sbagliate. La cera torna liscia.,Cada noche raspo las copias erróneas. La cera vuelve a quedar lisa.
+"COPIA RESPINTA
+Riga già iscritta.","COPIA RECHAZADA
+Línea ya inscrita."
+Una riga non va via. Ho consumato tre lame.,Una línea no se va. He gastado tres cuchillas.
+Che cosa dice?,¿Qué dice?
+Un nome e un fascicolo aperto. Il resto non è di mia competenza.,Un nombre y un expediente abierto. Lo demás no es de mi competencia.
+Lasciala dov’è. Anch’io lascio il posto com’è.,Déjala donde está. Yo también dejo el asiento como está.
+Vessa: Il conto è aperto.,Vessa: La cuenta está abierta.
+"Nerio: Copio la cifra, non il motivo.","Nerio: Copio la cifra, no el motivo."
+Orvo: La prima fila ha le tasche piene.,Orvo: La primera fila tiene los bolsillos llenos.
+Vessa: Di sabbia o di monete?,Vessa: ¿De arena o de monedas?
+Dima: Hanno venduto la terza fila.,Dima: Han vendido la tercera fila.
+Vessa: Il tuo posto no. Per ora.,Vessa: Tu asiento no. Por ahora.
+Orvo: Guarda come ti studiano.,Orvo: Mira cómo te estudian.
+"Rugo: Prima di gridare, la gradinata pesa.","Rugo: Antes de gritar, la grada te pesa."
+Vessa: La folla paga chi la regge.,Vessa: La multitud paga a quien la sostiene.
+Orvo: E presenta il conto a chi la perde.,Orvo: Y le pasa la cuenta a quien la pierde.
+Dima: Sento la sabbia nelle tasche.,Dima: Oigo la arena en los bolsillos.
+Rugo: Allora non è ancora il momento.,Rugo: Entonces todavía no es el momento.
+Vessa: Il conto.,Vessa: La cuenta.
+Nerio: Copiato.,Nerio: Copiado.
+Orvo: Tasche piene.,Orvo: Bolsillos llenos.
+"Vessa: Monete, spero.","Vessa: Monedas, espero."
+Dima: La terza fila.,Dima: La tercera fila.
+Vessa: Venduta.,Vessa: Vendida.
+Orvo: Ti pesano.,Orvo: Te están pesando.
+Rugo: Lo so.,Rugo: Lo sé.
+Vessa: Paga chi regge.,Vessa: Paga a quien resiste.
+Orvo: Sempre.,Orvo: Siempre.
+Dima: La sabbia.,Dima: La arena.
+Rugo: Non ancora.,Rugo: Todavía no.
+Il posto tenuto,El asiento guardado
+"Ogni volta che la gradinata si riempie, tieni la zampa su quel posto.","Cada vez que la grada se llena, pones la pata sobre ese asiento."
+"Finché si riempie. Poi la tolgo, e nessuno si siede.","Hasta que se llena. Luego la quito, y nadie se sienta."
+Chi ci sedeva?,¿Quién se sentaba ahí?
+Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.,Alguien que cerraba cada bando. Orvo no llegaba a pregonar el siguiente.
+Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura.,El expediente de ese asiento sigue abierto. Nunca copié su cierre.
+"Perché non c’è stata. Si è alzato, e il posto è rimasto caldo.","Porque no lo hubo. Se levantó, y el asiento se quedó caliente."
+Il passo,El paso
+Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo.,Hoy he oído un paso sobre la piedra. Se detenía donde se detenía el suyo.
+Il nuovo?,¿El nuevo?
+"Il nuovo. Stessa pausa prima della soglia, stesso piede avanti.","El nuevo. La misma pausa antes del umbral, el mismo pie adelante."
+Due soggetti non hanno lo stesso passo. Il Registro li distingue.,Dos sujetos no tienen el mismo paso. El Registro los distingue.
+Il Registro distingue le righe. Io sento la pietra.,El Registro distingue líneas. Yo escucho la piedra.
+"Allora lascia la zampa dov’è, ancora per un po’.","Entonces deja la pata donde está, un poco más."
+La stessa pendenza,La misma inclinación
+Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.,He puesto tu copia junto a esa línea. Tienen la misma inclinación.
+"CONFRONTO IN CORSO
+Corrispondenza parziale.","COMPARACIÓN EN CURSO
+Coincidencia parcial."
+"Che vuol dire, parziale?",¿Qué quiere decir parcial?
+Che il Registro sta cercando dove finisce l’una e comincia l’altra.,Que el Registro busca dónde termina una y empieza la otra.
+Il posto è sempre lì. Non aspetta te. Lo tengo io.,El asiento sigue ahí. No te espera a ti. Lo guardo yo.
+Lo annoto. Non so ancora in quale fascicolo.,Lo anoto. Todavía no sé en qué expediente.
+BANDO DI ORVO,BANDO DE ORVO
+IL BANDO DI ORVO,EL BANDO DE ORVO
+%d di %d Gloria entro l'arena %d.,%d de %d Gloria antes de la arena %d.
+Bando chiuso: Denari +%d e un gradino.,Bando cerrado: Denarios +%d y un peldaño.
+Scala completa: %d gradini.,Escala completa: %d peldaños.
+Gradino %d di %d.,Peldaño %d de %d.
+Gradino %d di %d,Peldaño %d de %d
+In palio il racconto «%s».,En juego: el relato «%s».
+In palio nuovi patti nel Registro.,En juego: nuevos pactos en el Registro.
+Incassa %d Gloria entro l'arena %d.,Cobra %d de Gloria antes de la arena %d.
+Chiudilo: Denari +%d e un gradino.,Ciérralo: Denarios +%d y un peldaño.
+Bando chiuso: gradino %d di %d.,Bando cerrado: peldaño %d de %d.
+Bando mancato: %d Gloria entro l'arena %d.,Bando fallido: %d de Gloria antes de la arena %d.
+Prossimo bando: %d Gloria entro l'arena %d.,Próximo bando: %d de Gloria antes de la arena %d.
+Il bando è scaduto.,El bando ha vencido.
+BANDO CHIUSO,BANDO CERRADO
+Bando chiuso: Denari +%d.,Bando cerrado: Denarios +%d.
+La gradinata ricorda il bando: Favore +2.,La grada recuerda el bando: Favor +2.
+Catena %d: posta %s.,Cadena %d: apuesta %s.
+Catena %s,Cadena %s
+Bando scaduto: nessun gradino.,Bando vencido: ningún peldaño.
+Bando mancato: nessun gradino.,Bando fallido: ningún peldaño.

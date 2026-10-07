@@ -3,11 +3,19 @@
 ## Principio
 
 Il contratto AV comprende `scripts/ci/character_runtime_contract.gd`: tre
-Gufi, un gallo, una gallina e venti scambi, localizzazione, selezione deterministica senza mutazioni,
+Gufi, un gallo, una gallina e trentadue scambi, localizzazione, selezione deterministica senza mutazioni,
 soppressione terminale/Silenzio e ingombri alle due risoluzioni. Con renderer
-e `--capture-dir=<directory>` produce 120 viste di dialogo e 18 dell'Archivio
+e `--capture-dir=<directory>` produce 192 viste di dialogo e 18 dell'Archivio
 (sei iniziali e dodici scorse fino alle schede di Rugo e Dima).
 Le immagini devono essere ispezionate: la sola geometria non prova visibilita'.
+`scripts/ci/illustrated_dialogue_contract.gd` attraversa anche gli otto racconti
+(nelle tre lingue a 1280x720), ne verifica l'ordine per gradino del bando, che
+nessuno compaia al gradino 0, che non si ripetano e che nessuno segua il
+congedo; il runner AV gli concede 150 secondi.
+Una build esportata va guardata anche dal pacchetto: `--main-pack <Gallicus.exe>`
+con il binario Linux carica le scene convertite come le vede Windows. Il 7
+ottobre 2026 solo cosi' si e' riprodotto il libro del Registro in alto a
+sinistra, invisibile nei test sul sorgente.
 
 Ogni invocazione di `run_headless_smoke.py` usa un profilo temporaneo nuovo
 tramite APPDATA/XDG_DATA_HOME, anche nell'export. Gli sblocchi dello scenario
@@ -164,7 +172,7 @@ linguette del fascicolo: next bet, new path e ritorno al menu. Le quattro route
 push-your-luck restano coperte dagli scenari dedicati.
 
 `KEYBOARD_FULL_RUN` inietta eventi `InputEventKey` press/release reali. Parte
-dal focus del menu, attraversa Registro, firma, patto, gesto, tre colpi,
+dal focus del menu, attraversa Registro, firma, patto, tre scambi con la gradinata, da uno a tre colpi,
 Push Your Luck e fascicolo, quindi verifica il ritorno al menu senza chiamare
 direttamente gli intenti di gameplay.
 
@@ -248,6 +256,15 @@ cumulativo usa un timeout di 600 secondi: la run diagnostica `32892578364` ha
 raggiunto il precedente limite di 480 secondi dopo 285 immagini, mentre
 statici e tutti gli otto scenari runtime erano gia' verdi. Il timeout esteso
 non riduce la matrice ne' sostituisce il requisito di 289/289 PNG.
+Il contratto statico `scripts/ci/test_ledger_economy_contract.py` (gate
+`ledger_economy`) controlla che il conto dei Denari resti autorita' di
+RunManager e del profilo, che il banco apra solo a Registro chiuso e mai in
+debito, e che la UI emetta soltanto `request_banco_purchase`.
+Il contratto statico `scripts/ci/test_bando_ladder_contract.py` (gate
+`bando_ladder`) controlla scala e costanti del bando, la chiusura prima della
+quietanza intera, la catena che cresce e si spezza, i patti aperti dai gradini,
+la UI solo reattiva a `bando_changed` e le chiavi IT/EN/ES.
+
 Il contratto statico `scripts/ci/test_ci_checkpoint_contract.py` ricostruisce il
 totale dai pattern della matrice e dalle catture letterali, quindi fallisce prima
 di avviare Godot se un PNG resta fuori dall'artifact o se la somma diverge da 289.

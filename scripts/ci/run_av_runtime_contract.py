@@ -24,7 +24,7 @@ def main() -> int:
         characters = subprocess.run([str(Path(args.godot_bin).resolve()), "--headless", "--audio-driver", "Dummy", "--path", str(ROOT), "--script", "res://scripts/ci/character_runtime_contract.gd"], cwd=ROOT, env=env, capture_output=True, text=True, timeout=45)
         env["APPDATA"] = str(base / "dialogue_appdata")
         env["XDG_DATA_HOME"] = str(base / "dialogue_xdg")
-        dialogue = subprocess.run([str(Path(args.godot_bin).resolve()), "--headless", "--audio-driver", "Dummy", "--path", str(ROOT), "--script", "res://scripts/ci/illustrated_dialogue_contract.gd"], cwd=ROOT, env=env, capture_output=True, text=True, timeout=90)
+        dialogue = subprocess.run([str(Path(args.godot_bin).resolve()), "--headless", "--audio-driver", "Dummy", "--path", str(ROOT), "--script", "res://scripts/ci/illustrated_dialogue_contract.gd"], cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)
     output = result.stdout + result.stderr + characters.stdout + characters.stderr + dialogue.stdout + dialogue.stderr
     print(output, end="")
     return 0 if result.returncode == 0 and characters.returncode == 0 and dialogue.returncode == 0 and "AV_RUNTIME_CONTRACT_OK" in output and "CHARACTER_RUNTIME_CONTRACT_OK" in output and "ILLUSTRATED_DIALOGUE_CONTRACT_OK" in output and "ERROR:" not in output else 1

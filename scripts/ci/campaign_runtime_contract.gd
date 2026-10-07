@@ -3,6 +3,7 @@ extends SceneTree
 # Real UI journey: only clocks and initial RNG seeds are controlled. No run
 # histories, campaign counters, outcomes or offered pacts are injected.
 const Catalog = preload("res://scripts/content/bet_catalog.gd")
+const Dialogues = preload("res://scripts/content/campaign_dialogues.gd")
 var scene: Node
 var manager: Node
 var rows: Array[Dictionary] = []
@@ -129,6 +130,14 @@ func _run() -> void:
 						best = side
 				_press("Btn_Sign_Left" if best == 0 else "Btn_Sign_Right")
 				continue
+			# A held seal asks again: strike once more while the posta is thin,
+			# otherwise raise the hand and keep what the wax has held.
+			if _available("Btn_RESOLUTION_NEXT"):
+				var held_run: RunState = manager.get("_run_state")
+				if held_run.stake_glory < 6 and int(manager.get("_seal_strike_count")) < 2 and _press("Btn_RESOLUTION_STRIKE"):
+					continue
+				_press("Btn_RESOLUTION_NEXT")
+				continue
 			if _press("Btn_FIRST_REACTION_NEXT") or _press("Btn_MID_CHOICE_SELECT_0") or _press("Btn_RESOLUTION_STRIKE"):
 				continue
 			# Real percorsi: rilancia until the third arena, then take the
@@ -161,8 +170,20 @@ func _run() -> void:
 	if save.get_registry_era() != 4: _fail("natural UI campaign did not reach Absence")
 	if resumed.size() != 4: _fail("missing checkpoint resumes: " + str(resumed))
 	if catalog_scars_applied == 0: _fail("natural losses produced no catalog scars")
-	if dialogues_seen.size() != 3: _fail("missing illustrated campaign stages: " + str(dialogues_seen))
-	print("CAMPAIGN_DIALOGUES=", JSON.stringify(dialogues_seen))
+	for stage: String in ["entry", "middle", "departure"]:
+		if not dialogues_seen.has(stage): _fail("missing illustrated campaign stage: " + stage)
+	# Racconti are the prize of closed bandi: heard in ladder order, never after the farewell.
+	var previous_run: int = int(dialogues_seen.get("entry", 0))
+	var gap: bool = false
+	for tale: Dictionary in Dialogues.TALES:
+		var tale_id: String = str(tale.id)
+		if not dialogues_seen.has(tale_id):
+			gap = true
+			continue
+		if gap or int(dialogues_seen[tale_id]) <= previous_run or int(dialogues_seen[tale_id]) > int(dialogues_seen.get("departure", 9999)):
+			_fail("racconti out of ladder order: " + str(dialogues_seen))
+		previous_run = int(dialogues_seen[tale_id])
+	print("CAMPAIGN_DIALOGUES=", JSON.stringify(dialogues_seen), " BANDO_STEP=", save.get_bando_step())
 	if save.get_registry_era() == 4:
 		var terminal: Node = scene.get_node("UI/RegistryTerminalView")
 		await create_timer(2.5).timeout

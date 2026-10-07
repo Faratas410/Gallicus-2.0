@@ -943,6 +943,11 @@ più facile
 
 👉 è illegale.
 
+Eccezione decisa da Marco (7 ottobre 2026): il conto dei Denari di Vessa
+sopravvive ai percorsi e puo' premiare o punire il percorso successivo.
+Regole in "Economia di fondo (ottobre 2026)". Resta vietato tutto il resto
+di questo elenco.
+
 ## 4. RUOLO DI FELIX NELLA META-PROGRESSIONE (boundary note)
 
 Le implicazioni narrative su Felix Gallicus sono state spostate in `docs/canon/LORE_UNIFIED.md` per evitare leak cross-category.
@@ -1306,14 +1311,138 @@ su posta, soglia della quietanza e lunghezza nascosta del percorso.
   Il modificatore si somma alla probabilita' base del sigillo prima delle
   penalita' di Pressione, segni e profilo d'arena. La pagina del Registro lo
   dice a parole, mai in percentuale.
-- **Gesto:** `ABBASSA LO SGUARDO` porta Pressione -1 e posta -1 se il patto
-  regge (minimo +1); `SFIDA LA GRADINATA` porta Pressione +1 e posta +2.
+- **Gesto:** sostituito dagli scambi con la gradinata (sezione "Arena attiva
+  (ottobre 2026)"): tre risposte per arena, ognuna col suo prezzo in favore,
+  Pressione, posta o Segni.
 - **Quietanza:** Gloria incassata = posta (ridotta dal modificatore della folla)
   piu' il bonus di Pressione esistente. Aperta dopo ogni responso.
 - **Marchio:** visibile solo quando la quietanza e' bloccata; chiude il percorso
   e perde la posta.
 - **Ritmo:** dopo il primo percorso concluso (`rite_learned` nel profilo) la
-  tavoletta del patto passa da sola dopo `PACT_SEALED_SECONDS` e un solo colpo
-  imprime i tre alloggi del sigillo. Fasi, segnali e checkpoint restano gli stessi.
+  tavoletta del patto passa da sola dopo `PACT_SEALED_SECONDS`. Fasi e
+  checkpoint restano gli stessi.
 - **Firma:** si legge sulle decisioni davvero aperte; vedi
   `docs/canon/REGISTRY_SYSTEM_SPEC.md`, sezione "Evidenza e chiusura delle Ere".
+
+## Arena attiva (ottobre 2026)
+
+Decisa da Marco dopo il playtest della build del 6 ottobre ("il gioco è troppo
+passivo"). Proposte e diagnosi: `docs/support/arena_attiva_2026-10-06.md`.
+Dopo la seconda prova ("il game feel resta passivo") la richiesta della
+gradinata e il presagio della cera sono stati sostituiti dagli scambi con la
+gradinata e dal favore visibile.
+
+- **Sigillo a colpi.** Il responso non è più un tiro unico dopo il sigillo:
+  ogni colpo è una prova che RunManager risolve e annuncia subito
+  (`seal_strike_resolved`). Il primo colpo è il tiro dell'arena, con le stesse
+  probabilità di prima. Se regge, il giocatore sceglie `COLPISCI ANCORA` o
+  `ALZA LA MANO`. Il secondo colpo regge spesso (`SEAL_EXTRA_STRIKE_HOLD` 0,6),
+  il terzo a volte (0,45); ogni colpo extra che regge aggiunge alla posta un
+  altro guadagno dell'arena (`_stake_gain_for`). Se un colpo extra incrina la
+  cera, il sigillo cede con le conseguenze normali del patto. Al massimo tre
+  colpi (`SEAL_MAX_STRIKES`). Il timing resta senza effetto: conta quante volte
+  si osa. Ogni colpo extra conta come decisione rischiosa per la firma; alzare
+  la mano quando si poteva colpire conta come decisione prudente.
+- **Scambi con la gradinata.** Il gesto non è più una scelta unica: sono tre
+  scambi (`CROWD_EXCHANGES_PER_ARENA`) nella stessa fase `INTERMEDIATE_CHOICE`.
+  A ogni scambio RunManager estrae, con seme di percorso, arena e scambio, cosa
+  sta per fare la folla (`RunState.crowd_intent`, salvato; mai lo stesso due
+  volte di fila) e la UI stampa il prezzo esatto delle due risposte,
+  `ABBASSA LO SGUARDO` e `SFIDA LA GRADINATA`:
+
+  | La gradinata | Abbassa lo sguardo | Sfida la gradinata |
+  | --- | --- | --- |
+  | vuole sangue | Favore -1 | Favore +1, Pressione +1, posta +1 se il patto regge |
+  | raccoglie la sabbia | niente | Favore +2 e il Segno Occhio perduto (se c'è già: Pressione +1) |
+  | si annoia | Favore -2 | Favore +1, Pressione +1 |
+  | trattiene il fiato | Favore +1, Pressione -1 | Favore -2, Pressione +1, posta +1 se il patto regge |
+
+  Ogni sfida conta come decisione rischiosa, ogni sguardo abbassato come
+  prudente. Il gesto dell'arena per l'eco della firma è la maggioranza dei tre
+  scambi. La posta "se il patto regge" si somma a `intermediate_bonus_tier`.
+- **Favore.** Il favore è l'umore della folla che esisteva già
+  (`RunState.audience_score`, da -5 a +5, azzerato a ogni percorso), ora
+  visibile e giocato. Pesa sul primo colpo di ogni sigillo
+  (`CROWD_FAVOR_SEAL_STEP`, 0,02 per punto, da -0,1 a +0,1) e mantiene le
+  soglie di prima: a 0 o meno la quietanza rende meno, a -3 o meno è bloccata.
+  Il responso lo sposta di ±2 senza mai portarlo agli estremi. Negli scambi,
+  arrivare a +5 è un trionfo (`LA GRADINATA TI PORTA`: posta +2 subito,
+  favore a +3); arrivare a -5 è una rivolta (`LA GRADINATA SI RIVOLTA`: Segno
+  Marchio della vergogna e Pressione +1, o Pressione +2 se il Segno c'è già;
+  favore a -2). La UI lo mostra nel riquadro in alto a sinistra
+  (`CrowdFavorPanel`) tramite `crowd_favor_changed`.
+- **Segno mostrato.** Se un colpo incrina la cera e il corpo porta gia' almeno
+  un Segno, una volta per percorso (`RunState.scar_shown_this_run`) il
+  giocatore puo' scegliere `MOSTRA UN SEGNO` o `LASCIA CEDERE`. Mostrarlo fa
+  reggere il sigillo, chiude i colpi e aggiunge un nuovo segno (Ossa
+  incrinate, origine "Segno mostrato alla gradinata"); conta come decisione
+  rischiosa. Lasciar cedere applica le conseguenze normali.
+- **Meno attesa.** Tavoletta automatica 0,7 s (`PACT_SEALED_SECONDS`), soglia
+  minima del rito 0,6 s, banner della sentenza 0,8 s, lettura minima dei
+  modali 0,5 s, rivelazione del verdetto circa un terzo piu' rapida.
+
+## Economia di fondo (ottobre 2026)
+
+Chiesta da Marco ("un sistema che premi o punisca il giocatore"), scelta
+"entrambi": un conto che sopravvive ai percorsi e si spende dentro il
+percorso. Proposta e simulazioni: `docs/support/arena_attiva_2026-10-06.md`.
+
+- **Denari e conto.** Il conto di Vessa (`SaveManager.get_ledger_denari`,
+  salvato nel profilo, non nel percorso) e' l'unica valuta. Puo' andare in
+  negativo: e' il debito. Solo RunManager lo scrive.
+- **Entrate.** Trionfo della gradinata: Denari +3. Quietanza: un Denaro ogni
+  3 Gloria incassate nel percorso (`LEDGER_CASHOUT_GLORY_PER_DENARO`), con o
+  senza bando chiuso. Bando chiuso: Denari +5 in piu' (`BANDO_DENARI`).
+- **Uscite e debito.** Rivolta della gradinata: Denari -3. Marchio
+  (`CONDANNA`), Raddoppia o muori spezzato e Provoca fallita: Denari -5.
+- **Banco di Vessa.** Sul Registro chiuso, prima di aprirlo, a ogni arena.
+  Compra il favore (Favore +2, mai fino al trionfo), paga la Pressione
+  (Pressione -2), assicura la posta (se il sigillo di questa arena cede, la
+  posta resta; un sigillo che regge consuma la polizza). Prezzi 3, 3 e 5
+  Denari, +1 per ogni Era del Registro (`BANCO_ERA_SURCHARGE`). Richiesta UI:
+  `request_banco_purchase(item_id)`; RunManager controlla fase, saldo e
+  disponibilita'.
+- **Debito.** Con il conto sotto zero il banco e' chiuso e ogni percorso parte
+  con Pressione +1. A -10 o meno il percorso parte con il Segno Marchio del
+  debito (origine "Debito con Vessa"). Il debito si salda solo con le entrate.
+  Il debito non scende sotto -20 Denari (`LEDGER_DEBT_FLOOR`): Vessa non presta
+  oltre, cosi' una campagna puo' sempre risalire.
+- **Visibilita'.** Il conto sta nel rail (`Conto N Denari`); il banco lo ripete
+  nel titolo. `ledger_changed` porta saldo, variazione, nota e vista del banco.
+
+## Bando, scala e catena (ottobre 2026)
+
+Chiesti da Marco ("Perche' scommettere? Perche' continuare?"), scelta "tutti e
+quattro": bando di Orvo, scala dei bandi, il posto vuoto nei racconti e
+catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`.
+
+- **Bando di Orvo.** Ogni percorso si apre con un bando: incassare almeno
+  `quota` Gloria con la quietanza entro l'arena `deadline`
+  (`RunState.bando_quota`, `bando_deadline`, `bando_status`). Stati: `open`,
+  `closed` (quietanza entro la scadenza con Gloria >= quota), `lapsed` (la
+  scadenza e' passata a percorso aperto), `missed` (il percorso chiude senza
+  chiuderlo). Mancarlo non toglie nulla: la quietanza paga come sempre, si
+  perde solo il gradino.
+- **Scala dei bandi.** Il gradino (`SaveManager.get_bando_step`, nel profilo,
+  da 0 a 12) sceglie quota e scadenza: quote
+  `10, 12, 14, 17, 20, 23, 26, 29, 32, 35, 38, 42` (`BANDO_LADDER`), scadenza
+  arena 4 per i gradini 0-2, 5 per 3-5, 6 per 6-8, 7 per 9-11. Chiudere il bando paga
+  Denari +5, sale di un gradino e lascia l'acclamazione: al percorso dopo la
+  gradinata parte da Favore +2 (`BANDO_ACCLAIM_FAVOR`). Dopo il dodicesimo
+  gradino la scala e' completa e il bando resta a quota 42.
+- **Premi della scala.** I gradini da 1 a 8 aprono gli otto racconti (vedi
+  `docs/canon/LORE_UNIFIED.md`); i gradini 3, 6 e 9 aprono le pagine sigillate
+  dei patti `CONDANNA_FIRMATO`, `CONDANNA_ANCORA` e `CONDANNA_MI_SONO_FERMATO`
+  (`BANDO_PACT_STEPS`), in alternativa alle regole di sblocco di prima.
+- **Catena.** I sigilli d'arena che reggono di fila nel percorso
+  (`RunState.seal_chain`) moltiplicano cio' che il sigillo che regge mette in
+  posta: x1 il primo, x1,5 il secondo, x2 il terzo, x3 dal quarto
+  (`SEAL_CHAIN_MULTIPLIERS`, arrotondato per eccesso, prima del raddoppio di
+  `Raddoppia o muori`). I colpi in piu' della stessa arena sono un solo anello
+  e condividono il suo moltiplicatore. Un colpo che cede la spezza; un Segno
+  mostrato la fa ripartire dal sigillo salvato. Il rail mostra il valore del
+  prossimo anello.
+- **Visibilita'.** `bando_changed` porta la vista del bando (gradino, quota,
+  scadenza, stato, posta, prossimo bando, racconto o patti in palio). La UI
+  lo mostra nel riquadro in basso a sinistra (`BandoPanel`), sul Registro
+  chiuso e nel fascicolo; la catena sta nel rail e nel testo del sigillo.

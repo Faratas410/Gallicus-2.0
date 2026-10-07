@@ -237,14 +237,14 @@ def main() -> int:
     keyboard_wrong_strike_count_failures = validate_log_text(
         keyboard_log.replace(
             "SMOKE:KEYBOARD key=Enter focus=Btn_RESOLUTION_STRIKE\n",
-            "",
+            "SMOKE:KEYBOARD key=Enter focus=Btn_RESOLUTION_STRIKE\n" * 2,
             1,
         ),
         SCENARIO_KEYBOARD_FULL_RUN,
     )
     if not any("Btn_RESOLUTION_STRIKE" in failure for failure in keyboard_wrong_strike_count_failures):
         return fail(
-            "expected KEYBOARD_FULL_RUN to enforce exactly three seal strikes, "
+            "expected KEYBOARD_FULL_RUN to reject more than three seal strikes, "
             f"got: {keyboard_wrong_strike_count_failures}"
         )
 

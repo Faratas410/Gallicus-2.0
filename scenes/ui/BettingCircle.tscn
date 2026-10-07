@@ -80,9 +80,9 @@ mouse_filter = 2
 
 [node name="IntroText" type="Label" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.22
-anchor_top = 0.27
+anchor_top = 0.1
 anchor_right = 0.78
-anchor_bottom = 0.39
+anchor_bottom = 0.2
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
 theme_override_font_sizes/font_size = 19
 text = "IL REGISTRO È CHIUSO"
@@ -92,9 +92,9 @@ autowrap_mode = 3
 
 [node name="IntroBodyPanel" type="PanelContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.26
-anchor_top = 0.405
+anchor_top = 0.215
 anchor_right = 0.74
-anchor_bottom = 0.51
+anchor_bottom = 0.315
 mouse_filter = 2
 theme_override_styles/panel = ExtResource("14_register_tablet")
 
@@ -111,9 +111,9 @@ mouse_filter = 2
 
 [node name="IntroSealPanel" type="PanelContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.38
-anchor_top = 0.535
+anchor_top = 0.335
 anchor_right = 0.62
-anchor_bottom = 0.595
+anchor_bottom = 0.385
 mouse_filter = 2
 theme_override_styles/panel = ExtResource("14_register_tablet")
 
@@ -129,9 +129,9 @@ mouse_filter = 2
 
 [node name="Btn_Open_Book" type="Button" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.34
-anchor_top = 0.645
+anchor_top = 0.41
 anchor_right = 0.66
-anchor_bottom = 0.745
+anchor_bottom = 0.51
 focus_mode = 2
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
@@ -147,6 +147,61 @@ text = "APRI IL REGISTRO"
 horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
+
+[node name="BancoPanel" type="VBoxContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
+anchor_left = 0.1
+anchor_top = 0.56
+anchor_right = 0.9
+anchor_bottom = 0.93
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="BancoTitle" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel"]
+theme_override_colors/font_color = Color(0.94, 0.8, 0.45, 1)
+theme_override_font_sizes/font_size = 16
+text = "BANCO DI VESSA"
+horizontal_alignment = 1
+
+[node name="BancoRow" type="HBoxContainer" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel"]
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Btn_Banco_favor" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
+custom_minimum_size = Vector2(212, 66)
+focus_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = ExtResource("15_button_normal")
+theme_override_styles/hover = ExtResource("16_button_hover")
+theme_override_styles/pressed = ExtResource("17_button_pressed")
+theme_override_styles/disabled = ExtResource("18_button_disabled")
+text = ""
+
+[node name="Btn_Banco_pressure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
+custom_minimum_size = Vector2(212, 66)
+focus_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = ExtResource("15_button_normal")
+theme_override_styles/hover = ExtResource("16_button_hover")
+theme_override_styles/pressed = ExtResource("17_button_pressed")
+theme_override_styles/disabled = ExtResource("18_button_disabled")
+text = ""
+
+[node name="Btn_Banco_insure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
+custom_minimum_size = Vector2(212, 66)
+focus_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = ExtResource("15_button_normal")
+theme_override_styles/hover = ExtResource("16_button_hover")
+theme_override_styles/pressed = ExtResource("17_button_pressed")
+theme_override_styles/disabled = ExtResource("18_button_disabled")
+text = ""
+
+[node name="BancoNote" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel"]
+theme_override_colors/font_color = Color(0.8, 0.74, 0.61, 1)
+theme_override_font_sizes/font_size = 14
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="TitleBacking" type="PanelContainer" parent="CenterContainer/BookFrame"]
 anchor_left = 0.17

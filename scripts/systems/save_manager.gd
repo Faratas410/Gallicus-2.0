@@ -2,6 +2,7 @@ extends Node
 
 const PROFILE_VERSION: int = 5
 const RegistryEvolutionScript = preload("res://scripts/systems/run/registry_evolution.gd")
+const CampaignDialogues = preload("res://scripts/content/campaign_dialogues.gd")
 const PROFILE_PATH: String = "user://profile.save"
 const TMP_PATH: String = "%s.tmp" % PROFILE_PATH
 const BAK_PATH: String = "%s.bak" % PROFILE_PATH
@@ -198,7 +199,7 @@ func has_seen_campaign_dialogue(id: String) -> bool:
 	return id in _settings.get("campaign_dialogues_seen", []) or (id == "entry" and has_seen_opening_prologue())
 
 func mark_campaign_dialogue_seen(id: String) -> void:
-	if id not in ["entry", "middle", "departure"] or has_seen_campaign_dialogue(id):
+	if not CampaignDialogues.SEQUENCES.has(id) or has_seen_campaign_dialogue(id):
 		return
 	var seen: Array[String] = _sanitize_campaign_dialogues(_settings.get("campaign_dialogues_seen", []))
 	seen.append(id)
@@ -212,7 +213,7 @@ func _sanitize_campaign_dialogues(value: Variant) -> Array[String]:
 	var result: Array[String] = []
 	if value is Array:
 		for id: Variant in value:
-			if id is String and id in ["entry", "middle", "departure"] and not result.has(id):
+			if id is String and CampaignDialogues.SEQUENCES.has(id) and not result.has(id):
 				result.append(id)
 	return result
 
@@ -264,6 +265,60 @@ func commit_registry_evolution(pressure: float, era: int, evolution: Dictionary)
 	_meta["registry_evolution"] = RegistryEvolutionScript.sanitize(evolution)
 	_profile_dirty = true
 	save_profile()
+
+# Vessa's ledger: the Denari the subject carries from one percorso to the next.
+# Negative is debt. Only RunManager writes it.
+func get_ledger_denari() -> int:
+	if not _profile_loaded:
+		load_profile()
+	return int(_meta.get("ledger_denari", 0))
+
+func set_ledger_denari(value: int) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: int = _sanitize_ledger_denari(value)
+	if int(_meta.get("ledger_denari", 0)) == sanitized:
+		return
+	_meta["ledger_denari"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func _sanitize_ledger_denari(value: int) -> int:
+	return clampi(value, -999, 9999)
+
+# Orvo's bandi: how many steps of the ladder the subject has climbed, and
+# whether the stands still remember the last closed bando. Only RunManager writes.
+func get_bando_step() -> int:
+	if not _profile_loaded:
+		load_profile()
+	return int(_meta.get("bando_step", 0))
+
+func set_bando_step(value: int) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: int = _sanitize_bando_step(value)
+	if int(_meta.get("bando_step", 0)) == sanitized:
+		return
+	_meta["bando_step"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func get_bando_acclaim() -> bool:
+	if not _profile_loaded:
+		load_profile()
+	return bool(_meta.get("bando_acclaim", false))
+
+func set_bando_acclaim(value: bool) -> void:
+	if not _profile_loaded:
+		load_profile()
+	if bool(_meta.get("bando_acclaim", false)) == value:
+		return
+	_meta["bando_acclaim"] = value
+	_profile_dirty = true
+	save_profile()
+
+func _sanitize_bando_step(value: int) -> int:
+	return clampi(value, 0, 99)
 
 func set_language(value: String) -> void:
 	if not _profile_loaded:
@@ -468,6 +523,9 @@ func _get_default_meta() -> Dictionary:
 		"registry_pressure": 0.0,
 		"registry_era": 0,
 		"registry_evolution": RegistryEvolutionScript.defaults(),
+		"ledger_denari": 0,
+		"bando_step": 0,
+		"bando_acclaim": false,
 	}
 
 func _sanitize_language(value: String) -> String:
@@ -594,6 +652,11 @@ func _load_meta_from_profile(data: Dictionary) -> void:
 		sanitized["registry_era"] = _sanitize_registry_era(int(meta_value.get("registry_era", 0)))
 	else:
 		needs_save = true
+	# Profiles older than the ledger start with an empty account.
+	sanitized["ledger_denari"] = _sanitize_ledger_denari(int(meta_value.get("ledger_denari", 0)))
+	# Profiles older than the bandi start at the foot of the ladder.
+	sanitized["bando_step"] = _sanitize_bando_step(int(meta_value.get("bando_step", 0)))
+	sanitized["bando_acclaim"] = bool(meta_value.get("bando_acclaim", false))
 	if not needs_save:
 		if not is_equal_approx(float(meta_value.get("registry_pressure", 0.0)), float(sanitized["registry_pressure"])):
 			needs_save = true

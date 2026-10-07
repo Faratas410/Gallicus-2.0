@@ -271,15 +271,10 @@ Un gesto debole. Ora ti strappano il rispetto.,Un gesto debole. Ora ti strappano
 Il gesto è sterile. Ti tengono in debito.,Il gesto è sterile. Ti tengono in debito.
 "Il gesto li accende, ma chiedono il crollo.","Il gesto li accende, ma chiedono il crollo."
 Il Registro pesa il patto.,Il Registro pesa il patto.
-Imprimi tre colpi sul sigillo.,Imprimi tre colpi sul sigillo.
 Tre colpi chiudono il verbale.,Tre colpi chiudono il verbale.
-IMPRIMI IL SIGILLO: TRE COLPI,IMPRIMI IL SIGILLO: TRE COLPI
 COLPISCI,COLPISCI
 COLPISCI ANCORA,COLPISCI ANCORA
 SIGILLATO,SIGILLATO
-PRIMO COLPO - CERA IMPRESSA,PRIMO COLPO - CERA IMPRESSA
-SECONDO COLPO - VERDETTO INCISO,SECONDO COLPO - VERDETTO INCISO
-TERZO COLPO - SIGILLO CHIUSO,TERZO COLPO - SIGILLO CHIUSO
 VERBALE INCISO - IL REGISTRO PUÒ AVANZARE,VERBALE INCISO - IL REGISTRO PUÒ AVANZARE
 FASCICOLO CHIUSO - COMPROMISSIONE,FASCICOLO CHIUSO - COMPROMISSIONE
 FASCICOLO CHIUSO - ASCESA,FASCICOLO CHIUSO - ASCESA
@@ -847,9 +842,6 @@ NESSUNA ULTERIORE DECISIONE RILEVANTE.,NESSUNA ULTERIORE DECISIONE RILEVANTE.
 In posta %d Gloria,In posta %d Gloria
 Arena %d di %d,Arena %d di %d
 La posta di %d Gloria resta in gioco. Pressione +%d.,La posta di %d Gloria resta in gioco. Pressione +%d.
-"Pressione -1. Se il patto regge, posta -1.","Pressione -1. Se il patto regge, posta -1."
-"Pressione +1. Se il patto regge, posta +2.","Pressione +1. Se il patto regge, posta +2."
-IMPRIMI IL SIGILLO: UN COLPO,IMPRIMI IL SIGILLO: UN COLPO
 Regge spesso,Regge spesso
 Regge a volte,Regge a volte
 Regge di rado,Regge di rado
@@ -858,3 +850,170 @@ Regge di rado,Regge di rado
 Perdi metà della posta.,Perdi metà della posta.
 Perdi tutta la posta.,Perdi tutta la posta.
 Il Registro resta aperto: incassa la posta o rilancia.,Il Registro resta aperto: incassa la posta o rilancia.
+Ogni colpo mette alla prova la cera.,Ogni colpo mette alla prova la cera.
+IMPRIMI IL SIGILLO,IMPRIMI IL SIGILLO
+ALZA LA MANO,ALZA LA MANO
+IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO,IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO
+SIGILLO PIENO - IL REGISTRO PUÒ AVANZARE,SIGILLO PIENO - IL REGISTRO PUÒ AVANZARE
+LA CERA SI INCRINA - IL SIGILLO CEDE,LA CERA SI INCRINA - IL SIGILLO CEDE
+Il sigillo regge: +%d Gloria in posta.,Il sigillo regge: +%d Gloria in posta.
+"Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede."
+La cera si incrina.,La cera si incrina.
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso."
+LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE
+LASCIA CEDERE,LASCIA CEDERE
+MOSTRA UN SEGNO,MOSTRA UN SEGNO
+IL SEGNO SALVA IL SIGILLO - IL CORPO PAGA,IL SEGNO SALVA IL SIGILLO - IL CORPO PAGA
+Segno mostrato alla gradinata,Segno mostrato alla gradinata
+La gradinata vuole sangue.,La gradinata vuole sangue.
+La gradinata raccoglie la sabbia.,La gradinata raccoglie la sabbia.
+La gradinata si annoia.,La gradinata si annoia.
+La gradinata trattiene il fiato.,La gradinata trattiene il fiato.
+Favore -1.,Favore -1.
+Favore -2.,Favore -2.
+"Favore +1, Pressione +1. Se il patto regge, posta +1.","Favore +1, Pressione +1. Se il patto regge, posta +1."
+Ti ripari: non cambia nulla.,Ti ripari: non cambia nulla.
+"Favore +2, ma la sabbia lascia un Segno.","Favore +2, ma la sabbia lascia un Segno."
+"Favore +2, Pressione +1: l'occhio è già perduto.","Favore +2, Pressione +1: l'occhio è già perduto."
+"Favore +1, Pressione +1.","Favore +1, Pressione +1."
+"Favore +1, Pressione -1.","Favore +1, Pressione -1."
+"Favore -2, Pressione +1. Se il patto regge, posta +1.","Favore -2, Pressione +1. Se il patto regge, posta +1."
+Il sigillo ha retto: la gradinata approva.,Il sigillo ha retto: la gradinata approva.
+Il sigillo ha ceduto: la gradinata si raffredda.,Il sigillo ha ceduto: la gradinata si raffredda.
+LA GRADINATA,LA GRADINATA
+Favore %+d.,Favore %+d.
+Ostile: blocca la quietanza.,Ostile: blocca la quietanza.
+Fredda: la quietanza rende meno.,Fredda: la quietanza rende meno.
+Ben disposta: il sigillo regge un po' di più.,Ben disposta: il sigillo regge un po' di più.
+Ti acclama: il sigillo regge di più.,Ti acclama: il sigillo regge di più.
+LA GRADINATA TI PORTA: posta +2.,LA GRADINATA TI PORTA: posta +2.
+"LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.","LA GRADINATA SI RIVOLTA: un Segno, Pressione +1."
+Scambio %d di %d:,Scambio %d di %d:
+Rivolta della gradinata,Rivolta della gradinata
+Sabbia della gradinata,Sabbia della gradinata
+BANCO DI VESSA,BANCO DI VESSA
+Conto %d Denari,Conto %d Denari
+%d Denari,%d Denari
+COMPRA IL FAVORE,COMPRA IL FAVORE
+PAGA LA PRESSIONE,PAGA LA PRESSIONE
+ASSICURA LA POSTA,ASSICURA LA POSTA
+Favore +2.,Favore +2.
+Pressione -2.,Pressione -2.
+"Se il sigillo cede, la posta resta.","Se il sigillo cede, la posta resta."
+In debito: il banco è chiuso finché una quietanza non salda il conto.,In debito: il banco è chiuso finché una quietanza non salda il conto.
+La posta di questa arena è assicurata.,La posta di questa arena è assicurata.
+La gradinata lancia monete: Denari +%d.,La gradinata lancia monete: Denari +%d.
+La rivolta costa: Denari -%d.,La rivolta costa: Denari -%d.
+Quietanza versata: Denari +%d.,Quietanza versata: Denari +%d.
+Vessa iscrive il debito: Denari -%d.,Vessa iscrive il debito: Denari -%d.
+Banco di Vessa: Denari -%d.,Banco di Vessa: Denari -%d.
+Vessa ricorda il debito: Pressione +1.,Vessa ricorda il debito: Pressione +1.
+La polizza di Vessa salva la posta.,La polizza di Vessa salva la posta.
+Comprato al banco: Favore +2.,Comprato al banco: Favore +2.
+Debito con Vessa,Debito con Vessa
+Il conto di Vessa,Il conto di Vessa
+"Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine.","Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine."
+Un conto? Una volta qui si pagava con la voce.,Un conto? Una volta qui si pagava con la voce.
+La voce non si archivia. I Denari sì.,La voce non si archivia. I Denari sì.
+E quando il conto scende sotto zero?,E quando il conto scende sotto zero?
+"Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena.","Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena."
+Allora anche la gradinata tiene un conto. Il suo non si scrive.,Allora anche la gradinata tiene un conto. Il suo non si scrive.
+La sabbia nelle tasche,La sabbia nelle tasche
+Hai visto la prima fila? Ha le tasche piene di sabbia.,Hai visto la prima fila? Ha le tasche piene di sabbia.
+"Una volta la sabbia restava giù, sotto i passi. Copriva i segni.","Una volta la sabbia restava giù, sotto i passi. Copriva i segni."
+Ora la raccolgono. La lanciano quando un patto non piace.,Ora la raccolgono. La lanciano quando un patto non piace.
+E quando piace?,E quando piace?
+Monete. Vessa le conta prima che tocchino terra.,Monete. Vessa le conta prima che tocchino terra.
+"Sabbia o monete, il corpo le ricorda tutte e due.","Sabbia o monete, il corpo le ricorda tutte e due."
+Il richiamo,Il richiamo
+"Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia.","Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia."
+Tu non provavi mai.,Tu non provavi mai.
+"Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni.","Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni."
+Sul foglio la tacca non c’è. C’è solo l’annuncio accettato.,Sul foglio la tacca non c’è. C’è solo l’annuncio accettato.
+Allora scrivi questo: oggi ho scelto di tacere.,Allora scrivi questo: oggi ho scelto di tacere.
+Un gallo che tace non è un atto. Non lo copio.,Un gallo che tace non è un atto. Non lo copio.
+I posti in vendita,I posti in vendita
+Vessa è passata con il righello. Vuole vendere anche la terza fila.,Vessa è passata con il righello. Vuole vendere anche la terza fila.
+"Ha misurato. Lo spazio libero rende, se lo si iscrive.","Ha misurato. Lo spazio libero rende, se lo si iscrive."
+Ogni posto ha un passo. Io li riconosco tutti.,Ogni posto ha un passo. Io li riconosco tutti.
+Anche quello accanto a te?,Anche quello accanto a te?
+Quello non si misura. L’ho detto a Vessa: il righello si ferma lì.,Quello non si misura. L’ho detto a Vessa: il righello si ferma lì.
+"Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco.","Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco."
+La riga che resta,La riga che resta
+Ogni sera raschio le copie sbagliate. La cera torna liscia.,Ogni sera raschio le copie sbagliate. La cera torna liscia.
+"COPIA RESPINTA
+Riga già iscritta.","COPIA RESPINTA
+Riga già iscritta."
+Una riga non va via. Ho consumato tre lame.,Una riga non va via. Ho consumato tre lame.
+Che cosa dice?,Che cosa dice?
+Un nome e un fascicolo aperto. Il resto non è di mia competenza.,Un nome e un fascicolo aperto. Il resto non è di mia competenza.
+Lasciala dov’è. Anch’io lascio il posto com’è.,Lasciala dov’è. Anch’io lascio il posto com’è.
+Vessa: Il conto è aperto.,Vessa: Il conto è aperto.
+"Nerio: Copio la cifra, non il motivo.","Nerio: Copio la cifra, non il motivo."
+Orvo: La prima fila ha le tasche piene.,Orvo: La prima fila ha le tasche piene.
+Vessa: Di sabbia o di monete?,Vessa: Di sabbia o di monete?
+Dima: Hanno venduto la terza fila.,Dima: Hanno venduto la terza fila.
+Vessa: Il tuo posto no. Per ora.,Vessa: Il tuo posto no. Per ora.
+Orvo: Guarda come ti studiano.,Orvo: Guarda come ti studiano.
+"Rugo: Prima di gridare, la gradinata pesa.","Rugo: Prima di gridare, la gradinata pesa."
+Vessa: La folla paga chi la regge.,Vessa: La folla paga chi la regge.
+Orvo: E presenta il conto a chi la perde.,Orvo: E presenta il conto a chi la perde.
+Dima: Sento la sabbia nelle tasche.,Dima: Sento la sabbia nelle tasche.
+Rugo: Allora non è ancora il momento.,Rugo: Allora non è ancora il momento.
+Vessa: Il conto.,Vessa: Il conto.
+Nerio: Copiato.,Nerio: Copiato.
+Orvo: Tasche piene.,Orvo: Tasche piene.
+"Vessa: Monete, spero.","Vessa: Monete, spero."
+Dima: La terza fila.,Dima: La terza fila.
+Vessa: Venduta.,Vessa: Venduta.
+Orvo: Ti pesano.,Orvo: Ti pesano.
+Rugo: Lo so.,Rugo: Lo so.
+Vessa: Paga chi regge.,Vessa: Paga chi regge.
+Orvo: Sempre.,Orvo: Sempre.
+Dima: La sabbia.,Dima: La sabbia.
+Rugo: Non ancora.,Rugo: Non ancora.
+Il posto tenuto,Il posto tenuto
+"Ogni volta che la gradinata si riempie, tieni la zampa su quel posto.","Ogni volta che la gradinata si riempie, tieni la zampa su quel posto."
+"Finché si riempie. Poi la tolgo, e nessuno si siede.","Finché si riempie. Poi la tolgo, e nessuno si siede."
+Chi ci sedeva?,Chi ci sedeva?
+Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.,Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.
+Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura.,Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura.
+"Perché non c’è stata. Si è alzato, e il posto è rimasto caldo.","Perché non c’è stata. Si è alzato, e il posto è rimasto caldo."
+Il passo,Il passo
+Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo.,Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo.
+Il nuovo?,Il nuovo?
+"Il nuovo. Stessa pausa prima della soglia, stesso piede avanti.","Il nuovo. Stessa pausa prima della soglia, stesso piede avanti."
+Due soggetti non hanno lo stesso passo. Il Registro li distingue.,Due soggetti non hanno lo stesso passo. Il Registro li distingue.
+Il Registro distingue le righe. Io sento la pietra.,Il Registro distingue le righe. Io sento la pietra.
+"Allora lascia la zampa dov’è, ancora per un po’.","Allora lascia la zampa dov’è, ancora per un po’."
+La stessa pendenza,La stessa pendenza
+Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.,Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.
+"CONFRONTO IN CORSO
+Corrispondenza parziale.","CONFRONTO IN CORSO
+Corrispondenza parziale."
+"Che vuol dire, parziale?","Che vuol dire, parziale?"
+Che il Registro sta cercando dove finisce l’una e comincia l’altra.,Che il Registro sta cercando dove finisce l’una e comincia l’altra.
+Il posto è sempre lì. Non aspetta te. Lo tengo io.,Il posto è sempre lì. Non aspetta te. Lo tengo io.
+Lo annoto. Non so ancora in quale fascicolo.,Lo annoto. Non so ancora in quale fascicolo.
+BANDO DI ORVO,BANDO DI ORVO
+IL BANDO DI ORVO,IL BANDO DI ORVO
+%d di %d Gloria entro l'arena %d.,%d di %d Gloria entro l'arena %d.
+Bando chiuso: Denari +%d e un gradino.,Bando chiuso: Denari +%d e un gradino.
+Scala completa: %d gradini.,Scala completa: %d gradini.
+Gradino %d di %d.,Gradino %d di %d.
+Gradino %d di %d,Gradino %d di %d
+In palio il racconto «%s».,In palio il racconto «%s».
+In palio nuovi patti nel Registro.,In palio nuovi patti nel Registro.
+Incassa %d Gloria entro l'arena %d.,Incassa %d Gloria entro l'arena %d.
+Chiudilo: Denari +%d e un gradino.,Chiudilo: Denari +%d e un gradino.
+Bando chiuso: gradino %d di %d.,Bando chiuso: gradino %d di %d.
+Bando mancato: %d Gloria entro l'arena %d.,Bando mancato: %d Gloria entro l'arena %d.
+Prossimo bando: %d Gloria entro l'arena %d.,Prossimo bando: %d Gloria entro l'arena %d.
+Il bando è scaduto.,Il bando è scaduto.
+BANDO CHIUSO,BANDO CHIUSO
+Bando chiuso: Denari +%d.,Bando chiuso: Denari +%d.
+La gradinata ricorda il bando: Favore +2.,La gradinata ricorda il bando: Favore +2.
+Catena %d: posta %s.,Catena %d: posta %s.
+Catena %s,Catena %s
+Bando scaduto: nessun gradino.,Bando scaduto: nessun gradino.
+Bando mancato: nessun gradino.,Bando mancato: nessun gradino.

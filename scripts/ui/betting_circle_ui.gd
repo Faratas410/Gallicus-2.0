@@ -66,16 +66,19 @@ const PAGE_IDLE_DRIFT_PIXELS: float = 1.4
 @onready var intro_seal: Label = $CenterContainer/BookFrame/ClosedIntro/IntroSealPanel/IntroSeal as Label
 @onready var open_book_button: Button = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book as Button
 @onready var open_book_label: Label = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book/Lbl_Open_Book as Label
+@onready var banco_title: Label = $CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoTitle as Label
+@onready var banco_note: Label = $CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoNote as Label
+@onready var banco_row: HBoxContainer = $CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow as HBoxContainer
 
 var selected_bet_id: StringName = &""
 var _betting_circle_options: Array[Dictionary] = []
 var _submit_locked: bool = false
 var _opening_locked: bool = false
 var _idle_time: float = 0.0
-var _left_page_base_position: Vector2 = Vector2.ZERO
-var _right_page_base_position: Vector2 = Vector2.ZERO
+var _left_page_base_offsets: Vector4 = Vector4.ZERO
+var _right_page_base_offsets: Vector4 = Vector4.ZERO
 var _book_base_scale: Vector2 = Vector2.ONE
-var _book_base_position: Vector2 = Vector2.ZERO
+var _book_base_offsets: Vector4 = Vector4.ZERO
 var _nodes_ready: bool = false
 var _open_tween: Tween = null
 var _contract_write_tween: Tween = null
@@ -83,6 +86,10 @@ var _book_content_nodes: Array[CanvasItem] = []
 var _book_content_target_modulates: Dictionary = {}
 var _awaiting_open_request: bool = false
 var _arena_background_default_texture: Texture2D = null
+# Vessa's banco renders the last ledger payload; RunManager prices and decides.
+var _banco_view: Dictionary = {}
+var _bando_view: Dictionary = {}
+var _banco_note_text: String = ""
 
 func _ready() -> void:
 	_nodes_ready = true
@@ -100,18 +107,22 @@ func _ready() -> void:
 		open_book_button.focus_exited.connect(_on_open_book_focus_exited)
 		open_book_button.button_down.connect(_on_open_book_button_down)
 		open_book_button.button_up.connect(_on_open_book_button_up)
+	# Exported builds can drop the instance's anchors (binary scene conversion);
+	# the circle must always cover the run root so the book sits centred.
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_wire_banco()
 	_wire_button_feedback_sfx()
 	# Legacy CI contract token: bet_option_3.visible = false
 	_refresh_from_catalog_if_empty()
 	_render_pages()
 	_reset_button_state()
 	if left_page != null:
-		_left_page_base_position = left_page.position
+		_left_page_base_offsets = _layout_offsets(left_page)
 	if right_page != null:
-		_right_page_base_position = right_page.position
+		_right_page_base_offsets = _layout_offsets(right_page)
 	if book_frame != null:
 		_book_base_scale = book_frame.scale
-		_book_base_position = book_frame.position
+		_book_base_offsets = _layout_offsets(book_frame)
 	if arena_background != null:
 		_arena_background_default_texture = arena_background.texture
 	_build_book_content_node_list()
@@ -135,18 +146,102 @@ func _refresh_localized_text() -> void:
 		left_sign_label.text = tr("FIRMA")
 	if right_sign_label != null:
 		right_sign_label.text = tr("FIRMA")
-	if intro_text != null:
-		intro_text.text = tr("IL REGISTRO È CHIUSO")
-	if intro_body != null:
-		intro_body.text = "%s\n%s" % [
-			tr("La pietra attende una firma."),
-			tr("Ogni patto lascia un segno."),
-		]
-	if intro_seal != null:
-		intro_seal.text = tr("I    II    III")
+	_render_bando_intro()
 	if open_book_label != null:
 		open_book_label.text = tr("APRI IL REGISTRO")
 	_render_pages()
+
+func _wire_banco() -> void:
+	if banco_row != null:
+		for button_node: Node in banco_row.get_children():
+			var button: Button = button_node as Button
+			if button == null:
+				continue
+			var item_id: String = String(button.name).trim_prefix("Btn_Banco_")
+			button.pressed.connect(_on_banco_pressed.bind(item_id))
+	if GameEvents != null and GameEvents.has_signal("ledger_changed"):
+		var ledger_callable: Callable = Callable(self, "_on_ledger_changed")
+		if not GameEvents.ledger_changed.is_connected(ledger_callable):
+			GameEvents.ledger_changed.connect(ledger_callable)
+	if GameEvents != null and GameEvents.has_signal("bando_changed"):
+		var bando_callable: Callable = Callable(self, "_on_bando_changed")
+		if not GameEvents.bando_changed.is_connected(bando_callable):
+			GameEvents.bando_changed.connect(bando_callable)
+	_render_banco()
+
+func _on_bando_changed(payload: Dictionary) -> void:
+	_bando_view = payload.duplicate()
+	_render_bando_intro()
+
+# The closed Registry is where Orvo announces the percorso's bando.
+func _render_bando_intro() -> void:
+	var open_bando: bool = str(_bando_view.get("status", "")) == "open"
+	if intro_text != null:
+		intro_text.text = tr("IL BANDO DI ORVO") if open_bando else tr("IL REGISTRO È CHIUSO")
+	if intro_body != null:
+		if open_bando:
+			intro_body.text = "%s\n%s" % [
+				tr("Incassa %d Gloria entro l'arena %d.") % [int(_bando_view.get("quota", 0)), int(_bando_view.get("deadline", 0))],
+				tr("Chiudilo: Denari +%d e un gradino.") % int(_bando_view.get("denari", 0)),
+			]
+		else:
+			intro_body.text = "%s\n%s" % [
+				tr("La pietra attende una firma."),
+				tr("Ogni patto lascia un segno."),
+			]
+	if intro_seal != null:
+		var steps: int = int(_bando_view.get("steps", 0))
+		if open_bando and steps > 0:
+			intro_seal.text = tr("Gradino %d di %d") % [mini(int(_bando_view.get("step", 0)) + 1, steps), steps]
+		else:
+			intro_seal.text = tr("I    II    III")
+
+func _on_ledger_changed(payload: Dictionary) -> void:
+	_banco_view = payload.get("banco", {}) as Dictionary
+	var note: String = str(payload.get("note", ""))
+	if note != "":
+		# Ledger notes carry the amount as %d: the key stays translatable.
+		_banco_note_text = tr(note) % absi(int(payload.get("delta", 0))) if note.contains("%d") else tr(note)
+	_render_banco()
+
+func _on_banco_pressed(item_id: String) -> void:
+	if not bool(_banco_view.get("open", false)):
+		return
+	_play_sfx(&"registry_table_open")
+	if GameEvents != null and GameEvents.has_signal("request_banco_purchase"):
+		GameEvents.request_banco_purchase.emit(item_id)
+
+func _render_banco() -> void:
+	if not _nodes_ready:
+		return
+	var denari: int = int(_banco_view.get("denari", 0))
+	if banco_title != null:
+		banco_title.text = "%s  ·  %s" % [tr("BANCO DI VESSA"), tr("Conto %d Denari") % denari]
+	var items: Array = _banco_view.get("items", []) as Array
+	if banco_row != null:
+		for button_node: Node in banco_row.get_children():
+			var button: Button = button_node as Button
+			if button == null:
+				continue
+			var item_id: String = String(button.name).trim_prefix("Btn_Banco_")
+			var item: Dictionary = {}
+			for item_value: Variant in items:
+				if item_value is Dictionary and str((item_value as Dictionary).get("id", "")) == item_id:
+					item = item_value as Dictionary
+			button.visible = not item.is_empty()
+			button.disabled = not bool(item.get("available", false))
+			button.text = "%s\n%s %s" % [
+				tr(str(item.get("title", ""))),
+				tr(str(item.get("text", ""))),
+				tr("%d Denari") % int(item.get("price", 0)),
+			]
+	if banco_note != null:
+		var note: String = _banco_note_text
+		if bool(_banco_view.get("in_debt", false)):
+			note = tr("In debito: il banco è chiuso finché una quietanza non salda il conto.")
+		elif bool(_banco_view.get("insured", false)):
+			note = tr("La posta di questa arena è assicurata.")
+		banco_note.text = note
 
 func set_offers(bets: Array[Dictionary]) -> void:
 	_betting_circle_options = []
@@ -189,12 +284,12 @@ func close() -> void:
 	_show_contract_text_immediate()
 	visible = false
 	if left_page != null:
-		left_page.position = _left_page_base_position
+		_shift_layout(left_page, _left_page_base_offsets, 0.0)
 	if right_page != null:
-		right_page.position = _right_page_base_position
+		_shift_layout(right_page, _right_page_base_offsets, 0.0)
 	if book_frame != null:
 		book_frame.scale = _book_base_scale
-		book_frame.position = _book_base_position
+		_set_book_drop(0.0)
 	_reset_interaction_lock()
 	if GameEvents.has_signal("modal_closed"):
 		GameEvents.modal_closed.emit("betting_circle")
@@ -211,7 +306,6 @@ func _play_open_animation() -> void:
 		return
 	if _open_tween != null and _open_tween.is_valid():
 		_open_tween.kill()
-	_book_base_position = book_frame.position
 	_opening_locked = true
 	_set_book_input_enabled(false)
 	if _book_content_target_modulates.is_empty():
@@ -226,12 +320,12 @@ func _play_open_animation() -> void:
 	_show_book_closed_state()
 	modulate = Color(1.0, 1.0, 1.0, 1.0)
 	book_frame.pivot_offset = book_frame.size * 0.5
-	book_frame.position = _book_base_position + BOOK_DROP_OFFSET
+	_set_book_drop(BOOK_DROP_OFFSET.y)
 	book_frame.scale = _book_base_scale * Vector2(0.92, 0.92)
 	_open_tween = create_tween()
 	_open_tween.set_trans(Tween.TRANS_QUAD)
 	_open_tween.set_ease(Tween.EASE_OUT)
-	_open_tween.tween_property(book_frame, "position", _book_base_position, BOOK_DROP_SECONDS)
+	_open_tween.tween_method(_set_book_drop, BOOK_DROP_OFFSET.y, 0.0, BOOK_DROP_SECONDS)
 	_open_tween.parallel().tween_property(book_frame, "scale", _book_base_scale * Vector2(0.98, 0.98), BOOK_DROP_SECONDS)
 	_open_tween.tween_callback(Callable(self, "_begin_book_open_swap"))
 	_open_tween.tween_callback(Callable(self, "_show_book_open_shell"))
@@ -265,7 +359,7 @@ func _show_closed_intro() -> void:
 	_set_registry_background_active(true)
 	if book_frame != null:
 		book_frame.pivot_offset = book_frame.size * 0.5
-		book_frame.position = _book_base_position
+		_set_book_drop(0.0)
 		book_frame.scale = _book_base_scale
 	if closed_intro != null:
 		closed_intro.visible = true
@@ -449,7 +543,7 @@ func _finish_open_animation() -> void:
 	_show_book_content_immediate()
 	_show_contract_text_immediate()
 	if book_frame != null:
-		book_frame.position = _book_base_position
+		_set_book_drop(0.0)
 		book_frame.scale = _book_base_scale
 	_apply_selection_visual()
 	_update_sigilla_state()
@@ -463,15 +557,31 @@ func _update_page_idle_motion() -> void:
 	if _opening_locked or _awaiting_open_request or _submit_locked:
 		return
 	if left_page != null:
-		left_page.position = _left_page_base_position + Vector2(0.0, sin(_idle_time * 0.72) * PAGE_IDLE_DRIFT_PIXELS)
+		_shift_layout(left_page, _left_page_base_offsets, sin(_idle_time * 0.72) * PAGE_IDLE_DRIFT_PIXELS)
 	if right_page != null:
-		right_page.position = _right_page_base_position + Vector2(0.0, sin(_idle_time * 0.68 + 0.8) * PAGE_IDLE_DRIFT_PIXELS)
+		_shift_layout(right_page, _right_page_base_offsets, sin(_idle_time * 0.68 + 0.8) * PAGE_IDLE_DRIFT_PIXELS)
+
+func _layout_offsets(control: Control) -> Vector4:
+	return Vector4(control.offset_left, control.offset_top, control.offset_right, control.offset_bottom)
+
+# Book and pages move through their anchored offsets, never an absolute position,
+# so a layout pass or window change cannot strand them off centre.
+func _shift_layout(control: Control, base: Vector4, shift_y: float) -> void:
+	if control == null:
+		return
+	control.offset_left = base.x
+	control.offset_top = base.y + shift_y
+	control.offset_right = base.z
+	control.offset_bottom = base.w + shift_y
+
+func _set_book_drop(shift_y: float) -> void:
+	_shift_layout(book_frame, _book_base_offsets, shift_y)
 
 func _restore_page_positions() -> void:
 	if left_page != null:
-		left_page.position = _left_page_base_position
+		_shift_layout(left_page, _left_page_base_offsets, 0.0)
 	if right_page != null:
-		right_page.position = _right_page_base_position
+		_shift_layout(right_page, _right_page_base_offsets, 0.0)
 
 func _is_reduced_motion() -> bool:
 	return SaveManager != null and SaveManager.has_method("get_reduced_motion") and SaveManager.get_reduced_motion()

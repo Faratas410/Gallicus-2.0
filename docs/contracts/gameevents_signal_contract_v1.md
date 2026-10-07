@@ -26,6 +26,11 @@ Source alignment: `docs/canon/RUN_ARCHITECTURE_CANON.md` (GameEvents required fo
 | `pact_sealed_closed` | 0 | RunManager -> UI |
 | `resolve_ritual_opened` | 1 | RunManager -> UI |
 | `resolve_ritual_closed` | 0 | RunManager -> UI |
+| `seal_strike_resolved` | 1 | RunManager -> UI |
+| `crowd_favor_changed` | 1 | RunManager -> UI |
+| `ledger_changed` | 1 | RunManager -> UI |
+| `request_banco_purchase` | 1 | UI -> RunManager intent |
+| `bando_changed` | 1 | RunManager -> UI |
 | `arena_started` | 1 | RunManager -> UI |
 | `arena_completed` | 1 | Arena/RunManager flow |
 | `request_mid_choice_select` | 1 | UI -> RunManager intent |

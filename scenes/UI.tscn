@@ -802,7 +802,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.94, 0.84, 0.62, 1)
 theme_override_font_sizes/font_size = 15
-text = "IMPRIMI IL SIGILLO: TRE COLPI"
+text = "IMPRIMI IL SIGILLO"
 
 [node name="Btn_RESOLUTION_STRIKE" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
 theme_override_styles/normal = ExtResource("64_registry_judgment_seal_normal")
@@ -1116,6 +1116,12 @@ custom_minimum_size = Vector2(120, 40)
 text = "SIGILLA"
 
 [node name="BettingCircle" parent="UI_RunRoot" instance=ExtResource("6")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Phase_PUSH_YOUR_LUCK" type="Control" parent="UI_RunRoot"]
 visible = false
@@ -1892,19 +1898,104 @@ theme_override_font_sizes/font_size = 14
 autowrap_mode = 2
 text = "Registro pulito: nessun segno inciso."
 
+[node name="CrowdFavorPanel" type="PanelContainer" parent="HUD"]
+visible = false
+z_index = 80
+theme_override_styles/panel = ExtResource("32_scars_dossier")
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 16.0
+offset_top = 24.0
+offset_right = 236.0
+offset_bottom = 150.0
+mouse_filter = 2
+custom_minimum_size = Vector2(220, 126)
 
+[node name="CrowdFavorVBox" type="VBoxContainer" parent="HUD/CrowdFavorPanel"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
+[node name="CrowdFavorTitle" type="Label" parent="HUD/CrowdFavorPanel/CrowdFavorVBox"]
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 2
+text = "LA GRADINATA"
 
+[node name="CrowdFavorBar" type="ProgressBar" parent="HUD/CrowdFavorPanel/CrowdFavorVBox"]
+custom_minimum_size = Vector2(0, 10)
+size_flags_horizontal = 3
+theme_override_styles/background = ExtResource("24_pressure_bar_bg")
+theme_override_styles/fill = ExtResource("25_pressure_bar_fill")
+min_value = -5.0
+max_value = 5.0
+value = 0.0
+show_percentage = false
 
+[node name="CrowdFavorBody" type="Label" parent="HUD/CrowdFavorPanel/CrowdFavorVBox"]
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94, 0.84, 0.62, 1)
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 2
+text = ""
 
+[node name="CrowdFavorNote" type="Label" parent="HUD/CrowdFavorPanel/CrowdFavorVBox"]
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.91, 0.86, 0.76, 1)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 2
+text = ""
 
+[node name="BandoPanel" type="PanelContainer" parent="HUD"]
+visible = false
+z_index = 80
+theme_override_styles/panel = ExtResource("32_scars_dossier")
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -128.0
+offset_right = 266.0
+offset_bottom = -16.0
+grow_vertical = 0
+mouse_filter = 2
+custom_minimum_size = Vector2(250, 0)
 
+[node name="BandoVBox" type="VBoxContainer" parent="HUD/BandoPanel"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
+[node name="BandoTitle" type="Label" parent="HUD/BandoPanel/BandoVBox"]
+theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 2
+text = "BANDO DI ORVO"
 
+[node name="BandoBar" type="ProgressBar" parent="HUD/BandoPanel/BandoVBox"]
+custom_minimum_size = Vector2(0, 10)
+size_flags_horizontal = 3
+theme_override_styles/background = ExtResource("24_pressure_bar_bg")
+theme_override_styles/fill = ExtResource("25_pressure_bar_fill")
+min_value = 0.0
+max_value = 8.0
+value = 0.0
+show_percentage = false
 
+[node name="BandoBody" type="Label" parent="HUD/BandoPanel/BandoVBox"]
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94, 0.84, 0.62, 1)
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 2
+text = ""
 
-
-
+[node name="BandoNote" type="Label" parent="HUD/BandoPanel/BandoVBox"]
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.91, 0.86, 0.76, 1)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 2
+text = ""
 
 [node name="RegistryTerminalView" type="CanvasLayer" parent="."]
 script = ExtResource("79_terminal_view")

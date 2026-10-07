@@ -58,6 +58,46 @@ RILEVANTE." Nessuna spiegazione, biografia o istruzione; nessuna riga
 nell'Assenza. Il posto vuoto che Dima tiene sulla gradinata resta allusione,
 mai dichiarazione. Direzione complessiva in `docs/direction.md`.
 
+## Racconti - 7 ottobre 2026
+
+Otto racconti illustrati riempiono il tratto fra la prima copia e la fine
+della seconda Era: compaiono all'inizio di un percorso, uno per volta, come
+premio dei gradini della scala dei bandi di Orvo (gradini 1-8, vedi
+`docs/canon/MECHANICS_UNIFIED.md`), dopo le scene d'Era che hanno la
+precedenza e mai dopo il congedo dell'ultima Era. Nessuno durante Silenzio o
+Assenza. Parlano Nerio, Rugo e Dima; il terminale ha due soli inserti di stato
+("COPIA RESPINTA", "CONFRONTO IN CORSO / Corrispondenza parziale."). Vessa e
+Orvo sono citati, non parlano.
+
+Il filo del posto vuoto (gradini 3, 6, 8) e' l'aggancio di trama: chi sedeva
+accanto a Dima chiudeva ogni bando, si e' alzato senza chiusura e il suo
+fascicolo risulta aperto; Dima sente un passo nuovo uguale al suo; Nerio trova
+la stessa pendenza fra la copia del soggetto e quella riga. Resta allusione: il
+nome arriva solo dal terminale al primo Silenzio.
+
+Fatti stabiliti dai racconti, coerenti con le Presenze dell'arena:
+
+- Vessa tiene un conto dei Denari a nome del soggetto e non dimentica i debiti;
+  prima dei Denari la gradinata "pagava con la voce".
+- La sabbia un tempo restava sotto i passi e copriva i segni; ora la prima
+  fila la raccoglie e la lancia quando un patto non piace. Le monete le conta
+  Vessa.
+- La tacca nella cresta di Rugo risale ai giorni in cui chiamava sopra tutti;
+  oggi sceglie di tacere, e il suo tacere non e' un atto che si copia.
+- Vessa misura i posti con un righello per venderli; la misura si ferma al
+  posto accanto a Dima. Oltre, il foglio di Nerio resta bianco.
+- Nerio raschia ogni sera le copie sbagliate; una riga ("un nome e un
+  fascicolo aperto") non va via. Dima lascia il posto com'e'.
+- Dima tiene la zampa sul posto vuoto finche' la gradinata si riempie; chi ci
+  sedeva chiudeva ogni bando e si e' alzato senza chiusura.
+- Il Registro distingue le righe, non i passi; la copia del soggetto ha una
+  corrispondenza parziale con quella riga.
+
+I racconti non spiegano regole, non nominano Felix, le Ere o il Silenzio e non
+assegnano battute al giocatore. Catalogo in
+`scripts/content/campaign_dialogues.gd` (`TALES`); copy in
+`docs/content_bible.md`.
+
 ## Index
 
 - [SOURCE: the_register](#source-docstheregistermd)

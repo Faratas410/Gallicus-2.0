@@ -40,8 +40,79 @@ enum RunPhase {
 	RESOLUTION = RunPhaseContractScript.RESOLUTION, # LEGACY COMPAT SLOT (non-mainline in active L3 flow)
 }
 
-const PACT_SEALED_SECONDS: float = 1.1
-const RESOLVE_RITUAL_SECONDS: float = 1.2
+const PACT_SEALED_SECONDS: float = 0.7
+const RESOLVE_RITUAL_SECONDS: float = 0.6
+# The seal answers each strike: a cracked or full seal stays on screen this long.
+const SEAL_VERDICT_HOLD_SECONDS: float = 0.8
+const SEAL_MAX_STRIKES: int = 3
+const SCAR_SHOWN_ORIGIN: String = "Segno mostrato alla gradinata"
+# Scambi con la gradinata: the gesture is a short exchange with the stands.
+# Each exchange shows what the crowd is about to do and the exact price of
+# both answers; the answer moves the crowd's favour (audience_score), which
+# stays for the whole percorso and tilts the first strike of every seal.
+const CROWD_EXCHANGES_PER_ARENA: int = 3
+const CROWD_FAVOR_SEAL_STEP: float = 0.02
+const CROWD_TRIUMPH_STAKE: int = 2
+const CROWD_TRIUMPH_RESET: int = 3
+const CROWD_RIOT_RESET: int = -2
+const CROWD_RIOT_ORIGIN: String = "Rivolta della gradinata"
+const CROWD_SAND_ORIGIN: String = "Sabbia della gradinata"
+const CROWD_INTENT_ORDER: Array[String] = ["blood", "sand", "bored", "breath"]
+const CROWD_INTENTS: Dictionary = {
+	"blood": {
+		"line": "La gradinata vuole sangue.",
+		"placa": {"favor": -1, "pressure": 0, "stake": 0, "scar": "", "text": "Favore -1."},
+		"provoca": {"favor": 1, "pressure": 1, "stake": 1, "scar": "", "text": "Favore +1, Pressione +1. Se il patto regge, posta +1."},
+	},
+	"sand": {
+		"line": "La gradinata raccoglie la sabbia.",
+		"placa": {"favor": 0, "pressure": 0, "stake": 0, "scar": "", "text": "Ti ripari: non cambia nulla."},
+		"provoca": {"favor": 2, "pressure": 0, "stake": 0, "scar": "ONE_EYE", "text": "Favore +2, ma la sabbia lascia un Segno."},
+	},
+	"bored": {
+		"line": "La gradinata si annoia.",
+		"placa": {"favor": -2, "pressure": 0, "stake": 0, "scar": "", "text": "Favore -2."},
+		"provoca": {"favor": 1, "pressure": 1, "stake": 0, "scar": "", "text": "Favore +1, Pressione +1."},
+	},
+	"breath": {
+		"line": "La gradinata trattiene il fiato.",
+		"placa": {"favor": 1, "pressure": -1, "stake": 0, "scar": "", "text": "Favore +1, Pressione -1."},
+		"provoca": {"favor": -2, "pressure": 1, "stake": 1, "scar": "", "text": "Favore -2, Pressione +1. Se il patto regge, posta +1."},
+	},
+}
+# The sand finds an eye already lost: the price becomes pressure.
+const CROWD_SAND_REPEAT_TEXT: String = "Favore +2, Pressione +1: l'occhio è già perduto."
+# Economia di fondo: i Denari di Vessa. The account outlives the percorso
+# (SaveManager ledger): the stands and the quietanza pay into it; a riot, the
+# marchio and a fall put it in debt. It is spent at the banco before the
+# Registry opens; in debt the banco is closed and a percorso starts with
+# Pressione +1, deep debt brands the body.
+const LEDGER_PERSISTS: bool = true
+const LEDGER_TRIUMPH_DENARI: int = 3
+const LEDGER_RIOT_DENARI: int = -3
+const LEDGER_CASHOUT_GLORY_PER_DENARO: int = 3
+const LEDGER_RUN_END_DENARI: Dictionary = {
+	"CONDANNA": -5,
+	"DOUBLE_OR_DIE": -5,
+	"PROVOCA_FAIL": -5,
+}
+const LEDGER_DEBT_PRESSURE: int = 1
+const LEDGER_DEBT_BRAND_THRESHOLD: int = -10
+const LEDGER_DEBT_BRAND_ORIGIN: String = "Debito con Vessa"
+# Vessa lends no further: the debt stops here so a campaign can always climb out.
+const LEDGER_DEBT_FLOOR: int = -20
+const BANCO_ITEM_ORDER: Array[String] = ["favor", "pressure", "insure"]
+const BANCO_ITEMS: Dictionary = {
+	"favor": {"price": 3, "title": "COMPRA IL FAVORE", "text": "Favore +2."},
+	"pressure": {"price": 3, "title": "PAGA LA PRESSIONE", "text": "Pressione -2."},
+	"insure": {"price": 5, "title": "ASSICURA LA POSTA", "text": "Se il sigillo cede, la posta resta."},
+}
+# Each Era the Registry asks one Denaro more for every service.
+const BANCO_ERA_SURCHARGE: int = 1
+
+# Hold chance of the second and third strike; the first strike is the arena roll.
+const SEAL_EXTRA_STRIKE_HOLD: Array[float] = [0.6, 0.45]
+const SEAL_EXTRA_STRIKE_ODDS: Array[String] = ["Regge spesso", "Regge a volte"]
 const RITUAL_STEP_SECONDS: float = 0.05
 const RITUAL_MAX_SECONDS: float = 30.0
 const QUICK_CUT_RESOLVE_BUFFER_SECONDS: float = 0.08
@@ -404,6 +475,25 @@ const PERCORSO_MAX_ARENAS: int = 7
 const STAKE_GESTURE_CHALLENGE_BONUS: int = 2
 const STAKE_GESTURE_BOW_PENALTY: int = 1
 const STAKE_DEPTH_BONUS: int = 1
+# Il bando di Orvo (ottobre 2026): every percorso opens with a quota of Gloria
+# to bank by a given arena. Closing it pays Denari, makes the stands cheer at
+# the next percorso and climbs one step of a visible ladder; the steps pay out
+# the racconti and, every third step, a sealed page of pacts. A quietanza under
+# the quota pays as usual: missing the bando costs only the step.
+const BANDO_LADDER: Array[int] = [10, 12, 14, 17, 20, 23, 26, 29, 32, 35, 38, 42]
+const BANDO_FIRST_DEADLINE: int = 4
+const BANDO_STEPS_PER_EXTRA_ARENA: int = 3
+const BANDO_DENARI: int = 5
+const BANDO_ACCLAIM_FAVOR: int = 2
+const BANDO_PACT_STEPS: Dictionary = {
+	CONDANNA_FIRMATO: 3,
+	CONDANNA_ANCORA: 6,
+	CONDANNA_MI_SONO_FERMATO: 9,
+}
+# La catena: arena seals held in a row this percorso multiply what the next
+# held seal puts in posta (index = its place in the chain, capped). A broken
+# seal resets it; the extra strikes of one arena are a single link.
+const SEAL_CHAIN_MULTIPLIERS: Array[float] = [1.0, 1.0, 1.5, 2.0, 3.0]
 # Percorsi shorter than this many responses are not evidence for the Registry.
 const REGISTRY_EVIDENCE_MIN_ARENAS: int = 2
 const ESCALATION_HIGH_THRESHOLD: int = 6
@@ -748,6 +838,12 @@ var _resolve_ritual_sequence_id: int = 0
 var _resolve_ritual_reward_applied: bool = false
 var _ritual_advance_pact_requested: bool = false
 var _ritual_advance_resolve_requested: bool = false
+var _seal_strike_count: int = 0
+var _seal_extra_strikes_held: int = 0
+var _seal_pending_result: ArenaResult = null
+var _seal_awaiting_scar_choice: bool = false
+var _seal_hold_until_seconds: float = 0.0
+var _resolve_ritual_elapsed_seconds: float = 0.0
 var _run_state: RunState = RunState.new()
 var _save_system: SaveSystem = SaveSystemScript.new()
 var _save_continue_boundary: SaveContinueBoundary = SaveContinueBoundaryScript.new()
@@ -1231,6 +1327,7 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
 		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
 		[&"request_mid_choice_select", &"_on_request_mid_choice_select", true],
+		[&"request_banco_purchase", &"_on_request_banco_purchase", true],
 		[&"request_pyl_cashout", &"_on_request_pyl_cashout", true],
 		[&"request_pyl_condanna", &"_on_request_pyl_condanna", true],
 		[&"request_pyl_double", &"_on_request_pyl_double", true],
@@ -1658,6 +1755,8 @@ func _start_level3_run() -> void:
 	_reset_upgrades()
 
 	GameEvents.run_started.emit()
+	_open_ledger_for_run()
+	_open_bando_for_run()
 	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	start_arena()
@@ -1670,6 +1769,7 @@ func start_arena() -> void:
 		return
 	_run_state.arena_index = maxi(_run_state.arena_index + 1, 1)
 	run["arena_index"] = _run_state.arena_index
+	_refresh_bando_deadline()
 	_emit_arena_theme_changed()
 	_maybe_activate_special_arena()
 	_select_risk_profile()
@@ -1772,6 +1872,7 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 	_flow_log("resolve_ritual_opened", "arena=%d, bet_id=%s" % [_run_state.arena_index, String(bet_id)])
 	_smoke_mark("RESOLVE_OPENED")
 	_ritual_advance_resolve_requested = false
+	_reset_seal_strikes()
 	_touch_request_activity("resolve_ritual_opened")
 	GameEvents.resolve_ritual_opened.emit(payload)
 	if _is_smoke_mode() and not _is_keyboard_full_run_smoke():
@@ -1790,8 +1891,9 @@ func _start_resolve_ritual(bet_id: StringName) -> void:
 		if sequence_id != _resolve_ritual_sequence_id:
 			return
 		elapsed_seconds += RITUAL_STEP_SECONDS
-		if elapsed_seconds >= RESOLVE_RITUAL_SECONDS and _ritual_advance_resolve_requested:
+		if elapsed_seconds >= maxf(RESOLVE_RITUAL_SECONDS, _seal_hold_until_seconds) and _ritual_advance_resolve_requested:
 			break
+		_resolve_ritual_elapsed_seconds = elapsed_seconds
 	if sequence_id != _resolve_ritual_sequence_id:
 		return
 	GameEvents.resolve_ritual_closed.emit()
@@ -1811,7 +1913,9 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 	GameEvents.arena_started.emit(_run_state.arena_index)
 	_play_arena_resolution_fx()
 	_apply_special_arena_pre_resolution()
-	var result: ArenaResult = _resolve_level3_arena()
+	# The seal strikes already rolled this arena; smoke and resumed rituals roll here.
+	var result: ArenaResult = _seal_pending_result if _seal_pending_result != null else _resolve_level3_arena()
+	_seal_pending_result = null
 	_update_audience_after_arena(result)
 	_run_state.arenas_cleared = maxi(_run_state.arenas_cleared + 1, 1)
 	GameEvents.arena_completed.emit(_run_state.arena_index)
@@ -1993,6 +2097,9 @@ func _open_level3_bet_ui() -> void:
 	_run_state.level3_current_offer = offer.duplicate(true)
 	var offer_payload: Dictionary = _betting_payload_factory.build_bet_offer_payload({"offer": offer})
 	var emitted_offer: Array[Dictionary] = offer_payload.get("offer", []) as Array[Dictionary]
+	_emit_crowd_favor("", "")
+	_emit_ledger("", 0)
+	_emit_bando("")
 	_flow_log("bet_ui_opened", "arena=%d, bet_id=" % _run_state.arena_index)
 	GameEvents.bet_ui_opened.emit(emitted_offer)
 	GameEvents.bet_opened.emit()
@@ -2056,7 +2163,8 @@ func _get_available_level3_bets() -> Array[Dictionary]:
 func _is_level3_bet_unlocked(bet_id: StringName) -> bool:
 	var unlock_id: StringName = BetCatalogScript.get_level3_pact_unlock(bet_id)
 	if unlock_id != &"" and not _is_unlocked(unlock_id):
-		return false
+		# Orvo's ladder opens the same sealed pages, every third step.
+		return _bando_step() >= int(BANDO_PACT_STEPS.get(unlock_id, 999))
 	return true
 
 func _is_level3_bet_allowed(bet: Dictionary) -> bool:
@@ -2276,6 +2384,9 @@ func _reject_invalid_continue_payload(reason: String) -> void:
 		GameEvents.continue_rejected.emit(final_reason)
 
 func _resume_run_from_save(flow_step: StringName, bet_id: StringName) -> void:
+	_emit_crowd_favor("", "")
+	_emit_ledger("", 0)
+	_emit_bando("")
 	_waiting_for_bet = false
 	_waiting_for_push_luck = false
 	_waiting_for_intermediate_choice = false
@@ -2366,6 +2477,297 @@ func _parse_pacts_log(values: Variant) -> Array[PactLogEntry]:
 		entry.outcome = int(entry_data.get("outcome", PACT_OUTCOME_UNKNOWN))
 		entries.append(entry)
 	return entries
+
+func _pick_crowd_intent() -> void:
+	# Seeded by run, arena and exchange, so a resumed exchange shows the same
+	# intent; the crowd never repeats itself twice in a row.
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = _get_run_seed_value() + _run_state.arena_index * 97 + _run_state.crowd_exchange_index * 13 + 101
+	var candidates: Array[String] = []
+	for intent_id: String in CROWD_INTENT_ORDER:
+		if intent_id != _run_state.crowd_intent:
+			candidates.append(intent_id)
+	_run_state.crowd_intent = candidates[rng.randi_range(0, candidates.size() - 1)]
+
+func _crowd_answer(intent_id: String, choice_id: String) -> Dictionary:
+	var intent: Dictionary = CROWD_INTENTS.get(intent_id, {}) as Dictionary
+	var answer: Dictionary = (intent.get(choice_id, {}) as Dictionary).duplicate()
+	if answer.is_empty():
+		return {}
+	var scar_id: StringName = StringName(str(answer.get("scar", "")))
+	if scar_id != &"" and _has_run_scar(scar_id):
+		answer["scar"] = ""
+		answer["pressure"] = int(answer.get("pressure", 0)) + 1
+		answer["text"] = CROWD_SAND_REPEAT_TEXT
+	return answer
+
+func _has_run_scar(scar_id: StringName) -> bool:
+	# A Segno is written once per percorso (see upsert_run_scar).
+	for existing_scar: StringName in _run_state.scars_history:
+		if existing_scar == scar_id:
+			return true
+	return false
+
+func get_crowd_exchange_view() -> Dictionary:
+	if _run_state.crowd_intent == "":
+		return {}
+	var intent: Dictionary = CROWD_INTENTS.get(_run_state.crowd_intent, {}) as Dictionary
+	return {
+		"intent": _run_state.crowd_intent,
+		"line": str(intent.get("line", "")),
+		"exchange": _run_state.crowd_exchange_index + 1,
+		"total": CROWD_EXCHANGES_PER_ARENA,
+		"placa_text": str(_crowd_answer(_run_state.crowd_intent, "placa").get("text", "")),
+		"provoca_text": str(_crowd_answer(_run_state.crowd_intent, "provoca").get("text", "")),
+	}
+
+func _shift_escalation(delta: int) -> void:
+	if delta == 0:
+		return
+	var previous_level: int = _run_state.escalation_level
+	var next_level: int = clampi(previous_level + delta, 0, ESCALATION_MAX)
+	_run_state.escalation_level = next_level
+	_run_state.level3_max_escalation = maxi(_run_state.level3_max_escalation, next_level)
+	_run_state.max_escalation = maxi(_run_state.max_escalation, next_level)
+	if next_level != previous_level:
+		_apply_escalation_threshold_events(previous_level, next_level)
+		_emit_escalation_changed()
+
+# Applies one answer to the crowd: favour, pressure, posta if the pact holds and
+# the Segno it may cost. Favour at the top carries the subject (posta now);
+# favour at the bottom turns the stands (a Segno and pressure).
+func _resolve_crowd_exchange(choice_id: String) -> void:
+	var answer: Dictionary = _crowd_answer(_run_state.crowd_intent, choice_id)
+	var favor_delta: int = int(answer.get("favor", 0))
+	_shift_escalation(int(answer.get("pressure", 0)))
+	_run_state.intermediate_bonus_tier += int(answer.get("stake", 0))
+	var scar_id: StringName = StringName(str(answer.get("scar", "")))
+	if scar_id != &"":
+		_apply_level3_scar(scar_id, CROWD_SAND_ORIGIN)
+	_run_state.audience_score = clampi(_run_state.audience_score + favor_delta, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
+	var event: String = ""
+	if _run_state.audience_score >= AUDIENCE_SCORE_MAX:
+		event = "triumph"
+		_run_state.crowd_triumphs += 1
+		_run_state.stake_glory += CROWD_TRIUMPH_STAKE
+		_run_state.audience_score = CROWD_TRIUMPH_RESET
+		_ledger_change(LEDGER_TRIUMPH_DENARI, "La gradinata lancia monete: Denari +%d.")
+	elif _run_state.audience_score <= AUDIENCE_SCORE_MIN:
+		event = "riot"
+		_run_state.crowd_riots += 1
+		_ledger_change(LEDGER_RIOT_DENARI, "La rivolta costa: Denari -%d.")
+		if _has_run_scar(SCAR_SHAME_MARK):
+			_shift_escalation(2)
+		else:
+			_apply_level3_scar(SCAR_SHAME_MARK, CROWD_RIOT_ORIGIN)
+			_shift_escalation(1)
+		_run_state.audience_score = CROWD_RIOT_RESET
+	_check_audience_condanne()
+	_emit_crowd_favor(str(answer.get("text", "")), event)
+
+func _emit_crowd_favor(note: String, event: String) -> void:
+	GameEvents.crowd_favor_changed.emit({
+		"favor": _run_state.audience_score,
+		"min": AUDIENCE_SCORE_MIN,
+		"max": AUDIENCE_SCORE_MAX,
+		"note": note,
+		"event": event,
+		"cashout_blocked": _run_state.audience_score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD,
+		"cashout_reduced": _run_state.audience_score <= AUDIENCE_CASHOUT_PENALTY_THRESHOLD,
+	})
+
+func _ledger_balance() -> int:
+	return SaveManager.get_ledger_denari()
+
+func _ledger_change(delta: int, note: String) -> void:
+	if delta == 0:
+		return
+	var before: int = _ledger_balance()
+	SaveManager.set_ledger_denari(maxi(before + delta, LEDGER_DEBT_FLOOR))
+	delta = _ledger_balance() - before
+	if delta == 0:
+		return
+	if delta > 0:
+		_run_state.ledger_earned += delta
+	else:
+		_run_state.ledger_lost -= delta
+	_emit_ledger(note, delta)
+
+func _open_ledger_for_run() -> void:
+	_run_state.banco_insured = false
+	_run_state.ledger_earned = 0
+	_run_state.ledger_lost = 0
+	if not LEDGER_PERSISTS:
+		SaveManager.set_ledger_denari(0)
+	var balance: int = _ledger_balance()
+	if balance < 0:
+		# The debt follows the subject into the sand.
+		_shift_escalation(LEDGER_DEBT_PRESSURE)
+		if balance <= LEDGER_DEBT_BRAND_THRESHOLD and not _has_run_scar(SCAR_DEBT_BRAND):
+			_apply_level3_scar(SCAR_DEBT_BRAND, LEDGER_DEBT_BRAND_ORIGIN)
+		_emit_ledger("Vessa ricorda il debito: Pressione +1.", 0)
+		return
+	_emit_ledger("", 0)
+
+func _settle_ledger_at_run_end(reason: String) -> void:
+	# The bando settles first: a closed one adds its Denari above the quietanza.
+	_settle_bando_at_run_end(reason)
+	if reason == "CASH_OUT":
+		var deposit: int = floori(float(maxi(_run_state.glory, 0)) / float(LEDGER_CASHOUT_GLORY_PER_DENARO))
+		if deposit > 0:
+			_ledger_change(deposit, "Quietanza versata: Denari +%d.")
+		return
+	if LEDGER_RUN_END_DENARI.has(reason):
+		_ledger_change(int(LEDGER_RUN_END_DENARI[reason]), "Vessa iscrive il debito: Denari -%d.")
+
+func _banco_price(item_id: String) -> int:
+	var item: Dictionary = BANCO_ITEMS.get(item_id, {}) as Dictionary
+	return int(item.get("price", 0)) + SaveManager.get_registry_era() * BANCO_ERA_SURCHARGE
+
+func _banco_item_available(item_id: String) -> bool:
+	match item_id:
+		"favor":
+			return _run_state.audience_score < AUDIENCE_SCORE_MAX - 1
+		"pressure":
+			return _run_state.escalation_level > 0
+		"insure":
+			return not _run_state.banco_insured
+	return false
+
+func get_banco_view() -> Dictionary:
+	var balance: int = _ledger_balance()
+	var open_now: bool = _phase == RunPhase.BET_PRESENT and _waiting_for_bet and balance >= 0
+	var items: Array[Dictionary] = []
+	for item_id: String in BANCO_ITEM_ORDER:
+		var item: Dictionary = BANCO_ITEMS.get(item_id, {}) as Dictionary
+		var price: int = _banco_price(item_id)
+		items.append({
+			"id": item_id,
+			"title": str(item.get("title", "")),
+			"text": str(item.get("text", "")),
+			"price": price,
+			"available": open_now and price <= balance and _banco_item_available(item_id),
+		})
+	return {
+		"denari": balance,
+		"in_debt": balance < 0,
+		"open": open_now,
+		"insured": _run_state.banco_insured,
+		"items": items,
+	}
+
+func _emit_ledger(note: String, delta: int) -> void:
+	GameEvents.ledger_changed.emit({
+		"denari": _ledger_balance(),
+		"delta": delta,
+		"note": note,
+		"banco": get_banco_view(),
+	})
+
+func _bando_step() -> int:
+	return SaveManager.get_bando_step()
+
+func _bando_quota_for(step: int) -> int:
+	return BANDO_LADDER[clampi(step, 0, BANDO_LADDER.size() - 1)]
+
+func _bando_deadline_for(step: int) -> int:
+	return mini(BANDO_FIRST_DEADLINE + clampi(step, 0, BANDO_LADDER.size() - 1) / BANDO_STEPS_PER_EXTRA_ARENA, PERCORSO_MAX_ARENAS)
+
+func _open_bando_for_run() -> void:
+	var step: int = _bando_step()
+	_run_state.bando_quota = _bando_quota_for(step)
+	_run_state.bando_deadline = _bando_deadline_for(step)
+	_run_state.bando_status = "open"
+	_run_state.seal_chain = 0
+	if SaveManager.get_bando_acclaim():
+		# The stands remember the last closed bando and cheer the entrance.
+		SaveManager.set_bando_acclaim(false)
+		_run_state.audience_score = clampi(_run_state.audience_score + BANDO_ACCLAIM_FAVOR, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX - 1)
+		_check_audience_condanne()
+		_emit_crowd_favor("La gradinata ricorda il bando: Favore +2.", "")
+	_emit_bando("")
+
+func _refresh_bando_deadline() -> void:
+	if _run_state.bando_status == "open" and _run_state.arena_index > _run_state.bando_deadline:
+		_run_state.bando_status = "lapsed"
+		_emit_bando("Il bando è scaduto.")
+		return
+	_emit_bando("")
+
+func _settle_bando_at_run_end(reason: String) -> bool:
+	if _run_state.bando_status != "open":
+		return false
+	var met: bool = reason == "CASH_OUT" and _run_state.arena_index <= _run_state.bando_deadline and _run_state.glory >= _run_state.bando_quota
+	if not met:
+		_run_state.bando_status = "missed"
+		_emit_bando("")
+		return false
+	_run_state.bando_status = "closed"
+	var step: int = _bando_step()
+	if step < BANDO_LADDER.size():
+		SaveManager.set_bando_step(step + 1)
+	SaveManager.set_bando_acclaim(true)
+	_ledger_change(BANDO_DENARI, "Bando chiuso: Denari +%d.")
+	_emit_bando("BANDO CHIUSO")
+	return true
+
+func _bando_prize_tale(step: int) -> String:
+	# The racconto the next closed bando pays out, by title.
+	var catalog = preload("res://scripts/content/campaign_dialogues.gd")
+	for tale: Dictionary in catalog.TALES:
+		if int(tale.step) == step + 1:
+			return str(catalog.SEQUENCES[str(tale.id)].title)
+	return ""
+
+func get_bando_view() -> Dictionary:
+	var step: int = _bando_step()
+	return {
+		"step": step,
+		"steps": BANDO_LADDER.size(),
+		"quota": _run_state.bando_quota,
+		"deadline": _run_state.bando_deadline,
+		"status": _run_state.bando_status,
+		"posta": maxi(_run_state.stake_glory, 0),
+		"arena": _run_state.arena_index,
+		"next_quota": _bando_quota_for(step),
+		"next_deadline": _bando_deadline_for(step),
+		"prize_tale": _bando_prize_tale(step),
+		"prize_pacts": BANDO_PACT_STEPS.values().has(step + 1),
+		"ladder_complete": step >= BANDO_LADDER.size(),
+		"denari": BANDO_DENARI,
+	}
+
+func _emit_bando(note: String) -> void:
+	var payload: Dictionary = get_bando_view()
+	payload["note"] = note
+	GameEvents.bando_changed.emit(payload)
+
+func get_seal_chain_multiplier() -> float:
+	# What the next held seal is worth: its place in the chain.
+	return SEAL_CHAIN_MULTIPLIERS[clampi(_run_state.seal_chain + 1, 0, SEAL_CHAIN_MULTIPLIERS.size() - 1)]
+
+func _on_request_banco_purchase(item_id: String) -> void:
+	_touch_request_activity("request_banco_purchase(%s)" % item_id)
+	var view: Dictionary = get_banco_view()
+	var chosen: Dictionary = {}
+	for item_value: Dictionary in view.get("items", []) as Array:
+		if str(item_value.get("id", "")) == item_id:
+			chosen = item_value
+	if chosen.is_empty() or not bool(chosen.get("available", false)):
+		_emit_ledger("", 0)
+		return
+	var price: int = int(chosen.get("price", 0))
+	match item_id:
+		"favor":
+			_run_state.audience_score = clampi(_run_state.audience_score + 2, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX - 1)
+			_check_audience_condanne()
+			_emit_crowd_favor("Comprato al banco: Favore +2.", "")
+		"pressure":
+			_shift_escalation(-2)
+		"insure":
+			_run_state.banco_insured = true
+	_ledger_change(-price, "Banco di Vessa: Denari -%d.")
+	_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
 
 func _emit_escalation_changed() -> void:
 	if not GameEvents.has_signal("escalation_changed"):
@@ -2603,7 +3005,7 @@ func _resolve_level3_arena() -> ArenaResult:
 		_get_active_scar_ids(),
 		_run_state.risk_profile,
 		LEVEL3_RISK_PROFILES,
-		float(BetCatalogScript.get_pact_family_profile(_run_state.active_bet_id).get("win_mod", 0.0))
+		float(BetCatalogScript.get_pact_family_profile(_run_state.active_bet_id).get("win_mod", 0.0)) + float(_run_state.audience_score) * CROWD_FAVOR_SEAL_STEP
 	)
 	result.won = bool(payload.get("won", false))
 	result.condemnation_flag = bool(payload.get("condemnation_flag", false))
@@ -2951,12 +3353,144 @@ func _on_request_ritual_advance(kind: String) -> void:
 		_ritual_advance_pact_requested = true
 		return
 	# Canonical resolve flow is ritual-driven and does not enter RunPhase.RESOLUTION.
+	if normalized == "strike" and _resolving_ritual:
+		_strike_seal()
+		return
+	if normalized == "show_scar" and _resolving_ritual:
+		_show_scar_to_save_seal()
+		return
 	if normalized == "resolve" and _resolving_ritual:
+		# Raising the hand keeps what the seal has held so far; while a cracked
+		# seal waits on a shown Segno, the same intent lets it give way.
+		if _seal_strike_count <= 0 or _ritual_advance_resolve_requested:
+			return
+		if _seal_awaiting_scar_choice:
+			_seal_awaiting_scar_choice = false
+		elif _seal_strike_count < SEAL_MAX_STRIKES:
+			_run_state.safe_decisions += 1
 		_ritual_advance_resolve_requested = true
 		return
 
+func _reset_seal_strikes() -> void:
+	_seal_strike_count = 0
+	_seal_extra_strikes_held = 0
+	_seal_pending_result = null
+	_seal_awaiting_scar_choice = false
+	_seal_hold_until_seconds = 0.0
+	_resolve_ritual_elapsed_seconds = 0.0
+
+func _strike_seal() -> void:
+	# Each strike is a visible test: the first one is the arena roll, every
+	# further strike risks the held seal for more posta.
+	if _ritual_advance_resolve_requested or _seal_awaiting_scar_choice or _seal_strike_count >= SEAL_MAX_STRIKES:
+		return
+	var bet_id: StringName = _run_state.active_bet_id
+	var held: bool = true
+	if _seal_strike_count == 0:
+		# Special arenas weigh on the roll exactly as they did before the strikes.
+		_apply_special_arena_pre_resolution()
+		_seal_pending_result = _resolve_level3_arena()
+		held = _seal_pending_result.won
+	else:
+		_run_state.risky_decisions += 1
+		_level3_rng.seed = _compute_level3_seed(bet_id) + _seal_strike_count * 7919
+		held = _level3_rng.randf() <= _seal_extra_strike_hold(_seal_strike_count)
+		if OS.get_environment("GALLICUS_SMOKE") == "1" and OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "FULL_RUN":
+			held = true
+		if held:
+			_seal_extra_strikes_held += 1
+		else:
+			_seal_pending_result.won = false
+	# A broken strike breaks the chain; a held seal joins it when the arena banks it.
+	if not held:
+		_run_state.seal_chain = 0
+	_seal_strike_count += 1
+	var can_strike_again: bool = held and _seal_strike_count < SEAL_MAX_STRIKES and not (_run_state.run_is_over or _is_game_over)
+	_seal_awaiting_scar_choice = not held and _can_show_scar()
+	if not can_strike_again and not _seal_awaiting_scar_choice:
+		_seal_hold_until_seconds = _resolve_ritual_elapsed_seconds + SEAL_VERDICT_HOLD_SECONDS
+		_ritual_advance_resolve_requested = true
+	_flow_log("seal_strike", "arena=%d, strike=%d, held=%s" % [_run_state.arena_index, _seal_strike_count, str(held)])
+	GameEvents.seal_strike_resolved.emit(_build_seal_strike_payload(bet_id, held, can_strike_again))
+
+func _can_show_scar() -> bool:
+	# Showing a Segno needs one already on the body, once per percorso.
+	return not _run_state.scar_shown_this_run and not _run_state.scars_history.is_empty()
+
+func _show_scar_to_save_seal() -> void:
+	if not _seal_awaiting_scar_choice or _seal_pending_result == null or _ritual_advance_resolve_requested:
+		return
+	_seal_awaiting_scar_choice = false
+	_run_state.scar_shown_this_run = true
+	_run_state.risky_decisions += 1
+	# The seal holds, but the body pays: the shown Segno deepens into a new one.
+	_seal_pending_result.won = true
+	_apply_level3_scar(SCAR_CRACKED_BONES, SCAR_SHOWN_ORIGIN)
+	# The body saved the seal, not the hand: the chain starts again from it.
+	_run_state.seal_chain = 0
+	_seal_hold_until_seconds = _resolve_ritual_elapsed_seconds + SEAL_VERDICT_HOLD_SECONDS
+	_ritual_advance_resolve_requested = true
+	var payload: Dictionary = _build_seal_strike_payload(_run_state.active_bet_id, true, false)
+	payload["scar_shown"] = true
+	_flow_log("seal_scar_shown", "arena=%d, strike=%d" % [_run_state.arena_index, _seal_strike_count])
+	GameEvents.seal_strike_resolved.emit(payload)
+
+func _seal_extra_strike_hold(strike_index: int) -> float:
+	return SEAL_EXTRA_STRIKE_HOLD[clampi(strike_index - 1, 0, SEAL_EXTRA_STRIKE_HOLD.size() - 1)]
+
+func _build_seal_strike_payload(bet_id: StringName, held: bool, can_strike_again: bool) -> Dictionary:
+	var gain: int = maxi(_stake_gain_for(bet_id) + _run_state.intermediate_bonus_tier, 1)
+	var base_total: int = gain + _seal_extra_strikes_held * _stake_gain_for(bet_id)
+	# Same arithmetic as _add_held_seal_to_stake: the chain multiplies the arena gain.
+	# Further strikes stay in the same link, so they share its multiplier.
+	var multiplier: float = get_seal_chain_multiplier()
+	var held_total: int = ceili(float(base_total) * multiplier)
+	var next_gain: int = ceili(float(base_total + _stake_gain_for(bet_id)) * multiplier) - held_total
+	if bet_id == BET_DOUBLE_OR_DIE_L3:
+		held_total = maxi(held_total, _run_state.stake_glory)
+	return {
+		"strike": _seal_strike_count,
+		"max_strikes": SEAL_MAX_STRIKES,
+		"held": held,
+		"can_strike_again": can_strike_again,
+		"held_gain": held_total if held else 0,
+		"next_gain": next_gain if can_strike_again else 0,
+		"chain": _run_state.seal_chain + 1 if held else 0,
+		"chain_multiplier": multiplier if held else 1.0,
+		"can_show_scar": _seal_awaiting_scar_choice,
+		"next_odds": SEAL_EXTRA_STRIKE_ODDS[clampi(_seal_strike_count - 1, 0, SEAL_EXTRA_STRIKE_ODDS.size() - 1)] if can_strike_again else "",
+	}
+
 func _apply_intermediate_choice(choice_id: String) -> void:
+	var normalized_choice: String = choice_id.strip_edges().to_lower()
+	if normalized_choice != "placa" and normalized_choice != "provoca":
+		return
 	_waiting_for_intermediate_choice = false
+	if _run_state.crowd_intent == "":
+		_start_crowd_exchanges()
+	match normalized_choice:
+		"placa":
+			_run_state.safe_decisions += 1
+			_run_state.crowd_exchange_bows += 1
+		"provoca":
+			_run_state.risky_decisions += 1
+			_run_state.crowd_exchange_challenges += 1
+			_run_state.crowd_arena_challenges += 1
+	_resolve_crowd_exchange(normalized_choice)
+	var bet_id: StringName = _run_state.intermediate_pending_bet_id
+	if bet_id == &"":
+		bet_id = _run_state.last_selected_bet_id
+	_run_state.crowd_exchange_index += 1
+	if _run_state.crowd_exchange_index < CROWD_EXCHANGES_PER_ARENA:
+		# The next exchange: a new intent, same phase, same gesture surface.
+		_pick_crowd_intent()
+		_waiting_for_intermediate_choice = true
+		_emit_ui(_build_intermediate_choice_ui_payload())
+		_autosave_run_checkpoint(RunSaveFlowStepContractScript.INTERMEDIATE_CHOICE, bet_id)
+		return
+	_finish_crowd_exchanges(bet_id)
+
+func _start_crowd_exchanges() -> void:
 	_run_state.intermediate_double_disabled_once = false
 	_run_state.intermediate_bonus_tier = 0
 	_run_state.intermediate_choice_note = ""
@@ -2964,37 +3498,20 @@ func _apply_intermediate_choice(choice_id: String) -> void:
 	_run_state.signature_echo_bonus_pending = 0
 	_run_state.signature_echo_note = ""
 	_run_state.provoke_armed = false
-	var normalized_choice: String = choice_id.strip_edges().to_lower()
-	var escalation_delta: int = 0
-	match normalized_choice:
-		"placa":
-			escalation_delta = -1
-			_run_state.intermediate_bonus_tier = -STAKE_GESTURE_BOW_PENALTY
-			_run_state.safe_decisions += 1
-			_run_state.intermediate_choice_note = "Gesto: Umiliati."
-		"provoca":
-			escalation_delta = 1
-			_run_state.intermediate_bonus_tier = STAKE_GESTURE_CHALLENGE_BONUS
-			_run_state.risky_decisions += 1
-			_run_state.intermediate_choice_note = "Gesto: Provoca."
-		_:
-			_run_state.intermediate_choice_note = ""
-	var bet_id: StringName = _run_state.intermediate_pending_bet_id
-	if bet_id == &"":
-		bet_id = _run_state.last_selected_bet_id
-	_update_signature_echo_from_choice(normalized_choice, bet_id)
-	if escalation_delta != 0:
-		var previous_level: int = _run_state.escalation_level
-		var next_level: int = clampi(previous_level + escalation_delta, 0, ESCALATION_MAX)
-		_run_state.escalation_level = next_level
-		if next_level > _run_state.level3_max_escalation:
-			_run_state.level3_max_escalation = next_level
-		if next_level > _run_state.max_escalation:
-			_run_state.max_escalation = next_level
-		if next_level != previous_level:
-			_apply_escalation_threshold_events(previous_level, next_level)
-			_emit_escalation_changed()
+	_run_state.crowd_exchange_index = 0
+	_run_state.crowd_intent = ""
+	_run_state.crowd_arena_challenges = 0
+	_pick_crowd_intent()
+
+# The arena's gesture is the majority of its exchanges: it feeds the signature
+# echo and the audience line exactly as the single gesture did.
+func _finish_crowd_exchanges(bet_id: StringName) -> void:
+	var dominant: String = "provoca" if _run_state.crowd_arena_challenges * 2 > CROWD_EXCHANGES_PER_ARENA else "placa"
+	_run_state.intermediate_choice_note = "Gesto: Provoca." if dominant == "provoca" else "Gesto: Umiliati."
+	_update_signature_echo_from_choice(dominant, bet_id)
 	_emit_audience_context_line(AUDIENCE_CONTEXT_GESTURE_CHOSEN)
+	_run_state.crowd_intent = ""
+	_run_state.crowd_exchange_index = 0
 	_run_state.intermediate_pending_bet_id = &""
 	_start_resolve_ritual(bet_id)
 	_autosave_run_checkpoint(RunSaveFlowStepContractScript.PUSH_LUCK, bet_id)
@@ -3232,6 +3749,8 @@ func _apply_intermediate_loss_penalty_if_needed() -> void:
 # FLOW ANCHOR hookup: see POST-BET SEQUENCE section.
 func _open_intermediate_choice(bet_id: StringName) -> void:
 	_run_state.intermediate_pending_bet_id = bet_id
+	if _run_state.crowd_intent == "":
+		_start_crowd_exchanges()
 	_waiting_for_intermediate_choice = true
 	_smoke_mark("INTERMEDIATE_CHOICE")
 	_set_phase(RunPhase.INTERMEDIATE_CHOICE, "open_intermediate_choice")
@@ -3271,6 +3790,7 @@ func _build_intermediate_choice_ui_payload() -> RunUiPayload:
 	payload.title = "%s\n%s" % [audience_message, title]
 	payload.meta = {
 		"audience_message": audience_message,
+		"exchange": get_crowd_exchange_view(),
 	}
 	var choices: Array = view.get("choices", []) as Array
 	payload.choices = []
@@ -3376,7 +3896,14 @@ func _stake_gain_for(bet_id: StringName) -> int:
 
 func _add_held_seal_to_stake(bet_id: StringName) -> void:
 	var profile: Dictionary = BetCatalogScript.get_pact_family_profile(bet_id)
+	# Vessa's insurance covers one arena: a held seal spends it unused.
+	_run_state.banco_insured = false
 	var gain: int = maxi(_stake_gain_for(bet_id) + _run_state.intermediate_bonus_tier, 1)
+	# Every further strike the seal held is worth another arena's gain.
+	gain += _seal_extra_strikes_held * _stake_gain_for(bet_id)
+	_seal_extra_strikes_held = 0
+	gain = ceili(float(gain) * get_seal_chain_multiplier())
+	_run_state.seal_chain += 1
 	if bet_id == BET_DOUBLE_OR_DIE_L3:
 		# Raddoppia o muori: a held seal doubles what is already in posta.
 		gain = maxi(gain, _run_state.stake_glory)
@@ -3386,14 +3913,22 @@ func _add_held_seal_to_stake(bet_id: StringName) -> void:
 		_run_state.escalation_level = maxi(_run_state.escalation_level - relief, 0)
 	# The rail reads the posta when the pressure state is refreshed.
 	_emit_escalation_changed()
+	_emit_bando("")
 
 func _apply_broken_seal_to_stake(bet_id: StringName) -> void:
 	var profile: Dictionary = BetCatalogScript.get_pact_family_profile(bet_id)
+	if _run_state.banco_insured:
+		# Vessa's insurance pays once: the posta survives this broken seal.
+		_run_state.banco_insured = false
+		_emit_ledger("La polizza di Vessa salva la posta.", 0)
+		_emit_escalation_changed()
+		return
 	if StringName(str(profile.get("stake_loss", ""))) == BetCatalogScript.STAKE_LOSS_ALL:
 		_run_state.stake_glory = 0
 	else:
 		_run_state.stake_glory = floori(float(maxi(_run_state.stake_glory, 0)) / 2.0)
 	_emit_escalation_changed()
+	_emit_bando("")
 
 func _record_pact_decision(bet_id: StringName) -> void:
 	# The signature reads exposure against the page the player left unsigned.
@@ -3549,10 +4084,13 @@ func _update_audience_after_arena(result: ArenaResult) -> void:
 		_apply_audience_pressure_delta(-1)
 	else:
 		_apply_audience_pressure_delta(1)
-	_run_state.audience_score = clampi(_run_state.audience_score + delta, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX)
+	# The seal moves the favour but never to the edges: the crowd carries you or
+	# turns on you only through the exchanges.
+	_run_state.audience_score = clampi(_run_state.audience_score + delta, AUDIENCE_SCORE_MIN + 1, AUDIENCE_SCORE_MAX - 1)
 	_check_audience_condanne()
 	if _run_state.audience_score <= AUDIENCE_CASHOUT_DISABLE_THRESHOLD:
 		_run_state.forced_next_pact_archetype = ARCH_EGO
+	_emit_crowd_favor("Il sigillo ha retto: la gradinata approva." if result.won else "Il sigillo ha ceduto: la gradinata si raffredda.", "")
 
 func _check_audience_condanne() -> void:
 	if _run_state.is_hunted_by_crowd or _run_state.audience_score >= AUDIENCE_ATTENTION_THRESHOLD:
@@ -3827,6 +4365,7 @@ func _register_run_end(reason: String) -> void:
 		return
 	if _run_state.run_end_reason == "":
 		_run_state.run_end_reason = reason
+		_settle_ledger_at_run_end(reason)
 
 func _emit_run_finale() -> void:
 	if _run_state.run_finale_emitted:
@@ -3926,16 +4465,26 @@ func get_campaign_dialogue() -> Dictionary:
 	# Presentation at a persisted entry checkpoint; no new gameplay phase.
 	if not can_start_run() or _run_state.registry_silence_active or _phase != RunPhase.BET_PRESENT or _run_state.arena_index != 1:
 		return {}
+	var catalog = preload("res://scripts/content/campaign_dialogues.gd")
+	var samples: int = int(SaveManager.get_registry_evolution().get("samples", 0))
+	var bando_step: int = _bando_step()
 	var id: String = ""
 	if _registry_era >= 3:
 		id = "departure"
 	elif _registry_era >= 2:
 		id = "middle"
-	elif _registry_era == 0 and int(SaveManager.get_registry_evolution().get("samples", 0)) == 0:
+	elif _registry_era == 0 and samples == 0:
 		id = "entry"
-	if id == "" or SaveManager.has_seen_campaign_dialogue(id):
+	if id != "" and SaveManager.has_seen_campaign_dialogue(id):
+		id = ""
+	# Racconti are the prize of Orvo's ladder: one per percorso, never after the farewell.
+	if id == "" and _registry_era < 3:
+		for tale: Dictionary in catalog.TALES:
+			if bando_step >= int(tale.step) and not SaveManager.has_seen_campaign_dialogue(str(tale.id)):
+				id = str(tale.id)
+				break
+	if id == "":
 		return {}
-	var catalog = preload("res://scripts/content/campaign_dialogues.gd")
 	var payload: Dictionary = catalog.SEQUENCES[id].duplicate(true)
 	payload["id"] = id
 	return payload

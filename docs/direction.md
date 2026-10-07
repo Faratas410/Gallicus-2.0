@@ -48,12 +48,28 @@ mistero; quella del Registro da' peso.
 ## Fantasia del giocatore
 
 Il giocatore d'azzardo che diventa la propria firma. Ogni scelta e' piccola e
-leggibile; il loro accumulo e' irreversibile. La tensione nasce da tre leve,
+leggibile; il loro accumulo e' irreversibile. La tensione nasce da sette leve,
 sempre visibili quando contano:
 
 - **Gloria**: cio' che il percorso ha guadagnato e cio' che e' ora in posta.
 - **Pressione**: quanto la gradinata stringe; sale con i rilanci e la sfida.
+- **Favore**: quanto la gradinata ti sostiene; si gioca negli scambi e pesa sul
+  sigillo e sulla quietanza.
+- **Denari**: il conto con Vessa, l'unica cosa che passa da un percorso
+  all'altro oltre al Registro. Premia la quietanza e il trionfo, punisce
+  rivolta, marchio e caduta; si spende al banco prima di aprire il Registro.
 - **Segni**: i costi accettati che restano sul corpo e pesano sulle prossime arene.
+- **Bando**: la quota di Gloria che Orvo bandisce a ogni percorso, da incassare
+  entro un'arena. E' la ragione per rischiare: il patto prudente da solo non
+  basta. Chiuso, paga Denari e fa salire di un gradino la scala dei bandi.
+- **Catena**: i sigilli d'arena che reggono di fila nel percorso moltiplicano
+  cio' che il sigillo mette in posta (x1,5, x2, x3); un sigillo che cede la
+  spezza.
+
+Perche' scommettere: per chiudere il bando. Perche' tornare: la scala dei bandi
+e' il progresso visibile della campagna, e ogni gradino paga un racconto del
+posto vuoto (chi sedeva accanto a Dima?) o una pagina di patti nuovi. Il
+fascicolo chiude sempre con il prossimo bando e il racconto in palio.
 
 Tutto il resto (firma comportamentale, Ere, soglie, convergenza) resta nascosto
 e si percepisce solo attraverso materiali, suono, tono e voci.
@@ -63,15 +79,31 @@ e si percepisce solo attraverso materiali, suono, tono e voci.
 Arena (circa 10-15 secondi dopo il primo percorso):
 
 ```text
-apri il Registro -> firma una promessa -> gesto davanti alla gradinata
--> imprimi il sigillo -> responso -> incassa la posta / rilancia
+bando di Orvo e banco di Vessa -> apri il Registro -> firma una promessa -> tre scambi con la gradinata
+-> colpisci il sigillo (ancora, o alza la mano) -> incassa la posta / rilancia
 ```
 
 Ogni sigillo che regge aggiunge Gloria alla **posta**; uno che cede ne toglie
 meta' (tutta, per l'Hybris) e lascia i costi del patto. Dopo ogni responso il
 giocatore sceglie fra incassare e rilanciare: e' la domanda dell'arena, posta
 ogni volta. Le famiglie dei patti dicono a parole quanto spesso il sigillo
-regge e quanto rende; il gesto scambia Pressione con posta.
+regge e quanto rende.
+
+La gradinata e' l'avversario: in arena non si combatte, si tiene la folla.
+Prima del sigillo ci sono tre scambi: a ogni scambio la folla mostra cosa sta
+per fare (vuole sangue, raccoglie la sabbia, si annoia, trattiene il fiato) e
+il giocatore risponde abbassando lo sguardo o sfidandola, leggendo il prezzo
+esatto di entrambe le risposte. Il prezzo si paga in **favore**, Pressione,
+posta o Segni. Il favore resta per tutto il percorso: alto, il sigillo regge di
+piu'; basso, la quietanza rende meno o si blocca. In cima la gradinata ti porta
+(posta subito), in fondo si rivolta (un Segno). Ogni risposta ha una
+conseguenza visibile che resta.
+
+Il responso si gioca, non si guarda: ogni colpo al sigillo e' una prova
+annunciata subito. Se la cera regge si sceglie fra colpire ancora (altra
+posta, piu' rischio) e alzare la mano; se si incrina, una volta per percorso
+si puo' mostrare un Segno alla gradinata e pagare col corpo invece che con la
+posta.
 
 Percorso (alcuni minuti): al massimo sette arene, limite visibile. Finisce con
 la quietanza, con il marchio quando la folla blocca l'incasso, o quando un
@@ -85,10 +117,13 @@ resta l'Assenza. Chiudere subito non avvicina la fine.
 Regola di ritmo: **un gesto per schermata, nessuna schermata senza decisione o
 rivelazione**. Le conferme che non aggiungono informazione si tolgono; le
 sequenze ripetute ogni arena si accorciano dopo il primo percorso (la
-tavoletta del patto passa da sola, il sigillo vuole un colpo).
+tavoletta del patto passa da sola). Ogni attesa deve precedere o seguire una
+scelta; nessun esito si decide fuori dalla vista del giocatore.
 
-Regole e numeri: `docs/canon/MECHANICS_UNIFIED.md`, sezione "Loop rivisto
-(ottobre 2026)". Revisione: `docs/support/game_loop_review_2026-10-06.md`.
+Regole e numeri: `docs/canon/MECHANICS_UNIFIED.md`, sezioni "Loop rivisto
+(ottobre 2026)" e "Arena attiva (ottobre 2026)". Revisioni:
+`docs/support/game_loop_review_2026-10-06.md`,
+`docs/support/arena_attiva_2026-10-06.md`.
 
 ## Regole di stile UI
 
@@ -109,11 +144,13 @@ Valgono per ogni superficie gameplay e utility.
    naturale.
 6. **Accenti nativi.** `È`, `più`, `così`: mai apostrofi al posto degli accenti
    nel testo player-facing.
-7. **Comando = verbo del gesto.** `FIRMA`, `COLPISCI`, `PRENDI LA QUIETANZA`,
-   `RICEVI IL MARCHIO`, `RADDOPPIA`. Non `CONTINUA` o `CONFERMA` quando esiste
+7. **Comando = verbo del gesto.** `FIRMA`, `COLPISCI`, `ALZA LA MANO`,
+   `MOSTRA UN SEGNO`, `LASCIA CEDERE`,
+   `PRENDI LA QUIETANZA`, `RICEVI IL MARCHIO`, `RADDOPPIA`. Non `CONTINUA` o `CONFERMA` quando esiste
    un gesto specifico.
 8. **Un posto per ogni informazione persistente.** Posta, Pressione e arena
-   (su sette) stanno nel rail in basso; i Segni nel riquadro in alto a destra.
+   (su sette), la catena e il conto in Denari stanno nel rail in basso; i Segni nel riquadro in alto a destra;
+   il favore della gradinata nel riquadro in alto a sinistra; il bando nel riquadro in basso a sinistra.
    La ricevuta della quietanza ripete la posta solo come importo da incassare.
 
 ## Lessico unico
@@ -124,6 +161,12 @@ Valgono per ogni superficie gameplay e utility.
 | Posta | gloria in gioco nell'arena corrente | gloria gia' incassata |
 | Gloria | valore guadagnato dal percorso | punteggio astratto |
 | Pressione | rischio corrente della gradinata | escalation, difficolta' |
+| Favore | quanto la gradinata ti sostiene nel percorso | punteggio, reputazione |
+| Denari / conto | cio' che Vessa ti deve o ti chiede, fra un percorso e l'altro | Gloria, punteggio |
+| Banco | dove si spendono i Denari, a Registro chiuso | negozio, shop |
+| Bando | la quota di Gloria del percorso, bandita da Orvo | missione, quest, obiettivo |
+| Gradino / scala | il progresso dei bandi chiusi nella campagna | livello, rank |
+| Catena | i sigilli che reggono di fila, moltiplicano la posta | combo, streak |
 | Segno / cicatrice | costo persistente sul corpo | equipaggiamento, malus generico |
 | Marchio | scelta di chiudere accettando la perdita della posta | condanna del Registro |
 | Condanna | registrazione avversa del Registro | errore, morte, achievement |
@@ -137,10 +180,13 @@ run, escalation, opzione, conferma.
 
 - `RunManager` resta l'unica autorita' del flow, `GameEvents` il bus, la UI
   reagisce ai payload.
-- Nessuna nuova economia, power scaling, modalita' endless o New Game+.
+- Nessuna modalita' endless o New Game+. Le sole aggiunte di ottobre 2026 sono
+  il conto di Vessa, il bando con la sua scala e la catena; la catena vale solo
+  dentro un percorso e si azzera a ogni sigillo che cede.
 - Il Registro non diventa personaggio; Felix non appare.
 - Firma, Ere e soglie del Silenzio non diventano contatori visibili.
-- Il timing del sigillo non influenza l'esito.
+- Il timing del sigillo non influenza l'esito: conta solo quante volte si
+  sceglie di colpire.
 
 ## Come si usa
 

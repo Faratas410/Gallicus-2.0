@@ -65,6 +65,18 @@ func get_run_stake() -> int:
 		return 0
 	return int(manager.get_run_stake())
 
+func get_seal_chain_multiplier() -> float:
+	var manager: Node = _get_manager()
+	if manager == null:
+		return 1.0
+	return float(manager.get_seal_chain_multiplier())
+
+func get_bando_view() -> Dictionary:
+	var manager: Node = _get_manager()
+	if manager == null:
+		return {}
+	return manager.get_bando_view() as Dictionary
+
 func get_arena_limit() -> int:
 	var manager: Node = _get_manager()
 	if manager == null:

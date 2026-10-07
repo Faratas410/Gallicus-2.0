@@ -1430,7 +1430,7 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   Denari +5, sale di un gradino e lascia l'acclamazione: al percorso dopo la
   gradinata parte da Favore +2 (`BANDO_ACCLAIM_FAVOR`). Dopo il dodicesimo
   gradino la scala e' completa e il bando resta a quota 42.
-- **Premi della scala.** I gradini da 1 a 8 aprono gli otto racconti (vedi
+- **Premi della scala.** I gradini da 1 a 10 aprono i dieci racconti (vedi
   `docs/canon/LORE_UNIFIED.md`); i gradini 3, 6 e 9 aprono le pagine sigillate
   dei patti `CONDANNA_FIRMATO`, `CONDANNA_ANCORA` e `CONDANNA_MI_SONO_FERMATO`
   (`BANDO_PACT_STEPS`), in alternativa alle regole di sblocco di prima.
@@ -1442,6 +1442,15 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   e condividono il suo moltiplicatore. Un colpo che cede la spezza; un Segno
   mostrato la fa ripartire dal sigillo salvato. Il rail mostra il valore del
   prossimo anello.
+- **Gesta di Lauro.** A chiusura del percorso RunManager compone la strofa del
+  cantastorie (`_sing_gesta`, catalogo `scripts/content/cantastorie.gd`) dai
+  fatti gia' stabiliti: arena raggiunta, bando chiuso, catena piu' lunga del
+  percorso (`RunState.seal_chain_peak`, almeno 3), trionfi e rivolte della
+  gradinata, Segno mostrato, Gloria (almeno 20) e motivo di chiusura. Il
+  payload `run_finale_selected` porta `gesta` (versi, gesta piu' alta, se e'
+  nuova). Il profilo conserva la gesta piu' alta (`SaveManager.get_gesta_best`:
+  Gloria e arene); e' solo presentazione e non modifica posta, conto o firma.
+  Silenzio e Assenza non hanno gesta.
 - **Visibilita'.** `bando_changed` porta la vista del bando (gradino, quota,
   scadenza, stato, posta, prossimo bando, racconto o patti in palio). La UI
   lo mostra nel riquadro in basso a sinistra (`BandoPanel`), sul Registro

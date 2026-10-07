@@ -141,7 +141,7 @@ func _run() -> void:
 	save.set_bando_step(0)
 	_check(manager.get_campaign_dialogue().is_empty(), "a tale came without a closed bando")
 	save.set_bando_step(12)
-	_check(str(manager.get_campaign_dialogue().get("id", "")) == "ledger", "first tale not offered first")
+	_check(str(manager.get_campaign_dialogue().get("id", "")) == "first_strophe", "first tale not offered first")
 	var all_tales: Array[String] = []
 	for tale: Dictionary in Catalog.TALES:
 		all_tales.append(str(tale.id))

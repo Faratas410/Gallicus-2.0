@@ -3,12 +3,12 @@
 ## Principio
 
 Il contratto AV comprende `scripts/ci/character_runtime_contract.gd`: tre
-Gufi, un gallo, una gallina e trentadue scambi, localizzazione, selezione deterministica senza mutazioni,
+Gufi, un gallo, una gallina, uno storno e quaranta scambi, localizzazione, selezione deterministica senza mutazioni,
 soppressione terminale/Silenzio e ingombri alle due risoluzioni. Con renderer
 e `--capture-dir=<directory>` produce 192 viste di dialogo e 18 dell'Archivio
 (sei iniziali e dodici scorse fino alle schede di Rugo e Dima).
 Le immagini devono essere ispezionate: la sola geometria non prova visibilita'.
-`scripts/ci/illustrated_dialogue_contract.gd` attraversa anche gli otto racconti
+`scripts/ci/illustrated_dialogue_contract.gd` attraversa anche i dieci racconti
 (nelle tre lingue a 1280x720), ne verifica l'ordine per gradino del bando, che
 nessuno compaia al gradino 0, che non si ripetano e che nessuno segua il
 congedo; il runner AV gli concede 150 secondi.

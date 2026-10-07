@@ -92,6 +92,15 @@ amministrativi, non compagni controllabili o portatori di bonus. Hanno
 scambi con i Gufi e fra loro, oltre a schede nell'Archivio. Autorita':
 `docs/canon/LORE_UNIFIED.md`, sezione "Presenze dell'arena".
 
+### Lauro
+
+Lauro e' uno storno cantastorie della gradinata: imita le voci degli altri e
+canta in fondo al fascicolo la gesta del percorso (tre versi) e ricorda la
+gesta piu' alta. Non e' un narratore del Registro, non giudica e non da'
+bonus; la gesta e' solo presentazione. Ha scambi in arena, due racconti e una
+scheda nell'Archivio. Autorita': `docs/canon/LORE_UNIFIED.md`, sezioni
+"Presenze dell'arena" e "Lauro e la gesta".
+
 ## Registry: Silence
 
 Type: State

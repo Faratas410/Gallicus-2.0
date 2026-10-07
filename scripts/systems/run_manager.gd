@@ -127,6 +127,7 @@ const QUICK_CUT_GLITCH_CHANCE: float = 0.35
 const INTERMEDIATE_PROVOCA_BONUS_TIER: int = 1
 const INTERMEDIATE_PROVOCA_CORRUPTION_PENALTY: int = 1
 const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
+const CantastorieScript = preload("res://scripts/content/cantastorie.gd")
 const BET_CASH_OUT: StringName = BetCatalogScript.BET_CASH_OUT
 const BET_DOUBLE_OR_DIE_L3: StringName = BetCatalogScript.BET_DOUBLE_OR_DIE
 const BET_DEBT_CHAIN: StringName = BetCatalogScript.BET_DEBT_CHAIN
@@ -3904,6 +3905,7 @@ func _add_held_seal_to_stake(bet_id: StringName) -> void:
 	_seal_extra_strikes_held = 0
 	gain = ceili(float(gain) * get_seal_chain_multiplier())
 	_run_state.seal_chain += 1
+	_run_state.seal_chain_peak = maxi(_run_state.seal_chain_peak, _run_state.seal_chain)
 	if bet_id == BET_DOUBLE_OR_DIE_L3:
 		# Raddoppia o muori: a held seal doubles what is already in posta.
 		gain = maxi(gain, _run_state.stake_glory)
@@ -4398,8 +4400,45 @@ func _emit_run_finale() -> void:
 		_registry_has_precedent = true
 	if finale.has("ending_id"):
 		print("Run ending chosen:", str(finale.get("ending_id", "")), " seed=", _run_state.run_seed)
+	finale["gesta"] = _sing_gesta(register_final)
 	GameEvents.run_finale_selected.emit(finale)
 	_export_run_summary(finale)
+
+func _sing_gesta(register_final: bool) -> Dictionary:
+	# Lauro's strophe over the closed percorso, and his highest gesta so far.
+	# Presentation built from facts already settled; nothing here changes the run.
+	var end: String = "cede"
+	if register_final:
+		end = "fascicolo"
+	elif _run_state.run_end_reason == "CASH_OUT":
+		end = "quietanza"
+	elif _run_state.run_end_reason == "CONDANNA":
+		end = "marchio"
+	var arenas: int = clampi(_run_state.arena_index, 1, PERCORSO_MAX_ARENAS)
+	var glory: int = maxi(_run_state.glory, 0)
+	var lines: Array[Dictionary] = CantastorieScript.compose({
+		"seed": _run_state.run_seed,
+		"arenas": arenas,
+		"glory": glory,
+		"bando_closed": _run_state.bando_status == "closed",
+		"chain_peak": _run_state.seal_chain_peak,
+		"triumphs": _run_state.crowd_triumphs,
+		"riots": _run_state.crowd_riots,
+		"scar_shown": _run_state.scar_shown_this_run,
+		"end": end,
+	})
+	var best: Dictionary = SaveManager.get_gesta_best()
+	var new_best: bool = glory > int(best.get("glory", 0)) and _run_state.run_end_reason != "INFRA_FAILURE"
+	if new_best:
+		SaveManager.set_gesta_best(glory, arenas)
+		best = SaveManager.get_gesta_best()
+	return {
+		"singer": CantastorieScript.SINGER,
+		"lines": lines,
+		"new_best": new_best,
+		"best_glory": int(best.get("glory", 0)),
+		"best_arenas": int(best.get("arenas", 0)),
+	}
 
 func _update_registry_meta_from_run() -> void:
 	if _registry_meta_committed_this_run:

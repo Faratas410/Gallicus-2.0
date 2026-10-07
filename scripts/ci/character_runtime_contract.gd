@@ -26,7 +26,7 @@ func _run() -> void:
 	var menu: Node = scene.get_node("MenuLayer/MainMenu")
 	root.get_node("SaveManager").set_reduced_motion(true)
 	var state: RunState = manager.get("_run_state")
-	_check(Characters.CHARACTERS.size() == 5, "expected three owls, a rooster and a hen")
+	_check(Characters.CHARACTERS.size() == 6, "expected three owls, a rooster, a hen and the storno")
 	_check(manager.get_character_dialogue("unknown").is_empty(), "unknown context has dialogue")
 	var heard: Dictionary = {}
 	for context: String in ["pact", "gesture"]:

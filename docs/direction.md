@@ -37,7 +37,7 @@ vuota. Per la prima volta anche il Registro dimentica.
 
 | Strato | Cosa contiene | Chi parla | Come parla |
 | --- | --- | --- | --- |
-| Gradinata | sabbia, folla, gloria, segni sul corpo, il posto vuoto | Rugo, Dima, la folla | frasi brevi e concrete, memoria dei passi |
+| Gradinata | sabbia, folla, gloria, segni sul corpo, il posto vuoto, le gesta | Rugo, Dima, Lauro, la folla | frasi brevi e concrete, memoria dei passi; Lauro in versi |
 | Amministrazione | quote, copie, bandi, archivio | Nerio, Vessa, Orvo | precisione da ufficio, mai giudizio |
 | Registro | firma, classificazione, Silenzio | il terminale | righe di stato maiuscole e rare |
 
@@ -70,6 +70,11 @@ Perche' scommettere: per chiudere il bando. Perche' tornare: la scala dei bandi
 e' il progresso visibile della campagna, e ogni gradino paga un racconto del
 posto vuoto (chi sedeva accanto a Dima?) o una pagina di patti nuovi. Il
 fascicolo chiude sempre con il prossimo bando e il racconto in palio.
+
+Lauro, lo storno cantastorie, canta in fondo al fascicolo la gesta del
+percorso: tre versi fatti di cio' che e' successo davvero, e la gesta piu' alta
+da battere. L'arena dimentica, il Registro copia, Lauro ricorda male ma
+ricorda.
 
 Tutto il resto (firma comportamentale, Ere, soglie, convergenza) resta nascosto
 e si percepisce solo attraverso materiali, suono, tono e voci.
@@ -172,6 +177,7 @@ Valgono per ogni superficie gameplay e utility.
 | Condanna | registrazione avversa del Registro | errore, morte, achievement |
 | Percorso | una partita dal primo patto al fascicolo | run, partita |
 | Fascicolo | il riepilogo scritto di un percorso | game over |
+| Gesta / strofa | cio' che Lauro canta di un percorso | punteggio, record, achievement |
 
 Parole escluse dal testo player-facing: morte, uccidere, nemico, combattimento,
 run, escalation, opzione, conferma.
@@ -181,7 +187,8 @@ run, escalation, opzione, conferma.
 - `RunManager` resta l'unica autorita' del flow, `GameEvents` il bus, la UI
   reagisce ai payload.
 - Nessuna modalita' endless o New Game+. Le sole aggiunte di ottobre 2026 sono
-  il conto di Vessa, il bando con la sua scala e la catena; la catena vale solo
+  il conto di Vessa, il bando con la sua scala, la catena e la gesta piu' alta
+  di Lauro (solo presentazione); la catena vale solo
   dentro un percorso e si azzera a ogni sigillo che cede.
 - Il Registro non diventa personaggio; Felix non appare.
 - Firma, Ere e soglie del Silenzio non diventano contatori visibili.

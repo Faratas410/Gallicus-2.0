@@ -59,9 +59,16 @@ del Registro restano ancorati al centro (UI_CANON, Motion Contract).
 
 Bando, scala e catena, 7 ottobre 2026 ("Perche' scommettere? Perche'
 continuare?"): ogni percorso ha un bando di Gloria da chiudere entro un'arena,
-la scala dei bandi paga gli otto racconti (tre sul posto vuoto) e tre pagine di
+la scala dei bandi paga i dieci racconti (quattro sul posto vuoto) e tre pagine di
 patti, i sigilli retti di fila moltiplicano la posta. Canone in
 `docs/canon/MECHANICS_UNIFIED.md`, numeri in `docs/support/motivazione_2026-10-07.md`.
+
+Lauro il cantastorie, 7 ottobre 2026 ("Aggiungiamo un personaggio? Un
+cantastorie, colui che racconta le gesta degli eroi"): uno storno della
+gradinata canta in fondo al fascicolo la gesta del percorso e ricorda la gesta
+piu' alta; due racconti suoi aprono la scala dei bandi e il filo del posto
+vuoto. Scheda, prove e prompt del ritratto in
+`docs/support/cantastorie_2026-10-07.md`.
 
 Consegna precedente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
 come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.

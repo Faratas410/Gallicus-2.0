@@ -688,7 +688,11 @@ Fasi, segnali e checkpoint non cambiano. RunManager resta l'unica autorita':
   della quietanza in `_settle_ledger_at_run_end`. Il profilo salva
   `bando_step` (0-99, sanificato) e `bando_acclaim`; il percorso salva
   `bando_quota`, `bando_deadline`, `bando_status` e `seal_chain`, letti vuoti
-  dai save precedenti (un percorso senza bando chiude come prima). La UI riceve
+  dai save precedenti (un percorso senza bando chiude come prima).
+  La gesta di Lauro (ottobre 2026) aggiunge `seal_chain_peak` al percorso
+  (letto da `seal_chain` nei save precedenti) e `gesta_best` (`glory`,
+  `arenas`) al profilo, vuoto nei profili precedenti; RunManager lo scrive in
+  `_sing_gesta` e lo consegna nel payload `run_finale_selected` (`gesta`). La UI riceve
   `bando_changed` e legge `get_bando_view()` dal port.
 - Regole di posta e firma: `docs/canon/MECHANICS_UNIFIED.md` ("Loop rivisto") e
   `docs/canon/REGISTRY_SYSTEM_SPEC.md` ("Evidenza e chiusura delle Ere").

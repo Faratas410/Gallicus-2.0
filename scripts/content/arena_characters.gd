@@ -31,6 +31,12 @@ const CHARACTERS: Array[Dictionary] = [
     "name": "Dima",
     "role": "Gallina della gradinata",
     "description": "Dima tiene una zampa sul posto accanto finché la gradinata si riempie. Riconosce i presenti dal passo sulla pietra. Quando Vessa conta i posti, lei ricorda chi li occupava."
+  },
+  {
+    "id": "lauro",
+    "name": "Lauro",
+    "role": "Storno cantastorie",
+    "description": "Lauro ha il piumaggio nero sparso di macchie chiare, come cera schizzata. Imita il richiamo di Orvo e il vecchio grido di Rugo meglio di loro. Canta le gesta di chi passa nell’arena e ogni sera cambia una parola."
   }
 ]
 
@@ -67,6 +73,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: Hanno venduto la terza fila.",
       "Vessa: Il tuo posto no. Per ora."
+    ],
+    [
+      "Lauro: Che rima ha questa firma?",
+      "Nerio: Nessuna. È una firma."
+    ],
+    [
+      "Dima: Lauro, è già in strofa?",
+      "Lauro: Non ancora. Aspetto il sigillo."
     ]
   ],
   "gesture": [
@@ -101,6 +115,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: Sento la sabbia nelle tasche.",
       "Rugo: Allora non è ancora il momento."
+    ],
+    [
+      "Lauro: Orvo, lasciami il primo verso.",
+      "Orvo: Il primo verso è il richiamo. È mio."
+    ],
+    [
+      "Rugo: Quel grido era il mio.",
+      "Lauro: Era. Ora lo canto meglio."
     ]
   ],
   "pact_worn": [
@@ -135,6 +157,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: La terza fila.",
       "Vessa: Venduta."
+    ],
+    [
+      "Lauro: Un’altra rima.",
+      "Nerio: Nessuna. Una copia."
+    ],
+    [
+      "Dima: Già in strofa?",
+      "Lauro: Dopo il sigillo."
     ]
   ],
   "gesture_worn": [
@@ -169,6 +199,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: La sabbia.",
       "Rugo: Non ancora."
+    ],
+    [
+      "Lauro: Il primo verso?",
+      "Orvo: Mio."
+    ],
+    [
+      "Rugo: Il mio grido.",
+      "Lauro: Il mio, ora."
     ]
   ]
 }

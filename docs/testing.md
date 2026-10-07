@@ -173,7 +173,7 @@ linguette del fascicolo: next bet, new path e ritorno al menu. Le quattro route
 push-your-luck restano coperte dagli scenari dedicati.
 
 `KEYBOARD_FULL_RUN` inietta eventi `InputEventKey` press/release reali. Parte
-dal focus del menu, attraversa Registro, firma, patto, tre scambi con la gradinata, da uno a tre colpi,
+dal focus del menu, attraversa Registro, firma, patto, gli scambi con la gradinata, da uno a tre colpi,
 Push Your Luck e fascicolo, quindi verifica il ritorno al menu senza chiamare
 direttamente gli intenti di gameplay.
 
@@ -552,3 +552,12 @@ e attraversarne le battute; lo smoke tastiera deve avanzare la nuova finestra.
 Le prove storiche del prologo automatico sono sostituite da lettura manuale.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+## Simulatore di campagna (tuning, non gate)
+
+`tools/campaign_sim.gd` gioca una campagna intera nella UI vera con uno stile
+scelto da argomenti (`--style`, `--strike`, `--crowd`, `--runs`, `--seed`) e
+stampa una riga `SIM_RUN` per percorso e un `SIM_SUMMARY`. Usare un profilo
+isolato (`APPDATA`/`XDG_DATA_HOME`). Confrontare sempre con `--crowd=read`:
+`--crowd=bow` porta a rivolte e debito. Risultati del 7 ottobre 2026 in
+`docs/support/benchmark_bcde_2026-10-07.md`.

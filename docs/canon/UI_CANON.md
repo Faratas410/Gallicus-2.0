@@ -478,8 +478,8 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 ## Crowd exchanges and favour panel (October 2026)
 
-- The gesture panel hosts three exchanges per arena. Its title reads
-  `Scambio N di 3:` followed by what the crowd is about to do (from
+- The gesture panel hosts one exchange per arena, three in exposed arenas
+  (`get_crowd_exchange_view().total`). Its title reads `Scambio N di M:` followed by what the crowd is about to do (from
   `meta.exchange.line`); each tile keeps its name and Registry note and prints
   the exact price of that answer (`placa_text`, `provoca_text`). After each
   answer RunManager sends the next exchange as a new payload: the tiles unlock

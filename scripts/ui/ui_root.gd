@@ -2406,13 +2406,13 @@ func _on_seal_strike_resolved(payload: Dictionary) -> void:
 		_apply_resolution_ritual_strike_feedback(_resolve_ritual_strike_on_beat, true)
 	if held and bool(payload.get("can_strike_again", false)):
 		_judgment_seal_locked = false
-		_set_resolve_ritual_body("%s\n%s" % [
-			held_line,
-			tr("Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.") % [
-				tr(str(payload.get("next_odds", ""))).to_lower(),
-				int(payload.get("next_gain", 0)),
-			],
-		])
+		var next_line: String = tr("Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.") % [
+			tr(str(payload.get("next_odds", ""))).to_lower(),
+			int(payload.get("next_gain", 0)),
+		]
+		if bool(payload.get("bando_strike", false)):
+			next_line += " " + tr("Il bando di Orvo è aperto: ogni colpo in più vale doppio.")
+		_set_resolve_ritual_body("%s\n%s" % [held_line, next_line])
 		if resolve_ritual_prompt != null:
 			resolve_ritual_prompt.text = tr("IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO")
 		_set_seal_choice_buttons_enabled(true)

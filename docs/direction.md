@@ -84,7 +84,7 @@ e si percepisce solo attraverso materiali, suono, tono e voci.
 Arena (circa 10-15 secondi dopo il primo percorso):
 
 ```text
-bando di Orvo e banco di Vessa -> apri il Registro -> firma una promessa -> tre scambi con la gradinata
+bando di Orvo e banco di Vessa -> apri il Registro -> firma una promessa -> scambi con la gradinata
 -> colpisci il sigillo (ancora, o alza la mano) -> incassa la posta / rilancia
 ```
 
@@ -95,7 +95,8 @@ ogni volta. Le famiglie dei patti dicono a parole quanto spesso il sigillo
 regge e quanto rende.
 
 La gradinata e' l'avversario: in arena non si combatte, si tiene la folla.
-Prima del sigillo ci sono tre scambi: a ogni scambio la folla mostra cosa sta
+Prima del sigillo la gradinata chiede uno scambio, tre nelle arene esposte
+(l'ultima utile del bando, l'arena speciale): a ogni scambio la folla mostra cosa sta
 per fare (vuole sangue, raccoglie la sabbia, si annoia, trattiene il fiato) e
 il giocatore risponde abbassando lo sguardo o sfidandola, leggendo il prezzo
 esatto di entrambe le risposte. Il prezzo si paga in **favore**, Pressione,

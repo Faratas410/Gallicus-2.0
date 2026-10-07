@@ -1310,9 +1310,13 @@ su posta, soglia della quietanza e lunghezza nascosta del percorso.
 
   Il modificatore si somma alla probabilita' base del sigillo prima delle
   penalita' di Pressione, segni e profilo d'arena. La pagina del Registro lo
-  dice a parole, mai in percentuale.
+  dice a parole, mai in percentuale, e sotto aggiunge le condizioni di oggi
+  (`seal_conditions`: Favore a favore o contro, Pressione, Segni che pesano):
+  "Oggi, a favore del sigillo: ...", "Oggi, contro il sigillo: ..." oppure
+  "Oggi niente sposta il sigillo".
 - **Gesto:** sostituito dagli scambi con la gradinata (sezione "Arena attiva
-  (ottobre 2026)"): tre risposte per arena, ognuna col suo prezzo in favore,
+  (ottobre 2026)"): una risposta per arena, tre nelle arene esposte, ognuna
+  col suo prezzo in favore,
   Pressione, posta o Segni.
 - **Quietanza:** Gloria incassata = posta (ridotta dal modificatore della folla)
   piu' il bonus di Pressione esistente. Aperta dopo ogni responso.
@@ -1339,14 +1343,20 @@ gradinata e dal favore visibile.
   `ALZA LA MANO`. Il secondo colpo regge spesso (`SEAL_EXTRA_STRIKE_HOLD` 0,6),
   il terzo a volte (0,45); ogni colpo extra che regge aggiunge alla posta un
   altro guadagno dell'arena (`_stake_gain_for`), anche sopra il raddoppio di
-  `Raddoppia o muori`; la previsione del colpo e il pagamento usano lo stesso
-  calcolo (`_held_seal_gain`). Se un colpo extra incrina la
+  `Raddoppia o muori`; finche' il bando di Orvo e' aperto ogni colpo extra vale
+  due guadagni dell'arena (`SEAL_BANDO_STRIKE_GAINS`), e il prompt lo dice: il
+  bando e' la ragione per colpire ancora. La previsione del colpo e il
+  pagamento usano lo stesso calcolo (`_held_seal_gain`). Se un colpo extra incrina la
   cera, il sigillo cede con le conseguenze normali del patto. Al massimo tre
   colpi (`SEAL_MAX_STRIKES`). Il timing resta senza effetto: conta quante volte
   si osa. Ogni colpo extra conta come decisione rischiosa per la firma; alzare
   la mano quando si poteva colpire conta come decisione prudente.
-- **Scambi con la gradinata.** Il gesto non è più una scelta unica: sono tre
-  scambi (`CROWD_EXCHANGES_PER_ARENA`) nella stessa fase `INTERMEDIATE_CHOICE`.
+- **Scambi con la gradinata.** Il gesto non è più una scelta unica: le arene
+  ordinarie hanno uno scambio (`CROWD_EXCHANGES_ORDINARY`), quelle esposte
+  (l'ultima arena utile del bando ancora aperto, l'arena speciale) tre
+  (`CROWD_EXCHANGES_PER_ARENA`; `_crowd_exchanges_this_arena`), nella stessa
+  fase `INTERMEDIATE_CHOICE`. La gradinata pesa di piu' dove c'e' di piu' in
+  gioco (benchmark del 7 ottobre 2026).
   A ogni scambio RunManager estrae, con seme di percorso, arena e scambio, cosa
   sta per fare la folla (`RunState.crowd_intent`, salvato; mai lo stesso due
   volte di fila) e la UI stampa il prezzo esatto delle due risposte,
@@ -1409,7 +1419,9 @@ percorso. Proposta e simulazioni: `docs/support/arena_attiva_2026-10-06.md`.
   disponibilita'.
 - **Debito.** Con il conto sotto zero il banco e' chiuso e ogni percorso parte
   con Pressione +1. A -10 o meno il percorso parte con il Segno Marchio del
-  debito (origine "Debito con Vessa"). Il debito si salda solo con le entrate.
+  debito (origine "Debito con Vessa"). Il debito si salda solo con le entrate;
+  finche' il conto e' sotto zero una quietanza versa il doppio dei Denari
+  (`LEDGER_DEBT_DEPOSIT_MULTIPLIER`), e il banco chiuso lo dice.
   Il debito non scende sotto -20 Denari (`LEDGER_DEBT_FLOOR`): Vessa non presta
   oltre, cosi' una campagna puo' sempre risalire.
 - **Visibilita'.** Il conto sta nel rail (`Conto N Denari`); il banco lo ripete
@@ -1440,13 +1452,16 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   (`"era"` in `CampaignDialogues.TALES`: 1 per `seat_kept` e `footstep`, 2 per
   `open_strophe` e `slope`): da quell'Era arrivano senza bando, e a Era 3 il
   congedo (`departure`) aspetta che siano stati raccontati. Un racconto gia'
-  raccontato non viene piu' annunciato come premio; i gradini 3, 6 e 9 aprono le pagine sigillate
-  dei patti `CONDANNA_FIRMATO`, `CONDANNA_ANCORA` e `CONDANNA_MI_SONO_FERMATO`
-  (`BANDO_PACT_STEPS`), in alternativa alle regole di sblocco di prima.
-  L'offerta del Registro contiene solo le pagine aperte
-  (`_is_level3_bet_offerable`: sblocco e Segni richiesti); il bando annuncia
-  le pagine in palio solo se sono ancora sigillate, e il racconto in palio
-  solo prima del congedo (dopo il congedo i racconti non vengono raccontati).
+  raccontato non viene piu' annunciato come premio, e nessun racconto e' in
+  palio dopo il congedo. Il libro base dei patti (Prudenza, Hybris e le pagine
+  `CONDANNA_FIRMATO`, `BASE_PACT_UNLOCKS`) e' aperto dal primo percorso; solo
+  la scala apre le pagine sigillate: gradino 3 `CONDANNA_ANCORA`, gradino 6
+  `CONDANNA_MI_SONO_FERMATO` (`BANDO_PACT_STEPS`). Le vecchie regole di
+  sblocco non le aprono piu'. L'offerta del Registro contiene solo le pagine
+  aperte (`_is_level3_bet_offerable`: sblocco e Segni richiesti). Con solo
+  Prudenza e Hybris all'inizio, chi ama il rischio finiva nell'Hybris e a zero
+  Gloria (52-82% dei percorsi in simulazione): per questo il libro base resta
+  aperto.
 - **Catena.** I sigilli d'arena che reggono di fila nel percorso
   (`RunState.seal_chain`) moltiplicano cio' che il sigillo che regge mette in
   posta: x1 il primo, x1,5 il secondo, x2 il terzo, x3 dal quarto

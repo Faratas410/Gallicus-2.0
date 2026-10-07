@@ -238,7 +238,7 @@ func _render_banco() -> void:
 	if banco_note != null:
 		var note: String = _banco_note_text
 		if bool(_banco_view.get("in_debt", false)):
-			note = tr("In debito: il banco è chiuso finché una quietanza non salda il conto.")
+			note = tr("In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.")
 		elif bool(_banco_view.get("insured", false)):
 			note = tr("La posta di questa arena è assicurata.")
 		banco_note.text = note
@@ -820,7 +820,7 @@ func _map_offer_for_display(source_offer: Dictionary) -> Dictionary:
 		"id": bet_id,
 		"source": source_offer.duplicate(true),
 		"name": title if title != "" else EMPTY_PAGE_TITLE,
-		"contract": _format_contract_body(title if title != "" else EMPTY_PAGE_TITLE, subtitle, doom_text, condition_text, pact_text, bet_id, int(source_offer.get("stake_gain", -1))),
+		"contract": _format_contract_body(title if title != "" else EMPTY_PAGE_TITLE, subtitle, doom_text, condition_text, pact_text, bet_id, int(source_offer.get("stake_gain", -1)), source_offer.get("seal_conditions", {}) as Dictionary),
 	}
 
 func _rebuild_options_from_catalog() -> void:
@@ -845,7 +845,7 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 			return bet_data
 	return {}
 
-func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String, bet_id: StringName = &"", stake_gain: int = -1) -> String:
+func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String, bet_id: StringName = &"", stake_gain: int = -1, conditions: Dictionary = {}) -> String:
 	# Three levels only (docs/direction.md): title, the deal, then what holds and
 	# what breaks. Size and colour carry hierarchy because the book font has no
 	# bold or italic face.
@@ -864,6 +864,9 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 	if not holds.is_empty():
 		lines.append(_contract_heading(tr("SE IL PATTO REGGE"), CONTRACT_HOLDS_COLOR))
 		lines.append(_escape_bbcode(" ".join(holds)))
+		var today: String = _seal_conditions_text(conditions)
+		if today != "":
+			lines.append("[color=#%s]%s[/color]" % [CONTRACT_NOTE_COLOR.to_html(false), _escape_bbcode(today)])
 	var breaks: Array[String] = _translated_lines(doom_text)
 	if not breaks.is_empty():
 		lines.append(_contract_heading(tr("SE IL PATTO CEDE"), CONTRACT_BREAKS_COLOR))
@@ -883,6 +886,31 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 	if lines.is_empty():
 		return EMPTY_PAGE_BODY
 	return "\n".join(lines)
+
+func _seal_conditions_text(conditions: Dictionary) -> String:
+	# Today's Favore, Pressione and Segni move every page's odds the same way.
+	if conditions.is_empty():
+		return ""
+	var helps: Array[String] = []
+	var weighs: Array[String] = []
+	var favor: int = int(conditions.get("favor", 0))
+	if favor > 0:
+		helps.append(tr("Favore +%d") % favor)
+	elif favor < 0:
+		weighs.append(tr("Favore -%d") % -favor)
+	var pressure: int = int(conditions.get("pressure", 0))
+	if pressure > 0:
+		weighs.append(tr("Pressione %d") % pressure)
+	if int(conditions.get("scars", 0)) > 0:
+		weighs.append(tr("i Segni"))
+	var parts: Array[String] = []
+	if not helps.is_empty():
+		parts.append(tr("Oggi, a favore del sigillo: %s.") % ", ".join(helps))
+	if not weighs.is_empty():
+		parts.append(tr("Oggi, contro il sigillo: %s.") % ", ".join(weighs))
+	if parts.is_empty():
+		return tr("Oggi niente sposta il sigillo.")
+	return " ".join(parts)
 
 func _stake_terms(bet_id: StringName, stake_gain: int = -1) -> Dictionary:
 	if bet_id == &"":

@@ -12,7 +12,8 @@ addicting". Proposta in quattro pezzi, scelta "Tutti e quattro".
   Denari +5, un gradino e l'acclamazione al percorso dopo (Favore +2).
 - **Il posto vuoto.** Gli otto racconti diventano i premi dei gradini 1-8; tre
   nuovi (`seat_kept`, `footstep`, `slope`) seguono chi sedeva accanto a Dima.
-  I gradini 3, 6 e 9 aprono le pagine sigillate dei patti.
+  I gradini 3, 6 e 9 aprono le pagine sigillate dei patti (dal benchmark del 7
+  ottobre: gradini 3 e 6, libro base aperto; vedi `docs/canon/MECHANICS_UNIFIED.md`).
 - **Catena.** I sigilli d'arena retti di fila valgono x1,5, x2, x3.
 
 Regole: `docs/canon/MECHANICS_UNIFIED.md` ("Bando, scala e catena"). Lore:

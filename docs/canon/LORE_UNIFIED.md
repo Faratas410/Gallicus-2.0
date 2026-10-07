@@ -91,7 +91,10 @@ Dieci racconti illustrati riempiono il tratto fra la prima copia e la fine
 della seconda Era: compaiono all'inizio di un percorso, uno per volta, come
 premio dei gradini della scala dei bandi di Orvo (gradini 1-10, vedi
 `docs/canon/MECHANICS_UNIFIED.md`), dopo le scene d'Era che hanno la
-precedenza e mai dopo il congedo dell'ultima Era. Nessuno durante Silenzio o
+precedenza e mai dopo il congedo dell'ultima Era. I quattro racconti del posto
+vuoto sono garantiti dalla campagna: arrivano anche senza bando dall'Era 1
+(`seat_kept`, `footstep`) e dall'Era 2 (`open_strophe`, `slope`), e il congedo
+li aspetta tutti. Il bando li anticipa. Nessuno durante Silenzio o
 Assenza. Parlano Nerio, Rugo, Dima e Lauro; il terminale ha due soli inserti di stato
 ("COPIA RESPINTA", "CONFRONTO IN CORSO / Corrispondenza parziale."). Vessa e
 Orvo sono citati, non parlano.

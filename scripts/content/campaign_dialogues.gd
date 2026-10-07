@@ -413,15 +413,18 @@ const SEQUENCES: Dictionary = {
 # next percorso opens on the racconto of that step, in this order, before the
 # last Era. The first brings Lauro, the cantastorie; from the fourth on they
 # follow one thread: the seat Dima keeps, and the strophe Lauro cannot close.
+# The racconti with an "era" carry the empty seat the farewell rests on: the
+# campaign tells them from that Era even without the bando, always before the
+# farewell. The ladder only brings them sooner.
 const TALES: Array[Dictionary] = [
   {"id": "first_strophe", "step": 1},
   {"id": "ledger", "step": 2},
   {"id": "sand", "step": 3},
-  {"id": "seat_kept", "step": 4},
+  {"id": "seat_kept", "step": 4, "era": 1},
   {"id": "call", "step": 5},
   {"id": "seats", "step": 6},
-  {"id": "footstep", "step": 7},
-  {"id": "open_strophe", "step": 8},
+  {"id": "footstep", "step": 7, "era": 1},
+  {"id": "open_strophe", "step": 8, "era": 2},
   {"id": "scraping", "step": 9},
-  {"id": "slope", "step": 10}
+  {"id": "slope", "step": 10, "era": 2}
 ]

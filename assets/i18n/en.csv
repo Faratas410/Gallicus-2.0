@@ -859,7 +859,7 @@ LA CERA SI INCRINA - IL SIGILLO CEDE,THE WAX CRACKS - THE SEAL GIVES WAY
 Il sigillo regge: +%d Gloria in posta.,The seal holds: +%d Glory to the stake.
 "Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Another strike: %s, +%d more Glory. If the wax cracks, the pact gives way."
 La cera si incrina.,The wax cracks.
-"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Show a Mark to the stands: the seal holds, but the body pays with a new mark. Once per path."
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso.","Show a Mark to the stands: the seal holds, but the body pays with Cracked Bones (if already there: Pressure +1). Once per path."
 LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,THE WAX CRACKS - SHOW A MARK OR LET IT GIVE WAY
 LASCIA CEDERE,LET IT GIVE WAY
 MOSTRA UN SEGNO,SHOW A MARK
@@ -899,7 +899,7 @@ PAGA LA PRESSIONE,PAY OFF PRESSURE
 ASSICURA LA POSTA,INSURE THE STAKE
 Favore +2.,Favour +2.
 Pressione -2.,Pressure -2.
-"Se il sigillo cede, la posta resta.","If the seal breaks, the stake stays."
+"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","If the seal breaks, the stake stays. Does not cover the Path of Hubris."
 In debito: il banco è chiuso finché una quietanza non salda il conto.,In debt: the counter stays closed until a receipt settles the account.
 La posta di questa arena è assicurata.,This arena's stake is insured.
 La gradinata lancia monete: Denari +%d.,The stands throw coins: Denarii +%d.

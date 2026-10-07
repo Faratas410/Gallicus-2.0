@@ -60,8 +60,15 @@ def main() -> int:
     if "_open_bando_for_run()" not in run_manager or "_refresh_bando_deadline()" not in _function_body(run_manager, "start_arena"):
         raise AssertionError("each percorso opens a bando and each arena checks its deadline")
     stake = _function_body(run_manager, "_add_held_seal_to_stake")
-    if "get_seal_chain_multiplier()" not in stake or "_run_state.seal_chain += 1" not in stake:
+    gain = _function_body(run_manager, "_held_seal_gain")
+    if "_held_seal_gain(" not in stake or "get_seal_chain_multiplier()" not in gain or "_run_state.seal_chain += 1" not in stake:
         raise AssertionError("held seals must be multiplied by the chain and join it")
+    preview = _function_body(run_manager, "_build_seal_strike_payload")
+    if preview.count("_held_seal_gain(") != 2:
+        raise AssertionError("the strike preview must use the same gain the held seal pays")
+    offer = _function_body(run_manager, "_build_level3_bet_offer")
+    if "_is_level3_bet_offerable(" not in offer or "_is_level3_bet_unlocked(" not in _function_body(run_manager, "_is_level3_bet_offerable"):
+        raise AssertionError("the pact offer must only hold the pages the player has opened")
     strike = _function_body(run_manager, "_strike_seal")
     if "if not held:\n\t\t_run_state.seal_chain = 0" not in strike:
         raise AssertionError("a broken strike resets the chain")
@@ -73,6 +80,11 @@ def main() -> int:
     dialogue = _function_body(run_manager, "get_campaign_dialogue")
     if "bando_step >= int(tale.step)" not in dialogue:
         raise AssertionError("racconti are the prize of the ladder")
+    if "_registry_era >= int(tale.era)" not in dialogue or 'id == "departure" and not farewell_heard' not in dialogue:
+        raise AssertionError("the empty-seat racconti come with their Era and before the farewell")
+    eras = re.findall(r'\{"id": "([a-z_]+)", "step": \d+, "era": (\d+)\}', _read(DIALOGUES))
+    if [tale for tale, _ in eras] != ["seat_kept", "footstep", "open_strophe", "slope"] or any(int(era) >= 3 for _, era in eras):
+        raise AssertionError(f"the empty-seat racconti must be due before the farewell Era: {eras}")
 
     run_state = _read(RUN_STATE)
     for key in ("bando_quota", "bando_deadline", "bando_status", "seal_chain"):
@@ -88,7 +100,7 @@ def main() -> int:
         raise AssertionError("signal contract must list bando_changed")
 
     dialogues = _read(DIALOGUES)
-    steps = [int(value) for value in re.findall(r'\{"id": "[a-z_]+", "step": (\d+)\}', dialogues)]
+    steps = [int(value) for value in re.findall(r'\{"id": "[a-z_]+", "step": (\d+)[,}]', dialogues)]
     if steps != sorted(steps) or len(steps) < 8 or steps[0] != 1:
         raise AssertionError(f"TALES must climb the ladder from step 1: {steps}")
 

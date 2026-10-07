@@ -269,7 +269,9 @@ di sei battute si aggiungono alle tre conversazioni illustrate, nello stesso
 catalogo e con gli stessi ritratti (Nerio, Rugo, Dima e il terminale). Con il
 bando di Orvo ("Perche' continuare?") diventano otto e ognuna e' il premio di
 un gradino della scala dei bandi. Con Lauro il cantastorie (7 ottobre 2026)
-diventano dieci; quattro raccontano il posto vuoto:
+diventano dieci; quattro raccontano il posto vuoto (`seat_kept`, `footstep`,
+`open_strophe`, `slope`) e sono garantiti dalla campagna anche senza bando,
+dall'Era 1 i primi due e dall'Era 2 gli altri, sempre prima del congedo:
 
 | Id | Titolo | Gradino | Cosa racconta |
 | --- | --- | --- | --- |

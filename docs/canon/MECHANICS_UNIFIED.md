@@ -1338,7 +1338,9 @@ gradinata e dal favore visibile.
   probabilità di prima. Se regge, il giocatore sceglie `COLPISCI ANCORA` o
   `ALZA LA MANO`. Il secondo colpo regge spesso (`SEAL_EXTRA_STRIKE_HOLD` 0,6),
   il terzo a volte (0,45); ogni colpo extra che regge aggiunge alla posta un
-  altro guadagno dell'arena (`_stake_gain_for`). Se un colpo extra incrina la
+  altro guadagno dell'arena (`_stake_gain_for`), anche sopra il raddoppio di
+  `Raddoppia o muori`; la previsione del colpo e il pagamento usano lo stesso
+  calcolo (`_held_seal_gain`). Se un colpo extra incrina la
   cera, il sigillo cede con le conseguenze normali del patto. Al massimo tre
   colpi (`SEAL_MAX_STRIKES`). Il timing resta senza effetto: conta quante volte
   si osa. Ogni colpo extra conta come decisione rischiosa per la firma; alzare
@@ -1375,7 +1377,8 @@ gradinata e dal favore visibile.
   un Segno, una volta per percorso (`RunState.scar_shown_this_run`) il
   giocatore puo' scegliere `MOSTRA UN SEGNO` o `LASCIA CEDERE`. Mostrarlo fa
   reggere il sigillo, chiude i colpi e aggiunge un nuovo segno (Ossa
-  incrinate, origine "Segno mostrato alla gradinata"); conta come decisione
+  incrinate, origine "Segno mostrato alla gradinata"); se le Ossa incrinate
+  ci sono gia', il corpo paga Pressione +1. Conta come decisione
   rischiosa. Lasciar cedere applica le conseguenze normali.
 - **Meno attesa.** Tavoletta automatica 0,7 s (`PACT_SEALED_SECONDS`), soglia
   minima del rito 0,6 s, banner della sentenza 0,8 s, lettura minima dei
@@ -1398,7 +1401,9 @@ percorso. Proposta e simulazioni: `docs/support/arena_attiva_2026-10-06.md`.
 - **Banco di Vessa.** Sul Registro chiuso, prima di aprirlo, a ogni arena.
   Compra il favore (Favore +2, mai fino al trionfo), paga la Pressione
   (Pressione -2), assicura la posta (se il sigillo di questa arena cede, la
-  posta resta; un sigillo che regge consuma la polizza). Prezzi 3, 3 e 5
+  posta resta; un sigillo che regge consuma la polizza). La polizza non copre
+  `Raddoppia o muori` (Via dell'Hybris): se cede, il percorso chiude prima
+  della polizza, e la voce del banco lo dice. Prezzi 3, 3 e 5
   Denari, +1 per ogni Era del Registro (`BANCO_ERA_SURCHARGE`). Richiesta UI:
   `request_banco_purchase(item_id)`; RunManager controlla fase, saldo e
   disponibilita'.
@@ -1431,9 +1436,17 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   gradinata parte da Favore +2 (`BANDO_ACCLAIM_FAVOR`). Dopo il dodicesimo
   gradino la scala e' completa e il bando resta a quota 42.
 - **Premi della scala.** I gradini da 1 a 10 aprono i dieci racconti (vedi
-  `docs/canon/LORE_UNIFIED.md`); i gradini 3, 6 e 9 aprono le pagine sigillate
+  `docs/canon/LORE_UNIFIED.md`). I quattro del posto vuoto hanno anche un'Era
+  (`"era"` in `CampaignDialogues.TALES`: 1 per `seat_kept` e `footstep`, 2 per
+  `open_strophe` e `slope`): da quell'Era arrivano senza bando, e a Era 3 il
+  congedo (`departure`) aspetta che siano stati raccontati. Un racconto gia'
+  raccontato non viene piu' annunciato come premio; i gradini 3, 6 e 9 aprono le pagine sigillate
   dei patti `CONDANNA_FIRMATO`, `CONDANNA_ANCORA` e `CONDANNA_MI_SONO_FERMATO`
   (`BANDO_PACT_STEPS`), in alternativa alle regole di sblocco di prima.
+  L'offerta del Registro contiene solo le pagine aperte
+  (`_is_level3_bet_offerable`: sblocco e Segni richiesti); il bando annuncia
+  le pagine in palio solo se sono ancora sigillate, e il racconto in palio
+  solo prima del congedo (dopo il congedo i racconti non vengono raccontati).
 - **Catena.** I sigilli d'arena che reggono di fila nel percorso
   (`RunState.seal_chain`) moltiplicano cio' che il sigillo che regge mette in
   posta: x1 il primo, x1,5 il secondo, x2 il terzo, x3 dal quarto

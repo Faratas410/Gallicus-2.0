@@ -10,8 +10,9 @@ e `--capture-dir=<directory>` produce 192 viste di dialogo e 18 dell'Archivio
 Le immagini devono essere ispezionate: la sola geometria non prova visibilita'.
 `scripts/ci/illustrated_dialogue_contract.gd` attraversa anche i dieci racconti
 (nelle tre lingue a 1280x720), ne verifica l'ordine per gradino del bando, che
-nessuno compaia al gradino 0, che non si ripetano e che nessuno segua il
-congedo; il runner AV gli concede 150 secondi.
+nessuno compaia al gradino 0 prima dell'Era 1, che i racconti del posto vuoto
+arrivino con la loro Era e prima del congedo, che non si ripetano e che nessuno
+segua il congedo; il runner AV gli concede 150 secondi.
 Una build esportata va guardata anche dal pacchetto: `--main-pack <Gallicus.exe>`
 con il binario Linux carica le scene convertite come le vede Windows. Il 7
 ottobre 2026 solo cosi' si e' riprodotto il libro del Registro in alto a

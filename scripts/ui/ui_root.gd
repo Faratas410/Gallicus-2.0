@@ -2392,7 +2392,7 @@ func _on_seal_strike_resolved(payload: Dictionary) -> void:
 		_judgment_seal_locked = false
 		_set_resolve_ritual_body("%s\n%s" % [
 			tr("La cera si incrina."),
-			tr("Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso."),
+			tr("Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso."),
 		])
 		if resolve_ritual_prompt != null:
 			resolve_ritual_prompt.text = tr("LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE")

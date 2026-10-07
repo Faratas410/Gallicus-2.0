@@ -859,7 +859,7 @@ LA CERA SI INCRINA - IL SIGILLO CEDE,LA CERA SE AGRIETA - EL SELLO CEDE
 Il sigillo regge: +%d Gloria in posta.,El sello resiste: +%d de Gloria en juego.
 "Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Otro golpe: %s, +%d de Gloria más. Si la cera se agrieta, el pacto cede."
 La cera si incrina.,La cera se agrieta.
-"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Muestra una Marca a las gradas: el sello resiste, pero el cuerpo paga con una nueva marca. Una vez por recorrido."
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso.","Muestra una Marca a las gradas: el sello resiste, pero el cuerpo paga con Huesos agrietados (si ya están: Presión +1). Una vez por recorrido."
 LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,LA CERA SE AGRIETA - MUESTRA UNA MARCA O DEJA QUE CEDA
 LASCIA CEDERE,DEJA QUE CEDA
 MOSTRA UN SEGNO,MUESTRA UNA MARCA
@@ -899,7 +899,7 @@ PAGA LA PRESSIONE,PAGA LA PRESIÓN
 ASSICURA LA POSTA,ASEGURA LA APUESTA
 Favore +2.,Favor +2.
 Pressione -2.,Presión -2.
-"Se il sigillo cede, la posta resta.","Si el sello cede, la apuesta se queda."
+"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","Si el sello cede, la apuesta se queda. No cubre la Vía de la Hybris."
 In debito: il banco è chiuso finché una quietanza non salda il conto.,En deuda: el mostrador sigue cerrado hasta que un finiquito salde la cuenta.
 La posta di questa arena è assicurata.,La apuesta de esta arena está asegurada.
 La gradinata lancia monete: Denari +%d.,La grada lanza monedas: Denarios +%d.

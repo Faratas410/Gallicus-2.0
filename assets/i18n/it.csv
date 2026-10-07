@@ -859,7 +859,7 @@ LA CERA SI INCRINA - IL SIGILLO CEDE,LA CERA SI INCRINA - IL SIGILLO CEDE
 Il sigillo regge: +%d Gloria in posta.,Il sigillo regge: +%d Gloria in posta.
 "Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede."
 La cera si incrina.,La cera si incrina.
-"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso."
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso.","Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso."
 LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE
 LASCIA CEDERE,LASCIA CEDERE
 MOSTRA UN SEGNO,MOSTRA UN SEGNO
@@ -899,7 +899,7 @@ PAGA LA PRESSIONE,PAGA LA PRESSIONE
 ASSICURA LA POSTA,ASSICURA LA POSTA
 Favore +2.,Favore +2.
 Pressione -2.,Pressione -2.
-"Se il sigillo cede, la posta resta.","Se il sigillo cede, la posta resta."
+"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris."
 In debito: il banco è chiuso finché una quietanza non salda il conto.,In debito: il banco è chiuso finché una quietanza non salda il conto.
 La posta di questa arena è assicurata.,La posta di questa arena è assicurata.
 La gradinata lancia monete: Denari +%d.,La gradinata lancia monete: Denari +%d.

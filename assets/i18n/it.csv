@@ -181,7 +181,7 @@ Cicatrici,Cicatrici
 Pattern,Pattern
 Fascicolo chiuso,Fascicolo chiuso
 Il registro è aperto.,Il registro è aperto.
-Incassa ora o aumenta esposizione.,Incassa ora o aumenta esposizione.
+Incassa la posta o rischiala nel prossimo rilancio.,Incassa la posta o rischiala nel prossimo rilancio.
 La condanna chiude il ciclo senza premio.,La condanna chiude il ciclo senza premio.
 Scegli un atto. La firma è irrevocabile.,Scegli un atto. La firma è irrevocabile.
 Nessun dettaglio.,Nessun dettaglio.
@@ -215,13 +215,13 @@ APRI IL REGISTRO,APRI IL REGISTRO
 REGISTRO DELL'ARENA,REGISTRO DELL'ARENA
 Apertura del verbale,Apertura del verbale
 IL REGISTRO È CHIUSO,IL REGISTRO È CHIUSO
-La pietra attende una firma.,La pietra attende una firma.
+Il Registro è pronto per la firma.,Il Registro è pronto per la firma.
 Ogni patto lascia un segno.,Ogni patto lascia un segno.
 APRI,APRI
 Apri il registro.,Apri il registro.
 Il registro è chiuso. Aprilo per scegliere la via.,Il registro è chiuso. Aprilo per scegliere la via.
 SCEGLI LA VIA,SCEGLI LA VIA
-Ogni firma apre una promessa e una condanna.,Ogni firma apre una promessa e una condanna.
+Leggi la promessa e il costo. Poi firma.,Leggi la promessa e il costo. Poi firma.
 CONDIZIONE,CONDIZIONE
 PATTO,PATTO
 registrato,registrato
@@ -283,15 +283,15 @@ FASCICOLO CHIUSO - PATTERN,FASCICOLO CHIUSO - PATTERN
 FASCICOLO CHIUSO,FASCICOLO CHIUSO
 Il Registro conserva la traccia del percorso.,Il Registro conserva la traccia del percorso.
 Il Registro chiude il fascicolo e classifica l'esito.,Il Registro chiude il fascicolo e classifica l'esito.
-Hai lasciato l'arena con la posta riconosciuta.,Hai lasciato l'arena con la posta riconosciuta.
+Posta incassata. Il percorso è chiuso.,Posta incassata. Il percorso è chiuso.
 Il patto regge: il percorso può proseguire.,Il patto regge: il percorso può proseguire.
-La condanna viene accettata e il percorso resta segnato.,La condanna viene accettata e il percorso resta segnato.
+Condanna iscritta. I segni restano nel fascicolo.,Condanna iscritta. I segni restano nel fascicolo.
 Pressione massima: %d/%d.,Pressione massima: %d/%d.
 Patti e sblocchi sono stati aggiornati nell'Archivio.,Patti e sblocchi sono stati aggiornati nell'Archivio.
 %d condanne archiviate; il dettaglio resta nell'Archivio.,%d condanne archiviate; il dettaglio resta nell'Archivio.
 Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.,Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.
-Il dettaglio degli sblocchi resta consultabile nell'Archivio.,Il dettaglio degli sblocchi resta consultabile nell'Archivio.
-Il Registro resta aperto: scegli se proseguire o lasciare l'arena.,Il Registro resta aperto: scegli se proseguire o lasciare l'arena.
+Le nuove voci sono consultabili nell’Archivio.,Le nuove voci sono consultabili nell’Archivio.
+Il Registro resta aperto. Puoi proseguire o tornare al menu.,Il Registro resta aperto. Puoi proseguire o tornare al menu.
 rinunciato,rinunciato
 accettato,accettato
 %d condizioni registrate,%d condizioni registrate
@@ -657,11 +657,13 @@ Hai firmato un patto che ha chiuso il percorso.,Hai firmato un patto che ha chiu
 Hai solo aggiunto il nome.","La sentenza era scritta.
 Hai solo aggiunto il nome."
 Hai scelto una condanna senza ricevere alcun reward.,Hai scelto una condanna senza ricevere alcuna ricompensa.
-"La folla non ha capito.
-Tu si.","La folla non ha capito.
-Tu sì."
+"Nessun premio sul banco.
+La condanna è iscritta.","Nessun premio sul banco.
+La condanna è iscritta."
 Hai perso il percorso a causa diretta di un patto firmato.,Hai perso il percorso a causa diretta di un patto firmato.
-Non e stata sfortuna.,Non è stata sfortuna.
+"Il costo era nel patto.
+Ora è nel fascicolo.","Il costo era nel patto.
+Ora è nel fascicolo."
 Hai continuato una run nonostante le tue condizioni critiche.,Hai continuato una run nonostante le tue condizioni critiche.
 Il corpo era gia un avviso.,Il corpo era già un avviso.
 Hai evitato la chiusura per un soffio.,Hai evitato la chiusura per un soffio.
@@ -669,23 +671,25 @@ Hai evitato la chiusura per un soffio.,Hai evitato la chiusura per un soffio.
 Tu no.","Il pubblico ha sospirato.
 Tu no."
 Hai incassato dopo una sequenza di scelte rischiose.,Hai incassato dopo una sequenza di scelte rischiose.
-"La saggezza arriva tardi.
-Ma arriva.","La saggezza arriva tardi.
-Ma arriva."
+"La quietanza porta la cifra incassata.
+Le firme restano dove sono.","La quietanza porta la cifra incassata.
+Le firme restano dove sono."
 Hai incassato con un livello di rischio estremamente alto.,Hai incassato con un livello di rischio estremamente alto.
 Questa volta.,Questa volta.
 Hai perso la tua prima run.,Hai perso la tua prima run.
 L'arena non fa sconti ai nuovi.,L'arena non fa sconti ai nuovi.
 Hai perso il percorso vicino a una soglia decisiva.,Hai perso il percorso vicino a una soglia decisiva.
-La folla aveva gia deciso.,La folla aveva già deciso.
+"Il percorso si è chiuso.
+Il verbale si ferma qui.","Il percorso si è chiuso.
+Il verbale si ferma qui."
 Hai preso una decisione rischiosa un attimo prima della fine.,Hai preso una decisione rischiosa un attimo prima della fine.
-"Un secondo prima
-sarebbe bastato.","Un secondo prima
-sarebbe bastato."
+"L’ultimo rischio è iscritto.
+Dopo, il verbale si chiude.","L’ultimo rischio è iscritto.
+Dopo, il verbale si chiude."
 Hai perso il percorso senza errori meccanici evidenti.,Hai perso il percorso senza errori meccanici evidenti.
 Nessuno ha barato.,Nessuno ha barato.
 Hai completato una run.,Hai completato una run.
-L'arena non dimentica.,L'arena non dimentica.
+Il percorso ha una copia nel Registro.,Il percorso ha una copia nel Registro.
 Hai attirato l'attenzione totale della folla.,Hai attirato l'attenzione totale della folla.
 Non eri piu solo.,Non eri più solo.
 Il pubblico ha iniziato a riconoscerti.,Il pubblico ha iniziato a riconoscerti.
@@ -735,85 +739,85 @@ La gradinata ricorda l'esposizione. Le sue voci si sono fatte più dure.,La grad
 La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro.,La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro.
 ESCI DAL GIOCO,ESCI DAL GIOCO
 Gufo scrivano,Gufo scrivano
-"Nerio allinea le copie con il bordo dell’ala. Ricorda ogni raschiatura, mai il motivo di chi l’ha chiesta. Per lui una pagina fuori posto è un lavoro lasciato a metà.","Nerio allinea le copie con il bordo dell’ala. Ricorda ogni raschiatura, mai il motivo di chi l’ha chiesta. Per lui una pagina fuori posto è un lavoro lasciato a metà."
+"Nerio allinea le copie con il bordo dell’ala. Di una raschiatura ricorda il punto esatto, non perché gli sia stata chiesta. Una pagina storta gli lascia il lavoro a metà.","Nerio allinea le copie con il bordo dell’ala. Di una raschiatura ricorda il punto esatto, non perché gli sia stata chiesta. Una pagina storta gli lascia il lavoro a metà."
 Gufo delle quote,Gufo delle quote
-Vessa conta gli spazi rimasti sulla tavola delle quote. Il suo piumaggio è sempre composto. Parla di margine anche quando gli altri parlano di ferite.,Vessa conta gli spazi rimasti sulla tavola delle quote. Il suo piumaggio è sempre composto. Parla di margine anche quando gli altri parlano di ferite.
+Vessa tiene il piumaggio composto e conta gli spazi vuoti sulla tavola delle quote. Gli altri le mostrano le ferite; lei guarda quanto margine rimane.,Vessa tiene il piumaggio composto e conta gli spazi vuoti sulla tavola delle quote. Gli altri le mostrano le ferite; lei guarda quanto margine rimane.
 Gufo banditore,Gufo banditore
-Orvo rivolge un ciuffo alla gradinata e l’altro ai colleghi. Prova le parole sottovoce prima di lanciarle all’arena. Detesta sprecare un annuncio su chi non ascolta.,Orvo rivolge un ciuffo alla gradinata e l’altro ai colleghi. Prova le parole sottovoce prima di lanciarle all’arena. Detesta sprecare un annuncio su chi non ascolta.
-Nerio: La firma è asciutta.,Nerio: La firma è asciutta.
-Vessa: Il margine resta in vendita.,Vessa: Il margine resta in vendita.
+Orvo tiene un ciuffo verso i colleghi e l’altro verso la gradinata. Prova il richiamo sottovoce. Prima di lanciarlo aspetta che l’ultima fila ascolti: un annuncio sprecato non lo recupera.,Orvo tiene un ciuffo verso i colleghi e l’altro verso la gradinata. Prova il richiamo sottovoce. Prima di lanciarlo aspetta che l’ultima fila ascolti: un annuncio sprecato non lo recupera.
+Nerio: Aspetta. La firma è ancora fresca.,Nerio: Aspetta. La firma è ancora fresca.
+Vessa: Intanto posso vendere il margine.,Vessa: Intanto posso vendere il margine.
 Orvo: Posso annunciarlo?,Orvo: Posso annunciarlo?
-Nerio: Prima lascia ferma la copia.,Nerio: Prima lascia ferma la copia.
-Vessa: Hai lasciato spazio?,Vessa: Hai lasciato spazio?
-Nerio: Fra le righe. Non nella firma.,Nerio: Fra le righe. Non nella firma.
-Orvo: L’ultima fila vuole sentire.,Orvo: L’ultima fila vuole sentire.
-Vessa: Tu conta chi resta.,Vessa: Tu conta chi resta.
+Nerio: Quando hai finito di muovermi la copia.,Nerio: Quando hai finito di muovermi la copia.
+Vessa: Fra quelle righe ci sta ancora qualcosa.,Vessa: Fra quelle righe ci sta ancora qualcosa.
+Nerio: Ci sta la raschiatura. Lascia stare.,Nerio: Ci sta la raschiatura. Lascia stare.
+Orvo: Dall’ultima fila non mi sentono.,Orvo: Dall’ultima fila non mi sentono.
+Vessa: Ma restano seduti. Continua.,Vessa: Ma restano seduti. Continua.
 Vessa: La gradinata aspetta.,Vessa: La gradinata aspetta.
-Orvo: Le pause sono parte del richiamo.,Orvo: Le pause sono parte del richiamo.
-Nerio: Hai già finito l’annuncio?,Nerio: Hai già finito l’annuncio?
-Orvo: Sto aspettando che mi ascoltino.,Orvo: Sto aspettando che mi ascoltino.
+Orvo: Aspetto che smettano di parlare.,Orvo: Aspetto che smettano di parlare.
+Nerio: Hai saltato l’ultima riga.,Nerio: Hai saltato l’ultima riga.
+Orvo: La tengo per quando ascoltano.,Orvo: La tengo per quando ascoltano.
 Nerio: Un’altra copia.,Nerio: Un’altra copia.
-Vessa: Lo spazio si vende ancora.,Vessa: Lo spazio si vende ancora.
+Vessa: Il margine lo prendo io.,Vessa: Il margine lo prendo io.
 Orvo: Lo stesso annuncio?,Orvo: Lo stesso annuncio?
-Nerio: Un foglio diverso.,Nerio: Un foglio diverso.
+Nerio: Guarda il foglio.,Nerio: Guarda il foglio.
 Vessa: È rimasto margine?,Vessa: È rimasto margine?
-Nerio: Sul bordo.,Nerio: Sul bordo.
-Orvo: Ancora l’ultima fila.,Orvo: Ancora l’ultima fila.
-Vessa: È ancora qui.,Vessa: È ancora qui.
+Nerio: Serve a me.,Nerio: Serve a me.
+Orvo: L’ultima fila non sente.,Orvo: L’ultima fila non sente.
+Vessa: Ma resta.,Vessa: Ma resta.
 Vessa: Aspettano.,Vessa: Aspettano.
-Orvo: Tengo la voce.,Orvo: Tengo la voce.
+Orvo: Aspetto anch’io.,Orvo: Aspetto anch’io.
 Nerio: L’annuncio?,Nerio: L’annuncio?
-Orvo: Più corto.,Orvo: Più corto.
+Orvo: Manca l’ultima riga.,Orvo: Manca l’ultima riga.
 GUFI DELL’ARENA,GUFI DELL’ARENA
 Voci dei Gufi,Voci dei Gufi
 Gallo della soglia,Gallo della soglia
-Rugo ha una tacca nella cresta e liscia sempre la stessa penna del petto. Dalla soglia ascolta il banditore senza alzare il becco. Una volta gridava sopra gli annunci; ora sceglie quando farsi sentire.,Rugo ha una tacca nella cresta e liscia sempre la stessa penna del petto. Dalla soglia ascolta il banditore senza alzare il becco. Una volta gridava sopra gli annunci; ora sceglie quando farsi sentire.
+"Rugo liscia sempre la stessa penna del petto. Nella cresta ha una tacca dei giorni in cui copriva gli annunci. Ora ascolta dalla soglia, col becco basso. La voce ce l’ha ancora; sceglie quando usarla.","Rugo liscia sempre la stessa penna del petto. Nella cresta ha una tacca dei giorni in cui copriva gli annunci. Ora ascolta dalla soglia, col becco basso. La voce ce l’ha ancora; sceglie quando usarla."
 Gallina della gradinata,Gallina della gradinata
-"Dima tiene una zampa sul posto accanto finché la gradinata si riempie. Riconosce i presenti dal passo sulla pietra. Quando Vessa conta i posti, lei ricorda chi li occupava.","Dima tiene una zampa sul posto accanto finché la gradinata si riempie. Riconosce i presenti dal passo sulla pietra. Quando Vessa conta i posti, lei ricorda chi li occupava."
-Rugo: L’inchiostro copre anche la tacca?,Rugo: L’inchiostro copre anche la tacca?
-Nerio: La copia non ha piume.,Nerio: La copia non ha piume.
+Dima tiene la zampa sul posto accanto finché la gradinata si riempie. Poi la toglie. Le basta il passo sulla pietra per sapere chi è arrivato. Vessa conta i posti; Dima ricorda chi ci sedeva.,Dima tiene la zampa sul posto accanto finché la gradinata si riempie. Poi la toglie. Le basta il passo sulla pietra per sapere chi è arrivato. Vessa conta i posti; Dima ricorda chi ci sedeva.
+Rugo: Hai copiato anche la tacca?,Rugo: Hai copiato anche la tacca?
+Nerio: Sul foglio non c’era.,Nerio: Sul foglio non c’era.
 "Vessa: Quel posto è libero, Dima.","Vessa: Quel posto è libero, Dima."
-Dima: So chi ci sedeva.,Dima: So chi ci sedeva.
+Dima: Il righello lascialo dov’è.,Dima: Il righello lascialo dov’è.
 "Orvo: Non canti più, Rugo?","Orvo: Non canti più, Rugo?"
 Rugo: Aspetto che finisca il tuo richiamo.,Rugo: Aspetto che finisca il tuo richiamo.
-Dima: Ti ho sentito dalla pietra.,Dima: Ti ho sentito dalla pietra.
-Rugo: Il passo è rimasto quello.,Rugo: Il passo è rimasto quello.
+"Dima: Ti ho sentito arrivare, prima del richiamo.","Dima: Ti ho sentito arrivare, prima del richiamo."
+Rugo: Il passo non l’ho cambiato.,Rugo: Il passo non l’ho cambiato.
 Rugo: La tacca resta.,Rugo: La tacca resta.
-Nerio: Anche la copia.,Nerio: Anche la copia.
-Vessa: Sempre quel posto?,Vessa: Sempre quel posto?
-Dima: Sempre quello.,Dima: Sempre quello.
+Nerio: Qui non c’è.,Nerio: Qui non c’è.
+Vessa: Posso misurare?,Vessa: Posso misurare?
+Dima: Fino a qui.,Dima: Fino a qui.
 "Orvo: Rugo, ci sei?","Orvo: Rugo, ci sei?"
 Rugo: Ho ancora voce.,Rugo: Ho ancora voce.
 Dima: Lo stesso passo.,Dima: Lo stesso passo.
-Rugo: Lo senti ancora.,Rugo: Lo senti ancora.
+Rugo: Mi hai sentito.,Rugo: Mi hai sentito.
 PRESENZE DELL’ARENA,PRESENZE DELL’ARENA
 Voci dell’arena,Voci dell’arena
 Registro,Registro
 Terminale rituale · stato,Terminale rituale · stato
 La prima copia,La prima copia
-La tavoletta entra qui. Sul vetro torna soltanto ciò che è stato accettato.,La tavoletta entra qui. Sul vetro torna soltanto ciò che è stato accettato.
+La tavoletta entra qui. Guarda il vetro: torna soltanto ciò che hai accettato.,La tavoletta entra qui. Guarda il vetro: torna soltanto ciò che hai accettato.
 "INGRESSO APERTO
 Nessuna promessa iscritta.","INGRESSO APERTO
 Nessuna promessa iscritta."
-"Quando il banditore copriva la mia voce, credevo che qui non arrivasse niente.","Quando il banditore copriva la mia voce, credevo che qui non arrivasse niente."
+E quando Orvo copriva la mia voce? Qui arrivava qualcosa?,E quando Orvo copriva la mia voce? Qui arrivava qualcosa?
 Arrivava la firma.,Arrivava la firma.
-Quella sì. Anche quando io non avevo più fiato.,Quella sì. Anche quando io non avevo più fiato.
-La copia resta. Il resto lo sentirà la gradinata.,La copia resta. Il resto lo sentirà la gradinata.
+Io avevo finito il fiato. Quella l’hai presa tutta?,Io avevo finito il fiato. Quella l’hai presa tutta?
+"Tutta. È qui, se vuoi controllare.","Tutta. È qui, se vuoi controllare."
 La stessa riga,La stessa riga
-La tavola cambia foglio. Quel posto è ancora vuoto.,La tavola cambia foglio. Quel posto è ancora vuoto.
-Ti ricordi ancora il passo?,Ti ricordi ancora il passo?
-Si fermava qui. Ora il banditore non lascia neppure la pausa.,Si fermava qui. Ora il banditore non lascia neppure la pausa.
+Un altro foglio. Il posto accanto è ancora vuoto.,Un altro foglio. Il posto accanto è ancora vuoto.
+Lo riconosceresti ancora dal passo?,Lo riconosceresti ancora dal passo?
+Si fermava qui. Orvo ora tira dritto con l’annuncio. Non lascia più quella pausa.,Si fermava qui. Orvo ora tira dritto con l’annuncio. Non lascia più quella pausa.
 "ARCHIVIO DISPONIBILE
 Tracce conservate.","ARCHIVIO DISPONIBILE
 Tracce conservate."
-Ho sostituito la tavoletta. Il solco torna nello stesso punto.,Ho sostituito la tavoletta. Il solco torna nello stesso punto.
-Io conto i posti che non si riempiono.,Io conto i posti che non si riempiono.
+Ho cambiato la tavoletta. Guarda: il solco torna proprio qui.,Ho cambiato la tavoletta. Guarda: il solco torna proprio qui.
+"Sì, lo vedo. Ma ti stavo parlando del posto.","Sì, lo vedo. Ma ti stavo parlando del posto."
 Il posto accanto,Il posto accanto
 Ho allineato anche l’ultima pila. Non resta nulla fuori margine.,Ho allineato anche l’ultima pila. Non resta nulla fuori margine.
-Eppure dalla soglia entra ancora aria.,Eppure dalla soglia entra ancora aria.
+Dalla soglia entra ancora aria. La senti?,Dalla soglia entra ancora aria. La senti?
 Il posto accanto lo lascio libero.,Il posto accanto lo lascio libero.
 Non lo tieni più?,Non lo tieni più?
-Non serve occuparlo.,Non serve occuparlo.
+No. Tolgo la zampa.,No. Tolgo la zampa.
 Allora resto qui. Senza chiamare.,Allora resto qui. Senza chiamare.
 ASCOLTA,ASCOLTA
 TORNA AL RITO,TORNA AL RITO
@@ -900,7 +904,7 @@ ASSICURA LA POSTA,ASSICURA LA POSTA
 Favore +2.,Favore +2.
 Pressione -2.,Pressione -2.
 "Se il sigillo cede, la posta resta.","Se il sigillo cede, la posta resta."
-In debito: il banco è chiuso finché una quietanza non salda il conto.,In debito: il banco è chiuso finché una quietanza non salda il conto.
+Conto in debito. Salda con la quietanza per riaprire il banco.,Conto in debito. Salda con la quietanza per riaprire il banco.
 La posta di questa arena è assicurata.,La posta di questa arena è assicurata.
 La gradinata lancia monete: Denari +%d.,La gradinata lancia monete: Denari +%d.
 La rivolta costa: Denari -%d.,La rivolta costa: Denari -%d.
@@ -912,89 +916,89 @@ La polizza di Vessa salva la posta.,La polizza di Vessa salva la posta.
 Comprato al banco: Favore +2.,Comprato al banco: Favore +2.
 Debito con Vessa,Debito con Vessa
 Il conto di Vessa,Il conto di Vessa
-"Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine.","Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine."
-Un conto? Una volta qui si pagava con la voce.,Un conto? Una volta qui si pagava con la voce.
-La voce non si archivia. I Denari sì.,La voce non si archivia. I Denari sì.
+Questo è il tuo conto da Vessa. Le cifre le copio io; il margine lo decide lei.,Questo è il tuo conto da Vessa. Le cifre le copio io; il margine lo decide lei.
+Prima dei Denari pagavamo con la voce. Quella dove la metti?,Prima dei Denari pagavamo con la voce. Quella dove la metti?
+"Sul conto ci sono i Denari, Dima. Per la voce non ho una cifra.","Sul conto ci sono i Denari, Dima. Per la voce non ho una cifra."
 E quando il conto scende sotto zero?,E quando il conto scende sotto zero?
-"Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena.","Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena."
-Allora anche la gradinata tiene un conto. Il suo non si scrive.,Allora anche la gradinata tiene un conto. Il suo non si scrive.
+"Vessa lo ricorda alla gradinata. A ogni arena, finché resta il debito.","Vessa lo ricorda alla gradinata. A ogni arena, finché resta il debito."
+Così la voce torna buona. Per riscuotere.,Così la voce torna buona. Per riscuotere.
 La sabbia nelle tasche,La sabbia nelle tasche
 Hai visto la prima fila? Ha le tasche piene di sabbia.,Hai visto la prima fila? Ha le tasche piene di sabbia.
-"Una volta la sabbia restava giù, sotto i passi. Copriva i segni.","Una volta la sabbia restava giù, sotto i passi. Copriva i segni."
-Ora la raccolgono. La lanciano quando un patto non piace.,Ora la raccolgono. La lanciano quando un patto non piace.
+Prima restava sotto i passi. Almeno copriva i segni.,Prima restava sotto i passi. Almeno copriva i segni.
+"Adesso se la tengono. Se il patto non piace, la tirano.","Adesso se la tengono. Se il patto non piace, la tirano."
 E quando piace?,E quando piace?
-Monete. Vessa le conta prima che tocchino terra.,Monete. Vessa le conta prima che tocchino terra.
-"Sabbia o monete, il corpo le ricorda tutte e due.","Sabbia o monete, il corpo le ricorda tutte e due."
+Tirano monete. Vessa è già lì che le conta.,Tirano monete. Vessa è già lì che le conta.
+Quelle almeno si vedono arrivare.,Quelle almeno si vedono arrivare.
 Il richiamo,Il richiamo
-"Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia.","Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia."
+Orvo sta provando il richiamo. Lo sento anche quando crede di parlare piano.,Orvo sta provando il richiamo. Lo sento anche quando crede di parlare piano.
 Tu non provavi mai.,Tu non provavi mai.
-"Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni.","Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni."
-Sul foglio la tacca non c’è. C’è solo l’annuncio accettato.,Sul foglio la tacca non c’è. C’è solo l’annuncio accettato.
+Chiamavo sopra tutti. Questa tacca me la porto da allora.,Chiamavo sopra tutti. Questa tacca me la porto da allora.
+Qui ho l’annuncio accettato. Della tacca non c’è traccia.,Qui ho l’annuncio accettato. Della tacca non c’è traccia.
 Allora scrivi questo: oggi ho scelto di tacere.,Allora scrivi questo: oggi ho scelto di tacere.
-Un gallo che tace non è un atto. Non lo copio.,Un gallo che tace non è un atto. Non lo copio.
+"Non ho un atto da copiare, Rugo.","Non ho un atto da copiare, Rugo."
 I posti in vendita,I posti in vendita
 Vessa è passata con il righello. Vuole vendere anche la terza fila.,Vessa è passata con il righello. Vuole vendere anche la terza fila.
-"Ha misurato. Lo spazio libero rende, se lo si iscrive.","Ha misurato. Lo spazio libero rende, se lo si iscrive."
-Ogni posto ha un passo. Io li riconosco tutti.,Ogni posto ha un passo. Io li riconosco tutti.
+Mi ha dato le misure. Devo copiarle tutte.,Mi ha dato le misure. Devo copiarle tutte.
+Tutte? Io so chi si sedeva in ciascuno di quei posti.,Tutte? Io so chi si sedeva in ciascuno di quei posti.
 Anche quello accanto a te?,Anche quello accanto a te?
-Quello non si misura. L’ho detto a Vessa: il righello si ferma lì.,Quello non si misura. L’ho detto a Vessa: il righello si ferma lì.
-"Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco.","Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco."
+"Le ho fermato il righello. Fin qui, le ho detto. Non oltre.","Le ho fermato il righello. Fin qui, le ho detto. Non oltre."
+La mia copia finisce al tuo posto. Dopo ho lasciato bianco.,La mia copia finisce al tuo posto. Dopo ho lasciato bianco.
 La riga che resta,La riga che resta
-Ogni sera raschio le copie sbagliate. La cera torna liscia.,Ogni sera raschio le copie sbagliate. La cera torna liscia.
+Le altre copie le ho raschiate. Come ogni sera. Passa l’ala: sono lisce.,Le altre copie le ho raschiate. Come ogni sera. Passa l’ala: sono lisce.
 "COPIA RESPINTA
 Riga già iscritta.","COPIA RESPINTA
 Riga già iscritta."
-Una riga non va via. Ho consumato tre lame.,Una riga non va via. Ho consumato tre lame.
+"Questa invece è ancora qui. Tre lame, e non sono riuscito a toglierla.","Questa invece è ancora qui. Tre lame, e non sono riuscito a toglierla."
 Che cosa dice?,Che cosa dice?
-Un nome e un fascicolo aperto. Il resto non è di mia competenza.,Un nome e un fascicolo aperto. Il resto non è di mia competenza.
-Lasciala dov’è. Anch’io lascio il posto com’è.,Lasciala dov’è. Anch’io lascio il posto com’è.
+Un nome. Il fascicolo è aperto. Non ho altro da trascrivere.,Un nome. Il fascicolo è aperto. Non ho altro da trascrivere.
+Lascia stare la lama. Io il posto lo tengo ancora.,Lascia stare la lama. Io il posto lo tengo ancora.
 Vessa: Il conto è aperto.,Vessa: Il conto è aperto.
-"Nerio: Copio la cifra, non il motivo.","Nerio: Copio la cifra, non il motivo."
+Nerio: La cifra l’ho copiata. Ora puoi riprenderlo.,Nerio: La cifra l’ho copiata. Ora puoi riprenderlo.
 Orvo: La prima fila ha le tasche piene.,Orvo: La prima fila ha le tasche piene.
 Vessa: Di sabbia o di monete?,Vessa: Di sabbia o di monete?
 Dima: Hanno venduto la terza fila.,Dima: Hanno venduto la terza fila.
 Vessa: Il tuo posto no. Per ora.,Vessa: Il tuo posto no. Per ora.
 Orvo: Guarda come ti studiano.,Orvo: Guarda come ti studiano.
-"Rugo: Prima di gridare, la gradinata pesa.","Rugo: Prima di gridare, la gradinata pesa."
-Vessa: La folla paga chi la regge.,Vessa: La folla paga chi la regge.
-Orvo: E presenta il conto a chi la perde.,Orvo: E presenta il conto a chi la perde.
+Rugo: Li vedo. Non ho ancora aperto il becco.,Rugo: Li vedo. Non ho ancora aperto il becco.
+Vessa: Guarda le monete. Basta tenerli dalla tua parte.,Vessa: Guarda le monete. Basta tenerli dalla tua parte.
+"Orvo: Se si rivoltano, il conto lo mandi tu.","Orvo: Se si rivoltano, il conto lo mandi tu."
 Dima: Sento la sabbia nelle tasche.,Dima: Sento la sabbia nelle tasche.
-Rugo: Allora non è ancora il momento.,Rugo: Allora non è ancora il momento.
+Rugo: Aspetta. Non chiamarli ancora.,Rugo: Aspetta. Non chiamarli ancora.
 Vessa: Il conto.,Vessa: Il conto.
 Nerio: Copiato.,Nerio: Copiato.
 Orvo: Tasche piene.,Orvo: Tasche piene.
 "Vessa: Monete, spero.","Vessa: Monete, spero."
 Dima: La terza fila.,Dima: La terza fila.
 Vessa: Venduta.,Vessa: Venduta.
-Orvo: Ti pesano.,Orvo: Ti pesano.
+Orvo: Ti guardano.,Orvo: Ti guardano.
 Rugo: Lo so.,Rugo: Lo so.
-Vessa: Paga chi regge.,Vessa: Paga chi regge.
-Orvo: Sempre.,Orvo: Sempre.
+Vessa: Le monete.,Vessa: Le monete.
+Orvo: O il conto.,Orvo: O il conto.
 Dima: La sabbia.,Dima: La sabbia.
 Rugo: Non ancora.,Rugo: Non ancora.
 Il posto tenuto,Il posto tenuto
-"Ogni volta che la gradinata si riempie, tieni la zampa su quel posto.","Ogni volta che la gradinata si riempie, tieni la zampa su quel posto."
-"Finché si riempie. Poi la tolgo, e nessuno si siede.","Finché si riempie. Poi la tolgo, e nessuno si siede."
+"Dima, la gradinata si sta riempiendo. Hai ancora la zampa lì.","Dima, la gradinata si sta riempiendo. Hai ancora la zampa lì."
+Aspetto che si siedano. Dopo la tolgo. Tanto lì non si mette nessuno.,Aspetto che si siedano. Dopo la tolgo. Tanto lì non si mette nessuno.
 Chi ci sedeva?,Chi ci sedeva?
 Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.,Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.
-Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura.,Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura.
-"Perché non c’è stata. Si è alzato, e il posto è rimasto caldo.","Perché non c’è stata. Si è alzato, e il posto è rimasto caldo."
+Manca la chiusura del fascicolo. Non l’ho mai ricevuta da copiare.,Manca la chiusura del fascicolo. Non l’ho mai ricevuta da copiare.
+Io l’ho visto alzarsi. Il posto era ancora caldo. La chiusura non c’è stata.,Io l’ho visto alzarsi. Il posto era ancora caldo. La chiusura non c’è stata.
 Il passo,Il passo
-Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo.,Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo.
+"Quel passo, oggi. Si è fermato sulla stessa pietra.","Quel passo, oggi. Si è fermato sulla stessa pietra."
 Il nuovo?,Il nuovo?
 "Il nuovo. Stessa pausa prima della soglia, stesso piede avanti.","Il nuovo. Stessa pausa prima della soglia, stesso piede avanti."
-Due soggetti non hanno lo stesso passo. Il Registro li distingue.,Due soggetti non hanno lo stesso passo. Il Registro li distingue.
-Il Registro distingue le righe. Io sento la pietra.,Il Registro distingue le righe. Io sento la pietra.
+Le righe sono distinte. Su questo non c’è dubbio.,Le righe sono distinte. Su questo non c’è dubbio.
+Non ti ho chiesto delle righe. La pausa l’ho sentita.,Non ti ho chiesto delle righe. La pausa l’ho sentita.
 "Allora lascia la zampa dov’è, ancora per un po’.","Allora lascia la zampa dov’è, ancora per un po’."
 La stessa pendenza,La stessa pendenza
 Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.,Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.
 "CONFRONTO IN CORSO
 Corrispondenza parziale.","CONFRONTO IN CORSO
 Corrispondenza parziale."
-"Che vuol dire, parziale?","Che vuol dire, parziale?"
-Che il Registro sta cercando dove finisce l’una e comincia l’altra.,Che il Registro sta cercando dove finisce l’una e comincia l’altra.
+Parziale. Le separi o no?,Parziale. Le separi o no?
+La pendenza coincide. Non basta per metterle nello stesso fascicolo.,La pendenza coincide. Non basta per metterle nello stesso fascicolo.
 Il posto è sempre lì. Non aspetta te. Lo tengo io.,Il posto è sempre lì. Non aspetta te. Lo tengo io.
-Lo annoto. Non so ancora in quale fascicolo.,Lo annoto. Non so ancora in quale fascicolo.
+Tengo le copie qui. Non le ho ancora archiviate.,Tengo le copie qui. Non le ho ancora archiviate.
 BANDO DI ORVO,BANDO DI ORVO
 IL BANDO DI ORVO,IL BANDO DI ORVO
 %d di %d Gloria entro l'arena %d.,%d di %d Gloria entro l'arena %d.
@@ -1005,7 +1009,7 @@ Gradino %d di %d,Gradino %d di %d
 In palio il racconto «%s».,In palio il racconto «%s».
 In palio nuovi patti nel Registro.,In palio nuovi patti nel Registro.
 Incassa %d Gloria entro l'arena %d.,Incassa %d Gloria entro l'arena %d.
-Chiudilo: Denari +%d e un gradino.,Chiudilo: Denari +%d e un gradino.
+Al bando chiuso: Denari +%d e un gradino.,Al bando chiuso: Denari +%d e un gradino.
 Bando chiuso: gradino %d di %d.,Bando chiuso: gradino %d di %d.
 Bando mancato: %d Gloria entro l'arena %d.,Bando mancato: %d Gloria entro l'arena %d.
 Prossimo bando: %d Gloria entro l'arena %d.,Prossimo bando: %d Gloria entro l'arena %d.
@@ -1017,3 +1021,46 @@ Catena %d: posta %s.,Catena %d: posta %s.
 Catena %s,Catena %s
 Bando scaduto: nessun gradino.,Bando scaduto: nessun gradino.
 Bando mancato: nessun gradino.,Bando mancato: nessun gradino.
+%d GLORIA IN POSTA,%d GLORIA IN POSTA
+%d Gloria incassate,%d Gloria incassate
+FERITA APERTA,FERITA APERTA
+OSSA INCRINATE,OSSA INCRINATE
+MARCHIO DELLA VERGOGNA,MARCHIO DELLA VERGOGNA
+ARMATURA ARRUGGINITA,ARMATURA ARRUGGINITA
+MARCHIO DEL DEBITO,MARCHIO DEL DEBITO
+OCCHIO PERDUTO,OCCHIO PERDUTO
+Tenuta rituale ridotta.,Tenuta rituale ridotta.
+Rischio aumentato nelle arene.,Rischio aumentato nelle arene.
+Il pubblico ti giudica.,Il pubblico ti giudica.
+Protezione compromessa.,Protezione compromessa.
+Pressione più severa.,Pressione più severa.
+Il perfetto è più raro.,Il perfetto è più raro.
+Tenuta rituale ridotta e recupero meno efficace.,Tenuta rituale ridotta e recupero meno efficace.
+Avanzamento piu lento e margine di errore ridotto.,Avanzamento piu lento e margine di errore ridotto.
+Aumenta la probabilita di condanna.,Aumenta la probabilita di condanna.
+Le conseguenze avverse sono piu probabili.,Le conseguenze avverse sono piu probabili.
+La pressione pesa di più.,La pressione pesa di più.
+Peggiora le chance di esiti puliti.,Peggiora le chance di esiti puliti.
+FOLLA IN DELIRIO,FOLLA IN DELIRIO
+La folla ti marca: incasso bloccato.,La folla ti marca: incasso bloccato.
+Il sangue ti segue anche quando l'arena tace.,Il sangue ti segue anche quando l'arena tace.
+La folla ascolta il tuo respiro corto.,La folla ascolta il tuo respiro corto.
+Il giudizio è già inciso sulla pelle.,Il giudizio è già inciso sulla pelle.
+Cammini con onore ma ogni passo pesa.,Cammini con onore ma ogni passo pesa.
+Il debito del corpo resta sotto la sabbia.,Il debito del corpo resta sotto la sabbia.
+Il destino ti guarda senza tregua.,Il destino ti guarda senza tregua.
+La vergogna ti precede davanti alla folla.,La vergogna ti precede davanti alla folla.
+Ogni sguardo è un giudizio che brucia.,Ogni sguardo è un giudizio che brucia.
+Porti il segno anche quando vinci.,Porti il segno anche quando vinci.
+"Hai offerto onore e sangue, ma l'armatura non regge.","Hai offerto onore e sangue, ma l'armatura non regge."
+La ruggine canta il tuo debito.,La ruggine canta il tuo debito.
+Il giudizio scivola sulle ferite.,Il giudizio scivola sulle ferite.
+Il debito ti stringe come catena sacra.,Il debito ti stringe come catena sacra.
+La folla esige il prezzo della promessa.,La folla esige il prezzo della promessa.
+Il destino pesa su ogni patto.,Il destino pesa su ogni patto.
+Hai perso un occhio ma non la vergogna di guardare.,Hai perso un occhio ma non la vergogna di guardare.
+Il sangue vela il tuo destino.,Il sangue vela il tuo destino.
+La folla vede la tua mancanza.,La folla vede la tua mancanza.
+"GLORIA
+IN POSTA","GLORIA
+IN POSTA"

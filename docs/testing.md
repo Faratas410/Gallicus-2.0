@@ -2,6 +2,14 @@
 
 ## Principio
 
+Review temporanea richiesta dall'utente, 8 ottobre 2026: per il primo pass
+materiale del Manifesto, catture e prove runtime soltanto in italiano.
+`tools/counter_layout_capture.gd` usa IT di default; `--all-languages`
+riattiva esplicitamente IT/EN/ES. EN/ES restano nel prodotto e nei contratti
+statici di integrita' delle risorse, ma non sono validati visivamente da
+questo pass. Il target di release trilingue resta invariato. Evidenze:
+`docs/support/manifesto_material_2026-10-08.md`.
+
 Il contratto AV comprende `scripts/ci/character_runtime_contract.gd`: tre
 Gufi, un gallo, una gallina e trentadue scambi, localizzazione, selezione deterministica senza mutazioni,
 soppressione terminale/Silenzio e ingombri alle due risoluzioni. Con renderer
@@ -183,6 +191,23 @@ riprodurre un caso diagnostico; il risultato con seed diverso non sostituisce
 la matrice canonica.
 
 ## QA visuale
+
+Pass locale dell'8 ottobre 2026: `tools/claude_review_capture.gd` verifica
+layout del banco con saldi fixture -5/0/20 e impostazioni, in IT/EN/ES a
+720p/1080p. Non prova l'economia. `tools/claude_review_journey.gd` estende
+la campagna UI reale con acquisti e obiettivo bando, mantenendo seed e
+tempo controllati: verifica addebiti e presenza degli otto racconti.
+`scripts/ci/character_runtime_contract.gd` verifica anche ritratti,
+biografie localizzate e scroll. Report, prove interrotte e limiti in
+`docs/support/claude_review_2026-10-08.md`. Queste prove locali non chiudono
+CP-03 o il checkpoint Linux.
+
+`tools/portrait_integration_capture.gd` rende Registro, cinque voci Archivio
+e tre interlocutori dei dialoghi: 54 fixture IT/EN/ES a 720p/1080p.
+Richiede driver grafico reale; non avanza campagna o modifica esiti.
+Controllare sagome senza fondo nero, base sfumata, testo libero e biografie
+interamente localizzate. I contratti headless del cast e dei dialoghi
+proteggono scroll, focus, avanzamento, skip e separazione dalla run.
 
 Richiesta per cambi UI, copy visibile, asset o motion.
 
@@ -551,3 +576,31 @@ e attraversarne le battute; lo smoke tastiera deve avanzare la nuova finestra.
 Le prove storiche del prologo automatico sono sostituite da lettura manuale.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+## Matrice visuale del banco - 8 ottobre 2026
+
+`tools/counter_layout_capture.gd` produce 126 catture viewport in IT/EN/ES a
+720p e 1080p: banco con/senza fondi, firma e firma registrata, patto, giudizio,
+gesto e focus, quietanza, notifica Segno, rilancio in focus, scelte bloccate,
+dettaglio Segni, tre esiti, utility in focus e fascicolo chiuso. Controlla ingombri, sovrapposizioni
+con colonna e rail e altezza del testo. Usare APPDATA temporaneo: il fixture
+modifica stato di prova e non rappresenta una run giocata.
+Il fixture usa reduced motion; KEYBOARD_FULL_RUN attraversa il flow reale
+con impostazioni predefinite. Le immagini vanno ispezionate: scroll e
+contrasto non sono provati da una sola asserzione geometrica.
+Evidenze e limiti: `docs/support/counter_ui_2026-10-08.md`.
+
+La revisione Manifesto aggiunge pressione 9, posta a quattro cifre e impronte
+confermate, con output in `artifacts/manifesto_2026-10-08/layout/`. Il pannello
+di fase ora copre il viewport: verificare i rettangoli delle singole azioni
+contro superficie stampata, HUD e footer. Le note devono stare nella stessa
+superficie dei comandi. Il test controlla anche che pressione e hover con
+motion attivo non cambino i target. Fixture e playtest umano restano distinti.
+Risultati: `docs/support/manifesto_verdict_2026-10-08.md`.
+
+Il campione di arena illustrata ripete la stessa matrice con la scena corrente
+in `artifacts/arena_stilizzata_2026-10-08/layout_capture.gd`, mantenendo separate
+le catture dal precedente banco. Controllare anche contrasto della didascalia
+alta, posta, focus e note sul nuovo fondale. Confrontare Registro e fascicolo
+adiacenti per rendere esplicite le differenze artistiche ancora da uniformare.
+Prova e perimetro: `docs/support/illustrated_arena_2026-10-08.md`.

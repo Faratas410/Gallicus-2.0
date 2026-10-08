@@ -136,10 +136,11 @@ Valgono per ogni superficie gameplay e utility.
    nota (dettaglio o numero). Mai piu' di tre livelli nella stessa superficie.
 3. **Numeri con unita'.** `+6 Gloria`, `Pressione +2`, mai valori nudi o
    separati da barre verticali.
-4. **Colore con significato.** Osso su basalto per leggere; bronzo per cio' che
-   e' disponibile o a fuoco; cera rossa solo per atti irreversibili (firma,
-   marchio); verde ossidato solo per l'anomalia. Lo stato non dipende mai dal
-   solo colore.
+4. **Colore con significato.** Nel Manifesto, nero per il Registro, avorio
+   per condizioni e risultati, cera rossa per esposizione e impegno, inclusi
+   posta e rilancio. Bronzo circoscritto agli oggetti che lo richiedono;
+   verde ossidato per l'anomalia. Focus, blocco e conferma hanno anche segni
+   grafici: lo stato non dipende mai dal solo colore.
 5. **Maiuscole solo per titoli e comandi.** Frasi narrative e valori in forma
    naturale.
 6. **Accenti nativi.** `È`, `più`, `così`: mai apostrofi al posto degli accenti
@@ -149,9 +150,11 @@ Valgono per ogni superficie gameplay e utility.
    `PRENDI LA QUIETANZA`, `RICEVI IL MARCHIO`, `RADDOPPIA`. Non `CONTINUA` o `CONFERMA` quando esiste
    un gesto specifico.
 8. **Un posto per ogni informazione persistente.** Posta, Pressione e arena
-   (su sette), la catena e il conto in Denari stanno nel rail in basso; i Segni nel riquadro in alto a destra;
-   il favore della gradinata nel riquadro in alto a sinistra; il bando nel riquadro in basso a sinistra.
-   La ricevuta della quietanza ripete la posta solo come importo da incassare.
+   (su sette), la catena e il conto in Denari stanno nel rail in basso.
+   Bando, Gradinata e Segni condividono la colonna destra. Nella decisione
+   sulla posta il numero domina la fascia rossa sinistra; la quietanza
+   ripete l'importo da incassare. Le altre fasi conservano composizioni
+   proprie secondo UI_CANON e layout_rules, senza replicare la fascia.
 
 ## Lessico unico
 

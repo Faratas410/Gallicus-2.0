@@ -5,17 +5,17 @@ const SPEAKERS: Dictionary = {
   "nerio": {
     "name": "Nerio",
     "role": "Gufo scrivano",
-    "portrait": "res://assets/ui/generated/dialogue_nerio.png"
+    "portrait": "res://assets/ui/generated/dialogue_nerio_cutout.png"
   },
   "rugo": {
     "name": "Rugo",
     "role": "Gallo della soglia",
-    "portrait": "res://assets/ui/generated/dialogue_rugo.png"
+    "portrait": "res://assets/ui/generated/dialogue_rugo_cutout.png"
   },
   "dima": {
     "name": "Dima",
     "role": "Gallina della gradinata",
-    "portrait": "res://assets/ui/generated/dialogue_dima.png"
+    "portrait": "res://assets/ui/generated/dialogue_dima_cutout.png"
   },
   "registry": {
     "name": "Registro",
@@ -30,7 +30,7 @@ const SEQUENCES: Dictionary = {
     "lines": [
       {
         "speaker": "nerio",
-        "text": "La tavoletta entra qui. Sul vetro torna soltanto ciò che è stato accettato."
+        "text": "La tavoletta entra qui. Guarda il vetro: torna soltanto ciò che hai accettato."
       },
       {
         "speaker": "registry",
@@ -38,7 +38,7 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "rugo",
-        "text": "Quando il banditore copriva la mia voce, credevo che qui non arrivasse niente."
+        "text": "E quando Orvo copriva la mia voce? Qui arrivava qualcosa?"
       },
       {
         "speaker": "nerio",
@@ -46,11 +46,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "rugo",
-        "text": "Quella sì. Anche quando io non avevo più fiato."
+        "text": "Io avevo finito il fiato. Quella l’hai presa tutta?"
       },
       {
         "speaker": "nerio",
-        "text": "La copia resta. Il resto lo sentirà la gradinata."
+        "text": "Tutta. È qui, se vuoi controllare."
       }
     ]
   },
@@ -59,15 +59,15 @@ const SEQUENCES: Dictionary = {
     "lines": [
       {
         "speaker": "dima",
-        "text": "La tavola cambia foglio. Quel posto è ancora vuoto."
+        "text": "Un altro foglio. Il posto accanto è ancora vuoto."
       },
       {
         "speaker": "rugo",
-        "text": "Ti ricordi ancora il passo?"
+        "text": "Lo riconosceresti ancora dal passo?"
       },
       {
         "speaker": "dima",
-        "text": "Si fermava qui. Ora il banditore non lascia neppure la pausa."
+        "text": "Si fermava qui. Orvo ora tira dritto con l’annuncio. Non lascia più quella pausa."
       },
       {
         "speaker": "registry",
@@ -75,11 +75,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Ho sostituito la tavoletta. Il solco torna nello stesso punto."
+        "text": "Ho cambiato la tavoletta. Guarda: il solco torna proprio qui."
       },
       {
         "speaker": "dima",
-        "text": "Io conto i posti che non si riempiono."
+        "text": "Sì, lo vedo. Ma ti stavo parlando del posto."
       }
     ]
   },
@@ -92,7 +92,7 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "rugo",
-        "text": "Eppure dalla soglia entra ancora aria."
+        "text": "Dalla soglia entra ancora aria. La senti?"
       },
       {
         "speaker": "dima",
@@ -104,7 +104,7 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "dima",
-        "text": "Non serve occuparlo."
+        "text": "No. Tolgo la zampa."
       },
       {
         "speaker": "rugo",
@@ -117,15 +117,15 @@ const SEQUENCES: Dictionary = {
     "lines": [
       {
         "speaker": "nerio",
-        "text": "Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine."
+        "text": "Questo è il tuo conto da Vessa. Le cifre le copio io; il margine lo decide lei."
       },
       {
         "speaker": "dima",
-        "text": "Un conto? Una volta qui si pagava con la voce."
+        "text": "Prima dei Denari pagavamo con la voce. Quella dove la metti?"
       },
       {
         "speaker": "nerio",
-        "text": "La voce non si archivia. I Denari sì."
+        "text": "Sul conto ci sono i Denari, Dima. Per la voce non ho una cifra."
       },
       {
         "speaker": "rugo",
@@ -133,11 +133,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena."
+        "text": "Vessa lo ricorda alla gradinata. A ogni arena, finché resta il debito."
       },
       {
         "speaker": "dima",
-        "text": "Allora anche la gradinata tiene un conto. Il suo non si scrive."
+        "text": "Così la voce torna buona. Per riscuotere."
       }
     ]
   },
@@ -150,11 +150,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "rugo",
-        "text": "Una volta la sabbia restava giù, sotto i passi. Copriva i segni."
+        "text": "Prima restava sotto i passi. Almeno copriva i segni."
       },
       {
         "speaker": "dima",
-        "text": "Ora la raccolgono. La lanciano quando un patto non piace."
+        "text": "Adesso se la tengono. Se il patto non piace, la tirano."
       },
       {
         "speaker": "rugo",
@@ -162,11 +162,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "dima",
-        "text": "Monete. Vessa le conta prima che tocchino terra."
+        "text": "Tirano monete. Vessa è già lì che le conta."
       },
       {
         "speaker": "rugo",
-        "text": "Sabbia o monete, il corpo le ricorda tutte e due."
+        "text": "Quelle almeno si vedono arrivare."
       }
     ]
   },
@@ -175,7 +175,7 @@ const SEQUENCES: Dictionary = {
     "lines": [
       {
         "speaker": "rugo",
-        "text": "Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia."
+        "text": "Orvo sta provando il richiamo. Lo sento anche quando crede di parlare piano."
       },
       {
         "speaker": "dima",
@@ -183,11 +183,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "rugo",
-        "text": "Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni."
+        "text": "Chiamavo sopra tutti. Questa tacca me la porto da allora."
       },
       {
         "speaker": "nerio",
-        "text": "Sul foglio la tacca non c’è. C’è solo l’annuncio accettato."
+        "text": "Qui ho l’annuncio accettato. Della tacca non c’è traccia."
       },
       {
         "speaker": "rugo",
@@ -195,7 +195,7 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Un gallo che tace non è un atto. Non lo copio."
+        "text": "Non ho un atto da copiare, Rugo."
       }
     ]
   },
@@ -208,11 +208,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Ha misurato. Lo spazio libero rende, se lo si iscrive."
+        "text": "Mi ha dato le misure. Devo copiarle tutte."
       },
       {
         "speaker": "dima",
-        "text": "Ogni posto ha un passo. Io li riconosco tutti."
+        "text": "Tutte? Io so chi si sedeva in ciascuno di quei posti."
       },
       {
         "speaker": "rugo",
@@ -220,11 +220,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "dima",
-        "text": "Quello non si misura. L’ho detto a Vessa: il righello si ferma lì."
+        "text": "Le ho fermato il righello. Fin qui, le ho detto. Non oltre."
       },
       {
         "speaker": "nerio",
-        "text": "Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco."
+        "text": "La mia copia finisce al tuo posto. Dopo ho lasciato bianco."
       }
     ]
   },
@@ -233,7 +233,7 @@ const SEQUENCES: Dictionary = {
     "lines": [
       {
         "speaker": "nerio",
-        "text": "Ogni sera raschio le copie sbagliate. La cera torna liscia."
+        "text": "Le altre copie le ho raschiate. Come ogni sera. Passa l’ala: sono lisce."
       },
       {
         "speaker": "registry",
@@ -241,7 +241,7 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Una riga non va via. Ho consumato tre lame."
+        "text": "Questa invece è ancora qui. Tre lame, e non sono riuscito a toglierla."
       },
       {
         "speaker": "rugo",
@@ -249,11 +249,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Un nome e un fascicolo aperto. Il resto non è di mia competenza."
+        "text": "Un nome. Il fascicolo è aperto. Non ho altro da trascrivere."
       },
       {
         "speaker": "dima",
-        "text": "Lasciala dov’è. Anch’io lascio il posto com’è."
+        "text": "Lascia stare la lama. Io il posto lo tengo ancora."
       }
     ]
   },
@@ -262,11 +262,11 @@ const SEQUENCES: Dictionary = {
     "lines": [
       {
         "speaker": "rugo",
-        "text": "Ogni volta che la gradinata si riempie, tieni la zampa su quel posto."
+        "text": "Dima, la gradinata si sta riempiendo. Hai ancora la zampa lì."
       },
       {
         "speaker": "dima",
-        "text": "Finché si riempie. Poi la tolgo, e nessuno si siede."
+        "text": "Aspetto che si siedano. Dopo la tolgo. Tanto lì non si mette nessuno."
       },
       {
         "speaker": "rugo",
@@ -278,11 +278,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura."
+        "text": "Manca la chiusura del fascicolo. Non l’ho mai ricevuta da copiare."
       },
       {
         "speaker": "dima",
-        "text": "Perché non c’è stata. Si è alzato, e il posto è rimasto caldo."
+        "text": "Io l’ho visto alzarsi. Il posto era ancora caldo. La chiusura non c’è stata."
       }
     ]
   },
@@ -291,7 +291,7 @@ const SEQUENCES: Dictionary = {
     "lines": [
       {
         "speaker": "dima",
-        "text": "Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo."
+        "text": "Quel passo, oggi. Si è fermato sulla stessa pietra."
       },
       {
         "speaker": "rugo",
@@ -303,11 +303,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Due soggetti non hanno lo stesso passo. Il Registro li distingue."
+        "text": "Le righe sono distinte. Su questo non c’è dubbio."
       },
       {
         "speaker": "dima",
-        "text": "Il Registro distingue le righe. Io sento la pietra."
+        "text": "Non ti ho chiesto delle righe. La pausa l’ho sentita."
       },
       {
         "speaker": "rugo",
@@ -328,11 +328,11 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "rugo",
-        "text": "Che vuol dire, parziale?"
+        "text": "Parziale. Le separi o no?"
       },
       {
         "speaker": "nerio",
-        "text": "Che il Registro sta cercando dove finisce l’una e comincia l’altra."
+        "text": "La pendenza coincide. Non basta per metterle nello stesso fascicolo."
       },
       {
         "speaker": "dima",
@@ -340,7 +340,7 @@ const SEQUENCES: Dictionary = {
       },
       {
         "speaker": "nerio",
-        "text": "Lo annoto. Non so ancora in quale fascicolo."
+        "text": "Tengo le copie qui. Non le ho ancora archiviate."
       }
     ]
   }

@@ -44,6 +44,39 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Autorita'
 
+Identita' UI scelta dall'utente: **Manifesto del Verdetto**. Regole comuni
+in `docs/art_direction.md`, prima applicazione nella decisione sulla posta
+in `docs/support/manifesto_verdict_2026-10-08.md`.
+
+Base confermata con adattamento al mood di Gallicus: cera piu' spenta,
+avorio sporco, inchiostro e incisioni asciutte. Handoff per Astra sulla
+sequenza UI: `docs/support/astra_manifesto_handoff_2026-10-08.md`.
+
+Catture correnti e progetto della prima patch circoscritta alla posta:
+`docs/support/manifesto_scope_2026-10-08.md`. Diagnosi preparata, nessuna
+nuova implementazione in questa consegna.
+
+Prima implementazione del perimetro, con prove visuali/runtime solo IT:
+`docs/support/manifesto_material_2026-10-08.md`.
+
+Prova successiva di attraversamento: quattro vedute della stessa arena e
+anteprima separata dal runtime in `docs/support/spatial_sequence_2026-10-08.md`.
+Le reference spaziali non fissano il trattamento runtime: primo campione
+illustrato nell'arena e criterio comune in `docs/support/illustrated_arena_2026-10-08.md`.
+
+Banco amministrativo integrato dopo il confronto sui concept UI:
+`docs/support/counter_ui_2026-10-08.md`. Composizione, materiali e verifiche locali.
+
+
+Verifica del lavoro corrente e pass UI/cast dell'8 ottobre 2026:
+`docs/support/claude_review_2026-10-08.md`. Prove locali e simulazioni restano
+separate dal playtest umano e dal checkpoint Linux.
+
+Handoff per il pass di scrittura richiesto all'Astra:
+`docs/support/astra_writing_handoff_2026-10-08.md`.
+Pass integrato successivo, con campione prima/dopo, matrice narrativa e
+verifiche: `docs/support/writing_pass_2026-10-08.md`.
+
 Rework di prodotto del 6 ottobre 2026: direzione in `docs/direction.md`,
 gap e piano in `docs/support/rework_audit_2026-10-06.md`. Revisione del game
 loop dello stesso giorno (posta, quietanza, patti, gesto, campagna, ritmo):

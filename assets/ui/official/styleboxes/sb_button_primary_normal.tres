@@ -1,15 +1,13 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
-
-[ext_resource type="Texture2D" path="res://assets/ui/generated/bronze_plaque.png" id="1_button"]
+[gd_resource type="StyleBoxFlat" format=3]
 
 [resource]
-texture = ExtResource("1_button")
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
-content_margin_left = 28.0
-content_margin_top = 10.0
-content_margin_right = 28.0
-content_margin_bottom = 10.0
-modulate_color = Color(1, 1, 1, 1)
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.12, 0.13, 0.115, 1)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 2
+border_color = Color(0.36, 0.35, 0.29, 1)

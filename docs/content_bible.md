@@ -7,6 +7,49 @@ un narratore moderno: annota, pesa, confronta, convalida e conclude.
 
 La durezza nasce dalla procedura e dall'irreversibilita', non da gore o insulti.
 
+Il pass editoriale dell'8 ottobre 2026 e' integrato nei cataloghi IT/EN/ES.
+Confronto della sequenza campione, matrice delle undici scene, inventario e
+prove: `docs/support/writing_pass_2026-10-08.md`.
+
+### Criterio di scena e cinque voci
+
+Ogni scena parte da un lavoro o un gesto in corso e da una richiesta rivolta
+a qualcuno. La replica deve accettarla, limitarla, deviarla o rifiutarla.
+La battuta finale lascia una situazione aperta o un gesto compiuto; non deve
+riassumere il tema con una massima. Sei battute restano sei: la profondita'
+viene dal rapporto, non dalla durata aggiunta.
+
+| Voce | Desiderio locale | Attrito che genera la replica |
+| --- | --- | --- |
+| Nerio | finire una copia controllabile | gli chiedono di trascrivere fiato, intenzione o memoria; torna al foglio e a cio' che manca |
+| Vessa | trovare spazio o attenzione ancora vendibili | tratta il limite posto dagli altri come il confine della transazione |
+| Orvo | essere ascoltato al momento utile | trattiene una riga o una pausa mentre i colleghi vogliono che finisca |
+| Rugo | decidere quando usare la voce e cosa ne resta | chiede a Nerio una traccia del proprio tacere; alla fine rimane senza chiamare |
+| Dima | tenere un posto e riconoscere chi arriva | corregge chi sostituisce un occupante con una misura o un passo con una riga |
+
+Questi sono criteri editoriali subordinati a LORE_UNIFIED, non nuovi fatti.
+Non ridurre le voci a formule ricorrenti: far nominare a Nerio la copia in
+ogni frase non basta a distinguerlo. Le varianti compresse conservano la
+stessa transazione e lo stesso interlocutore, con meno parole.
+
+Il posto vuoto procede da gesto abituale a limite della vendita, poi a
+riconoscimento incerto e infine a posto lasciato libero. La riga procede da
+copia a raschiatura fallita e confronto parziale. Nessuna corrispondenza
+diventa identita' accertata. Non introdurre una spiegazione del finale.
+
+### Criterio delle superfici operative
+
+Le istruzioni utili non adottano il sottotesto dei dialoghi. Firma: promessa
+e costo prima del gesto. Banco: servizio, prezzo e causa del blocco. Bando:
+Gloria, arena limite, premio e prossimo racconto. Sigillo: prova della cera,
+rischio del colpo successivo e alternative. Quietanza: importo e chiusura.
+Fascicolo: atto registrato e conseguenze, senza dedurre motivi o saggezza.
+
+Conservare placeholder, unita', condizioni ed effetti. I testi che gia'
+rendono chiaro il gesto restano validi: non riscriverli solo per uniformarli
+al tono di una scena. EN/ES adattano la funzione della replica; le chiavi
+italiane e i consumer vengono aggiornati insieme alle tre traduzioni.
+
 La voce dei Gufi e' distinta: brevi scambi fra Nerio (precisione della copia),
 Vessa (margine commerciale) e Orvo (attenzione della gradinata). Sono colleghi
 dell'amministrazione. Rugo, gallo della soglia, misura il richiamo; Dima,
@@ -284,10 +327,21 @@ Il riquadro del bando e il fascicolo dicono il titolo del racconto in palio
 (`In palio il racconto «%s».`), cosi' il prossimo racconto e' la ragione per
 chiudere il prossimo bando.
 
-Vessa e Orvo non hanno ritratto: se ne parla, non parlano. I racconti danno
+Nei racconti Vessa e Orvo sono citati, non parlano. Dall'8 ottobre 2026
+hanno ritratti nell'Archivio e sul Registro chiuso; il cast delle
+conversazioni illustrate resta invariato. I racconti danno
 corpo ai sistemi gia' presenti (conto, sabbia, favore, posti) senza spiegarne
 le regole, senza nominare Felix, le Ere o il Silenzio e senza parole del
 giocatore. "Un nome e un fascicolo aperto" resta allusione: il nome arriva
 solo dal terminale al primo Silenzio. Le dodici nuove voci dell'arena (tre per
 contesto, distese e compresse) toccano gli stessi temi: conto, tasche piene,
 terza fila venduta, folla che paga chi la regge.
+
+## Gerarchia testuale del banco - 8 ottobre 2026
+
+La posta diventa `%d GLORIA IN POSTA`; nel fascicolo l'incasso mostra
+`%d Gloria incassate`. Pressione e Corruzione restano etichette esplicite.
+La notifica breve dei Segni mostra nome ed effetto; la narrativa rimane nel
+dettaglio. Nomi, descrizioni ed effetti dei sei Segni sono localizzati in
+IT/EN/ES senza nuovi fatti o conseguenze. La nota della Gradinata mantiene
+il testo completo nel tooltip. Prove: `docs/support/counter_ui_2026-10-08.md`.

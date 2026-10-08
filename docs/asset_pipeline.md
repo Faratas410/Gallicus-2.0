@@ -100,7 +100,8 @@ Priorita' di audit:
 5. variazioni delle Ere;
 6. audio con naming o mood action/combat.
 
-Gli StyleBox OF-01..10 restano in `assets/ui/official/objects/` e puntano
+Baseline storica, con eccezioni native del banco descritte sotto: gli
+StyleBox OF-01..10 restano in `assets/ui/official/objects/` e puntano
 soltanto ai raster originali. Sono immagini rettangolari RGB a campo pieno:
 margini texture zero, safe area del testo e geometria costanti tra stati.
 La vecchia regola alpha non si applica alla nuova famiglia. Focus, pressione,
@@ -129,7 +130,7 @@ I vecchi file restano consultabili come sorgenti storiche ma sono esclusi
 dall'export, inclusi `assets/ui/lapidary/` e i vecchi PNG sotto
 `assets/ui/official/`. Il controllo del pacchetto verifica anche i `.ctex`
 importati: nessun vecchio raster deve essere incluso. I WAV restano.
-ImageGen non sostituisce audio o font: il testo usa il font incorporato di
+ImageGen non sostituisce audio o font: il corpo usa il font incorporato di
 Godot tramite `assets/ui/fonts/engine_sans.tres`. Attribuzioni audio sospese
 su richiesta dell'utente; il gate licenze release rimane aperto.
 
@@ -178,3 +179,32 @@ Import Godot ed export devono includere i quattro ritratti; il testo e' live
 IT/EN/ES. Il Registro e' una macchina impersonale, gli altri soggetti sono uccelli.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+## Banco amministrativo - 8 ottobre 2026
+
+Tre raster originali senza testo sono aggiunti al manifest: registry_counter,
+registry_paper e registry_wax_trace. Banco e carta sono RGB, la cera conserva
+alpha. La carta usa nove sezioni con margini texture di 12 px. Le famiglie
+Registro, firma, gesto, incisione e linguette usano StyleBoxFlat nativi.
+`generated_art_contract.py` controlla entrambe le famiglie esplicitamente.
+Libre Baskerville proviene dal repository ufficiale Google Fonts; TTF e
+OFL.txt sono in `assets/ui/official/typography/`, fuori dalle sorgenti
+ritirate dall'export. Il corpo mantiene il sans incorporato Godot.
+Prompt, provenienza e prove: `docs/support/counter_ui_2026-10-08.md`.
+
+## Campione arena illustrata - 8 ottobre 2026
+
+La successiva identita' Manifesto del Verdetto impiega forme e contrassegni
+nativi sui fondali pittorici esistenti. Nessun testo viene generato nel raster.
+`assets/ui/fonts/font_manifesto.tres` usa Roboto Serif e la sua licenza OFL
+in `assets/ui/official/typography/roboto_serif/`. Provenienza e applicazione:
+`docs/support/manifesto_verdict_2026-10-08.md`.
+
+`arena_illustrated_sample.png` e' un nuovo raster senza testo, generato con
+ImageGen integrato usando la veduta 02 solo come reference geografica.
+Prompt completo, origine e hash sono nel manifest degli asset generati.
+Non sostituisce o altera i PNG delle reference. La scena UI lo usa per
+giudizio, gesto e scelta quietanza/raddoppio; ombreggiatura di lettura nativa
+separata dal raster. Gli altri ambienti e il cast attendono l'allineamento
+alla stessa mano: `docs/art_direction.md` e
+`docs/support/illustrated_arena_2026-10-08.md`.

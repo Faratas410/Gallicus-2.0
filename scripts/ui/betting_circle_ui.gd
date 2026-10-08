@@ -5,15 +5,15 @@ const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 const CONTRACT_TITLE_SIZE: int = 20
 const CONTRACT_HEADING_SIZE: int = 14
-const CONTRACT_TITLE_COLOR: Color = Color(0.93, 0.80, 0.52)
-const CONTRACT_HOLDS_COLOR: Color = Color(0.80, 0.68, 0.40)
+const CONTRACT_TITLE_COLOR: Color = Color(0.92, 0.90, 0.81)
+const CONTRACT_HOLDS_COLOR: Color = Color(0.79, 0.78, 0.66)
 const CONTRACT_BREAKS_COLOR: Color = Color(0.86, 0.42, 0.33)
 const CONTRACT_NOTE_COLOR: Color = Color(0.74, 0.70, 0.62)
 const SCREEN_TITLE: String = "SCEGLI LA VIA"
-const SCREEN_SUBTITLE: String = "Ogni firma apre una promessa e una condanna."
+const SCREEN_SUBTITLE: String = "Leggi la promessa e il costo. Poi firma."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
 const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
-const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_chamber.png")
+const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_counter.png")
 const REGISTRY_TABLE_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_normal.tres")
 const REGISTRY_TABLE_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_focus.tres")
 const REGISTRY_TABLE_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_pressed.tres")
@@ -182,11 +182,11 @@ func _render_bando_intro() -> void:
 		if open_bando:
 			intro_body.text = "%s\n%s" % [
 				tr("Incassa %d Gloria entro l'arena %d.") % [int(_bando_view.get("quota", 0)), int(_bando_view.get("deadline", 0))],
-				tr("Chiudilo: Denari +%d e un gradino.") % int(_bando_view.get("denari", 0)),
+				tr("Al bando chiuso: Denari +%d e un gradino.") % int(_bando_view.get("denari", 0)),
 			]
 		else:
 			intro_body.text = "%s\n%s" % [
-				tr("La pietra attende una firma."),
+				tr("Il Registro è pronto per la firma."),
 				tr("Ogni patto lascia un segno."),
 			]
 	if intro_seal != null:
@@ -230,7 +230,7 @@ func _render_banco() -> void:
 					item = item_value as Dictionary
 			button.visible = not item.is_empty()
 			button.disabled = not bool(item.get("available", false))
-			button.text = "%s\n%s %s" % [
+			button.text = "%s\n%s\n%s" % [
 				tr(str(item.get("title", ""))),
 				tr(str(item.get("text", ""))),
 				tr("%d Denari") % int(item.get("price", 0)),
@@ -238,7 +238,7 @@ func _render_banco() -> void:
 	if banco_note != null:
 		var note: String = _banco_note_text
 		if bool(_banco_view.get("in_debt", false)):
-			note = tr("In debito: il banco è chiuso finché una quietanza non salda il conto.")
+			note = tr("Conto in debito. Salda con la quietanza per riaprire il banco.")
 		elif bool(_banco_view.get("insured", false)):
 			note = tr("La posta di questa arena è assicurata.")
 		banco_note.text = note
@@ -712,6 +712,9 @@ func _set_promise_signature_state(button: Button, state: StringName) -> void:
 			focus_style = PROMISE_SIGNATURE_STYLE_DISABLED
 			pressed_style = PROMISE_SIGNATURE_STYLE_DISABLED
 	button.set_meta(PROMISE_SIGNATURE_STATE_META, state)
+	var trace := button.get_node_or_null("WaxTrace") as TextureRect
+	if trace != null:
+		trace.visible = state == PROMISE_SIGNATURE_STATE_SIGNED
 	button.add_theme_stylebox_override("normal", normal_style)
 	button.add_theme_stylebox_override("hover", focus_style)
 	button.add_theme_stylebox_override("focus", focus_style)

@@ -87,7 +87,7 @@ def _assert_scene_binding() -> None:
         'theme_override_styles/focus = ExtResource("45_registry_second_incision_focus")',
         'theme_override_styles/pressed = ExtResource("46_registry_second_incision_pressed")',
         'theme_override_styles/disabled = ExtResource("48_registry_second_incision_disabled")',
-        'custom_minimum_size = Vector2(0, 104)',
+        'custom_minimum_size = Vector2(0, 158)',
         'text = "RADDOPPIA"',
     ):
         if token not in block:

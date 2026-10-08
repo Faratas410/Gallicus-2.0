@@ -1047,9 +1047,10 @@ func _run_smoke_full_run_driver() -> void:
 		_smoke_full_run_step = "INTERMEDIATE_CHOICE"
 		_smoke_full_run_mid_choice_sent = false
 		_smoke_full_run_resolve_advance_sent = false
-		print("SMOKE:REQ=request_mid_choice_select index=0")
+		var choice_index: int = _get_smoke_mid_choice_index()
+		print("SMOKE:REQ=request_mid_choice_select index=%d" % choice_index)
 		_smoke_full_run_mid_choice_sent = true
-		_on_request_mid_choice_select(0)
+		_on_request_mid_choice_select(choice_index)
 		return
 	if _phase == RunPhase.INTERMEDIATE_CHOICE and _resolving_ritual:
 		if not _smoke_full_run_resolve_advance_sent:
@@ -1058,10 +1059,11 @@ func _run_smoke_full_run_driver() -> void:
 		_on_request_ritual_advance("resolve")
 		return
 	if _phase == RunPhase.INTERMEDIATE_CHOICE and not _resolving_ritual:
+		var choice_index: int = _get_smoke_mid_choice_index()
 		if not _smoke_full_run_mid_choice_sent:
-			print("SMOKE:REQ=request_mid_choice_select index=0")
+			print("SMOKE:REQ=request_mid_choice_select index=%d" % choice_index)
 			_smoke_full_run_mid_choice_sent = true
-		_on_request_mid_choice_select(0)
+		_on_request_mid_choice_select(choice_index)
 		return
 	if _phase == RunPhase.PUSH_YOUR_LUCK and _smoke_full_run_step != "PUSH_YOUR_LUCK":
 		_smoke_full_run_step = "PUSH_YOUR_LUCK"
@@ -1238,6 +1240,14 @@ func _drive_smoke_full_run_pyl_request() -> void:
 		return
 	print("SMOKE:REQ=request_pyl_condanna")
 	_on_request_pyl_condanna()
+
+func _get_smoke_mid_choice_index() -> int:
+	# The cashout witness must keep the crowd receptive instead of provoking a
+	# riot by bowing to every intent. Use the same offered responses as the UI;
+	# never inject favour, pressure or outcomes. Other smoke policies stay fixed.
+	if OS.get_environment("GALLICUS_SMOKE_SCENARIO") == "ROUTE_CASHOUT":
+		return 1 if _run_state.crowd_intent in ["blood", "bored"] else 0
+	return 0
 
 func _get_smoke_selected_bet_id() -> String:
 	if _run_state.level3_current_offer.is_empty():

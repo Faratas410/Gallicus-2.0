@@ -2,6 +2,14 @@
 
 ## Baseline
 
+Pass dell'8 ottobre 2026: Registro chiuso con Orvo accanto al bando e Vessa
+accanto al banco; i ritratti ignorano mouse e focus. Servizio, effetto e
+prezzo del banco occupano righe distinte, font 15 px e pulsanti con wrapping
+e minimo 182x94. Le note di favore e bando sono almeno 15 px. Nell'Archivio
+ogni presenza ha ritratto 112x168 e biografia localizzata da 18 px, separati
+da 24 px. Le voci restano nello scroll esistente. La composizione della
+biografia e' tradotta prima del rendering e non ritradotta dal Label.
+
 La UI deve essere funzionale almeno a:
 
 - 1280x720;
@@ -47,12 +55,13 @@ Il testo secondario non deve competere con il gesto principale.
 - **END_RUN:** fascicolo, esito, memoria e route disponibili.
 
 Il fascicolo END_RUN usa un controllo fisso `1120x640`. La safe area interna
-parte dopo il dorso (150 px a sinistra, 94 px a destra) e mantiene il titolo
-sotto la cerniera, una riga di posta (Gloria, segni, pressione massima), tre
+usa 70 px ai lati, 48 px sopra e 42 px sotto, con testo allineato a sinistra,
+una riga di posta (Gloria, segni, pressione massima), tre
 colonne compatte per patti firmati, nuove voci d'Archivio e ultima voce, e una
 riga centrata `864x64`. Le linguette restano `280x64` anche quando
 `PROSSIMA SCOMMESSA` non e' disponibile; non si espandono e non cambiano scala
-tra focus, selected e disabled. Nessun testo o comando tocca il dorso.
+tra focus, selected e disabled. La prosecuzione disponibile riceve il focus;
+ritorno al menu e riavvio con prosecuzione disponibile sono subordinati.
 - **Archivio:** consultazione, non griglia di achievement generica.
 - **Assenza:** nessun residuo del normale HUD.
 
@@ -105,17 +114,45 @@ Una patch visibile richiede:
 
 ## Geometrie della bonifica
 
+La decisione sulla posta e' successivamente sostituita dalla composizione
+Manifesto del Verdetto: fascia rossa a sinistra (188 px), colonna nera a destra
+(306 px), azioni a 244 px dal fondo con altezza 158 px. Il contenitore di fase
+copre il viewport ma ignora input; soltanto le aree dei comandi ricevono click.
+Numero nativo adattato alla larghezza per poste a piu' cifre. Le note restano
+entro l'area dipinta e ignorano input, lasciando attivo il pulsante sottostante.
+Le righe sotto descrivono le geometrie precedenti delle altre fasi; dettagli
+e matrice aggiornata in `docs/support/manifesto_verdict_2026-10-08.md`.
+
+Rifinitura materiale successiva: geometrie esterne invariate, note della
+posta allineate in alto a y=64 nella superficie del comando, almeno 8 px
+liberi sotto l'ultima riga. Focus, hover e pressed non cambiano dimensioni.
+Tre tagli pieni identificano la conferma; due barre nel margine sinistro
+identificano il blocco insieme alla causa scritta. Dettagli e prove:
+`docs/support/manifesto_material_2026-10-08.md`.
+
 - Menu: marchio largo 740 px, frase senza cornice, soglia da 480x72 px,
   ripresa disponibile solo con save valido e utility in una riga da 480 px.
   Gli avvisi di salvataggio hanno una riga dedicata e wrapping. La colonna
   resta ferma; solo luce del marchio e fondale hanno moto ambientale.
-- Registro: tavola 900x540, due blocchi unificati e firma per pagina.
-- Push Your Luck: tre oggetti alti 104 px, note da 15 px e spazio riservato
-  sotto ciascun comando. Nessuna cornice aggiuntiva nei pannelli testuali.
-- Pressione: rail largo 680 px, 16 px sopra il bordo inferiore; tutti i figli,
-  inclusa la descrizione della fascia, devono rientrare nel viewport.
-- Fascicolo: geometria 1120x640 invariata; nessun pannello scuro dietro
-  l'inchiostro, testo chiaro sulle linguette.
+- Registro: tavola 900x540 nel campo sinistro, due blocchi e firma per pagina.
+  Anchor centrale, offset (-600, -255); a 720p parte da (40, 105).
+- Push Your Luck: 900x414, offset (-600, -145) dal centro; posta 44 px,
+  azioni 24 px, note 17 px. Oggetti alti 104 px. La colonna del marchio non
+  lascia vuoti quando nascosta. Nessuna cornice nei pannelli testuali.
+- Bando, Gradinata e Segni: colonna destra larga 270 px, offset x=338 dal
+  centro; offset y=-134, 24, 162 e altezze 156, 136, 108. Nota della Gradinata
+  su una riga con ellissi e tooltip completo. Segni: numero e nomi nello
+  scroll; effetti e racconto nel dettaglio. Nessuna altezza dinamica.
+- Patto e giudizio conservano dimensioni e oggetti; anchor centrale con
+  offset x=-500, y=-145/-165. Il patto conserva il banco; il giudizio usa
+  il campione di arena illustrata, condiviso da gesto e incasso/raddoppio.
+  Un gradiente nativo comune protegge la lettura senza cambiare geometrie,
+  target o focus. Il gradiente ignora input e resta sotto tutti i controlli.
+- Pressione: rail 1216x60, offset (-608, 284) dal centro; a 720p resta a
+  16 px dal bordo inferiore. A 1080p il gruppo resta centrato; font e target
+  non scalano. Tutti i figli devono rientrare nel viewport.
+- Fascicolo: geometria 1120x640 invariata, carta e inchiostro; route primaria
+  scura, utility subordinate con linea semplice.
 - Assenza: nero full viewport sopra HUD, menu e luminosita', senza CTA.
 
 La matrice Opzioni cambia lingua attraverso il selettore reale e ripristina
@@ -143,8 +180,8 @@ Cicatrici: dettaglio 440x360, testo scrollabile, CHIUDI sempre accessibile;
 overlay sopra la fase attiva, blocker separato, Escape e focus confinato al
 dettaglio. La chiusura conserva il rito sottostante. Notifica non modale con
 superficie basaltica, lettura 3,5 s e scadenza anche con movimento ridotto.
-Il fascicolo usa il sigillo gia' nel materiale: niente badge decorativo
-duplicato con fondo nero. Silenzio: ritorno 320x52 centrato in basso, offset
+Il fascicolo aggiornato/chiuso usa una sola traccia RGBA di cera, separata
+dalla carta e priva di fondo nero; il documento aperto non la mostra. Silenzio: ritorno 320x52 centrato in basso, offset
 relativi agli anchor; Assenza conserva superficie senza CTA.
 
 ## Finestra di conversazione - 12 settembre 2026
@@ -155,3 +192,10 @@ scuro 768x430. Corpo 24 px, nome 34 px, ruolo 18 px; font identici a 720p e
 La finestra copre il rito e ne intercetta tutti gli input finche' viene chiusa.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+I cinque ritratti aviani sono sagome trasparenti sulle superfici esistenti.
+Nei dialoghi il ritratto parte da x=20 e copre 28 px del bordo sinistro del
+pannello, davanti alla pietra e prima del testo che parte da x=432. La base
+del busto sfuma nell'ultimo 10 percento; nessun pannello proprio del ritratto.
+Archivio e Registro conservano dimensioni e target del pass precedente.
+Le figure ignorano input; la finitura e' statica anche con movimento ridotto.

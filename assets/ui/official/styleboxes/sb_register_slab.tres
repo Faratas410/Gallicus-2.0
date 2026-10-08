@@ -1,15 +1,13 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
-
-[ext_resource type="Texture2D" path="res://assets/ui/generated/basalt_panel.png" id="1_slab"]
+[gd_resource type="StyleBoxFlat" format=3]
 
 [resource]
-texture = ExtResource("1_slab")
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
-content_margin_left = 34.0
-content_margin_top = 28.0
-content_margin_right = 34.0
-content_margin_bottom = 28.0
-modulate_color = Color(1, 1, 1, 1)
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+bg_color = Color(0.08, 0.085, 0.075, 0.97)
+border_width_left = 0
+border_width_top = 1
+border_width_right = 0
+border_width_bottom = 1
+border_color = Color(0.32, 0.30, 0.25, 1)

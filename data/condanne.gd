@@ -63,13 +63,13 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_L_HO_ACCETTATO",
 		"L'ho accettato.",
 		"Hai scelto una condanna senza ricevere alcun reward.",
-		"La folla non ha capito.\nTu si."
+		"Nessun premio sul banco.\nLa condanna è iscritta."
 	))
 	entries.append(make(
 		&"CONDANNA_ERA_IL_PREZZO",
 		"Era il prezzo.",
 		"Hai perso il percorso a causa diretta di un patto firmato.",
-		"Non e stata sfortuna."
+		"Il costo era nel patto.\nOra è nel fascicolo."
 	))
 	entries.append(make(
 		&"CONDANNA_SO_COME_FINISCE",
@@ -87,7 +87,7 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_HO_VISTO_ABBASTANZA",
 		"Ho visto abbastanza.",
 		"Hai incassato dopo una sequenza di scelte rischiose.",
-		"La saggezza arriva tardi.\nMa arriva."
+		"La quietanza porta la cifra incassata.\nLe firme restano dove sono."
 	))
 	entries.append(make(
 		&"CONDANNA_MI_SONO_FERMATO",
@@ -105,13 +105,13 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_NON_ABBASTANZA",
 		"Non abbastanza.",
 		"Hai perso il percorso vicino a una soglia decisiva.",
-		"La folla aveva gia deciso."
+		"Il percorso si è chiuso.\nIl verbale si ferma qui."
 	))
 	entries.append(make(
 		&"CONDANNA_TROPPO_TARDI",
 		"Troppo tardi.",
 		"Hai preso una decisione rischiosa un attimo prima della fine.",
-		"Un secondo prima\nsarebbe bastato."
+		"L’ultimo rischio è iscritto.\nDopo, il verbale si chiude."
 	))
 	entries.append(make(
 		&"CONDANNA_NON_E_COLPA_LORO",
@@ -123,7 +123,7 @@ static func defaults() -> Array[CondannaData]:
 		&"CONDANNA_RICORDATO",
 		"Ricordato.",
 		"Hai completato una run.",
-		"L'arena non dimentica."
+		"Il percorso ha una copia nel Registro."
 	))
 	entries.append(make(
 		&"CONDANNA_VISTO_DAL_PUBBLICO",

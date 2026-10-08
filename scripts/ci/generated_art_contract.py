@@ -23,6 +23,32 @@ FAMILIES = {
     "final_dossier": {"final_dossier", "registry_closed", "bronze_plaque"},
 }
 
+# The counter pass replaces ornamental object frames with native state surfaces.
+# Paper is the only textured reading surface; other families keep their legacy art.
+COUNTER_FAMILIES = {"receipt", "second_incision", "promise_signature", "arena_gesture", "registry_table", "final_dossier"}
+
+def validate_counter_styles(family: str, styles: list[Path], declared: set[str]) -> None:
+    geometries = {}
+    for style in styles:
+        text = style.read_text(encoding="utf-8")
+        paper = family == "receipt" or (family == "final_dossier" and "_tab_" not in style.stem and "closed" not in style.stem)
+        if paper:
+            assert 'type="StyleBoxTexture"' in text, f"{style}: paper surface missing"
+            assert 'path="res://assets/ui/generated/registry_paper.png"' in text, f"{style}: wrong reading material"
+            assert "registry_paper" in declared, "missing paper provenance"
+            assert (ART / "registry_paper.png").is_file(), "missing paper texture"
+            slices = re.findall(r"^texture_margin_(?:left|top|right|bottom) = (.+)$", text, re.M)
+            assert len(slices) == 4 and all(float(x) == 12 for x in slices), f"{style}: unstable paper edge"
+        else:
+            assert 'type="StyleBoxFlat"' in text, f"{style}: expected native counter state"
+            assert "bg_color = Color(" in text and "border_color = Color(" in text, f"{style}: missing state contrast"
+        geometry = tuple(re.findall(r"^content_margin_(?:left|top|right|bottom) = (.+)$", text, re.M))
+        assert len(geometry) == 4, f"{style}: margins must be explicit"
+        group = "tab" if "_tab_" in style.stem else "object"
+        if group in geometries:
+            assert geometries[group] == geometry, f"{style}: state changes hit geometry"
+        geometries[group] = geometry
+
 def validate_family(family: str) -> None:
     manifest = json.loads((ART / "manifest.json").read_text(encoding="utf-8"))
     declared = {entry["name"] for entry in manifest["assets"] if entry["prompt"] and entry["tool"] == "built-in image_gen"}
@@ -38,6 +64,9 @@ def validate_family(family: str) -> None:
         assert abs(width / height - expected) < 0.005, f"{path}: incorrect object aspect"
     styles = sorted((ROOT / "assets/ui/official/objects" / family).glob("*.tres"))
     assert len(styles) >= 4, f"{family}: missing interactive states"
+    if family in COUNTER_FAMILIES:
+        validate_counter_styles(family, styles, declared)
+        return
     geometries = {}
     bindings = set()
     for style in styles:
@@ -66,5 +95,8 @@ def validate_theme() -> None:
             if source.suffix not in (".gd", ".tscn", ".tres") or "ci" in source.parts:
                 continue
             for path in re.findall(r'res://[^"\s]+\.(?:png|jpg|webp|svg|ttf|otf)', source.read_text(encoding="utf-8")):
-                assert path.startswith("res://assets/ui/generated/"), f"{source}: retired visual dependency {path}"
+                is_title_font = path in {"res://assets/ui/official/typography/LibreBaskerville.ttf", "res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf"}
+                assert path.startswith("res://assets/ui/generated/") or is_title_font, f"{source}: retired visual dependency {path}"
                 assert (ROOT / path.removeprefix("res://")).is_file(), f"{source}: missing visual {path}"
+                if is_title_font:
+                    assert (ROOT / path.removeprefix("res://")).with_name("OFL.txt").is_file(), "missing title font license"

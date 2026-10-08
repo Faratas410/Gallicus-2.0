@@ -63,7 +63,7 @@ def main() -> int:
         "func _apply_broken_seal_to_stake",
         "func _compute_cashout_glory",
         "func _format_push_luck_receipt_text",
-        "POSTA VIVA: +%d Gloria",
+        "%d GLORIA IN POSTA",
         "CORRUZIONE: %d",
         "func _format_cashout_note",
         "func _format_double_note",

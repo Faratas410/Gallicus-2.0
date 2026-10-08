@@ -1,0 +1,8 @@
+[gd_resource type="FontVariation" format=3]
+
+[ext_resource type="FontFile" path="res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf" id="1"]
+
+[resource]
+base_font = ExtResource("1")
+variation_opentype = { 2003265652: 900.0, 1869640570: 48.0, 2003072104: 62.5 }
+spacing_glyph = -1

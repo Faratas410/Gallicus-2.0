@@ -53,11 +53,12 @@ func _ready() -> void:
 	_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_place(_image, Rect2(0, 20, 400, 600))
+	_place(_image, Rect2(20, 20, 400, 600))
 	var panel := Panel.new()
 	panel.add_theme_stylebox_override("panel", preload("res://assets/ui/official/styleboxes/sb_panel_main.tres"))
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_place(panel, Rect2(392, 134, 768, 430))
+	_stage.move_child(_image, panel.get_index())
 	_chapter = _label("ConversationTitle", Rect2(432, 46, 688, 54), 22)
 	_chapter.add_theme_color_override("font_color", Color(0.69, 0.61, 0.44))
 	_speaker = _label("SpeakerName", Rect2(432, 163, 630, 54), 34)
@@ -135,6 +136,7 @@ func _refresh_line() -> void:
 	var line: Dictionary = _payload.lines[_beat]
 	var identity: Dictionary = Catalog.SPEAKERS[line.speaker]
 	_image.texture = load(str(identity.portrait)) as Texture2D
+	_image.material = preload("res://assets/ui/official/portrait_grounding.tres") if str(identity.portrait).ends_with("_cutout.png") else null
 	_speaker.text = tr(str(identity.name))
 	_role.text = tr(str(identity.role))
 	_caption.text = tr(str(line.text))

@@ -1,64 +1,69 @@
 extends RefCounted
 
-# Text-only arena inhabitants; never the voice or decisions of the Register.
+# Arena inhabitants; portraits never own the voice or decisions of the Register.
 const CHARACTERS: Array[Dictionary] = [
   {
     "id": "nerio",
+    "portrait": "res://assets/ui/generated/dialogue_nerio_cutout.png",
     "name": "Nerio",
     "role": "Gufo scrivano",
-    "description": "Nerio allinea le copie con il bordo dell’ala. Ricorda ogni raschiatura, mai il motivo di chi l’ha chiesta. Per lui una pagina fuori posto è un lavoro lasciato a metà."
+    "description": "Nerio allinea le copie con il bordo dell’ala. Di una raschiatura ricorda il punto esatto, non perché gli sia stata chiesta. Una pagina storta gli lascia il lavoro a metà."
   },
   {
     "id": "vessa",
+    "portrait": "res://assets/ui/generated/dialogue_vessa_cutout.png",
     "name": "Vessa",
     "role": "Gufo delle quote",
-    "description": "Vessa conta gli spazi rimasti sulla tavola delle quote. Il suo piumaggio è sempre composto. Parla di margine anche quando gli altri parlano di ferite."
+    "description": "Vessa tiene il piumaggio composto e conta gli spazi vuoti sulla tavola delle quote. Gli altri le mostrano le ferite; lei guarda quanto margine rimane."
   },
   {
     "id": "orvo",
+    "portrait": "res://assets/ui/generated/dialogue_orvo_cutout.png",
     "name": "Orvo",
     "role": "Gufo banditore",
-    "description": "Orvo rivolge un ciuffo alla gradinata e l’altro ai colleghi. Prova le parole sottovoce prima di lanciarle all’arena. Detesta sprecare un annuncio su chi non ascolta."
+    "description": "Orvo tiene un ciuffo verso i colleghi e l’altro verso la gradinata. Prova il richiamo sottovoce. Prima di lanciarlo aspetta che l’ultima fila ascolti: un annuncio sprecato non lo recupera."
   },
   {
     "id": "rugo",
+    "portrait": "res://assets/ui/generated/dialogue_rugo_cutout.png",
     "name": "Rugo",
     "role": "Gallo della soglia",
-    "description": "Rugo ha una tacca nella cresta e liscia sempre la stessa penna del petto. Dalla soglia ascolta il banditore senza alzare il becco. Una volta gridava sopra gli annunci; ora sceglie quando farsi sentire."
+    "description": "Rugo liscia sempre la stessa penna del petto. Nella cresta ha una tacca dei giorni in cui copriva gli annunci. Ora ascolta dalla soglia, col becco basso. La voce ce l’ha ancora; sceglie quando usarla."
   },
   {
     "id": "dima",
+    "portrait": "res://assets/ui/generated/dialogue_dima_cutout.png",
     "name": "Dima",
     "role": "Gallina della gradinata",
-    "description": "Dima tiene una zampa sul posto accanto finché la gradinata si riempie. Riconosce i presenti dal passo sulla pietra. Quando Vessa conta i posti, lei ricorda chi li occupava."
+    "description": "Dima tiene la zampa sul posto accanto finché la gradinata si riempie. Poi la toglie. Le basta il passo sulla pietra per sapere chi è arrivato. Vessa conta i posti; Dima ricorda chi ci sedeva."
   }
 ]
 
 const DIALOGUES: Dictionary = {
   "pact": [
     [
-      "Nerio: La firma è asciutta.",
-      "Vessa: Il margine resta in vendita."
+      "Nerio: Aspetta. La firma è ancora fresca.",
+      "Vessa: Intanto posso vendere il margine."
     ],
     [
       "Orvo: Posso annunciarlo?",
-      "Nerio: Prima lascia ferma la copia."
+      "Nerio: Quando hai finito di muovermi la copia."
     ],
     [
-      "Vessa: Hai lasciato spazio?",
-      "Nerio: Fra le righe. Non nella firma."
+      "Vessa: Fra quelle righe ci sta ancora qualcosa.",
+      "Nerio: Ci sta la raschiatura. Lascia stare."
     ],
     [
-      "Rugo: L’inchiostro copre anche la tacca?",
-      "Nerio: La copia non ha piume."
+      "Rugo: Hai copiato anche la tacca?",
+      "Nerio: Sul foglio non c’era."
     ],
     [
       "Vessa: Quel posto è libero, Dima.",
-      "Dima: So chi ci sedeva."
+      "Dima: Il righello lascialo dov’è."
     ],
     [
       "Vessa: Il conto è aperto.",
-      "Nerio: Copio la cifra, non il motivo."
+      "Nerio: La cifra l’ho copiata. Ora puoi riprenderlo."
     ],
     [
       "Orvo: La prima fila ha le tasche piene.",
@@ -71,58 +76,58 @@ const DIALOGUES: Dictionary = {
   ],
   "gesture": [
     [
-      "Orvo: L’ultima fila vuole sentire.",
-      "Vessa: Tu conta chi resta."
+      "Orvo: Dall’ultima fila non mi sentono.",
+      "Vessa: Ma restano seduti. Continua."
     ],
     [
       "Vessa: La gradinata aspetta.",
-      "Orvo: Le pause sono parte del richiamo."
+      "Orvo: Aspetto che smettano di parlare."
     ],
     [
-      "Nerio: Hai già finito l’annuncio?",
-      "Orvo: Sto aspettando che mi ascoltino."
+      "Nerio: Hai saltato l’ultima riga.",
+      "Orvo: La tengo per quando ascoltano."
     ],
     [
       "Orvo: Non canti più, Rugo?",
       "Rugo: Aspetto che finisca il tuo richiamo."
     ],
     [
-      "Dima: Ti ho sentito dalla pietra.",
-      "Rugo: Il passo è rimasto quello."
+      "Dima: Ti ho sentito arrivare, prima del richiamo.",
+      "Rugo: Il passo non l’ho cambiato."
     ],
     [
       "Orvo: Guarda come ti studiano.",
-      "Rugo: Prima di gridare, la gradinata pesa."
+      "Rugo: Li vedo. Non ho ancora aperto il becco."
     ],
     [
-      "Vessa: La folla paga chi la regge.",
-      "Orvo: E presenta il conto a chi la perde."
+      "Vessa: Guarda le monete. Basta tenerli dalla tua parte.",
+      "Orvo: Se si rivoltano, il conto lo mandi tu."
     ],
     [
       "Dima: Sento la sabbia nelle tasche.",
-      "Rugo: Allora non è ancora il momento."
+      "Rugo: Aspetta. Non chiamarli ancora."
     ]
   ],
   "pact_worn": [
     [
       "Nerio: Un’altra copia.",
-      "Vessa: Lo spazio si vende ancora."
+      "Vessa: Il margine lo prendo io."
     ],
     [
       "Orvo: Lo stesso annuncio?",
-      "Nerio: Un foglio diverso."
+      "Nerio: Guarda il foglio."
     ],
     [
       "Vessa: È rimasto margine?",
-      "Nerio: Sul bordo."
+      "Nerio: Serve a me."
     ],
     [
       "Rugo: La tacca resta.",
-      "Nerio: Anche la copia."
+      "Nerio: Qui non c’è."
     ],
     [
-      "Vessa: Sempre quel posto?",
-      "Dima: Sempre quello."
+      "Vessa: Posso misurare?",
+      "Dima: Fino a qui."
     ],
     [
       "Vessa: Il conto.",
@@ -139,16 +144,16 @@ const DIALOGUES: Dictionary = {
   ],
   "gesture_worn": [
     [
-      "Orvo: Ancora l’ultima fila.",
-      "Vessa: È ancora qui."
+      "Orvo: L’ultima fila non sente.",
+      "Vessa: Ma resta."
     ],
     [
       "Vessa: Aspettano.",
-      "Orvo: Tengo la voce."
+      "Orvo: Aspetto anch’io."
     ],
     [
       "Nerio: L’annuncio?",
-      "Orvo: Più corto."
+      "Orvo: Manca l’ultima riga."
     ],
     [
       "Orvo: Rugo, ci sei?",
@@ -156,15 +161,15 @@ const DIALOGUES: Dictionary = {
     ],
     [
       "Dima: Lo stesso passo.",
-      "Rugo: Lo senti ancora."
+      "Rugo: Mi hai sentito."
     ],
     [
-      "Orvo: Ti pesano.",
+      "Orvo: Ti guardano.",
       "Rugo: Lo so."
     ],
     [
-      "Vessa: Paga chi regge.",
-      "Orvo: Sempre."
+      "Vessa: Le monete.",
+      "Orvo: O il conto."
     ],
     [
       "Dima: La sabbia.",

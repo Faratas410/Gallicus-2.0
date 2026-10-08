@@ -181,7 +181,7 @@ Cicatrici,Scars
 Pattern,Pattern
 Fascicolo chiuso,File closed
 Il registro è aperto.,The registry is open.
-Incassa ora o aumenta esposizione.,Cash out now or increase exposure.
+Incassa la posta o rischiala nel prossimo rilancio.,Bank the stake or risk it on the next raise.
 La condanna chiude il ciclo senza premio.,The sentence closes the cycle without reward.
 Scegli un atto. La firma è irrevocabile.,Choose an act. The signature is irrevocable.
 Nessun dettaglio.,No details.
@@ -215,13 +215,13 @@ APRI IL REGISTRO,OPEN THE REGISTRY
 REGISTRO DELL'ARENA,ARENA REGISTRY
 Apertura del verbale,OPENING THE RECORD
 IL REGISTRO È CHIUSO,THE REGISTRY IS CLOSED
-La pietra attende una firma.,The stone awaits a signature.
+Il Registro è pronto per la firma.,The Registry is ready for a signature.
 Ogni patto lascia un segno.,Every pact leaves a mark.
 APRI,OPEN
 Apri il registro.,Open the registry.
 Il registro è chiuso. Aprilo per scegliere la via.,The registry is closed. Open it to choose the path.
 SCEGLI LA VIA,CHOOSE THE PATH
-Ogni firma apre una promessa e una condanna.,Every signature opens a promise and a sentence.
+Leggi la promessa e il costo. Poi firma.,Read the promise and the cost. Then sign.
 CONDIZIONE,CONDITION
 PATTO,PACT
 registrato,recorded
@@ -283,15 +283,15 @@ FASCICOLO CHIUSO - PATTERN,CASE FILE CLOSED - PATTERN
 FASCICOLO CHIUSO,CASE FILE CLOSED
 Il Registro conserva la traccia del percorso.,The Registry preserves the record of the path.
 Il Registro chiude il fascicolo e classifica l'esito.,The Registry closes the case file and classifies the outcome.
-Hai lasciato l'arena con la posta riconosciuta.,You left the arena with the stake acknowledged.
+Posta incassata. Il percorso è chiuso.,Stake banked. The path is closed.
 Il patto regge: il percorso può proseguire.,The pact holds: the path may continue.
-La condanna viene accettata e il percorso resta segnato.,The sentence is accepted and the path remains marked.
+Condanna iscritta. I segni restano nel fascicolo.,Condemnation entered. The marks remain in the case file.
 Pressione massima: %d/%d.,Peak pressure: %d/%d.
 Patti e sblocchi sono stati aggiornati nell'Archivio.,Pacts and unlocks have been updated in the Archive.
 %d condanne archiviate; il dettaglio resta nell'Archivio.,%d sentences archived; details remain in the Archive.
 Nessun patto aggiuntivo da elencare: consulta l'Archivio per gli sblocchi.,No additional pacts to list: consult the Archive for unlocks.
-Il dettaglio degli sblocchi resta consultabile nell'Archivio.,Unlock details remain available in the Archive.
-Il Registro resta aperto: scegli se proseguire o lasciare l'arena.,The Registry remains open: choose whether to continue or leave the arena.
+Le nuove voci sono consultabili nell’Archivio.,New entries can be read in the Archive.
+Il Registro resta aperto. Puoi proseguire o tornare al menu.,The Registry stays open. You can proceed or return to the menu.
 rinunciato,declined
 accettato,accepted
 %d condizioni registrate,%d conditions recorded
@@ -657,11 +657,13 @@ Hai firmato un patto che ha chiuso il percorso.,You signed a pact that closed th
 Hai solo aggiunto il nome.","The sentence was written.
 You only added your name."
 Hai scelto una condanna senza ricevere alcun reward.,You chose a sentence without receiving any reward.
-"La folla non ha capito.
-Tu si.","The crowd did not understand.
-You did."
+"Nessun premio sul banco.
+La condanna è iscritta.","No reward on the counter.
+The condemnation is entered."
 Hai perso il percorso a causa diretta di un patto firmato.,You lost the run as a direct result of a signed pact.
-Non e stata sfortuna.,It was not bad luck.
+"Il costo era nel patto.
+Ora è nel fascicolo.","The cost was in the pact.
+Now it is in the case file."
 Hai continuato una run nonostante le tue condizioni critiche.,You continued a run despite your critical condition.
 Il corpo era gia un avviso.,Your body was already a warning.
 Hai evitato la chiusura per un soffio.,You narrowly escaped closure.
@@ -669,23 +671,25 @@ Hai evitato la chiusura per un soffio.,You narrowly escaped closure.
 Tu no.","The crowd sighed.
 You did not."
 Hai incassato dopo una sequenza di scelte rischiose.,You cashed out after a series of risky choices.
-"La saggezza arriva tardi.
-Ma arriva.","Wisdom comes late.
-But it comes."
+"La quietanza porta la cifra incassata.
+Le firme restano dove sono.","The receipt bears the amount banked.
+The signatures stay where they are."
 Hai incassato con un livello di rischio estremamente alto.,You cashed out at an extremely high level of risk.
 Questa volta.,This time.
 Hai perso la tua prima run.,You lost your first run.
 L'arena non fa sconti ai nuovi.,The arena makes no allowances for newcomers.
 Hai perso il percorso vicino a una soglia decisiva.,You lost the run close to a decisive threshold.
-La folla aveva gia deciso.,The crowd had already decided.
+"Il percorso si è chiuso.
+Il verbale si ferma qui.","The path has closed.
+The record stops here."
 Hai preso una decisione rischiosa un attimo prima della fine.,You made a risky decision just before the end.
-"Un secondo prima
-sarebbe bastato.","One second earlier
-would have been enough."
+"L’ultimo rischio è iscritto.
+Dopo, il verbale si chiude.","The last risk is entered.
+After it, the record closes."
 Hai perso il percorso senza errori meccanici evidenti.,You lost the run without any obvious mechanical mistakes.
 Nessuno ha barato.,No one cheated.
 Hai completato una run.,You completed a run.
-L'arena non dimentica.,The arena does not forget.
+Il percorso ha una copia nel Registro.,The path has a copy in the Registry.
 Hai attirato l'attenzione totale della folla.,You drew the full attention of the crowd.
 Non eri piu solo.,You were no longer alone.
 Il pubblico ha iniziato a riconoscerti.,The crowd began to recognize you.
@@ -735,85 +739,85 @@ La gradinata ricorda l'esposizione. Le sue voci si sono fatte più dure.,The sta
 La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro.,The stands respond to gestures. Their voices are not the Registry's verdict.
 ESCI DAL GIOCO,EXIT GAME
 Gufo scrivano,Owl scribe
-"Nerio allinea le copie con il bordo dell’ala. Ricorda ogni raschiatura, mai il motivo di chi l’ha chiesta. Per lui una pagina fuori posto è un lavoro lasciato a metà.","Nerio aligns copies with the edge of his wing. He remembers every scraping, never why it was requested. To him, a misplaced page is unfinished work."
+"Nerio allinea le copie con il bordo dell’ala. Di una raschiatura ricorda il punto esatto, non perché gli sia stata chiesta. Una pagina storta gli lascia il lavoro a metà.","Nerio aligns copies with the edge of his wing. He remembers exactly where a scraping was made, not why it was requested. A crooked page leaves his work unfinished."
 Gufo delle quote,Owl of the odds
-Vessa conta gli spazi rimasti sulla tavola delle quote. Il suo piumaggio è sempre composto. Parla di margine anche quando gli altri parlano di ferite.,Vessa counts the spaces left on the odds board. Her plumage is always tidy. She speaks of margins even when others speak of wounds.
+Vessa tiene il piumaggio composto e conta gli spazi vuoti sulla tavola delle quote. Gli altri le mostrano le ferite; lei guarda quanto margine rimane.,Vessa keeps her plumage neat and counts the empty spaces on the odds board. Others show her their wounds; she looks at how much margin is left.
 Gufo banditore,Owl herald
-Orvo rivolge un ciuffo alla gradinata e l’altro ai colleghi. Prova le parole sottovoce prima di lanciarle all’arena. Detesta sprecare un annuncio su chi non ascolta.,Orvo turns one ear tuft toward the stands and the other toward his colleagues. He rehearses words quietly before calling them into the arena. He hates wasting an announcement on those who are not listening.
-Nerio: La firma è asciutta.,Nerio: The signature is dry.
-Vessa: Il margine resta in vendita.,Vessa: The margin is still for sale.
+Orvo tiene un ciuffo verso i colleghi e l’altro verso la gradinata. Prova il richiamo sottovoce. Prima di lanciarlo aspetta che l’ultima fila ascolti: un annuncio sprecato non lo recupera.,"Orvo keeps one tuft turned towards his colleagues and the other towards the stands. He rehearses under his breath. Before calling out, he waits for the back row to listen: a wasted announcement cannot be taken back."
+Nerio: Aspetta. La firma è ancora fresca.,Nerio: Wait. The signature is still fresh.
+Vessa: Intanto posso vendere il margine.,Vessa: I can sell the margin while we wait.
 Orvo: Posso annunciarlo?,Orvo: May I announce it?
-Nerio: Prima lascia ferma la copia.,"Nerio: First, leave the copy still."
-Vessa: Hai lasciato spazio?,Vessa: Did you leave room?
-Nerio: Fra le righe. Non nella firma.,Nerio: Between the lines. Not in the signature.
-Orvo: L’ultima fila vuole sentire.,Orvo: The back row wants to hear.
-Vessa: Tu conta chi resta.,Vessa: Count those who stay.
+Nerio: Quando hai finito di muovermi la copia.,Nerio: Once you stop moving my copy.
+Vessa: Fra quelle righe ci sta ancora qualcosa.,Vessa: There is room for something between those lines.
+Nerio: Ci sta la raschiatura. Lascia stare.,Nerio: Room to scrape. Leave it alone.
+Orvo: Dall’ultima fila non mi sentono.,Orvo: They cannot hear me in the back row.
+Vessa: Ma restano seduti. Continua.,Vessa: But they are still seated. Go on.
 Vessa: La gradinata aspetta.,Vessa: The stands are waiting.
-Orvo: Le pause sono parte del richiamo.,Orvo: Pauses are part of the call.
-Nerio: Hai già finito l’annuncio?,Nerio: Have you finished the announcement?
-Orvo: Sto aspettando che mi ascoltino.,Orvo: I am waiting for them to listen.
+Orvo: Aspetto che smettano di parlare.,Orvo: I am waiting for them to stop talking.
+Nerio: Hai saltato l’ultima riga.,Nerio: You skipped the last line.
+Orvo: La tengo per quando ascoltano.,Orvo: I am saving it for when they listen.
 Nerio: Un’altra copia.,Nerio: Another copy.
-Vessa: Lo spazio si vende ancora.,Vessa: Space still sells.
+Vessa: Il margine lo prendo io.,Vessa: I will take the margin.
 Orvo: Lo stesso annuncio?,Orvo: The same announcement?
-Nerio: Un foglio diverso.,Nerio: A different sheet.
+Nerio: Guarda il foglio.,Nerio: Look at the page.
 Vessa: È rimasto margine?,Vessa: Any margin left?
-Nerio: Sul bordo.,Nerio: At the edge.
-Orvo: Ancora l’ultima fila.,Orvo: The back row again.
-Vessa: È ancora qui.,Vessa: It is still here.
+Nerio: Serve a me.,Nerio: I need it.
+Orvo: L’ultima fila non sente.,Orvo: The back row cannot hear.
+Vessa: Ma resta.,Vessa: But it stays.
 Vessa: Aspettano.,Vessa: They are waiting.
-Orvo: Tengo la voce.,Orvo: I am saving my voice.
+Orvo: Aspetto anch’io.,Orvo: So am I.
 Nerio: L’annuncio?,Nerio: The announcement?
-Orvo: Più corto.,Orvo: Shorter.
+Orvo: Manca l’ultima riga.,Orvo: One line left.
 GUFI DELL’ARENA,OWLS OF THE ARENA
 Voci dei Gufi,Voices of the Owls
 Gallo della soglia,Rooster at the threshold
-Rugo ha una tacca nella cresta e liscia sempre la stessa penna del petto. Dalla soglia ascolta il banditore senza alzare il becco. Una volta gridava sopra gli annunci; ora sceglie quando farsi sentire.,Rugo has a notch in his comb and always smooths the same breast feather. From the threshold he listens to the herald without raising his beak. He once shouted over announcements; now he chooses when to be heard.
+"Rugo liscia sempre la stessa penna del petto. Nella cresta ha una tacca dei giorni in cui copriva gli annunci. Ora ascolta dalla soglia, col becco basso. La voce ce l’ha ancora; sceglie quando usarla.","Rugo keeps smoothing the same breast feather. The notch in his comb dates from when he drowned out the announcements. Now he listens from the threshold, beak lowered. He still has his voice; he chooses when to use it."
 Gallina della gradinata,Hen in the stands
-"Dima tiene una zampa sul posto accanto finché la gradinata si riempie. Riconosce i presenti dal passo sulla pietra. Quando Vessa conta i posti, lei ricorda chi li occupava.","Dima keeps one foot on the next seat until the stands fill. She recognizes those present by their steps on stone. When Vessa counts the seats, she remembers who occupied them."
-Rugo: L’inchiostro copre anche la tacca?,Rugo: Does the ink cover the notch too?
-Nerio: La copia non ha piume.,Nerio: The copy has no feathers.
+Dima tiene la zampa sul posto accanto finché la gradinata si riempie. Poi la toglie. Le basta il passo sulla pietra per sapere chi è arrivato. Vessa conta i posti; Dima ricorda chi ci sedeva.,Dima keeps her claw on the next seat until the stands fill up. Then she lifts it. A footstep on stone tells her who has arrived. Vessa counts seats; Dima remembers who sat in them.
+Rugo: Hai copiato anche la tacca?,Rugo: Did you copy the notch too?
+Nerio: Sul foglio non c’era.,Nerio: It was not on the page.
 "Vessa: Quel posto è libero, Dima.","Vessa: That seat is free, Dima."
-Dima: So chi ci sedeva.,Dima: I know who sat there.
+Dima: Il righello lascialo dov’è.,Dima: Leave the ruler where it is.
 "Orvo: Non canti più, Rugo?","Orvo: No more crowing, Rugo?"
 Rugo: Aspetto che finisca il tuo richiamo.,Rugo: I am waiting for your call to end.
-Dima: Ti ho sentito dalla pietra.,Dima: I heard you on the stone.
-Rugo: Il passo è rimasto quello.,Rugo: The step is still the same.
+"Dima: Ti ho sentito arrivare, prima del richiamo.","Dima: I heard you coming, before the call."
+Rugo: Il passo non l’ho cambiato.,Rugo: I have not changed my step.
 Rugo: La tacca resta.,Rugo: The notch remains.
-Nerio: Anche la copia.,Nerio: So does the copy.
-Vessa: Sempre quel posto?,Vessa: Still that seat?
-Dima: Sempre quello.,Dima: Still that one.
+Nerio: Qui non c’è.,Nerio: It is not here.
+Vessa: Posso misurare?,Vessa: May I measure?
+Dima: Fino a qui.,Dima: This far.
 "Orvo: Rugo, ci sei?","Orvo: Rugo, are you there?"
 Rugo: Ho ancora voce.,Rugo: I still have a voice.
 Dima: Lo stesso passo.,Dima: The same step.
-Rugo: Lo senti ancora.,Rugo: You still hear it.
+Rugo: Mi hai sentito.,Rugo: You heard me.
 PRESENZE DELL’ARENA,FACES OF THE ARENA
 Voci dell’arena,Voices of the arena
 Registro,Registry
 Terminale rituale · stato,Ritual terminal · status
 La prima copia,The first copy
-La tavoletta entra qui. Sul vetro torna soltanto ciò che è stato accettato.,The tablet goes here. Only what has been accepted returns on the glass.
+La tavoletta entra qui. Guarda il vetro: torna soltanto ciò che hai accettato.,The tablet goes in here. Look at the glass: only what you accepted comes back.
 "INGRESSO APERTO
 Nessuna promessa iscritta.","ENTRY OPEN
 No promise inscribed."
-"Quando il banditore copriva la mia voce, credevo che qui non arrivasse niente.","When the herald drowned out my voice, I thought nothing reached this place."
-Arrivava la firma.,The signature reached it.
-Quella sì. Anche quando io non avevo più fiato.,That did. Even when I had no breath left.
-La copia resta. Il resto lo sentirà la gradinata.,The copy stays. The stands will hear the rest.
+E quando Orvo copriva la mia voce? Qui arrivava qualcosa?,And when Orvo drowned me out? Did anything reach this thing?
+Arrivava la firma.,Your signature did.
+Io avevo finito il fiato. Quella l’hai presa tutta?,I had no breath left. Did you get all of it?
+"Tutta. È qui, se vuoi controllare.","All of it. It is here, if you want to check."
 La stessa riga,The same line
-La tavola cambia foglio. Quel posto è ancora vuoto.,The table gets a new sheet. That seat is still empty.
-Ti ricordi ancora il passo?,Do you still remember the step?
-Si fermava qui. Ora il banditore non lascia neppure la pausa.,They used to stop here. Now the herald does not even leave a pause.
+Un altro foglio. Il posto accanto è ancora vuoto.,Another page. The seat beside me is still empty.
+Lo riconosceresti ancora dal passo?,Would you still know those footsteps?
+Si fermava qui. Orvo ora tira dritto con l’annuncio. Non lascia più quella pausa.,They stopped here. Orvo goes straight through his announcement now. He leaves no pause.
 "ARCHIVIO DISPONIBILE
 Tracce conservate.","ARCHIVE AVAILABLE
 Traces preserved."
-Ho sostituito la tavoletta. Il solco torna nello stesso punto.,I replaced the tablet. The groove returns to the same spot.
-Io conto i posti che non si riempiono.,I count the seats that never fill.
+Ho cambiato la tavoletta. Guarda: il solco torna proprio qui.,I replaced the tablet. Look: the groove comes back right here.
+"Sì, lo vedo. Ma ti stavo parlando del posto.","Yes, I see it. But I was talking about the seat."
 Il posto accanto,The next seat
 Ho allineato anche l’ultima pila. Non resta nulla fuori margine.,I aligned the last stack too. Nothing remains outside the margin.
-Eppure dalla soglia entra ancora aria.,Yet air still comes through the threshold.
+Dalla soglia entra ancora aria. La senti?,There is still air coming through the threshold. Can you feel it?
 Il posto accanto lo lascio libero.,I am leaving the next seat free.
 Non lo tieni più?,You are no longer keeping it?
-Non serve occuparlo.,It does not need to be occupied.
+No. Tolgo la zampa.,No. I am moving my claw.
 Allora resto qui. Senza chiamare.,Then I will stay here. Without calling.
 ASCOLTA,LISTEN
 TORNA AL RITO,RETURN TO THE RITE
@@ -900,7 +904,7 @@ ASSICURA LA POSTA,INSURE THE STAKE
 Favore +2.,Favour +2.
 Pressione -2.,Pressure -2.
 "Se il sigillo cede, la posta resta.","If the seal breaks, the stake stays."
-In debito: il banco è chiuso finché una quietanza non salda il conto.,In debt: the counter stays closed until a receipt settles the account.
+Conto in debito. Salda con la quietanza per riaprire il banco.,Account in debt. Settle it with a receipt to reopen the counter.
 La posta di questa arena è assicurata.,This arena's stake is insured.
 La gradinata lancia monete: Denari +%d.,The stands throw coins: Denarii +%d.
 La rivolta costa: Denari -%d.,The riot costs: Denarii -%d.
@@ -912,89 +916,89 @@ La polizza di Vessa salva la posta.,Vessa's policy saves the stake.
 Comprato al banco: Favore +2.,Bought at the counter: Favour +2.
 Debito con Vessa,Debt with Vessa
 Il conto di Vessa,Vessa's account
-"Vessa ha aperto un conto a tuo nome. Io copio le cifre, lei decide il margine.",Vessa has opened an account in your name. I copy the figures; she decides the margin.
-Un conto? Una volta qui si pagava con la voce.,An account? Here we used to pay with our voices.
-La voce non si archivia. I Denari sì.,A voice cannot be filed. Denarii can.
+Questo è il tuo conto da Vessa. Le cifre le copio io; il margine lo decide lei.,This is your account with Vessa. I copy the figures; she sets the margin.
+Prima dei Denari pagavamo con la voce. Quella dove la metti?,"Before Denarii, we paid with our voices. Where do you put that?"
+"Sul conto ci sono i Denari, Dima. Per la voce non ho una cifra.","The account holds Denarii, Dima. I have no figure for a voice."
 E quando il conto scende sotto zero?,And when the account drops below zero?
-"Vessa non dimentica un debito. Lo ricorda alla gradinata, a ogni arena.","Vessa never forgets a debt. She reminds the stands of it, every arena."
-Allora anche la gradinata tiene un conto. Il suo non si scrive.,Then the stands keep an account too. Theirs is never written down.
+"Vessa lo ricorda alla gradinata. A ogni arena, finché resta il debito.","Vessa reminds the stands. Every arena, for as long as the debt remains."
+Così la voce torna buona. Per riscuotere.,So a voice is useful after all. For collecting.
 La sabbia nelle tasche,Sand in their pockets
 Hai visto la prima fila? Ha le tasche piene di sabbia.,Have you seen the front row? Their pockets are full of sand.
-"Una volta la sabbia restava giù, sotto i passi. Copriva i segni.","Sand used to stay down there, under the footsteps. It covered the marks."
-Ora la raccolgono. La lanciano quando un patto non piace.,Now they gather it. They throw it when a pact displeases them.
+Prima restava sotto i passi. Almeno copriva i segni.,It used to stay underfoot. At least it covered the marks.
+"Adesso se la tengono. Se il patto non piace, la tirano.","Now they save it. If they dislike the pact, they throw it."
 E quando piace?,And when it pleases them?
-Monete. Vessa le conta prima che tocchino terra.,Coins. Vessa counts them before they touch the ground.
-"Sabbia o monete, il corpo le ricorda tutte e due.","Sand or coins, the body remembers both."
+Tirano monete. Vessa è già lì che le conta.,They throw coins. Vessa is already counting them.
+Quelle almeno si vedono arrivare.,At least you can see those coming.
 Il richiamo,The call
-"Orvo prova i richiami sottovoce, prima di salire. Lo sento dalla soglia.",Orvo rehearses his calls under his breath before he goes up. I hear him from the threshold.
+Orvo sta provando il richiamo. Lo sento anche quando crede di parlare piano.,Orvo is rehearsing his call. I can hear him even when he thinks he is being quiet.
 Tu non provavi mai.,You never rehearsed.
-"Io chiamavo e basta, sopra tutti. La tacca nella cresta è di quei giorni.","I just called, over everyone. The notch in my crest dates from those days."
-Sul foglio la tacca non c’è. C’è solo l’annuncio accettato.,The notch is not on the page. Only the accepted announcement is.
+Chiamavo sopra tutti. Questa tacca me la porto da allora.,I called over everyone. I have had this notch ever since.
+Qui ho l’annuncio accettato. Della tacca non c’è traccia.,I have the accepted announcement here. There is no record of the notch.
 Allora scrivi questo: oggi ho scelto di tacere.,Then write this: today I chose to keep quiet.
-Un gallo che tace non è un atto. Non lo copio.,A rooster keeping quiet is not an act. I do not copy it.
+"Non ho un atto da copiare, Rugo.","There is no act for me to copy, Rugo."
 I posti in vendita,Seats for sale
 Vessa è passata con il righello. Vuole vendere anche la terza fila.,Vessa came by with her ruler. She wants to sell the third row too.
-"Ha misurato. Lo spazio libero rende, se lo si iscrive.","She measured. Empty space pays, once it is entered."
-Ogni posto ha un passo. Io li riconosco tutti.,Every seat has its footstep. I recognise them all.
+Mi ha dato le misure. Devo copiarle tutte.,She gave me the measurements. I have to copy them all.
+Tutte? Io so chi si sedeva in ciascuno di quei posti.,All of them? I know who sat in every one of those seats.
 Anche quello accanto a te?,Even the one next to you?
-Quello non si misura. L’ho detto a Vessa: il righello si ferma lì.,That one is not measured. I told Vessa: the ruler stops there.
-"Ho copiato la misura fino al tuo posto. Oltre, il foglio resta bianco.","I copied the measure up to your seat. Beyond it, the page stays blank."
+"Le ho fermato il righello. Fin qui, le ho detto. Non oltre.","I stopped her ruler. This far, I told her. No further."
+La mia copia finisce al tuo posto. Dopo ho lasciato bianco.,My copy ends at your seat. I left the rest blank.
 La riga che resta,The line that stays
-Ogni sera raschio le copie sbagliate. La cera torna liscia.,Every evening I scrape the wrong copies. The wax comes back smooth.
+Le altre copie le ho raschiate. Come ogni sera. Passa l’ala: sono lisce.,I scraped the other copies. As I do every evening. Run your wing over them: smooth.
 "COPIA RESPINTA
 Riga già iscritta.","COPY REJECTED
 Line already entered."
-Una riga non va via. Ho consumato tre lame.,One line will not come off. I have worn out three blades.
+"Questa invece è ancora qui. Tre lame, e non sono riuscito a toglierla.","But this one is still here. Three blades, and I have not managed to remove it."
 Che cosa dice?,What does it say?
-Un nome e un fascicolo aperto. Il resto non è di mia competenza.,A name and an open case file. The rest is not my concern.
-Lasciala dov’è. Anch’io lascio il posto com’è.,Leave it where it is. I leave the seat as it is too.
+Un nome. Il fascicolo è aperto. Non ho altro da trascrivere.,A name. The case file is open. I have nothing else to transcribe.
+Lascia stare la lama. Io il posto lo tengo ancora.,Put the blade down. I am still keeping the seat.
 Vessa: Il conto è aperto.,Vessa: The account is open.
-"Nerio: Copio la cifra, non il motivo.","Nerio: I copy the figure, not the reason."
+Nerio: La cifra l’ho copiata. Ora puoi riprenderlo.,Nerio: I copied the figure. You can take it back now.
 Orvo: La prima fila ha le tasche piene.,Orvo: The front row has full pockets.
 Vessa: Di sabbia o di monete?,Vessa: Of sand or of coins?
 Dima: Hanno venduto la terza fila.,Dima: They sold the third row.
 Vessa: Il tuo posto no. Per ora.,Vessa: Not your seat. For now.
 Orvo: Guarda come ti studiano.,Orvo: Look how they study you.
-"Rugo: Prima di gridare, la gradinata pesa.","Rugo: Before it shouts, the crowd weighs you."
-Vessa: La folla paga chi la regge.,Vessa: The crowd pays whoever holds it.
-Orvo: E presenta il conto a chi la perde.,Orvo: And bills whoever loses it.
+Rugo: Li vedo. Non ho ancora aperto il becco.,Rugo: I see them. I have not even opened my beak.
+Vessa: Guarda le monete. Basta tenerli dalla tua parte.,Vessa: Look at the coins. Just keep them on your side.
+"Orvo: Se si rivoltano, il conto lo mandi tu.","Orvo: If they turn, you send the bill."
 Dima: Sento la sabbia nelle tasche.,Dima: I can hear the sand in their pockets.
-Rugo: Allora non è ancora il momento.,Rugo: Then it is not time yet.
+Rugo: Aspetta. Non chiamarli ancora.,Rugo: Wait. Do not call to them yet.
 Vessa: Il conto.,Vessa: The account.
 Nerio: Copiato.,Nerio: Copied.
 Orvo: Tasche piene.,Orvo: Full pockets.
 "Vessa: Monete, spero.","Vessa: Coins, I hope."
 Dima: La terza fila.,Dima: The third row.
 Vessa: Venduta.,Vessa: Sold.
-Orvo: Ti pesano.,Orvo: They are weighing you.
+Orvo: Ti guardano.,Orvo: They are watching you.
 Rugo: Lo so.,Rugo: I know.
-Vessa: Paga chi regge.,Vessa: It pays whoever holds.
-Orvo: Sempre.,Orvo: Always.
+Vessa: Le monete.,Vessa: The coins.
+Orvo: O il conto.,Orvo: Or the bill.
 Dima: La sabbia.,Dima: The sand.
 Rugo: Non ancora.,Rugo: Not yet.
 Il posto tenuto,The kept seat
-"Ogni volta che la gradinata si riempie, tieni la zampa su quel posto.","Every time the stands fill up, you keep your claw on that seat."
-"Finché si riempie. Poi la tolgo, e nessuno si siede.","Until they fill up. Then I lift it, and nobody sits down."
+"Dima, la gradinata si sta riempiendo. Hai ancora la zampa lì.","Dima, the stands are filling up. Your claw is still there."
+Aspetto che si siedano. Dopo la tolgo. Tanto lì non si mette nessuno.,I wait until they sit down. Then I move it. Nobody sits there anyway.
 Chi ci sedeva?,Who used to sit there?
 Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.,Someone who closed every bando. Orvo could barely announce the next one in time.
-Il fascicolo di quel posto risulta aperto. Non ho mai copiato la chiusura.,The case file for that seat is still open. I never copied its closing.
-"Perché non c’è stata. Si è alzato, e il posto è rimasto caldo.","Because there was none. Whoever it was stood up, and the seat stayed warm."
+Manca la chiusura del fascicolo. Non l’ho mai ricevuta da copiare.,The closing entry is missing from the case file. I never received it to copy.
+Io l’ho visto alzarsi. Il posto era ancora caldo. La chiusura non c’è stata.,I saw them get up. The seat was still warm. There was no closing.
 Il passo,The footstep
-Oggi ho sentito un passo sulla pietra. Si fermava dove si fermava il suo.,Today I heard a footstep on the stone. It stopped where theirs used to stop.
+"Quel passo, oggi. Si è fermato sulla stessa pietra.",Those footsteps today. They stopped on the same stone.
 Il nuovo?,The new one?
 "Il nuovo. Stessa pausa prima della soglia, stesso piede avanti.","The new one. Same pause before the threshold, same foot forward."
-Due soggetti non hanno lo stesso passo. Il Registro li distingue.,No two subjects share a footstep. The Registry tells them apart.
-Il Registro distingue le righe. Io sento la pietra.,The Registry tells lines apart. I listen to the stone.
+Le righe sono distinte. Su questo non c’è dubbio.,The entries are separate. There is no doubt about that.
+Non ti ho chiesto delle righe. La pausa l’ho sentita.,I did not ask about the entries. I heard the pause.
 "Allora lascia la zampa dov’è, ancora per un po’.","Then keep your claw where it is, a little longer."
 La stessa pendenza,The same slant
 Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.,I set your copy beside that line. They share the same slant.
 "CONFRONTO IN CORSO
 Corrispondenza parziale.","COMPARISON IN PROGRESS
 Partial match."
-"Che vuol dire, parziale?",What does partial mean?
-Che il Registro sta cercando dove finisce l’una e comincia l’altra.,That the Registry is looking for where one ends and the other begins.
+Parziale. Le separi o no?,Partial. Can you separate them or not?
+La pendenza coincide. Non basta per metterle nello stesso fascicolo.,The slant matches. That is not enough to put them in the same case file.
 Il posto è sempre lì. Non aspetta te. Lo tengo io.,The seat is still there. It is not waiting for you. I am keeping it.
-Lo annoto. Non so ancora in quale fascicolo.,I will note it. I do not know yet in which case file.
+Tengo le copie qui. Non le ho ancora archiviate.,I am keeping the copies here. I have not filed them yet.
 BANDO DI ORVO,ORVO'S BANDO
 IL BANDO DI ORVO,ORVO'S BANDO
 %d di %d Gloria entro l'arena %d.,%d of %d Glory by arena %d.
@@ -1005,7 +1009,7 @@ Gradino %d di %d,Step %d of %d
 In palio il racconto «%s».,Prize: the tale “%s”.
 In palio nuovi patti nel Registro.,Prize: new pacts in the Registry.
 Incassa %d Gloria entro l'arena %d.,Bank %d Glory by arena %d.
-Chiudilo: Denari +%d e un gradino.,Close it: Denarii +%d and one step.
+Al bando chiuso: Denari +%d e un gradino.,On closing the bando: Denarii +%d and one step.
 Bando chiuso: gradino %d di %d.,Bando closed: step %d of %d.
 Bando mancato: %d Gloria entro l'arena %d.,Bando missed: %d Glory by arena %d.
 Prossimo bando: %d Gloria entro l'arena %d.,Next bando: %d Glory by arena %d.
@@ -1017,3 +1021,46 @@ Catena %d: posta %s.,Chain %d: stake %s.
 Catena %s,Chain %s
 Bando scaduto: nessun gradino.,Bando expired: no rung.
 Bando mancato: nessun gradino.,Bando missed: no rung.
+%d GLORIA IN POSTA,%d GLORY AT STAKE
+%d Gloria incassate,%d Glory banked
+FERITA APERTA,OPEN WOUND
+OSSA INCRINATE,CRACKED BONES
+MARCHIO DELLA VERGOGNA,MARK OF SHAME
+ARMATURA ARRUGGINITA,RUSTED ARMOUR
+MARCHIO DEL DEBITO,BRAND OF DEBT
+OCCHIO PERDUTO,LOST EYE
+Tenuta rituale ridotta.,Reduced ritual endurance.
+Rischio aumentato nelle arene.,Greater risk in the arenas.
+Il pubblico ti giudica.,The crowd judges you.
+Protezione compromessa.,Compromised protection.
+Pressione più severa.,Harsher pressure.
+Il perfetto è più raro.,A perfect outcome is rarer.
+Tenuta rituale ridotta e recupero meno efficace.,Reduced ritual endurance and less effective recovery.
+Avanzamento piu lento e margine di errore ridotto.,Slower progress and less room for error.
+Aumenta la probabilita di condanna.,Increases the chance of condemnation.
+Le conseguenze avverse sono piu probabili.,Adverse consequences are more likely.
+La pressione pesa di più.,Pressure takes a greater toll.
+Peggiora le chance di esiti puliti.,Reduces the chance of a clean outcome.
+FOLLA IN DELIRIO,CROWD IN A FRENZY
+La folla ti marca: incasso bloccato.,The crowd marks you: cashing out is blocked.
+Il sangue ti segue anche quando l'arena tace.,The blood follows you even when the arena falls silent.
+La folla ascolta il tuo respiro corto.,The crowd listens to your shallow breathing.
+Il giudizio è già inciso sulla pelle.,Judgment is already carved into your skin.
+Cammini con onore ma ogni passo pesa.,"You walk with honour, but every step weighs on you."
+Il debito del corpo resta sotto la sabbia.,The body's debt remains beneath the sand.
+Il destino ti guarda senza tregua.,Fate watches you without respite.
+La vergogna ti precede davanti alla folla.,Shame precedes you before the crowd.
+Ogni sguardo è un giudizio che brucia.,Every gaze is a judgment that burns.
+Porti il segno anche quando vinci.,You bear the mark even when you win.
+"Hai offerto onore e sangue, ma l'armatura non regge.","You offered honour and blood, but the armour will not hold."
+La ruggine canta il tuo debito.,Rust sings of your debt.
+Il giudizio scivola sulle ferite.,Judgment slips across your wounds.
+Il debito ti stringe come catena sacra.,Debt binds you like a sacred chain.
+La folla esige il prezzo della promessa.,The crowd demands the price of the promise.
+Il destino pesa su ogni patto.,Fate weighs on every pact.
+Hai perso un occhio ma non la vergogna di guardare.,"You lost an eye, but not the shame of looking."
+Il sangue vela il tuo destino.,Blood veils your fate.
+La folla vede la tua mancanza.,The crowd sees what you lack.
+"GLORIA
+IN POSTA","GLORY
+AT STAKE"

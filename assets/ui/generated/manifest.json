@@ -186,6 +186,131 @@
       "date": "2026-09-12",
       "sha256": "66516874bb087da70b72e3ceddde2f19b917d2566ad8370a9b6685ca7a9b898a",
       "role": "Portrait for illustrated campaign dialogue; original generated art, no external reference."
+    },
+    {
+      "name": "dialogue_vessa",
+      "source": "exec-c3e269b7-990f-47f4-aed6-132f91426332.png",
+      "prompt": "Create ONE original production portrait for Gallicus: Vessa, the owl administrator of accounts and margins. Use the supplied Nerio portrait ONLY as visual style, palette, lighting and world reference, create a clearly distinct individual. Vertical 2:3 composition, bust and folded wings visible, no human anatomy, no hands. A compact barn owl with precise ivory heart-shaped face, composed pale grey and tobacco feathers, small dark amber eyes, attentive commercial gaze, one slightly narrowed eye, elegant but worn dark bronze collar, a plain ash cloth over shoulders. Her wing rests beside a modest bronze counting tray with three ancient coins at lower edge, NEVER human fingers. Dark almost black warm background, tangible painterly brushwork and feather detail, chiaroscuro warm light from left, dusty basalt and bronze, no gold fantasy jewelry, no mascot cuteness, no cartoon, no armor, no text, lettering, numbers, watermark or frame. Match existing illustration seriousness and muted tones. Portrait filled naturally but leave comfortable upper head margins. Save the generated output as a local PNG and return its local path.",
+      "role": "Vessa at the bank and in the archive; original portrait derived from Nerio style.",
+      "path": "res://assets/ui/generated/dialogue_vessa.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "sha256": "35a53fc9130003d9e86a08dd4b9040b7f660ef28d248b33e99b9915f294c243e"
+    },
+    {
+      "name": "dialogue_orvo",
+      "source": "exec-70369d98-dbce-47d4-8987-f3b638ed5238.png",
+      "prompt": "Create ONE original production portrait for Gallicus: Orvo, owl herald of the Roman arena and its quotas. Use supplied Nerio ONLY as visual style lighting palette world reference, depict distinct character. Vertical 2:3, entire head and upper body with folded feathered wings, no human anatomy or hands. Tall lean Eurasian eagle owl with one ear tuft directed toward crowd and the other slightly tilted aside, rust and ash brown feathers, intelligent vivid but muted amber eyes, beak very slightly open about to announce. A modest weathered bronze shoulder clasp and dusty ochre cloth, no armor or crown. One narrow rolled administrative proclamation rests against folded wing near lower edge, no visible writing. Serious lived-in avian character, subtle expressiveness, realistic painterly brushwork, feather texture, warm chiaroscuro light from left, deep warm charcoal background. Match reference realism, archaeological bronze basalt bone and wax red palette, restrained saturation. No cartoon, mascot, magic, human fingers, raised human arms, fantasy ornaments, text, letters, watermark or frame. Comfortable upper head margins. Save result locally as PNG and return path.",
+      "role": "Orvo at the bando announcement and in the archive; original portrait derived from Nerio style.",
+      "path": "res://assets/ui/generated/dialogue_orvo.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "sha256": "a4005ae6519d53794fa4c58850077c4736735f0e922d87c310e818d248f91746"
+    },
+    {
+      "name": "basalt_worked",
+      "source": "exec-19bf0af4-65d8-4ebd-88dd-c1735422146b.png",
+      "prompt": "Production texture asset for Gallicus Roman administrative ritual UI. ONE front-facing full-bleed horizontal dark basalt surface, 3:2 aspect, 1536x1024 requested. This is a flat physical stone slab, no scene and no UI mockup. Refined somber painterly realism, warm charcoal black basalt, tactile fine stone grain. REMOVE the clean repeated rectangular metallic framing of generic game UI: outermost edge has restrained uneven chipped stone corners and hand-worked tool marks, thin discontinuous aged bronze inlay only along outer 5% perimeter, asymmetrical subtle abrasion at lower right. Central 85 percent must be EMPTY UNIFORM VERY DARK stone for pale engine text, no high contrast texture, no symbols or pictorial content there. Material detail confined to margins, no dramatic lighting gradients, no bevel extrusion or glossy shine. Severe archaeological texture, dusty bone and muted bronze accents, no wax circles, no parchment, no fantasy ornaments, no text letters numbers logo watermark, no decorative rivets, no drop shadow. Entire rectangular image is usable stone, no external background. Preserve text contrast and understated coherent warm basalt palette. Save locally and return PNG path.",
+      "role": "Shared worked stone for ritual panels, HUD, settings and dialogue; plain dark text well.",
+      "path": "res://assets/ui/generated/basalt_worked.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "sha256": "0d5b8932ee52dbdbca520249db1dabeafbb4014663971e4496a4ae58879c2786"
+    },
+    {
+      "name": "dialogue_nerio_cutout",
+      "source": "exec-37dedd3f-3683-460a-8051-4d4091f33efa.png",
+      "prompt": "Edit the supplied Gallicus character portrait nerio. Remove ONLY the entire dark black/brown painted backdrop to real alpha transparency. Preserve the exact character identity, anatomy, silhouette, pose, expression, feather detail, worn bronze, clothing, lighting, palette, painterly texture, and every held object. Preserve the original framing and bottom crop. Keep the fine feather edges with clean semi-transparent antialiasing. Do not redraw, redesign, add a frame, floor, shadow backdrop, glow, halo, new limbs, text, checkerboard or other scene. The existing character and its objects must form a transparent-background cutout, ready to stand directly on a dark stone game UI. Existing internal dark plumage and dark clothing must remain opaque. Output a portrait PNG with genuine transparent background.",
+      "reference": "res://assets/ui/generated/dialogue_nerio.png",
+      "path": "res://assets/ui/generated/dialogue_nerio_cutout.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "transparent_background": true,
+      "role": "Transparent character silhouette, shared across Archive, Registry and existing conversations; preserved original identity.",
+      "sha256": "c72033262201ef125224e207009b4dcfb722317ec188bd81976f54c4e17f65eb"
+    },
+    {
+      "name": "dialogue_rugo_cutout",
+      "source": "exec-1e4f86da-ee06-4098-a042-f2303ad24d99.png",
+      "prompt": "Edit the supplied Gallicus character portrait rugo. Remove ONLY the entire dark black/brown painted backdrop to real alpha transparency. Preserve the exact character identity, anatomy, silhouette, pose, expression, feather detail, worn bronze, clothing, lighting, palette, painterly texture, and every held object. Preserve the original framing and bottom crop. Keep the fine feather edges with clean semi-transparent antialiasing. Do not redraw, redesign, add a frame, floor, shadow backdrop, glow, halo, new limbs, text, checkerboard or other scene. The existing character and its objects must form a transparent-background cutout, ready to stand directly on a dark stone game UI. Existing internal dark plumage and dark clothing must remain opaque. Output a portrait PNG with genuine transparent background.",
+      "reference": "res://assets/ui/generated/dialogue_rugo.png",
+      "path": "res://assets/ui/generated/dialogue_rugo_cutout.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "transparent_background": true,
+      "role": "Transparent character silhouette, shared across Archive, Registry and existing conversations; preserved original identity.",
+      "sha256": "a6b9982b891470114a11fd00bf754911ff72f178b27a0b588b6187beadf37b6b"
+    },
+    {
+      "name": "dialogue_dima_cutout",
+      "source": "exec-0dbc64e0-6cc6-4908-addd-33806aefd493.png",
+      "prompt": "Edit the supplied Gallicus character portrait dima. Remove ONLY the entire dark black/brown painted backdrop to real alpha transparency. Preserve the exact character identity, anatomy, silhouette, pose, expression, feather detail, worn bronze, clothing, lighting, palette, painterly texture, and every held object. Preserve the original framing and bottom crop. Keep the fine feather edges with clean semi-transparent antialiasing. Do not redraw, redesign, add a frame, floor, shadow backdrop, glow, halo, new limbs, text, checkerboard or other scene. The existing character and its objects must form a transparent-background cutout, ready to stand directly on a dark stone game UI. Existing internal dark plumage and dark clothing must remain opaque. Output a portrait PNG with genuine transparent background.",
+      "reference": "res://assets/ui/generated/dialogue_dima.png",
+      "path": "res://assets/ui/generated/dialogue_dima_cutout.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "transparent_background": true,
+      "role": "Transparent character silhouette, shared across Archive, Registry and existing conversations; preserved original identity.",
+      "sha256": "33b2082ce66dc44c8919c73dcaf3ee6e50be503932833d9c72a2c27dedf3b9eb"
+    },
+    {
+      "name": "dialogue_vessa_cutout",
+      "source": "exec-2fb27da3-67f3-42c0-ae39-cecca3c8615c.png",
+      "prompt": "Edit the supplied Gallicus character portrait vessa. Remove ONLY the entire dark black/brown painted backdrop to real alpha transparency. Preserve the exact character identity, anatomy, silhouette, pose, expression, feather detail, worn bronze, clothing, lighting, palette, painterly texture, and every held object. Preserve the original framing and bottom crop. Keep the fine feather edges with clean semi-transparent antialiasing. Do not redraw, redesign, add a frame, floor, shadow backdrop, glow, halo, new limbs, text, checkerboard or other scene. The existing character and its objects must form a transparent-background cutout, ready to stand directly on a dark stone game UI. Existing internal dark plumage and dark clothing must remain opaque. Output a portrait PNG with genuine transparent background.",
+      "reference": "res://assets/ui/generated/dialogue_vessa.png",
+      "path": "res://assets/ui/generated/dialogue_vessa_cutout.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "transparent_background": true,
+      "role": "Transparent character silhouette, shared across Archive, Registry and existing conversations; preserved original identity.",
+      "sha256": "1007036f47c48506ddd64b3ef6b3fbb6633ec4c50ce31b80f7359252d3dac9a8"
+    },
+    {
+      "name": "dialogue_orvo_cutout",
+      "source": "exec-eb64075a-01e1-47e8-8f0c-f5bd5c669970.png",
+      "prompt": "Edit the supplied Gallicus character portrait orvo. Remove ONLY the entire dark black/brown painted backdrop to real alpha transparency. Preserve the exact character identity, anatomy, silhouette, pose, expression, feather detail, worn bronze, clothing, lighting, palette, painterly texture, and every held object. Preserve the original framing and bottom crop. Keep the fine feather edges with clean semi-transparent antialiasing. Do not redraw, redesign, add a frame, floor, shadow backdrop, glow, halo, new limbs, text, checkerboard or other scene. The existing character and its objects must form a transparent-background cutout, ready to stand directly on a dark stone game UI. Existing internal dark plumage and dark clothing must remain opaque. Output a portrait PNG with genuine transparent background.",
+      "reference": "res://assets/ui/generated/dialogue_orvo.png",
+      "path": "res://assets/ui/generated/dialogue_orvo_cutout.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08",
+      "transparent_background": true,
+      "role": "Transparent character silhouette, shared across Archive, Registry and existing conversations; preserved original identity.",
+      "sha256": "0e01af017f4f7e3f9844ba67fe171ac810bd4d7c52a0ac81f99914ad31b1e648"
+    },
+    {
+      "name": "registry_counter",
+      "prompt": "Bare Roman administrative counter before arena; matte charcoal stone, neutral daylight, quiet lower 72 percent, no lettering, UI, seals, gold trim or marble veins. Based on user composition reference; architecture and empty work surface only.",
+      "source": "exec-6c46c6af-b3e5-433b-92ea-0d571f17a374.png",
+      "path": "res://assets/ui/generated/registry_counter.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08"
+    },
+    {
+      "name": "registry_paper",
+      "prompt": "Orthographic 7:4 full-bleed plain used ivory rag paper; subtle fibres and handling at corners; quiet central 95 percent; no frame, seals, symbols, letters, stains or decorative ageing.",
+      "source": "exec-cfaadff0-ae83-422b-a7c3-33656ba5c844.png",
+      "path": "res://assets/ui/generated/registry_paper.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08"
+    },
+    {
+      "name": "registry_wax_trace",
+      "prompt": "Isolated red wax registry impression, three incisions joined by a base, no letters. Remove metal and stone from the existing registry emblem, genuinely transparent background. Small confirmed signature and archive trace, no decoration.",
+      "source": "exec-498244b5-1bd0-4e46-bc69-4d7e2a94e751.png",
+      "path": "res://assets/ui/generated/registry_wax_trace.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-08"
+    },
+    {
+      "prompt": "Use case: style-transfer. Asset type: production 16:9 2D game arena backdrop, NO UI.\nInput image: geography reference ONLY, not a rendering-style reference. Repaint this Roman arena in a decisively simplified, authored 2D illustrative style. Keep the low west arch with three dark voussoirs on the left, the plain faded oxblood banner beside it, the curve of stone terraces. Remove the foreground pedestal and wax seal: gameplay objects are separate native game elements.\nMedium: opaque gouache with broad, deliberate shapes and selective dark contours, a serious theatrical illustrated world, restrained and severe. Almost flat local colors, two or three value planes per material, irregular but clean silhouette edges. Absolutely no photorealism, 3D rendering, PBR, cinematic lens effects, photographic grain, marble veins, pore texture, scratched microdetail, scattered pebbles or individually rendered grains of sand. Not cute, not whimsical, not luxury.\nComposition: eye level inside the arena, architecture in the upper 40 percent and an expansive empty sandy floor in the lower 60 percent. Warm pale limestone lit across the upper tiers; lower floor entirely in a broad subdued deep umber/olive shadow, with quiet flat areas suitable for overlaying ivory game text. No dramatic light patches on the lower floor. The left arch stays identifiable; architecture should feel open, not a desk or room. A few tiny perched BIRD silhouettes on upper terraces only, no human figures or humanoid crowd.\nPalette: restricted muted limestone, bone, ochre, dark warm umber, charcoal olive, faded oxblood. Single broad light direction. Preserve enough shape separation in shadow to read the place. Text: none. No lettering, logo, ornament frames, UI, furniture, ritual object, watermarks. Create a crisp widescreen background illustration, not a photograph with a painterly filter.",
+      "tool": "built-in image_gen",
+      "source": "exec-0bc2280f-455e-4b80-84f1-0ea6f2a34734.png",
+      "reference": "artifacts/attraversamento_2026-10-08/02_arena.png",
+      "name": "arena_illustrated_sample",
+      "path": "res://assets/ui/generated/arena_illustrated_sample.png",
+      "date": "2026-10-08",
+      "sha256": "5d7a0a611fe234ecdded6be745fc67d3576aad55b0e81d18b4927a9321fa45c3",
+      "role": "Single illustrated runtime arena sample; adjacent locations and cast still await style alignment."
     }
   ]
 }

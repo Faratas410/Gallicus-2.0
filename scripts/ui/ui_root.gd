@@ -880,20 +880,15 @@ func _wire_intro_phase_buttons() -> void:
 func _show_scar_popup(scar: Dictionary) -> void:
 	if scar_popup == null:
 		return
-	var scar_name: String = str(scar.get("name", ""))
+	var scar_name: String = tr(str(scar.get("name", "")))
 	if scar_name == "":
 		scar_name = str(scar.get("id", "Scar"))
-	var scar_story: String = str(scar.get("narrative_text", ""))
-	if scar_story == "":
-		scar_story = str(scar.get("story", ""))
 	var effect_text: String = str(scar.get("effect_text", ""))
 	if effect_text == "":
 		effect_text = str(scar.get("effect", ""))
-	var text_lines: Array[String] = ["[center][b]%s[/b][/center]" % scar_name]
-	if scar_story != "":
-		text_lines.append("[i]%s[/i]" % scar_story)
+	var text_lines: Array[String] = ["[b]%s[/b]" % scar_name]
 	if effect_text != "":
-		text_lines.append(tr("[b]Effetto:[/b] %s") % effect_text)
+		text_lines.append(tr("[b]Effetto:[/b] %s") % tr(effect_text))
 	scar_popup.text = "\n".join(text_lines)
 	if scar_popup_panel == null:
 		return
@@ -1380,11 +1375,11 @@ func _build_smart_register_summary() -> String:
 	if _last_register_final:
 		outcome_line = tr("Il Registro chiude il fascicolo e classifica l'esito.")
 	elif _last_verdict_outcome == &"CASHOUT":
-		outcome_line = tr("Hai lasciato l'arena con la posta riconosciuta.")
+		outcome_line = tr("Posta incassata. Il percorso è chiuso.")
 	elif _last_verdict_outcome == &"WIN":
 		outcome_line = tr("Il patto regge: il percorso può proseguire.")
 	else:
-		outcome_line = tr("La condanna viene accettata e il percorso resta segnato.")
+		outcome_line = tr("Condanna iscritta. I segni restano nel fascicolo.")
 	# What the player wants from a dossier: what was earned, what was paid,
 	# how close the crowd came. Archive unlocks stay in their own column.
 	var stakes: Array[String] = [
@@ -1463,7 +1458,7 @@ func _refresh_verdict_panel() -> void:
 		if _last_register_final:
 			verdict_outcome.text = tr("Protocollo di classificazione completato.")
 		elif _last_verdict_outcome == &"CASHOUT":
-			verdict_outcome.text = tr("Incasso registrato.")
+			verdict_outcome.text = tr("%d Gloria incassate") % maxi(_last_finale_glory, 0)
 		elif _last_verdict_outcome == &"WIN":
 			verdict_outcome.text = tr("Arena superata.")
 		else:
@@ -1474,9 +1469,9 @@ func _refresh_verdict_panel() -> void:
 	if verdict_sentence_label != null:
 		verdict_sentence_label.text = _build_smart_register_summary()
 	if verdict_charge_label != null:
-		var status_text: String = tr("Il dettaglio degli sblocchi resta consultabile nell'Archivio.")
+		var status_text: String = tr("Le nuove voci sono consultabili nell’Archivio.")
 		if _last_next_bet_enabled:
-			status_text = tr("Il Registro resta aperto: scegli se proseguire o lasciare l'arena.")
+			status_text = tr("Il Registro resta aperto. Puoi proseguire o tornare al menu.")
 		verdict_charge_label.text = status_text
 	if ending_text != null:
 		_refresh_ending_text()
@@ -1601,13 +1596,21 @@ func _apply_end_run_button_visual(button: Button, can_be_active: bool) -> void:
 	button.add_theme_stylebox_override("disabled", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_DISABLED)
 	button.add_theme_color_override("font_color", Color(0.96, 0.92, 0.82, 1.0))
 	button.add_theme_color_override("font_hover_color", Color(1, 0.96, 0.84, 1.0))
+	button.add_theme_color_override("font_focus_color", Color(1, 0.96, 0.84, 1.0))
 	button.add_theme_color_override("font_pressed_color", Color(1.0, 0.93, 0.74, 1.0))
 	button.add_theme_color_override("font_disabled_color", Color(1.0, 0.92, 0.72, 1.0) if selected else Color(0.5, 0.46, 0.41, 0.86))
+	# One continuation has visual priority; every authorized route remains present.
+	if not selected and _final_dossier_state != FINAL_DOSSIER_STATE_CLOSED and (button == quit_button or (button == restart_button and _last_next_bet_enabled)):
+		button.add_theme_stylebox_override("normal", preload("res://assets/ui/official/styleboxes/sb_counter_utility.tres"))
+		button.add_theme_color_override("font_color", Color(0.20, 0.17, 0.12, 1))
 
 func _set_final_dossier_state(state: StringName) -> void:
 	_final_dossier_state = state
 	if game_over_panel == null:
 		return
+	var trace := game_over_panel.get_node_or_null("WaxSeal") as TextureRect
+	if trace != null:
+		trace.visible = state != FINAL_DOSSIER_STATE_OPEN
 	var style: StyleBox = FINAL_DOSSIER_STYLE_OPEN
 	match state:
 		FINAL_DOSSIER_STATE_UPDATED:
@@ -1618,6 +1621,7 @@ func _set_final_dossier_state(state: StringName) -> void:
 			_final_dossier_state = FINAL_DOSSIER_STATE_OPEN
 	game_over_panel.add_theme_stylebox_override("panel", style)
 	_apply_final_dossier_palette()
+	_refresh_end_run_button_visuals()
 
 func _apply_final_dossier_palette() -> void:
 	var closed: bool = _final_dossier_state == FINAL_DOSSIER_STATE_CLOSED
@@ -1766,6 +1770,8 @@ func _update_escalation_bar() -> void:
 		escalation_bar.max_value = float(safe_max)
 		escalation_bar.value = float(clamped_level)
 		_apply_pressure_bar_color(_get_pressure_color(clamped_level))
+	if push_luck_panel != null:
+		push_luck_panel.call("present_pressure", clamped_level)
 
 func _format_run_status_line(pressure_level: int) -> String:
 	# One persistent place for the run's stakes: mood, earned Glory and arena.
@@ -2248,6 +2254,7 @@ func _on_crowd_favor_changed(payload: Dictionary) -> void:
 			crowd_favor_note.text = tr("LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.")
 		else:
 			crowd_favor_note.text = tr(note) if note != "" else ""
+		crowd_favor_note.tooltip_text = crowd_favor_note.text
 	if _impact != null:
 		if event == "triumph":
 			_impact.flash(IMPACT_BONE, 0.22, 0.5)
@@ -2837,13 +2844,9 @@ func _refresh_scars_ui(scars: Array) -> void:
 			scars_panel.visible = false
 			return
 		scars_panel.visible = not suppress_for_betting
-		if not suppress_for_betting:
-			var scar_count: int = scars.size()
-			var clamped_count: int = maxi(scar_count, 1)
-			var desired_height: float = SCARS_PANEL_BASE_HEIGHT + (SCARS_PANEL_ROW_HEIGHT * float(clamped_count))
-			var clamped_height: float = clampf(desired_height, SCARS_PANEL_MIN_HEIGHT, SCARS_PANEL_MAX_HEIGHT)
-			scars_panel.custom_minimum_size.y = clamped_height
-			scars_panel.size.y = clamped_height
+		# The margin stays fixed; overflow is handled by ScarsScroll.
+		var title := scars_panel.get_node("ScarsVBox/ScarsTitlePanel/ScarsTitle") as Label
+		title.text = "%s · %d" % [tr("SEGNI"), scars.size()]
 	if scars.is_empty():
 		scars_label.text = tr("Registro pulito: nessun segno inciso.")
 		scars_label.tooltip_text = ""
@@ -2856,22 +2859,23 @@ func _refresh_scars_ui(scars: Array) -> void:
 	for scar_value: Dictionary in scars:
 		var scar: Dictionary = scar_value as Dictionary
 		var visual_tag: String = str(scar.get("visual_tag", ""))
-		var short_desc: String = str(scar.get("short_desc", ""))
+		var short_desc: String = tr(str(scar.get("short_desc", "")))
 		var story: String = str(scar.get("narrative_text", ""))
 		if story == "":
 			story = str(scar.get("story", ""))
+		story = _translate_multiline_copy(story)
 		var effect_text: String = str(scar.get("effect_text", ""))
 		if effect_text == "":
 			effect_text = str(scar.get("effect", ""))
+		effect_text = tr(effect_text)
 		var origin: String = str(scar.get("origin", ""))
 		if visual_tag != "":
-			summary_lines.append("- %s" % visual_tag)
+			summary_lines.append(tr(str(scar.get("name", "Cicatrice"))))
 			detail_lines.append("- %s" % visual_tag)
 		else:
 			summary_lines.append("- %s" % tr("Cicatrice"))
 			detail_lines.append("- %s" % tr("Cicatrice"))
 		if short_desc != "":
-			summary_lines.append("  %s" % short_desc)
 			detail_lines.append("  %s" % short_desc)
 		if story != "":
 			var story_lines: PackedStringArray = story.split("\n")
@@ -2882,7 +2886,6 @@ func _refresh_scars_ui(scars: Array) -> void:
 			detail_lines.append(tr("  Effetto: %s") % effect_text)
 		if origin != "":
 			detail_lines.append(tr("  Origine: %s") % origin)
-		summary_lines.append("")
 		detail_lines.append("")
 	if summary_lines.size() > 0 and summary_lines[summary_lines.size() - 1] == "":
 		summary_lines.remove_at(summary_lines.size() - 1)
@@ -3018,7 +3021,7 @@ func _on_push_luck_opened(payload: Dictionary) -> void:
 	ui_payload.meta = payload
 	ui_payload.title = tr("SPINGI LA SORTE")
 	ui_payload.subtitle = str(payload.get("subtitle", tr("Il registro è aperto.")))
-	ui_payload.body = str(payload.get("body", tr("Incassa ora o aumenta esposizione.")))
+	ui_payload.body = str(payload.get("body", tr("Incassa la posta o rischiala nel prossimo rilancio.")))
 	ui_payload.hint = str(payload.get("hint", tr("La condanna chiude il ciclo senza premio.")))
 	ui_payload.footer = str(payload.get("footer", tr("Scegli un atto. La firma è irrevocabile.")))
 	ui_payload.choices = ["cashout", "condanna", "double"]
@@ -3044,14 +3047,8 @@ func _compact_push_luck_detail_line(line: String) -> String:
 
 func _format_push_luck_receipt_text(meta: Dictionary) -> String:
 	var stake_glory: int = maxi(int(meta.get("stake_glory", 0)), 0)
-	var current_corruption: int = maxi(int(meta.get("current_corruption", 0)), 0)
 	# Gloria is banked only by the quietanza, so the live posta is the run's value.
-	var lines: Array[String] = [
-		tr("POSTA VIVA: +%d Gloria") % stake_glory,
-		tr("CORRUZIONE: %d") % current_corruption,
-		_format_pressure_label(_escalation_level, _escalation_max),
-	]
-	return "\n".join(lines)
+	return tr("%d GLORIA IN POSTA") % stake_glory
 
 func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: int) -> String:
 	var parts: Array[String] = []
@@ -3059,7 +3056,7 @@ func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: in
 	if cashout_corruption_delta > 0:
 		parts.append(tr("Corruzione -%d") % cashout_corruption_delta)
 	parts.append(tr("chiudi il registro"))
-	return " | ".join(parts)
+	return "\n".join(parts)
 
 func _format_double_note(double_next_stake_glory: int, double_pressure_delta: int) -> String:
 	return tr("La posta di %d Gloria resta in gioco. Pressione +%d.") % [
@@ -3080,7 +3077,10 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_title != null:
 		push_luck_title.text = str(payload.title if payload.title != "" else tr("SPINGI LA SORTE"))
 	if push_luck_info != null:
-		push_luck_info.text = str(payload.body if payload.body != "" else tr("Incassa ora o aumenta esposizione."))
+		push_luck_info.text = tr("CORRUZIONE: %d") % maxi(int(meta.get("current_corruption", 0)), 0)
+		push_luck_info.show()
+		push_luck_title.show()
+		push_luck_details.show()
 	var doom_text: String = str(meta.get("next_doom", ""))
 	var condition_text: String = str(meta.get("condition", ""))
 	var pact_text: String = str(meta.get("next_pact", ""))
@@ -3128,9 +3128,9 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			audience_panel.visible = audience_label != ""
 	if push_luck_audience_reason != null:
 		var state_line: String = str(meta.get("state_line", "")).strip_edges()
-		if state_line == "":
-			state_line = tr("Stato: in attesa di scelta.")
-		push_luck_audience_reason.text = "%s\n%s" % [_get_pressure_state_text(_escalation_level), state_line]
+		push_luck_audience_reason.text = "%s · %s" % [_format_pressure_label(_escalation_level, _escalation_max), _get_pressure_state_text(_escalation_level)]
+		if state_line != "":
+			push_luck_audience_reason.text += " · " + state_line
 		push_luck_audience_reason.visible = true
 	if push_luck_cashout_button != null:
 		push_luck_cashout_button.disabled = cashout_locked
@@ -3148,6 +3148,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	# The marchio is the way out only when the crowd or a pact blocks the quietanza.
 	if push_luck_condanna_button != null:
 		push_luck_condanna_button.visible = cashout_locked
+		push_luck_condanna_button.get_parent().visible = cashout_locked
 	if push_luck_condanna_note != null:
 		push_luck_condanna_note.text = _format_condanna_note(stake_glory)
 		push_luck_condanna_note.visible = cashout_locked
@@ -3166,6 +3167,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 			push_luck_double_note.visible = true
 	_set_push_luck_modal(true)
 	_refresh_push_luck_button_visuals()
+	push_luck_panel.call("present_payload", meta)
 
 func _on_push_luck_closed() -> void:
 	_reset_pyl_lock_state()
@@ -3420,6 +3422,9 @@ func _set_receipt_taken_state(taken: bool) -> void:
 	if push_luck_cashout_button == null:
 		return
 	push_luck_cashout_button.set_meta(RECEIPT_TAKEN_META, taken)
+	var trace := push_luck_cashout_button.get_node_or_null("WaxTrace") as TextureRect
+	if trace != null:
+		trace.visible = taken
 	push_luck_cashout_button.add_theme_stylebox_override(
 		"disabled",
 		RECEIPT_STYLE_PRESSED if taken else RECEIPT_STYLE_DISABLED
@@ -3428,6 +3433,8 @@ func _set_receipt_taken_state(taken: bool) -> void:
 		"font_disabled_color",
 		Color(0.95, 0.91, 0.78, 1.0) if taken else Color(0.54, 0.52, 0.48, 1.0)
 	)
+	push_luck_panel.call("refresh_buttons")
+
 
 func _set_condemnation_mark_registered_state(registered: bool) -> void:
 	if push_luck_condanna_button == null:
@@ -3441,11 +3448,16 @@ func _set_condemnation_mark_registered_state(registered: bool) -> void:
 		"font_disabled_color",
 		Color(1.0, 0.82, 0.68, 1.0) if registered else Color(0.54, 0.52, 0.48, 1.0)
 	)
+	push_luck_panel.call("refresh_buttons")
+
 
 func _set_second_incision_sealed_state(sealed: bool) -> void:
 	if push_luck_double_button == null:
 		return
 	push_luck_double_button.set_meta(SECOND_INCISION_SEALED_META, sealed)
+	var trace := push_luck_double_button.get_node_or_null("WaxTrace") as TextureRect
+	if trace != null:
+		trace.visible = sealed
 	push_luck_double_button.add_theme_stylebox_override(
 		"disabled",
 		SECOND_INCISION_STYLE_SEALED if sealed else SECOND_INCISION_STYLE_DISABLED
@@ -3454,6 +3466,8 @@ func _set_second_incision_sealed_state(sealed: bool) -> void:
 		"font_disabled_color",
 		Color(1.0, 0.84, 0.66, 1.0) if sealed else Color(0.54, 0.52, 0.48, 1.0)
 	)
+	push_luck_panel.call("refresh_buttons")
+
 
 func _on_bet_win_pressed() -> void:
 	_play_sfx(&"cursor_select")
@@ -3822,7 +3836,7 @@ func _apply_decision_lock(panel: Control, buttons: Array[Button], hint_label: La
 		button.disabled = true
 		if selected_button != null:
 			button.modulate = Color(1.0, 1.0, 1.0, 1.0) if button == selected_button else Color(1.0, 1.0, 1.0, 0.45)
-			button.scale = Vector2(1.025, 1.025) if button == selected_button and scale_selected and not _is_reduced_motion() else Vector2.ONE
+			button.scale = Vector2(1.025, 1.025) if button == selected_button and scale_selected and not _is_reduced_motion() and not _is_pyl_button(button) else Vector2.ONE
 		else:
 			button.scale = Vector2.ONE
 	if hint_label != null:
@@ -3898,6 +3912,9 @@ func _on_sign_preview_entered(button: Button) -> void:
 	if button == null or button.disabled or _is_signing:
 		return
 	_play_sfx(&"button_hover")
+	if _is_pyl_button(button):
+		button.scale = Vector2.ONE
+		return
 	if _is_reduced_motion():
 		button.scale = Vector2.ONE
 		return
@@ -4000,12 +4017,14 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 func _refresh_push_luck_button_visuals() -> void:
 	for button: Button in [push_luck_cashout_button, push_luck_condanna_button, push_luck_double_button]:
 		_apply_push_luck_button_visual(button)
+	if push_luck_panel != null:
+		push_luck_panel.call("refresh_buttons")
 
 func _apply_push_luck_button_visual(button: Button) -> void:
 	if button == null:
 		return
 	var active: bool = button.visible and not button.disabled
-	button.modulate = Color(1.0, 0.98, 0.86, 1.0) if active else Color(0.82, 0.78, 0.7, 0.62)
+	button.modulate = Color.WHITE if active else Color(0.85, 0.85, 0.82, 0.85)
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
 	if button == push_luck_cashout_button:
 		var taken: bool = bool(button.get_meta(RECEIPT_TAKEN_META, false))
@@ -4031,9 +4050,9 @@ func _apply_push_luck_button_visual(button: Button) -> void:
 		return
 	if button == push_luck_double_button:
 		var sealed: bool = bool(button.get_meta(SECOND_INCISION_SEALED_META, false))
-		button.add_theme_color_override("font_color", Color(0.98, 0.9, 0.66, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(1.0, 0.95, 0.72, 1.0))
+		button.add_theme_color_override("font_color", Color(0.94, 0.92, 0.84, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(1.0, 0.98, 0.9, 1.0))
+		button.add_theme_color_override("font_focus_color", Color(1.0, 0.98, 0.9, 1.0))
 		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.84, 0.66, 1.0))
 		button.add_theme_color_override(
 			"font_disabled_color",
@@ -4347,6 +4366,8 @@ func _set_intermediate_choice_modal(active: bool) -> void:
 		call_deferred("_focus_first_available", [intermediate_choice_placa_button, intermediate_choice_provoca_button])
 
 func _set_push_luck_modal(active: bool) -> void:
+	if push_luck_panel != null:
+		push_luck_panel.call("set_manifesto_active", active)
 	if active:
 		show_modal(push_luck_modal)
 	_push_luck_modal_fade_tween = _fade_modal(push_luck_panel, push_luck_modal, active, _push_luck_modal_fade_tween, MOTION_KIND_RITUAL)
@@ -4380,7 +4401,7 @@ func _set_game_over_modal(active: bool) -> void:
 	_refresh_modal_dimmer()
 	get_viewport().gui_release_focus()
 	if active:
-		call_deferred("_focus_first_available", [restart_button, next_bet_button, quit_button])
+		call_deferred("_focus_first_available", [next_bet_button, restart_button, quit_button])
 
 func _focus_first_available(controls: Array) -> void:
 	for candidate: Variant in controls:

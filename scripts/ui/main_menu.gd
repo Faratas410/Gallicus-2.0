@@ -322,7 +322,7 @@ func _build_museo_list() -> void:
 	_add_museo_item(tr("Il fascicolo conserva gli esiti. Qui ritrovi i vincoli delle promesse disponibili."))
 	_add_museo_header(tr("PRESENZE DELL’ARENA"))
 	for character: Dictionary in ArenaCharacters.CHARACTERS:
-		_add_museo_item("%s — %s\n%s" % [str(character.name), tr(str(character.role)), tr(str(character.description))])
+		_add_character_entry(character)
 	_add_museo_header(tr("PATTI DISPONIBILI"))
 	if pact_ids.is_empty():
 		_add_museo_item(tr("- Nessun patto disponibile."))
@@ -346,6 +346,36 @@ func _build_museo_list() -> void:
 func _add_museo_header(text: String) -> void:
 	var entry_panel: PanelContainer = _create_museo_entry_panel(text)
 	museo_vbox.add_child(entry_panel)
+
+func _add_character_entry(character: Dictionary) -> void:
+	var entry := HBoxContainer.new()
+	entry.name = "Presence_" + str(character.id)
+	entry.set_meta("character_id", str(character.id))
+	entry.add_theme_constant_override("separation", 24)
+	entry.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var portrait := TextureRect.new()
+	portrait.name = "Portrait"
+	portrait.texture = load(str(character.portrait)) as Texture2D
+	portrait.material = preload("res://assets/ui/official/portrait_grounding.tres")
+	portrait.custom_minimum_size = Vector2(112, 168)
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	entry.add_child(portrait)
+	var biography := Label.new()
+	biography.name = "Biography"
+	# The assembled name/role/biography is already localized. Letting Label
+	# translate its paragraphs again can select a different fallback locale.
+	biography.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	biography.text = "%s — %s\n%s" % [str(character.name), tr(str(character.role)), tr(str(character.description))]
+	biography.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	biography.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	biography.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	biography.add_theme_font_size_override("font_size", 18)
+	biography.add_theme_constant_override("line_spacing", 5)
+	biography.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	entry.add_child(biography)
+	museo_vbox.add_child(entry)
 
 func _add_museo_item(text: String) -> void:
 	var entry_panel: PanelContainer = _create_museo_entry_panel(text)

@@ -85,7 +85,7 @@ def _assert_scene_binding() -> None:
         'theme_override_styles/focus = ExtResource("40_registry_condemnation_mark_focus")',
         'theme_override_styles/pressed = ExtResource("41_registry_condemnation_mark_pressed")',
         'theme_override_styles/disabled = ExtResource("43_registry_condemnation_mark_disabled")',
-        'custom_minimum_size = Vector2(0, 104)',
+        'custom_minimum_size = Vector2(0, 158)',
         'text = "RICEVI IL MARCHIO"',
     ):
         if token not in block:

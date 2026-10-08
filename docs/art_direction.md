@@ -1,11 +1,110 @@
 # Gallicus Art Direction
 
+## Identita' scelta: Manifesto del Verdetto
+
+Decisione dell'utente, 8 ottobre 2026: la terza proposta, nella rifinitura con
+azioni raccolte in basso, fissa l'identita' UI. Grafica incisa, netta e rituale:
+sfondi pittorici lasciano spazio al mondo, interfaccia a stampa da' peso alle
+scelte, impronte ne conservano le conseguenze. Supera la sobria UI del banco
+come riferimento di carattere, mantenendo la direzione spaziale gia' definita.
+
+- Il carattere nasce da forme, proporzioni, posta dominante e lettere alte e
+  strette. La ruvidita' si concentra ai margini; niente rumore dietro agli effetti.
+- Nero: informazioni del Registro. Avorio: condizioni e risultati. Rosso:
+  esposizione e impegno. Posta e seconda incisione condividono il rosso finche'
+  il rischio resta aperto. Il colore non sostituisce testo, focus o disponibilita'.
+- Titoli e verbi incisivi, grazie nette; descrizioni in un carattere pulito.
+- Contrassegno del Registro predisposto, impresso dopo la conferma, conservato
+  nel resoconto. I tre tagli sono un'identita' grafica fissa e non contano i
+  Segni, che conservano numero e nomi espliciti, incluso Occhio perduto.
+- Pressione 0: composizione ferma. A rischio crescente sono ammessi pochi
+  accenti statici ai bordi, senza spostare comandi o sporcare testo e numeri.
+
+La fascia laterale rossa con la posta appartiene alla decisione quietanza/
+raddoppio. Non diventa un arredo obbligatorio di ogni fase. Registro: patto e
+firma; arena: gesto e posta; Gradinata: pubblico e risposte ai margini; esito:
+risultato impresso e continuazione distinta. Palette, tipografia e impronte
+sono comuni, composizione e ambiente possono cambiare.
+
+Prima applicazione e verifica: `docs/support/manifesto_verdict_2026-10-08.md`.
+L'identita' e' scelta; l'estensione materiale a tutto il gioco resta lavoro
+da completare e verificare in sequenza.
+
+Conferma successiva dell'utente, 8 ottobre 2026: tenere Manifesto del
+Verdetto come base e adattarlo al mood di Gallicus con rosso di cera piu'
+spento, avorio sporco, nero d'inchiostro e incisioni asciutte. Le grandi
+scritte hanno il peso di un atto del Registro: severo, pubblico, destinato
+a restare. Conservare numero dominante, scelte nette e spazio per
+l'ambiente. Tipografia, materiali e impronte sono comuni; ogni fase ha
+la propria composizione. Valori colore e risultato integrato restano da
+verificare nel gioco. Handoff operativo per Astra:
+`docs/support/astra_manifesto_handoff_2026-10-08.md`.
+
 ## Tesi visuale
+
+Primo adattamento materiale circoscritto alla posta:
+`docs/support/manifesto_material_2026-10-08.md`. Pigmenti nativi condivisi
+con l'impronta del fascicolo: inchiostro `191917`, avorio `e7ddc5`, cera
+`792d26`. Bordi con poche incisioni statiche; centro delle azioni calmo.
+Il raccordo delle altre fasi rimane aperto. Verifica visuale corrente
+limitata all'italiano su richiesta dell'utente.
 
 Gallicus e' un teatro amministrativo romano reso fisico: un'arena severa in
 cui pietra, cera, bronzo e fascicoli registrano il comportamento del soggetto.
 L'immagine non deve sembrare fantasy generico, horror demoniaco o interfaccia
 moderna travestita.
+
+Revisione del banco, 8 ottobre 2026: la composizione gameplay usa
+`assets/ui/generated/registry_counter.png`, piano continuo di pietra opaca
+con arena sullo sfondo. Le superfici condivise sono sobrie e native; bronzo
+e cera restano sugli oggetti con una funzione rituale. Questo pass sostituisce
+il precedente rivestimento generalizzato in `basalt_worked.png`.
+La carta `registry_paper.png` distingue quietanza e fascicolo; la traccia
+`registry_wax_trace.png` compare sugli stati registrati.
+Prove: `docs/support/counter_ui_2026-10-08.md`.
+
+Correzione di regia successiva richiesta dall'utente: identita' UI comune,
+ma banco limitato al Registro, rischio sulla sabbia, Gradinata come cambio
+di sguardo nello stesso luogo e resoconto nel portico dopo l'uscita.
+La scelta quietanza/raddoppio rimane nell'arena. Quattro vedute provvisorie,
+geografia e anteprima in `docs/support/spatial_sequence_2026-10-08.md`.
+Le quattro immagini sono reference di geografia: il loro realismo e la loro
+grana non sono il trattamento approvato per il runtime. Un primo campione
+illustrato e' ora integrato sotto giudizio, gesto e scelta incasso/raddoppio:
+`assets/ui/generated/arena_illustrated_sample.png`. Registro, patto e
+fascicolo conservano per ora il banco precedente. Prova e differenze ancora
+aperte: `docs/support/illustrated_arena_2026-10-08.md`.
+
+## Mano comune tra ambienti
+
+Il campione definisce una proposta da confrontare in gioco, non un'approvazione
+artistica dell'intero set. Luoghi diversi condividono queste regole:
+
+- Forme dipinte leggibili, silhouette selettive, due o tre piani di valore per
+  materiale. Niente micrograna fotografica, riflessi PBR o effetti da obiettivo.
+- Calcare e osso per la luce, terra e oliva scuro per le ombre, rosso spento
+  per stoffa e cera. Bronzo circoscritto alla funzione degli oggetti.
+- Una direzione di luce ampia; il cambio di ambiente cambia l'esposizione e
+  l'inquadratura, non la tecnica pittorica o il contrasto dei comandi.
+- Dettaglio concentrato sulle forme identificative. Piume, pietra e carta
+  devono condividere la stessa semplificazione; evitare un ritratto fotografico
+  sopra un fondale illustrato o una quietanza piena di fibre ad alto contrasto.
+- Testi e numeri restano nativi. La superficie di lettura viene verificata
+  a 720p con UI reale; la bellezza dell'immagine isolata non basta.
+- Gerarchia, font, focus, stati e significato dei materiali restano comuni
+  tra menu, Registro, arena, Archivio e fascicolo. Gli sfondi non contengono
+  falsi pulsanti, testi o duplicati degli oggetti rituali interattivi.
+- La Gradinata e' un diverso sguardo sulla stessa arena. Registro e portico
+  riprendono arco e vessillo mantenendo scala e geografia riconoscibili.
+
+Per estendere il trattamento, confrontare una sequenza con Registro, arena,
+Gradinata, portico, cast e Archivio, includendo condizioni chiare/scure e
+IT/EN/ES. Non considerare conclusa la coerenza dal solo campione dell'arena.
+
+Vessa e Orvo hanno ritratti originali nella stessa luce e palette di Nerio,
+rispettivamente con vassoio contabile e annuncio arrotolato. Completano il
+cast visivo esistente, senza nuove specie, voci, personaggi o regole.
+Prove e limiti: `docs/support/claude_review_2026-10-08.md`.
 
 La scena primaria e' l'oggetto rituale. Cornici e decorazioni esistono solo per
 stabilire gerarchia, stato o conseguenza.
@@ -54,8 +153,8 @@ Le texture devono rendere il materiale riconoscibile senza sporcare il testo.
 Ogni oggetto ha stati coerenti: integro, disponibile, attivato, registrato,
 consumato o assente.
 
-Il fascicolo finale usa carta amministrativa leggibile, dorso di basalto,
-cerniere di bronzo e cera rossa controllata. Open e updated conservano carta
+Il fascicolo finale usa carta amministrativa leggibile, margini ampi e una
+sola traccia di cera rossa; dorso e cerniere ornamentali sono rimossi. Open e updated conservano carta
 chiara e inchiostro scuro; closed introduce una superficie scura e testo
 chiaro senza alterare perimetro o safe area. Le linguette restano subordinate
 al documento e non diventano card flottanti.
@@ -145,7 +244,8 @@ coprire testo o impedire un equivalente reduced-motion.
 ## Tipografia e simboli
 
 - Testo breve, con gerarchia netta e letter spacing neutro.
-- Font decorativo solo per titoli brevi.
+- Libre Baskerville per titoli brevi e posta; corpo nel sans incorporato di
+  Godot. Font e licenza SIL OFL in `assets/ui/official/typography/`.
 - Corpo leggibile anche in inglese e spagnolo.
 - Icone come segni amministrativi, non illustrazioni decorative.
 - Nessun simbolo privo di ruolo, lore o stato.
@@ -232,3 +332,15 @@ I ritratti 2:3 sono asset senza testo; nomi, stato e dialogo sono resi da Godot.
 Le superfici rituali restano materiali, collegate all'apparato del terminale.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+## Ritratti integrati - 8 ottobre 2026
+
+Nerio, Rugo, Dima, Vessa e Orvo usano varianti `dialogue_*_cutout.png`
+con alpha reale, derivate dai ritratti esistenti attraverso ImageGen.
+Sagome, anatomia aviana e oggetti mantengono la stessa identita' pittorica.
+Il fondo della superficie resta visibile tra le piume: nessuna cartella nera,
+cornice aggiunta o ombra rettangolare. Il materiale `portrait_grounding.tres`
+sfuma soltanto l'ultimo 10 percento inferiore del busto, senza animazioni.
+Archivio, banco e conversazioni condividono questi asset. Le sorgenti opache
+restano nel manifest per provenienza; i cataloghi runtime usano i cutout.
+Prove e limiti nel report `docs/support/claude_review_2026-10-08.md`.

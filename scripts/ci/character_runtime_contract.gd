@@ -84,9 +84,12 @@ func _run() -> void:
 			for character: Dictionary in Characters.CHARACTERS:
 				var found: bool = false
 				for entry: Node in archive.get_children():
-					if entry.get_child_count() == 0 or not entry.get_child(0) is Label:
+					if str(entry.get_meta("character_id", "")) != str(character.id):
 						continue
-					var biography: Label = entry.get_child(0)
+					var biography: Label = entry.get_node("Biography")
+					var portrait: TextureRect = entry.get_node("Portrait")
+					_check(portrait.texture != null and portrait.texture.resource_path == character.portrait, "missing portrait: " + character.name)
+					_check(biography.text.contains(String(TranslationServer.translate(str(character.description)))), "biography language mismatch: " + character.name + " / " + TranslationServer.get_locale())
 					if not biography.text.begins_with(character.name + " — "):
 						continue
 					found = true
@@ -95,7 +98,7 @@ func _run() -> void:
 					await process_frame
 					_check(biography.get_line_count() * biography.get_line_height() <= biography.size.y + 1.0, "clipped biography: " + character.name)
 					_check(scroll.get_global_rect().encloses(biography.get_global_rect()), "unreachable biography: " + character.name)
-					if capture_dir != "" and character.id in ["rugo", "dima"]:
+					if capture_dir != "":
 						await RenderingServer.frame_post_draw
 						root.get_texture().get_image().save_png(capture_dir.path_join("archive_%s_%s_%dx%d.png" % [character.id, TranslationServer.get_locale(), size.x, size.y]))
 				_check(found, "missing archive character: " + character.name)

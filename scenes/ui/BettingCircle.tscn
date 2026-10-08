@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_chamber.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_counter.png" id="4"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_betting_title.tres" id="10"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/italiana_regular_font.tres" id="11_book_font"]
@@ -16,6 +16,10 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_focus.tres" id="20_promise_focus"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_pressed.tres" id="21_promise_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_disabled.tres" id="24_promise_disabled"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/dialogue_vessa_cutout.png" id="25_vessa"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/dialogue_orvo_cutout.png" id="26_orvo"]
+[ext_resource type="Material" path="res://assets/ui/official/portrait_grounding.tres" id="27_grounding"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_wax_trace.png" id="wax_trace"]
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
 [node name="BettingCircle" type="Control"]
@@ -40,17 +44,17 @@ stretch_mode = 5
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 1
-color = Color(0, 0, 0, 0.62)
+color = Color(0, 0, 0, 0.16)
 
 [node name="CenterContainer" type="Control" parent="."]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -450.0
-offset_top = -290.0
-offset_right = 450.0
-offset_bottom = 250.0
+offset_left = -600
+offset_top = -255
+offset_right = 300
+offset_bottom = 285
 mouse_filter = 1
 
 [node name="BookFrame" type="Control" parent="CenterContainer"]
@@ -89,6 +93,28 @@ text = "IL REGISTRO È CHIUSO"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="OrvoPortrait" type="TextureRect" parent="CenterContainer/BookFrame/ClosedIntro"]
+material = ExtResource("27_grounding")
+anchor_left = 0.105
+anchor_top = 0.08
+anchor_right = 0.25
+anchor_bottom = 0.44
+mouse_filter = 2
+texture = ExtResource("26_orvo")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="VessaPortrait" type="TextureRect" parent="CenterContainer/BookFrame/ClosedIntro"]
+material = ExtResource("27_grounding")
+anchor_left = 0.075
+anchor_top = 0.56
+anchor_right = 0.205
+anchor_bottom = 0.92
+mouse_filter = 2
+texture = ExtResource("25_vessa")
+expand_mode = 1
+stretch_mode = 4
 
 [node name="IntroBodyPanel" type="PanelContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.26
@@ -149,9 +175,9 @@ vertical_alignment = 1
 mouse_filter = 2
 
 [node name="BancoPanel" type="VBoxContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
-anchor_left = 0.1
+anchor_left = 0.225
 anchor_top = 0.56
-anchor_right = 0.9
+anchor_right = 0.925
 anchor_bottom = 0.93
 theme_override_constants/separation = 8
 alignment = 1
@@ -167,9 +193,11 @@ theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Btn_Banco_favor" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(212, 66)
+custom_minimum_size = Vector2(182, 94)
+size_flags_horizontal = 3
 focus_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 3
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
 theme_override_styles/pressed = ExtResource("17_button_pressed")
@@ -177,9 +205,11 @@ theme_override_styles/disabled = ExtResource("18_button_disabled")
 text = ""
 
 [node name="Btn_Banco_pressure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(212, 66)
+custom_minimum_size = Vector2(182, 94)
+size_flags_horizontal = 3
 focus_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 3
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
 theme_override_styles/pressed = ExtResource("17_button_pressed")
@@ -187,9 +217,11 @@ theme_override_styles/disabled = ExtResource("18_button_disabled")
 text = ""
 
 [node name="Btn_Banco_insure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(212, 66)
+custom_minimum_size = Vector2(182, 94)
+size_flags_horizontal = 3
 focus_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 3
 theme_override_styles/normal = ExtResource("15_button_normal")
 theme_override_styles/hover = ExtResource("16_button_hover")
 theme_override_styles/pressed = ExtResource("17_button_pressed")
@@ -198,7 +230,7 @@ text = ""
 
 [node name="BancoNote" type="Label" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel"]
 theme_override_colors/font_color = Color(0.8, 0.74, 0.61, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 15
 text = ""
 horizontal_alignment = 1
 autowrap_mode = 3
@@ -209,13 +241,13 @@ anchor_top = -0.085
 anchor_right = 0.83
 anchor_bottom = 0.035
 mouse_filter = 2
-theme_override_styles/panel = ExtResource("10")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_1")
 
 [node name="Title" type="Label" parent="CenterContainer/BookFrame"]
 anchor_left = 0.19
-anchor_top = -0.073
+anchor_top = 0.02
 anchor_right = 0.81
-anchor_bottom = 0.026
+anchor_bottom = 0.11
 theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
 theme_override_constants/line_spacing = 0
 theme_override_font_sizes/font_size = 16
@@ -226,7 +258,7 @@ autowrap_mode = 3
 
 [node name="LeftPage" type="Control" parent="CenterContainer/BookFrame"]
 anchor_left = 0.055
-anchor_top = 0.09
+anchor_top = 0.15
 anchor_right = 0.475
 anchor_bottom = 0.93
 mouse_filter = 1
@@ -277,7 +309,7 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/LeftPage"]
 anchor_right = 1.0
-anchor_bottom = 0.89
+anchor_bottom = 0.85
 offset_left = 20.0
 offset_top = 4.0
 offset_right = -14.0
@@ -305,10 +337,10 @@ scroll_active = false
 autowrap_mode = 3
 
 [node name="Btn_Sign_Left" type="Button" parent="CenterContainer/BookFrame/LeftPage"]
-anchor_left = 0.22
-anchor_top = 0.9
-anchor_right = 0.78
-anchor_bottom = 1.015
+anchor_left = 0.06
+anchor_top = 0.88
+anchor_right = 0.94
+anchor_bottom = 1.0
 focus_mode = 2
 theme_override_styles/normal = ExtResource("19_promise_normal")
 theme_override_styles/hover = ExtResource("20_promise_focus")
@@ -322,12 +354,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_font_sizes/font_size = 18
 text = "FIRMA"
-horizontal_alignment = 1
+horizontal_alignment = 0
 vertical_alignment = 1
 mouse_filter = 2
+offset_left = 24
+offset_right = -64
+
 [node name="RightPage" type="Control" parent="CenterContainer/BookFrame"]
 anchor_left = 0.525
-anchor_top = 0.09
+anchor_top = 0.15
 anchor_right = 0.945
 anchor_bottom = 0.93
 mouse_filter = 1
@@ -378,7 +413,7 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="Content" type="MarginContainer" parent="CenterContainer/BookFrame/RightPage"]
 anchor_right = 1.0
-anchor_bottom = 0.89
+anchor_bottom = 0.85
 offset_left = 14.0
 offset_top = 4.0
 offset_right = -16.0
@@ -406,10 +441,10 @@ scroll_active = false
 autowrap_mode = 3
 
 [node name="Btn_Sign_Right" type="Button" parent="CenterContainer/BookFrame/RightPage"]
-anchor_left = 0.22
-anchor_top = 0.9
-anchor_right = 0.78
-anchor_bottom = 1.015
+anchor_left = 0.06
+anchor_top = 0.88
+anchor_right = 0.94
+anchor_bottom = 1.0
 focus_mode = 2
 theme_override_styles/normal = ExtResource("19_promise_normal")
 theme_override_styles/hover = ExtResource("20_promise_focus")
@@ -423,6 +458,47 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_font_sizes/font_size = 18
 text = "FIRMA"
-horizontal_alignment = 1
+horizontal_alignment = 0
 vertical_alignment = 1
 mouse_filter = 2
+offset_left = 24
+offset_right = -64
+
+[node name="PageDivision" type="ColorRect" parent="CenterContainer/BookFrame/SpellbookBg"]
+anchor_left = 0.5
+anchor_top = 0.16
+anchor_right = 0.5
+anchor_bottom = 0.9
+offset_right = 1.0
+mouse_filter = 2
+color = Color(0.48, 0.46, 0.38, 0.5)
+
+[node name="WaxTrace" type="TextureRect" parent="CenterContainer/BookFrame/LeftPage/Btn_Sign_Left"]
+visible = false
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -56.0
+offset_top = -24.0
+offset_right = -8.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("wax_trace")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="WaxTrace" type="TextureRect" parent="CenterContainer/BookFrame/RightPage/Btn_Sign_Right"]
+visible = false
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -56.0
+offset_top = -24.0
+offset_right = -8.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("wax_trace")
+expand_mode = 1
+stretch_mode = 5

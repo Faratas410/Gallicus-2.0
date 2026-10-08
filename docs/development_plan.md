@@ -10,6 +10,67 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+Identita' UI scelta: Manifesto del Verdetto, proposta 3 rifinita con azioni
+basse e arena aperta. Prima applicazione alla decisione sulla posta:
+`docs/support/manifesto_verdict_2026-10-08.md`. Estendere il linguaggio a
+Registro, Gradinata, esito, menu e Archivio con composizioni proprie, senza
+replicare ovunque la fascia della posta. Verificare la sequenza completa.
+
+Base confermata dall'utente: adattamento con cera piu' spenta, avorio
+sporco, nero d'inchiostro e incisioni asciutte; scritte come atti pubblici
+del Registro. Prossima azione visuale per Astra: integrare l'adattamento
+nella scelta sulla posta, poi raccordare le fasi esistenti con composizioni
+proprie. Perimetro e prove in
+`docs/support/astra_manifesto_handoff_2026-10-08.md`. Handoff preparato;
+adattamento non eseguito da questa patch documentale, nessun gate chiuso.
+
+Avvio circoscritto successivo: nuove catture della sequenza e progetto del
+pass su materia, descrizioni e stati della decisione sulla posta in
+`docs/support/manifesto_scope_2026-10-08.md`. Implementazione ancora da
+eseguire; estensione alle altre fasi separata, nessun gate chiuso.
+
+Implementazione successiva circoscritta a materia e stati della posta,
+con raccordo colore dell'impronta nel fascicolo:
+`docs/support/manifesto_material_2026-10-08.md`. Per richiesta dell'utente
+le prove visuali e runtime di questo pass sono solo IT. EN/ES rinviate;
+uniformazione delle altre fasi, accettazione umana e Linux restano aperti.
+
+Prova artistica successiva: sequenza Registro -> sabbia -> sguardo alla
+Gradinata -> portico, con geografia condivisa e UI campione disattivabile.
+Consegna in `docs/support/spatial_sequence_2026-10-08.md`. Queste immagini
+restano reference spaziali: l'utente esclude il loro realismo dal runtime.
+Primo campione illustrato integrato nell'arena, con UI reale e confronto
+720p/1080p: `docs/support/illustrated_arena_2026-10-08.md`. Prossimo passo:
+valutare la mano del campione, poi applicarla a Registro, Gradinata, portico,
+cast e superfici, verificandoli in sequenza. Nessuna chiusura di gate.
+
+Banco amministrativo dell'8 ottobre 2026 implementato dopo approvazione dei
+concept: gerarchia gameplay, colonna stabile, superfici sobrie e fascicolo
+editoriale. Prove: `docs/support/counter_ui_2026-10-08.md`. Prossimo passo:
+revisione in gioco della lettura e del carattere visivo, poi checkpoint Linux
+sul candidato committato dall'utente. Core Playable Candidate invariato.
+
+
+Pass editoriale dell'8 ottobre 2026: «La prima copia» riscritta e criterio
+esteso alle undici scene, alle cinque presenze e agli scambi patto/gesto;
+copy operativa e sei voci d'Archivio riviste, con adattamento IT/EN/ES.
+Confronto, perimetro e prove in `docs/support/writing_pass_2026-10-08.md`.
+Stage invariato: Core Playable Candidate. Prossimo passo sul contenuto:
+lettura umana della sequenza e del filo posto/riga, poi verifica del ritmo
+nel playtest. Il pass locale non chiude Content Lock, CP-03 o checkpoint Linux.
+
+Pass locale dell'8 ottobre 2026: verifica del lavoro di ottobre, superfici
+UI condivise in pietra lavorata, ritratti di Vessa/Orvo e cast illustrato
+nell'Archivio. Il playtest diretto e' stato interrotto dall'utente; la
+consegna usa le osservazioni gia' raccolte. Report e gate aperti in
+`docs/support/claude_review_2026-10-08.md`. Stage invariato: Core Playable
+Candidate. Prossimo passo: revisione umana della patch locale e checkpoint
+Linux sul candidato che l'utente committera' manualmente.
+
+Su richiesta successiva, i cinque ritratti sono ora sagome trasparenti
+integrate nella pietra, con base sfumata e bordo del dialogo condiviso.
+La verifica aggiunta riguarda solo composizione e contratti UI.
+
 Rework di prodotto del 6 ottobre 2026, richiesto dall'utente: direzione unica
 in `docs/direction.md`, audit e piano in
 `docs/support/rework_audit_2026-10-06.md`. Primo pacchetto implementato:
@@ -33,7 +94,8 @@ Racconti, 7 ottobre 2026 (otto con il bando): cinque scene illustrate in piu' (c
 sabbia, richiamo, posti in vendita, riga che resta) fra la prima copia e la
 meta' della campagna, e dodici nuove voci dell'arena; canone in
 `docs/canon/LORE_UNIFIED.md`, copy in `docs/content_bible.md`. Pannelli e libro
-del Registro restano ancorati al centro (UI_CANON, Motion Contract).
+del Registro conservano offset rispetto agli anchor centrali; il successivo
+pass banco definisce il campo sinistro (UI_CANON, Motion Contract).
 
 Bando, scala e catena, 7 ottobre 2026 ("Perche' scommettere? Perche'
 continuare?"): ogni percorso ha un bando di Gloria da chiudere entro un'arena,

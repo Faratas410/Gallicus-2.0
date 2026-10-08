@@ -150,8 +150,9 @@ conflitto questo canon prevale.
 - Previous MainMenu, StonePixel, RPG UI and official_source graphics are
   retired from runtime and export, retained only as source history.
 - Authoritative theme: `res://assets/ui/theme/official_theme.tres`.
-- Font wrappers use `res://assets/ui/fonts/engine_sans.tres`, Godot's embedded
-  fallback; purchased font files are not runtime dependencies.
+- Body wrappers use `res://assets/ui/fonts/engine_sans.tres`, Godot's embedded
+  fallback. Short titles use Libre Baskerville via font_title_outline.tres;
+  TTF and SIL OFL license live in `res://assets/ui/official/typography/`.
 
 ## Run flow payload contract (INTERMEDIATE_CHOICE)
 - `RunManager` remains sole authority for phase progression and emits `RunUiPayload` for `INTERMEDIATE_CHOICE`.
@@ -186,10 +187,14 @@ conflitto questo canon prevale.
 
 ## Import standard (UI PNG)
 Track PNG and .png.import together. Generated raster sources are full-frame
-RGB rectangles; the title wordmark alone preserves its generated RGBA alpha.
+RGB rectangles; wordmark, dust, portraits and registered wax trace preserve
+ their generated RGBA alpha.
 All are filtered linearly by controls; no old pixel-art/alpha rule
-applies. Object StyleBoxTexture margins are zero and states preserve content
-geometry. The .godot cache stays ignored. Provenance and dimensions are
+applies. Preserved full-frame object textures use zero texture margins.
+Receipt and open/updated dossier use registry_paper with 12 px nine-slice
+margins. Native styles replace ornamental frames on Registry, signatures,
+gesture tesserae, second incision and dossier tabs. All states preserve
+explicit content margins and control geometry. The .godot cache stays ignored. Provenance and dimensions are
 checked by `scripts/ci/generated_art_contract.py`.
 
 ## Resolution/stretch baseline (UI hardening)
@@ -324,7 +329,7 @@ Current MP3 files under `res://assets/audio/`:
   - Button intent handlers must not `await` animation before emitting `request_*` signals.
   - Standard modal motion kinds are `standard`, `ritual`, and `ending`; ritual motion is reserved for pact, resolve, intermediate choice, Push Your Luck, and END_RUN surfaces.
   - The `BettingCircle` instance in `scenes/UI.tscn` declares full-rect anchors (`layout_mode = 3`) and `betting_circle_ui.gd` re-applies `PRESET_FULL_RECT` in `_ready`: without them the exported (binary) scene reset the instance to zero size and the Registry book opened in the top-left corner (Windows build of 2026-10-07; guarded by `test_ui_motion_contract.py`).
-  - Panel, book and page motion moves anchored surfaces through their declared offsets, never through a cached absolute `position` (fix of 2026-10-07 for panels reported off centre): a layout pass, a window change or an interrupted tween cannot strand a panel away from the centre.
+  - Panel, book and page motion moves anchored surfaces through their declared offsets, never through a cached absolute `position` (fix of 2026-10-07 for panels reported off centre): a layout pass, a window change or an interrupted tween cannot strand a panel away from its declared work area.
 - Betting-circle book reveal is player-confirmed: the closed-book intro exposes only `APRI`, and the open animation remains presentational-only with no `GameEvents` emission.
 - Betting-circle open pages do not use idle bob/page drift. Pact text reveal is handled as a presentational writing animation (`visible_characters`) after the book opens; sign buttons remain disabled until the writing reveal completes.
   - Shake/glitch/flash remain bounded to existing ritual or quick-cut feedback surfaces, not generic hover states.
@@ -429,9 +434,9 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 - Runtime scene: `res://scenes/UI.tscn`; technical input nodes:
   `Btn_MID_CHOICE_SELECT_0` and `Btn_MID_CHOICE_SELECT_1`.
-- `placa` and `provoca` are presented as text-free 3:2 basalt, bronze and sand
-  tesserae with the same silhouette. Their Godot-rendered CTAs remain
-  descriptive in IT/EN/ES and expose Pressure -1/+1 before activation.
+- `placa` and `provoca` are matte dark 3:2 tesserae with native borders
+  and state treatment. Their Godot-rendered CTAs remain descriptive in
+  IT/EN/ES and expose the authoritative exchange price before activation.
 - Each control is `336x224` inside a `764x430` panel. Normal, focus, pressed,
   selected and disabled share identical margins and never scale or move.
 - Activation guards duplicate input, exposes selected, applies decision lock
@@ -484,10 +489,10 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   the exact price of that answer (`placa_text`, `provoca_text`). After each
   answer RunManager sends the next exchange as a new payload: the tiles unlock
   after the normal modal read delay, which is the beat between exchanges.
-- `HUD/CrowdFavorPanel`, top left, mirrors the Segni box: title
+- `HUD/CrowdFavorPanel`, in the fixed right context column: title
   `LA GRADINATA`, a favour bar from -5 to +5 (`CrowdFavorBar`, pressure-bar
   styles), the favour with its band as body (`Favore +2. Ben disposta: ...`)
-  and the last price paid as note. A triumph or a riot replaces the note with
+  and the last price paid as a one-line note with full tooltip. A triumph or a riot replaces the note with
   `LA GRADINATA TI PORTA: posta +2.` or
   `LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.` It is hidden outside a
   percorso and in ending mode.
@@ -507,8 +512,8 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 ## Orvo's bando and the chain (October 2026)
 
-- `HUD/BandoPanel`, bottom left (250 px wide, same dossier style as the Segni
-  box): title `BANDO DI ORVO`, a bar of the posta against the quota
+- `HUD/BandoPanel`, first in the right column (270 px wide, shared surface
+  and thin divider): title `BANDO DI ORVO`, a bar of the posta against the quota
   (`BandoBar`, pressure-bar styles), the body by status
   (`%d di %d Gloria entro l'arena %d.`, `Bando chiuso: Denari +%d e un gradino.`,
   `Bando scaduto: nessun gradino.`, `Bando mancato: nessun gradino.`) and a note
@@ -545,7 +550,8 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 - Runtime scene: `res://scenes/UI.tscn`; `Panel_END_RUN` is presented as a
   fixed `1120x640` dossier, not as a generic modal card.
 - The dossier keeps a fixed rectangular control across open, updated
-  and closed; original paper and closed Registry textures replace alpha silhouettes. `meta.register_final=false` maps to updated;
+  and closed; original paper serves open/updated and a native dark surface
+  serves closed. `meta.register_final=false` maps to updated;
   `meta.register_final=true` maps to closed. The UI does not infer either
   state from outcome copy.
 - `EndRunRouteTabs` contains fixed `280x64` text-free tabs (row `864x64`) for
@@ -657,3 +663,75 @@ beat index. Closing returns focus to Btn_Open_Book; menu cancellation hides
 the surface without marking it seen. Silence and Absence have no conversation.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
+
+## Character and material presentation - 2026-10-08
+
+Closed Registry presentation pairs Orvo's announcement with his portrait,
+and Vessa's bank with hers. The existing five Archive biographies now pair
+with the same portraits. These images ignore input, never indicate an
+outcome, and disappear with their owning surface. No dialogue eligibility,
+reading interval, phase, signal or save schema changes. Bank controls show
+service, effect and authoritative price on separate lines. Generic ritual,
+HUD, dialogue and utility panels originally shared worked basalt; the later
+counter revision replaces shared ornamental frames with restrained native
+surfaces. Interaction ownership remains unchanged. Details and local evidence:
+`docs/support/claude_review_2026-10-08.md`.
+
+The five avian portraits use genuine transparent silhouettes on their owning
+stone surface, with no separate portrait cards. A shared static material
+softens the cropped bottom of the bust. Conversation feathers overlap only
+the panel's left margin, with body text and controls unobstructed. This is a
+presentation change; the Registry machine remains an impersonal object.
+
+## Counter composition - 2026-10-08
+
+Registry and pact retain the counter. The subsequent illustrated arena sample
+replaces the backdrop for judgment, gestures and push-your-luck; these phases
+share `arena_illustrated_sample.png`. The dossier still uses the earlier counter
+pending the portico treatment. No phase or interaction ownership changes.
+Primary work occupies the left field; Bando, crowd and Segni occupy a fixed
+right column; pressure, stake, account and arena share the footer. The large
+stake comes from the existing payload. The pressure caption names its metric.
+Scar notices show name and effect; narrative remains in the scrollable detail.
+The dossier preserves 1120x640 geometry with 70 px side margins. Available
+continuation receives initial focus; utility routes preserve their availability.
+Wax trace observes existing registered presentation states and introduces no
+new gameplay result. All node paths, intents and RunManager authority remain.
+Geometry and evidence: `docs/layout_rules.md`, `docs/support/counter_ui_2026-10-08.md`.
+
+The arena sample uses a shared native vertical reading shade below controls.
+It ignores input, introduces no new object or result, and keeps all text live.
+Its geography comes from spatial references; their photorealistic treatment
+is excluded from runtime. Cross-game art alignment remains unfinished.
+Current sample: `docs/support/illustrated_arena_2026-10-08.md`.
+
+## Manifesto del Verdetto - selected identity, 2026-10-08
+
+The user's refined third proposal is the UI identity. The first implementation
+places the numeric stake on a red left strip, receipt and second incision on
+low ivory/red printed surfaces, and Registry information on a black right field.
+The existing illustrated arena stays exposed in this decision. The strip is
+specific to push-your-luck; other phases keep their own composition.
+
+Native text consumes authoritative payload fields, with separate localized
+stake caption and explicit scar count/names. Three fixed cuts identify the
+Registry; they do not count scars. Prepared outlines fill in the existing
+registered states. The dossier keeps the same three-cut identifier after its
+existing updated/closed state. Availability and request recovery remain owned
+by the existing UI flow; decorative drawing never emits game intents.
+
+The full printed action is clickable, including the area under descriptions.
+Focus adds a line and hover does not scale these actions. Existing pressure
+adds at most three static edge traces; it does not move the controls. The
+third condemnation action remains available when the receipt is blocked.
+The HUD's prior anchors and offsets are restored when leaving the decision.
+Scope and evidence: `docs/support/manifesto_verdict_2026-10-08.md`.
+
+The material refinement retains these geometries and native controls.
+Notes align at the top with bottom padding; sparse edge cuts replace the
+repeated jagged outline. Hover adds an inset underline, focus retains the
+bottom line, and pressed changes the surface with an inset outline.
+Blocked choices retain their reason and add two bars in the mark margin;
+confirmed choices fill the three wider cuts only from existing registered
+metadata. Palette is shared with the dossier imprint. No new state or
+intent is introduced. Evidence: `docs/support/manifesto_material_2026-10-08.md`.

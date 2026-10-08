@@ -32,6 +32,13 @@ func _input_action(action: String) -> void:
 	Input.parse_input_event(event)
 	await process_frame
 
+func _era_tales() -> Array[String]:
+	var ids: Array[String] = []
+	for tale: Dictionary in Catalog.TALES:
+		if tale.has("era"):
+			ids.append(str(tale.id))
+	return ids
+
 func _new_entry(id: String) -> void:
 	root.get_node("GameEvents").request_show_main_menu.emit()
 	var era: int = {"entry":0, "middle":2, "departure":3}.get(id, 1)
@@ -47,6 +54,9 @@ func _new_entry(id: String) -> void:
 		earlier_tales.append(str(tale.id))
 	if not Catalog.SEQUENCES.has(id) or ["entry", "middle", "departure"].has(id):
 		earlier_tales = []
+	if id == "departure":
+		# The farewell waits for the empty-seat racconti.
+		earlier_tales = _era_tales()
 	save.commit_registry_evolution(0.0, era, evolution)
 	manager.set("_registry_era", era)
 	var settings: Dictionary = save.get("_settings")
@@ -135,13 +145,25 @@ func _run() -> void:
 				_check(not view.get("_active") and save.has_seen_campaign_dialogue(id), "last beat did not close and persist: " + id)
 				_check(root.gui_get_focus_owner().name == "Btn_Open_Book", "focus not restored")
 	# Racconti wait their turn: one per percorso, never after the farewell.
-	save.commit_registry_evolution(0.0, 1, Evolution.defaults().merged({"samples": 20}, true))
-	manager.set("_registry_era", 1)
+	save.commit_registry_evolution(0.0, 0, Evolution.defaults().merged({"samples": 20}, true))
+	manager.set("_registry_era", 0)
 	save.get("_settings")["campaign_dialogues_seen"] = []
 	save.set_bando_step(0)
 	_check(manager.get_campaign_dialogue().is_empty(), "a tale came without a closed bando")
+	# The empty-seat racconti come with their Era, bando or not, and hold the farewell back.
+	save.commit_registry_evolution(0.0, 1, Evolution.defaults().merged({"samples": 20}, true))
+	manager.set("_registry_era", 1)
+	_check(str(manager.get_campaign_dialogue().get("id", "")) == "seat_kept", "the Era did not bring the empty seat")
+	save.commit_registry_evolution(0.0, 3, Evolution.defaults().merged({"samples": 20}, true))
+	manager.set("_registry_era", 3)
+	_check(str(manager.get_campaign_dialogue().get("id", "")) == "seat_kept", "the farewell came before the empty seat")
+	save.get("_settings")["campaign_dialogues_seen"] = _era_tales()
+	_check(str(manager.get_campaign_dialogue().get("id", "")) == "departure", "the farewell did not follow the empty seat")
+	save.commit_registry_evolution(0.0, 1, Evolution.defaults().merged({"samples": 20}, true))
+	manager.set("_registry_era", 1)
+	save.get("_settings")["campaign_dialogues_seen"] = []
 	save.set_bando_step(12)
-	_check(str(manager.get_campaign_dialogue().get("id", "")) == "ledger", "first tale not offered first")
+	_check(str(manager.get_campaign_dialogue().get("id", "")) == "first_strophe", "first tale not offered first")
 	var all_tales: Array[String] = []
 	for tale: Dictionary in Catalog.TALES:
 		all_tales.append(str(tale.id))

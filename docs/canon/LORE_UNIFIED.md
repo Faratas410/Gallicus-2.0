@@ -32,6 +32,10 @@ stabilisce la specie del giocatore o di Felix.
   penna del petto; prima copriva gli annunci, ora sceglie quando usare la voce.
 - **Dima, Gallina della gradinata:** tiene una zampa sul posto accanto, riconosce
   i passi e ricorda chi sedeva dove l'amministrazione vede spazio vendibile.
+- **Lauro, Storno cantastorie (7 ottobre 2026):** piumaggio nero a macchie
+  chiare, porta sulla schiena tre tavolette dipinte. Imita il richiamo di Orvo
+  e il vecchio grido di Rugo; canta le gesta di chi passa nell'arena e ogni
+  sera cambia una parola. Abita la gradinata, non l'amministrazione.
 
 Gli scambi avvengono fra abitanti e amministratori attorno alla firma gia' apposta e al gesto
 pubblico ancora da compiere. Non assegnano parole al giocatore, non giudicano
@@ -58,20 +62,48 @@ RILEVANTE." Nessuna spiegazione, biografia o istruzione; nessuna riga
 nell'Assenza. Il posto vuoto che Dima tiene sulla gradinata resta allusione,
 mai dichiarazione. Direzione complessiva in `docs/direction.md`.
 
+## Lauro e la gesta - 7 ottobre 2026
+
+Su richiesta dell'utente ("un cantastorie, colui che racconta le gesta degli
+eroi") la gradinata riceve una terza memoria accanto all'arena che dimentica e
+al Registro che copia: la canzone, che ricorda male ma ricorda. Lauro e' uno
+storno: imita le voci degli altri, mai il Registro, e non parla a nome del
+soggetto, che resta senza battute.
+
+- **La gesta.** Alla chiusura di ogni percorso (non durante Silenzio o
+  Assenza) Lauro canta una strofa di tre versi composta dai fatti gia'
+  stabiliti: quante arene, il fatto piu' alto (bando chiuso, catena di almeno
+  tre sigilli, gradinata che porta, Segno mostrato, sabbia lanciata, Gloria
+  alta) e come il percorso si e' chiuso (quietanza, marchio, cera che cede,
+  fascicolo classificato). La strofa non giudica e non cambia l'esito.
+- **La gesta piu' alta.** Lauro ricorda la strofa con piu' Gloria fra un
+  percorso e l'altro; il fascicolo la cita come nota.
+- **Divieti.** Lauro non nomina Felix, le Ere o il Silenzio, non spiega
+  regole e non celebra il precedente: la gesta del posto vuoto resta aperta.
+
+Catalogo dei versi in `scripts/content/cantastorie.gd`; regole in
+`docs/canon/MECHANICS_UNIFIED.md` ("Bando, scala e catena"); scheda in
+`docs/support/cantastorie_2026-10-07.md`.
+
 ## Racconti - 7 ottobre 2026
 
-Otto racconti illustrati riempiono il tratto fra la prima copia e la fine
+Dieci racconti illustrati riempiono il tratto fra la prima copia e la fine
 della seconda Era: compaiono all'inizio di un percorso, uno per volta, come
-premio dei gradini della scala dei bandi di Orvo (gradini 1-8, vedi
+premio dei gradini della scala dei bandi di Orvo (gradini 1-10, vedi
 `docs/canon/MECHANICS_UNIFIED.md`), dopo le scene d'Era che hanno la
-precedenza e mai dopo il congedo dell'ultima Era. Nessuno durante Silenzio o
-Assenza. Parlano Nerio, Rugo e Dima; il terminale ha due soli inserti di stato
+precedenza e mai dopo il congedo dell'ultima Era. I quattro racconti del posto
+vuoto sono garantiti dalla campagna: arrivano anche senza bando dall'Era 1
+(`seat_kept`, `footstep`) e dall'Era 2 (`open_strophe`, `slope`), e il congedo
+li aspetta tutti. Il bando li anticipa. Nessuno durante Silenzio o
+Assenza. Parlano Nerio, Rugo, Dima e Lauro; il terminale ha due soli inserti di stato
 ("COPIA RESPINTA", "CONFRONTO IN CORSO / Corrispondenza parziale."). Vessa e
 Orvo sono citati, non parlano.
 
-Il filo del posto vuoto (gradini 3, 6, 8) e' l'aggancio di trama: chi sedeva
+Il primo racconto (gradino 1, "La prima strofa") presenta Lauro. Il filo del
+posto vuoto (gradini 4, 7, 8, 10) e' l'aggancio di trama: chi sedeva
 accanto a Dima chiudeva ogni bando, si e' alzato senza chiusura e il suo
-fascicolo risulta aperto; Dima sente un passo nuovo uguale al suo; Nerio trova
+fascicolo risulta aperto; Dima sente un passo nuovo uguale al suo; Lauro ne
+canta la gesta ma non riesce a finirla ("La strofa aperta"); Nerio trova
 la stessa pendenza fra la copia del soggetto e quella riga. Resta allusione: il
 nome arriva solo dal terminale al primo Silenzio.
 
@@ -92,6 +124,12 @@ Fatti stabiliti dai racconti, coerenti con le Presenze dell'arena:
   sedeva chiudeva ogni bando e si e' alzato senza chiusura.
 - Il Registro distingue le righe, non i passi; la copia del soggetto ha una
   corrispondenza parziale con quella riga.
+- Lauro canta quello che le righe lasciano fuori: "L'arena dimentica. Il
+  Registro no. Io ricordo male, ma ricordo." Nella sua strofa la cresta di
+  Rugo e' ogni volta piu' alta.
+- La gesta di chi sedeva accanto a Dima si interrompe quando "si alza": la
+  gradinata non la applaude, la ascolta. Lauro non inventa la fine e la lascia
+  aperta come il posto. Non e' una celebrazione: e' una strofa senza chiusura.
 
 I racconti non spiegano regole, non nominano Felix, le Ere o il Silenzio e non
 assegnano battute al giocatore. Catalogo in

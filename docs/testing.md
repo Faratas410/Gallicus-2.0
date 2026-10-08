@@ -11,15 +11,16 @@ questo pass. Il target di release trilingue resta invariato. Evidenze:
 `docs/support/manifesto_material_2026-10-08.md`.
 
 Il contratto AV comprende `scripts/ci/character_runtime_contract.gd`: tre
-Gufi, un gallo, una gallina e trentadue scambi, localizzazione, selezione deterministica senza mutazioni,
+Gufi, un gallo, una gallina, uno storno e quaranta scambi, localizzazione, selezione deterministica senza mutazioni,
 soppressione terminale/Silenzio e ingombri alle due risoluzioni. Con renderer
-e `--capture-dir=<directory>` produce 192 viste di dialogo e 18 dell'Archivio
-(sei iniziali e dodici scorse fino alle schede di Rugo e Dima).
+e `--capture-dir=<directory>` produce 240 viste di dialogo e 42 dell'Archivio
+(sei iniziali e trentasei scorse sulle sei schede, incluso Lauro).
 Le immagini devono essere ispezionate: la sola geometria non prova visibilita'.
-`scripts/ci/illustrated_dialogue_contract.gd` attraversa anche gli otto racconti
+`scripts/ci/illustrated_dialogue_contract.gd` attraversa anche i dieci racconti
 (nelle tre lingue a 1280x720), ne verifica l'ordine per gradino del bando, che
-nessuno compaia al gradino 0, che non si ripetano e che nessuno segua il
-congedo; il runner AV gli concede 150 secondi.
+nessuno compaia al gradino 0 prima dell'Era 1, che i racconti del posto vuoto
+arrivino con la loro Era e prima del congedo, che non si ripetano e che nessuno
+segua il congedo; il runner AV gli concede 150 secondi.
 Una build esportata va guardata anche dal pacchetto: `--main-pack <Gallicus.exe>`
 con il binario Linux carica le scene convertite come le vede Windows. Il 7
 ottobre 2026 solo cosi' si e' riprodotto il libro del Registro in alto a
@@ -180,7 +181,7 @@ linguette del fascicolo: next bet, new path e ritorno al menu. Le quattro route
 push-your-luck restano coperte dagli scenari dedicati.
 
 `KEYBOARD_FULL_RUN` inietta eventi `InputEventKey` press/release reali. Parte
-dal focus del menu, attraversa Registro, firma, patto, tre scambi con la gradinata, da uno a tre colpi,
+dal focus del menu, attraversa Registro, firma, patto, gli scambi con la gradinata, da uno a tre colpi,
 Push Your Luck e fascicolo, quindi verifica il ritorno al menu senza chiamare
 direttamente gli intenti di gameplay.
 
@@ -604,3 +605,12 @@ le catture dal precedente banco. Controllare anche contrasto della didascalia
 alta, posta, focus e note sul nuovo fondale. Confrontare Registro e fascicolo
 adiacenti per rendere esplicite le differenze artistiche ancora da uniformare.
 Prova e perimetro: `docs/support/illustrated_arena_2026-10-08.md`.
+
+## Simulatore di campagna (tuning, non gate)
+
+`tools/campaign_sim.gd` gioca una campagna intera nella UI vera con uno stile
+scelto da argomenti (`--style`, `--strike`, `--crowd`, `--runs`, `--seed`) e
+stampa una riga `SIM_RUN` per percorso e un `SIM_SUMMARY`. Usare un profilo
+isolato (`APPDATA`/`XDG_DATA_HOME`). Confrontare sempre con `--crowd=read`:
+`--crowd=bow` porta a rivolte e debito. Risultati del 7 ottobre 2026 in
+`docs/support/benchmark_bcde_2026-10-07.md`.

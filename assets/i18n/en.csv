@@ -863,7 +863,7 @@ LA CERA SI INCRINA - IL SIGILLO CEDE,THE WAX CRACKS - THE SEAL GIVES WAY
 Il sigillo regge: +%d Gloria in posta.,The seal holds: +%d Glory to the stake.
 "Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Another strike: %s, +%d more Glory. If the wax cracks, the pact gives way."
 La cera si incrina.,The wax cracks.
-"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Show a Mark to the stands: the seal holds, but the body pays with a new mark. Once per path."
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso.","Show a Mark to the stands: the seal holds, but the body pays with Cracked Bones (if already there: Pressure +1). Once per path."
 LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,THE WAX CRACKS - SHOW A MARK OR LET IT GIVE WAY
 LASCIA CEDERE,LET IT GIVE WAY
 MOSTRA UN SEGNO,SHOW A MARK
@@ -905,6 +905,8 @@ Favore +2.,Favour +2.
 Pressione -2.,Pressure -2.
 "Se il sigillo cede, la posta resta.","If the seal breaks, the stake stays."
 Conto in debito. Salda con la quietanza per riaprire il banco.,Account in debt. Settle it with a receipt to reopen the counter.
+"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","If the seal breaks, the stake stays. Does not cover the Path of Hubris."
+In debito: il banco è chiuso finché una quietanza non salda il conto.,In debt: the counter stays closed until a receipt settles the account.
 La posta di questa arena è assicurata.,This arena's stake is insured.
 La gradinata lancia monete: Denari +%d.,The stands throw coins: Denarii +%d.
 La rivolta costa: Denari -%d.,The riot costs: Denarii -%d.
@@ -1064,3 +1066,81 @@ La folla vede la tua mancanza.,The crowd sees what you lack.
 "GLORIA
 IN POSTA","GLORY
 AT STAKE"
+"Udite: una soglia, una sola arena.","Hear this: one threshold, a single arena."
+Udite: un passo solo sulla sabbia.,Hear this: one lone step on the sand.
+Udite: %d arene sotto la stessa gradinata.,Hear this: %d arenas beneath the same stands.
+"Udite: %d arene, e la gradinata non perde un gesto.","Hear this: %d arenas, and the stands miss no gesture."
+"Udite: %d arene, e nessuno lascia il suo posto.","Hear this: %d arenas, and no one leaves their seat."
+"Udite: %d arene, fino a far tacere Orvo.","Hear this: %d arenas, until Orvo falls silent."
+"Udite: sette arene, fino all'ultima soglia.","Hear this: seven arenas, to the last threshold."
+"Udite: sette arene, e la sabbia non basta più.","Hear this: seven arenas, and the sand runs short."
+"Il bando di Orvo, chiuso prima dell'ultimo richiamo.","Orvo's bando, closed before his final call."
+"Il bando chiuso, e Orvo resta senza voce.","The bando closed, and Orvo left without a voice."
+"%d sigilli di fila, e la cera non cede.","%d seals in a row, and the wax holds."
+%d sigilli di fila: la catena suona come un coro.,%d seals in a row: the chain rings like a choir.
+"La gradinata si alza insieme, come uno stormo.","The stands rise as one, like a flock."
+"La gradinata porta il passo, fila dopo fila.","The stands carry the step, row after row."
+"Un Segno mostrato alla folla, invece della posta.","A Mark shown to the crowd, instead of the stake."
+"Il corpo mostra un Segno, e la posta resta intera.","The body shows a Mark, and the stake stays whole."
+"La sabbia vola dalla prima fila, e il passo non si ferma.","Sand flies from the front row, and the step does not stop."
+La prima fila lancia sabbia; la sabbia non basta.,The front row throws sand; the sand is not enough.
+"%d Gloria, e Vessa la conta due volte.","%d Glory, and Vessa counts it twice."
+"%d Gloria, e la terza fila si alza.","%d Glory, and the third row stands up."
+"Pochi colpi al sigillo, ognuno ascoltato.","Few strikes at the seal, each one heard."
+"Un patto firmato, e la gradinata trattiene il fiato.","One pact signed, and the stands hold their breath."
+"Poi la quietanza: il Registro copia la cifra, io il resto.","Then the receipt: the Registry copies the figure, I keep the rest."
+"Poi la quietanza, presa a mano ferma.","Then the receipt, taken with a steady hand."
+"Poi il marchio, scelto a mano ferma.","Then the brand, chosen with a steady hand."
+Poi il marchio: la posta resta sulla sabbia.,Then the brand: the stake stays on the sand.
+"Poi la cera cede. Finisce la strofa, non la voce.","Then the wax gives way. The verse ends, not the voice."
+Poi la cera cede. Domani la canto meglio.,Then the wax gives way. Tomorrow I will sing it better.
+Il Registro chiude il fascicolo. La strofa resta aperta.,The Registry closes the dossier. The verse stays open.
+Il Registro classifica. Io canto.,The Registry classifies. I sing.
+LA GESTA DI LAURO,LAURO'S DEED
+Nuova gesta più alta: %d Gloria in un'arena.,New highest deed: %d Glory in one arena.
+Nuova gesta più alta: %d Gloria in %d arene.,New highest deed: %d Glory in %d arenas.
+Gesta più alta: %d Gloria in un'arena.,Highest deed: %d Glory in one arena.
+Gesta più alta: %d Gloria in %d arene.,Highest deed: %d Glory in %d arenas.
+Storno cantastorie,Starling storyteller
+"Lauro ha il piumaggio nero sparso di macchie chiare, come cera schizzata. Imita il richiamo di Orvo e il vecchio grido di Rugo meglio di loro. Canta le gesta di chi passa nell’arena e ogni sera cambia una parola.","Lauro's black plumage is scattered with pale flecks, like spattered wax. He imitates Orvo's call and Rugo's old cry better than they do. He sings the deeds of whoever passes through the arena, and every evening he changes a word."
+Lauro: Che rima ha questa firma?,Lauro: What rhymes with this signature?
+Nerio: Nessuna. È una firma.,Nerio: Nothing. It is a signature.
+"Dima: Lauro, è già in strofa?","Dima: Lauro, is it in a verse yet?"
+Lauro: Non ancora. Aspetto il sigillo.,Lauro: Not yet. I wait for the seal.
+"Lauro: Orvo, lasciami il primo verso.","Lauro: Orvo, leave me the first line."
+Orvo: Il primo verso è il richiamo. È mio.,Orvo: The first line is the call. It is mine.
+Rugo: Quel grido era il mio.,Rugo: That cry was mine.
+Lauro: Era. Ora lo canto meglio.,Lauro: It was. Now I sing it better.
+Lauro: Un’altra rima.,Lauro: Another rhyme.
+Dima: Già in strofa?,Dima: In a verse yet?
+Lauro: Dopo il sigillo.,Lauro: After the seal.
+Lauro: Il primo verso?,Lauro: The first line?
+Orvo: Mio.,Orvo: Mine.
+Rugo: Il mio grido.,Rugo: My cry.
+"Lauro: Il mio, ora.","Lauro: Mine, now."
+La prima strofa,The first verse
+"Udite, gradinata! Un passo nuovo sulla sabbia. Cerco già la rima.","Hear me, stands! A new step on the sand. I am already looking for the rhyme."
+Lauro è tornato. Ha imparato il richiamo di Orvo prima di Orvo.,Lauro is back. He learned Orvo's call before Orvo did.
+Il cantastorie non copia. Ogni sera cambia una parola.,The storyteller does not copy. Every evening he changes a word.
+"Tu copi le righe, Nerio. Io canto quello che le righe lasciano fuori.","You copy the lines, Nerio. I sing what the lines leave out."
+Nella sua strofa la mia cresta è ogni volta più alta.,In his verse my comb gets taller every time.
+"L’arena dimentica. Il Registro no. Io ricordo male, ma ricordo.","The arena forgets. The Registry does not. I remember badly, but I remember."
+La strofa aperta,The open verse
+"C’è una gesta che canto da anni. Uno che chiudeva ogni bando, senza fretta.","There is a deed I have sung for years. Someone who closed every bando, unhurried."
+E la gradinata non applaude mai. Ascolta e basta.,And the stands never applaud. They only listen.
+"Perché non finisce. Arrivo a quando si alza, e la rima non viene.","Because it does not end. I reach the moment he stands up, and the rhyme does not come."
+Non viene perché manca la chiusura. Quel fascicolo risulta aperto.,It does not come because the closure is missing. That dossier is still open.
+Inventala. È il tuo mestiere.,Make it up. That is your trade.
+"Una fine inventata la canta chiunque. Questa la lascio aperta, come il posto.","Anyone can sing an invented ending. This one I leave open, like the seat."
+Nerio: Nessuna. Una copia.,Nerio: None. A copy.
+"Il bando di Orvo è aperto: ogni colpo in più vale doppio.","Orvo's bando is open: every extra strike is worth double."
+"Favore +%d","Favour +%d"
+"Favore -%d","Favour -%d"
+"Pressione %d","Pressure %d"
+"i Segni","the Marks"
+"Oggi, a favore del sigillo: %s.","Today, for the seal: %s."
+"Oggi, contro il sigillo: %s.","Today, against the seal: %s."
+"Oggi niente sposta il sigillo.","Today nothing moves the seal."
+"Quietanza versata contro il debito: Denari +%d, il doppio.","Receipt deposited against the debt: Denarii +%d, double."
+"In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","In debt: the counter stays closed until the account is even. Every receipt deposited in debt counts double."
+Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Account in debt. The receipt counts double; settle the account to reopen the counter.

@@ -320,6 +320,30 @@ func set_bando_acclaim(value: bool) -> void:
 func _sanitize_bando_step(value: int) -> int:
 	return clampi(value, 0, 99)
 
+# Lauro's highest gesta: the best Gloria a percorso has been sung for, and in
+# how many arenas. Only RunManager writes it.
+func get_gesta_best() -> Dictionary:
+	if not _profile_loaded:
+		load_profile()
+	return (_meta.get("gesta_best", {"glory": 0, "arenas": 0}) as Dictionary).duplicate()
+
+func set_gesta_best(glory: int, arenas: int) -> void:
+	if not _profile_loaded:
+		load_profile()
+	var sanitized: Dictionary = _sanitize_gesta_best({"glory": glory, "arenas": arenas})
+	if _meta.get("gesta_best", {}) == sanitized:
+		return
+	_meta["gesta_best"] = sanitized
+	_profile_dirty = true
+	save_profile()
+
+func _sanitize_gesta_best(value: Variant) -> Dictionary:
+	var source: Dictionary = value if value is Dictionary else {}
+	return {
+		"glory": clampi(int(source.get("glory", 0)), 0, 99999),
+		"arenas": clampi(int(source.get("arenas", 0)), 0, 99),
+	}
+
 func set_language(value: String) -> void:
 	if not _profile_loaded:
 		load_profile()
@@ -526,6 +550,7 @@ func _get_default_meta() -> Dictionary:
 		"ledger_denari": 0,
 		"bando_step": 0,
 		"bando_acclaim": false,
+		"gesta_best": {"glory": 0, "arenas": 0},
 	}
 
 func _sanitize_language(value: String) -> String:
@@ -657,6 +682,8 @@ func _load_meta_from_profile(data: Dictionary) -> void:
 	# Profiles older than the bandi start at the foot of the ladder.
 	sanitized["bando_step"] = _sanitize_bando_step(int(meta_value.get("bando_step", 0)))
 	sanitized["bando_acclaim"] = bool(meta_value.get("bando_acclaim", false))
+	# Profiles older than Lauro have no gesta yet.
+	sanitized["gesta_best"] = _sanitize_gesta_best(meta_value.get("gesta_best", {}))
 	if not needs_save:
 		if not is_equal_approx(float(meta_value.get("registry_pressure", 0.0)), float(sanitized["registry_pressure"])):
 			needs_save = true

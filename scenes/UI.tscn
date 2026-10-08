@@ -1738,6 +1738,7 @@ text = ""
 [node name="Box_END_RUN_CROWD" type="VBoxContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS"]
 visible = false
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
 theme_override_constants/separation = 4
 
 [node name="Lbl_END_RUN_CROWD_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD"]
@@ -1766,7 +1767,6 @@ theme_override_font_sizes/font_size = 16
 horizontal_alignment = 0
 vertical_alignment = 0
 autowrap_mode = 2
-clip_text = true
 text = ""
 
 [node name="Box_END_RUN_SCROLL" type="ScrollContainer" parent="UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN"]

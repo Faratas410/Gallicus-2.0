@@ -36,6 +36,13 @@ const CHARACTERS: Array[Dictionary] = [
     "name": "Dima",
     "role": "Gallina della gradinata",
     "description": "Dima tiene la zampa sul posto accanto finché la gradinata si riempie. Poi la toglie. Le basta il passo sulla pietra per sapere chi è arrivato. Vessa conta i posti; Dima ricorda chi ci sedeva."
+  },
+  {
+    "id": "lauro",
+    "portrait": "res://assets/ui/generated/dialogue_lauro.png",
+    "name": "Lauro",
+    "role": "Storno cantastorie",
+    "description": "Lauro ha il piumaggio nero sparso di macchie chiare, come cera schizzata. Imita il richiamo di Orvo e il vecchio grido di Rugo meglio di loro. Canta le gesta di chi passa nell’arena e ogni sera cambia una parola."
   }
 ]
 
@@ -72,6 +79,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: Hanno venduto la terza fila.",
       "Vessa: Il tuo posto no. Per ora."
+    ],
+    [
+      "Lauro: Che rima ha questa firma?",
+      "Nerio: Nessuna. È una firma."
+    ],
+    [
+      "Dima: Lauro, è già in strofa?",
+      "Lauro: Non ancora. Aspetto il sigillo."
     ]
   ],
   "gesture": [
@@ -106,6 +121,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: Sento la sabbia nelle tasche.",
       "Rugo: Aspetta. Non chiamarli ancora."
+    ],
+    [
+      "Lauro: Orvo, lasciami il primo verso.",
+      "Orvo: Il primo verso è il richiamo. È mio."
+    ],
+    [
+      "Rugo: Quel grido era il mio.",
+      "Lauro: Era. Ora lo canto meglio."
     ]
   ],
   "pact_worn": [
@@ -140,6 +163,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: La terza fila.",
       "Vessa: Venduta."
+    ],
+    [
+      "Lauro: Un’altra rima.",
+      "Nerio: Nessuna. Una copia."
+    ],
+    [
+      "Dima: Già in strofa?",
+      "Lauro: Dopo il sigillo."
     ]
   ],
   "gesture_worn": [
@@ -174,6 +205,14 @@ const DIALOGUES: Dictionary = {
     [
       "Dima: La sabbia.",
       "Rugo: Non ancora."
+    ],
+    [
+      "Lauro: Il primo verso?",
+      "Orvo: Mio."
+    ],
+    [
+      "Rugo: Il mio grido.",
+      "Lauro: Il mio, ora."
     ]
   ]
 }

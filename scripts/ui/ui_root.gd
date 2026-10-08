@@ -252,6 +252,8 @@ var _last_verdict_outcome: StringName = &"LOSS"
 var _last_verdict_sentence: String = ""
 var _last_verdict_charge: String = ""
 var _last_verdict_crowd_line: String = ""
+# Lauro's strophe over the closed percorso (RunManager payload "gesta").
+var _last_gesta: Dictionary = {}
 var _last_verdict_crowd_line_key: String = ""
 var _character_audience_source: String = ""
 var _last_verdict_pacts: Array[String] = []
@@ -1060,6 +1062,7 @@ func _on_run_started() -> void:
 	_last_verdict_condanne = []
 	_last_verdict_crowd_line = ""
 	_last_verdict_crowd_line_key = ""
+	_last_gesta = {}
 	_last_verdict_outcome = &"LOSS"
 	_special_arena_payload = {}
 	if special_arena_label != null:
@@ -1260,6 +1263,7 @@ func _on_run_finale_selected(payload: Dictionary) -> void:
 	_last_verdict_condanne = _coerce_string_list(condanne_payload)
 	_last_verdict_crowd_line_key = str(payload.get("last_crowd_line", ""))
 	_last_verdict_crowd_line = tr(_last_verdict_crowd_line_key)
+	_last_gesta = (payload.get("gesta", {}) as Dictionary).duplicate(true)
 	var outcome_value: Variant = payload.get("outcome", &"LOSS")
 	_last_verdict_outcome = StringName(str(outcome_value))
 	var summary: Dictionary = _build_verdict_summary(payload, pacts_payload, condanne_payload)
@@ -1409,6 +1413,31 @@ func _dossier_bando_line() -> String:
 			parts.append(tr("In palio il racconto «%s».") % tr(tale))
 	return " ".join(parts)
 
+func _format_gesta() -> String:
+	# Body: the three verses Lauro sings. Note: his highest gesta, with units.
+	if _last_gesta.is_empty():
+		return ""
+	var verses: Array[String] = []
+	for line_value: Variant in _last_gesta.get("lines", []) as Array:
+		var line: Dictionary = line_value as Dictionary
+		var verse: String = tr(str(line.get("key", "")))
+		var value: int = int(line.get("value", -1))
+		if value >= 0 and verse.contains("%d"):
+			verse = verse % value
+		verses.append(verse)
+	# One sung line across the dossier: the strophe reads as a verse, not a list.
+	var text: String = " ".join(verses)
+	var best_glory: int = int(_last_gesta.get("best_glory", 0))
+	if best_glory <= 0:
+		return text
+	var arenas: int = int(_last_gesta.get("best_arenas", 0))
+	var note: String = ""
+	if bool(_last_gesta.get("new_best", false)):
+		note = tr("Nuova gesta più alta: %d Gloria in un'arena.") % best_glory if arenas <= 1 else tr("Nuova gesta più alta: %d Gloria in %d arene.") % [best_glory, arenas]
+	else:
+		note = tr("Gesta più alta: %d Gloria in un'arena.") % best_glory if arenas <= 1 else tr("Gesta più alta: %d Gloria in %d arene.") % [best_glory, arenas]
+	return "%s\n%s" % [text, note]
+
 func _resolve_condanna_titles(values: Array[String]) -> Array[String]:
 	if values.is_empty():
 		return []
@@ -1448,7 +1477,7 @@ func _refresh_verdict_panel() -> void:
 		condanne_title.text = tr("NUOVE VOCI D'ARCHIVIO")
 	var crowd_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel/Lbl_END_RUN_CROWD_TITLE") as Label
 	if crowd_title != null:
-		crowd_title.text = tr("ULTIMA VOCE")
+		crowd_title.text = tr("LA GESTA DI LAURO") if not _last_gesta.is_empty() else tr("ULTIMA VOCE")
 	if verdict_header != null:
 		var title_text: String = _last_finale_title.strip_edges()
 		if title_text == "":
@@ -1496,7 +1525,9 @@ func _refresh_verdict_panel() -> void:
 			var condanne_title_panel := condanne_panel.get_parent().get_node_or_null("Lbl_END_RUN_CONDANNE_TITLEPanel") as CanvasItem
 			if condanne_title_panel != null:
 				condanne_title_panel.visible = true
-	var crowd_line: String = _last_verdict_crowd_line.strip_edges()
+	var crowd_line: String = _format_gesta()
+	if crowd_line == "":
+		crowd_line = _last_verdict_crowd_line.strip_edges()
 	if verdict_crowd_section != null:
 		verdict_crowd_section.visible = true
 	if verdict_crowd_text != null:
@@ -1523,6 +1554,8 @@ func _set_verdict_canvas_alpha(alpha: float) -> void:
 		targets.append(verdict_charge_label)
 	if verdict_sections != null:
 		targets.append(verdict_sections)
+	if verdict_crowd_section != null and verdict_crowd_section.visible:
+		targets.append(verdict_crowd_section)
 	if ending_text != null:
 		targets.append(ending_text)
 	for node in targets:
@@ -1710,7 +1743,7 @@ func _set_verdict_mode(active: bool) -> void:
 	if verdict_sections != null:
 		verdict_sections.visible = active
 	if verdict_crowd_section != null and active:
-		verdict_crowd_section.visible = _last_verdict_crowd_line.strip_edges() != ""
+		verdict_crowd_section.visible = not _last_gesta.is_empty() or _last_verdict_crowd_line.strip_edges() != ""
 	if game_over_scroll != null:
 		game_over_scroll.visible = false
 	if ending_text != null:
@@ -2366,7 +2399,7 @@ func _on_seal_strike_resolved(payload: Dictionary) -> void:
 		_judgment_seal_locked = false
 		_set_resolve_ritual_body("%s\n%s" % [
 			tr("La cera si incrina."),
-			tr("Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso."),
+			tr("Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso."),
 		])
 		if resolve_ritual_prompt != null:
 			resolve_ritual_prompt.text = tr("LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE")
@@ -2380,13 +2413,13 @@ func _on_seal_strike_resolved(payload: Dictionary) -> void:
 		_apply_resolution_ritual_strike_feedback(_resolve_ritual_strike_on_beat, true)
 	if held and bool(payload.get("can_strike_again", false)):
 		_judgment_seal_locked = false
-		_set_resolve_ritual_body("%s\n%s" % [
-			held_line,
-			tr("Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.") % [
-				tr(str(payload.get("next_odds", ""))).to_lower(),
-				int(payload.get("next_gain", 0)),
-			],
-		])
+		var next_line: String = tr("Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.") % [
+			tr(str(payload.get("next_odds", ""))).to_lower(),
+			int(payload.get("next_gain", 0)),
+		]
+		if bool(payload.get("bando_strike", false)):
+			next_line += " " + tr("Il bando di Orvo è aperto: ogni colpo in più vale doppio.")
+		_set_resolve_ritual_body("%s\n%s" % [held_line, next_line])
 		if resolve_ritual_prompt != null:
 			resolve_ritual_prompt.text = tr("IL SIGILLO REGGE - COLPISCI ANCORA O ALZA LA MANO")
 		_set_seal_choice_buttons_enabled(true)
@@ -4420,6 +4453,9 @@ func _is_reduced_motion() -> bool:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
 		_update_escalation_bar()
+		# The dossier (and Lauro's strophe) is composed text: rebuild it in the new language.
+		if game_over_modal != null and game_over_modal.visible:
+			_refresh_verdict_panel()
 
 func _on_settings_changed(payload: Dictionary) -> void:
 	_update_escalation_bar()

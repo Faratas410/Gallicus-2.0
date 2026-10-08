@@ -247,8 +247,9 @@ func _verify_music_route(scene: Node) -> void:
 	_expect_score(scene, "tense", "resumed pact")
 	_expect(str(scene.get_node("UI").get("pact_sealed_subtitle").text) == character_before, "Continue changed the character exchange")
 	await _press_route(scene, "Btn_FIRST_REACTION_NEXT")
-	# The gesture is three exchanges with the stands; each answer unlocks the next.
-	for exchange: int in range(3):
+	# The gesture is one exchange with the stands, three in an exposed arena;
+	# each answer unlocks the next.
+	for exchange: int in range(int(scene.get_node("RunManager").call("_crowd_exchanges_this_arena"))):
 		await _press_route(scene, "Btn_MID_CHOICE_SELECT_0")
 		await create_timer(0.3).timeout
 	_expect_score(scene, "tense", "judgment")

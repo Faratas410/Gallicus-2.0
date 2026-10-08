@@ -863,7 +863,7 @@ LA CERA SI INCRINA - IL SIGILLO CEDE,LA CERA SE AGRIETA - EL SELLO CEDE
 Il sigillo regge: +%d Gloria in posta.,El sello resiste: +%d de Gloria en juego.
 "Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Otro golpe: %s, +%d de Gloria más. Si la cera se agrieta, el pacto cede."
 La cera si incrina.,La cera se agrieta.
-"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Muestra una Marca a las gradas: el sello resiste, pero el cuerpo paga con una nueva marca. Una vez por recorrido."
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso.","Muestra una Marca a las gradas: el sello resiste, pero el cuerpo paga con Huesos agrietados (si ya están: Presión +1). Una vez por recorrido."
 LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,LA CERA SE AGRIETA - MUESTRA UNA MARCA O DEJA QUE CEDA
 LASCIA CEDERE,DEJA QUE CEDA
 MOSTRA UN SEGNO,MUESTRA UNA MARCA
@@ -905,10 +905,12 @@ Favore +2.,Favor +2.
 Pressione -2.,Presión -2.
 "Se il sigillo cede, la posta resta.","Si el sello cede, la apuesta se queda."
 Conto in debito. Salda con la quietanza per riaprire il banco.,Cuenta en deuda. Sáldala con el recibo para reabrir el mostrador.
+"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","Si el sello cede, la apuesta se queda. No cubre la Vía de la Hybris."
+In debito: il banco è chiuso finché una quietanza non salda il conto.,En deuda: el mostrador sigue cerrado hasta que un recibo salde la cuenta.
 La posta di questa arena è assicurata.,La apuesta de esta arena está asegurada.
 La gradinata lancia monete: Denari +%d.,La grada lanza monedas: Denarios +%d.
 La rivolta costa: Denari -%d.,La rebelión cuesta: Denarios -%d.
-Quietanza versata: Denari +%d.,Finiquito ingresado: Denarios +%d.
+Quietanza versata: Denari +%d.,Recibo ingresado: Denarios +%d.
 Vessa iscrive il debito: Denari -%d.,Vessa anota la deuda: Denarios -%d.
 Banco di Vessa: Denari -%d.,Mostrador de Vessa: Denarios -%d.
 Vessa ricorda il debito: Pressione +1.,Vessa recuerda la deuda: Presión +1.
@@ -1064,3 +1066,81 @@ La folla vede la tua mancanza.,La grada ve lo que te falta.
 "GLORIA
 IN POSTA","GLORIA
 EN JUEGO"
+"Udite: una soglia, una sola arena.","Oíd: un umbral, una sola arena."
+Udite: un passo solo sulla sabbia.,Oíd: un solo paso sobre la arena.
+Udite: %d arene sotto la stessa gradinata.,Oíd: %d arenas bajo la misma grada.
+"Udite: %d arene, e la gradinata non perde un gesto.","Oíd: %d arenas, y la grada no pierde un gesto."
+"Udite: %d arene, e nessuno lascia il suo posto.","Oíd: %d arenas, y nadie deja su asiento."
+"Udite: %d arene, fino a far tacere Orvo.","Oíd: %d arenas, hasta hacer callar a Orvo."
+"Udite: sette arene, fino all'ultima soglia.","Oíd: siete arenas, hasta el último umbral."
+"Udite: sette arene, e la sabbia non basta più.","Oíd: siete arenas, y ya no basta la arena."
+"Il bando di Orvo, chiuso prima dell'ultimo richiamo.","El bando de Orvo, cerrado antes del último pregón."
+"Il bando chiuso, e Orvo resta senza voce.","El bando cerrado, y Orvo se queda sin voz."
+"%d sigilli di fila, e la cera non cede.","%d sellos seguidos, y la cera no cede."
+%d sigilli di fila: la catena suona come un coro.,%d sellos seguidos: la cadena suena como un coro.
+"La gradinata si alza insieme, come uno stormo.","La grada se alza a la vez, como una bandada."
+"La gradinata porta il passo, fila dopo fila.","La grada lleva el paso, fila tras fila."
+"Un Segno mostrato alla folla, invece della posta.","Una Marca mostrada a la multitud, en lugar de la apuesta."
+"Il corpo mostra un Segno, e la posta resta intera.","El cuerpo muestra una Marca, y la apuesta queda entera."
+"La sabbia vola dalla prima fila, e il passo non si ferma.","Vuela arena desde la primera fila, y el paso no se detiene."
+La prima fila lancia sabbia; la sabbia non basta.,La primera fila lanza arena; la arena no basta.
+"%d Gloria, e Vessa la conta due volte.","%d de Gloria, y Vessa la cuenta dos veces."
+"%d Gloria, e la terza fila si alza.","%d de Gloria, y la tercera fila se levanta."
+"Pochi colpi al sigillo, ognuno ascoltato.","Pocos golpes al sello, cada uno escuchado."
+"Un patto firmato, e la gradinata trattiene il fiato.","Un pacto firmado, y la grada contiene el aliento."
+"Poi la quietanza: il Registro copia la cifra, io il resto.","Luego el recibo: el Registro copia la cifra, yo el resto."
+"Poi la quietanza, presa a mano ferma.","Luego el recibo, tomado con mano firme."
+"Poi il marchio, scelto a mano ferma.","Luego la marca, elegida con mano firme."
+Poi il marchio: la posta resta sulla sabbia.,Luego la marca: la apuesta se queda en la arena.
+"Poi la cera cede. Finisce la strofa, non la voce.","Luego la cera cede. Termina la estrofa, no la voz."
+Poi la cera cede. Domani la canto meglio.,Luego la cera cede. Mañana la canto mejor.
+Il Registro chiude il fascicolo. La strofa resta aperta.,El Registro cierra el expediente. La estrofa queda abierta.
+Il Registro classifica. Io canto.,El Registro clasifica. Yo canto.
+LA GESTA DI LAURO,LA GESTA DE LAURO
+Nuova gesta più alta: %d Gloria in un'arena.,Nueva gesta más alta: %d de Gloria en una arena.
+Nuova gesta più alta: %d Gloria in %d arene.,Nueva gesta más alta: %d de Gloria en %d arenas.
+Gesta più alta: %d Gloria in un'arena.,Gesta más alta: %d de Gloria en una arena.
+Gesta più alta: %d Gloria in %d arene.,Gesta más alta: %d de Gloria en %d arenas.
+Storno cantastorie,Estornino cuentacuentos
+"Lauro ha il piumaggio nero sparso di macchie chiare, come cera schizzata. Imita il richiamo di Orvo e il vecchio grido di Rugo meglio di loro. Canta le gesta di chi passa nell’arena e ogni sera cambia una parola.","Lauro tiene el plumaje negro salpicado de motas claras, como cera salpicada. Imita el pregón de Orvo y el viejo grito de Rugo mejor que ellos. Canta las gestas de quien pasa por la arena y cada noche cambia una palabra."
+Lauro: Che rima ha questa firma?,Lauro: ¿Qué rima tiene esta firma?
+Nerio: Nessuna. È una firma.,Nerio: Ninguna. Es una firma.
+"Dima: Lauro, è già in strofa?","Dima: Lauro, ¿ya está en estrofa?"
+Lauro: Non ancora. Aspetto il sigillo.,Lauro: Todavía no. Espero el sello.
+"Lauro: Orvo, lasciami il primo verso.","Lauro: Orvo, déjame el primer verso."
+Orvo: Il primo verso è il richiamo. È mio.,Orvo: El primer verso es el pregón. Es mío.
+Rugo: Quel grido era il mio.,Rugo: Ese grito era el mío.
+Lauro: Era. Ora lo canto meglio.,Lauro: Lo era. Ahora lo canto mejor.
+Lauro: Un’altra rima.,Lauro: Otra rima.
+Dima: Già in strofa?,Dima: ¿Ya en estrofa?
+Lauro: Dopo il sigillo.,Lauro: Después del sello.
+Lauro: Il primo verso?,Lauro: ¿El primer verso?
+Orvo: Mio.,Orvo: Mío.
+Rugo: Il mio grido.,Rugo: Mi grito.
+"Lauro: Il mio, ora.","Lauro: El mío, ahora."
+La prima strofa,La primera estrofa
+"Udite, gradinata! Un passo nuovo sulla sabbia. Cerco già la rima.","¡Oíd, grada! Un paso nuevo sobre la arena. Ya busco la rima."
+Lauro è tornato. Ha imparato il richiamo di Orvo prima di Orvo.,Lauro ha vuelto. Aprendió el pregón de Orvo antes que Orvo.
+Il cantastorie non copia. Ogni sera cambia una parola.,El cuentacuentos no copia. Cada noche cambia una palabra.
+"Tu copi le righe, Nerio. Io canto quello che le righe lasciano fuori.","Tú copias las líneas, Nerio. Yo canto lo que las líneas dejan fuera."
+Nella sua strofa la mia cresta è ogni volta più alta.,En su estrofa mi cresta es cada vez más alta.
+"L’arena dimentica. Il Registro no. Io ricordo male, ma ricordo.","La arena olvida. El Registro no. Yo recuerdo mal, pero recuerdo."
+La strofa aperta,La estrofa abierta
+"C’è una gesta che canto da anni. Uno che chiudeva ogni bando, senza fretta.","Hay una gesta que canto desde hace años. Alguien que cerraba cada bando, sin prisa."
+E la gradinata non applaude mai. Ascolta e basta.,Y la grada nunca aplaude. Solo escucha.
+"Perché non finisce. Arrivo a quando si alza, e la rima non viene.","Porque no termina. Llego a cuando se levanta, y la rima no llega."
+Non viene perché manca la chiusura. Quel fascicolo risulta aperto.,No llega porque falta el cierre. Ese expediente consta abierto.
+Inventala. È il tuo mestiere.,Invéntala. Es tu oficio.
+"Una fine inventata la canta chiunque. Questa la lascio aperta, come il posto.","Un final inventado lo canta cualquiera. Este lo dejo abierto, como el asiento."
+Nerio: Nessuna. Una copia.,Nerio: Ninguna. Una copia.
+"Il bando di Orvo è aperto: ogni colpo in più vale doppio.","El bando de Orvo está abierto: cada golpe de más vale el doble."
+"Favore +%d","Favor +%d"
+"Favore -%d","Favor -%d"
+"Pressione %d","Presión %d"
+"i Segni","las Marcas"
+"Oggi, a favore del sigillo: %s.","Hoy, a favor del sello: %s."
+"Oggi, contro il sigillo: %s.","Hoy, en contra del sello: %s."
+"Oggi niente sposta il sigillo.","Hoy nada mueve el sello."
+"Quietanza versata contro il debito: Denari +%d, il doppio.","Recibo ingresado contra la deuda: Denarios +%d, el doble."
+"In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","En deuda: el mostrador sigue cerrado hasta que la cuenta quede a cero. Cada recibo ingresado en deuda vale el doble."
+Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Cuenta en deuda. El recibo vale el doble; salda la cuenta para reabrir el mostrador.

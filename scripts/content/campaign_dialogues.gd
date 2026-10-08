@@ -17,6 +17,11 @@ const SPEAKERS: Dictionary = {
     "role": "Gallina della gradinata",
     "portrait": "res://assets/ui/generated/dialogue_dima_cutout.png"
   },
+  "lauro": {
+    "name": "Lauro",
+    "role": "Storno cantastorie",
+    "portrait": "res://assets/ui/generated/dialogue_lauro.png"
+  },
   "registry": {
     "name": "Registro",
     "role": "Terminale rituale · stato",
@@ -343,19 +348,83 @@ const SEQUENCES: Dictionary = {
         "text": "Tengo le copie qui. Non le ho ancora archiviate."
       }
     ]
+  },
+  "first_strophe": {
+    "title": "La prima strofa",
+    "lines": [
+      {
+        "speaker": "lauro",
+        "text": "Udite, gradinata! Un passo nuovo sulla sabbia. Cerco già la rima."
+      },
+      {
+        "speaker": "dima",
+        "text": "Lauro è tornato. Ha imparato il richiamo di Orvo prima di Orvo."
+      },
+      {
+        "speaker": "nerio",
+        "text": "Il cantastorie non copia. Ogni sera cambia una parola."
+      },
+      {
+        "speaker": "lauro",
+        "text": "Tu copi le righe, Nerio. Io canto quello che le righe lasciano fuori."
+      },
+      {
+        "speaker": "rugo",
+        "text": "Nella sua strofa la mia cresta è ogni volta più alta."
+      },
+      {
+        "speaker": "lauro",
+        "text": "L’arena dimentica. Il Registro no. Io ricordo male, ma ricordo."
+      }
+    ]
+  },
+  "open_strophe": {
+    "title": "La strofa aperta",
+    "lines": [
+      {
+        "speaker": "lauro",
+        "text": "C’è una gesta che canto da anni. Uno che chiudeva ogni bando, senza fretta."
+      },
+      {
+        "speaker": "dima",
+        "text": "E la gradinata non applaude mai. Ascolta e basta."
+      },
+      {
+        "speaker": "lauro",
+        "text": "Perché non finisce. Arrivo a quando si alza, e la rima non viene."
+      },
+      {
+        "speaker": "nerio",
+        "text": "Non viene perché manca la chiusura. Quel fascicolo risulta aperto."
+      },
+      {
+        "speaker": "rugo",
+        "text": "Inventala. È il tuo mestiere."
+      },
+      {
+        "speaker": "lauro",
+        "text": "Una fine inventata la canta chiunque. Questa la lascio aperta, come il posto."
+      }
+    ]
   }
 }
 
 # Racconti: the prize of Orvo's ladder. Each closed bando climbs a step and the
 # next percorso opens on the racconto of that step, in this order, before the
-# last Era. From the third on they follow one thread: the seat Dima keeps.
+# last Era. The first brings Lauro, the cantastorie; from the fourth on they
+# follow one thread: the seat Dima keeps, and the strophe Lauro cannot close.
+# The racconti with an "era" carry the empty seat the farewell rests on: the
+# campaign tells them from that Era even without the bando, always before the
+# farewell. The ladder only brings them sooner.
 const TALES: Array[Dictionary] = [
-  {"id": "ledger", "step": 1},
-  {"id": "sand", "step": 2},
-  {"id": "seat_kept", "step": 3},
-  {"id": "call", "step": 4},
-  {"id": "seats", "step": 5},
-  {"id": "footstep", "step": 6},
-  {"id": "scraping", "step": 7},
-  {"id": "slope", "step": 8}
+  {"id": "first_strophe", "step": 1},
+  {"id": "ledger", "step": 2},
+  {"id": "sand", "step": 3},
+  {"id": "seat_kept", "step": 4, "era": 1},
+  {"id": "call", "step": 5},
+  {"id": "seats", "step": 6},
+  {"id": "footstep", "step": 7, "era": 1},
+  {"id": "open_strophe", "step": 8, "era": 2},
+  {"id": "scraping", "step": 9},
+  {"id": "slope", "step": 10, "era": 2}
 ]

@@ -173,16 +173,25 @@ func _run() -> void:
 	for stage: String in ["entry", "middle", "departure"]:
 		if not dialogues_seen.has(stage): _fail("missing illustrated campaign stage: " + stage)
 	# Racconti are the prize of closed bandi: heard in ladder order, never after the farewell.
+	# The empty-seat racconti come with their Era too: all of them precede the farewell.
 	var previous_run: int = int(dialogues_seen.get("entry", 0))
 	var gap: bool = false
+	var departure_run: int = int(dialogues_seen.get("departure", 9999))
 	for tale: Dictionary in Dialogues.TALES:
 		var tale_id: String = str(tale.id)
 		if not dialogues_seen.has(tale_id):
+			if tale.has("era"):
+				_fail("the farewell came without the empty seat: " + tale_id)
 			gap = true
 			continue
-		if gap or int(dialogues_seen[tale_id]) <= previous_run or int(dialogues_seen[tale_id]) > int(dialogues_seen.get("departure", 9999)):
+		var heard: int = int(dialogues_seen[tale_id])
+		if heard <= int(dialogues_seen.get("entry", 0)) or heard > departure_run:
+			_fail("racconto outside the campaign: " + str(dialogues_seen))
+		if tale.has("era"):
+			continue
+		if gap or heard <= previous_run:
 			_fail("racconti out of ladder order: " + str(dialogues_seen))
-		previous_run = int(dialogues_seen[tale_id])
+		previous_run = heard
 	print("CAMPAIGN_DIALOGUES=", JSON.stringify(dialogues_seen), " BANDO_STEP=", save.get_bando_step())
 	if save.get_registry_era() == 4:
 		var terminal: Node = scene.get_node("UI/RegistryTerminalView")

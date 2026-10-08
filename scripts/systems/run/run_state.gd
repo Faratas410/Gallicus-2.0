@@ -111,6 +111,8 @@ var bando_deadline: int = 0
 var bando_status: String = ""
 # The chain: seals held in a row this percorso; a broken seal resets it.
 var seal_chain: int = 0
+# The longest chain of the percorso: Lauro sings it in the gesta.
+var seal_chain_peak: int = 0
 # A Segno can be shown to the stands once per percorso to save a cracking seal.
 var scar_shown_this_run: bool = false
 var corruption: int = 0
@@ -227,6 +229,7 @@ func reset() -> void:
 	bando_deadline = 0
 	bando_status = ""
 	seal_chain = 0
+	seal_chain_peak = 0
 	scar_shown_this_run = false
 	corruption = 0
 	scar_double_count = 0
@@ -338,6 +341,7 @@ func to_dict() -> Dictionary:
 		"bando_deadline": bando_deadline,
 		"bando_status": bando_status,
 		"seal_chain": seal_chain,
+		"seal_chain_peak": seal_chain_peak,
 		"scar_shown_this_run": scar_shown_this_run,
 		"corruption": corruption,
 		"scar_double_count": scar_double_count,
@@ -452,6 +456,7 @@ func from_dict(d: Dictionary) -> void:
 	if bando_status not in ["", "open", "closed", "lapsed", "missed"]:
 		bando_status = ""
 	seal_chain = maxi(int(d.get("seal_chain", 0)), 0)
+	seal_chain_peak = maxi(int(d.get("seal_chain_peak", seal_chain)), seal_chain)
 	scar_shown_this_run = bool(d.get("scar_shown_this_run", false))
 	corruption = int(d.get("corruption", 0))
 	scar_double_count = int(d.get("scar_double_count", 0))

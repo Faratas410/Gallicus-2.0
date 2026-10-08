@@ -53,8 +53,9 @@ italiane e i consumer vengono aggiornati insieme alle tre traduzioni.
 La voce dei Gufi e' distinta: brevi scambi fra Nerio (precisione della copia),
 Vessa (margine commerciale) e Orvo (attenzione della gradinata). Sono colleghi
 dell'amministrazione. Rugo, gallo della soglia, misura il richiamo; Dima,
-gallina della gradinata, ricorda gli occupanti dei posti. Nessuno e' umano
-o narratore del Registro. Trentadue scambi
+gallina della gradinata, ricorda gli occupanti dei posti; Lauro, storno
+cantastorie, mette in versi le gesta e ruba la voce agli altri. Nessuno e' umano
+o narratore del Registro. Quaranta scambi
 di due battute, nei due contesti patto/gesto e nelle varianti distese/compresse,
 sono localizzati in IT/EN/ES insieme a ruoli e schede. I nomi non si traducono.
 La firma resta attestata dal titolo del patto; il corpo ospita "Voci dell’arena".
@@ -310,18 +311,23 @@ Su richiesta dell'utente ("aggiungi un po' di lore e racconti"), cinque scene
 di sei battute si aggiungono alle tre conversazioni illustrate, nello stesso
 catalogo e con gli stessi ritratti (Nerio, Rugo, Dima e il terminale). Con il
 bando di Orvo ("Perche' continuare?") diventano otto e ognuna e' il premio di
-un gradino della scala dei bandi; tre raccontano il posto vuoto:
+un gradino della scala dei bandi. Con Lauro il cantastorie (7 ottobre 2026)
+diventano dieci; quattro raccontano il posto vuoto (`seat_kept`, `footstep`,
+`open_strophe`, `slope`) e sono garantiti dalla campagna anche senza bando,
+dall'Era 1 i primi due e dall'Era 2 gli altri, sempre prima del congedo:
 
 | Id | Titolo | Gradino | Cosa racconta |
 | --- | --- | --- | --- |
-| `ledger` | Il conto di Vessa | 1 | il conto dei Denari e il debito ricordato alla gradinata |
-| `sand` | La sabbia nelle tasche | 2 | perche' la gradinata lancia sabbia o monete |
-| `seat_kept` | Il posto tenuto | 3 | chi sedeva accanto a Dima chiudeva ogni bando e se n'e' andato senza chiusura |
-| `call` | Il richiamo | 4 | Orvo che prova i richiami, la tacca di Rugo |
-| `seats` | I posti in vendita | 5 | il righello di Vessa si ferma al posto accanto a Dima |
-| `footstep` | Il passo | 6 | Dima sente un passo nuovo uguale al suo |
-| `scraping` | La riga che resta | 7 | la riga che Nerio non riesce a raschiare |
-| `slope` | La stessa pendenza | 8 | la copia del soggetto e quella riga hanno la stessa pendenza; il terminale: "CONFRONTO IN CORSO / Corrispondenza parziale." |
+| `first_strophe` | La prima strofa | 1 | Lauro arriva sulla gradinata: canta quello che le righe lasciano fuori |
+| `ledger` | Il conto di Vessa | 2 | il conto dei Denari e il debito ricordato alla gradinata |
+| `sand` | La sabbia nelle tasche | 3 | perche' la gradinata lancia sabbia o monete |
+| `seat_kept` | Il posto tenuto | 4 | chi sedeva accanto a Dima chiudeva ogni bando e se n'e' andato senza chiusura |
+| `call` | Il richiamo | 5 | Orvo che prova i richiami, la tacca di Rugo |
+| `seats` | I posti in vendita | 6 | il righello di Vessa si ferma al posto accanto a Dima |
+| `footstep` | Il passo | 7 | Dima sente un passo nuovo uguale al suo |
+| `open_strophe` | La strofa aperta | 8 | la gesta di chi sedeva accanto a Dima: Lauro non riesce a finirla e non la inventa |
+| `scraping` | La riga che resta | 9 | la riga che Nerio non riesce a raschiare |
+| `slope` | La stessa pendenza | 10 | la copia del soggetto e quella riga hanno la stessa pendenza; il terminale: "CONFRONTO IN CORSO / Corrispondenza parziale." |
 
 Il riquadro del bando e il fascicolo dicono il titolo del racconto in palio
 (`In palio il racconto «%s».`), cosi' il prossimo racconto e' la ragione per
@@ -345,3 +351,30 @@ La notifica breve dei Segni mostra nome ed effetto; la narrativa rimane nel
 dettaglio. Nomi, descrizioni ed effetti dei sei Segni sono localizzati in
 IT/EN/ES senza nuovi fatti o conseguenze. La nota della Gradinata mantiene
 il testo completo nel tooltip. Prove: `docs/support/counter_ui_2026-10-08.md`.
+
+Integrazione con il benchmark del 7 ottobre: la nota del banco conserva
+la brevità del pass editoriale e dichiara che in debito la quietanza vale
+doppio; il banco riapre quando il conto è saldato. L'assicurazione esplicita
+che non copre la Via dell'Hybris. Consumer e risorse IT/EN/ES sono allineati.
+
+## Lauro e la gesta - 7 ottobre 2026
+
+Lauro, storno cantastorie, parla in versi brevi che cominciano spesso con
+"Udite". Ruba la voce agli altri (il richiamo di Orvo, il grido di Rugo) e
+ammette di ricordare male: "L'arena dimentica. Il Registro no. Io ricordo
+male, ma ricordo." Non e' buffo e non e' un giullare: e' caldo, preciso sui
+fatti, libero sulle parole.
+
+La gesta del fascicolo e' una strofa di tre versi (catalogo
+`scripts/content/cantastorie.gd`, due varianti per verso, scelte dal seme):
+
+| Verso | Da che cosa dipende | Esempio |
+| --- | --- | --- |
+| Apertura | arene raggiunte (una, 2-4, 5-6, sette) | "Udite: %d arene sotto la stessa gradinata." |
+| Fatto | il primo che vale: bando chiuso, catena di 3+, gradinata che porta, Segno mostrato, sabbia lanciata, 20+ Gloria, altrimenti un verso semplice | "%d sigilli di fila, e la cera non cede." |
+| Chiusura | quietanza, marchio, cera che cede, fascicolo classificato | "Poi la quietanza: il Registro copia la cifra, io il resto." |
+
+Sotto la strofa una nota dice la gesta piu' alta ("Gesta più alta: %d Gloria
+in %d arene.", o "Nuova gesta più alta" quando la si batte). Otto nuove voci
+dell'arena (due per contesto, distese e compresse) mettono Lauro accanto a
+Nerio, Dima, Orvo e Rugo.

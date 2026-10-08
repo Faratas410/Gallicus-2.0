@@ -10,6 +10,14 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+Integrazione locale dell'8 ottobre 2026: il pass UI/editoriale `0fe2699` e i
+tre commit remoti fino a `2e2ab6b` sono conciliati nel working tree su main.
+Lauro, gesta e benchmark conservano le nuove regole; testi e composizione
+mantengono il pass locale piu' recente. Evidenze e inventario:
+`docs/support/merge_integration_2026-10-08.md`. Stage invariato: Core Playable
+Candidate. Prossima azione: revisione e commit manuale del merge in GitHub
+Desktop, poi checkpoint Linux sul candidato committato.
+
 Identita' UI scelta: Manifesto del Verdetto, proposta 3 rifinita con azioni
 basse e arena aperta. Prima applicazione alla decisione sulla posta:
 `docs/support/manifesto_verdict_2026-10-08.md`. Estendere il linguaggio a
@@ -99,9 +107,16 @@ pass banco definisce il campo sinistro (UI_CANON, Motion Contract).
 
 Bando, scala e catena, 7 ottobre 2026 ("Perche' scommettere? Perche'
 continuare?"): ogni percorso ha un bando di Gloria da chiudere entro un'arena,
-la scala dei bandi paga gli otto racconti (tre sul posto vuoto) e tre pagine di
+la scala dei bandi paga i dieci racconti (quattro sul posto vuoto) e tre pagine di
 patti, i sigilli retti di fila moltiplicano la posta. Canone in
 `docs/canon/MECHANICS_UNIFIED.md`, numeri in `docs/support/motivazione_2026-10-07.md`.
+
+Lauro il cantastorie, 7 ottobre 2026 ("Aggiungiamo un personaggio? Un
+cantastorie, colui che racconta le gesta degli eroi"): uno storno della
+gradinata canta in fondo al fascicolo la gesta del percorso e ricorda la gesta
+piu' alta; due racconti suoi aprono la scala dei bandi e il filo del posto
+vuoto. Scheda, prove e prompt del ritratto in
+`docs/support/cantastorie_2026-10-07.md`.
 
 Consegna precedente: tre scene illustrate, art di Nerio/Rugo/Dima e Registro
 come terminale rituale impersonale. Specifica e prove in `docs/support/illustrated_dialogues_2026-09-12.md`.

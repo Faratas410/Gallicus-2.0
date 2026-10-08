@@ -863,7 +863,7 @@ LA CERA SI INCRINA - IL SIGILLO CEDE,LA CERA SI INCRINA - IL SIGILLO CEDE
 Il sigillo regge: +%d Gloria in posta.,Il sigillo regge: +%d Gloria in posta.
 "Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede.","Un altro colpo: %s, altri +%d Gloria. Se la cera si incrina, il patto cede."
 La cera si incrina.,La cera si incrina.
-"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso.","Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con un nuovo segno. Una volta per percorso."
+"Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso.","Mostra un Segno alla gradinata: il sigillo regge, ma il corpo paga con Ossa incrinate (se ci sono già: Pressione +1). Una volta per percorso."
 LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE,LA CERA SI INCRINA - MOSTRA UN SEGNO O LASCIA CEDERE
 LASCIA CEDERE,LASCIA CEDERE
 MOSTRA UN SEGNO,MOSTRA UN SEGNO
@@ -905,6 +905,8 @@ Favore +2.,Favore +2.
 Pressione -2.,Pressione -2.
 "Se il sigillo cede, la posta resta.","Se il sigillo cede, la posta resta."
 Conto in debito. Salda con la quietanza per riaprire il banco.,Conto in debito. Salda con la quietanza per riaprire il banco.
+"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris."
+In debito: il banco è chiuso finché una quietanza non salda il conto.,In debito: il banco è chiuso finché una quietanza non salda il conto.
 La posta di questa arena è assicurata.,La posta di questa arena è assicurata.
 La gradinata lancia monete: Denari +%d.,La gradinata lancia monete: Denari +%d.
 La rivolta costa: Denari -%d.,La rivolta costa: Denari -%d.
@@ -1064,3 +1066,81 @@ La folla vede la tua mancanza.,La folla vede la tua mancanza.
 "GLORIA
 IN POSTA","GLORIA
 IN POSTA"
+"Udite: una soglia, una sola arena.","Udite: una soglia, una sola arena."
+Udite: un passo solo sulla sabbia.,Udite: un passo solo sulla sabbia.
+Udite: %d arene sotto la stessa gradinata.,Udite: %d arene sotto la stessa gradinata.
+"Udite: %d arene, e la gradinata non perde un gesto.","Udite: %d arene, e la gradinata non perde un gesto."
+"Udite: %d arene, e nessuno lascia il suo posto.","Udite: %d arene, e nessuno lascia il suo posto."
+"Udite: %d arene, fino a far tacere Orvo.","Udite: %d arene, fino a far tacere Orvo."
+"Udite: sette arene, fino all'ultima soglia.","Udite: sette arene, fino all'ultima soglia."
+"Udite: sette arene, e la sabbia non basta più.","Udite: sette arene, e la sabbia non basta più."
+"Il bando di Orvo, chiuso prima dell'ultimo richiamo.","Il bando di Orvo, chiuso prima dell'ultimo richiamo."
+"Il bando chiuso, e Orvo resta senza voce.","Il bando chiuso, e Orvo resta senza voce."
+"%d sigilli di fila, e la cera non cede.","%d sigilli di fila, e la cera non cede."
+%d sigilli di fila: la catena suona come un coro.,%d sigilli di fila: la catena suona come un coro.
+"La gradinata si alza insieme, come uno stormo.","La gradinata si alza insieme, come uno stormo."
+"La gradinata porta il passo, fila dopo fila.","La gradinata porta il passo, fila dopo fila."
+"Un Segno mostrato alla folla, invece della posta.","Un Segno mostrato alla folla, invece della posta."
+"Il corpo mostra un Segno, e la posta resta intera.","Il corpo mostra un Segno, e la posta resta intera."
+"La sabbia vola dalla prima fila, e il passo non si ferma.","La sabbia vola dalla prima fila, e il passo non si ferma."
+La prima fila lancia sabbia; la sabbia non basta.,La prima fila lancia sabbia; la sabbia non basta.
+"%d Gloria, e Vessa la conta due volte.","%d Gloria, e Vessa la conta due volte."
+"%d Gloria, e la terza fila si alza.","%d Gloria, e la terza fila si alza."
+"Pochi colpi al sigillo, ognuno ascoltato.","Pochi colpi al sigillo, ognuno ascoltato."
+"Un patto firmato, e la gradinata trattiene il fiato.","Un patto firmato, e la gradinata trattiene il fiato."
+"Poi la quietanza: il Registro copia la cifra, io il resto.","Poi la quietanza: il Registro copia la cifra, io il resto."
+"Poi la quietanza, presa a mano ferma.","Poi la quietanza, presa a mano ferma."
+"Poi il marchio, scelto a mano ferma.","Poi il marchio, scelto a mano ferma."
+Poi il marchio: la posta resta sulla sabbia.,Poi il marchio: la posta resta sulla sabbia.
+"Poi la cera cede. Finisce la strofa, non la voce.","Poi la cera cede. Finisce la strofa, non la voce."
+Poi la cera cede. Domani la canto meglio.,Poi la cera cede. Domani la canto meglio.
+Il Registro chiude il fascicolo. La strofa resta aperta.,Il Registro chiude il fascicolo. La strofa resta aperta.
+Il Registro classifica. Io canto.,Il Registro classifica. Io canto.
+LA GESTA DI LAURO,LA GESTA DI LAURO
+Nuova gesta più alta: %d Gloria in un'arena.,Nuova gesta più alta: %d Gloria in un'arena.
+Nuova gesta più alta: %d Gloria in %d arene.,Nuova gesta più alta: %d Gloria in %d arene.
+Gesta più alta: %d Gloria in un'arena.,Gesta più alta: %d Gloria in un'arena.
+Gesta più alta: %d Gloria in %d arene.,Gesta più alta: %d Gloria in %d arene.
+Storno cantastorie,Storno cantastorie
+"Lauro ha il piumaggio nero sparso di macchie chiare, come cera schizzata. Imita il richiamo di Orvo e il vecchio grido di Rugo meglio di loro. Canta le gesta di chi passa nell’arena e ogni sera cambia una parola.","Lauro ha il piumaggio nero sparso di macchie chiare, come cera schizzata. Imita il richiamo di Orvo e il vecchio grido di Rugo meglio di loro. Canta le gesta di chi passa nell’arena e ogni sera cambia una parola."
+Lauro: Che rima ha questa firma?,Lauro: Che rima ha questa firma?
+Nerio: Nessuna. È una firma.,Nerio: Nessuna. È una firma.
+"Dima: Lauro, è già in strofa?","Dima: Lauro, è già in strofa?"
+Lauro: Non ancora. Aspetto il sigillo.,Lauro: Non ancora. Aspetto il sigillo.
+"Lauro: Orvo, lasciami il primo verso.","Lauro: Orvo, lasciami il primo verso."
+Orvo: Il primo verso è il richiamo. È mio.,Orvo: Il primo verso è il richiamo. È mio.
+Rugo: Quel grido era il mio.,Rugo: Quel grido era il mio.
+Lauro: Era. Ora lo canto meglio.,Lauro: Era. Ora lo canto meglio.
+Lauro: Un’altra rima.,Lauro: Un’altra rima.
+Dima: Già in strofa?,Dima: Già in strofa?
+Lauro: Dopo il sigillo.,Lauro: Dopo il sigillo.
+Lauro: Il primo verso?,Lauro: Il primo verso?
+Orvo: Mio.,Orvo: Mio.
+Rugo: Il mio grido.,Rugo: Il mio grido.
+"Lauro: Il mio, ora.","Lauro: Il mio, ora."
+La prima strofa,La prima strofa
+"Udite, gradinata! Un passo nuovo sulla sabbia. Cerco già la rima.","Udite, gradinata! Un passo nuovo sulla sabbia. Cerco già la rima."
+Lauro è tornato. Ha imparato il richiamo di Orvo prima di Orvo.,Lauro è tornato. Ha imparato il richiamo di Orvo prima di Orvo.
+Il cantastorie non copia. Ogni sera cambia una parola.,Il cantastorie non copia. Ogni sera cambia una parola.
+"Tu copi le righe, Nerio. Io canto quello che le righe lasciano fuori.","Tu copi le righe, Nerio. Io canto quello che le righe lasciano fuori."
+Nella sua strofa la mia cresta è ogni volta più alta.,Nella sua strofa la mia cresta è ogni volta più alta.
+"L’arena dimentica. Il Registro no. Io ricordo male, ma ricordo.","L’arena dimentica. Il Registro no. Io ricordo male, ma ricordo."
+La strofa aperta,La strofa aperta
+"C’è una gesta che canto da anni. Uno che chiudeva ogni bando, senza fretta.","C’è una gesta che canto da anni. Uno che chiudeva ogni bando, senza fretta."
+E la gradinata non applaude mai. Ascolta e basta.,E la gradinata non applaude mai. Ascolta e basta.
+"Perché non finisce. Arrivo a quando si alza, e la rima non viene.","Perché non finisce. Arrivo a quando si alza, e la rima non viene."
+Non viene perché manca la chiusura. Quel fascicolo risulta aperto.,Non viene perché manca la chiusura. Quel fascicolo risulta aperto.
+Inventala. È il tuo mestiere.,Inventala. È il tuo mestiere.
+"Una fine inventata la canta chiunque. Questa la lascio aperta, come il posto.","Una fine inventata la canta chiunque. Questa la lascio aperta, come il posto."
+Nerio: Nessuna. Una copia.,Nerio: Nessuna. Una copia.
+"Il bando di Orvo è aperto: ogni colpo in più vale doppio.","Il bando di Orvo è aperto: ogni colpo in più vale doppio."
+"Favore +%d","Favore +%d"
+"Favore -%d","Favore -%d"
+"Pressione %d","Pressione %d"
+"i Segni","i Segni"
+"Oggi, a favore del sigillo: %s.","Oggi, a favore del sigillo: %s."
+"Oggi, contro il sigillo: %s.","Oggi, contro il sigillo: %s."
+"Oggi niente sposta il sigillo.","Oggi niente sposta il sigillo."
+"Quietanza versata contro il debito: Denari +%d, il doppio.","Quietanza versata contro il debito: Denari +%d, il doppio."
+"In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio."
+Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.

@@ -130,16 +130,15 @@ def _assert_runtime_contract() -> None:
         raise AssertionError("promise selection must not move or resize the target")
     state_helper = _function_body(source, "_set_promise_signature_state")
     for token in (
-        "PROMISE_SIGNATURE_STYLE_NORMAL",
-        "PROMISE_SIGNATURE_STYLE_FOCUS",
-        "PROMISE_SIGNATURE_STYLE_PRESSED",
-        "PROMISE_SIGNATURE_STYLE_SELECTED",
-        "PROMISE_SIGNATURE_STYLE_SIGNED",
-        "PROMISE_SIGNATURE_STYLE_DISABLED",
+        'Kit.apply_action(button, &"wax", true, state == PROMISE_SIGNATURE_STATE_SIGNED',
+        "state == PROMISE_SIGNATURE_STATE_SELECTED)",
+        'button.text = "FIRMA"',
         "set_meta(PROMISE_SIGNATURE_STATE_META, state)",
     ):
         if token not in state_helper:
             raise AssertionError(f"promise state helper missing token: {token}")
+    if "registered" in selection or "PROMISE_SIGNATURE_STATE_SIGNED" in selection:
+        raise AssertionError("consulting a page must never register its signature")
 
     if "signal request_place_bet(bet_id: String, stake: int)" not in _read(GAME_EVENTS):
         raise AssertionError("GameEvents request_place_bet contract changed")

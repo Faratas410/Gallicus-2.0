@@ -2,6 +2,39 @@
 
 ## Identita' scelta: Manifesto del Verdetto
 
+Pacchetto 3, 9 ottobre: sigillo nativo in basalto, bronzo e cera con CTA
+Manifesto 22 px; nessuna sostituzione con le incisioni del marchio. Verbale
+e titolo su supporti inchiostro nella colonna sinistra, gesto e ausiliario
+compatti nella destra. Geometria fissa fra testo iniziale, colpi e Segno.
+Confronto e limiti: `docs/support/manifesto_judgment_2026-10-09.md`.
+
+Pacchetto 2, 9 ottobre: Patto come tavoletta avorio con gesto in inchiostro;
+Gradinata con spazio centrale per l'arena, intenzione separata e risposte
+raccolte in basso. Carta per la misura, cera per l'esposizione, prezzi
+allineati sotto il verbo. Selected non riempie l'impronta; validated del
+Patto la riempie. Confronto e limiti:
+`docs/support/manifesto_pact_crowd_2026-10-09.md`.
+
+Implementazione condivisa dal 9 ottobre 2026: `scripts/ui/manifesto_kit.gd`
+centralizza tipografia, spazi e adattatori dei comandi; pigmenti in
+`scripts/ui/manifesto_palette.gd`, incisioni in
+`scripts/ui/manifesto_primitives.gd`. Posta e route del fascicolo usano
+`scripts/ui/manifesto_action_surface.gd`, con varianti carta, inchiostro e
+cera. Non generare una nuova immagine del medesimo componente per ogni fase.
+Estendere la libreria e il campionario prima di introdurre altri override
+locali equivalenti. Composizioni e oggetti specifici restano di fase.
+Copertura attuale e uso: `docs/support/ui_kit_2026-10-09.md`.
+
+Pacchetto Registro del 9 ottobre: due documenti avorio dentro il supporto
+inchiostro; titoli e intestazioni Manifesto, condizioni in corpo pulito.
+Il banco mantiene Orvo e Vessa e usa carta per servizio/effetto/prezzo.
+Cera concentrata nelle firme. La selezione aggiunge una regola laterale e
+un'impronta vuota; solo signed riempie i tagli. Nessuna tinta sull'intero
+testo, fascia della posta o numero gigante. Superfici native condivise in
+`scripts/ui/manifesto_document_surface.gd`; confronto ispezionato e limiti
+in `docs/support/manifesto_registry_2026-10-09.md`. Le descrizioni storiche
+delle pagine scure sotto non definiscono il nuovo consumer del Registro.
+
 Decisione dell'utente, 8 ottobre 2026: la terza proposta, nella rifinitura con
 azioni raccolte in basso, fissa l'identita' UI. Grafica incisa, netta e rituale:
 sfondi pittorici lasciano spazio al mondo, interfaccia a stampa da' peso alle

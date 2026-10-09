@@ -2,6 +2,51 @@
 
 ## Principio
 
+Giudizio e sigillo, 9 ottobre: `tools/counter_layout_capture.gd --
+--judgment-only` produce 52 viste IT, 720p/1080p e motion normale/ridotto.
+Include focus/hover/pressed, lock e recovery, colpi 1/2/3, arresto,
+incrinato, Segno offerto e mostrato. Verifica target fermo, contenuto nel
+pannello e un solo intent da Invio/ripetizione sui due Button. Nella matrice
+si scollega solo il ricevitore del manager e si iniettano risposte di
+presentazione; il percorso `--pact-crowd-flow-only` usa invece il manager
+reale fino alla posta. Il campionario clona il pannello nativo fuori dal
+runtime e riusa adapter e helper visivi degli incavi, senza aggiungere
+la sorgente alla SceneTree. Evidenze:
+`docs/support/manifesto_judgment_2026-10-09.md`.
+
+Patto e Gradinata, 9 ottobre: `tools/counter_layout_capture.gd --
+--pact-crowd-only --capture-dir=<directory>` copre 64 viste di presentazione
+IT a 720p/1080p, entrambe le modalita' motion: focus, hover, pressed,
+validated/selected/disabled, tre scambi, favore -4/0/+4 ed effetti lunghi.
+Testi identici nei confronti; prezzi reali dal catalogo del manager.
+Include inoltre un percorso via Button/Invio: firma, Patto, tre scambi,
+giudizio e posta. La sola condizione di scenario imposta l'arena speciale
+sulla prima arena nel profilo usa e getta; transizioni e conseguenze sono
+risolte da RunManager. Il campionario ha una sezione Patto/Gradinata con
+gli stessi adattatori e selettore degli stati. Report:
+`docs/support/manifesto_pact_crowd_2026-10-09.md`.
+
+Kit UI, 9 ottobre 2026: `tools/manifesto_kit_capture.gd` verifica il
+campionario con renderer reale, IT di default e due risoluzioni.
+`--all-languages` riattiva IT/EN/ES. Controlla
+risorse di traduzione caricate, ingombri, idempotenza dell'adattatore,
+passaggio mouse dalle note al Button, invio singolo da click/Invio e blocco.
+`tools/counter_layout_capture.gd -- --all-languages` copre le schermate
+integrate; il kit non cambia il default IT della fixture storica.
+Report e comandi: `docs/support/ui_kit_2026-10-09.md`.
+
+Pacchetto Registro del 9 ottobre: `tools/counter_layout_capture.gd --
+--registry-only --capture-dir=<directory>` produce 64 viste IT a 720p/1080p
+in entrambe le modalita' motion. Usa gli stessi dati di catalogo nei
+prima/dopo; per la firma reale ripristina le offerte preparate dal manager.
+Include banco -5/0/20, input mouse, selected/signed, offerta mancante,
+testo lungo all'inizio/fine, riapertura, lock e firma tramite Invio fino
+al Patto. Le viste signed sono fixture di presentazione, non prove di save.
+Controlla contenimento di documenti e servizi, altezza del testo o scroll
+attivo, skin dentro i target e focus dopo la chiusura. Il campionario ha
+una sezione Registro/banco/firma con gli stessi adattatori del gioco.
+Report: `docs/support/manifesto_registry_2026-10-09.md`.
+
 Review temporanea richiesta dall'utente, 8 ottobre 2026: per il primo pass
 materiale del Manifesto, catture e prove runtime soltanto in italiano.
 `tools/counter_layout_capture.gd` usa IT di default; `--all-languages`

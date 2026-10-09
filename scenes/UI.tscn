@@ -39,21 +39,6 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_focus.tres" id="45_registry_second_incision_focus"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_pressed.tres" id="46_registry_second_incision_pressed"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/second_incision/sb_registry_second_incision_disabled.tres" id="48_registry_second_incision_disabled"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_normal.tres" id="49_registry_pact_tablet_normal"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_focus.tres" id="50_registry_pact_tablet_focus"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_pressed.tres" id="51_registry_pact_tablet_pressed"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_validated.tres" id="52_registry_pact_tablet_validated"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_disabled.tres" id="53_registry_pact_tablet_disabled"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_normal.tres" id="54_arena_gesture_placa_normal"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_focus.tres" id="55_arena_gesture_placa_focus"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_pressed.tres" id="56_arena_gesture_placa_pressed"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_selected.tres" id="57_arena_gesture_placa_selected"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_disabled.tres" id="58_arena_gesture_placa_disabled"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_normal.tres" id="59_arena_gesture_provoca_normal"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_focus.tres" id="60_arena_gesture_provoca_focus"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_pressed.tres" id="61_arena_gesture_provoca_pressed"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_selected.tres" id="62_arena_gesture_provoca_selected"]
-[ext_resource type="StyleBox" path="res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_disabled.tres" id="63_arena_gesture_provoca_disabled"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_normal.tres" id="64_registry_judgment_seal_normal"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_focus.tres" id="65_registry_judgment_seal_focus"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_pressed.tres" id="66_registry_judgment_seal_pressed"]
@@ -679,11 +664,11 @@ custom_minimum_size = Vector2(660, 390)
 [node name="Box_FIRST_REACTION" type="VBoxContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 34.0
-offset_right = -24.0
-offset_bottom = -34.0
-theme_override_constants/separation = 10
+offset_left = 32.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = -32.0
+theme_override_constants/separation = 16
 
 [node name="Lbl_FIRST_REACTION_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 custom_minimum_size = Vector2(0, 46)
@@ -692,7 +677,6 @@ theme_override_styles/panel = ExtResource("20_verdict_banner")
 
 [node name="Lbl_FIRST_REACTION_TITLE" type="Label" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION/Lbl_FIRST_REACTION_TITLEPanel"]
 theme_type_variation = &"TitleLabel"
-theme_override_constants/letter_spacing = 3
 theme_override_constants/outline_size = 0
 theme_override_colors/font_color = Color(0.96, 0.91, 0.78, 1)
 theme_override_font_sizes/font_size = 26
@@ -717,18 +701,7 @@ text = "La pietra ha preso la firma.\nLa gradinata attende il gesto."
 
 [node name="Btn_FIRST_REACTION_NEXT" type="Button" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION/Box_FIRST_REACTION"]
 focus_mode = 2
-theme_override_styles/normal = ExtResource("49_registry_pact_tablet_normal")
-theme_override_styles/hover = ExtResource("50_registry_pact_tablet_focus")
-theme_override_styles/focus = ExtResource("50_registry_pact_tablet_focus")
-theme_override_styles/pressed = ExtResource("51_registry_pact_tablet_pressed")
-theme_override_styles/disabled = ExtResource("53_registry_pact_tablet_disabled")
-theme_override_colors/font_color = Color(0.98, 0.92, 0.76, 1)
-theme_override_colors/font_hover_color = Color(1, 0.97, 0.84, 1)
-theme_override_colors/font_focus_color = Color(1, 0.97, 0.84, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.84, 0.66, 1)
-theme_override_colors/font_disabled_color = Color(0.76, 0.72, 0.64, 1)
-theme_override_font_sizes/font_size = 20
-custom_minimum_size = Vector2(320, 128)
+custom_minimum_size = Vector2(320, 88)
 size_flags_horizontal = 4
 text = "MOSTRA IL PATTO"
 
@@ -771,22 +744,25 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -500
-offset_top = -165
-offset_right = 140
-offset_bottom = 255
-custom_minimum_size = Vector2(640, 420)
+offset_left = -530
+offset_top = -180
+offset_right = 290
+offset_bottom = 220
+custom_minimum_size = Vector2(820, 400)
 
-[node name="Box_RESOLUTION" type="VBoxContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION"]
+[node name="Box_RESOLUTION" type="Control" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 34.0
-offset_top = 30.0
-offset_right = -34.0
-offset_bottom = -30.0
-theme_override_constants/separation = 8
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
 
 [node name="Lbl_RESOLUTION_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 356.0
+offset_bottom = 44.0
 custom_minimum_size = Vector2(0, 44)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("20_verdict_banner")
@@ -801,6 +777,10 @@ text = "RITO DI GIUDIZIO"
 theme_override_fonts/font = ExtResource("11")
 
 [node name="Lbl_RESOLUTION_BODYPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+offset_left = 0.0
+offset_top = 64.0
+offset_right = 356.0
+offset_bottom = 328.0
 custom_minimum_size = Vector2(0, 104)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("22_verdict_body")
@@ -811,10 +791,14 @@ vertical_alignment = 1
 theme_override_colors/font_color = Color(0.94, 0.92, 0.84, 1)
 theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
-clip_text = true
+clip_text = false
 text = "Il Registro pesa il patto. Colpisci tre volte il sigillo."
 
 [node name="Lbl_RESOLUTION_RITUAL_PROMPTPanel" type="PanelContainer" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+offset_left = 396.0
+offset_top = 0.0
+offset_right = 756.0
+offset_bottom = 84.0
 custom_minimum_size = Vector2(0, 34)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("21_verdict_detail")
@@ -824,9 +808,14 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.94, 0.84, 0.62, 1)
 theme_override_font_sizes/font_size = 15
+autowrap_mode = 2
 text = "IMPRIMI IL SIGILLO"
 
 [node name="Btn_RESOLUTION_STRIKE" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+offset_left = 396.0
+offset_top = 108.0
+offset_right = 756.0
+offset_bottom = 252.0
 theme_override_styles/normal = ExtResource("64_registry_judgment_seal_normal")
 theme_override_styles/hover = ExtResource("65_registry_judgment_seal_focus")
 theme_override_styles/focus = ExtResource("65_registry_judgment_seal_focus")
@@ -842,11 +831,15 @@ size_flags_horizontal = 4
 text = "COLPISCI"
 
 [node name="Btn_RESOLUTION_NEXT" type="Button" parent="UI_RunRoot/Phase_RESOLUTION/Panel_RESOLUTION/Box_RESOLUTION"]
+offset_left = 426.0
+offset_top = 280.0
+offset_right = 726.0
+offset_bottom = 340.0
 theme_override_styles/normal = ExtResource("12")
 theme_override_styles/hover = ExtResource("13")
 theme_override_styles/pressed = ExtResource("14")
 theme_override_styles/disabled = ExtResource("15")
-custom_minimum_size = Vector2(170, 54)
+custom_minimum_size = Vector2(300, 60)
 size_flags_horizontal = 4
 text = "AVANTI"
 
@@ -891,11 +884,10 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -560
-offset_top = -165
+offset_top = -180
 offset_right = 204
-offset_bottom = 265
-clip_contents = true
-custom_minimum_size = Vector2(764, 430)
+offset_bottom = 264
+custom_minimum_size = Vector2(764, 444)
 
 [node name="BackgroundMidChoice" type="TextureRect" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
 visible = false
@@ -931,7 +923,7 @@ offset_bottom = -20.0
 theme_override_constants/separation = 10
 
 [node name="Lbl_MID_CHOICE_AUDIENCEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 80)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
@@ -942,8 +934,12 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "La folla osserva."
 
+[node name="ArenaSpace" type="Control" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
+mouse_filter = 2
+size_flags_vertical = 3
+
 [node name="Lbl_MID_CHOICE_TITLEPanel" type="PanelContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 theme_override_styles/panel = ExtResource("30_mid_choice_plate")
 
@@ -957,44 +953,21 @@ theme_override_fonts/font = ExtResource("11")
 
 [node name="Box_MID_CHOICE_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
 size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/separation = 14
+theme_override_constants/separation = 16
 alignment = 1
 
 [node name="Btn_MID_CHOICE_SELECT_0" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
 focus_mode = 2
-theme_override_styles/normal = ExtResource("54_arena_gesture_placa_normal")
-theme_override_styles/hover = ExtResource("55_arena_gesture_placa_focus")
-theme_override_styles/focus = ExtResource("55_arena_gesture_placa_focus")
-theme_override_styles/pressed = ExtResource("56_arena_gesture_placa_pressed")
-theme_override_styles/disabled = ExtResource("58_arena_gesture_placa_disabled")
-theme_override_colors/font_color = Color(0.98, 0.94, 0.82, 1)
-theme_override_colors/font_hover_color = Color(1, 0.98, 0.86, 1)
-theme_override_colors/font_focus_color = Color(1, 0.98, 0.86, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.91, 0.7, 1)
-theme_override_colors/font_disabled_color = Color(0.72, 0.7, 0.64, 1)
-theme_override_font_sizes/font_size = 18
-custom_minimum_size = Vector2(336, 224)
-size_flags_horizontal = 0
+custom_minimum_size = Vector2(350, 180)
+size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
 text = "ABBASSA LO SGUARDO\nPressione -1.\nIl Registro annota misura."
 
 [node name="Btn_MID_CHOICE_SELECT_1" type="Button" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE/Box_MID_CHOICE_CHOICES"]
 focus_mode = 2
-theme_override_styles/normal = ExtResource("59_arena_gesture_provoca_normal")
-theme_override_styles/hover = ExtResource("60_arena_gesture_provoca_focus")
-theme_override_styles/focus = ExtResource("60_arena_gesture_provoca_focus")
-theme_override_styles/pressed = ExtResource("61_arena_gesture_provoca_pressed")
-theme_override_styles/disabled = ExtResource("63_arena_gesture_provoca_disabled")
-theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
-theme_override_colors/font_hover_color = Color(1, 0.96, 0.84, 1)
-theme_override_colors/font_focus_color = Color(1, 0.96, 0.84, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.84, 0.7, 1)
-theme_override_colors/font_disabled_color = Color(0.72, 0.68, 0.62, 1)
-theme_override_font_sizes/font_size = 18
-custom_minimum_size = Vector2(336, 224)
-size_flags_horizontal = 0
+custom_minimum_size = Vector2(350, 180)
+size_flags_horizontal = 3
 size_flags_vertical = 0
 autowrap_mode = 2
 text = "SFIDA LA GRADINATA\nPressione +1.\nIl Registro annota esposizione."

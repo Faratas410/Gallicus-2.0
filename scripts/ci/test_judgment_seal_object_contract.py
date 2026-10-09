@@ -210,6 +210,16 @@ def _assert_scene_binding() -> None:
 
 def _assert_runtime() -> None:
     ui = _read(UI_ROOT)
+    input_handler = _function_body(ui, "_handle_resolution_ritual_input")
+    for button in ("resolve_ritual_strike_button", "resolve_ritual_advance_button"):
+        if f"{button}.has_focus()" not in input_handler:
+            raise AssertionError(f"focused {button} must own ui_accept before the strike shortcut")
+    kit = _read(ROOT / "scripts/ui/manifesto_kit.gd")
+    judgment_adapter = _function_body(kit.replace("static func ", "func "), "apply_judgment")
+    if 'ManifestoKit.apply_judgment(resolve_ritual_panel)' not in ui:
+        raise AssertionError("judgment must consume the shared type/support adapter")
+    if "add_theme_stylebox_override" in judgment_adapter.split("var seal: Button", 1)[1].split("apply_action", 1)[0]:
+        raise AssertionError("type adapter must not replace native seal skins")
     strike = _function_body(ui, "_on_resolve_ritual_strike_pressed")
     answered = _function_body(ui, "_on_seal_strike_resolved")
     raise_hand = _function_body(ui, "_on_resolve_ritual_next_pressed")

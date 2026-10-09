@@ -44,6 +44,21 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Autorita'
 
+Kit UI Manifesto riutilizzabile, 9 ottobre 2026: token, superfici e azioni
+condivisi tra posta e comandi del fascicolo, con campionario interattivo.
+API, perimetro e prove in `docs/support/ui_kit_2026-10-09.md`.
+
+Preparazione dell'estensione alle schermate rimanenti, sul kit corrente:
+`docs/support/manifesto_remaining_screens_2026-10-09.md`. Primo pacchetto:
+Registro, banco e firma. Preparazione storica; prove visuali/runtime solo IT.
+Pacchetto 1 implementato e verificato localmente:
+`docs/support/manifesto_registry_2026-10-09.md`.
+Pacchetto 2 implementato e verificato localmente:
+`docs/support/manifesto_pact_crowd_2026-10-09.md`.
+Pacchetto 3 implementato e verificato localmente:
+`docs/support/manifesto_judgment_2026-10-09.md`. Prossimo pacchetto:
+Fascicolo, HUD e dettaglio Segni. Revisione umana e checkpoint Linux rimangono aperti.
+
 Integrazione locale dei contesti del 7 e 8 ottobre 2026, con risoluzione dei
 conflitti fra UI/editoriale e Lauro/benchmark:
 `docs/support/merge_integration_2026-10-08.md`. Candidato verificato su Windows;

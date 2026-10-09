@@ -3,32 +3,23 @@ class_name BettingCircleUI
 
 const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
-const CONTRACT_TITLE_SIZE: int = 20
-const CONTRACT_HEADING_SIZE: int = 14
-const CONTRACT_TITLE_COLOR: Color = Color(0.92, 0.90, 0.81)
-const CONTRACT_HOLDS_COLOR: Color = Color(0.79, 0.78, 0.66)
-const CONTRACT_BREAKS_COLOR: Color = Color(0.86, 0.42, 0.33)
-const CONTRACT_NOTE_COLOR: Color = Color(0.74, 0.70, 0.62)
+const Kit = preload("res://scripts/ui/manifesto_kit.gd")
+const CONTRACT_TITLE_SIZE: int = Kit.CONTRACT_TITLE_SIZE
+const CONTRACT_HEADING_SIZE: int = Kit.CONTRACT_HEADING_SIZE
+const CONTRACT_TITLE_COLOR: Color = Kit.Palette.INK
+const CONTRACT_HOLDS_COLOR: Color = Kit.Palette.INK
+const CONTRACT_BREAKS_COLOR: Color = Kit.Palette.INK
+const CONTRACT_NOTE_COLOR: Color = Kit.Palette.INK
 const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Leggi la promessa e il costo. Poi firma."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
 const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
 const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_counter.png")
-const REGISTRY_TABLE_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_normal.tres")
-const REGISTRY_TABLE_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_focus.tres")
-const REGISTRY_TABLE_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_pressed.tres")
-const REGISTRY_TABLE_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/registry_table/sb_registry_table_closed_disabled.tres")
 const REGISTRY_TABLE_STATE_NORMAL: StringName = &"normal"
 const REGISTRY_TABLE_STATE_FOCUS: StringName = &"focus"
 const REGISTRY_TABLE_STATE_PRESSED: StringName = &"pressed"
 const REGISTRY_TABLE_STATE_DISABLED: StringName = &"disabled"
 const REGISTRY_TABLE_STATE_META: StringName = &"registry_table_state"
-const PROMISE_SIGNATURE_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_normal.tres")
-const PROMISE_SIGNATURE_STYLE_FOCUS: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_focus.tres")
-const PROMISE_SIGNATURE_STYLE_PRESSED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_pressed.tres")
-const PROMISE_SIGNATURE_STYLE_SELECTED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_selected.tres")
-const PROMISE_SIGNATURE_STYLE_SIGNED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_signed.tres")
-const PROMISE_SIGNATURE_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/promise_signature/sb_registry_promise_signature_disabled.tres")
 const PROMISE_SIGNATURE_STATE_NORMAL: StringName = &"normal"
 const PROMISE_SIGNATURE_STATE_SELECTED: StringName = &"selected"
 const PROMISE_SIGNATURE_STATE_SIGNED: StringName = &"signed"
@@ -94,6 +85,7 @@ var _banco_note_text: String = ""
 func _ready() -> void:
 	_nodes_ready = true
 	visible = false
+	_apply_manifesto_surfaces()
 	_refresh_localized_text()
 	left_select_button.pressed.connect(_on_select_left_pressed)
 	right_select_button.pressed.connect(_on_select_right_pressed)
@@ -131,6 +123,34 @@ func _ready() -> void:
 		if not GameEvents.settings_changed.is_connected(settings_callable):
 			GameEvents.settings_changed.connect(settings_callable)
 
+func _apply_manifesto_surfaces() -> void:
+	Kit.apply_document(open_book_bg, &"ink")
+	Kit.apply_document(closed_book_bg, &"ink")
+	for page: Control in [left_page, right_page]:
+		Kit.apply_document(page.get_node("LeftPaper" if page == left_page else "RightPaper"))
+	for label: RichTextLabel in [left_contract_label, right_contract_label]:
+		Kit.apply_rich_text(label)
+		label.resized.connect(_refresh_contract_scroll.bind(label))
+	for button: Button in [left_select_button, right_select_button]:
+		Kit.apply_page_selection(button)
+	for label: Label in [header_label, intro_body, intro_seal, banco_note]:
+		Kit.apply_label(label)
+	for label: Label in [intro_text, banco_title]:
+		Kit.apply_label(label, &"title")
+	banco_title.add_theme_font_size_override("font_size", Kit.ACTION_COMPACT)
+	Kit.apply_document(intro_body.get_parent() as Control, &"ink")
+	(intro_seal.get_parent() as Control).add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	# Native Button text is the single printed CTA; keep legacy labels as bindings.
+	open_book_label.hide()
+	left_sign_label.hide()
+	right_sign_label.hide()
+	Kit.apply_action(open_book_button, &"paper", true)
+
+func _refresh_contract_scroll(label: RichTextLabel) -> void:
+	var overflowing: bool = label.get_content_height() > label.size.y
+	label.scroll_active = overflowing
+	label.mouse_filter = Control.MOUSE_FILTER_STOP if overflowing else Control.MOUSE_FILTER_IGNORE
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		if not _nodes_ready:
@@ -149,6 +169,7 @@ func _refresh_localized_text() -> void:
 	_render_bando_intro()
 	if open_book_label != null:
 		open_book_label.text = tr("APRI IL REGISTRO")
+		open_book_button.text = "APRI IL REGISTRO"
 	_render_pages()
 
 func _wire_banco() -> void:
@@ -235,6 +256,7 @@ func _render_banco() -> void:
 				tr(str(item.get("text", ""))),
 				tr("%d Denari") % int(item.get("price", 0)),
 			]
+			Kit.apply_action(button, &"paper", true, false, Kit.ACTION_COMPACT, false, true)
 	if banco_note != null:
 		var note: String = _banco_note_text
 		if bool(_banco_view.get("in_debt", false)):
@@ -409,19 +431,9 @@ func _on_open_book_button_up() -> void:
 func _set_registry_table_closed_state(state: StringName) -> void:
 	if closed_book_bg == null:
 		return
-	var style: StyleBox = REGISTRY_TABLE_STYLE_NORMAL
-	match state:
-		REGISTRY_TABLE_STATE_FOCUS:
-			style = REGISTRY_TABLE_STYLE_FOCUS
-		REGISTRY_TABLE_STATE_PRESSED:
-			style = REGISTRY_TABLE_STYLE_PRESSED
-		REGISTRY_TABLE_STATE_DISABLED:
-			style = REGISTRY_TABLE_STYLE_DISABLED
-		_:
-			state = REGISTRY_TABLE_STATE_NORMAL
-	closed_book_bg.add_theme_stylebox_override("panel", style)
 	if open_book_button != null:
 		open_book_button.set_meta(REGISTRY_TABLE_STATE_META, state)
+		Kit.apply_action(open_book_button, &"paper", true)
 
 func _build_book_content_node_list() -> void:
 	_book_content_nodes = [] as Array[CanvasItem]
@@ -649,13 +661,15 @@ func _apply_selection_visual() -> void:
 	var right_id: StringName = _offer_id_at(1)
 	var left_selected: bool = left_id != &"" and selected_bet_id == left_id
 	var right_selected: bool = right_id != &"" and selected_bet_id == right_id
-	# Legacy yellow outlines remain disabled by design.
+	# A rule identifies the consulted page without tinting its content or signing it.
 	left_selection_outline.visible = false
 	right_selection_outline.visible = false
 	if left_page != null:
-		left_page.modulate = Color(1.0, 0.98, 0.9, 1.0) if left_selected else Color(0.86, 0.84, 0.78, 0.96)
+		left_page.modulate = Color.WHITE
+		Kit.apply_document(left_page.get_node("LeftPaper"), &"paper", left_selected)
 	if right_page != null:
-		right_page.modulate = Color(1.0, 0.98, 0.9, 1.0) if right_selected else Color(0.86, 0.84, 0.78, 0.96)
+		right_page.modulate = Color.WHITE
+		Kit.apply_document(right_page.get_node("RightPaper"), &"paper", right_selected)
 
 func _offer_id_at(index: int) -> StringName:
 	if index < 0 or index >= _betting_circle_options.size():
@@ -695,39 +709,12 @@ func _submit_selected_offer(button: Button) -> void:
 func _set_promise_signature_state(button: Button, state: StringName) -> void:
 	if button == null:
 		return
-	var normal_style: StyleBox = PROMISE_SIGNATURE_STYLE_NORMAL
-	var focus_style: StyleBox = PROMISE_SIGNATURE_STYLE_FOCUS
-	var pressed_style: StyleBox = PROMISE_SIGNATURE_STYLE_PRESSED
-	var disabled_style: StyleBox = PROMISE_SIGNATURE_STYLE_DISABLED
-	match state:
-		PROMISE_SIGNATURE_STATE_SELECTED:
-			normal_style = PROMISE_SIGNATURE_STYLE_SELECTED
-		PROMISE_SIGNATURE_STATE_SIGNED:
-			normal_style = PROMISE_SIGNATURE_STYLE_SIGNED
-			focus_style = PROMISE_SIGNATURE_STYLE_SIGNED
-			pressed_style = PROMISE_SIGNATURE_STYLE_SIGNED
-			disabled_style = PROMISE_SIGNATURE_STYLE_SIGNED
-		PROMISE_SIGNATURE_STATE_DISABLED:
-			normal_style = PROMISE_SIGNATURE_STYLE_DISABLED
-			focus_style = PROMISE_SIGNATURE_STYLE_DISABLED
-			pressed_style = PROMISE_SIGNATURE_STYLE_DISABLED
 	button.set_meta(PROMISE_SIGNATURE_STATE_META, state)
+	button.text = "FIRMA"
+	Kit.apply_action(button, &"wax", true, state == PROMISE_SIGNATURE_STATE_SIGNED, Kit.ACTION_COMPACT, state == PROMISE_SIGNATURE_STATE_SELECTED)
 	var trace := button.get_node_or_null("WaxTrace") as TextureRect
 	if trace != null:
-		trace.visible = state == PROMISE_SIGNATURE_STATE_SIGNED
-	button.add_theme_stylebox_override("normal", normal_style)
-	button.add_theme_stylebox_override("hover", focus_style)
-	button.add_theme_stylebox_override("focus", focus_style)
-	button.add_theme_stylebox_override("pressed", pressed_style)
-	button.add_theme_stylebox_override("disabled", disabled_style)
-	var label: Label = left_sign_label if button == left_sign_button else right_sign_label
-	if label != null:
-		if state == PROMISE_SIGNATURE_STATE_DISABLED:
-			label.modulate = Color(0.64, 0.61, 0.57, 0.8)
-		elif state == PROMISE_SIGNATURE_STATE_SIGNED:
-			label.modulate = Color(1.0, 0.91, 0.72, 1.0)
-		else:
-			label.modulate = Color(1.0, 0.94, 0.82, 1.0)
+		trace.hide()
 
 func _wire_button_feedback_sfx() -> void:
 	for button: Button in [open_book_button, left_select_button, right_select_button, left_sign_button, right_sign_button]:
@@ -804,6 +791,8 @@ func _apply_page(offer: Dictionary, contract_label: RichTextLabel) -> void:
 	if contract_label != null:
 		var localized: Dictionary = _map_offer_for_display(offer.source) if offer.has("source") else offer
 		contract_label.text = str(localized.get("contract", EMPTY_PAGE_BODY))
+		contract_label.scroll_to_line(0)
+		_refresh_contract_scroll.call_deferred(contract_label)
 
 func _refresh_from_catalog_if_empty() -> void:
 	if not _betting_circle_options.is_empty():
@@ -850,12 +839,11 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 
 func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String, bet_id: StringName = &"", stake_gain: int = -1, conditions: Dictionary = {}) -> String:
 	# Three levels only (docs/direction.md): title, the deal, then what holds and
-	# what breaks. Size and colour carry hierarchy because the book font has no
-	# bold or italic face.
+	# what breaks. Shared body typography preserves the existing BBCode content.
 	var lines: Array[String] = []
 	var title_text: String = tr(title.strip_edges())
 	if title_text != "":
-		lines.append("[center][font_size=%d][color=#%s]%s[/color][/font_size][/center]" % [CONTRACT_TITLE_SIZE, CONTRACT_TITLE_COLOR.to_html(false), _escape_bbcode(title_text)])
+		lines.append("[center]%s[/center]" % Kit.format_heading(title_text, CONTRACT_TITLE_SIZE, CONTRACT_TITLE_COLOR))
 	var subtitle_text: String = tr(subtitle.strip_edges())
 	if subtitle_text != "":
 		lines.append("[center]%s[/center]" % _escape_bbcode(subtitle_text))
@@ -933,7 +921,7 @@ func _stake_terms(bet_id: StringName, stake_gain: int = -1) -> Dictionary:
 	return {"holds": holds, "breaks": breaks}
 
 func _contract_heading(text: String, color: Color) -> String:
-	return "\n[font_size=%d][color=#%s]%s[/color][/font_size]" % [CONTRACT_HEADING_SIZE, color.to_html(false), _escape_bbcode(text)]
+	return "\n" + Kit.format_heading(text, CONTRACT_HEADING_SIZE, color)
 
 func _translated_lines(source: String) -> Array[String]:
 	var result: Array[String] = []

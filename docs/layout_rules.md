@@ -2,6 +2,43 @@
 
 ## Baseline
 
+Giudizio Manifesto, 9 ottobre: pannello trasparente `820x400`, offset
+(-530, -180) dal centro. Inset 24 px; sinistra larga 356 px, titolo 26 px
+e verbale 17 px nel supporto `356x264`. Destra: prompt 15 px con wrapping
+nel supporto `360x84`, sigillo nativo `360x144` a y=108 e ausiliario
+`300x60` a y=280. I testi non riallocano il target; hover/focus
+dell'ausiliario non lo scalano. I tre incavi restano figli del sigillo.
+Prove e limiti: `docs/support/manifesto_judgment_2026-10-09.md`.
+
+Patto e Gradinata Manifesto, 9 ottobre: tavoletta avorio `660x390`,
+titolo 38 px, corpo 17 px e gesto inchiostro `320x88` con testo 22 px.
+Griglia trasparente `764x444`: voci in alto, spazio elastico per l'arena,
+intenzione su fascia inchiostro, risposte in basso con minimo `350x180`
+e separazione 16 px. Titolo della risposta 22 px e prezzo/corpo 17 px,
+stesse coordinate per entrambi gli atti. Misura su carta, esposizione su cera;
+selected vuoto e validated pieno restano distinti. Dettagli e prove:
+`docs/support/manifesto_pact_crowd_2026-10-09.md`.
+
+Registro Manifesto, 9 ottobre: documento `900x540`, due pagine affiancate
+con medesima gerarchia titolo/condizioni/costo e firme stabili di circa
+`333x51`. Corpo 17 px, titolo 22 px, intestazioni 15 px; nessuna tinta del
+testo per selezionare. Il testo lungo scorre nel suo RichTextLabel, torna
+all'inizio con una nuova offerta e mantiene la firma fuori dallo scroll.
+I comandi del banco conservano tre righe semantiche e wrapping, corpo 15 px,
+minimo `182x110` e padding verticale 8 px; il servizio piu' lungo porta la
+riga a 148 px nel campione IT. Il banco ha spazio anche per la causa del
+blocco e resta nel Registro chiuso. Nessun target scala in hover/focus.
+Prove e perimetro: `docs/support/manifesto_registry_2026-10-09.md`.
+
+Kit condiviso, 9 ottobre 2026: azioni della posta e route del fascicolo
+consumano `scripts/ui/manifesto_kit.gd`. La variante estesa mantiene titolo,
+conseguenza e marchio; quella compatta conserva i target del fascicolo
+`280x64`, con font Manifesto 22 px e wrapping. Titoli 40/26 px,
+conseguenze 17 px, caption 38 px e passo spaziature 8 px sono centralizzati.
+I Button originali conservano focus, disponibilita', segnali e testo
+semantico; superfici e label aggiunte ignorano input. Stati senza scala o
+movimento. Catalogo e ricette in `docs/support/ui_kit_2026-10-09.md`.
+
 Pass dell'8 ottobre 2026: Registro chiuso con Orvo accanto al bando e Vessa
 accanto al banco; i ritratti ignorano mouse e focus. Servizio, effetto e
 prezzo del banco occupano righe distinte, font 15 px e pulsanti con wrapping
@@ -26,10 +63,9 @@ larghezza viewport.
 - Vietate card dentro card.
 - Dimensioni e aspect ratio degli oggetti critici sono stabili.
 - Hover, focus, label e stato non devono ridimensionare il layout.
-- La tavoletta OF-07 usa controllo `320x128` (5:2) nel pannello `660x390`;
-  le tessere OF-08 usano controlli `336x224` (3:2) nel pannello `764x430`,
-  centrate con separazione `14 px`; il sigillo OF-09 usa controllo `360x144`
-  (5:2) nel pannello `640x420`. Gli stati conservano queste geometrie.
+- Il Patto e le risposte adottano le dimensioni Manifesto descritte sopra.
+  Il sigillo OF-09 conserva controllo `360x144` (5:2) nel pannello `640x420`.
+  Gli stati di ogni oggetto conservano la propria geometria.
 
 ## Gerarchia
 
@@ -143,8 +179,9 @@ identificano il blocco insieme alla causa scritta. Dettagli e prove:
   centro; offset y=-134, 24, 162 e altezze 156, 136, 108. Nota della Gradinata
   su una riga con ellissi e tooltip completo. Segni: numero e nomi nello
   scroll; effetti e racconto nel dettaglio. Nessuna altezza dinamica.
-- Patto e giudizio conservano dimensioni e oggetti; anchor centrale con
-  offset x=-500, y=-145/-165. Il patto conserva il banco; il giudizio usa
+- Patto e giudizio usano le dimensioni Manifesto correnti descritte sopra.
+  Il giudizio conserva il proprio oggetto di cera e gli incavi.
+  Il patto conserva il banco; il giudizio usa
   il campione di arena illustrata, condiviso da gesto e incasso/raddoppio.
   Un gradiente nativo comune protegge la lettura senza cambiare geometrie,
   target o focus. Il gradiente ignora input e resta sotto tutti i controlli.

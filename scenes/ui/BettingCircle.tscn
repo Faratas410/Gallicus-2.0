@@ -63,7 +63,7 @@ anchor_bottom = 1.0
 custom_minimum_size = Vector2(900, 540)
 mouse_filter = 1
 
-[node name="SpellbookBg" type="PanelContainer" parent="CenterContainer/BookFrame"]
+[node name="SpellbookBg" type="Panel" parent="CenterContainer/BookFrame"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = ExtResource("12_registry_table_open")
@@ -120,7 +120,7 @@ stretch_mode = 4
 anchor_left = 0.26
 anchor_top = 0.215
 anchor_right = 0.74
-anchor_bottom = 0.315
+anchor_bottom = 0.335
 mouse_filter = 2
 theme_override_styles/panel = ExtResource("14_register_tablet")
 
@@ -176,9 +176,9 @@ mouse_filter = 2
 
 [node name="BancoPanel" type="VBoxContainer" parent="CenterContainer/BookFrame/ClosedIntro"]
 anchor_left = 0.225
-anchor_top = 0.56
+anchor_top = 0.53
 anchor_right = 0.925
-anchor_bottom = 0.93
+anchor_bottom = 0.975
 theme_override_constants/separation = 8
 alignment = 1
 
@@ -193,7 +193,7 @@ theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Btn_Banco_favor" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(182, 94)
+custom_minimum_size = Vector2(182, 110)
 size_flags_horizontal = 3
 focus_mode = 2
 theme_override_font_sizes/font_size = 15
@@ -205,7 +205,7 @@ theme_override_styles/disabled = ExtResource("18_button_disabled")
 text = ""
 
 [node name="Btn_Banco_pressure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(182, 94)
+custom_minimum_size = Vector2(182, 110)
 size_flags_horizontal = 3
 focus_mode = 2
 theme_override_font_sizes/font_size = 15
@@ -217,7 +217,7 @@ theme_override_styles/disabled = ExtResource("18_button_disabled")
 text = ""
 
 [node name="Btn_Banco_insure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(182, 94)
+custom_minimum_size = Vector2(182, 110)
 size_flags_horizontal = 3
 focus_mode = 2
 theme_override_font_sizes/font_size = 15
@@ -311,7 +311,7 @@ modulate = Color(1, 1, 1, 0)
 anchor_right = 1.0
 anchor_bottom = 0.85
 offset_left = 20.0
-offset_top = 4.0
+offset_top = 16.0
 offset_right = -14.0
 offset_bottom = -4.0
 clip_contents = true
@@ -415,7 +415,7 @@ modulate = Color(1, 1, 1, 0)
 anchor_right = 1.0
 anchor_bottom = 0.85
 offset_left = 14.0
-offset_top = 4.0
+offset_top = 16.0
 offset_right = -16.0
 offset_bottom = -4.0
 clip_contents = true

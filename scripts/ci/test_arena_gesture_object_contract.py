@@ -134,21 +134,17 @@ def _assert_assets_and_states() -> None:
 def _assert_scene_and_copy() -> None:
     scene = _read(SCENE)
     panel = _node_block(scene, "Panel_MID_CHOICE")
-    if "custom_minimum_size = Vector2(764, 430)" not in panel:
-        raise AssertionError("gesture panel must be 764x430")
+    if "custom_minimum_size = Vector2(764, 444)" not in panel:
+        raise AssertionError("gesture panel must be 764x444")
     box = _node_block(scene, "Box_MID_CHOICE_CHOICES")
-    if "theme_override_constants/separation = 14" not in box or "alignment = 1" not in box:
-        raise AssertionError("gesture tiles must be centered with 14 px separation")
+    if "theme_override_constants/separation = 16" not in box or "alignment = 1" not in box:
+        raise AssertionError("gesture tiles must be centered with 16 px separation")
+    spacer = _node_block(scene, "ArenaSpace")
+    if "size_flags_vertical = 3" not in spacer or "mouse_filter = 2" not in spacer:
+        raise AssertionError("crowd must leave the arena open above the responses")
     for index, gesture in enumerate(GESTURES):
         block = _node_block(scene, f"Btn_MID_CHOICE_SELECT_{index}")
-        resource_ids = (54, 55, 55, 56, 58) if gesture == "placa" else (59, 60, 60, 61, 63)
-        for property_name, resource_id in zip(
-            ("normal", "hover", "focus", "pressed", "disabled"), resource_ids
-        ):
-            token = f'theme_override_styles/{property_name} = ExtResource("{resource_id}_arena_gesture_{gesture}_'
-            if token not in block:
-                raise AssertionError(f"{gesture} scene binding missing {property_name}")
-        for token in ("focus_mode = 2", "custom_minimum_size = Vector2(336, 224)", "size_flags_horizontal = 0"):
+        for token in ("focus_mode = 2", "custom_minimum_size = Vector2(350, 180)", "size_flags_horizontal = 3"):
             if token not in block:
                 raise AssertionError(f"{gesture} scene geometry missing: {token}")
     for key, translations in EXPECTED_COPY.items():
@@ -189,6 +185,14 @@ def _assert_runtime() -> None:
     wire = _function_body(source, "_wire_intermediate_choice_buttons")
     if "_wire_sign_preview" in wire or "_wire_mid_choice_emphasis" in wire:
         raise AssertionError("gesture tiles must not use inherited hover/sign scaling")
+    selected = _function_body(source, "_set_gesture_choice_selected_state")
+    if 'ManifestoKit.apply_response(button, &"paper" if index == 0 else &"wax", selected)' not in selected:
+        raise AssertionError("gesture selection must use the shared response and retain selected semantics")
+    kit = _read(ROOT / "scripts/ui/manifesto_kit.gd")
+    response = _function_body(kit.replace("static func ", "func "), "apply_response")
+    for token in ('apply_action(button, material, false, false, ACTION_COMPACT, selected)', 'button.text.split', 'MOUSE_FILTER_IGNORE'):
+        if token not in response:
+            raise AssertionError(f"response must retain native text, passive copy, and selected != registered: {token}")
     apply_payload = _function_body(source, "_apply_intermediate_choice_payload")
     for token in ("_reset_gesture_choice_state()", "tr(audience_line)", "tr(title)", "_refresh_gesture_choice_copy()"):
         if token not in apply_payload:

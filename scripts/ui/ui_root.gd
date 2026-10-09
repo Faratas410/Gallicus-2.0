@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const ManifestoKit = preload("res://scripts/ui/manifesto_kit.gd")
+
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
 # - This script is responsible for: Rendering UI based on run/game state signals.
@@ -66,14 +68,8 @@ const CONDEMNATION_MARK_REGISTERED_META: StringName = &"registry_condemnation_ma
 const SECOND_INCISION_STYLE_SEALED: StyleBox = preload("res://assets/ui/official/objects/second_incision/sb_registry_second_incision_sealed.tres")
 const SECOND_INCISION_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/second_incision/sb_registry_second_incision_disabled.tres")
 const SECOND_INCISION_SEALED_META: StringName = &"registry_second_incision_sealed"
-const PACT_TABLET_STYLE_VALIDATED: StyleBox = preload("res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_validated.tres")
-const PACT_TABLET_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/pact_tablet/sb_registry_pact_tablet_disabled.tres")
 const PACT_TABLET_VALIDATED_META: StringName = &"registry_pact_tablet_validated"
 const PACT_TABLET_WATCHDOG_SECONDS: float = 1.25
-const GESTURE_PLACA_STYLE_SELECTED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_selected.tres")
-const GESTURE_PLACA_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_placa_disabled.tres")
-const GESTURE_PROVOCA_STYLE_SELECTED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_selected.tres")
-const GESTURE_PROVOCA_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_gesture/sb_arena_gesture_provoca_disabled.tres")
 const GESTURE_CHOICE_STATE_META: StringName = &"arena_gesture_choice_state"
 const GESTURE_CHOICE_WATCHDOG_SECONDS: float = 1.25
 const JUDGMENT_SEAL_STYLE_NORMAL: StyleBox = preload("res://assets/ui/official/objects/judgment_seal/sb_registry_judgment_seal_normal.tres")
@@ -1622,20 +1618,12 @@ func _apply_end_run_button_visual(button: Button, can_be_active: bool) -> void:
 	button.scale = Vector2.ONE
 	button.modulate = Color.WHITE
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
-	button.add_theme_stylebox_override("normal", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_NORMAL)
-	button.add_theme_stylebox_override("hover", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_FOCUS)
-	button.add_theme_stylebox_override("focus", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_FOCUS)
-	button.add_theme_stylebox_override("pressed", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_PRESSED)
-	button.add_theme_stylebox_override("disabled", FINAL_DOSSIER_TAB_STYLE_SELECTED if selected else FINAL_DOSSIER_TAB_STYLE_DISABLED)
-	button.add_theme_color_override("font_color", Color(0.96, 0.92, 0.82, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(1, 0.96, 0.84, 1.0))
-	button.add_theme_color_override("font_focus_color", Color(1, 0.96, 0.84, 1.0))
-	button.add_theme_color_override("font_pressed_color", Color(1.0, 0.93, 0.74, 1.0))
-	button.add_theme_color_override("font_disabled_color", Color(1.0, 0.92, 0.72, 1.0) if selected else Color(0.5, 0.46, 0.41, 0.86))
-	# One continuation has visual priority; every authorized route remains present.
+	# Same printed action as the stake screen, compact for dossier routes.
+	# Ink is the available continuation; paper subordinates utility on the page.
+	var material: StringName = &"ink"
 	if not selected and _final_dossier_state != FINAL_DOSSIER_STATE_CLOSED and (button == quit_button or (button == restart_button and _last_next_bet_enabled)):
-		button.add_theme_stylebox_override("normal", preload("res://assets/ui/official/styleboxes/sb_counter_utility.tres"))
-		button.add_theme_color_override("font_color", Color(0.20, 0.17, 0.12, 1))
+		material = &"paper"
+	ManifestoKit.apply_action(button, material, true, selected)
 
 func _set_final_dossier_state(state: StringName) -> void:
 	_final_dossier_state = state
@@ -2182,14 +2170,7 @@ func _set_pact_tablet_validated_state(validated: bool) -> void:
 	if pact_sealed_advance_button == null:
 		return
 	pact_sealed_advance_button.set_meta(PACT_TABLET_VALIDATED_META, validated)
-	pact_sealed_advance_button.add_theme_stylebox_override(
-		"disabled",
-		PACT_TABLET_STYLE_VALIDATED if validated else PACT_TABLET_STYLE_DISABLED
-	)
-	pact_sealed_advance_button.add_theme_color_override(
-		"font_disabled_color",
-		Color(1.0, 0.9, 0.72, 1.0) if validated else Color(0.76, 0.72, 0.64, 1.0)
-	)
+	ManifestoKit.apply_action(pact_sealed_advance_button, &"ink", true, validated)
 
 func _on_resolve_ritual_opened(payload: Dictionary) -> void:
 	_reset_sign_feedback()
@@ -2796,6 +2777,9 @@ func _refresh_gesture_choice_copy() -> void:
 			tr(str(_gesture_exchange.get("provoca_text", "Favore +1, Pressione +1."))),
 			tr("Il Registro annota esposizione."),
 		]
+	for button: Button in [intermediate_choice_placa_button, intermediate_choice_provoca_button]:
+		if button != null:
+			ManifestoKit.apply_response(button, &"paper" if button == intermediate_choice_placa_button else &"wax", button.get_meta(GESTURE_CHOICE_STATE_META, &"normal") == &"selected")
 
 func _update_special_arena_ui() -> void:
 	if special_arena_label == null:
@@ -3225,11 +3209,18 @@ func _wire_push_luck_buttons() -> void:
 
 func _wire_ritual_advance_buttons() -> void:
 	if pact_sealed_advance_button != null:
+		ManifestoKit.apply_document(pact_sealed_panel, &"paper")
+		for label: Label in [pact_sealed_title, pact_sealed_subtitle]:
+			label.get_parent().add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+			ManifestoKit.apply_label(label, &"caption" if label == pact_sealed_title else &"body", ManifestoKit.Palette.INK)
+			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+			label.add_theme_constant_override("outline_size", 0)
 		var pact_callable: Callable = Callable(self, "_on_pact_ritual_next_pressed")
 		if not pact_sealed_advance_button.pressed.is_connected(pact_callable):
 			pact_sealed_advance_button.pressed.connect(pact_callable)
 		_wire_sign_preview(pact_sealed_advance_button)
 	if resolve_ritual_advance_button != null:
+		ManifestoKit.apply_judgment(resolve_ritual_panel)
 		var resolve_callable: Callable = Callable(self, "_on_resolve_ritual_next_pressed")
 		if not resolve_ritual_advance_button.pressed.is_connected(resolve_callable):
 			resolve_ritual_advance_button.pressed.connect(resolve_callable)
@@ -3240,6 +3231,19 @@ func _wire_ritual_advance_buttons() -> void:
 			resolve_ritual_strike_button.pressed.connect(strike_callable)
 
 func _wire_intermediate_choice_buttons() -> void:
+	for label: Label in [intermediate_choice_label, intermediate_choice_audience_label]:
+		ManifestoKit.apply_document(label.get_parent(), &"ink")
+		var inset := StyleBoxEmpty.new()
+		inset.content_margin_left = 16
+		inset.content_margin_right = 16
+		inset.content_margin_top = 8
+		inset.content_margin_bottom = 8
+		label.get_parent().add_theme_stylebox_override("panel", inset)
+		ManifestoKit.apply_label(label, &"title" if label == intermediate_choice_label else &"body")
+		if label == intermediate_choice_label:
+			label.add_theme_font_size_override("font_size", ManifestoKit.ACTION_COMPACT)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		label.add_theme_constant_override("outline_size", 0)
 	if intermediate_choice_placa_button != null:
 		var placa_callable: Callable = Callable(self, "_on_intermediate_choice_placa_pressed")
 		if not intermediate_choice_placa_button.pressed.is_connected(placa_callable):
@@ -3319,19 +3323,13 @@ func _reset_gesture_choice_state() -> void:
 
 func _set_gesture_choice_selected_state(selected_index: int) -> void:
 	var buttons: Array[Button] = [intermediate_choice_placa_button, intermediate_choice_provoca_button]
-	var selected_styles: Array[StyleBox] = [GESTURE_PLACA_STYLE_SELECTED, GESTURE_PROVOCA_STYLE_SELECTED]
-	var disabled_styles: Array[StyleBox] = [GESTURE_PLACA_STYLE_DISABLED, GESTURE_PROVOCA_STYLE_DISABLED]
 	for index: int in range(buttons.size()):
 		var button: Button = buttons[index]
 		if button == null:
 			continue
 		var selected: bool = index == selected_index
 		button.set_meta(GESTURE_CHOICE_STATE_META, &"selected" if selected else &"normal")
-		button.add_theme_stylebox_override("disabled", selected_styles[index] if selected else disabled_styles[index])
-		button.add_theme_color_override(
-			"font_disabled_color",
-			Color(1.0, 0.91, 0.7, 1.0) if selected else Color(0.72, 0.69, 0.63, 1.0)
-		)
+		ManifestoKit.apply_response(button, &"paper" if index == 0 else &"wax", selected)
 
 func _on_push_luck_cashout_pressed() -> void:
 	if _pyl_locked:
@@ -3945,7 +3943,7 @@ func _on_sign_preview_entered(button: Button) -> void:
 	if button == null or button.disabled or _is_signing:
 		return
 	_play_sfx(&"button_hover")
-	if _is_pyl_button(button):
+	if _is_pyl_button(button) or button == pact_sealed_advance_button or button == resolve_ritual_advance_button:
 		button.scale = Vector2.ONE
 		return
 	if _is_reduced_motion():
@@ -4453,6 +4451,8 @@ func _is_reduced_motion() -> bool:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
 		_update_escalation_bar()
+		if intermediate_choice_modal != null and intermediate_choice_modal.visible:
+			_refresh_gesture_choice_copy()
 		# The dossier (and Lauro's strophe) is composed text: rebuild it in the new language.
 		if game_over_modal != null and game_over_modal.visible:
 			_refresh_verdict_panel()
@@ -4707,7 +4707,7 @@ func _handle_resolution_ritual_input(event: InputEvent) -> bool:
 		return false
 	var should_strike: bool = false
 	if event is InputEventKey:
-		if resolve_ritual_strike_button != null and resolve_ritual_strike_button.has_focus():
+		if (resolve_ritual_strike_button != null and resolve_ritual_strike_button.has_focus()) or (resolve_ritual_advance_button != null and resolve_ritual_advance_button.has_focus()):
 			# The focused Button owns ui_accept. Handling the same key again here
 			# would count one physical press as two ritual strikes.
 			return false

@@ -383,7 +383,12 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   `request_place_bet` intent.
 - Each page renders one unified `RichTextLabel` contract block (`Rtl_Left_Contract`, `Rtl_Right_Contract`) containing title, subtitle, condanna, condition, and pact copy.
 - Local fragmented render paths (`Lbl_*_Title`, `Rtl_*_Bet`, `Rtl_*_Explain`) are retired because they create scrollbars, duplicated spacing, and overlay-like text drift.
-- Contract text uses warm bone on dark basalt; the paper dossier uses dark ink. Body copy must retain contrast in every state.
+- Manifesto Registry contracts use ink on ivory inside the two-leaf ink
+  support (2026-10-09). Body copy retains contrast in every state; selection
+  adds a rule instead of tinting the whole page. The shared reading surface
+  has no registered mark. Long contracts scroll within the existing
+  RichTextLabel while the signature remains fixed outside it; new offers
+  reset the scroll. Non-scrolling text passes input to the page selector.
 - Scope guard: this is presentation-only. BettingCircle still consumes prepared offer payloads and does not own bet selection authority beyond emitting the existing sign intent.
 
 ## BettingCircle promise signature contract (OF-06)
@@ -393,6 +398,11 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   wax signature cartouches inside the two existing Registry recesses.
 - States are normal, focus, pressed, selected, signed and disabled. They share
   identical geometry; selection and signing must not scale or move the target.
+- Since 2026-10-09 the native signature Button consumes the Manifesto kit:
+  selected has outlined cuts and a rule, signed alone has filled cuts, and
+  disabled has two bars. Native Button text is the single CTA; the legacy
+  Lbl_Sign bindings stay hidden. The local signed feedback retains its
+  original timing before intent emission and is not a new save confirmation.
 - `FIRMA`, `SIGN` and `FIRMAR` remain Godot-rendered CTA copy, never baked into
   the textures.
 - On activation the selected cartouche enters signed state, the existing
@@ -408,8 +418,10 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 - Runtime scene: `res://scenes/UI.tscn`; technical input node:
   `Btn_FIRST_REACTION_NEXT`.
-- The button is presented as a sealed basalt, bronze and red-wax pact tablet
-  using a text-free 5:2 RGB texture. The CTA remains Godot-rendered as
+- The Manifesto reading tablet is an ivory `660x390` document with ink type
+  and one native `320x88` ink action. Shared document/action adapters replace
+  the earlier basalt texture bindings; historical assets remain preserved.
+  The CTA remains Godot-rendered as
   `MOSTRA IL PATTO`, `SHOW THE PACT` and `MUESTRA EL PACTO`. The CTA appears
   only in the first percorso; afterwards the tablet passes by itself.
 - States are normal, focus, pressed, validated and disabled. They share
@@ -434,11 +446,16 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 - Runtime scene: `res://scenes/UI.tscn`; technical input nodes:
   `Btn_MID_CHOICE_SELECT_0` and `Btn_MID_CHOICE_SELECT_1`.
-- `placa` and `provoca` are matte dark 3:2 tesserae with native borders
-  and state treatment. Their Godot-rendered CTAs remain descriptive in
+- `placa` and `provoca` use the shared Manifesto response adapter: paper for
+  restraint, wax for exposure. The native Button keeps its complete semantic
+  text; passive title and consequence labels separate the verb from the price.
+  Their Godot-rendered CTAs remain descriptive in
   IT/EN/ES and expose the authoritative exchange price before activation.
-- Each control is `336x224` inside a `764x430` panel. Normal, focus, pressed,
-  selected and disabled share identical margins and never scale or move.
+- Each control has a `350x180` minimum inside a transparent `764x444` panel,
+  separated by 16 px. Voices sit above an elastic open arena space; intent and
+  aligned responses occupy the lower edge. Normal, focus, pressed, selected
+  and disabled share identical margins and never scale or move. Selected
+  remains an outlined imprint; it must not become a registered full imprint.
 - Activation guards duplicate input, exposes selected, applies decision lock
   without generic click feedback, plays the dedicated gesture cue and emits
   the unchanged `request_mid_choice_select(0/1)` intent. No presentation
@@ -452,6 +469,18 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   transition is added.
 
 ## Judgment seal contract (OF-09)
+
+- Since 2026-10-09 the transparent `820x400` panel has fixed columns:
+  left title/record, right wrapped prompt, original `360x144` seal and
+  `300x60` auxiliary. `ManifestoKit.apply_judgment` shares 26/17/15/22 px
+  type and supports with the gallery, preserving all native seal skins.
+  Long record or Segno copy cannot reposition the seal. Auxiliary hover and
+  focus keep scale one. The three sockets are strike counts, not the
+  Manifesto identity engraving.
+- Both focused native Buttons own keyboard acceptance before the generic
+  strike shortcut. Raising the hand or showing a Segno must never become
+  a strike through `_unhandled_input`. Locks and existing public intents
+  remain unchanged. Windows evidence: `docs/support/manifesto_judgment_2026-10-09.md`.
 
 - Runtime scene: `res://scenes/UI.tscn`; technical input node:
   `Btn_RESOLUTION_STRIKE`.
@@ -476,8 +505,9 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   `can_show_scar`, the seal reads `LASCIA CEDERE` (emits `resolve`) and
   `Btn_RESOLUTION_NEXT` reads `MOSTRA UN SEGNO` (emits `show_scar`). No presentation
   `await` may delay an intent.
-- Opening, close, phase change, failed emission, recovery and watchdog restore
-  the intact state and clear the local lock.
+- Opening, close and phase change restore the intact state and clear the
+  local lock. Failed emission, recovery and watchdog unlock the available
+  choice; after an answered strike they preserve the wax already filled.
 - Scope guard: `RunManager` remains the sole owner of judgment, outcome and
   flow; the UI never decides whether a strike holds (Arena attiva, October 2026).
 

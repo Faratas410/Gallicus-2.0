@@ -132,15 +132,15 @@ def _assert_runtime_contract() -> None:
         raise AssertionError("hidden Registry control must enter disabled state")
     helper = _function_body(source, "_set_registry_table_closed_state")
     for token in (
-        "REGISTRY_TABLE_STYLE_NORMAL",
-        "REGISTRY_TABLE_STYLE_FOCUS",
-        "REGISTRY_TABLE_STYLE_PRESSED",
-        "REGISTRY_TABLE_STYLE_DISABLED",
-        'add_theme_stylebox_override("panel", style)',
+        'Kit.apply_action(open_book_button, &"paper", true)',
         "set_meta(REGISTRY_TABLE_STATE_META, state)",
     ):
         if token not in helper:
             raise AssertionError(f"Registry state helper missing token: {token}")
+    surfaces = _function_body(source, "_apply_manifesto_surfaces")
+    for token in ('Kit.apply_document(open_book_bg, &"ink")', "Kit.apply_rich_text(label)"):
+        if token not in surfaces:
+            raise AssertionError(f"Registry must use the shared reading kit: {token}")
 
     game_events = _read(GAME_EVENTS)
     run_manager = _read(RUN_MANAGER)

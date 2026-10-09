@@ -10,6 +10,44 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+Pacchetto 3 Manifesto del 9 ottobre 2026: giudizio a due colonne, verbale
+compatto e sigillo nativo stabile. Cera e tre incavi restano sul proprio
+oggetto; il kit serve tipografia, supporti e comando ausiliario. Invio sui
+due Button conserva la rispettiva richiesta, con lock precedente all'emissione.
+Evidenze e limiti: `docs/support/manifesto_judgment_2026-10-09.md`.
+Prossimo pacchetto: Fascicolo, HUD e dettaglio Segni. Gate Linux e umani aperti.
+
+Pacchetto 2 Manifesto del 9 ottobre 2026: Patto e Gradinata migrati al kit,
+tavoletta di lettura con un solo gesto e risposte al margine basso dell'arena.
+Conseguenze, tre scambi, lock e intenti restano degli owner esistenti.
+Evidenze e limiti: `docs/support/manifesto_pact_crowd_2026-10-09.md`.
+Passo successivo di questa consegna: Giudizio e sigillo, implementato sotto
+lo stesso stage nel pacchetto 3.
+
+Pacchetto 1 Manifesto del 9 ottobre 2026: Registro, banco e firma migrati
+al kit presente, con superfici di lettura e selected distinto da signed.
+Evidenze, file e limiti: `docs/support/manifesto_registry_2026-10-09.md`.
+Core Playable Candidate invariato; revisione
+umana del pass e checkpoint Linux sul candidato committato restano aperti.
+
+Preparazione del 9 ottobre 2026 per le schermate rimanenti:
+`docs/support/manifesto_remaining_screens_2026-10-09.md`. Usa il kit gia'
+presente nel working tree e divide l'estensione in patch verificabili:
+Registro/firma, patto/Gradinata, giudizio, fascicolo/HUD, menu/utility,
+Archivio e raccordo narrativo finale. Pacchetti 1, 2 e 3 ora implementati
+localmente. Prove visuali/runtime solo IT;
+nessuna implementazione aggiunta da questa preparazione, nessun gate chiuso.
+
+9 ottobre 2026: primo nucleo del kit Manifesto implementato e verificato
+localmente su main, HEAD di partenza `6f8088a`, working tree inizialmente pulito.
+Posta e route del fascicolo condividono lo stesso componente di presentazione;
+campionario navigabile in `tools/manifesto_kit_gallery.tscn`.
+Consegna: `docs/support/ui_kit_2026-10-09.md`. Prossimo passo visuale:
+revisione umana del kit nel campionario e nelle due schermate, poi migrazione
+circostanziata di Registro, menu e Archivio usando la stessa libreria.
+Core Playable Candidate invariato; checkpoint Linux e gate umani aperti.
+I paragrafi datati sotto conservano la sequenza delle consegne precedenti.
+
 Integrazione locale dell'8 ottobre 2026: il pass UI/editoriale `0fe2699` e i
 tre commit remoti fino a `2e2ab6b` sono conciliati nel working tree su main.
 Lauro, gesta e benchmark conservano le nuove regole; testi e composizione

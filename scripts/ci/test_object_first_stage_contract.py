@@ -42,6 +42,13 @@ OBJECT_STYLE_PREFIXES = (
     "final_dossier/sb_registry_final_dossier_",
 )
 
+# Migrated objects keep their intent/state contracts through shared consumers,
+# rather than keeping unused legacy StyleBox resources in the runtime scene.
+MANIFESTO_BINDINGS = {
+    "pact_tablet/sb_registry_pact_tablet_": 'ManifestoKit.apply_action(pact_sealed_advance_button, &"ink", true, validated)',
+    "arena_gesture/sb_arena_gesture_": 'ManifestoKit.apply_response(button, &"paper" if index == 0 else &"wax", selected)',
+}
+
 INTENT_SIGNALS = (
     "request_new_run",
     "request_place_bet",
@@ -79,8 +86,12 @@ def _assert_stable_visual_grammar() -> None:
     scene_corpus = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / "scenes").rglob("*.tscn"))
     ui = _read(UI_ROOT)
     for prefix in OBJECT_STYLE_PREFIXES:
-        if prefix not in scene_corpus:
+        migrated_binding = MANIFESTO_BINDINGS.get(prefix, "")
+        if prefix not in scene_corpus and not (migrated_binding and migrated_binding in ui):
             raise AssertionError(f"UI scene is missing Object-First binding family: {prefix}")
+    if any(binding in ui for binding in MANIFESTO_BINDINGS.values()):
+        if 'const ManifestoKit = preload("res://scripts/ui/manifesto_kit.gd")' not in ui:
+            raise AssertionError("migrated Object-First consumers must use the shared kit")
     if "END_RUN_BUTTON_READY_SCALE" in ui:
         raise AssertionError("Object-First route focus must not use scale")
     visual_match = re.search(r"(?ms)^func _apply_end_run_button_visual\(.*?(?=^func |\Z)", ui)

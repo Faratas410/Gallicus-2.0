@@ -95,21 +95,12 @@ def _assert_texture_and_styles() -> None:
 
 def _assert_scene_and_copy() -> None:
     scene = _read(SCENE)
-    for state in STYLE_NAMES:
-        resource = f"sb_registry_pact_tablet_{state}.tres"
-        if resource not in scene:
-            raise AssertionError(f"UI scene missing pact tablet resource: {resource}")
     block = _node_block(scene, "Btn_FIRST_REACTION_NEXT")
+    if "theme_override_styles/" in block:
+        raise AssertionError("pact states must come from the shared runtime adapter")
     for token in (
         "focus_mode = 2",
-        'theme_override_styles/normal = ExtResource("49_registry_pact_tablet_normal")',
-        'theme_override_styles/hover = ExtResource("50_registry_pact_tablet_focus")',
-        'theme_override_styles/focus = ExtResource("50_registry_pact_tablet_focus")',
-        'theme_override_styles/pressed = ExtResource("51_registry_pact_tablet_pressed")',
-        'theme_override_styles/disabled = ExtResource("53_registry_pact_tablet_disabled")',
-        "theme_override_colors/font_disabled_color = Color(0.76, 0.72, 0.64, 1)",
-        "theme_override_font_sizes/font_size = 20",
-        "custom_minimum_size = Vector2(320, 128)",
+        "custom_minimum_size = Vector2(320, 88)",
         'text = "MOSTRA IL PATTO"',
     ):
         if token not in block:
@@ -176,12 +167,17 @@ def _assert_runtime_contract() -> None:
         raise AssertionError("pact tablet watchdog is incomplete")
     state_helper = _function_body(source, "_set_pact_tablet_validated_state")
     for token in (
-        "PACT_TABLET_STYLE_VALIDATED",
-        "PACT_TABLET_STYLE_DISABLED",
+        'ManifestoKit.apply_action(pact_sealed_advance_button, &"ink", true, validated)',
         "set_meta(PACT_TABLET_VALIDATED_META, validated)",
     ):
         if token not in state_helper:
             raise AssertionError(f"pact tablet state helper missing token: {token}")
+    wire = _function_body(source, "_wire_ritual_advance_buttons")
+    if 'ManifestoKit.apply_document(pact_sealed_panel, &"paper")' not in wire:
+        raise AssertionError("pact must use the shared reading surface")
+    hover = _function_body(source, "_on_sign_preview_entered")
+    if "or button == pact_sealed_advance_button" not in hover:
+        raise AssertionError("pact hover must keep its native target fixed")
 
     if "signal request_ritual_advance(kind: String)" not in _read(GAME_EVENTS):
         raise AssertionError("GameEvents request_ritual_advance contract changed")

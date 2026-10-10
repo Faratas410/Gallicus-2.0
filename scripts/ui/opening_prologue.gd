@@ -2,6 +2,7 @@ extends CanvasLayer
 
 # Legacy node name retained. RunManager supplies the eligible, persisted beat.
 const Catalog = preload("res://scripts/content/campaign_dialogues.gd")
+const Kit = preload("res://scripts/ui/manifesto_kit.gd")
 const CHAMBER: Texture2D = preload("res://assets/ui/generated/registry_chamber.png")
 const READ_GUARD: float = 0.5
 var _port: RunManagerUiPort
@@ -36,7 +37,7 @@ func _ready() -> void:
 	_surface.add_child(backdrop)
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var shade := ColorRect.new()
-	shade.color = Color(0.025, 0.021, 0.016, 0.82)
+	shade.color = Color(Kit.Palette.INK, 0.82)
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_surface.add_child(shade)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -55,28 +56,39 @@ func _ready() -> void:
 	_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_place(_image, Rect2(20, 20, 400, 600))
 	var panel := Panel.new()
-	panel.add_theme_stylebox_override("panel", preload("res://assets/ui/official/styleboxes/sb_panel_main.tres"))
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_place(panel, Rect2(392, 134, 768, 430))
+	# Atto a stampa, package 7: the dialogue rests on an ink slab.
+	Kit.apply_panel(panel, &"ink")
 	_stage.move_child(_image, panel.get_index())
 	_chapter = _label("ConversationTitle", Rect2(432, 46, 688, 54), 22)
-	_chapter.add_theme_color_override("font_color", Color(0.69, 0.61, 0.44))
+	Kit.apply_muted(_chapter)
+	_chapter.add_theme_font_override("font", Kit.DISPLAY_FONT)
 	_speaker = _label("SpeakerName", Rect2(432, 163, 630, 54), 34)
+	_speaker.add_theme_font_override("font", Kit.DISPLAY_FONT)
+	_speaker.add_theme_color_override("font_color", Kit.Palette.IVORY)
 	_role = _label("SpeakerRole", Rect2(432, 220, 688, 32), 18)
-	_role.add_theme_color_override("font_color", Color(0.72, 0.67, 0.56))
+	Kit.apply_muted(_role)
+	_role.add_theme_font_size_override("font_size", 18)
 	var rule := ColorRect.new()
-	rule.color = Color(0.47, 0.36, 0.20)
+	rule.color = Kit.Palette.MUTED
 	rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_place(rule, Rect2(432, 269, 688, 1))
 	_caption = _label("DialogueText", Rect2(432, 294, 688, 156), 24)
+	_caption.add_theme_font_override("font", Kit.BODY_FONT)
+	_caption.add_theme_color_override("font_color", Kit.Palette.IVORY)
 	_counter = _label("DialoguePosition", Rect2(432, 484, 80, 42), 18)
+	Kit.apply_muted(_counter)
+	_counter.add_theme_font_size_override("font_size", 18)
 	_next = Button.new()
 	_next.name = "AdvanceDialogue"
 	_place(_next, Rect2(784, 474, 336, 64))
+	Kit.apply_primary_button(_next)
 	_next.pressed.connect(_advance)
 	_skip = Button.new()
 	_skip.name = "SkipPrologue"
 	_place(_skip, Rect2(432, 576, 336, 44))
+	Kit.apply_secondary_button(_skip)
 	_skip.pressed.connect(_finish)
 	_skip.focus_neighbor_right = _next.get_path()
 	_skip.focus_next = _next.get_path()

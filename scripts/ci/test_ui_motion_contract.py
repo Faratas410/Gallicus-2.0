@@ -89,8 +89,13 @@ def test_ui_motion_contract() -> None:
         if "_emit_game_event_signal_if_available" not in body:
             raise AssertionError(f"{name} must still emit gameplay intent")
 
-    if "_menu_button_tweens" not in main_menu:
-        raise AssertionError("main_menu.gd must guard hover tweens against accumulation")
+    # Sober profile: the menu never scales on hover/focus; the stylus accent
+    # lives in the kit surface, which kills its previous tween before tracing.
+    if "MENU_BUTTON_HOVER_SCALE" in main_menu or '"scale", target_scale' in main_menu:
+        raise AssertionError("main_menu.gd must not scale buttons on hover/focus")
+    surface = _read(ROOT / "scripts" / "ui" / "manifesto_action_surface.gd")
+    if "_accent_tween.kill()" not in surface or "get_reduced_motion" not in surface:
+        raise AssertionError("manifesto_action_surface.gd must guard accent tweens and honour reduced motion")
     if "Tween.TRANS_QUAD" not in betting_circle:
         raise AssertionError("betting_circle_ui.gd must use governed QUAD motion for open/stamp feedback")
     for token in [

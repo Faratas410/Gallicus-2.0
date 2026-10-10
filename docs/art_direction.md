@@ -377,3 +377,17 @@ sfuma soltanto l'ultimo 10 percento inferiore del busto, senza animazioni.
 Archivio, banco e conversazioni condividono questi asset. Le sorgenti opache
 restano nel manifest per provenienza; i cataloghi runtime usano i cutout.
 Prove e limiti nel report `docs/support/claude_review_2026-10-08.md`.
+
+## Menu e bottoni - Atto a stampa, 10 ottobre 2026
+
+Menu, impostazioni, crediti, Archivio, fascicolo, HUD e prologo usano il kit
+Manifesto. Primario/continuazione: lastra d'inchiostro con testo avorio, al
+massimo uno per schermata. Secondario/utilita': lastra di carta con testo
+inchiostro. Esposizione: cera. Disattivato: 16% verso l'inchiostro, due
+barre e motivo scritto. Un solo accento vivo: la linea incisa dello stilo
+sul bordo inferiore (hover e focus, sinistra -> destra in 0.12 s) con il
+marchio a tre tagli vuoto; il marchio pieno solo per "registrato".
+Slider, toggle, selettori, scrollbar, tooltip e popup sono incisi nella
+stessa materia: niente bronzo, niente oro. Token in
+`scripts/ui/manifesto_palette.gd`. Report:
+`docs/support/manifesto_atto_a_stampa_2026-10-10.md`.

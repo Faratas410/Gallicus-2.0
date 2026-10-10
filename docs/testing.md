@@ -659,3 +659,11 @@ stampa una riga `SIM_RUN` per percorso e un `SIM_SUMMARY`. Usare un profilo
 isolato (`APPDATA`/`XDG_DATA_HOME`). Confrontare sempre con `--crowd=read`:
 `--crowd=bow` porta a rivolte e debito. Risultati del 7 ottobre 2026 in
 `docs/support/benchmark_bcde_2026-10-07.md`.
+
+## Pass UI Atto a stampa - 10 ottobre 2026
+
+Verifica headless del branch `claude/ui-pass`: import, playbook statico,
+runtime contract e smoke `KEYBOARD_FULL_RUN` verdi; `test_ui_motion_contract`
+ora vieta la scala hover del menu e richiede la guardia del tween d'accento.
+La revisione visiva a 720p/1080p (catture kit/counter, campionario sezione 5)
+resta da eseguire in locale: il pass non e' validato finche' non e' fatta.

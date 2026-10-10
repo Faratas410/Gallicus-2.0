@@ -38,6 +38,14 @@ Archivio e raccordo narrativo finale. Pacchetti 1, 2 e 3 ora implementati
 localmente. Prove visuali/runtime solo IT;
 nessuna implementazione aggiunta da questa preparazione, nessun gate chiuso.
 
+10 ottobre 2026 (decisione di Marco: pass UI comune ai giochi): pacchetti
+4-7 del Manifesto implementati sul branch `claude/ui-pass` con PR verso main,
+su mandato esplicito. Fascicolo/HUD/Segni, menu/impostazioni/crediti,
+Archivio e prologo usano il kit; rimossa la scala hover 1.02 del menu;
+terminale/Assenza esclusi. Verifica solo headless verde; prossimo passo:
+revisione visiva locale 720p/1080p e merge da parte di Marco. Report:
+`docs/support/manifesto_atto_a_stampa_2026-10-10.md`.
+
 9 ottobre 2026: primo nucleo del kit Manifesto implementato e verificato
 localmente su main, HEAD di partenza `6f8088a`, working tree inizialmente pulito.
 Posta e route del fascicolo condividono lo stesso componente di presentazione;

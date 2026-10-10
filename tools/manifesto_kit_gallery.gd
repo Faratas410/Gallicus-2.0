@@ -24,6 +24,7 @@ var judgment_advance: Button
 var judgment_pips: Array[Panel] = []
 var judgment_preview_source: Node
 var judgment_state: OptionButton
+var controls_catalogue: VBoxContainer
 
 func _ready() -> void:
 	# The game loads these in MainMenu; the standalone catalogue has no menu.
@@ -59,6 +60,7 @@ func _ready() -> void:
 	section.add_item("REGISTRO / BANCO / FIRMA")
 	section.add_item("PATTO / GRADINATA")
 	section.add_item("GIUDIZIO / SIGILLO")
+	section.add_item("MENU / IMPOSTAZIONI / ARCHIVIO")
 	section.item_selected.connect(show_section)
 	header.add_child(section)
 	var root_column: VBoxContainer = column
@@ -118,6 +120,11 @@ func _ready() -> void:
 	root_column.add_child(judgment_catalogue)
 	_build_judgment_catalogue()
 	judgment_catalogue.hide()
+	controls_catalogue = VBoxContainer.new()
+	controls_catalogue.add_theme_constant_override("separation", Kit.SPACE * 2)
+	root_column.add_child(controls_catalogue)
+	_build_controls_catalogue()
+	controls_catalogue.hide()
 	root_column.add_child(status)
 	states[1].grab_focus()
 
@@ -130,6 +137,7 @@ func show_section(index: int) -> void:
 	registry_catalogue.visible = index == 1
 	crowd_catalogue.visible = index == 2
 	judgment_catalogue.visible = index == 3
+	controls_catalogue.visible = index == 4
 	if index == 1:
 		registry_buttons[1].grab_focus()
 	elif index == 2:
@@ -321,3 +329,52 @@ func _compact(value: String, material: StringName) -> Button:
 func _record_activation() -> void:
 	activations += 1
 	status.text = "Input ricevuti: %d" % activations
+
+func _build_controls_catalogue() -> void:
+	# Packages 5-6: the same components the menu, settings and Archive consume.
+	controls_catalogue.add_child(_label("05 / MENU - primaria, utilita', disattivata, scheda selezionata", &"title"))
+	var commands := _row(controls_catalogue)
+	var primary := _compact("RIPRENDI IL PERCORSO", &"ink")
+	Kit.apply_primary_button(primary)
+	commands.add_child(primary)
+	for index: int in range(3):
+		var utility := _compact(["ARCHIVIO", "IMPOSTAZIONI", "CREDITI"][index], &"paper")
+		Kit.apply_secondary_button(utility, true, index == 0)
+		utility.disabled = index == 2
+		commands.add_child(utility)
+	controls_catalogue.add_child(_label("06 / IMPOSTAZIONI - slider, selettore, interruttore", &"title"))
+	var settings := _row(controls_catalogue)
+	var slider := HSlider.new()
+	slider.custom_minimum_size = Vector2(320, 32)
+	slider.max_value = 1.0
+	slider.step = 0.05
+	slider.value = 0.6
+	Kit.apply_slider(slider)
+	settings.add_child(slider)
+	var option := OptionButton.new()
+	for item: String in ["1280x720", "1920x1080"]:
+		option.add_item(item)
+	Kit.apply_option_button(option)
+	settings.add_child(option)
+	for index: int in range(2):
+		var toggle := CheckBox.new()
+		toggle.text = ["SCHERMO INTERO", "RIDUCI MOVIMENTO"][index]
+		toggle.button_pressed = index == 0
+		Kit.apply_toggle(toggle)
+		settings.add_child(toggle)
+	controls_catalogue.add_child(_label("07 / ARCHIVIO - scheda letta, voce bloccata, nota", &"title"))
+	var archive := _row(controls_catalogue)
+	for index: int in range(3):
+		var sheet := PanelContainer.new()
+		sheet.custom_minimum_size = Vector2(300, 72)
+		var text := Label.new()
+		text.text = ["- Condanna disponibile", "- Condanna non ancora registrata", "Come e' stata ottenuta: nota di consultazione."][index]
+		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		sheet.add_child(text)
+		archive.add_child(sheet)
+		if index == 1:
+			Kit.apply_panel(sheet, &"ink")
+			Kit.apply_muted(text)
+		else:
+			Kit.apply_inset(sheet)
+			Kit.apply_body(text, Palette.INK)

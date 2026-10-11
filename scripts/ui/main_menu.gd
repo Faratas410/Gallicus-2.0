@@ -16,12 +16,12 @@ const ArenaThemes = preload("res://data/arena_themes.gd")
 const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
 const ArenaCharacters = preload("res://scripts/content/arena_characters.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
+const Kit = preload("res://scripts/ui/manifesto_kit.gd")
+const Palette = preload("res://scripts/ui/manifesto_palette.gd")
 const LanguagesScript = preload("res://assets/i18n/languages.gd")
 const ARENA_THRESHOLD_STYLE_CROSSED: StyleBox = preload("res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_crossed.tres")
 const ARENA_THRESHOLD_STYLE_DISABLED: StyleBox = preload("res://assets/ui/official/objects/arena_threshold/sb_arena_threshold_disabled.tres")
 const ARENA_THRESHOLD_CROSSED_META: StringName = &"arena_threshold_crossed"
-const SETTINGS_ROW_STYLE: StyleBox = preload("res://assets/ui/official/styleboxes/sb_settings_row.tres")
-const SETTINGS_FOCUS_STYLE: StyleBox = preload("res://assets/ui/official/styleboxes/sb_settings_field_hover.tres")
 
 @onready var menu_vbox: VBoxContainer = get_node("CenterContainer/MenuVBox") as VBoxContainer
 @onready var achievements_panel: Control = get_node("AchievementsPanel") as Control
@@ -80,7 +80,6 @@ const CONDANNA_LOCKED_ALPHA: float = 0.78
 const MENU_TITLE_PULSE_SPEED: float = 1.8
 const MENU_TITLE_PULSE_BASE: float = 0.95
 const MENU_TITLE_PULSE_AMPLITUDE: float = 0.05
-const MENU_BUTTON_HOVER_SCALE: float = 1.02
 const SETTINGS_RESOLUTIONS: Array[String] = [
 	"960x540",
 	"1280x720",
@@ -103,7 +102,6 @@ var _run_manager_port: RunManagerUiPort = null
 var _menu_next_step_hint: String = ""
 var _menu_idle_time: float = 0.0
 var _menu_buttons: Array[Button] = []
-var _menu_button_tweens: Dictionary = {}
 
 func _ready() -> void:
 	_ensure_i18n_loaded()
@@ -118,6 +116,7 @@ func _ready() -> void:
 	_refresh_localized_ui()
 	_build_condanne_list()
 	_cache_menu_buttons()
+	_apply_manifesto_skin()
 	_wire_menu_button_animations()
 	_wire_menu_button_sfx()
 	continue_button.pressed.connect(_on_continue_pressed)
@@ -344,7 +343,7 @@ func _build_museo_list() -> void:
 	_add_museo_item(tr("La gradinata ricorda l'esposizione. Le sue voci si sono fatte più dure.") if harsh_unlocked else tr("La gradinata accompagna i gesti. Le sue voci non sono il responso del Registro."))
 
 func _add_museo_header(text: String) -> void:
-	var entry_panel: PanelContainer = _create_museo_entry_panel(text)
+	var entry_panel: PanelContainer = _create_museo_entry_panel(text, true)
 	museo_vbox.add_child(entry_panel)
 
 func _add_character_entry(character: Dictionary) -> void:
@@ -371,7 +370,8 @@ func _add_character_entry(character: Dictionary) -> void:
 	biography.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	biography.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	biography.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	biography.add_theme_font_size_override("font_size", 18)
+	Kit.apply_body(biography)
+	biography.add_theme_font_size_override("font_size", Kit.CONTROL_SIZE)
 	biography.add_theme_constant_override("line_spacing", 5)
 	biography.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	entry.add_child(biography)
@@ -381,11 +381,18 @@ func _add_museo_item(text: String) -> void:
 	var entry_panel: PanelContainer = _create_museo_entry_panel(text)
 	museo_vbox.add_child(entry_panel)
 
-func _create_museo_entry_panel(text: String) -> PanelContainer:
+func _create_museo_entry_panel(text: String, header: bool = false) -> PanelContainer:
 	var entry_panel: PanelContainer = UIFactoryScript.create_sprite_label(text) as PanelContainer
 	entry_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var entry_label: Label = entry_panel.get_child(0) as Label
 	entry_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Read-only consultation sheet: paper and ink, no confirmation mark.
+	# Section headers stay on the ink page in the title role.
+	if header:
+		Kit.apply_title(entry_label)
+	else:
+		Kit.apply_inset(entry_panel)
+		Kit.apply_body(entry_label, Palette.INK)
 	return entry_panel
 
 func _get_pact_display_name(pact_id: StringName) -> String:
@@ -404,6 +411,9 @@ func _set_achievements_tab(tab_id: StringName) -> void:
 	museo_tab_button.toggle_mode = true
 	condanne_tab_button.set_pressed_no_signal(show_condanne)
 	museo_tab_button.set_pressed_no_signal(not show_condanne)
+	# A consulted tab is selected (rule), never registered (mark).
+	Kit.apply_secondary_button(condanne_tab_button, true, show_condanne)
+	Kit.apply_secondary_button(museo_tab_button, true, not show_condanne)
 	if not show_condanne:
 		condanna_tooltip.visible = false
 
@@ -423,6 +433,14 @@ func _apply_condanna_style(condanna_id: StringName, entry_label: Label) -> void:
 	var unlocked: bool = SaveManager.has_unlocked(condanna_id)
 	var alpha: float = CONDANNA_UNLOCKED_ALPHA if unlocked else CONDANNA_LOCKED_ALPHA
 	entry_label.modulate = Color(1.0, 1.0, 1.0, alpha)
+	# Locked entries also lose the paper (shape) and drop to the muted role.
+	var entry_panel := entry_label.get_parent() as Control
+	if unlocked:
+		Kit.apply_inset(entry_panel)
+		Kit.apply_body(entry_label, Palette.INK)
+	else:
+		Kit.apply_panel(entry_panel, &"ink")
+		Kit.apply_muted(entry_label)
 
 func _on_condanna_registered(condanna_id: StringName) -> void:
 	if condanna_entries.is_empty():
@@ -757,7 +775,7 @@ func _update_sfx_volume_label(value: float) -> void:
 func _on_sfx_focus_changed(active: bool) -> void:
 	if sfx_volume_label_panel == null:
 		return
-	sfx_volume_label_panel.add_theme_stylebox_override("panel", SETTINGS_FOCUS_STYLE if active else SETTINGS_ROW_STYLE)
+	sfx_volume_label_panel.add_theme_stylebox_override("panel", Kit.focus_rule() if active else StyleBoxEmpty.new())
 
 func _apply_master_volume(value: float) -> void:
 	var bus_index: int = AudioServer.get_bus_index("Master")
@@ -1026,20 +1044,9 @@ func _on_menu_button_hover(button: Button, active: bool) -> void:
 		return
 	if active and not button.disabled:
 		_play_sfx(&"button_hover")
-	button.pivot_offset = button.size * 0.5
-	var target_scale: Vector2 = Vector2(MENU_BUTTON_HOVER_SCALE, MENU_BUTTON_HOVER_SCALE) if active else Vector2.ONE
-	var tween_key: int = button.get_instance_id()
-	var existing_tween: Tween = _menu_button_tweens.get(tween_key, null) as Tween
-	if existing_tween != null and existing_tween.is_valid():
-		existing_tween.kill()
-	if SaveManager != null and SaveManager.get_reduced_motion():
-		button.scale = Vector2.ONE
-		return
-	var tween: Tween = create_tween()
-	tween.set_trans(Tween.TRANS_SINE)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(button, "scale", target_scale, 0.12)
-	_menu_button_tweens[tween_key] = tween
+	# UI canon: no scale or offset on hover/focus. The stylus accent belongs
+	# to the kit surface and already honours reduced motion.
+	button.scale = Vector2.ONE
 
 func _on_menu_button_pressed(button: Button) -> void:
 	if button == null or button.disabled:
@@ -1056,3 +1063,41 @@ func _play_sfx(cue: StringName) -> void:
 	if sfx_bus == null or not sfx_bus.has_method("play_cue"):
 		return
 	sfx_bus.call("play_cue", cue)
+
+func _apply_manifesto_skin() -> void:
+	# Atto a stampa, packages 5-6: menu, utilities, settings, credits, Archive.
+	# The arena threshold keeps its object skin; only native commands migrate.
+	Kit.apply_primary_button(continue_button)
+	for button: Button in [achievements_button, settings_button, credits_button, back_button, credits_back_button, settings_back_button]:
+		Kit.apply_secondary_button(button)
+	for panel_path: String in ["AchievementsPanel/UtilitySurface", "CreditsPanel/UtilitySurface", "SettingsPanel/UtilitySurface"]:
+		Kit.apply_panel(get_node(panel_path) as Control, &"ink")
+	for title_path: String in [
+		"AchievementsPanel/AchievementsCenter/AchievementsVBox/AchievementsTitlePanel/AchievementsTitle",
+		"CreditsPanel/CreditsCenter/CreditsVBox/CreditsTitlePanel/CreditsTitle",
+		"SettingsPanel/SettingsCenter/SettingsVBox/SettingsTitlePanel/SettingsTitle",
+	]:
+		var title := get_node(title_path) as Label
+		(title.get_parent() as Control).add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+		Kit.apply_title(title)
+	Kit.apply_body(get_node("CreditsPanel/CreditsCenter/CreditsVBox/CreditsBodyPanel/CreditsBody") as Label)
+	Kit.apply_muted(get_node("AchievementsPanel/AchievementsCenter/AchievementsVBox/ArchivioDisclaimerPanel/ArchivioDisclaimer") as Label)
+	Kit.apply_muted(continue_hint_label)
+	for label: Label in [brightness_label, language_label, volume_label, music_volume_label, sfx_volume_label, resolution_label]:
+		(label.get_parent() as Control).add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+		Kit.apply_body(label)
+	for label: Label in [brightness_value, language_value, master_volume_value, music_volume_value, sfx_volume_value, resolution_value]:
+		(label.get_parent() as Control).add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+		Kit.apply_muted(label)
+	for slider: HSlider in [brightness_slider, master_volume_slider, music_volume_slider, sfx_volume_slider]:
+		Kit.apply_slider(slider)
+	for option: OptionButton in [language_option, resolution_option]:
+		Kit.apply_option_button(option)
+	for toggle: CheckBox in [fullscreen_toggle, reduced_motion_toggle]:
+		Kit.apply_toggle(toggle)
+	for scroll_path: String in [
+		"AchievementsPanel/AchievementsCenter/AchievementsVBox/CondanneContainer/CondanneScroll",
+		"AchievementsPanel/AchievementsCenter/AchievementsVBox/MuseoContainer/MuseoScroll",
+	]:
+		Kit.apply_scroll(get_node(scroll_path) as ScrollContainer)
+	Kit.apply_tooltip(condanna_tooltip, tooltip_label)

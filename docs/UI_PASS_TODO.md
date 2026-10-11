@@ -1,6 +1,6 @@
 # UI pass - Gallicus
 
-Stato: da fare (to do). Scritto il 2026-10-09.
+Stato: implementato, verifica visiva aperta. Scritto il 2026-10-09; pacchetti 4-7 implementati il 2026-10-10 (branch `claude/ui-pass`, report `docs/support/manifesto_atto_a_stampa_2026-10-10.md`).
 
 ## Contesto
 
@@ -81,3 +81,10 @@ RunManager, GameEvents, payload e intent; skin degli oggetti (sigillo, soglia), 
 - Tutti i bottoni hanno i cinque stati; hover e focus mostrano l'accento; primario unico per schermata.
 - Nessun hex inline nelle UI toccate; token solo nello script tema.
 - Docs e decision log aggiornati; verifica del repo verde; catture prima/dopo dove il repo le richiede.
+
+## Ancora aperto
+
+- Verifica visiva a 720p e 1080p sul PC locale (catture kit/counter, campionario sezione 5, menu, Archivio, fascicolo, prologo). Verde solo headless: non validato.
+- Tipografia: Libre Baskerville vs RobotoSerif; i titoli del fascicolo restano col font di scena (il display variabile li' rompe lo shaping in 4.6.2).
+- Focus oro 2 px del tema legacy nei controlli non migrati; rinomina di `italiana_regular_font.tres` non fatta.
+- Terminale ambra escluso (Era 4 / Assenza); skin oggetto e colori di stato della pressione invariati.

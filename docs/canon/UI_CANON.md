@@ -765,3 +765,16 @@ Blocked choices retain their reason and add two bars in the mark margin;
 confirmed choices fill the three wider cuts only from existing registered
 metadata. Palette is shared with the dossier imprint. No new state or
 intent is introduced. Evidence: `docs/support/manifesto_material_2026-10-08.md`.
+
+### Atto a stampa - menu, utilities and reading surfaces (2026-10-10)
+
+Menu, settings, credits, Archive, dossier type, HUD counters, Scars detail
+and the prologue consume `scripts/ui/manifesto_kit.gd`. Hover and focus
+share one accent: an incised line traced along the lower edge (left to
+right, 0.12 s, instant with reduced motion) plus the empty three-cut mark
+on compact commands. No control scales or moves on hover/focus; the main
+menu's former 1.02 hover scale is removed. A consulted tab or entry is
+`selected` (rule), never `registered` (filled mark). Locked Archive entries
+lose the paper sheet and use the muted role, so state never relies on colour
+alone. Era 4 / Absence and object skins are unchanged.
+Evidence: `docs/support/manifesto_atto_a_stampa_2026-10-10.md`.

@@ -236,3 +236,13 @@ pannello, davanti alla pietra e prima del testo che parte da x=432. La base
 del busto sfuma nell'ultimo 10 percento; nessun pannello proprio del ritratto.
 Archivio e Registro conservano dimensioni e target del pass precedente.
 Le figure ignorano input; la finitura e' statica anche con movimento ridotto.
+
+## Atto a stampa - 10 ottobre 2026
+
+- Un solo primario per schermata (ripresa nel menu, avanzamento nel
+  prologo); utilita' e ritorni sono secondari compatti con target invariato.
+- Hover/focus: nessuna scala o spostamento; la linea dello stilo non cambia
+  la geometria. Premuto: tinta e contorno interno, margini costanti.
+- Schede di lettura con margine 16 px; voci bloccate distinte per forma
+  (inchiostro, ruolo muted) oltre che per colore.
+- Scrollbar del kit larghe almeno 10 px.

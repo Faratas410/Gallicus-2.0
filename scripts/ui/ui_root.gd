@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const ManifestoKit = preload("res://scripts/ui/manifesto_kit.gd")
+const Palette = preload("res://scripts/ui/manifesto_palette.gd")
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -540,6 +541,7 @@ func _ready() -> void:
 	_wire_push_luck_buttons()
 	_wire_ritual_advance_buttons()
 	_wire_intro_phase_buttons()
+	_apply_manifesto_print()
 
 	_refresh_runtime_group_cache(true)
 
@@ -704,7 +706,7 @@ func _bind_scene_nodes() -> void:
 	# End run
 	scar_popup_panel = get_node_or_null("HUD/ScarPopupPanel") as Control
 	if scar_popup_panel != null:
-		scar_popup_panel.add_theme_stylebox_override("panel", preload("res://assets/ui/official/styleboxes/sb_panel_main.tres"))
+		ManifestoKit.apply_panel(scar_popup_panel, &"ink")
 	scar_popup = get_node_or_null("HUD/ScarPopupPanel/ScarPopupMargin/ScarPopupTextPanel/ScarPopup") as RichTextLabel
 	scars_detail_panel = get_node_or_null("UI_RunRoot/ScarsDetailPanel") as Control
 	scars_detail_text = get_node_or_null("UI_RunRoot/ScarsDetailPanel/ScarsDetailVBox/ScarsDetailTextPanel/ScarsDetailText") as RichTextLabel
@@ -1646,9 +1648,9 @@ func _set_final_dossier_state(state: StringName) -> void:
 
 func _apply_final_dossier_palette() -> void:
 	var closed: bool = _final_dossier_state == FINAL_DOSSIER_STATE_CLOSED
-	var heading_color: Color = Color(0.98, 0.9, 0.7, 1.0) if closed else Color(0.19, 0.12, 0.08, 1.0)
-	var body_color: Color = Color(0.9, 0.82, 0.68, 1.0) if closed else Color(0.28, 0.2, 0.14, 1.0)
-	var detail_color: Color = Color(0.86, 0.77, 0.61, 1.0) if closed else Color(0.12, 0.08, 0.05, 1.0)
+	var heading_color: Color = Palette.IVORY if closed else Palette.INK
+	var body_color: Color = Palette.IVORY if closed else Palette.INK
+	var detail_color: Color = Palette.MUTED if closed else Palette.INK
 	for label: Label in [verdict_header, verdict_outcome, verdict_charge_label]:
 		if label != null:
 			label.add_theme_color_override("font_color", heading_color)
@@ -3462,7 +3464,7 @@ func _set_receipt_taken_state(taken: bool) -> void:
 	)
 	push_luck_cashout_button.add_theme_color_override(
 		"font_disabled_color",
-		Color(0.95, 0.91, 0.78, 1.0) if taken else Color(0.54, 0.52, 0.48, 1.0)
+		Palette.IVORY if taken else Palette.MUTED
 	)
 	push_luck_panel.call("refresh_buttons")
 
@@ -3477,7 +3479,7 @@ func _set_condemnation_mark_registered_state(registered: bool) -> void:
 	)
 	push_luck_condanna_button.add_theme_color_override(
 		"font_disabled_color",
-		Color(1.0, 0.82, 0.68, 1.0) if registered else Color(0.54, 0.52, 0.48, 1.0)
+		Palette.IVORY if registered else Palette.MUTED
 	)
 	push_luck_panel.call("refresh_buttons")
 
@@ -3495,7 +3497,7 @@ func _set_second_incision_sealed_state(sealed: bool) -> void:
 	)
 	push_luck_double_button.add_theme_color_override(
 		"font_disabled_color",
-		Color(1.0, 0.84, 0.66, 1.0) if sealed else Color(0.54, 0.52, 0.48, 1.0)
+		Palette.IVORY if sealed else Palette.MUTED
 	)
 	push_luck_panel.call("refresh_buttons")
 
@@ -4031,7 +4033,7 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 		var button: Button = buttons[index]
 		initial_states[index] = button.disabled
 		button.disabled = true
-		button.modulate = Color(0.92, 0.88, 0.78, 0.72)
+		button.modulate = Color(1.0, 1.0, 1.0, 0.72)
 	await get_tree().create_timer(MIN_MODAL_READ_TIME_SEC).timeout
 	for index: int in range(buttons.size()):
 		var button: Button = buttons[index]
@@ -4039,7 +4041,7 @@ func _apply_modal_read_delay(buttons: Array[Button]) -> void:
 		if _pyl_locked and _is_pyl_button(button):
 			should_disable = true
 		button.disabled = should_disable
-		button.modulate = Color(1.0, 0.98, 0.86, 1.0) if not should_disable else Color(0.86, 0.82, 0.74, 0.62)
+		button.modulate = Color.WHITE if not should_disable else Color(1.0, 1.0, 1.0, 0.62)
 		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if not should_disable else Control.CURSOR_ARROW
 		if _is_pyl_button(button):
 			_apply_push_luck_button_visual(button)
@@ -4055,39 +4057,39 @@ func _apply_push_luck_button_visual(button: Button) -> void:
 	if button == null:
 		return
 	var active: bool = button.visible and not button.disabled
-	button.modulate = Color.WHITE if active else Color(0.85, 0.85, 0.82, 0.85)
+	button.modulate = Color.WHITE if active else Color(1.0, 1.0, 1.0, 0.85)
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if active else Control.CURSOR_ARROW
 	if button == push_luck_cashout_button:
 		var taken: bool = bool(button.get_meta(RECEIPT_TAKEN_META, false))
-		button.add_theme_color_override("font_color", Color(0.16, 0.11, 0.06, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.08, 0.055, 0.03, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(0.08, 0.055, 0.03, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(0.95, 0.91, 0.78, 1.0))
+		button.add_theme_color_override("font_color", Palette.INK)
+		button.add_theme_color_override("font_hover_color", Palette.INK)
+		button.add_theme_color_override("font_focus_color", Palette.INK)
+		button.add_theme_color_override("font_pressed_color", Palette.IVORY)
 		button.add_theme_color_override(
 			"font_disabled_color",
-			Color(0.95, 0.91, 0.78, 1.0) if taken else Color(0.54, 0.52, 0.48, 1.0)
+			Palette.IVORY if taken else Palette.MUTED
 		)
 		return
 	if button == push_luck_condanna_button:
 		var registered: bool = bool(button.get_meta(CONDEMNATION_MARK_REGISTERED_META, false))
-		button.add_theme_color_override("font_color", Color(0.98, 0.9, 0.78, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.84, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(1.0, 0.95, 0.84, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.82, 0.68, 1.0))
+		button.add_theme_color_override("font_color", Palette.IVORY if active else Palette.MUTED)
+		button.add_theme_color_override("font_hover_color", Palette.IVORY)
+		button.add_theme_color_override("font_focus_color", Palette.IVORY)
+		button.add_theme_color_override("font_pressed_color", Palette.IVORY)
 		button.add_theme_color_override(
 			"font_disabled_color",
-			Color(1.0, 0.82, 0.68, 1.0) if registered else Color(0.54, 0.52, 0.48, 1.0)
+			Palette.IVORY if registered else Palette.MUTED
 		)
 		return
 	if button == push_luck_double_button:
 		var sealed: bool = bool(button.get_meta(SECOND_INCISION_SEALED_META, false))
-		button.add_theme_color_override("font_color", Color(0.94, 0.92, 0.84, 1.0) if active else Color(0.54, 0.52, 0.48, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(1.0, 0.98, 0.9, 1.0))
-		button.add_theme_color_override("font_focus_color", Color(1.0, 0.98, 0.9, 1.0))
-		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.84, 0.66, 1.0))
+		button.add_theme_color_override("font_color", Palette.IVORY if active else Palette.MUTED)
+		button.add_theme_color_override("font_hover_color", Palette.IVORY)
+		button.add_theme_color_override("font_focus_color", Palette.IVORY)
+		button.add_theme_color_override("font_pressed_color", Palette.IVORY)
 		button.add_theme_color_override(
 			"font_disabled_color",
-			Color(1.0, 0.84, 0.66, 1.0) if sealed else Color(0.54, 0.52, 0.48, 1.0)
+			Palette.IVORY if sealed else Palette.MUTED
 		)
 
 func _fade_modal(panel: CanvasItem, modal: Control, active: bool, tween: Tween, kind: String = MOTION_KIND_STANDARD) -> Tween:
@@ -4825,3 +4827,62 @@ func _input(event: InputEvent) -> void:
 		if scars_detail_close.has_focus():
 			_on_scars_detail_closed()
 		get_viewport().set_input_as_handled()
+
+func _apply_manifesto_print() -> void:
+	# Atto a stampa, package 4: dossier type, HUD counters and Scars detail.
+	# Object skins (seal, threshold, dossier paper) and node paths stay put.
+	for path: String in ["HUD/CrowdFavorPanel", "HUD/BandoPanel"]:
+		var counter := get_node_or_null(path) as Control
+		if counter == null:
+			continue
+		var stem: String = path.get_file().trim_suffix("Panel")
+		var vbox: Node = counter.get_node("%sVBox" % stem)
+		ManifestoKit.apply_title(vbox.get_node("%sTitle" % stem) as Label)
+		vbox.get_node("%sTitle" % stem).add_theme_font_size_override("font_size", ManifestoKit.ACTION_COMPACT)
+		ManifestoKit.apply_meter(vbox.get_node("%sBar" % stem) as ProgressBar)
+		ManifestoKit.apply_body(vbox.get_node("%sBody" % stem) as Label)
+		vbox.get_node("%sBody" % stem).add_theme_font_size_override("font_size", ManifestoKit.SERVICE_SIZE)
+		ManifestoKit.apply_muted(vbox.get_node("%sNote" % stem) as Label)
+	for label: Label in [escalation_label, pressure_state_label]:
+		if label != null:
+			ManifestoKit.apply_body(label)
+			label.add_theme_font_size_override("font_size", 16)
+	if scars_label != null:
+		ManifestoKit.apply_body(scars_label)
+	var scars_scroll := get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll") as ScrollContainer
+	if scars_scroll != null:
+		ManifestoKit.apply_scroll(scars_scroll)
+	if scar_popup != null:
+		ManifestoKit.apply_rich_text(scar_popup, Palette.IVORY)
+	if scars_detail_panel != null:
+		ManifestoKit.apply_panel(scars_detail_panel, &"ink")
+		var title := scars_detail_panel.get_node_or_null("ScarsDetailVBox/ScarsDetailTitlePanel/ScarsDetailTitle") as Label
+		if title != null:
+			ManifestoKit.apply_title(title)
+		var sheet := scars_detail_panel.get_node_or_null("ScarsDetailVBox/ScarsDetailTextPanel") as Control
+		if sheet != null:
+			ManifestoKit.apply_inset(sheet)
+		if scars_detail_text != null:
+			ManifestoKit.apply_rich_text(scars_detail_text, Palette.INK)
+			ManifestoKit.apply_scrollbar(scars_detail_text.get_v_scroll_bar())
+		if scars_detail_close != null:
+			ManifestoKit.apply_secondary_button(scars_detail_close)
+	# Dossier body: same reading type as the Registry; pigments by state.
+	# Headings keep their scene face: overriding it with the variable display
+	# face here makes Godot 4.6.2 fail shaping (fd null) on the posta commands.
+	for label: Label in [verdict_header, verdict_outcome, verdict_charge_label]:
+		if label != null:
+			label.add_theme_constant_override("outline_size", 0)
+	if verdict_sentence_label != null:
+		verdict_sentence_label.add_theme_font_override("font", ManifestoKit.BODY_FONT)
+		verdict_sentence_label.add_theme_constant_override("outline_size", 0)
+	for rich_label: RichTextLabel in [verdict_pacts_text, verdict_condanne_text, ending_text]:
+		if rich_label != null:
+			for font_role: String in ["normal_font", "bold_font", "italics_font", "bold_italics_font"]:
+				rich_label.add_theme_font_override(font_role, ManifestoKit.BODY_FONT)
+			rich_label.add_theme_constant_override("outline_size", 0)
+			ManifestoKit.apply_scrollbar(rich_label.get_v_scroll_bar())
+	if verdict_crowd_text != null:
+		verdict_crowd_text.add_theme_font_override("font", ManifestoKit.BODY_FONT)
+		verdict_crowd_text.add_theme_constant_override("outline_size", 0)
+	_apply_final_dossier_palette()

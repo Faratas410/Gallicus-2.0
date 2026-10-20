@@ -141,7 +141,7 @@ func _ready() -> void:
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 	reduced_motion_toggle.toggled.connect(_on_reduced_motion_toggled)
 	_configure_focus_order()
-		# Godot 4.6: TranslationServer no longer exposes a translation-changed signal.
+		# TranslationServer has no translation-changed signal to connect here.
 	# UI refresh on locale updates is handled in _notification(NOTIFICATION_TRANSLATION_CHANGED).
 	if GameEvents.has_signal("condanna_registered"):
 		var condanna_callable: Callable = Callable(self, "_on_condanna_registered")

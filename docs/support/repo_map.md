@@ -15,7 +15,7 @@
 - `docs/canon/CANON_DEPENDENCY_MATRIX.md`
 
 ## Runtime invariants snapshot
-- Engine: **Godot 4.6**
+- Engine: **Godot 4.7.2**
 - Entry scene: `res://scenes/Main.tscn`
 - Single flow authority: `res://scripts/systems/run_manager.gd` (group `run_manager`)
 - Global event authority: `res://scripts/systems/game_events.gd` (`GameEvents` autoload)

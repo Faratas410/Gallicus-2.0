@@ -85,7 +85,7 @@ RunManager, GameEvents, payload e intent; skin degli oggetti (sigillo, soglia), 
 ## Ancora aperto
 
 - Verifica visiva a 720p e 1080p sul PC locale (catture kit/counter, campionario sezione 5, menu, Archivio, fascicolo, prologo). Verde solo headless: non validato.
-- Tipografia: Libre Baskerville vs RobotoSerif; i titoli del fascicolo restano col font di scena (il display variabile li' rompe lo shaping in 4.6.2).
+- Tipografia: Libre Baskerville vs RobotoSerif; dal 20 ottobre (Godot 4.7.2) il titolo del fascicolo usa il display del kit, l'esito resta col font di scena (sovrascriverlo rompe ancora lo shaping, `fd null`).
 - Focus oro 2 px del tema legacy nei controlli non migrati; rinomina di `italiana_regular_font.tres` non fatta.
 - Terminale ambra escluso (Era 4 / Assenza); skin oggetto e colori di stato della pressione invariati.
 
@@ -110,6 +110,8 @@ e 1080p). Corretti:
   voci della folla; `Finché`, `è`, `più` dove mancavano; ES `quería`; nota di
   debito del banco ES accorciata (usciva dal pannello).
 
-Restano aperti: il titolo del fascicolo usa ancora il font di scena (il font
-display variabile rompe lo shaping in 4.6.2, riprovato); crediti e terminale
-dell'Assenza fuori perimetro; la frase dei crediti cita il playtest.
+Con il passaggio a Godot 4.7.2 il titolo del fascicolo usa il display del
+kit; la riga d'esito resta col font di scena perché sovrascriverla rompe
+ancora lo shaping (`fd null`) sui comandi della posta. Restano aperti: crediti
+e terminale dell'Assenza fuori perimetro; la frase dei crediti cita il
+playtest.

@@ -130,7 +130,7 @@ GameEvents e formato scene. Il contratto CI fallisce se un test presente su
 disco non compare esattamente una volta nel playbook.
 
 ```powershell
-python scripts/ci/run_testing_playbook.py --godot-bin ".\tools\godot\Godot_v4.6.2-stable_win64_console.exe" --scenario FULL_RUN
+python scripts/ci/run_testing_playbook.py --godot-bin ".\tools\godot\Godot_v4.7.2-stable_win64_console.exe" --scenario FULL_RUN
 ```
 
 Scrive log e summary in `artifacts/testing_playbook/`. Windows e' diagnostico;
@@ -173,7 +173,7 @@ Exit code 1 senza output significa nessun match.
 Per runtime, scene, asset o tooling smoke:
 
 ```powershell
-python scripts/ci/run_godot_import.py --godot-bin ".\tools\godot\Godot_v4.6.2-stable_win64_console.exe"
+python scripts/ci/run_godot_import.py --godot-bin ".\tools\godot\Godot_v4.7.2-stable_win64_console.exe"
 ```
 
 Warning non fatali vanno classificati; parser error, missing resource e
@@ -195,7 +195,7 @@ Scenari:
 Esempio:
 
 ```powershell
-python scripts/ci/run_headless_smoke.py --scenario ROUTE_CASHOUT --godot-bin ".\tools\godot\Godot_v4.6.2-stable_win64_console.exe"
+python scripts/ci/run_headless_smoke.py --scenario ROUTE_CASHOUT --godot-bin ".\tools\godot\Godot_v4.7.2-stable_win64_console.exe"
 ```
 
 `FULL_RUN` deve includere:
@@ -258,37 +258,37 @@ proteggono scroll, focus, avanzamento, skip e separazione dalla run.
 Richiesta per cambi UI, copy visibile, asset o motion.
 
 ```powershell
-.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn
+.\tools\godot\Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn
 ```
 
 Per OF-07 non checkpoint, la matrice locale mirata usa:
 
 ```powershell
-.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=pact_tablet
+.\tools\godot\Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=pact_tablet
 ```
 
 Per OF-08 non checkpoint, la matrice locale mirata usa:
 
 ```powershell
-.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=gesture_choice
+.\tools\godot\Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=gesture_choice
 ```
 
 Per OF-09 checkpoint, la matrice locale mirata usa:
 
 ```powershell
-.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=judgment_seal
+.\tools\godot\Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=judgment_seal
 ```
 
 Per OF-10/OF-11, la matrice locale mirata del fascicolo usa:
 
 ```powershell
-.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=final_dossier
+.\tools\godot\Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=final_dossier
 ```
 
 Per CP-02, la matrice mirata delle impostazioni usa:
 
 ```powershell
-.\tools\godot\Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=accessibility_settings
+.\tools\godot\Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/visual_qa_capture.tscn -- --section=accessibility_settings
 ```
 
 La prova viene dalla viewport/finestra Godot, non dal desktop intero.
@@ -418,7 +418,7 @@ Il gate CP-02 usa il preset `Core Playable Candidate - Windows x86_64` e
 produce `artifacts/exports/cp02/Gallicus_Core_Playable_Candidate.exe`. Dopo il
 commit manuale:
 
-- export release con template Windows Godot 4.6.2;
+- export release con template Windows Godot 4.7.2;
 - avvio con `APPDATA` temporaneo;
 - `KEYBOARD_FULL_RUN` sull'EXE;
 - registrazione SHA-256, dimensione, log e commit sorgente;
@@ -544,9 +544,9 @@ Usare APPDATA isolata prima del lancio, con risoluzione del path bloccante:
 $ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Force artifacts/screen_audit_2026-09-08/profile | Out-Null
 $env:APPDATA = (Resolve-Path artifacts/screen_audit_2026-09-08/profile).Path
-./tools/godot/Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/audit_screen_capture.tscn --audio-driver Dummy --max-fps 60
+./tools/godot/Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/audit_screen_capture.tscn --audio-driver Dummy --max-fps 60
 # Usare un altro profilo vuoto per la prova lineare:
-./tools/godot/Godot_v4.6.2-stable_win64_console.exe --path . --scene res://tools/audit_screen_capture.tscn --audio-driver Dummy --max-fps 60 -- --linear
+./tools/godot/Godot_v4.7.2-stable_win64_console.exe --path . --scene res://tools/audit_screen_capture.tscn --audio-driver Dummy --max-fps 60 -- --linear
 ```
 
 Queste prove sono locali. Il collegamento musica-flow deve essere verificato

@@ -5,7 +5,7 @@ These rules apply to all coding agents working in this repository.
 ## Project Operating Contract
 
 - Official project: Gallicus 2.0.
-- Stack: Godot 4.6.2, GDScript, Python CI helpers.
+- Stack: Godot 4.7.2, GDScript, Python CI helpers.
 - Active game target: Gallicus 1.0, a finite ritual campaign ending in the Absence of Register.
 - Release surface: Windows x64 in Italian, English, and Spanish; Linux is the canonical CI surface.
 - Distribution target: Steam publication; follow `docs/steam_release.md` without treating local export or product signoff as publication.

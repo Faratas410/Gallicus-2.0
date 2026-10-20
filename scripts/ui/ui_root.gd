@@ -4868,11 +4868,15 @@ func _apply_manifesto_print() -> void:
 		if scars_detail_close != null:
 			ManifestoKit.apply_secondary_button(scars_detail_close)
 	# Dossier body: same reading type as the Registry; pigments by state.
-	# Headings keep their scene face: overriding it with the variable display
-	# face here makes Godot 4.6.2 fail shaping (fd null) on the posta commands.
 	for label: Label in [verdict_header, verdict_outcome, verdict_charge_label]:
 		if label != null:
 			label.add_theme_constant_override("outline_size", 0)
+	# The title takes the kit display face like every Manifesto surface
+	# (size before face). The outcome keeps its scene face: overriding it
+	# still makes Godot 4.7.2 fail shaping (fd null) on the posta commands.
+	if verdict_header != null:
+		verdict_header.add_theme_font_size_override("font_size", ManifestoKit.TITLE_LARGE)
+		verdict_header.add_theme_font_override("font", ManifestoKit.DISPLAY_FONT)
 	if verdict_sentence_label != null:
 		verdict_sentence_label.add_theme_font_override("font", ManifestoKit.BODY_FONT)
 		verdict_sentence_label.add_theme_constant_override("outline_size", 0)

@@ -10,6 +10,12 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+Motore del 20 ottobre 2026: il progetto passa a Godot 4.7.2 su richiesta di
+Marco (`project.godot`, workflow CI, comandi di `docs/testing.md`, script
+`.cmd` locali). Gli eseguibili e i template 4.6 non si usano più; i report in
+`docs/support/` datati prima di questa data restano evidenze dei comandi 4.6.2
+con cui furono prodotti. Export Windows: servono i template 4.7.2.
+
 Pacchetto 3 Manifesto del 9 ottobre 2026: giudizio a due colonne, verbale
 compatto e sigillo nativo stabile. Cera e tre incavi restano sul proprio
 oggetto; il kit serve tipografia, supporti e comando ausiliario. Invio sui

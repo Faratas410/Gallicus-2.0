@@ -449,7 +449,7 @@ Ma non burocraticamente lento.
 
 1. INVARIANTI TECNICI (NON NEGOZIABILI)
 
-Engine: Godot 4.6
+Engine: Godot 4.7.2
 
 Linguaggio: strict typed GDScript
 

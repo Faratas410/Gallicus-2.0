@@ -28,10 +28,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GODOT_VERSION: "4.6.2-stable"
-  GODOT_BIN_NAME: "Godot_v4.6.2-stable_linux.x86_64"
-  GODOT_ZIP_NAME: "Godot_v4.6.2-stable_linux.x86_64.zip"
-  GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip"
+  GODOT_VERSION: "4.7.2-stable"
+  GODOT_BIN_NAME: "Godot_v4.7.2-stable_linux.x86_64"
+  GODOT_ZIP_NAME: "Godot_v4.7.2-stable_linux.x86_64.zip"
+  GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip"
 
 jobs:
   static_contracts:
@@ -68,7 +68,7 @@ jobs:
         with:
           lfs: true
 
-      - name: Cache Godot 4.6.2 headless binary
+      - name: Cache Godot 4.7.2 headless binary
         uses: actions/cache@v4
         with:
           path: tools/godot
@@ -153,7 +153,7 @@ jobs:
         with:
           lfs: true
 
-      - name: Cache Godot 4.6.2 headless binary
+      - name: Cache Godot 4.7.2 headless binary
         uses: actions/cache@v4
         with:
           path: tools/godot

@@ -941,6 +941,6 @@ func _strip_effect_prefix(line: String) -> String:
 	return line
 
 func _escape_bbcode(value: String) -> String:
-	# Godot 4.6 does not expose String.escape_bbcode(); escaping the opening
+	# No String.escape_bbcode() helper is relied on; escaping the opening
 	# bracket is the supported way to prevent user/content text from becoming tags.
 	return value.replace("[", "[lb]")

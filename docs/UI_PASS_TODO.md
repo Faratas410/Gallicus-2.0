@@ -88,3 +88,28 @@ RunManager, GameEvents, payload e intent; skin degli oggetti (sigillo, soglia), 
 - Tipografia: Libre Baskerville vs RobotoSerif; i titoli del fascicolo restano col font di scena (il display variabile li' rompe lo shaping in 4.6.2).
 - Focus oro 2 px del tema legacy nei controlli non migrati; rinomina di `italiana_regular_font.tres` non fatta.
 - Terminale ambra escluso (Era 4 / Assenza); skin oggetto e colori di stato della pressione invariati.
+
+## Passata di coerenza (20 ottobre 2026)
+
+Controllo delle schermate contro `docs/direction.md` (catture IT/EN/ES a 720p
+e 1080p). Corretti:
+
+- Archivio: le linguette CONDANNE/MUSEO collassavano in strisce alte senza
+  testo (bottoni compatti a capo dentro un HBox senza larghezza); ora una riga,
+  220 px. Il contenuto torna dentro il pannello e TORNA AL MENU non esce dallo
+  schermo a 720p. La scheda carta copre anche il margine interno: il testo non
+  tocca più le righe sottili (`manifesto_document_surface.gd`).
+- Impostazioni: via i prefissi `[X]`/`[ ]` accanto al quadrato inciso; titolo
+  IMPOSTAZIONI al posto di OPZIONI (parola esclusa), VOLUME GENERALE.
+- Spingi la sorte: `Corruzione 0` invece di `CORRUZIONE: 0`; la quietanza
+  chiude con una frase (`Il Registro si chiude.`); il marchio dice `la posta di
+  4 Gloria` senza `+`; nessuna barra verticale nelle righe di stato e di patto.
+- Gradinata: la nota va a capo invece di finire con i puntini; nel verdetto la
+  colonna destra lascia 150 px alla Gradinata.
+- Lessico e accenti: `run` e `corsa` diventano percorso nelle condanne e nelle
+  voci della folla; `Finché`, `è`, `più` dove mancavano; ES `quería`; nota di
+  debito del banco ES accorciata (usciva dal pannello).
+
+Restano aperti: il titolo del fascicolo usa ancora il font di scena (il font
+display variabile rompe lo shaping in 4.6.2, riprovato); crediti e terminale
+dell'Assenza fuori perimetro; la frase dei crediti cita il playtest.

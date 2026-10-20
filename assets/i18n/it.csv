@@ -4,7 +4,7 @@ Nessuna partita salvata.,Nessuna partita salvata.
 ENTRA NELL'ARENA,ENTRA NELL'ARENA
 CARICA PARTITA,CARICA PARTITA
 ARCHIVIO,ARCHIVIO
-OPZIONI,OPZIONI
+OPZIONI,IMPOSTAZIONI
 CREDITI,CREDITI
 ARCHIVIO DELLE CONDANNE,ARCHIVIO DELLE CONDANNE
 Registro consultivo. Nessuna ricompensa.,Registro consultivo. Nessuna ricompensa.
@@ -23,7 +23,7 @@ LUMINOSITÀ,LUMINOSITÀ
 Luminosità: %.2f,Luminosità: %.2f
 LINGUA,LINGUA
 Lingua selezionata: %s,Lingua selezionata: %s
-VOLUME MASTER,VOLUME MASTER
+VOLUME MASTER,VOLUME GENERALE
 VOLUME MUSICA,VOLUME MUSICA
 VOLUME EFFETTI,VOLUME EFFETTI
 SCHERMO INTERO,SCHERMO INTERO
@@ -66,7 +66,7 @@ Pressione +1. Continua alla prossima arena con posta aumentata.,Pressione +1. Co
 La folla osserva.,La folla osserva.
 La folla pretende un altro rilancio.,La folla pretende un altro rilancio.
 La folla resta in ascolto.,La folla resta in ascolto.
-Stato del percorso: Gloria %d | Corruzione %d | %s,Stato del percorso: Gloria %d | Corruzione %d | %s
+Stato del percorso: Gloria %d | Corruzione %d | %s,Gloria del percorso %d · Corruzione %d. %s
 Incasso sotto richiesta della folla: x%.2f,Incasso sotto richiesta della folla: x%.2f
 CICATRICE APPLICATA,CICATRICE APPLICATA
 Il patto viene giudicato...,Il patto viene giudicato...
@@ -166,7 +166,7 @@ La folla osserva la tua scelta.,La folla osserva la tua scelta.
 Arena speciale,Arena speciale
 Firma una via. Il Registro annota il prezzo.,Firma una via. Il Registro annota il prezzo.
 Clausola non esposta.,Clausola non esposta.
-Firma focus: %s | Clausola: %s,Firma focus: %s | Clausola: %s
+Firma focus: %s | Clausola: %s,Patto in esame: %s. Clausola: %s
 Cicatrice,Cicatrice
   Effetto: %s,  Effetto: %s
   Origine: %s,  Origine: %s
@@ -203,12 +203,12 @@ Stato: richiesta rilancio non disponibile.,Stato: richiesta rilancio non disponi
 Stato: richiesta non accettata. Scegli di nuovo.,Stato: richiesta non accettata. Scegli di nuovo.
 POSTA VIVA: +%d Gloria,POSTA VIVA: +%d Gloria
 GLORIA: %d,GLORIA: %d
-CORRUZIONE: %d,CORRUZIONE: %d
+CORRUZIONE: %d,Corruzione %d
 Ottieni +%d Gloria,Ottieni +%d Gloria
 Corruzione -%d,Corruzione -%d
-chiudi il registro,chiudi il registro
+chiudi il registro,Il Registro si chiude.
 Prossima posta: +%d Gloria. Pressione +%d.,Prossima posta: +%d Gloria. Pressione +%d.
-Perdi la posta di +%d Gloria. Il percorso si chiude.,Perdi la posta di +%d Gloria. Il percorso si chiude.
+Perdi la posta di +%d Gloria. Il percorso si chiude.,Perdi la posta di %d Gloria. Il percorso si chiude.
 FIRMA,FIRMA
 MOSTRA IL PATTO,MOSTRA IL PATTO
 APRI IL REGISTRO,APRI IL REGISTRO
@@ -371,7 +371,7 @@ Analisi completata. Non sono richiesti ulteriori dati.,Analisi completata. Non s
 +%d altre,+%d altre
 Non mi fermerò.,Non mi fermerò.
 Ancora.,Ancora.
-Finche regge.,Finche regge.
+Finche regge.,Finché regge.
 Non dovevo provarci.,Non dovevo provarci.
 Firmato.,Firmato.
 Sapevo cosa stavo facendo.,Sapevo cosa stavo facendo.
@@ -384,7 +384,7 @@ Mi sono fermato.,Mi sono fermato.
 È finita così.,È finita così.
 Non abbastanza.,Non abbastanza.
 Troppo tardi.,Troppo tardi.
-Non e colpa loro.,Non e colpa loro.
+Non e colpa loro.,Non è colpa loro.
 Ricordato.,Ricordato.
 Visto dal pubblico.,Visto dal pubblico.
 Il tuo nome.,Il tuo nome.
@@ -405,7 +405,7 @@ Continui. Ora ti vogliono sanguinare.,Continui. Ora ti vogliono sanguinare.
 Così finisci. La folla non ti piange.,Così finisci. La folla non ti piange.
 È finita. Il pubblico prende il tuo nome.,È finita. Il pubblico prende il tuo nome.
 È finita. Solo occhi fermi.,È finita. Solo occhi fermi.
-Fine della corsa. Il silenzio resta.,Fine della corsa. Il silenzio resta.
+Fine della corsa. Il silenzio resta.,Fine del percorso. Il silenzio resta.
 Fine violenta. La folla ha ciò che voleva.,Fine violenta. La folla ha ciò che voleva.
 Firma asciutta. Ti contano come errore.,Firma asciutta. Ti contano come errore.
 Firma e alza il rischio. Ti chiedono il salto.,Firma e alza il rischio. Ti chiedono il salto.
@@ -426,7 +426,7 @@ Hai scelto di restare. Non chiamarla coraggio.,Hai scelto di restare. Non chiama
 Hai scelto l'uscita. La folla ti mette il conto.,Hai scelto l'uscita. La folla ti mette il conto.
 Hai segnato il destino. Ti vogliono a terra.,Hai segnato il destino. Ti vogliono a terra.
 Hai spento il delirio. Ora ti chiedono sangue.,Hai spento il delirio. Ora ti chiedono sangue.
-Hai spento la corsa. La folla voleva il salto.,Hai spento la corsa. La folla voleva il salto.
+Hai spento la corsa. La folla voleva il salto.,Hai chiuso il percorso. La folla voleva il salto.
 Il brusio non concede riparo.,Il brusio non concede riparo.
 Il delirio ti brucia addosso.,Il delirio ti brucia addosso.
 Il patto accende la folla. Spingi ora.,Il patto accende la folla. Spingi ora.
@@ -638,7 +638,7 @@ Hai rifiutato l'incasso quando potevi fermarti.,Hai rifiutato l'incasso quando p
 "Il pubblico aveva gia contato le monete.
 Tu hai chiuso il pugno.","Il pubblico aveva già contato le monete.
 Tu hai chiuso il pugno."
-Hai rifiutato l'incasso piu di una volta nella stessa run.,Hai rifiutato l'incasso più di una volta nella stessa run.
+Hai rifiutato l'incasso piu di una volta nella stessa run.,Hai rifiutato l'incasso più di una volta nello stesso percorso.
 "La folla ha smesso di gridare.
 Ha iniziato a guardare.","La folla ha smesso di gridare.
 Ha iniziato a guardare."
@@ -664,7 +664,7 @@ Hai perso il percorso a causa diretta di un patto firmato.,Hai perso il percorso
 "Il costo era nel patto.
 Ora è nel fascicolo.","Il costo era nel patto.
 Ora è nel fascicolo."
-Hai continuato una run nonostante le tue condizioni critiche.,Hai continuato una run nonostante le tue condizioni critiche.
+Hai continuato una run nonostante le tue condizioni critiche.,Hai continuato un percorso nonostante le tue condizioni critiche.
 Il corpo era gia un avviso.,Il corpo era già un avviso.
 Hai evitato la chiusura per un soffio.,Hai evitato la chiusura per un soffio.
 "Il pubblico ha sospirato.
@@ -676,7 +676,7 @@ Le firme restano dove sono.","La quietanza porta la cifra incassata.
 Le firme restano dove sono."
 Hai incassato con un livello di rischio estremamente alto.,Hai incassato con un livello di rischio estremamente alto.
 Questa volta.,Questa volta.
-Hai perso la tua prima run.,Hai perso la tua prima run.
+Hai perso la tua prima run.,Hai perso il tuo primo percorso.
 L'arena non fa sconti ai nuovi.,L'arena non fa sconti ai nuovi.
 Hai perso il percorso vicino a una soglia decisiva.,Hai perso il percorso vicino a una soglia decisiva.
 "Il percorso si è chiuso.
@@ -688,7 +688,7 @@ Dopo, il verbale si chiude.","L’ultimo rischio è iscritto.
 Dopo, il verbale si chiude."
 Hai perso il percorso senza errori meccanici evidenti.,Hai perso il percorso senza errori meccanici evidenti.
 Nessuno ha barato.,Nessuno ha barato.
-Hai completato una run.,Hai completato una run.
+Hai completato una run.,Hai completato un percorso.
 Il percorso ha una copia nel Registro.,Il percorso ha una copia nel Registro.
 Hai attirato l'attenzione totale della folla.,Hai attirato l'attenzione totale della folla.
 Non eri piu solo.,Non eri più solo.
@@ -1038,9 +1038,9 @@ Protezione compromessa.,Protezione compromessa.
 Pressione più severa.,Pressione più severa.
 Il perfetto è più raro.,Il perfetto è più raro.
 Tenuta rituale ridotta e recupero meno efficace.,Tenuta rituale ridotta e recupero meno efficace.
-Avanzamento piu lento e margine di errore ridotto.,Avanzamento piu lento e margine di errore ridotto.
+Avanzamento piu lento e margine di errore ridotto.,Avanzamento più lento e margine di errore ridotto.
 Aumenta la probabilita di condanna.,Aumenta la probabilita di condanna.
-Le conseguenze avverse sono piu probabili.,Le conseguenze avverse sono piu probabili.
+Le conseguenze avverse sono piu probabili.,Le conseguenze avverse sono più probabili.
 La pressione pesa di più.,La pressione pesa di più.
 Peggiora le chance di esiti puliti.,Peggiora le chance di esiti puliti.
 FOLLA IN DELIRIO,FOLLA IN DELIRIO

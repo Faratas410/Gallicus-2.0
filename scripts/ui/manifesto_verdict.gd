@@ -140,8 +140,8 @@ func _layout() -> void:
 	_place(choices, Rect2(rail_width + 48, size.y - 244, size.x - rail_width - 80, 158))
 	if active:
 		_place(ui.get_node("HUD/BandoPanel"), Rect2(size.x - 286, 24, 254, 162))
-		_place(ui.get_node("HUD/CrowdFavorPanel"), Rect2(size.x - 286, 196, 254, 122))
-		_place(ui.get_node("HUD/ScarsPanel"), Rect2(size.x - 286, 334, 254, 112))
+		_place(ui.get_node("HUD/CrowdFavorPanel"), Rect2(size.x - 286, 196, 254, 150))
+		_place(ui.get_node("HUD/ScarsPanel"), Rect2(size.x - 286, 356, 254, 108))
 		_place(ui.get_node("HUD/PressureRail"), Rect2(32, size.y - 64, size.x - 64, 60))
 	# Audience already has its complete reactive section in the right column.
 	get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_HINTPanel").hide()
@@ -153,7 +153,7 @@ func _draw() -> void:
 		return
 	Print.slab(self, Rect2(20, -6, 188, size.y - 66), INK, 2)
 	Print.slab(self, Rect2(28, -6, 172, size.y - 78), RED, 6)
-	Print.slab(self, Rect2(size.x - 302, -6, 306, 470), INK, 9)
+	Print.slab(self, Rect2(size.x - 302, -6, 306, 478), INK, 9)
 	var feedback: Label = ui.get("push_luck_audience_reason")
 	if feedback != null and not feedback.text.is_empty():
 		Print.slab(self, Rect2(232, size.y - 290, size.x - 524, 46), INK, 5)

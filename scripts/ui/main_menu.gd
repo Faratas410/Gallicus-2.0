@@ -75,6 +75,7 @@ const ARENA_THRESHOLD_CROSSED_META: StringName = &"arena_threshold_crossed"
 
 const ACHIEVEMENTS_TAB_CONDANNE: StringName = &"CONDANNE"
 const ACHIEVEMENTS_TAB_MUSEO: StringName = &"MUSEO"
+const ARCHIVE_TAB_WIDTH: float = 220.0
 const CONDANNA_UNLOCKED_ALPHA: float = 1.0
 const CONDANNA_LOCKED_ALPHA: float = 0.78
 const MENU_TITLE_PULSE_SPEED: float = 1.8
@@ -414,6 +415,11 @@ func _set_achievements_tab(tab_id: StringName) -> void:
 	# A consulted tab is selected (rule), never registered (mark).
 	Kit.apply_secondary_button(condanne_tab_button, true, show_condanne)
 	Kit.apply_secondary_button(museo_tab_button, true, not show_condanne)
+	# Compact actions wrap by word; tabs in an HBox need a width or they
+	# collapse to a tall empty strip. One line, same size for both.
+	for tab: Button in [condanne_tab_button, museo_tab_button]:
+		tab.autowrap_mode = TextServer.AUTOWRAP_OFF
+		tab.custom_minimum_size = Vector2(ARCHIVE_TAB_WIDTH, 0)
 	if not show_condanne:
 		condanna_tooltip.visible = false
 
@@ -918,9 +924,10 @@ func _on_reduced_motion_toggled(toggled: bool) -> void:
 
 func _update_toggle_labels() -> void:
 	if fullscreen_toggle != null:
-		fullscreen_toggle.text = "%s %s" % ["[X]" if fullscreen_toggle.button_pressed else "[ ]", tr("SCHERMO INTERO")]
+		# The incised box already shows the state; no bracket prefix in the label.
+		fullscreen_toggle.text = tr("SCHERMO INTERO")
 	if reduced_motion_toggle != null:
-		reduced_motion_toggle.text = "%s %s" % ["[X]" if reduced_motion_toggle.button_pressed else "[ ]", tr("MOVIMENTO RIDOTTO")]
+		reduced_motion_toggle.text = tr("MOVIMENTO RIDOTTO")
 
 func _on_settings_opened() -> void:
 	_show_settings()

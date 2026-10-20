@@ -4,7 +4,7 @@ Nessuna partita salvata.,No hay partida guardada.
 ENTRA NELL'ARENA,ENTRA EN LA ARENA
 CARICA PARTITA,CARGAR PARTIDA
 ARCHIVIO,ARCHIVO
-OPZIONI,OPCIONES
+OPZIONI,AJUSTES
 CREDITI,CREDITOS
 ARCHIVIO DELLE CONDANNE,ARCHIVO DE CONDENAS
 Registro consultivo. Nessuna ricompensa.,Registro consultivo. Sin recompensa.
@@ -66,7 +66,7 @@ Pressione +1. Continua alla prossima arena con posta aumentata.,Presión +1. Con
 La folla osserva.,La multitud observa.
 La folla pretende un altro rilancio.,La multitud exige otro aumento.
 La folla resta in ascolto.,La multitud sigue atenta.
-Stato del percorso: Gloria %d | Corruzione %d | %s,Estado del recorrido: Gloria %d | Corrupción %d | %s
+Stato del percorso: Gloria %d | Corruzione %d | %s,Gloria del recorrido %d · Corrupción %d. %s
 Incasso sotto richiesta della folla: x%.2f,Cobro bajo demanda de la multitud: x%.2f
 CICATRICE APPLICATA,CICATRIZ APLICADA
 Il patto viene giudicato...,El pacto está siendo juzgado...
@@ -166,7 +166,7 @@ La folla osserva la tua scelta.,La multitud observa tu elección.
 Arena speciale,Arena especial
 Firma una via. Il Registro annota il prezzo.,Firma una vía. El Registro anota el precio.
 Clausola non esposta.,Cláusula no expuesta.
-Firma focus: %s | Clausola: %s,Foco de firma: %s | Cláusula: %s
+Firma focus: %s | Clausola: %s,Pacto en examen: %s. Cláusula: %s
 Cicatrice,Cicatriz
   Effetto: %s,  Efecto: %s
   Origine: %s,  Origen: %s
@@ -203,12 +203,12 @@ Stato: richiesta rilancio non disponibile.,Estado: solicitud de relance no dispo
 Stato: richiesta non accettata. Scegli di nuovo.,Estado: solicitud no aceptada. Elige de nuevo.
 POSTA VIVA: +%d Gloria,APUESTA VIVA: +%d Gloria
 GLORIA: %d,GLORIA: %d
-CORRUZIONE: %d,CORRUPCIÓN: %d
+CORRUZIONE: %d,Corrupción %d
 Ottieni +%d Gloria,Obtienes +%d Gloria
 Corruzione -%d,Corrupción -%d
-chiudi il registro,cierra el registro
+chiudi il registro,El Registro se cierra.
 Prossima posta: +%d Gloria. Pressione +%d.,Próxima apuesta: +%d Gloria. Presión +%d.
-Perdi la posta di +%d Gloria. Il percorso si chiude.,Pierdes la apuesta de +%d Gloria. El recorrido se cierra.
+Perdi la posta di +%d Gloria. Il percorso si chiude.,Pierdes la apuesta de %d Gloria. El recorrido se cierra.
 FIRMA,FIRMAR
 MOSTRA IL PATTO,MUESTRA EL PACTO
 APRI IL REGISTRO,ABRE EL REGISTRO
@@ -405,7 +405,7 @@ Continui. Ora ti vogliono sanguinare.,Continuas. Ahora quieren verte sangrar.
 Così finisci. La folla non ti piange.,Así terminas. La grada no te llora.
 È finita. Il pubblico prende il tuo nome.,Se acabo. La grada toma tu nombre.
 È finita. Solo occhi fermi.,Se acabo. Solo quedan miradas fijas.
-Fine della corsa. Il silenzio resta.,Fin de la carrera. El silencio permanece.
+Fine della corsa. Il silenzio resta.,Fin del recorrido. El silencio permanece.
 Fine violenta. La folla ha ciò che voleva.,Final violento. La grada obtuvo lo que queria.
 Firma asciutta. Ti contano come errore.,Firma seca. Te cuentan como un error.
 Firma e alza il rischio. Ti chiedono il salto.,Firma y eleva el riesgo. Te exigen el salto.
@@ -426,7 +426,7 @@ Hai scelto di restare. Non chiamarla coraggio.,Has elegido quedarte. No lo llame
 Hai scelto l'uscita. La folla ti mette il conto.,Has elegido la salida. La grada te presenta la cuenta.
 Hai segnato il destino. Ti vogliono a terra.,Has marcado tu destino. Te quieren en el suelo.
 Hai spento il delirio. Ora ti chiedono sangue.,Has apagado el delirio. Ahora te exigen sangre.
-Hai spento la corsa. La folla voleva il salto.,Has detenido la carrera. La grada queria el salto.
+Hai spento la corsa. La folla voleva il salto.,Has cerrado el recorrido. La grada quería el salto.
 Il brusio non concede riparo.,El murmullo no ofrece refugio.
 Il delirio ti brucia addosso.,El delirio te quema por dentro.
 Il patto accende la folla. Spingi ora.,El pacto enciende a la grada. Empuja ahora.
@@ -1143,4 +1143,4 @@ Nerio: Nessuna. Una copia.,Nerio: Ninguna. Una copia.
 "Oggi niente sposta il sigillo.","Hoy nada mueve el sello."
 "Quietanza versata contro il debito: Denari +%d, il doppio.","Recibo ingresado contra la deuda: Denarios +%d, el doble."
 "In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","En deuda: el mostrador sigue cerrado hasta que la cuenta quede a cero. Cada recibo ingresado en deuda vale el doble."
-Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Cuenta en deuda. El recibo vale el doble; salda la cuenta para reabrir el mostrador.
+Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,En deuda: el recibo vale el doble. Salda para reabrir el mostrador.

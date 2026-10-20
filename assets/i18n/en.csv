@@ -4,7 +4,7 @@ Nessuna partita salvata.,No saved game.
 ENTRA NELL'ARENA,ENTER THE ARENA
 CARICA PARTITA,Load Game
 ARCHIVIO,ARCHIVE
-OPZIONI,OPTIONS
+OPZIONI,SETTINGS
 CREDITI,CREDITS
 ARCHIVIO DELLE CONDANNE,Archive of Sentences
 Registro consultivo. Nessuna ricompensa.,Consultation log. No rewards.
@@ -66,7 +66,7 @@ Pressione +1. Continua alla prossima arena con posta aumentata.,Pressure +1. Con
 La folla osserva.,The crowd watches.
 La folla pretende un altro rilancio.,The crowd demands another raise.
 La folla resta in ascolto.,The crowd is still listening.
-Stato del percorso: Gloria %d | Corruzione %d | %s,Path status: Glory %d | Corruption %d | %s
+Stato del percorso: Gloria %d | Corruzione %d | %s,Run Glory %d · Corruption %d. %s
 Incasso sotto richiesta della folla: x%.2f,Cashout under crowd demand: x%.2f
 CICATRICE APPLICATA,SCAR APPLIED
 Il patto viene giudicato...,The pact is being judged...
@@ -166,7 +166,7 @@ La folla osserva la tua scelta.,The crowd watches your choice.
 Arena speciale,Special arena
 Firma una via. Il Registro annota il prezzo.,Sign a path. The Registry records the price.
 Clausola non esposta.,Clause not exposed.
-Firma focus: %s | Clausola: %s,Signature focus: %s | Clause: %s
+Firma focus: %s | Clausola: %s,Pact under review: %s. Clause: %s
 Cicatrice,Scar
   Effetto: %s,  Effect: %s
   Origine: %s,  Origin: %s
@@ -203,12 +203,12 @@ Stato: richiesta rilancio non disponibile.,Status: raise request unavailable.
 Stato: richiesta non accettata. Scegli di nuovo.,Status: request not accepted. Choose again.
 POSTA VIVA: +%d Gloria,LIVE STAKE: +%d Glory
 GLORIA: %d,GLORY: %d
-CORRUZIONE: %d,CORRUPTION: %d
+CORRUZIONE: %d,Corruption %d
 Ottieni +%d Gloria,Gain +%d Glory
 Corruzione -%d,Corruption -%d
-chiudi il registro,close the registry
+chiudi il registro,The Registry closes.
 Prossima posta: +%d Gloria. Pressione +%d.,Next stake: +%d Glory. Pressure +%d.
-Perdi la posta di +%d Gloria. Il percorso si chiude.,You lose the +%d Glory stake. The path closes.
+Perdi la posta di +%d Gloria. Il percorso si chiude.,You lose the %d Glory stake. The run closes.
 FIRMA,SIGN
 MOSTRA IL PATTO,SHOW THE PACT
 APRI IL REGISTRO,OPEN THE REGISTRY

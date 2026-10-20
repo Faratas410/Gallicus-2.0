@@ -1282,7 +1282,15 @@ most one double. Provoke remains armed until classification has been emitted.
 Campaign parameters belong to docs/canon/REGISTRY_SYSTEM_SPEC.md. Signature
 and era may bias offer selection within eligibility, never payout or outcome
 odds. Silence takes precedence at run closure, grants no closing unlock and
-advances exactly one Era. Absence is final.
+advances exactly one Era. Absence is final for that campaign: the terminal
+surface offers NUOVA CAMPAGNA and Settings offer AZZERA LA CAMPAGNA (October
+2026). Both send `request_reset_campaign`; RunManager accepts it only in
+MAIN_MENU, NONE or GAME_OVER and calls `SaveManager.reset_campaign`, which
+restores the default meta (Registry era, pressure and evolution, Vessa's
+ledger, bando step and acclaim, gesta), clears campaign dialogues seen,
+`registry_precedent` and the run save. Condanne in the Archive, the opening
+prologue, the learned rite and all settings stay. RunManager reloads its
+cached Registry state and emits `campaign_reset`.
 
 ## Loop rivisto (ottobre 2026)
 
@@ -1456,8 +1464,11 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   palio dopo il congedo. Il libro base dei patti (Prudenza, Hybris e le pagine
   `CONDANNA_FIRMATO`, `BASE_PACT_UNLOCKS`) e' aperto dal primo percorso; solo
   la scala apre le pagine sigillate: gradino 3 `CONDANNA_ANCORA`, gradino 6
-  `CONDANNA_MI_SONO_FERMATO` (`BANDO_PACT_STEPS`). Le vecchie regole di
-  sblocco non le aprono piu'. L'offerta del Registro contiene solo le pagine
+  `CONDANNA_MI_SONO_FERMATO`, gradino 9 `CONDANNA_NON_DOVEVO_PROVARCI` (il
+  patto che mente, dal 20 ottobre 2026) (`BANDO_PACT_STEPS`). Le vecchie regole
+  di sblocco non le aprono piu'. Nell'Archivio una pagina sigillata mostra il
+  nome e il gradino che la apre, non i termini
+  (`get_level3_pact_open_step`). L'offerta del Registro contiene solo le pagine
   aperte (`_is_level3_bet_offerable`: sblocco e Segni richiesti). Con solo
   Prudenza e Hybris all'inizio, chi ama il rischio finiva nell'Hybris e a zero
   Gloria (52-82% dei percorsi in simulazione): per questo il libro base resta
@@ -1483,3 +1494,36 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   scadenza, stato, posta, prossimo bando, racconto o patti in palio). La UI
   lo mostra nel riquadro in basso a sinistra (`BandoPanel`), sul Registro
   chiuso e nel fascicolo; la catena sta nel rail e nel testo del sigillo.
+
+## Archivio delle condanne (ottobre 2026)
+
+Revisione del 20 ottobre 2026 (thread "Scrittura, economia e sblocchi"), fatta
+da un profilo vuoto. Ogni condanna dell'Archivio risponde a un solo modo di
+giocare, quello che la sua riga dichiara; una sconfitta non ne apre piu' sei
+insieme. Le condanne restano senza premio (Archivio consultivo), salvo i
+cancelli gia' esistenti indicati nell'ultima colonna.
+
+| Condanna | Si ottiene quando | Apre anche |
+| --- | --- | --- |
+| Firmato | si firma il primo patto | - |
+| Non mi fermerò / Ancora | si rilancia con la quietanza aperta, una o due volte nello stesso percorso | - |
+| Finché regge | si rilancia con Pressione 6 o piu' | - |
+| So come finisce | si rilancia portando 3 Segni o piu' | Arena del Silenzio |
+| Ho visto abbastanza / Mi sono fermato | quietanza dopo un rilancio o a Pressione 4+; quietanza a Pressione 7+ | - |
+| Non oggi | regge il sigillo della Via dell'Hybris | - |
+| È finita così | la prima sconfitta, quando arriva (prima era solo la sconfitta al primo percorso, quindi mancabile per sempre) | Arena del Sangue, "Non sarà l'ultima" |
+| Non sarà l'ultima | si rientra nell'arena dopo una sconfitta | - |
+| L'ho accettato | si riceve il marchio (prima non aveva nessun trigger) | - |
+| Era il prezzo | si riceve il marchio mentre un patto tiene chiusa la quietanza | - |
+| Non è colpa loro | si riceve il marchio senza aver mai rilanciato nel percorso | - |
+| Sapevo cosa stavo facendo | un patto chiude il percorso (Hybris spezzata) | - |
+| Non dovevo provarci | si perde subito dopo un rilancio | - |
+| Troppo tardi | si perde dopo una scelta rischiosa non ancora risolta | - |
+| Non abbastanza | il percorso si chiude in perdita con il bando ancora aperto | - |
+| Ricordato | si chiude un percorso | - |
+| Visto dal pubblico / Il tuo nome | Favore 3+ (o folla a caccia); di nuovo in un percorso successivo | voci dure della gradinata |
+| Registro: Compromissione, Ascesa, Consumo, Pattern | chiusura del fascicolo con almeno 3 patti: Corruzione 70+, Gloria 100+, 3 Segni, altrimenti Pattern | voce d'archivio |
+
+Le soglie di Pressione 3, 5 e 7 aggiungono ancora Corruzione ma non aprono
+piu' condanne. Da verificare nella campagna simulata in Godot: quanto spesso si
+arriva a Registro: Compromissione e Registro: Ascesa.

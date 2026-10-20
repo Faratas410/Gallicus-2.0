@@ -33,8 +33,8 @@ STYLE_NAMES = (
 TEXTURE_RES_PATH = "res://assets/ui/official/objects/condemnation_mark/registry_condemnation_mark_base.png"
 EXPECTED_COPY = {
     "it": "RICEVI IL MARCHIO",
-    "en": "RECEIVE THE MARK",
-    "es": "RECIBE LA MARCA",
+    "en": "RECEIVE THE BRAND",
+    "es": "RECIBE EL ESTIGMA",
 }
 
 

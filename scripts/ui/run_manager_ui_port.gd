@@ -103,6 +103,12 @@ func get_available_level3_pacts() -> Array[StringName]:
 		return empty
 	return manager.get_available_level3_pacts() as Array[StringName]
 
+func get_level3_pact_open_step(pact_id: StringName) -> int:
+	var manager: Node = _get_manager()
+	if manager == null:
+		return 0
+	return int(manager.get_level3_pact_open_step(pact_id))
+
 func get_available_arena_themes() -> Array[StringName]:
 	var manager: Node = _get_manager()
 	if manager == null:

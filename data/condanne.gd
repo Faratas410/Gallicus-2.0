@@ -62,13 +62,13 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_L_HO_ACCETTATO",
 		"L'ho accettato.",
-		"Hai scelto una condanna senza ricevere alcun reward.",
+		"Hai ricevuto il marchio e lasciato la posta sulla sabbia.",
 		"Nessun premio sul banco.\nLa condanna è iscritta."
 	))
 	entries.append(make(
 		&"CONDANNA_ERA_IL_PREZZO",
 		"Era il prezzo.",
-		"Hai perso il percorso a causa diretta di un patto firmato.",
+		"Hai ricevuto il marchio mentre un patto teneva chiusa la quietanza.",
 		"Il costo era nel patto.\nOra è nel fascicolo."
 	))
 	entries.append(make(
@@ -98,13 +98,13 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_E_FINITA_COSI",
 		"È finita così.",
-		"Hai perso la tua prima run.",
+		"Hai perso un percorso per la prima volta.",
 		"L'arena non fa sconti ai nuovi."
 	))
 	entries.append(make(
 		&"CONDANNA_NON_ABBASTANZA",
 		"Non abbastanza.",
-		"Hai perso il percorso vicino a una soglia decisiva.",
+		"Il percorso si è chiuso con il bando di Orvo ancora aperto.",
 		"Il percorso si è chiuso.\nIl verbale si ferma qui."
 	))
 	entries.append(make(
@@ -116,7 +116,7 @@ static func defaults() -> Array[CondannaData]:
 	entries.append(make(
 		&"CONDANNA_NON_E_COLPA_LORO",
 		"Non e colpa loro.",
-		"Hai perso il percorso senza errori meccanici evidenti.",
+		"Hai ricevuto il marchio senza aver mai rilanciato.",
 		"Nessuno ha barato."
 	))
 	entries.append(make(

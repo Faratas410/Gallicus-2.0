@@ -66,7 +66,7 @@ Pressione +1. Continua alla prossima arena con posta aumentata.,Pressione +1. Co
 La folla osserva.,La folla osserva.
 La folla pretende un altro rilancio.,La folla pretende un altro rilancio.
 La folla resta in ascolto.,La folla resta in ascolto.
-Stato del percorso: Gloria %d | Corruzione %d | %s,Gloria del percorso %d · Corruzione %d. %s
+Stato del percorso: Gloria %d | %s,Gloria del percorso %d · %s
 Incasso sotto richiesta della folla: x%.2f,Incasso sotto richiesta della folla: x%.2f
 CICATRICE APPLICATA,CICATRICE APPLICATA
 Il patto viene giudicato...,Il patto viene giudicato...
@@ -90,7 +90,7 @@ FOCUS: Leggi prima la CONDANNA.,FOCUS: Leggi prima la CONDANNA.
 Seed (opzionale),Seed (opzionale)
 Es. 10331,Es. 10331
 APPLICA,APPLICA
-Stake,Stake
+Stake,Posta
 CONDANNA - TUTTO O NIENTE,CONDANNA - TUTTO O NIENTE
 CONDIZIONE - SANGUE INTEGRO,CONDIZIONE - SANGUE INTEGRO
 PATTO - INCASSA E VAI,PATTO - INCASSA E VAI
@@ -102,7 +102,7 @@ Incassa ora o rilancia il rischio,Incassa ora o rilancia il rischio
 PRENDI LA QUIETANZA,PRENDI LA QUIETANZA
 RICEVI IL MARCHIO,RICEVI IL MARCHIO
 CONDANNA,CONDANNA
-NESSUN REWARD,NESSUN REWARD
+NESSUN REWARD,NESSUNA RICOMPENSA
 RADDOPPIA,RADDOPPIA
 DETTAGLIO CICATRICI,DETTAGLIO CICATRICI
 CHIUDI,CHIUDI
@@ -203,9 +203,7 @@ Stato: richiesta rilancio non disponibile.,Stato: richiesta rilancio non disponi
 Stato: richiesta non accettata. Scegli di nuovo.,Stato: richiesta non accettata. Scegli di nuovo.
 POSTA VIVA: +%d Gloria,POSTA VIVA: +%d Gloria
 GLORIA: %d,GLORIA: %d
-CORRUZIONE: %d,Corruzione %d
 Ottieni +%d Gloria,Ottieni +%d Gloria
-Corruzione -%d,Corruzione -%d
 chiudi il registro,Il Registro si chiude.
 Prossima posta: +%d Gloria. Pressione +%d.,Prossima posta: +%d Gloria. Pressione +%d.
 Perdi la posta di +%d Gloria. Il percorso si chiude.,Perdi la posta di %d Gloria. Il percorso si chiude.
@@ -304,7 +302,7 @@ Il soggetto ha completato il ciclo operativo.,Il soggetto ha completato il ciclo
 Il soggetto presenta un profilo registrabile.,Il soggetto presenta un profilo registrabile.
 accettazione ricorrente di condizioni irreversibili,accettazione ricorrente di condizioni irreversibili
 rifiuto della chiusura quando disponibile,rifiuto della chiusura quando disponibile
-accumulo di Scar persistenti su più passaggi,accumulo di Scar persistenti su più passaggi
+accumulo di Scar persistenti su più passaggi,accumulo di cicatrici persistenti su più passaggi
 reiterazione oltre l'utile con esposizione crescente,reiterazione oltre l'utile con esposizione crescente
 sacrificio di opzioni future registrato,sacrificio di opzioni future registrato
 Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.,Il profilo osservato eccede le soglie operative previste; classificazione mantenuta coerente.
@@ -656,11 +654,11 @@ Hai firmato un patto che ha chiuso il percorso.,Hai firmato un patto che ha chiu
 "La sentenza era scritta.
 Hai solo aggiunto il nome.","La sentenza era scritta.
 Hai solo aggiunto il nome."
-Hai scelto una condanna senza ricevere alcun reward.,Hai scelto una condanna senza ricevere alcuna ricompensa.
+Hai ricevuto il marchio e lasciato la posta sulla sabbia.,Hai ricevuto il marchio e lasciato la posta sulla sabbia.
 "Nessun premio sul banco.
 La condanna è iscritta.","Nessun premio sul banco.
 La condanna è iscritta."
-Hai perso il percorso a causa diretta di un patto firmato.,Hai perso il percorso a causa diretta di un patto firmato.
+Hai ricevuto il marchio mentre un patto teneva chiusa la quietanza.,Hai ricevuto il marchio mentre un patto teneva chiusa la quietanza.
 "Il costo era nel patto.
 Ora è nel fascicolo.","Il costo era nel patto.
 Ora è nel fascicolo."
@@ -676,9 +674,9 @@ Le firme restano dove sono.","La quietanza porta la cifra incassata.
 Le firme restano dove sono."
 Hai incassato con un livello di rischio estremamente alto.,Hai incassato con un livello di rischio estremamente alto.
 Questa volta.,Questa volta.
-Hai perso la tua prima run.,Hai perso il tuo primo percorso.
+Hai perso un percorso per la prima volta.,Hai perso un percorso per la prima volta.
 L'arena non fa sconti ai nuovi.,L'arena non fa sconti ai nuovi.
-Hai perso il percorso vicino a una soglia decisiva.,Hai perso il percorso vicino a una soglia decisiva.
+Il percorso si è chiuso con il bando di Orvo ancora aperto.,Il percorso si è chiuso con il bando di Orvo ancora aperto.
 "Il percorso si è chiuso.
 Il verbale si ferma qui.","Il percorso si è chiuso.
 Il verbale si ferma qui."
@@ -686,7 +684,7 @@ Hai preso una decisione rischiosa un attimo prima della fine.,Hai preso una deci
 "L’ultimo rischio è iscritto.
 Dopo, il verbale si chiude.","L’ultimo rischio è iscritto.
 Dopo, il verbale si chiude."
-Hai perso il percorso senza errori meccanici evidenti.,Hai perso il percorso senza errori meccanici evidenti.
+Hai ricevuto il marchio senza aver mai rilanciato.,Hai ricevuto il marchio senza aver mai rilanciato.
 Nessuno ha barato.,Nessuno ha barato.
 Hai completato una run.,Hai completato un percorso.
 Il percorso ha una copia nel Registro.,Il percorso ha una copia nel Registro.
@@ -1039,10 +1037,10 @@ Pressione più severa.,Pressione più severa.
 Il perfetto è più raro.,Il perfetto è più raro.
 Tenuta rituale ridotta e recupero meno efficace.,Tenuta rituale ridotta e recupero meno efficace.
 Avanzamento piu lento e margine di errore ridotto.,Avanzamento più lento e margine di errore ridotto.
-Aumenta la probabilita di condanna.,Aumenta la probabilita di condanna.
+Aumenta la probabilita di condanna.,Aumenta la probabilità di condanna.
 Le conseguenze avverse sono piu probabili.,Le conseguenze avverse sono più probabili.
 La pressione pesa di più.,La pressione pesa di più.
-Peggiora le chance di esiti puliti.,Peggiora le chance di esiti puliti.
+Peggiora le chance di esiti puliti.,Riduce le possibilità di esiti puliti.
 FOLLA IN DELIRIO,FOLLA IN DELIRIO
 La folla ti marca: incasso bloccato.,La folla ti marca: incasso bloccato.
 Il sangue ti segue anche quando l'arena tace.,Il sangue ti segue anche quando l'arena tace.
@@ -1144,3 +1142,27 @@ Nerio: Nessuna. Una copia.,Nerio: Nessuna. Una copia.
 "Quietanza versata contro il debito: Denari +%d, il doppio.","Quietanza versata contro il debito: Denari +%d, il doppio."
 "In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio."
 Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.
+Arena Muta,Arena Muta
+Arena di Cenere,Arena di Cenere
+Arena del Disprezzo,Arena del Disprezzo
+Arena della Vergogna,Arena della Vergogna
+La Pressione sale di uno prima del sigillo.,La Pressione sale di uno prima del sigillo.
+"Se il patto regge, +1 Gloria. In ogni caso resta un Segno.","Se il patto regge, +1 Gloria. In ogni caso resta un Segno."
+Dopo il responso la quietanza è vietata: la gradinata vuole un'altra arena.,Dopo il responso la quietanza è vietata: la gradinata vuole un'altra arena.
+La vergogna costa Favore: la gradinata si raffredda di uno.,La vergogna costa Favore: la gradinata si raffredda di uno.
+Qui il conto ti segue.,Qui il conto ti segue.
+Nessuno ti applaude. Nessuno ti salva.,Nessuno ti applaude. Nessuno ti salva.
+Il sangue è l’unica valuta accettata.,Il sangue è l’unica valuta accettata.
+Come si ottiene:,Come si ottiene:
+Pagina sigillata: si apre al gradino %d della scala dei bandi.,Pagina sigillata: si apre al gradino %d della scala dei bandi.
+Esito incasso: +%d Gloria,Esito incasso: +%d Gloria
+NUOVA CAMPAGNA,NUOVA CAMPAGNA
+AZZERA LA CAMPAGNA,AZZERA LA CAMPAGNA
+CONFERMA: AZZERA,CONFERMA: AZZERA
+CAMPAGNA AZZERATA,CAMPAGNA AZZERATA
+ANNULLA,ANNULLA
+Campagna azzerata. L'Archivio resta.,Campagna azzerata. L'Archivio resta.
+"Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano.","Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano."
+NEW_CAMPAIGN_CONFIRM_BODY,"Il Registro non torna. Si apre un fascicolo nuovo.
+Riparte il conto di Vessa, la scala dei bandi e i racconti.
+L'Archivio delle condanne resta tuo."

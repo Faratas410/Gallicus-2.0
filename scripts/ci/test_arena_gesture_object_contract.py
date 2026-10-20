@@ -27,7 +27,7 @@ STATES = ("normal", "focus", "pressed", "selected", "disabled")
 EXPECTED_COPY = {
     "ATTO DAVANTI ALLA GRADINATA": {
         "it": "ATTO DAVANTI ALLA GRADINATA",
-        "en": "ACT BEFORE THE CROWD",
+        "en": "ACT BEFORE THE STANDS",
         "es": "ACTO ANTE LA GRADA",
     },
     "ABBASSA LO SGUARDO": {
@@ -37,7 +37,7 @@ EXPECTED_COPY = {
     },
     "SFIDA LA GRADINATA": {
         "it": "SFIDA LA GRADINATA",
-        "en": "CHALLENGE THE CROWD",
+        "en": "CHALLENGE THE STANDS",
         "es": "DESAFÍA A LA GRADA",
     },
     "Il Registro annota misura.": {

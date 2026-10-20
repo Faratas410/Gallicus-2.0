@@ -498,6 +498,7 @@ const BANDO_ACCLAIM_FAVOR: int = 2
 const BANDO_PACT_STEPS: Dictionary = {
 	CONDANNA_ANCORA: 3,
 	CONDANNA_MI_SONO_FERMATO: 6,
+	CONDANNA_NON_DOVEVO_PROVARCI: 9,
 }
 # The first signed pages are the base book: the Registry offers them from the
 # first arena, so a newcomer always has a page between prudence and hybris.
@@ -1359,6 +1360,7 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"request_reset_run", &"_on_request_reset_run", true],
 		[&"request_retry_run", &"_on_request_retry_run", true],
 		[&"request_continue_run", &"_on_request_continue_run", true],
+		[&"request_reset_campaign", &"_on_request_reset_campaign", true],
 		[&"request_show_main_menu", &"_on_request_show_main_menu", true],
 		[&"request_fail_run", &"_on_request_fail_run", true],
 		[&"modal_opened", &"_on_modal_opened", true],
@@ -1825,8 +1827,6 @@ func _confirm_pact_with_bet_id(bet_id: StringName) -> void:
 		if archetype == ARCH_EGO or archetype == ARCH_TIME:
 			_run_state.risky_choice_made_recently = true
 		_register_condanna(CONDANNA_FIRMATO)
-		_register_condanna(CONDANNA_FIRMATO)
-		_register_condanna(CONDANNA_FIRMATO)
 	_record_pact_decision(bet_id)
 	_run_state.current_bet_id = String(bet_id)
 	_run_state.last_selected_bet_id = bet_id
@@ -1955,7 +1955,8 @@ func _resolve_ritual_outcome(bet_id: StringName) -> void:
 		_resolve_ritual_reward_applied = false
 		var bet_data: Dictionary = _get_bet_data(String(bet_id))
 		var archetype: StringName = StringName(str(bet_data.get("archetype", "")))
-		if bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
+		# Non oggi: the seal that rarely holds (Hybris) held, the closure missed by a breath.
+		if bet_id == BET_DOUBLE_OR_DIE_L3 or bet_id == BET_LAST_BREATH or archetype == ARCH_TIME:
 			_register_condanna(CONDANNA_NON_OGGI)
 	_update_last_pact_outcome(bet_id, not failed)
 	_apply_special_arena_post_resolution(result, failed)
@@ -2735,6 +2736,8 @@ func _settle_bando_at_run_end(reason: String) -> bool:
 		return false
 	var met: bool = reason == "CASH_OUT" and _run_state.arena_index <= _run_state.bando_deadline and _run_state.glory >= _run_state.bando_quota
 	if not met:
+		# Non abbastanza: the percorso closed while the bando was still in reach.
+		_run_state.bando_reachable_at_close = reason != "CASH_OUT"
 		_run_state.bando_status = "missed"
 		_emit_bando("")
 		return false
@@ -2929,7 +2932,7 @@ func _apply_special_arena_ash_reward(result: ArenaResult, failed: bool) -> void:
 		_run_state.glory = maxi(_run_state.glory + 1, 0)
 	var scar_id: StringName = _pick_special_arena_scar()
 	if scar_id != &"":
-		_apply_level3_scar(scar_id, "Arena of Ash")
+		_apply_level3_scar(scar_id, "Arena di Cenere")
 	_run_state.special_arena_effect_applied = true
 
 func _pick_special_arena_scar() -> StringName:
@@ -3316,6 +3319,20 @@ func _on_request_continue_run() -> void:
 	var allowed_phases: Array[RunPhase] = [RunPhase.NONE, RunPhase.PREP, RunPhase.LIVE, RunPhase.GAME_OVER, RunPhase.MAIN_MENU, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET]
 	_route_guarded_phase_request("request_continue_run", allowed_phases, _phase_main_menu_handler, {})
 	return
+
+func _on_request_reset_campaign() -> void:
+	_touch_request_activity("request_reset_campaign()")
+	if not _guard_request_phase("request_reset_campaign", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
+		return
+	# A new campaign: the profile forgets the Registry, the ledger and the ladder;
+	# the Archive of condanne stays. Cached campaign state reloads from the profile.
+	SaveManager.reset_campaign([UNLOCK_REGISTRY_PRECEDENT])
+	_registry_has_precedent = false
+	_registry_pressure = SaveManager.get_registry_pressure()
+	_registry_era = clampi(SaveManager.get_registry_era(), 0, 4)
+	_register_state = RegisterState.new()
+	if GameEvents.has_signal("campaign_reset"):
+		GameEvents.campaign_reset.emit()
 
 func _on_request_show_main_menu() -> void:
 	var allowed_phases: Array[RunPhase] = [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER, RunPhase.RUN_INIT, RunPhase.BET_PRESENT, RunPhase.BET_COMMITTED, RunPhase.INTERMEDIATE_CHOICE, RunPhase.PUSH_YOUR_LUCK, RunPhase.NEXT_BET]
@@ -3787,15 +3804,12 @@ func _apply_escalation_threshold_events(previous_level: int, next_level: int) ->
 	if next_level >= 3 and not _run_state.escalation_threshold_3_fired:
 		_run_state.escalation_threshold_3_fired = true
 		_apply_corruption(1)
-		_register_condanna(CONDANNA_NON_OGGI)
 	if next_level >= 5 and not _run_state.escalation_threshold_5_fired:
 		_run_state.escalation_threshold_5_fired = true
 		_apply_corruption(1)
-		_register_condanna(CONDANNA_TROPPO_TARDI)
 	if next_level >= 7 and not _run_state.escalation_threshold_7_fired:
 		_run_state.escalation_threshold_7_fired = true
 		_apply_corruption(1)
-		_register_condanna(CONDANNA_NON_E_COLPA_LORO)
 
 func _apply_intermediate_loss_penalty_if_needed() -> void:
 	if not _run_state.intermediate_loss_penalty_pending:
@@ -4040,11 +4054,11 @@ func _compute_cashout_reward_bonus() -> Dictionary:
 
 func _build_cashout_reward_text(base_text: String) -> String:
 	var bonus: Dictionary = _compute_cashout_reward_bonus()
-	var relief: int = int(bonus.get("corruption_relief", 0))
 	var glory_bonus: int = int(bonus.get("glory_bonus", 0))
-	var line: String = "Esito incasso: -%d Corruzione" % relief
-	if glory_bonus > 0:
-		line = "%s | +%d Gloria" % [line, glory_bonus]
+	# Corruption relief stays off screen; only the Gloria bonus is the player's business.
+	if glory_bonus <= 0:
+		return base_text
+	var line: String = tr("Esito incasso: +%d Gloria") % glory_bonus
 	if base_text.strip_edges() == "":
 		return line
 	return "%s\n%s" % [base_text, line]
@@ -4067,15 +4081,13 @@ func _build_push_luck_choice_note() -> String:
 
 func _build_push_luck_state_line() -> String:
 	var pressure: int = clampi(_run_state.audience_pressure, 0, AUDIENCE_PRESSURE_MAX)
-	var corruption_value: int = clampi(int(run.get("corruption", _run_state.corruption)), 0, CORRUPTION_MAX)
 	var crowd_state: String = tr("La folla osserva.")
 	if pressure >= AUDIENCE_PRESSURE_PENALTY_THRESHOLD:
 		crowd_state = tr("La folla pretende un altro rilancio.")
 	elif pressure > 0:
 		crowd_state = tr("La folla resta in ascolto.")
-	return tr("Stato del percorso: Gloria %d | Corruzione %d | %s") % [
+	return tr("Stato del percorso: Gloria %d | %s") % [
 		_run_state.glory,
-		corruption_value,
 		crowd_state,
 	]
 
@@ -4365,21 +4377,24 @@ func _enter_game_over() -> void:
 	_update_registry_meta_from_run()
 	if not _should_emit_registry_silence():
 		var is_loss: bool = _run_state.run_end_reason != "CASH_OUT"
-		var first_run_completed: bool = SaveManager.has_unlocked(CONDANNA_RICORDATO)
 		_register_condanna(CONDANNA_RICORDATO)
+		# Each loss condanna answers one way of closing, as its Archive line says.
 		if is_loss:
-			if not first_run_completed:
-				_register_condanna(CONDANNA_E_FINITA_COSI)
-			if _run_state.arena_index >= 2:
-				_register_condanna(CONDANNA_NON_ABBASTANZA)
-			if _run_state.bets_history.size() > 0:
-				_register_condanna(CONDANNA_NON_E_COLPA_LORO)
+			# The first fall, whenever it comes: it also opens the Blood arena and
+			# "Non sarà l'ultima" on the next entrance.
+			_register_condanna(CONDANNA_E_FINITA_COSI)
+			if _run_state.run_end_reason == "CONDANNA":
+				_register_condanna(CONDANNA_L_HO_ACCETTATO)
+				if _run_state.cashout_lock_remaining > 0:
+					_register_condanna(CONDANNA_ERA_IL_PREZZO)
+				if _run_state.refuse_cashout_count_this_run == 0:
+					_register_condanna(CONDANNA_NON_E_COLPA_LORO)
+			elif _run_state.run_end_reason == "DOUBLE_OR_DIE" or _run_state.run_end_reason == "PROVOCA_FAIL":
+				_register_condanna(CONDANNA_SAPEVO_COSA_STAVO_FACENDO)
 			if _run_state.risky_choice_made_recently:
 				_register_condanna(CONDANNA_TROPPO_TARDI)
-			if _run_state.last_signed_pact_id != &"":
-				_register_condanna(CONDANNA_SAPEVO_COSA_STAVO_FACENDO)
-			if _run_state.bets_history.size() > 0:
-				_register_condanna(CONDANNA_ERA_IL_PREZZO)
+			if _run_state.bando_status == "missed" and _run_state.bando_reachable_at_close:
+				_register_condanna(CONDANNA_NON_ABBASTANZA)
 		if _run_state.run_end_reason != "CASH_OUT" and _run_state.last_action_was_rilancio:
 			_register_condanna(CONDANNA_NON_DOVEVO_PROVARCI)
 	_waiting_for_bet = false
@@ -4868,6 +4883,13 @@ func _count_scars_with_tag(tag: StringName) -> int:
 func get_available_level3_pacts() -> Array[StringName]:
 	# The active offer builder uses this catalogue, not legacy unlock gates.
 	return BetCatalogScript.level3_active_bet_ids()
+
+# The Archive shows a sealed page with the ladder step that opens it (0 = open).
+func get_level3_pact_open_step(pact_id: StringName) -> int:
+	if _is_level3_bet_unlocked(pact_id):
+		return 0
+	var unlock_id: StringName = BetCatalogScript.get_level3_pact_unlock(pact_id)
+	return int(BANDO_PACT_STEPS.get(unlock_id, 0))
 
 func get_level3_pact_title(pact_id: StringName) -> String:
 	if BetCatalogScript.level3_active_bet_ids().has(pact_id):

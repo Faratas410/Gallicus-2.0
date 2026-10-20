@@ -57,6 +57,8 @@ signal request_new_run
 signal request_reset_run
 signal request_retry_run
 signal request_continue_run
+signal request_reset_campaign
+signal campaign_reset
 signal continue_rejected(reason: String)
 signal request_intro_select_bet(bet_id: String)
 signal request_intro_confirm

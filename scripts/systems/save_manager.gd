@@ -134,6 +134,20 @@ func get_unlocked_ids() -> Array[StringName]:
 		load_profile()
 	return _unlocked_ids.duplicate()
 
+# A new campaign after the Absence (or whenever the player asks): the Registry,
+# Vessa's ledger, the bando ladder, Lauro's gesta and the campaign dialogues start
+# over. The Archive of condanne and the settings are the player's, so they stay.
+func reset_campaign(campaign_unlock_ids: Array[StringName] = []) -> void:
+	if not _profile_loaded:
+		load_profile()
+	_meta = _get_default_meta()
+	_settings["campaign_dialogues_seen"] = []
+	for id: StringName in campaign_unlock_ids:
+		_unlocked_ids.erase(id)
+	_profile_dirty = true
+	save_profile()
+	clear_run()
+
 func get_settings() -> Dictionary:
 	if not _profile_loaded:
 		load_profile()

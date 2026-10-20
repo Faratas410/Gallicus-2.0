@@ -103,6 +103,8 @@ var _run_manager_port: RunManagerUiPort = null
 var _menu_next_step_hint: String = ""
 var _menu_idle_time: float = 0.0
 var _menu_buttons: Array[Button] = []
+var reset_campaign_button: Button = null
+var _reset_campaign_armed: bool = false
 
 func _ready() -> void:
 	_ensure_i18n_loaded()
@@ -116,6 +118,7 @@ func _ready() -> void:
 	_setup_initial_values()
 	_refresh_localized_ui()
 	_build_condanne_list()
+	_build_reset_campaign_button()
 	_cache_menu_buttons()
 	_apply_manifesto_skin()
 	_wire_menu_button_animations()
@@ -159,6 +162,10 @@ func _ready() -> void:
 		var settings_closed_callable: Callable = Callable(self, "_on_settings_closed")
 		if not GameEvents.settings_closed.is_connected(settings_closed_callable):
 			GameEvents.settings_closed.connect(settings_closed_callable)
+	if GameEvents.has_signal("campaign_reset"):
+		var campaign_reset_callable: Callable = Callable(self, "_on_campaign_reset")
+		if not GameEvents.campaign_reset.is_connected(campaign_reset_callable):
+			GameEvents.campaign_reset.connect(campaign_reset_callable)
 	if GameEvents.has_signal("continue_rejected"):
 		var continue_rejected_callable: Callable = Callable(self, "_on_continue_rejected")
 		if not GameEvents.continue_rejected.is_connected(continue_rejected_callable):
@@ -278,7 +285,50 @@ func _show_settings() -> void:
 	achievements_panel.visible = false
 	credits_panel.visible = false
 	settings_panel.visible = true
+	_disarm_reset_campaign()
 	call_deferred("_focus_first_available", [language_option])
+
+func _build_reset_campaign_button() -> void:
+	# Built in code so the scene stays untouched; it sits beside TORNA AL MENU.
+	reset_campaign_button = Button.new()
+	reset_campaign_button.name = "ResetCampaignButton"
+	reset_campaign_button.custom_minimum_size = Vector2(280, 52)
+	reset_campaign_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var row: Node = settings_back_button.get_parent()
+	row.add_child(reset_campaign_button)
+	row.move_child(reset_campaign_button, 0)
+	(row as HBoxContainer).add_theme_constant_override("separation", 24)
+	reset_campaign_button.pressed.connect(_on_reset_campaign_pressed)
+	_disarm_reset_campaign()
+
+func _disarm_reset_campaign() -> void:
+	_reset_campaign_armed = false
+	if reset_campaign_button == null:
+		return
+	reset_campaign_button.disabled = false
+	reset_campaign_button.text = tr("AZZERA LA CAMPAGNA")
+	reset_campaign_button.tooltip_text = tr("Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano.")
+
+func _on_reset_campaign_pressed() -> void:
+	# Two presses: the first arms the button, the second asks RunManager to reset.
+	if not _reset_campaign_armed:
+		_reset_campaign_armed = true
+		reset_campaign_button.text = tr("CONFERMA: AZZERA")
+		return
+	_reset_campaign_armed = false
+	if GameEvents.has_signal("request_reset_campaign"):
+		GameEvents.request_reset_campaign.emit()
+
+func _on_campaign_reset() -> void:
+	_disarm_reset_campaign()
+	# The menu hint waits for TORNA AL MENU; the button itself confirms the reset.
+	_menu_next_step_hint = tr("Campagna azzerata. L'Archivio resta.")
+	if settings_panel.visible:
+		reset_campaign_button.text = tr("CAMPAGNA AZZERATA")
+		reset_campaign_button.disabled = true
+		return
+	visible = true
+	_show_menu()
 
 func _disable_unavailable_buttons() -> void:
 	load_game_button.disabled = true
@@ -329,7 +379,12 @@ func _build_museo_list() -> void:
 	else:
 		for pact_id in pact_ids:
 			var pact_title: String = _get_pact_display_name(pact_id)
-			_add_museo_item("%s\n%s" % [tr(pact_title), tr(BetCatalogScript.get_level3_display_subtitle(pact_id))])
+			var open_step: int = _run_manager_port.get_level3_pact_open_step(pact_id) if _run_manager_port != null else 0
+			if open_step > 0:
+				# A sealed page: its name and the ladder step that opens it, not its terms.
+				_add_museo_item("%s\n%s" % [tr(pact_title), tr("Pagina sigillata: si apre al gradino %d della scala dei bandi.") % open_step])
+			else:
+				_add_museo_item("%s\n%s" % [tr(pact_title), tr(BetCatalogScript.get_level3_display_subtitle(pact_id))])
 	_add_museo_header(tr("ARENE TEMATICHE"))
 	if arena_themes.is_empty():
 		_add_museo_item(tr("- Nessuna arena disponibile."))
@@ -456,12 +511,19 @@ func _on_condanna_registered(condanna_id: StringName) -> void:
 		_apply_condanna_style(condanna_id, entry_label)
 
 func _on_condanna_mouse_entered(condanna: CondannaData) -> void:
-	var tooltip_label_text: String = "%s\n\n%s\n%s\n\n%s" % [
+	# A locked condanna says how it is earned and keeps its lore for later.
+	var tooltip_label_text: String = "%s\n\n%s\n%s" % [
 		tr(condanna.title),
-		tr("Come e' stata ottenuta:"),
+		tr("Come si ottiene:"),
 		tr(condanna.condition_text),
-		tr(condanna.lore_text)
 	]
+	if SaveManager.has_unlocked(condanna.id):
+		tooltip_label_text = "%s\n\n%s\n%s\n\n%s" % [
+			tr(condanna.title),
+			tr("Come e' stata ottenuta:"),
+			tr(condanna.condition_text),
+			tr(condanna.lore_text)
+		]
 	tooltip_label.text = tooltip_label_text
 	condanna_tooltip.visible = true
 	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
@@ -861,6 +923,8 @@ func _refresh_localized_ui() -> void:
 		credits_back_button.text = tr("TORNA AL MENU")
 	if settings_back_button != null:
 		settings_back_button.text = tr("TORNA AL MENU")
+	if reset_campaign_button != null:
+		_disarm_reset_campaign()
 	_update_language_label()
 	if master_volume_slider != null:
 		_update_volume_label(master_volume_slider.value)
@@ -967,6 +1031,7 @@ func _configure_focus_order() -> void:
 		master_volume_slider,
 		music_volume_slider,
 		sfx_volume_slider,
+		reset_campaign_button,
 		settings_back_button,
 	])
 	_set_focus_cycle([condanne_tab_button, museo_tab_button, back_button])
@@ -1018,6 +1083,7 @@ func _cache_menu_buttons() -> void:
 		museo_tab_button,
 		back_button,
 		credits_back_button,
+		reset_campaign_button,
 		settings_back_button,
 	]
 
@@ -1075,7 +1141,7 @@ func _apply_manifesto_skin() -> void:
 	# Atto a stampa, packages 5-6: menu, utilities, settings, credits, Archive.
 	# The arena threshold keeps its object skin; only native commands migrate.
 	Kit.apply_primary_button(continue_button)
-	for button: Button in [achievements_button, settings_button, credits_button, back_button, credits_back_button, settings_back_button]:
+	for button: Button in [achievements_button, settings_button, credits_button, back_button, credits_back_button, reset_campaign_button, settings_back_button]:
 		Kit.apply_secondary_button(button)
 	for panel_path: String in ["AchievementsPanel/UtilitySurface", "CreditsPanel/UtilitySurface", "SettingsPanel/UtilitySurface"]:
 		Kit.apply_panel(get_node(panel_path) as Control, &"ink")

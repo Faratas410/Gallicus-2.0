@@ -2789,8 +2789,8 @@ func _update_special_arena_ui() -> void:
 	if _special_arena_payload.is_empty():
 		special_arena_label.visible = false
 		return
-	var title: String = str(_special_arena_payload.get("title", tr("Arena speciale")))
-	var desc: String = str(_special_arena_payload.get("description", ""))
+	var title: String = tr(str(_special_arena_payload.get("title", "Arena speciale")))
+	var desc: String = tr(str(_special_arena_payload.get("description", "")))
 	if desc != "":
 		special_arena_label.text = "%s\n%s" % [title, desc]
 	else:
@@ -2810,8 +2810,8 @@ func _update_arena_theme_ui() -> void:
 		if arena_theme_subtitle_panel != null:
 			arena_theme_subtitle_panel.visible = false
 		return
-	var title: String = str(_arena_theme_payload.get("title", ""))
-	var subtitle: String = str(_arena_theme_payload.get("subtitle", ""))
+	var title: String = tr(str(_arena_theme_payload.get("title", "")))
+	var subtitle: String = tr(str(_arena_theme_payload.get("subtitle", "")))
 	if arena_theme_title_label != null:
 		arena_theme_title_label.text = title
 		arena_theme_title_label.visible = title != ""
@@ -2890,7 +2890,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 		var origin: String = str(scar.get("origin", ""))
 		if visual_tag != "":
 			summary_lines.append(tr(str(scar.get("name", "Cicatrice"))))
-			detail_lines.append("- %s" % visual_tag)
+			detail_lines.append("- %s" % tr(visual_tag))
 		else:
 			summary_lines.append("- %s" % tr("Cicatrice"))
 			detail_lines.append("- %s" % tr("Cicatrice"))
@@ -2904,7 +2904,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 		if effect_text != "":
 			detail_lines.append(tr("  Effetto: %s") % effect_text)
 		if origin != "":
-			detail_lines.append(tr("  Origine: %s") % origin)
+			detail_lines.append(tr("  Origine: %s") % tr(origin))
 		detail_lines.append("")
 	if summary_lines.size() > 0 and summary_lines[summary_lines.size() - 1] == "":
 		summary_lines.remove_at(summary_lines.size() - 1)
@@ -3069,11 +3069,10 @@ func _format_push_luck_receipt_text(meta: Dictionary) -> String:
 	# Gloria is banked only by the quietanza, so the live posta is the run's value.
 	return tr("%d GLORIA IN POSTA") % stake_glory
 
-func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: int) -> String:
+func _format_cashout_note(cashout_glory_delta: int, _cashout_corruption_delta: int) -> String:
 	var parts: Array[String] = []
 	parts.append(tr("Ottieni +%d Gloria") % maxi(cashout_glory_delta, 0))
-	if cashout_corruption_delta > 0:
-		parts.append(tr("Corruzione -%d") % cashout_corruption_delta)
+	# Corruzione stays hidden: it shapes the Registry's closing, not the player's arithmetic.
 	parts.append(tr("chiudi il registro"))
 	return "\n".join(parts)
 
@@ -3096,7 +3095,7 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_title != null:
 		push_luck_title.text = str(payload.title if payload.title != "" else tr("SPINGI LA SORTE"))
 	if push_luck_info != null:
-		push_luck_info.text = tr("CORRUZIONE: %d") % maxi(int(meta.get("current_corruption", 0)), 0)
+		push_luck_info.text = tr("GLORIA: %d") % maxi(int(meta.get("current_glory", 0)), 0)
 		push_luck_info.show()
 		push_luck_title.show()
 		push_luck_details.show()

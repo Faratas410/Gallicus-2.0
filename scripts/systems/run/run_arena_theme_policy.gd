@@ -67,9 +67,9 @@ func pick_special_arena_id(run_seed: int, arena_index: int, rng: RandomNumberGen
 func get_special_arena_title(arena_id: StringName) -> String:
 	match arena_id:
 		SPECIAL_ARENA_SILENCE:
-			return "Arena of Silence"
+			return "Arena Muta"
 		SPECIAL_ARENA_ASH:
-			return "Arena of Ash"
+			return "Arena di Cenere"
 		SPECIAL_ARENA_DISPREZZO:
 			return "Arena del Disprezzo"
 		SPECIAL_ARENA_VERGOGNA:
@@ -81,12 +81,12 @@ func get_special_arena_title(arena_id: StringName) -> String:
 func get_special_arena_description(arena_id: StringName) -> String:
 	match arena_id:
 		SPECIAL_ARENA_SILENCE:
-			return "La pressione sale subito. Il rischio cresce, le ricompense restano."
+			return "La Pressione sale di uno prima del sigillo."
 		SPECIAL_ARENA_ASH:
-			return "Ricompensa extra, ma una cicatrice è garantita."
+			return "Se il patto regge, +1 Gloria. In ogni caso resta un Segno."
 		SPECIAL_ARENA_DISPREZZO:
-			return "Qui non si incassa. La folla pretende un altro sangue."
+			return "Dopo il responso la quietanza è vietata: la gradinata vuole un'altra arena."
 		SPECIAL_ARENA_VERGOGNA:
-			return "La vergogna intacca il favore. Il pubblico cala più in fretta."
+			return "La vergogna costa Favore: la gradinata si raffredda di uno."
 		_:
 			return ""

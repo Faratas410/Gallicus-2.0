@@ -134,16 +134,17 @@ func get_unlocked_ids() -> Array[StringName]:
 		load_profile()
 	return _unlocked_ids.duplicate()
 
-# A new campaign after the Absence (or whenever the player asks): the Registry,
-# Vessa's ledger, the bando ladder, Lauro's gesta and the campaign dialogues start
-# over. The Archive of condanne and the settings are the player's, so they stay.
-func reset_campaign(campaign_unlock_ids: Array[StringName] = []) -> void:
+# A new campaign after the Absence (or whenever the player asks): everything the
+# player earned starts over, the Archive of condanne and the first-run prologue and
+# rite included. Only the settings (language, audio, video, motion) stay.
+func reset_campaign() -> void:
 	if not _profile_loaded:
 		load_profile()
 	_meta = _get_default_meta()
+	_unlocked_ids.clear()
 	_settings["campaign_dialogues_seen"] = []
-	for id: StringName in campaign_unlock_ids:
-		_unlocked_ids.erase(id)
+	_settings["opening_prologue_seen"] = false
+	_settings["rite_learned"] = false
 	_profile_dirty = true
 	save_profile()
 	clear_run()

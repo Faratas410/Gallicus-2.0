@@ -1161,8 +1161,8 @@ AZZERA LA CAMPAGNA,REINICIA LA CAMPAÑA
 CONFERMA: AZZERA,CONFIRMA: REINICIA
 CAMPAGNA AZZERATA,CAMPAÑA REINICIADA
 ANNULLA,CANCELAR
-Campagna azzerata. L'Archivio resta.,Campaña reiniciada. El Archivo se queda.
-"Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano.","Vuelven a empezar el Registro, la cuenta de Vessa, la escala de bandos y los relatos. El Archivo y los ajustes se quedan."
+"Riparte tutto: Registro, conto di Vessa, scala dei bandi, racconti e Archivio delle condanne. Restano solo le impostazioni.","Todo vuelve a empezar: el Registro, la cuenta de Vessa, la escala de bandos, los relatos y el Archivo de las condenas. Solo se quedan los ajustes."
+Campagna azzerata. Restano solo le impostazioni.,Campaña reiniciada. Solo se quedan los ajustes.
 NEW_CAMPAIGN_CONFIRM_BODY,"El Registro no vuelve. Se abre un expediente nuevo.
-Vuelven a empezar la cuenta de Vessa, la escala de bandos y los relatos.
-El Archivo de las condenas sigue siendo tuyo."
+Todo vuelve a empezar, también el Archivo de las condenas.
+Solo se quedan los ajustes."

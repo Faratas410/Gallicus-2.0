@@ -307,7 +307,7 @@ func _disarm_reset_campaign() -> void:
 		return
 	reset_campaign_button.disabled = false
 	reset_campaign_button.text = tr("AZZERA LA CAMPAGNA")
-	reset_campaign_button.tooltip_text = tr("Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano.")
+	reset_campaign_button.tooltip_text = tr("Riparte tutto: Registro, conto di Vessa, scala dei bandi, racconti e Archivio delle condanne. Restano solo le impostazioni.")
 
 func _on_reset_campaign_pressed() -> void:
 	# Two presses: the first arms the button, the second asks RunManager to reset.
@@ -321,8 +321,9 @@ func _on_reset_campaign_pressed() -> void:
 
 func _on_campaign_reset() -> void:
 	_disarm_reset_campaign()
+	_refresh_condanne_visuals()
 	# The menu hint waits for TORNA AL MENU; the button itself confirms the reset.
-	_menu_next_step_hint = tr("Campagna azzerata. L'Archivio resta.")
+	_menu_next_step_hint = tr("Campagna azzerata. Restano solo le impostazioni.")
 	if settings_panel.visible:
 		reset_campaign_button.text = tr("CAMPAGNA AZZERATA")
 		reset_campaign_button.disabled = true

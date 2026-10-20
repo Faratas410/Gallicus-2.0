@@ -3324,9 +3324,9 @@ func _on_request_reset_campaign() -> void:
 	_touch_request_activity("request_reset_campaign()")
 	if not _guard_request_phase("request_reset_campaign", [RunPhase.MAIN_MENU, RunPhase.NONE, RunPhase.GAME_OVER]):
 		return
-	# A new campaign: the profile forgets the Registry, the ledger and the ladder;
-	# the Archive of condanne stays. Cached campaign state reloads from the profile.
-	SaveManager.reset_campaign([UNLOCK_REGISTRY_PRECEDENT])
+	# A new campaign: the profile forgets everything but the settings, Archive included.
+	# Cached campaign state reloads from the profile.
+	SaveManager.reset_campaign()
 	_registry_has_precedent = false
 	_registry_pressure = SaveManager.get_registry_pressure()
 	_registry_era = clampi(SaveManager.get_registry_era(), 0, 4)

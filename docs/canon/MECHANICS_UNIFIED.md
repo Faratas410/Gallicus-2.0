@@ -1287,10 +1287,11 @@ surface offers NUOVA CAMPAGNA and Settings offer AZZERA LA CAMPAGNA (October
 2026). Both send `request_reset_campaign`; RunManager accepts it only in
 MAIN_MENU, NONE or GAME_OVER and calls `SaveManager.reset_campaign`, which
 restores the default meta (Registry era, pressure and evolution, Vessa's
-ledger, bando step and acclaim, gesta), clears campaign dialogues seen,
-`registry_precedent` and the run save. Condanne in the Archive, the opening
-prologue, the learned rite and all settings stay. RunManager reloads its
-cached Registry state and emits `campaign_reset`.
+ledger, bando step and acclaim, gesta) and clears every unlocked id (the
+Archive of condanne and `registry_precedent`), the campaign dialogues seen,
+the opening prologue, the learned rite and the run save. Only the settings
+(language, audio, video, motion) stay, as Marco chose on 2026-10-20.
+RunManager reloads its cached Registry state and emits `campaign_reset`.
 
 ## Loop rivisto (ottobre 2026)
 

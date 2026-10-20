@@ -1161,8 +1161,8 @@ AZZERA LA CAMPAGNA,AZZERA LA CAMPAGNA
 CONFERMA: AZZERA,CONFERMA: AZZERA
 CAMPAGNA AZZERATA,CAMPAGNA AZZERATA
 ANNULLA,ANNULLA
-Campagna azzerata. L'Archivio resta.,Campagna azzerata. L'Archivio resta.
-"Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano.","Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano."
+"Riparte tutto: Registro, conto di Vessa, scala dei bandi, racconti e Archivio delle condanne. Restano solo le impostazioni.","Riparte tutto: Registro, conto di Vessa, scala dei bandi, racconti e Archivio delle condanne. Restano solo le impostazioni."
+Campagna azzerata. Restano solo le impostazioni.,Campagna azzerata. Restano solo le impostazioni.
 NEW_CAMPAIGN_CONFIRM_BODY,"Il Registro non torna. Si apre un fascicolo nuovo.
-Riparte il conto di Vessa, la scala dei bandi e i racconti.
-L'Archivio delle condanne resta tuo."
+Riparte tutto, anche l'Archivio delle condanne.
+Restano solo le impostazioni."

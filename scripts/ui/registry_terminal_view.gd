@@ -67,7 +67,7 @@ func _ready() -> void:
 	add_child(_credits)
 	_credits_button.pressed.connect(func() -> void: _credits.popup_centered(Vector2i(720, 460)))
 	_credits.confirmed.connect(func() -> void: _credits_button.grab_focus())
-	# The Absence closes this campaign for good; a new one is a new file, and the Archive stays.
+	# The Absence closes this campaign for good; a new one starts from nothing but the settings.
 	_new_campaign_button = _make_utility("NewCampaign", "NUOVA CAMPAGNA", -160.0, 160.0)
 	_new_campaign_button.offset_top = -152.0
 	_new_campaign_button.offset_bottom = -100.0

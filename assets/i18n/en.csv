@@ -1161,8 +1161,8 @@ AZZERA LA CAMPAGNA,RESET THE CAMPAIGN
 CONFERMA: AZZERA,CONFIRM: RESET
 CAMPAGNA AZZERATA,CAMPAIGN RESET
 ANNULLA,CANCEL
-Campagna azzerata. L'Archivio resta.,Campaign reset. The Archive stays.
-"Riparte il Registro, il conto di Vessa, la scala dei bandi e i racconti. L'Archivio e le impostazioni restano.","The Registry, Vessa's account, the bando ladder and the tales start over. The Archive and the settings stay."
+"Riparte tutto: Registro, conto di Vessa, scala dei bandi, racconti e Archivio delle condanne. Restano solo le impostazioni.","Everything starts over: the Registry, Vessa's account, the bando ladder, the tales and the Archive of sentences. Only the settings stay."
+Campagna azzerata. Restano solo le impostazioni.,Campaign reset. Only the settings stay.
 NEW_CAMPAIGN_CONFIRM_BODY,"The Registry does not return. A new dossier opens.
-Vessa's account, the bando ladder and the tales start over.
-The Archive of sentences stays yours."
+Everything starts over, the Archive of sentences too.
+Only the settings stay."

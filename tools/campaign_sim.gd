@@ -115,7 +115,10 @@ func _run() -> void:
 		row.merge({"run": index + 1, "reason": reason, "glory": int(manager.get("_run_state").glory) if reason == "CASH_OUT" else 0,
 			"arenas": manager.get("_run_state").arena_index, "quota": quota, "deadline": deadline,
 			"bando": save.get_bando_step() > step_before, "step": save.get_bando_step(),
-			"denari": save.get_ledger_denari(), "era": save.get_registry_era()}, true)
+			"denari": save.get_ledger_denari(), "era": save.get_registry_era(),
+			"corruption": int(manager.get("_run_state").corruption), "favor": int(manager.get("_run_state").audience_score),
+			"pressure_max": int(manager.get("_run_state").max_escalation), "scars": manager.get("_run_state").scars.size(),
+			"chain_peak": int(manager.get("_run_state").seal_chain_peak), "register": str(manager.call("_get_register_final_ending_key"))}, true)
 		rows.append(row)
 		print("SIM_RUN ", JSON.stringify(row))
 		if save.get_registry_era() == 4:

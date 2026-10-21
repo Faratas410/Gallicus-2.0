@@ -778,3 +778,10 @@ menu's former 1.02 hover scale is removed. A consulted tab or entry is
 lose the paper sheet and use the muted role, so state never relies on colour
 alone. Era 4 / Absence and object skins are unchanged.
 Evidence: `docs/support/manifesto_atto_a_stampa_2026-10-10.md`.
+
+Boot plate (2026-10-21): every launch opens on a ~2.4 s ink plate (wordmark,
+stylus incision traced left to right, tagline, dissolve to the menu). Any
+key, click, touch or pad button skips it; reduced motion shows it still for
+0.8 s and cuts. It never scales or moves, and it is absent in headless runs,
+with `--skip-intro` and when a tool instances `Main.tscn`.
+Evidence: `docs/support/intro_menu_2026-10-21.md`.

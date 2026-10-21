@@ -238,6 +238,11 @@ la matrice canonica.
 
 ## QA visuale
 
+Lastra d'avvio (21 ottobre 2026): gli strumenti che istanziano `Main.tscn` e
+le esecuzioni headless non la mostrano; per un avvio reale senza lastra si
+passa `-- --skip-intro`. La verifica a occhio (battute, skip, movimento
+ridotto) resta locale: `docs/support/intro_menu_2026-10-21.md`.
+
 Pass locale dell'8 ottobre 2026: `tools/claude_review_capture.gd` verifica
 layout del banco con saldi fixture -5/0/20 e impostazioni, in IT/EN/ES a
 720p/1080p. Non prova l'economia. `tools/claude_review_journey.gd` estende

@@ -391,3 +391,9 @@ Slider, toggle, selettori, scrollbar, tooltip e popup sono incisi nella
 stessa materia: niente bronzo, niente oro. Token in
 `scripts/ui/manifesto_palette.gd`. Report:
 `docs/support/manifesto_atto_a_stampa_2026-10-10.md`.
+
+Lastra d'avvio (21 ottobre 2026, decisione di Marco): a ogni avvio, prima del
+menu, ~2,4 s su inchiostro pieno: wordmark, linea dello stilo incisa da
+sinistra a destra, tagline, dissolvenza al menu. Saltabile con qualsiasi
+input; ferma 0,8 s con movimento ridotto. Nessuna scala o spostamento, solo
+token del kit. Report: `docs/support/intro_menu_2026-10-21.md`.

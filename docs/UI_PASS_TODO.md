@@ -84,6 +84,7 @@ RunManager, GameEvents, payload e intent; skin degli oggetti (sigillo, soglia), 
 
 ## Ancora aperto
 
+- Lastra d'avvio e menu principale (2026-10-21, `docs/support/intro_menu_2026-10-21.md`): implementati, verifica visiva aperta.
 - Verifica visiva a 720p e 1080p sul PC locale (catture kit/counter, campionario sezione 5, menu, Archivio, fascicolo, prologo). Verde solo headless: non validato.
 - Tipografia: Libre Baskerville vs RobotoSerif; dal 20 ottobre (Godot 4.7.2) il titolo del fascicolo usa il display del kit, l'esito resta col font di scena (sovrascriverlo rompe ancora lo shaping, `fd null`).
 - Focus oro 2 px del tema legacy nei controlli non migrati; rinomina di `italiana_regular_font.tres` non fatta.

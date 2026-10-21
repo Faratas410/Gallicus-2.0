@@ -155,9 +155,13 @@ Valgono per ogni superficie gameplay e utility.
    `MOSTRA UN SEGNO`, `LASCIA CEDERE`,
    `PRENDI LA QUIETANZA`, `RICEVI IL MARCHIO`, `RADDOPPIA`. Non `CONTINUA` o `CONFERMA` quando esiste
    un gesto specifico.
-8. **Un posto per ogni informazione persistente.** Posta, Pressione e arena
-   (su sette), la catena e il conto in Denari stanno nel rail in basso.
-   Bando, Gradinata e Segni condividono la colonna destra. Nella decisione
+8. **Un posto per ogni informazione persistente.** Il rail in basso porta il
+   bilancio, sempre nello stesso ordine e in ogni fase del percorso: posta,
+   Pressione, Favore, Segni, conto in Denari e arena (su sette); sotto, lo
+   stato della folla e la catena. Ogni valore spiega al passaggio del mouse
+   cosa fa. Bando, Gradinata e Segni condividono la colonna destra con il
+   dettaglio dietro i numeri, anche durante la scelta del patto e il banco
+   (decisione di Marco, 21 ottobre 2026). Nella decisione
    sulla posta il numero domina la fascia rossa sinistra; la quietanza
    ripete l'importo da incassare. Le altre fasi conservano composizioni
    proprie secondo UI_CANON e layout_rules, senza replicare la fascia.

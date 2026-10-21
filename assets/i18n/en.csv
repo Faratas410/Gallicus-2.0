@@ -693,19 +693,19 @@ Il pubblico ha iniziato a riconoscerti.,The crowd began to recognize you.
 Ora sanno chi sei.,Now they know who you are.
 Sei tornato all'arena dopo una sconfitta.,You returned to the arena after a defeat.
 L'arena e ancora li.,The arena is still there.
-Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,The Registry closed the dossier for compromise.
+Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,"The Registry closed the dossier for compromise: four Marks, or a debt with Vessa."
 "La deviazione ha superato la soglia.
 Il Registro ha emesso chiusura definitiva.","The deviation exceeded the threshold.
 The Registry ordered final closure."
-Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,The Registry closed the dossier for ascension.
+Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,The Registry closed the dossier for ascension: 40 Glory banked on one path.
 "L'evidenza di ascesa e risultata prevalente.
 Il fascicolo e stato definito.","The evidence of ascension prevailed.
 The dossier was settled."
-Il Registro ha chiuso il fascicolo per consumo (ending_scars).,The Registry closed the dossier for exhaustion.
+Il Registro ha chiuso il fascicolo per consumo (ending_scars).,The Registry closed the dossier for exhaustion: three Marks on the body.
 "L'accumulo di consumo e stato ritenuto definitivo.
 Il Registro ha concluso l'atto.","The accumulated wear was deemed final.
 The Registry concluded the record."
-Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,The Registry closed the dossier for an established pattern.
+Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,The Registry closed the dossier for an established pattern: no other closing applied.
 "La ripetizione e risultata sufficiente.
 La classificazione è stata archiviata.","The repetition was sufficient.
 The classification was archived."
@@ -887,7 +887,7 @@ Ostile: blocca la quietanza.,Hostile: it blocks the receipt.
 Fredda: la quietanza rende meno.,Cold: the receipt pays less.
 Ben disposta: il sigillo regge un po' di più.,Well disposed: the seal holds a little more often.
 Ti acclama: il sigillo regge di più.,Cheering you: the seal holds more often.
-LA GRADINATA TI PORTA: posta +2.,THE STANDS CARRY YOU: stake +2.
+LA GRADINATA TI PORTA: il favore resta a +4.,THE STANDS CARRY YOU: Favour holds at +4.
 "LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.","THE STANDS TURN ON YOU: a Mark, Pressure +1."
 Scambio %d di %d:,Exchange %d of %d:
 Rivolta della gradinata,The stands turned

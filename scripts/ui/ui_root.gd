@@ -2296,7 +2296,7 @@ func _on_resolve_ritual_strike_pressed() -> void:
 func _on_crowd_favor_changed(payload: Dictionary) -> void:
 	var favor: int = int(payload.get("favor", 0))
 	_crowd_favor_value = favor
-	# The rail reads the posta and the favour: a triumph adds to both.
+	# The rail reads the favour too: after a triumph it settles at +4.
 	_update_escalation_bar()
 	var event: String = str(payload.get("event", ""))
 	var note: String = str(payload.get("note", ""))
@@ -2315,7 +2315,7 @@ func _on_crowd_favor_changed(payload: Dictionary) -> void:
 		crowd_favor_body.text = "%s %s" % [tr("Favore %+d.") % favor, tr(_crowd_favor_band_text(favor))]
 	if crowd_favor_note != null:
 		if event == "triumph":
-			crowd_favor_note.text = tr("LA GRADINATA TI PORTA: posta +2.")
+			crowd_favor_note.text = tr("LA GRADINATA TI PORTA: il favore resta a +4.")
 		elif event == "riot":
 			crowd_favor_note.text = tr("LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.")
 		else:

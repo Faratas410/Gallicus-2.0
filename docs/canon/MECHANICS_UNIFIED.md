@@ -1387,8 +1387,9 @@ gradinata e dal favore visibile.
   (`CROWD_FAVOR_SEAL_STEP`, 0,02 per punto, da -0,1 a +0,1) e mantiene le
   soglie di prima: a 0 o meno la quietanza rende meno, a -3 o meno è bloccata.
   Il responso lo sposta di ±2 senza mai portarlo agli estremi. Negli scambi,
-  arrivare a +5 è un trionfo (`LA GRADINATA TI PORTA`: posta +2 subito,
-  favore a +3); arrivare a -5 è una rivolta (`LA GRADINATA SI RIVOLTA`: Segno
+  arrivare a +5 è un trionfo (`LA GRADINATA TI PORTA`: Denari +3 e il
+  favore scende a +4; da ottobre 2026 il trionfo non dà più posta e conta
+  solo quando ci si arriva); arrivare a -5 è una rivolta (`LA GRADINATA SI RIVOLTA`: Segno
   Marchio della vergogna e Pressione +1, o Pressione +2 se il Segno c'è già;
   favore a -2). La UI lo mostra nel riquadro in alto a sinistra
   (`CrowdFavorPanel`) tramite `crowd_favor_changed`.
@@ -1523,8 +1524,41 @@ cancelli gia' esistenti indicati nell'ultima colonna.
 | Non abbastanza | il percorso si chiude in perdita con il bando ancora aperto | - |
 | Ricordato | si chiude un percorso | - |
 | Visto dal pubblico / Il tuo nome | Favore 3+ (o folla a caccia); di nuovo in un percorso successivo | voci dure della gradinata |
-| Registro: Compromissione, Ascesa, Consumo, Pattern | chiusura del fascicolo con almeno 3 patti: Corruzione 70+, Gloria 100+, 3 Segni, altrimenti Pattern | voce d'archivio |
+| Registro: Compromissione, Ascesa, Consumo, Pattern | chiusura del fascicolo con almeno 3 patti: 4 Segni o conto di Vessa in debito, poi 40 Gloria incassate, poi 3 Segni, altrimenti Pattern | voce d'archivio |
 
-Le soglie di Pressione 3, 5 e 7 aggiungono ancora Corruzione ma non aprono
-piu' condanne. Da verificare nella campagna simulata in Godot: quanto spesso si
-arriva a Registro: Compromissione e Registro: Ascesa.
+Le soglie di Pressione 3, 5 e 7 non aprono piu' condanne e, dal ribilanciamento
+di ottobre 2026, non aggiungono Corruzione.
+
+## Ribilanciamento (ottobre 2026)
+
+Scelte di Marco del 21 ottobre 2026 sulla proposta con il simulatore di campagna
+(proposte A, D, E; B e C respinte).
+
+- **A. Corruzione dentro i Segni.** `RunState.corruption` non accumula piu'
+  nulla di nascosto: vale `Segni visibili x CORRUPTION_PER_SEGNO` (3), letto da
+  `scars_payload` a ogni aggiornamento dei Segni (`_sync_corruption_from_segni`).
+  Rilanci, patti forti, soglie di Pressione, provocazioni fallite e sconfitte
+  costose non aggiungono piu' Corruzione e la quietanza non la scala piu'. La
+  scala resta quella delle regole dei finali (`data/ending_rules.gd`: 5, 8, 10),
+  cioe' 2, 3 e 4 Segni.
+- **E. Chiusure del Registro sui numeri visibili.** Con almeno 3 patti:
+  Compromissione con 4 Segni o con il conto di Vessa in debito; poi Ascesa con
+  40 Gloria incassate nel percorso; poi Consumo con 3 Segni; altrimenti Pattern.
+  Le condizioni delle quattro condanne REGISTRO_* lo dicono al giocatore.
+- **D. Fonti di posta.** Il trionfo della gradinata non mette piu' posta: il
+  favore scende a +4 (`CROWD_TRIUMPH_SETTLE`) e il trionfo scatta solo quando
+  ci si arriva (Denari +3 invariati). Il bonus per arena attraversata resta
+  dentro il valore del sigillo, come gia' mostrato nel testo del sigillo.
+
+Simulatore di campagna (`tools/campaign_sim.gd`, circa 42 percorsi fino
+all'Assenza per stile), prima e dopo:
+
+| Stile | Chiusure prima | Chiusure dopo | Incasso mediano | Denari max |
+| --- | --- | --- | --- | --- |
+| bando | Compromissione 32, Pattern 10 | Pattern 20, Consumo 10, Ascesa 6, Compromissione 5 | 21 -> 17 | 59 -> 50 |
+| prudente | Compromissione 17, Pattern 25 | Pattern 39, Compromissione 1 | 12 -> 10 | 51 -> 27 |
+| scarno | Compromissione 21, Pattern 19 | Pattern 38, Consumo 2 | 14 -> 14 | 50 -> 58 |
+
+Varianti scartate: favore fermo a +5 dopo il trionfo (Denari max 100, scala
+completa al percorso 8: troppo generosa) e favore a +3 (una sola Ascesa).
+

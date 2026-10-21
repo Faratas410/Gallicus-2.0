@@ -102,7 +102,7 @@ il giocatore risponde abbassando lo sguardo o sfidandola, leggendo il prezzo
 esatto di entrambe le risposte. Il prezzo si paga in **favore**, Pressione,
 posta o Segni. Il favore resta per tutto il percorso: alto, il sigillo regge di
 piu'; basso, la quietanza rende meno o si blocca. In cima la gradinata ti porta
-(posta subito), in fondo si rivolta (un Segno). Ogni risposta ha una
+(Denari, e il favore scende a +4), in fondo si rivolta (un Segno). Ogni risposta ha una
 conseguenza visibile che resta.
 
 Il responso si gioca, non si guarda: ogni colpo al sigillo e' una prova

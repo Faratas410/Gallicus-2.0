@@ -693,19 +693,19 @@ Il pubblico ha iniziato a riconoscerti.,El público empezó a reconocerte.
 Ora sanno chi sei.,Ahora saben quién eres.
 Sei tornato all'arena dopo una sconfitta.,Volviste a la arena después de una derrota.
 L'arena e ancora li.,La arena sigue ahí.
-Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,El Registro cerró el expediente por compromiso.
+Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,"El Registro cerró el expediente por compromiso: cuatro Marcas, o una deuda con Vessa."
 "La deviazione ha superato la soglia.
 Il Registro ha emesso chiusura definitiva.","La desviación superó el umbral.
 El Registro ordenó el cierre definitivo."
-Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,El Registro cerró el expediente por ascenso.
+Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,El Registro cerró el expediente por ascenso: 40 de Gloria cobrada en un recorrido.
 "L'evidenza di ascesa e risultata prevalente.
 Il fascicolo e stato definito.","Las pruebas de ascenso prevalecieron.
 El expediente quedó resuelto."
-Il Registro ha chiuso il fascicolo per consumo (ending_scars).,El Registro cerró el expediente por desgaste.
+Il Registro ha chiuso il fascicolo per consumo (ending_scars).,El Registro cerró el expediente por desgaste: tres Marcas en el cuerpo.
 "L'accumulo di consumo e stato ritenuto definitivo.
 Il Registro ha concluso l'atto.","El desgaste acumulado se consideró definitivo.
 El Registro concluyó el acta."
-Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,El Registro cerró el expediente por un patrón consolidado.
+Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,El Registro cerró el expediente por un patrón consolidado: ningún otro cierre.
 "La ripetizione e risultata sufficiente.
 La classificazione è stata archiviata.","La repetición fue suficiente.
 La clasificación quedó archivada."
@@ -887,7 +887,7 @@ Ostile: blocca la quietanza.,Hostil: bloquea el recibo.
 Fredda: la quietanza rende meno.,Fría: el recibo rinde menos.
 Ben disposta: il sigillo regge un po' di più.,Bien dispuesta: el sello resiste un poco más.
 Ti acclama: il sigillo regge di più.,Te aclama: el sello resiste más.
-LA GRADINATA TI PORTA: posta +2.,LA GRADA TE LLEVA: apuesta +2.
+LA GRADINATA TI PORTA: il favore resta a +4.,LA GRADA TE LLEVA: el Favor se queda en +4.
 "LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.","LA GRADA SE REBELA: una Marca, Presión +1."
 Scambio %d di %d:,Intercambio %d de %d:
 Rivolta della gradinata,Rebelión de la grada

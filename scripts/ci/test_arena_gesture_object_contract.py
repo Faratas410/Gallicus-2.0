@@ -305,7 +305,7 @@ def _assert_crowd_exchanges() -> None:
         "La gradinata trattiene il fiato.",
         "Scambio %d di %d:",
         "Favore %+d.",
-        "LA GRADINATA TI PORTA: posta +2.",
+        "LA GRADINATA TI PORTA: il favore resta a +4.",
         "LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.",
     ):
         for locale in ("it", "en", "es"):

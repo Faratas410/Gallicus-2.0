@@ -524,7 +524,7 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   `LA GRADINATA`, a favour bar from -5 to +5 (`CrowdFavorBar`, pressure-bar
   styles), the favour with its band as body (`Favore +2. Ben disposta: ...`)
   and the last price paid as a one-line note with full tooltip. A triumph or a riot replaces the note with
-  `LA GRADINATA TI PORTA: posta +2.` or
+  `LA GRADINATA TI PORTA: il favore resta a +4.` or
   `LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.` It is hidden outside a
   percorso and in ending mode.
 - Reactive only: it renders `crowd_favor_changed` and never computes favour.

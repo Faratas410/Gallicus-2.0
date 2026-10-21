@@ -4086,10 +4086,8 @@ func _build_push_luck_state_line() -> String:
 		crowd_state = tr("La folla pretende un altro rilancio.")
 	elif pressure > 0:
 		crowd_state = tr("La folla resta in ascolto.")
-	return tr("Stato del percorso: Gloria %d | %s") % [
-		_run_state.glory,
-		crowd_state,
-	]
+	# Gloria sits in the posta until the quietanza: the receipt already shows it.
+	return crowd_state
 
 func _emit_sentence_banner_for_bet(bet_id: StringName) -> void:
 	if not GameEvents.has_signal("sentence_banner_requested"):

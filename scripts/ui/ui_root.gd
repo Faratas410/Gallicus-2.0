@@ -3095,7 +3095,8 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_title != null:
 		push_luck_title.text = str(payload.title if payload.title != "" else tr("SPINGI LA SORTE"))
 	if push_luck_info != null:
-		push_luck_info.text = tr("GLORIA: %d") % maxi(int(meta.get("current_glory", 0)), 0)
+		# Gloria lives in the posta until the quietanza; the corner shows what Vessa holds.
+		push_luck_info.text = tr("Conto %d Denari") % _ledger_denari
 		push_luck_info.show()
 		push_luck_title.show()
 		push_luck_details.show()

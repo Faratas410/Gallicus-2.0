@@ -64,7 +64,7 @@ def main() -> int:
         "func _compute_cashout_glory",
         "func _format_push_luck_receipt_text",
         "%d GLORIA IN POSTA",
-        "GLORIA: %d",
+        "Conto %d Denari",
         "func _format_cashout_note",
         "func _format_double_note",
         "func _format_condanna_note",

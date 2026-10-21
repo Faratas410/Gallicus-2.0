@@ -58,7 +58,7 @@ REQUIRED_COPY_TOKENS = {
     I18N_DIR / "it.csv": [
         "SPINGI LA SORTE",
         "NUOVO PERCORSO",
-        "Stato del percorso",
+        "La folla osserva.",
         "La pressione è rimasta sotto controllo.",
     ],
     ROOT / "scripts" / "ui" / "ui_root.gd": [

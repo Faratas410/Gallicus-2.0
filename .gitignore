@@ -24,3 +24,6 @@ text_editor_themes/
 # Python cache
 __pycache__/
 *.pyc
+
+# Downloaded audio sources (tools/audio/fetch_sources.py)
+.audio_cache/

@@ -224,3 +224,49 @@ sono quelli esistenti; nessuna modifica al bus o al gain dei gesti. Lo stesso
 valore si applica al Continue, senza riavviare una traccia gia' attiva.
 Silenzi e Assenza arrestano lo score; il battito inizia sul nero dopo il
 congedo, immediatamente sul boot terminale. Ascolto e fatigue restano umani.
+
+## Sabbia e Bronzo - 21 ottobre 2026
+
+Su richiesta dell'utente la raccolta procedurale **Pietra e Aria** e' sostituita
+da musica e cue montati da registrazioni reali gratuite. Fonti, commit e
+licenze: `tools/audio/sources.json`; crediti: `docs/audio_credits.md`. Solo
+CC0 1.0 e CC BY 3.0, nessuna licenza NC/ND, nessun modello neurale audio.
+Ricostruzione: `python tools/audio/fetch_sources.py` poi
+`python tools/audio/compose.py` (NumPy, SciPy, soundfile, pyloudnorm, ffmpeg).
+
+Musica: cinque loop OGG da 80 s, tutti a 72 BPM in re dorico, in
+`assets/audio/score/`: `atrium` (menu), `registry` (arena e patto),
+`inscription` (sigillo e rito), `threshold` (SPINGI LA SORTE), `dossier`
+(fascicolo). Strumenti: arpa, salterio ad arco, flauti dolci tenore e basso
+come aulos e bordone, tamburo a cornice, darbuka, timpani, gong, campane.
+Il tema di Gallicus (A-G-F-E-F-D) torna in ogni sezione. Loop chiusi
+ripiegando code e riverbero sull'inizio. Master a -18 LUFS, MusicDirector
+a -14 dB. Poiche' i loop condividono durata e griglia, il crossfade fa
+partire la traccia entrante alla posizione di quella uscente: la battuta non
+salta.
+
+Gradinata: due beds sul bus `Ambience` (inviato a `SFX`, quindi regolato dal
+cursore effetti). `gradinata_murmur` (voci, passi sulla sabbia, torce) sale
+con la Pressione; `gradinata_rhythm` (piedi sui gradoni sui battiti 1 e 3,
+mani su 2 e 4, allineato alla griglia della musica) entra sopra il 40% di
+Pressione e sempre in SPINGI LA SORTE. Solo in arena, patto e rito; tace nel
+menu e nel fascicolo, si ferma con Silenzio e Assenza, si dirada con la ramp
+del Registro (`material_fade`).
+
+Cue: i 25 nomi esistenti restano (stessi path e guadagni dei contratti
+object-first, durate nelle finestre), rifatti con pietra, ghiaia, sabbia,
+cera (guiro), bronzo (campane, gong, incudine), carta e monete. Nuovi cue:
+`crowd_favor_up`, `crowd_favor_down`, `crowd_triumph`, `crowd_riot`
+(da `crowd_favor_changed`, 0,35 s dopo il gesto), `coins_gain` e
+`coins_loss` (da `ledger_changed`, saltati se la quietanza o il bando hanno
+appena suonato), `bando_closed` (nota `BANDO CHIUSO`). Il battito
+dell'Assenza e' ora una grancassa reale piano, doppio colpo ogni 3 s.
+Livelli per famiglia nei file (momentary dal piu' forte tratto di 300 ms),
+picco massimo -3 dBFS; un limiter su Master a -1 dB protegge gli accumuli.
+Piccola variazione d'intonazione su hover, colpi del sigillo e monete.
+
+Alcuni timbri senza registrazione libera raggiungibile (squillo delle monete,
+grana della carta, coda della bruciatura, voci lontane della folla) sono
+sintetizzati e sempre posati sotto un livello registrato. Restano gate umani:
+ascolto su cuffie e speaker, fatica lungo una campagna, credibilita' delle
+voci della gradinata.

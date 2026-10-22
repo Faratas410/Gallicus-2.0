@@ -1,0 +1,1861 @@
+{
+ "note": "Every external recording used by tools/audio/compose.py. Pinned to commits; licenses are per file. Regenerate with tools/audio/fetch_sources.py then tools/audio/compose.py.",
+ "collections": {
+  "vcsl": {
+   "repo": "sgossner/VCSL",
+   "commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "home": "https://github.com/sgossner/VCSL"
+  },
+  "sonicpi": {
+   "repo": "sonic-pi-net/sonic-pi",
+   "commit": "df6f17e4625b0451fa2af8accf2e1e641c7ad458",
+   "license": "CC0-1.0",
+   "home": "https://github.com/sonic-pi-net/sonic-pi/blob/main/etc/samples/README.md"
+  },
+  "minetest_game": {
+   "repo": "luanti-org/minetest_game",
+   "commit": "c42e4d0c0ff9d27ff7b9b308c3cfc14098dd3a0f",
+   "home": "https://github.com/luanti-org/minetest_game"
+  }
+ },
+ "files": [
+  {
+   "key": "harp_C2_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C2_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_C2_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C2_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D2_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D2_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D2_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D2_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E2_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E2_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E2_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E2_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_F#2_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_F#2_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_F#2_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_F#2_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_G#2_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_G#2_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_G#2_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_G#2_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_A#2_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_A#2_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_A#2_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_A#2_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_C3_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C3_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_C3_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C3_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D3_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D3_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D3_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D3_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E3_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E3_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E3_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E3_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_F#3_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_F#3_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_F#3_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_F#3_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_G#3_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_G#3_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_G#3_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_G#3_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_A#3_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_A#3_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_A#3_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_A#3_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_C4_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C4_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_C4_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C4_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D4_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D4_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D4_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D4_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E4_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E4_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E4_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E4_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_F#4_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_F#4_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_F#4_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_F#4_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_G#4_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_G#4_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_G#4_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_G#4_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_A#4_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_A#4_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_A#4_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_A#4_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_C5_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C5_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_C5_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C5_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D5_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D5_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_D5_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_D5_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E5_v2",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E5_v2_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "harp_E5_v3",
+   "collection": "vcsl",
+   "path": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_E5_v3_RR1.wav",
+   "role": "folk harp, the arena lyre",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_A#3",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_A#3_Main_LongBow_rr2.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_C4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_C4_Main_LongBow_rr1.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_D4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_D4_Main_LongBow_rr1.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_E4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_E4_Main_LongBow_rr2.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_F#4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_F#4_Main_LongBow_rr1.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_G#4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_G#4_Main_LongBow_rr1.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_A#4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_A#4_Main_LongBow_rr2.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_C5",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_C5_Main_LongBow_rr1.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_bow_D5",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_D5_Main_LongBow_rr2.wav",
+   "role": "bowed psaltery, Registry pad",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_C4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_C4_Main_Pluck_rr1.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_D4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_D4_Main_Pluck_rr1.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_E4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_E4_Main_Pluck_rr2.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_F#4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_F#4_Main_Pluck_rr1.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_G#4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_G#4_Main_Pluck_rr3.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_A#4",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_A#4_Main_Pluck_rr1.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_C5",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_C5_Main_Pluck_rr1.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_D5",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_D5_Main_Pluck_rr1.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "psaltery_pluck_E5",
+   "collection": "vcsl",
+   "path": "Chordophones/Zithers/Psaltery, Bowed and Plucked/Pluck/BowedPsaltery_E5_Main_Pluck_rr1.wav",
+   "role": "plucked psaltery",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumL_Hand_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumL_Hand_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumL_HitMuted_v2_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumL_HitMuted_v2_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumL_HitMuted_v3_rr2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumL_HitMuted_v3_rr2_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumL_Hit_v2_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumL_Hit_v2_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumL_Hit_v2_rr2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumL_Hit_v2_rr2_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumL_Hit_v3_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumL_Hit_v3_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumL_Hit_v3_rr2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumL_Hit_v3_rr2_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumS_Hand_v1_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumS_Hand_v1_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumS_HitMuted_v2_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumS_HitMuted_v2_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumS_HitMuted_v3_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumS_HitMuted_v3_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumS_Hit_v2_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumS_Hit_v2_rr1_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "frame_HDrumS_Hit_v3_rr2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Frame Drum/HDrumS_Hit_v3_rr2_Sum.wav",
+   "role": "frame drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_1_vl1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_1_hit_vl1_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_1_vl2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_1_hit_vl2_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_2_vl1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_2_hit_vl1_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_2_vl2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_2_hit_vl2_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_3_vl1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_3_hit_vl1_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_3_vl2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_3_hit_vl2_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_4_vl1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_4_hit_vl1_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_4_vl2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_4_hit_vl2_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_5_vl1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_5_hit_vl1_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "darbuka_5_vl2",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Darbuka/Darbuka_5_hit_vl2_rr1.wav",
+   "role": "darbuka",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_Clap_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/Clap_rr1.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_Clap_rr2",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/Clap_rr2.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_Clap_rr3",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/Clap_rr3.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_Clap_rr4",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/Clap_rr4.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_Clap_rr5",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/Clap_rr5.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_Clap_rr6",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/Clap_rr6.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_SoloClap_vl1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/SoloClap_vl1.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_SoloClap_vl2",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/SoloClap_vl2.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_SoloClap_vl3",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/SoloClap_vl3.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "clap_SoloClap_vl4",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Claps/SoloClap_vl4.wav",
+   "role": "hand claps, the gradinata",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "gong_p",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Gong 1/gong_p.wav",
+   "role": "gong, the Registry bronze",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "gong_mf",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Gong 1/gong_mf.wav",
+   "role": "gong, the Registry bronze",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "gong_scrape_mf",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Gong 1/gong_scrape_mf.wav",
+   "role": "gong, the Registry bronze",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "anvil_Anvil_Hit1_v1_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Anvil/Anvil_Hit1_v1_rr1_Mid.wav",
+   "role": "anvil, the seal and the brand",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "anvil_Anvil_Hit1_v3_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Anvil/Anvil_Hit1_v3_rr1_Mid.wav",
+   "role": "anvil, the seal and the brand",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "anvil_Anvil_Hit2_v2_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Anvil/Anvil_Hit2_v2_rr1_Mid.wav",
+   "role": "anvil, the seal and the brand",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "anvil_Anvil_Hit3_v2_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Anvil/Anvil_Hit3_v2_rr1_Mid.wav",
+   "role": "anvil, the seal and the brand",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "anvil_Anvil_Hit3_v3_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Anvil/Anvil_Hit3_v3_rr1_Mid.wav",
+   "role": "anvil, the seal and the brand",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "guiro_Guiro_Slow_rr2_Mid",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Guiro/Guiro_Slow_rr2_Mid.wav",
+   "role": "guiro scrape, the stylus in wax",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "guiro_Guiro_Med_rr1_Mid",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Guiro/Guiro_Med_rr1_Mid.wav",
+   "role": "guiro scrape, the stylus in wax",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "guiro_Guiro_Fast_rr1_Mid",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Guiro/Guiro_Fast_rr1_Mid.wav",
+   "role": "guiro scrape, the stylus in wax",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "guiro_Guiro_Hit_rr1_Mid",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Guiro/Guiro_Hit_rr1_Mid.wav",
+   "role": "guiro scrape, the stylus in wax",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "guiro_guiro_short",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Guiro/Legacy/guiro_short.wav",
+   "role": "guiro scrape, the stylus in wax",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "guiro_guiro_long",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Guiro/Legacy/guiro_long.wav",
+   "role": "guiro scrape, the stylus in wax",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "handbell_HB_1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Hand Bells, Nepalese/HB_1.wav",
+   "role": "nepalese hand bells",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "handbell_HB_2",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Hand Bells, Nepalese/HB_2.wav",
+   "role": "nepalese hand bells",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "handbell_HB_3",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Hand Bells, Nepalese/HB_3.wav",
+   "role": "nepalese hand bells",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "finger_cymbals",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Finger Cymbals/Fing_Cymb.wav",
+   "role": "finger cymbals, coin metal",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_C3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_C3_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_D3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_D3_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_E3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_E3_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_F#3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_F#3_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_G3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_G3_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_A3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_A3_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_B3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_B3_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_C4",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_C4_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_D4",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_D4_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_E4",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_E4_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_F#4",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_F#4_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_G4",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_G4_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_A4",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_A4_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tenrec_B4",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/SusVib/TenRecorder_SusVib_B4_rr1_Main.wav",
+   "role": "tenor recorder, the aulos voice",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_F2",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_F2_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_G2",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_G2_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_A2",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_A2_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_B2",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_B2_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_C3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_C3_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_D3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_D3_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_E3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_E3_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_F3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_F3_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_G3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_G3_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassrec_A3",
+   "collection": "vcsl",
+   "path": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder/SusVib/BassRecorder_SusVib_A3_rr1_Main.wav",
+   "role": "bass recorder drone",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "ocean_drum_2",
+   "collection": "vcsl",
+   "path": "Membranophones/Other Membranophones/Ocean Drum/OceanDrum_Sus_2_Mid.wav",
+   "role": "ocean drum, sand wash",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "woodblock_wood_click_mp",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Woodblock/wood_click_mp.wav",
+   "role": "woodblock",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "woodblock_wood_click_pp_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Woodblock/wood_click_pp_rr1.wav",
+   "role": "woodblock",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "woodblock_wood_click_f_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Woodblock/wood_click_f_rr1.wav",
+   "role": "woodblock",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "woodblock_wood_click3_vl1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Woodblock/wood_click3_vl1.wav",
+   "role": "woodblock",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "timp_Timpani1_Hit_v2_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani1_Hit_v2_rr1_Sum.wav",
+   "role": "timpani",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "timp_Timpani1_Hit_v4_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani1_Hit_v4_rr1_Sum.wav",
+   "role": "timpani",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "timp_Timpani3_Hit_v2_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani3_Hit_v2_rr1_Sum.wav",
+   "role": "timpani",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "timp_Timpani3_Hit_v3_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani3_Hit_v3_rr1_Sum.wav",
+   "role": "timpani",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "timp_Timpani5_Hit_v2_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani5_Hit_v2_rr1_Sum.wav",
+   "role": "timpani",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "timp_Timpani5_Hit_v3_rr1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani5_Hit_v3_rr1_Sum.wav",
+   "role": "timpani",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "timp_roll_1_v3",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani1_Roll_v3_rr1_Sum.wav",
+   "role": "timpani roll",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tubular_chimes_D3_pp_rr3",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Tubular Bells 1/chimes_D3_pp_rr3.wav",
+   "role": "tubular bells, the Registry bell",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tubular_chimes_D4_p_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Tubular Bells 1/chimes_D4_p_rr1.wav",
+   "role": "tubular bells, the Registry bell",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tubular_chimes_A#3_pp_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Tubular Bells 1/chimes_A#3_pp_rr1.wav",
+   "role": "tubular bells, the Registry bell",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "tubular_chimes_E3_pp_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Tubular Bells 1/chimes_E3_pp_rr1.wav",
+   "role": "tubular bells, the Registry bell",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassdrum_bassdrum_hit_pp1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_hit_pp1.wav",
+   "role": "orchestral bass drum, stomps and heartbeat",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassdrum_bassdrum_hit_mp1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_hit_mp1.wav",
+   "role": "orchestral bass drum, stomps and heartbeat",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassdrum_bassdrum_hit_mf1",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_hit_mf1.wav",
+   "role": "orchestral bass drum, stomps and heartbeat",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassdrum_bassdrum_hit_f",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_hit_f.wav",
+   "role": "orchestral bass drum, stomps and heartbeat",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassdrum_bassdrum_roll_pp",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_roll_pp.wav",
+   "role": "orchestral bass drum, stomps and heartbeat",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "bassdrum_bassdrum_cresc_short",
+   "collection": "vcsl",
+   "path": "Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_cresc_short.wav",
+   "role": "orchestral bass drum, stomps and heartbeat",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "slit_LogDrumHi_MedM_v2_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Slit Drum/LogDrumHi_MedM_v2_rr1_Sum.wav",
+   "role": "log drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "slit_LogDrumLo_MedM_v2_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Slit Drum/LogDrumLo_MedM_v2_rr1_Sum.wav",
+   "role": "log drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "slit_LogDrumLo_MedM_v3_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Slit Drum/LogDrumLo_MedM_v3_rr1_Sum.wav",
+   "role": "log drum",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "shaker_Mid_ShakerDouble_Down_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Shaker, Small/Mid_ShakerDouble_Down_rr1.wav",
+   "role": "small shaker, paper grain",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "shaker_Mid_ShakerLowFaster_Down_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Shaker, Small/Mid_ShakerLowFaster_Down_rr1.wav",
+   "role": "small shaker, paper grain",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "shaker_Mid_Shaker_Slap_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Shaker, Small/Mid_Shaker_Slap_rr1.wav",
+   "role": "small shaker, paper grain",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "shaker_Mid_Shaker_Roll_Fast_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Shaker, Small/Mid_Shaker_Roll_Fast_rr1.wav",
+   "role": "small shaker, paper grain",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "slapstick_quiet_rr1",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Slapstick/slapstick_quiet_rr1.wav",
+   "role": "slapstick, tablet slap",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "slapstick_rr2",
+   "collection": "vcsl",
+   "path": "Idiophones/Struck Idiophones/Slapstick/slapstick_rr2.wav",
+   "role": "slapstick, tablet slap",
+   "license": "CC0-1.0",
+   "author": "Versilian Studios (Sam Gossner) and VCSL contributors",
+   "origin": "https://github.com/sgossner/VCSL"
+  },
+  {
+   "key": "sp_ambi_choir",
+   "collection": "sonicpi",
+   "path": "etc/samples/ambi_choir.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "Exsomniel",
+   "origin": "http://freesound.org/people/Exsomniel/sounds/207809/"
+  },
+  {
+   "key": "sp_ambi_drone",
+   "collection": "sonicpi",
+   "path": "etc/samples/ambi_drone.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "Autistic Lucario",
+   "origin": "http://freesound.org/people/Autistic%20Lucario/sounds/195341/"
+  },
+  {
+   "key": "sp_ambi_dark_woosh",
+   "collection": "sonicpi",
+   "path": "etc/samples/ambi_dark_woosh.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "EcoDTR",
+   "origin": "http://freesound.org/people/EcoDTR/sounds/27281/"
+  },
+  {
+   "key": "sp_ambi_swoosh",
+   "collection": "sonicpi",
+   "path": "etc/samples/ambi_swoosh.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "Halgrimm",
+   "origin": "http://freesound.org/people/Halgrimm/sounds/169867/"
+  },
+  {
+   "key": "sp_perc_swash",
+   "collection": "sonicpi",
+   "path": "etc/samples/perc_swash.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "qubodup",
+   "origin": "http://freesound.org/people/qubodup/sounds/60009/"
+  },
+  {
+   "key": "sp_perc_door",
+   "collection": "sonicpi",
+   "path": "etc/samples/perc_door.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "hullum",
+   "origin": "https://freesound.org/people/hullum/sounds/415579/"
+  },
+  {
+   "key": "sp_perc_impact1",
+   "collection": "sonicpi",
+   "path": "etc/samples/perc_impact1.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "hullum",
+   "origin": "https://freesound.org/people/hullum/sounds/415578/"
+  },
+  {
+   "key": "sp_perc_impact2",
+   "collection": "sonicpi",
+   "path": "etc/samples/perc_impact2.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "hullum",
+   "origin": "https://freesound.org/people/hullum/sounds/415581/"
+  },
+  {
+   "key": "sp_perc_swoosh",
+   "collection": "sonicpi",
+   "path": "etc/samples/perc_swoosh.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "hullum",
+   "origin": "https://freesound.org/people/hullum/sounds/415580/"
+  },
+  {
+   "key": "sp_drum_heavy_kick",
+   "collection": "sonicpi",
+   "path": "etc/samples/drum_heavy_kick.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "Zajo",
+   "origin": "http://freesound.org/people/Zajo/sounds/4832/"
+  },
+  {
+   "key": "sp_perc_bell",
+   "collection": "sonicpi",
+   "path": "etc/samples/perc_bell.flac",
+   "role": "Sonic Pi sample (from freesound, CC0)",
+   "license": "CC0-1.0",
+   "author": "AlaskaRobotics",
+   "origin": "http://freesound.org/people/AlaskaRobotics/sounds/221515/"
+  },
+  {
+   "key": "mt_sand_footstep_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_sand_footstep.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "worthahep88",
+   "origin": "https://freesound.org/people/worthahep88/sounds/319224/"
+  },
+  {
+   "key": "mt_sand_footstep_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_sand_footstep.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "worthahep88",
+   "origin": "https://freesound.org/people/worthahep88/sounds/319224/"
+  },
+  {
+   "key": "mt_sand_footstep_3",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_sand_footstep.3.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "worthahep88",
+   "origin": "https://freesound.org/people/worthahep88/sounds/319224/"
+  },
+  {
+   "key": "mt_gravel_dig_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_gravel_dig.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "lolamadeus",
+   "origin": "https://freesound.org/people/lolamadeus/sounds/179341/"
+  },
+  {
+   "key": "mt_gravel_dig_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_gravel_dig.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "lolamadeus",
+   "origin": "https://freesound.org/people/lolamadeus/sounds/179341/"
+  },
+  {
+   "key": "mt_gravel_dug_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_gravel_dug.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "lolamadeus",
+   "origin": "https://freesound.org/people/lolamadeus/sounds/179341/"
+  },
+  {
+   "key": "mt_gravel_dug_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_gravel_dug.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "lolamadeus",
+   "origin": "https://freesound.org/people/lolamadeus/sounds/179341/"
+  },
+  {
+   "key": "mt_gravel_dug_3",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_gravel_dug.3.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "lolamadeus",
+   "origin": "https://freesound.org/people/lolamadeus/sounds/179341/"
+  },
+  {
+   "key": "mt_dug_metal_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dug_metal.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "Iwan Gabovitch (qubodup)",
+   "origin": "http://opengameart.org/users/qubodup"
+  },
+  {
+   "key": "mt_dug_metal_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dug_metal.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "Iwan Gabovitch (qubodup)",
+   "origin": "http://opengameart.org/users/qubodup"
+  },
+  {
+   "key": "mt_place_metal_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_place_node_metal.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "Ogrebane",
+   "origin": "http://opengameart.org/content/wood-and-metal-sound-effects-volume-2"
+  },
+  {
+   "key": "mt_place_metal_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_place_node_metal.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "Ogrebane",
+   "origin": "http://opengameart.org/content/wood-and-metal-sound-effects-volume-2"
+  },
+  {
+   "key": "mt_metal_footstep_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_metal_footstep.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "mypantsfelldown",
+   "origin": "https://freesound.org/people/mypantsfelldown/sounds/398937/"
+  },
+  {
+   "key": "mt_metal_footstep_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_metal_footstep.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "mypantsfelldown",
+   "origin": "https://freesound.org/people/mypantsfelldown/sounds/398937/"
+  },
+  {
+   "key": "mt_metal_footstep_3",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_metal_footstep.3.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "mypantsfelldown",
+   "origin": "https://freesound.org/people/mypantsfelldown/sounds/398937/"
+  },
+  {
+   "key": "mt_dig_choppy_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dig_choppy.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "Sheyvan",
+   "origin": "https://freesound.org/people/Sheyvan/sounds/476113/"
+  },
+  {
+   "key": "mt_dig_choppy_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dig_choppy.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "Sheyvan",
+   "origin": "https://freesound.org/people/Sheyvan/sounds/476113/"
+  },
+  {
+   "key": "mt_dig_choppy_3",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dig_choppy.3.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "Sheyvan",
+   "origin": "https://freesound.org/people/Sheyvan/sounds/476113/"
+  },
+  {
+   "key": "mt_fencegate_open",
+   "collection": "minetest_game",
+   "path": "mods/doors/sounds/doors_fencegate_open.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC0-1.0",
+   "author": "mhtaylor67",
+   "origin": "http://www.freesound.org/people/mhtaylor67/sounds/126041/"
+  },
+  {
+   "key": "mt_dig_cracky_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dig_cracky.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Benboncan",
+   "origin": "https://freesound.org/people/Benboncan/sounds/71823/"
+  },
+  {
+   "key": "mt_dig_cracky_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dig_cracky.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Benboncan",
+   "origin": "https://freesound.org/people/Benboncan/sounds/71823/"
+  },
+  {
+   "key": "mt_dig_cracky_3",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_dig_cracky.3.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Benboncan",
+   "origin": "https://freesound.org/people/Benboncan/sounds/71823/"
+  },
+  {
+   "key": "mt_hard_footstep_1",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_hard_footstep.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Erdie",
+   "origin": "https://freesound.org/people/Erdie/sounds/41579/"
+  },
+  {
+   "key": "mt_hard_footstep_2",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_hard_footstep.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Erdie",
+   "origin": "https://freesound.org/people/Erdie/sounds/41579/"
+  },
+  {
+   "key": "mt_hard_footstep_3",
+   "collection": "minetest_game",
+   "path": "mods/default/sounds/default_hard_footstep.3.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Erdie",
+   "origin": "https://freesound.org/people/Erdie/sounds/41579/"
+  },
+  {
+   "key": "mt_fire_1",
+   "collection": "minetest_game",
+   "path": "mods/fire/sounds/fire_fire.1.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Dynamicell",
+   "origin": "http://www.freesound.org/people/Dynamicell/sounds/17548/"
+  },
+  {
+   "key": "mt_fire_2",
+   "collection": "minetest_game",
+   "path": "mods/fire/sounds/fire_fire.2.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Dynamicell",
+   "origin": "http://www.freesound.org/people/Dynamicell/sounds/17548/"
+  },
+  {
+   "key": "mt_fire_3",
+   "collection": "minetest_game",
+   "path": "mods/fire/sounds/fire_fire.3.ogg",
+   "role": "Minetest Game sound",
+   "license": "CC-BY-3.0",
+   "author": "Dynamicell",
+   "origin": "http://www.freesound.org/people/Dynamicell/sounds/17548/"
+  }
+ ]
+}

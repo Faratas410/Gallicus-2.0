@@ -172,7 +172,7 @@ func _return_to_menu() -> void:
 func _play_heartbeat() -> void:
 	if _heartbeat.playing:
 		return
-	var stream: AudioStreamWAV = preload("res://assets/audio/original/terminal_heartbeat.wav")
+	var stream: AudioStreamWAV = preload("res://assets/audio/sfx/terminal_heartbeat.wav")
 	stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 	stream.loop_end = int(stream.get_length() * stream.mix_rate)
 	_heartbeat.stream = stream

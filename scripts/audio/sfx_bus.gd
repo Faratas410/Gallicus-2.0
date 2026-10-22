@@ -1,13 +1,14 @@
 extends Node
 
-const DEFAULT_VOLUME_DB: float = -10.0
+const DEFAULT_VOLUME_DB: float = -11.0
 const SFX_BUS_NAME: String = "SFX"
 const POOL_SIZE: int = 6
 const HOVER_INTERVAL_MS: int = 120
+# Files are levelled by family in tools/audio/compose.py; these gains only trim.
 const CUE_VOLUME_DB: Dictionary = {
-	&"button_hover": -18.0,
-	&"button_click": -13.0,
-	&"cursor_move": -16.0,
+	&"button_hover": -11.0,
+	&"button_click": -11.0,
+	&"cursor_move": -11.0,
 	&"cursor_select": -11.0,
 	&"player_damage": -11.0,
 	&"enemy_hit": -12.0,
@@ -30,6 +31,13 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"registry_dossier_close": -10.0,
 	&"registry_dossier_route": -11.0,
 	&"game_over": -10.0,
+	&"crowd_favor_up": -12.0,
+	&"crowd_favor_down": -12.0,
+	&"crowd_triumph": -11.0,
+	&"crowd_riot": -11.0,
+	&"coins_gain": -12.0,
+	&"coins_loss": -12.0,
+	&"bando_closed": -11.0,
 }
 const SFX_PATHS: Dictionary = {
 	&"button_hover": "res://assets/audio/sfx/button_hover.wav",
@@ -57,13 +65,34 @@ const SFX_PATHS: Dictionary = {
 	&"registry_dossier_close": "res://assets/audio/sfx/registry_dossier_close.wav",
 	&"registry_dossier_route": "res://assets/audio/sfx/registry_dossier_route.wav",
 	&"game_over": "res://assets/audio/sfx/game_over.wav",
+	&"crowd_favor_up": "res://assets/audio/sfx/crowd_favor_up.wav",
+	&"crowd_favor_down": "res://assets/audio/sfx/crowd_favor_down.wav",
+	&"crowd_triumph": "res://assets/audio/sfx/crowd_triumph.wav",
+	&"crowd_riot": "res://assets/audio/sfx/crowd_riot.wav",
+	&"coins_gain": "res://assets/audio/sfx/coins_gain.wav",
+	&"coins_loss": "res://assets/audio/sfx/coins_loss.wav",
+	&"bando_closed": "res://assets/audio/sfx/bando_closed.wav",
 }
+# Repeated gestures should not sound identical: a small random pitch per play.
+const CUE_PITCH_JITTER: Dictionary = {
+	&"button_hover": 0.03,
+	&"cursor_move": 0.03,
+	&"registry_judgment_seal_strike": 0.04,
+	&"coins_gain": 0.05,
+	&"coins_loss": 0.04,
+}
+# The gradinata answers a little after the gesture that moved it.
+const CROWD_REACTION_DELAY: float = 0.35
+const COIN_COOLDOWN_MS: int = 1200
 
 var _streams: Dictionary = {}
 var _players: Array[AudioStreamPlayer] = []
 var _next_player_index: int = 0
 var _sfx_bus_index: int = -1
 var _last_hover_ms: int = -120
+var _last_favor: int = 0
+var _last_cue_ms: Dictionary = {}
+var _silenced_at_ms: int = -1
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -78,6 +107,9 @@ func _ready() -> void:
 	_preload_streams()
 	_apply_saved_sfx_volume()
 	GameEvents.run_ended.connect(_on_run_ended)
+	GameEvents.crowd_favor_changed.connect(_on_crowd_favor_changed)
+	GameEvents.ledger_changed.connect(_on_ledger_changed)
+	GameEvents.bando_changed.connect(_on_bando_changed)
 	if GameEvents != null and GameEvents.has_signal("settings_changed"):
 		var settings_callable: Callable = Callable(self, "_on_settings_changed")
 		if not GameEvents.settings_changed.is_connected(settings_callable):
@@ -90,6 +122,14 @@ func _ensure_sfx_bus() -> void:
 		_sfx_bus_index = AudioServer.bus_count - 1
 		AudioServer.set_bus_name(_sfx_bus_index, SFX_BUS_NAME)
 	AudioServer.set_bus_send(_sfx_bus_index, "Master")
+	# One limiter on Master keeps stacked crowd, coins and score below clipping.
+	var master: int = AudioServer.get_bus_index("Master")
+	for effect_index: int in range(AudioServer.get_bus_effect_count(master)):
+		if AudioServer.get_bus_effect(master, effect_index) is AudioEffectHardLimiter:
+			return
+	var limiter: AudioEffectHardLimiter = AudioEffectHardLimiter.new()
+	limiter.ceiling_db = -1.0
+	AudioServer.add_bus_effect(master, limiter)
 
 func _apply_saved_sfx_volume() -> void:
 	var value: float = 1.0
@@ -137,7 +177,10 @@ func play_cue(cue: StringName, volume_db: float = INF) -> void:
 	player.stop()
 	player.stream = stream
 	player.volume_db = float(CUE_VOLUME_DB.get(cue, DEFAULT_VOLUME_DB)) if is_inf(volume_db) else volume_db
+	var jitter: float = float(CUE_PITCH_JITTER.get(cue, 0.0))
+	player.pitch_scale = 1.0 + randf_range(-jitter, jitter) if jitter > 0.0 else 1.0
 	player.play()
+	_last_cue_ms[cue] = Time.get_ticks_msec()
 
 func _preload_streams() -> void:
 	for cue: StringName in SFX_PATHS.keys():
@@ -157,5 +200,53 @@ func _get_stream(cue: StringName) -> AudioStream:
 
 func _on_run_ended(reason: String, _summary: Dictionary) -> void:
 	if reason == "REGISTRY_SILENCE" or reason == "REGISTRY_ABSENCE":
+		_silenced_at_ms = Time.get_ticks_msec()
 		for player: AudioStreamPlayer in _players:
 			player.stop()
+
+func _played_recently(cues: Array[StringName], window_ms: int) -> bool:
+	var now: int = Time.get_ticks_msec()
+	for cue: StringName in cues:
+		if _last_cue_ms.has(cue) and now - int(_last_cue_ms[cue]) < window_ms:
+			return true
+	return false
+
+func _play_later(cue: StringName, delay: float) -> void:
+	var scheduled: int = Time.get_ticks_msec()
+	await get_tree().create_timer(delay).timeout
+	if _silenced_at_ms < scheduled:
+		play_cue(cue)
+
+func _on_crowd_favor_changed(payload: Dictionary) -> void:
+	# Resets and reloads carry no note and no event: they only set the baseline.
+	var favor: int = int(payload.get("favor", 0))
+	var event: String = str(payload.get("event", ""))
+	var moved: bool = event != "" or str(payload.get("note", "")) != ""
+	var previous: int = _last_favor
+	_last_favor = favor
+	if not moved:
+		return
+	var cue: StringName = &""
+	if event == "triumph":
+		cue = &"crowd_triumph"
+	elif event == "riot":
+		cue = &"crowd_riot"
+	elif favor > previous:
+		cue = &"crowd_favor_up"
+	elif favor < previous:
+		cue = &"crowd_favor_down"
+	if cue != &"":
+		_play_later(cue, CROWD_REACTION_DELAY)
+
+func _on_ledger_changed(payload: Dictionary) -> void:
+	var delta: int = int(payload.get("delta", 0))
+	if delta == 0:
+		return
+	# The quietanza and the bando already ring their own coins.
+	if _played_recently([&"registry_receipt_take", &"bando_closed"], COIN_COOLDOWN_MS):
+		return
+	play_cue(&"coins_gain" if delta > 0 else &"coins_loss")
+
+func _on_bando_changed(payload: Dictionary) -> void:
+	if str(payload.get("note", "")) == "BANDO CHIUSO":
+		play_cue(&"bando_closed")

@@ -41,7 +41,6 @@ const ARENA_THRESHOLD_CROSSED_META: StringName = &"arena_threshold_crossed"
 @onready var continue_hint_panel: PanelContainer = get_node("CenterContainer/MenuVBox/ContinueHintPanel") as PanelContainer
 @onready var continue_hint_label: Label = get_node("CenterContainer/MenuVBox/ContinueHintPanel/ContinueHintLabel") as Label
 @onready var new_game_button: Button = get_node("CenterContainer/MenuVBox/NewGameButton") as Button
-@onready var load_game_button: Button = get_node("CenterContainer/MenuVBox/LoadGameButton") as Button
 @onready var achievements_button: Button = get_node("CenterContainer/MenuVBox/UtilityRow/AchievementsButton") as Button
 @onready var settings_button: Button = get_node("CenterContainer/MenuVBox/UtilityRow/SettingsButton") as Button
 @onready var credits_button: Button = get_node("CenterContainer/MenuVBox/UtilityRow/CreditsButton") as Button
@@ -111,7 +110,6 @@ func _ready() -> void:
 	_arena_themes = ArenaThemes.new()
 	_run_manager_port = RunManagerUiPort.new(get_tree())
 	_show_menu()
-	_disable_unavailable_buttons()
 	_refresh_continue_button()
 	_setup_language_options()
 	_setup_resolution_options()
@@ -330,11 +328,6 @@ func _on_campaign_reset() -> void:
 		return
 	visible = true
 	_show_menu()
-
-func _disable_unavailable_buttons() -> void:
-	load_game_button.disabled = true
-	load_game_button.visible = false
-	load_game_button.tooltip_text = tr("Funzione disattiva in L3.")
 
 func _build_condanne_list() -> void:
 	if condanne_populated:
@@ -895,8 +888,6 @@ func _refresh_localized_ui() -> void:
 		continue_button.text = tr("RIPRENDI IL PERCORSO")
 	if new_game_button != null:
 		new_game_button.text = tr("ENTRA NELL'ARENA")
-	if load_game_button != null:
-		load_game_button.text = tr("CARICA PARTITA")
 	if achievements_button != null:
 		achievements_button.text = tr("ARCHIVIO")
 	if settings_button != null:
@@ -1076,7 +1067,6 @@ func _cache_menu_buttons() -> void:
 	_menu_buttons = [
 		continue_button,
 		new_game_button,
-		load_game_button,
 		achievements_button,
 		settings_button,
 		credits_button,

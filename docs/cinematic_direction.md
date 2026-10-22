@@ -26,6 +26,10 @@ stato prima -> oggetto -> trasformazione -> stato dopo -> controllo restituito
 
 ### Apertura
 
+Prima del menu, a ogni avvio: lastra d'avvio di ~2,4 s (inchiostro, wordmark,
+incisione dello stilo, tagline), saltabile con qualsiasi input e ferma con
+movimento ridotto. Specifica in `docs/support/intro_menu_2026-10-21.md`.
+
 La finestra illustrata a lettura manuale sostituisce il prologo automatico
 descritto nelle reference storiche sotto. Specifica corrente in `docs/support/illustrated_dialogues_2026-09-12.md`.
 

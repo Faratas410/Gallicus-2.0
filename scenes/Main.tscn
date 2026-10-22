@@ -31,6 +31,8 @@
 
 [ext_resource type="Script" path="res://scripts/ui/opening_prologue.gd" id="34_prologue"]
 
+[ext_resource type="Script" path="res://scripts/ui/boot_intro.gd" id="35_boot_intro"]
+
 [sub_resource type="StyleBoxEmpty" id="MenuEmpty"]
 
 [sub_resource type="StyleBoxTexture" id="4"]
@@ -207,10 +209,6 @@ theme_override_colors/font_color = Color(0.94, 0.88, 0.75, 1)
 theme_override_colors/font_shadow_color = Color(0.08, 0.06, 0.04, 1)
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 16
-
-[node name="LoadGameButton" type="Button" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
-visible = false
-text = "CARICA PARTITA"
 
 [node name="UtilitySpace" type="Control" parent="MenuLayer/MainMenu/CenterContainer/MenuVBox"]
 custom_minimum_size = Vector2(0, 10)
@@ -639,3 +637,7 @@ size_flags_horizontal = 4
 
 [node name="OpeningPrologue" type="CanvasLayer" parent="."]
 script = ExtResource("34_prologue")
+
+[node name="BootIntro" type="CanvasLayer" parent="."]
+layer = 80
+script = ExtResource("35_boot_intro")

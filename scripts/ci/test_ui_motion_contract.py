@@ -93,6 +93,17 @@ def test_ui_motion_contract() -> None:
     # lives in the kit surface, which kills its previous tween before tracing.
     if "MENU_BUTTON_HOVER_SCALE" in main_menu or '"scale", target_scale' in main_menu:
         raise AssertionError("main_menu.gd must not scale buttons on hover/focus")
+    # Boot plate: shown at every launch, skippable, sober (no scale or offset),
+    # still under reduced motion, never in headless runs or tool-instanced scenes.
+    boot_intro = _read(ROOT / "scripts" / "ui" / "boot_intro.gd")
+    for token in ['"--skip-intro"', '"headless"', "get_reduced_motion", "set_input_as_handled", "MAIN_SCENE_PATH"]:
+        if token not in boot_intro:
+            raise AssertionError(f"boot_intro.gd missing boot plate token: {token}")
+    for forbidden in ['"scale"', '"position"', ".scale =", ".position =", "create_tween()"]:
+        if forbidden in boot_intro:
+            raise AssertionError(f"boot_intro.gd must not move or scale the plate: {forbidden}")
+    if 'script = ExtResource("35_boot_intro")' not in _read(ROOT / "scenes" / "Main.tscn"):
+        raise AssertionError("Main.tscn must instance the BootIntro plate")
     surface = _read(ROOT / "scripts" / "ui" / "manifesto_action_surface.gd")
     if "_accent_tween.kill()" not in surface or "get_reduced_motion" not in surface:
         raise AssertionError("manifesto_action_surface.gd must guard accent tweens and honour reduced motion")

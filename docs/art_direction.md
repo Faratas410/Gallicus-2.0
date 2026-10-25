@@ -1,5 +1,31 @@
 # Gallicus Art Direction
 
+## Prova pixel art - 25 ottobre 2026
+
+Dopo i mockup del 25 ottobre l'utente ha scelto di valutare una direzione pixel
+art ricavata dagli asset dipinti esistenti (non disegnata da zero). La prova e'
+limitata al rito di giudizio e non sostituisce ancora il resto di questo
+documento:
+
+- Fondale e pelle del sigillo passano per `assets/ui/official/ritual_aging.gdshader`
+  con `pixel_rows = 360`: griglia 640x360 (due pixel del viewport 1280x720 per
+  pixel d'arte) e palette chiusa di 32 colori, `assets/ui/official/pixel_palette.png`,
+  ricavata dai fondali unificati e dalla cera con `python tools/build_pixel_palette.py`.
+  Niente dithering. La usura ambientale resta applicata prima della palette.
+- Titoli e parola del sigillo in Pixelify Sans (OFL, `assets/ui/official/typography/pixelify_sans/`),
+  importata senza antialiasing. Il testo di lettura resta nella serif e nel
+  sans attuali, a piena risoluzione: la leggibilita' viene prima della coerenza
+  del pixel.
+- Le parole del sigillo sono disegnate da un'etichetta figlia
+  (`scripts/ui/pixel_caption.gd`) per non essere ricampionate dallo shader; il
+  bottone conserva testo, focus e bersaglio.
+- Codice della prova: `scripts/ui/pixel_scene.gd`. Mockup di riferimento fuori
+  dal repo, nella cartella condivisa del progetto (`ui_bella/direzioni/`).
+
+La regola "niente micrograna" e i divieti restano validi per tutto cio' che non
+e' nella prova. Se la direzione viene adottata, questo documento va riscritto
+per intero (palette, fondali, ritratti, tipografia) invece di accumulare eccezioni.
+
 ## Uniformazione corrente - 24 ottobre 2026
 
 La richiesta di uniformazione completa estende la famiglia recente della posta

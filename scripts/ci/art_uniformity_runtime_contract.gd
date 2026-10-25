@@ -101,7 +101,10 @@ func _run() -> void:
 				if texture.texture != null and texture.texture.resource_path in EnvironmentPresentation.BACKGROUNDS:
 					var material := texture.material as ShaderMaterial
 					check(material != null and is_equal_approx(float(material.get_shader_parameter("wear")), expected), "environment missed ramp: " + str(texture.get_path()))
-	check(strike.material == null, "environment shader leaked onto command")
+	# The pixel-art trial snaps the seal skin to the scene grid; environmental wear must still stay off it.
+	var strike_material := strike.material as ShaderMaterial
+	var strike_wear: Variant = strike_material.get_shader_parameter("wear") if strike_material != null else null
+	check(strike_wear == null or is_zero_approx(float(strike_wear)), "environment shader leaked onto command")
 	ui.call("_apply_visual_tier", ui._VISUAL_TIER_ERA3)
 	check(ui.get("hud_root").material == null and ui.get("hud_root").modulate == Color.WHITE, "late tier distorted the HUD")
 	check(ui.get("modals_root").material == null and ui.get("modals_root").modulate == Color.WHITE, "late tier distorted reading surfaces")

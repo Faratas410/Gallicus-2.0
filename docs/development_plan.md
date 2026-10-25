@@ -10,6 +10,13 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+25 ottobre 2026: il lavoro locale del 22-24 ottobre e' stato portato su un ramo
+e unito con `origin/main` (Godot 4.7.2, riequilibrio, audio). Su richiesta
+dell'utente e' attiva una prova pixel art sul solo rito di giudizio; regole e
+limiti in `docs/art_direction.md`, sezione "Prova pixel art - 25 ottobre 2026".
+Prossimo passo: valutazione umana della prova in movimento, poi decisione se
+estenderla a banco, gradinata e posta.
+
 24 ottobre 2026, pass successivo all'audit richiesto dall'utente: uniformazione
 di ambienti/cast, tipografia, fascia persistente, focus e animazioni; corretti
 shake della UI e cancellazione degli effetti in Movimento ridotto.

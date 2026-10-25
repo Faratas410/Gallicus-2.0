@@ -3,6 +3,7 @@ extends CanvasLayer
 const ManifestoKit = preload("res://scripts/ui/manifesto_kit.gd")
 const Palette = preload("res://scripts/ui/manifesto_palette.gd")
 const RitualEnvironment = preload("res://scripts/ui/ritual_environment.gd")
+const PixelScene = preload("res://scripts/ui/pixel_scene.gd")
 const ArenaPresence = preload("res://scripts/ui/verdict_atmosphere.gd")
 const StatusHeader = preload("res://scripts/ui/ritual_status_header.gd")
 
@@ -3267,6 +3268,7 @@ func _wire_ritual_advance_buttons() -> void:
 		_wire_sign_preview(pact_sealed_advance_button)
 	if resolve_ritual_advance_button != null:
 		ManifestoKit.apply_judgment(resolve_ritual_panel)
+		PixelScene.apply_judgment(resolve_ritual_panel, get_node_or_null("UI_RunRoot/Phase_RESOLUTION/ResolveBackdrop") as TextureRect)
 		var resolve_callable: Callable = Callable(self, "_on_resolve_ritual_next_pressed")
 		if not resolve_ritual_advance_button.pressed.is_connected(resolve_callable):
 			resolve_ritual_advance_button.pressed.connect(resolve_callable)

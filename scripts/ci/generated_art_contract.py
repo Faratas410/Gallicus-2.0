@@ -103,8 +103,10 @@ def validate_theme() -> None:
             if source.suffix not in (".gd", ".tscn", ".tres") or "ci" in source.parts:
                 continue
             for path in re.findall(r'res://[^"\s]+\.(?:png|jpg|webp|svg|ttf|otf)', source.read_text(encoding="utf-8")):
-                is_title_font = path in {"res://assets/ui/official/typography/LibreBaskerville.ttf", "res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf", "res://assets/ui/official/typography/roboto_serif/GallicusSerif-Regular.ttf"}
-                assert path.startswith("res://assets/ui/generated/") or is_title_font, f"{source}: retired visual dependency {path}"
+                is_title_font = path in {"res://assets/ui/official/typography/LibreBaskerville.ttf", "res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf", "res://assets/ui/official/typography/roboto_serif/GallicusSerif-Regular.ttf", "res://assets/ui/official/typography/pixelify_sans/PixelifySans-Regular.ttf"}
+                # Pixel-art trial (25 Oct 2026): the closed palette is derived from the generated backgrounds by tools/build_pixel_palette.py.
+                is_pixel_palette = path == "res://assets/ui/official/pixel_palette.png"
+                assert path.startswith("res://assets/ui/generated/") or is_title_font or is_pixel_palette, f"{source}: retired visual dependency {path}"
                 assert (ROOT / path.removeprefix("res://")).is_file(), f"{source}: missing visual {path}"
                 if is_title_font:
                     assert (ROOT / path.removeprefix("res://")).with_name("OFL.txt").is_file(), "missing title font license"

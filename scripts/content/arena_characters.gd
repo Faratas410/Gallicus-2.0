@@ -39,7 +39,7 @@ const CHARACTERS: Array[Dictionary] = [
   },
   {
     "id": "lauro",
-    "portrait": "res://assets/ui/generated/dialogue_lauro.png",
+    "portrait": "res://assets/ui/generated/dialogue_lauro_cutout.png",
     "name": "Lauro",
     "role": "Storno cantastorie",
     "description": "Lauro ha il piumaggio nero sparso di macchie chiare, come cera schizzata. Imita il richiamo di Orvo e il vecchio grido di Rugo meglio di loro. Canta le gesta di chi passa nell’arena e ogni sera cambia una parola."

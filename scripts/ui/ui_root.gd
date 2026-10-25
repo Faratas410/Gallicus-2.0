@@ -2,6 +2,9 @@ extends CanvasLayer
 
 const ManifestoKit = preload("res://scripts/ui/manifesto_kit.gd")
 const Palette = preload("res://scripts/ui/manifesto_palette.gd")
+const RitualEnvironment = preload("res://scripts/ui/ritual_environment.gd")
+const ArenaPresence = preload("res://scripts/ui/verdict_atmosphere.gd")
+const StatusHeader = preload("res://scripts/ui/ritual_status_header.gd")
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -542,6 +545,12 @@ func _ready() -> void:
 	_wire_ritual_advance_buttons()
 	_wire_intro_phase_buttons()
 	_apply_manifesto_print()
+	_install_arena_presence()
+	var status_header := StatusHeader.new()
+	status_header.name = "RitualStatusHeader"
+	hud_root.add_child(status_header)
+	status_header.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	call_deferred("_apply_campaign_environment")
 
 	_refresh_runtime_group_cache(true)
 
@@ -1000,12 +1009,22 @@ func show_countdown(seconds: int = 3) -> void:
 # FLOW: MainMenu -> GameEvents.request_new_run -> RunManager.start_new_run -> UI updates
 # Preconditions: RunManager emitted GameEvents.run_started; UI nodes are initialized.
 # Postconditions: HUD/modals reset and visible state reflects a fresh run.
+func _install_arena_presence() -> void:
+	for path: String in ["UI_RunRoot/Phase_RESOLUTION/ResolveBackdrop", "UI_RunRoot/Phase_MID_CHOICE/MidChoiceBackdrop"]:
+		var backdrop: Control = get_node(path)
+		var presence := ArenaPresence.new()
+		presence.name = "ArenaPresence"
+		presence.draw_background = false
+		presence.staging = &"crowd" if path.contains("MID_CHOICE") else &"arena"
+		backdrop.add_child(presence)
+		presence.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
 func _apply_campaign_environment() -> void:
 	var presentation: Dictionary = _run_manager_port.get_registry_presentation()
 	var fade: float = float(presentation.get("material_fade", 0.0))
-	# Fade only environmental surfaces; text and focus contrast remain constant.
-	for background: Node in find_children("*Backdrop", "TextureRect", true, false):
-		(background as TextureRect).self_modulate = Color(1.0 - fade, 1.0 - fade, 1.0 - fade, 1.0)
+	RitualEnvironment.apply_scene(get_parent(), fade)
+	for presence: Node in get_tree().get_nodes_in_group("arena_presence"):
+		presence.call("present_environment", fade)
 
 func _on_run_started() -> void:
 	_set_crowd_favor_visible(false)
@@ -1930,50 +1949,16 @@ func _set_silence_overlay_active(active: bool) -> void:
 	else:
 		silence_overlay.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
-func _apply_visual_tier(tier: int) -> void:
-	var use_alt: bool = tier == _VISUAL_TIER_ERA2
-	var use_global: bool = tier == _VISUAL_TIER_ERA3
-	var arena_panel_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
-	var end_run_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
-	var hud_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
-	var ui_root_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
-	var torch_overlay_modulate: Color = Color(1.0, 1.0, 1.0, 0.0)
-	var resolution_overlay_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
-	if use_alt:
-		arena_panel_modulate = Color(0.78, 0.78, 0.78, 1.0)
-		end_run_modulate = Color(1.0, 1.0, 1.0, 0.92)
-	elif use_global:
-		arena_panel_modulate = Color(0.74, 0.74, 0.74, 1.0)
-		end_run_modulate = Color(1.0, 1.0, 1.0, 0.94)
-		hud_modulate = Color(0.9, 0.9, 0.9, 1.0)
-		ui_root_modulate = Color(0.9, 0.9, 0.9, 1.0)
-		torch_overlay_modulate = Color(1.0, 1.0, 1.0, 0.22)
-		resolution_overlay_modulate = Color(1.0, 1.0, 1.0, 0.85)
-	if arena_theme_title_panel != null:
-		arena_theme_title_panel.modulate = arena_panel_modulate
-		arena_theme_title_panel.material = _ERA2_PANEL_MATERIAL if tier == _VISUAL_TIER_ERA2 else null
-	if arena_theme_subtitle_panel != null:
-		arena_theme_subtitle_panel.modulate = arena_panel_modulate
-		arena_theme_subtitle_panel.material = _ERA2_PANEL_MATERIAL if tier == _VISUAL_TIER_ERA2 else null
-	if game_over_panel != null:
-		game_over_panel.modulate = end_run_modulate
-		game_over_panel.material = _ERA2_PANEL_MATERIAL if tier == _VISUAL_TIER_ERA2 else null
-	if hud_root != null:
-		hud_root.modulate = hud_modulate
-		hud_root.material = _ERA3_GLOBAL_MATERIAL if tier == _VISUAL_TIER_ERA3 else null
-	if modals_root != null:
-		modals_root.modulate = ui_root_modulate
-		modals_root.material = _ERA3_GLOBAL_MATERIAL if tier == _VISUAL_TIER_ERA3 else null
+func _apply_visual_tier(_tier: int) -> void:
+	# Environmental wear owns the ramp now. Legacy global distortion must not
+	# alter live type, paper, focus or the coordinates of interactive surfaces.
+	for surface: CanvasItem in [arena_theme_title_panel, arena_theme_subtitle_panel, game_over_panel, hud_root, modals_root, arena_resolution_panel, verdict_header, verdict_sentence_label, verdict_outcome]:
+		if surface != null:
+			surface.modulate = Color.WHITE
+			surface.material = null
 	if torch_flicker_overlay != null:
-		torch_flicker_overlay.modulate = torch_overlay_modulate
-	if arena_resolution_panel != null:
-		arena_resolution_panel.modulate = resolution_overlay_modulate
-	if verdict_header != null:
-		verdict_header.modulate = Color(1.0, 1.0, 1.0, 1.0)
-	if verdict_sentence_label != null:
-		verdict_sentence_label.modulate = Color(1.0, 1.0, 1.0, 1.0)
-	if verdict_outcome != null:
-		verdict_outcome.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		torch_flicker_overlay.modulate.a = 0.0
+	_apply_campaign_environment()
 
 func _on_betting_opened() -> void:
 	if game_over_panel != null and game_over_panel.visible:
@@ -2248,6 +2233,8 @@ func _on_crowd_favor_changed(payload: Dictionary) -> void:
 	# The rail reads the posta too: a triumph adds to it.
 	_update_escalation_bar()
 	var favor: int = int(payload.get("favor", 0))
+	for presence: Node in get_tree().get_nodes_in_group("arena_presence"):
+		presence.set("favor", favor)
 	var event: String = str(payload.get("event", ""))
 	var note: String = str(payload.get("note", ""))
 	if crowd_favor_bar != null:
@@ -2535,6 +2522,8 @@ func _apply_resolution_ritual_strike_feedback(on_beat: bool, held: bool = true) 
 			# The drop settles into its socket; the seal itself never moves.
 			pip.scale = Vector2(1.6, 1.6)
 			var drop := create_tween()
+			pip.set_meta("wax_pip", true)
+			_track_presentation_tween(pip, drop, &"wax_pip_tween")
 			drop.set_trans(Tween.TRANS_BACK)
 			drop.set_ease(Tween.EASE_OUT)
 			drop.tween_property(pip, "scale", Vector2.ONE, 0.18)
@@ -2946,7 +2935,10 @@ func _hide_scars_detail() -> void:
 		return
 	scars_detail_panel.visible = false
 	_set_scars_detail_modal(false)
-	if scars_panel != null and scars_panel.is_visible_in_tree():
+	var header: Control = get_node_or_null("HUD/RitualStatusHeader")
+	if header != null and header.is_visible_in_tree():
+		header.get("scars").grab_focus()
+	elif scars_panel != null and scars_panel.is_visible_in_tree():
 		scars_panel.grab_focus()
 
 func _on_scars_detail_closed() -> void:
@@ -4245,38 +4237,14 @@ func _release_presentation_tween(item: CanvasItem, key: StringName) -> void:
 		tween.kill()
 	item.remove_meta(key)
 
-func _play_panel_enter(panel: CanvasItem, kind: String = MOTION_KIND_STANDARD) -> void:
+func _play_panel_enter(panel: CanvasItem, _kind: String = MOTION_KIND_STANDARD) -> void:
 	if panel == null:
 		return
 	var control: Control = panel as Control
 	if control == null:
 		return
-	if _is_reduced_motion():
-		_restore_panel_motion_base(control)
-		return
-	var start_scale: Vector2 = Vector2(0.985, 0.985)
-	var start_shift: float = 0.0
-	var seconds: float = 0.18
-	match kind:
-		MOTION_KIND_RITUAL:
-			start_scale = Vector2(0.99, 0.99)
-			start_shift = 4.0
-			seconds = 0.22
-		MOTION_KIND_ENDING:
-			start_scale = Vector2(0.975, 0.975)
-			seconds = 0.24
-		_:
-			pass
-	_set_panel_motion_shift(control, start_shift)
-	control.pivot_offset = control.size * 0.5
-	control.scale = start_scale
-	var tween: Tween = create_tween()
-	_track_presentation_tween(control, tween, &"panel_enter_tween")
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(control, "scale", Vector2.ONE, seconds)
-	if start_shift != 0.0:
-		tween.parallel().tween_method(func(value: float) -> void: _set_panel_motion_shift(control, value), start_shift, 0.0, seconds)
+	# _fade_modal owns entry opacity; geometry is stable from the first frame.
+	_restore_panel_motion_base(control)
 
 func _play_backdrop_enter(modal: Control, kind: String = MOTION_KIND_STANDARD) -> void:
 	if modal == null:
@@ -4470,8 +4438,10 @@ func _on_settings_changed(payload: Dictionary) -> void:
 		return
 	for item: Node in get_tree().get_nodes_in_group("active_presentation_motion"):
 		var canvas: CanvasItem = item as CanvasItem
-		for key: StringName in [&"panel_enter_tween", &"backdrop_enter_tween", &"shade_enter_tween"]:
+		for key: StringName in [&"panel_enter_tween", &"backdrop_enter_tween", &"shade_enter_tween", &"wax_pip_tween"]:
 			_release_presentation_tween(canvas, key)
+		if canvas is Control and canvas.has_meta("wax_pip"):
+			(canvas as Control).scale = Vector2.ONE
 		if canvas.has_meta(MOTION_BASE_OFFSETS_META):
 			_restore_panel_motion_base(canvas)
 		if canvas is Control and canvas.has_meta(BACKDROP_BASE_SCALE_META):
@@ -4868,10 +4838,10 @@ func _apply_manifesto_print() -> void:
 		if scars_detail_close != null:
 			ManifestoKit.apply_secondary_button(scars_detail_close)
 	# Dossier body: same reading type as the Registry; pigments by state.
-	# Headings keep their scene face: overriding it with the variable display
-	# face here makes Godot 4.6.2 fail shaping (fd null) on the posta commands.
+	# All reading heads now share the regular, non-condensed face of the arena.
 	for label: Label in [verdict_header, verdict_outcome, verdict_charge_label]:
 		if label != null:
+			label.add_theme_font_override("font", ManifestoKit.DISPLAY_FONT)
 			label.add_theme_constant_override("outline_size", 0)
 	if verdict_sentence_label != null:
 		verdict_sentence_label.add_theme_font_override("font", ManifestoKit.BODY_FONT)

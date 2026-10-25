@@ -1,0 +1,14 @@
+{
+  "source": "RobotoSerif.ttf",
+  "source_sha256": "351ced75f3851806aa6d846b669361521eb1925cfc530396df9c1a1b77061ddb",
+  "output": "GallicusSerif-Regular.ttf",
+  "sha256": "62767c74d66561632c88761bb73bb0be4b8666fc9703dd63721dbe7acedc7340",
+  "axes": {
+    "wdth": 100,
+    "opsz": 32,
+    "wght": 400,
+    "GRAD": 0.0
+  },
+  "tool": "fontTools 4.67.0",
+  "license": "SIL OFL 1.1 (OFL.txt)"
+}

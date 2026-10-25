@@ -1,4 +1,5 @@
 extends CanvasLayer
+const Kit = preload("res://scripts/ui/manifesto_kit.gd")
 
 # Presentation only: listens to RunManager's terminal reasons through GameEvents.
 var _port: RunManagerUiPort
@@ -14,6 +15,7 @@ var _credits: AcceptDialog
 var _elapsed: float = 0.0
 var _status_label: Label
 var _status_key: String = ""
+var _status_tween: Tween
 const DEPARTURE_SECONDS: float = 6.0
 const STATUS_COLOR: Color = Color(0.93, 0.66, 0.30, 1.0)
 
@@ -51,6 +53,7 @@ func _ready() -> void:
 	_return_button.offset_bottom = -36.0
 	_return_button.text = tr("TORNA AL MENU")
 	_return_button.pressed.connect(_return_to_menu)
+	Kit.apply_secondary_button(_return_button)
 	_exit_button = _make_utility("ExitGame", "ESCI DAL GIOCO", 12.0, 332.0)
 	_exit_button.pressed.connect(_exit_game)
 	_credits_button = _make_utility("TerminalCredits", "CREDITI", -332.0, -12.0)
@@ -63,6 +66,7 @@ func _ready() -> void:
 	_credits.theme = credits_theme
 	_credits.ok_button_text = tr("CHIUDI")
 	add_child(_credits)
+	Kit.apply_dialog(_credits)
 	_credits_button.pressed.connect(func() -> void: _credits.popup_centered(Vector2i(720, 460)))
 	_credits.confirmed.connect(func() -> void: _credits_button.grab_focus())
 	_heartbeat = AudioStreamPlayer.new()
@@ -81,7 +85,7 @@ func _ready() -> void:
 	GameEvents.run_ended.connect(_on_run_ended)
 	GameEvents.run_started.connect(_hide_surface)
 	GameEvents.request_show_main_menu.connect(_hide_surface)
-	GameEvents.settings_changed.connect(func(_payload: Dictionary) -> void: _refresh_text())
+	GameEvents.settings_changed.connect(_on_settings_changed)
 	call_deferred("_restore_terminal")
 
 func _restore_terminal() -> void:
@@ -129,9 +133,16 @@ func _show_status() -> void:
 		_status_label.modulate.a = 1.0
 		return
 	_status_label.modulate.a = 0.0
-	var tween: Tween = create_tween()
-	tween.tween_interval(0.6)
-	tween.tween_property(_status_label, "modulate:a", 1.0, 1.2)
+	if is_instance_valid(_status_tween): _status_tween.kill()
+	_status_tween = create_tween()
+	_status_tween.tween_interval(0.6)
+	_status_tween.tween_property(_status_label, "modulate:a", 1.0, 1.2)
+
+func _on_settings_changed(payload: Dictionary) -> void:
+	_refresh_text()
+	if bool(payload.get("reduced_motion", false)):
+		if is_instance_valid(_status_tween): _status_tween.kill()
+		_status_label.modulate.a = 1.0
 
 func _offer_return() -> void:
 	if _terminal or not _black.visible:
@@ -169,6 +180,7 @@ func _make_utility(node_name: String, label: String, left: float, right: float) 
 	button.name = node_name
 	button.text = tr(label)
 	button.theme = _return_button.theme
+	Kit.apply_secondary_button(button)
 	_black.add_child(button)
 	button.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	button.offset_left = left
@@ -200,7 +212,7 @@ func _build_departure() -> void:
 	_departure = TextureRect.new()
 	_departure.name = "UnclassifiedDeparture"
 	_departure.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_departure.texture = preload("res://assets/ui/generated/registry_departure.png")
+	_departure.texture = preload("res://assets/ui/generated/portico_unified.png")
 	_departure.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_departure.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	_black.add_child(_departure)

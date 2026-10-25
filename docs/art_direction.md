@@ -1,6 +1,49 @@
 # Gallicus Art Direction
 
+## Uniformazione corrente - 24 ottobre 2026
+
+La richiesta di uniformazione completa estende la famiglia recente della posta
+alle altre superfici. Questo paragrafo prevale sulle descrizioni storiche di
+font condensato, HUD laterale e fondali campione presenti sotto.
+
+- Quattro vedute dello stesso luogo: `arena_unified.png`, `crowd_unified.png`,
+  `registry_counter_unified.png`, `portico_unified.png`. Arco, cancello,
+  due vessilli aviani, pietra calda e luce del pomeriggio restano comuni.
+  Nessuna figura o scritta e' impressa nei fondali.
+- Banco per Registro/firma; cambio di sguardo alla Gradinata; sabbia comune
+  per giudizio/posta; portico per fascicolo, conversazioni e menu.
+  L'Assenza conserva il portico vuoto e il nero canonico.
+- Serif regolare comune per titoli, comandi e numeri: Roboto Serif adottata,
+  peso 400, larghezza 100, optical size 32. Corpo sans per la lettura.
+  Si distribuisce `GallicusSerif-Regular.ttf`, OFL, con `font_verdict.tres`.
+- Carta/inchiostro/cera e incisioni del kit rimangono comuni. Focus = regola
+  avorio inferiore da 4 px anche sugli oggetti pittorici. Blocco = due barre
+  e motivo scritto. Selected non diventa un'impronta registrata.
+- Arena, Pressione, Catena, Favore, Conto e Segni nella fascia superiore
+  comune; Bando e spiegazione della fascia di Favore nella seconda riga.
+  Note almeno 15 px, senza spostare le
+  metriche passando da firma a Gradinata, giudizio e posta.
+- Sei personaggi con cutout, luce e dettaglio del piumaggio comuni.
+  Lauro usa `dialogue_lauro_cutout.png`; Vessa conserva busto e vassoio.
+- La deriva autorevole tratta tutti i fondali con sottrazione di pigmento
+  e ossidazione nelle ombre. Folla e luce si diradano; testo, focus e
+  contatori mantengono il contrasto. Nessuna nuova regola di campagna.
+- Niente shake del CanvasLayer. Entrate con dissolvenza e geometria ferma;
+  polvere locale, luce opaca breve, piedi della folla ancorati. Le lampade
+  dipinte non ricevono una seconda fiamma poligonale. Movimento ridotto
+  interrompe anche gli effetti gia' avviati.
+
+Mandato, inventario e prove: `docs/support/art_unification_2026-10-24.md`.
+
 ## Identita' scelta: Manifesto del Verdetto
+
+Revisione locale del 15 ottobre, Godot 4.7.2: le schede dell'Archivio
+conservano un minimo di 240x52 px ciascuna; i checkbox usano il segno nativo
+del kit senza duplicarlo nel testo. Le incisioni dei documenti restano nel
+padding esterno alla lettura anche dentro un PanelContainer. Nota del banco
+a 15 px, come le altre note di servizio. Composizioni, pigmenti, skin oggetto
+e fallback tipografico del Fascicolo restano quelli gia' implementati.
+Prove e limiti: `docs/support/manifesto_visual_review_2026-10-15.md`.
 
 Pacchetto 3, 9 ottobre: sigillo nativo in basalto, bronzo e cera con CTA
 Manifesto 22 px; nessuna sostituzione con le incisioni del marchio. Verbale
@@ -379,6 +422,21 @@ restano nel manifest per provenienza; i cataloghi runtime usano i cutout.
 Prove e limiti nel report `docs/support/claude_review_2026-10-08.md`.
 
 ## Menu e bottoni - Atto a stampa, 10 ottobre 2026
+
+Override circoscritto del 22 ottobre: Incasso/Rilancio segue il mockup
+"Dopo meno seria, piu' viva" fornito dall'utente. Arena scura, quietanza
+inclinata con timbro, sigillo di cera rossa con incisioni aviane e Marchio
+su pietra sostituiscono le lastre piatte di questa sola fase. La folla
+pittorica comprende esclusivamente galli e gufi; torce e polvere hanno
+movimento ambientale contenuto. La seconda incisione non simula una
+frattura: e' un gesto di esposizione, distinto dall'esito del sigillo.
+La Catena pulsa brevemente al cambio; movimento ridotto ferma atmosfera,
+conteggio animato, sollevamento e scossa. Vessa parla senza promettere
+premi o tempi inesistenti. Dopo il feedback dell'utente, la folla e' rada,
+in cinque piccoli gruppi distanti; tipografia locale Roboto Serif 400,
+larghezza normale, optical size 32, azioni in sentence case. La variante
+Manifesto 900 condensata resta nelle altre schermate. Provenienza e confronto:
+`docs/support/living_verdict_2026-10-22.md`.
 
 Menu, impostazioni, crediti, Archivio, fascicolo, HUD e prologo usano il kit
 Manifesto. Primario/continuazione: lastra d'inchiostro con testo avorio, al

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gallicus — studio della fascia di stato</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="game" id="game">
+  <header class="hud" aria-label="Stato del percorso">
+    <div class="identity"><div class="insignia" aria-hidden="true">Ⅲ</div><div><span class="eyebrow">IL REGISTRO</span><strong>GALLICUS</strong><span class="small">Il tuo nome resta.</span></div></div>
+    <div class="vitals">
+      <div class="meter-head"><span>PRESSIONE</span><span><b id="pressure-value">4</b><span class="muted"> / 10</span></span></div>
+      <div class="meter pressure" role="meter" aria-label="Pressione" aria-valuemin="0" aria-valuemax="10" aria-valuenow="4"><div id="pressure-fill"></div></div>
+      <div class="meter-head favor-head"><span>FAVORE DELLA GRADINATA</span><span><b id="favor-value">6</b><span class="muted"> / 10</span></span></div>
+      <div class="meter favor" role="meter" aria-label="Favore della gradinata" aria-valuemin="0" aria-valuemax="10" aria-valuenow="6"><div id="favor-fill"></div></div>
+    </div>
+    <div class="stake"><span class="eyebrow">GLORIA IN POSTA</span><div><strong id="stake-value">24</strong><span class="chain" id="chain">CATENA ×1,5</span></div><span class="small">Ancora da incassare</span></div>
+    <div class="account"><span class="eyebrow">CONTO DI VESSA</span><div class="money"><span class="coin" aria-hidden="true">G</span><strong id="coins">38</strong><span>Denari</span></div><span class="small">Tra un percorso e l’altro</span></div>
+    <button class="scars" id="scars-open" aria-haspopup="dialog"><span class="eyebrow">SUL CORPO</span><span class="scar-count"><span aria-hidden="true">╱╱</span> 2 Segni</span><span class="small">Consulta i segni ↗</span></button>
+  </header>
+  <section class="journey" aria-label="Obiettivo del percorso">
+    <div class="arena"><span class="eyebrow">ARENA</span><b>III <span>/ VII</span></b><span class="arena-dots" aria-hidden="true">● ● ● ○ ○ ○ ○</span></div>
+    <div class="bando"><span class="eyebrow">BANDO DI ORVO</span><span>Incassa <b>30 Gloria</b> entro l’arena V</span><span class="bando-track" aria-hidden="true"><i id="bando-fill"></i></span><b id="bando-value">24 / 30</b></div>
+    <span class="crowd-state" id="crowd-state">La gradinata ti sostiene.</span>
+  </section>
+  <section class="stage" aria-labelledby="stage-title">
+    <div class="chapter"><span class="eyebrow">IL RESPONSO È SCRITTO</span><h1 id="stage-title">Quanto<br>vale fermarsi?</h1><p id="stage-copy">Il sigillo ha retto.<br>La posta è tua, se la prendi adesso.</p><div class="fine-rule"></div><span class="chapter-note">L’arena dimentica.<br>Il Registro no.</span></div>
+    <div class="arena-caption"><span class="tiny-mark" aria-hidden="true">Ⅲ</span><span>UN ALTRO ATTO.<br>UN’ALTRA TRACCIA.</span></div>
+    <div class="result" id="result" role="status" aria-live="polite" hidden><span class="eyebrow" id="result-kicker"></span><h2 id="result-title"></h2><p id="result-copy"></p><button id="result-reset" class="plain-button">TORNA ALLA SCELTA ↶</button></div>
+  </section>
+  <section class="decision" aria-label="Incassa o rilancia">
+    <div class="decision-heading"><span>IL PERCORSO È ANCORA APERTO</span><span>La tua prossima incisione</span></div>
+    <div class="choices">
+      <article class="choice paper"><span class="choice-index">I / CHIUDI IL PERCORSO</span><div class="choice-body"><div><h2>La quietanza</h2><p id="cash-copy">24 Gloria diventano tue.<br>Il rischio si chiude qui.</p></div><span class="choice-symbol" aria-hidden="true">↓</span></div><button class="action ink" id="cashout"><span>PRENDI LA QUIETANZA</span><span aria-hidden="true">↵</span></button><span class="consequence" id="cash-note">Incassi 24 Gloria. Il bando resta incompleto.</span></article>
+      <article class="choice wax"><span class="choice-index">II / RESTA ESPOSTO</span><div class="choice-body"><div><h2>La seconda incisione</h2><p id="risk-copy">Lascia 24 Gloria in posta.<br>La gradinata stringe ancora.</p></div><span class="choice-symbol" aria-hidden="true">↑</span></div><button class="action exposure" id="raise"><span>RADDOPPIA</span><span aria-hidden="true">→</span></button><span class="consequence" id="raise-note">Pressione +1. La posta resta a rischio.</span></article>
+    </div>
+  </section>
+</main>
+<footer class="lab" aria-label="Controlli del prototipo">
+  <span><b>STUDIO UI · 01</b><span class="lab-note"> HTML · valori dimostrativi</span></span>
+  <div class="scenarios" role="group" aria-label="Scenario dimostrativo"><button data-scenario="normal" aria-pressed="true">Equilibrio</button><button data-scenario="high" aria-pressed="false">Pressione alta</button><button data-scenario="blocked" aria-pressed="false">Incasso bloccato</button></div>
+  <button id="reset" class="reset">Ripristina ↶</button>
+</footer>
+<dialog id="scars-dialog" aria-labelledby="scars-title"><span class="eyebrow">IL CORPO CONSERVA</span><h2 id="scars-title">I tuoi Segni</h2><p class="dialog-intro">Due costi accettati. Due tracce nel percorso.</p><div class="scar-entry"><span aria-hidden="true">╱</span><div><h3>Ossa incrinate</h3><p>Una traccia che resta sul corpo.</p></div></div><div class="scar-entry"><span aria-hidden="true">╳</span><div><h3>Occhio perduto</h3><p>Il Registro ne conserva il nome.</p></div></div><p class="prototype-note">Anteprima della consultazione: gli effetti di gioco non sono simulati.</p><form method="dialog"><button class="action ink">TORNA ALL’ARENA <span aria-hidden="true">×</span></button></form></dialog>
+<script src="app.js"></script>
+</body>
+</html>

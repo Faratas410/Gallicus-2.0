@@ -918,9 +918,9 @@ func _on_reduced_motion_toggled(toggled: bool) -> void:
 
 func _update_toggle_labels() -> void:
 	if fullscreen_toggle != null:
-		fullscreen_toggle.text = "%s %s" % ["[X]" if fullscreen_toggle.button_pressed else "[ ]", tr("SCHERMO INTERO")]
+		fullscreen_toggle.text = tr("SCHERMO INTERO")
 	if reduced_motion_toggle != null:
-		reduced_motion_toggle.text = "%s %s" % ["[X]" if reduced_motion_toggle.button_pressed else "[ ]", tr("MOVIMENTO RIDOTTO")]
+		reduced_motion_toggle.text = tr("MOVIMENTO RIDOTTO")
 
 func _on_settings_opened() -> void:
 	_show_settings()
@@ -1067,7 +1067,12 @@ func _play_sfx(cue: StringName) -> void:
 func _apply_manifesto_skin() -> void:
 	# Atto a stampa, packages 5-6: menu, utilities, settings, credits, Archive.
 	# The arena threshold keeps its object skin; only native commands migrate.
+	new_game_button.add_theme_font_override("font", Kit.DISPLAY_FONT)
+	new_game_button.add_theme_font_size_override("font_size", Kit.ACTION_COMPACT)
 	Kit.apply_primary_button(continue_button)
+	for menu_action: Button in [achievements_button, settings_button, credits_button]:
+		# Regular-width serif must keep each short menu word on one line.
+		menu_action.custom_minimum_size = Vector2(190, 50)
 	for button: Button in [achievements_button, settings_button, credits_button, back_button, credits_back_button, settings_back_button]:
 		Kit.apply_secondary_button(button)
 	for panel_path: String in ["AchievementsPanel/UtilitySurface", "CreditsPanel/UtilitySurface", "SettingsPanel/UtilitySurface"]:

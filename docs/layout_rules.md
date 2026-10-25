@@ -1,5 +1,27 @@
 # Gallicus Layout Rules
 
+## Fascia persistente comune - 24 ottobre 2026
+
+`scripts/ui/ritual_status_header.gd` mantiene Arena, Pressione a dieci tacche,
+Catena, Favore, Denari e Segni nella prima riga (82 px complessivi a 720p),
+Bando e spiegazione della fascia di Favore nella seconda. La geometria resta uguale nelle fasi attive; colonna
+laterale e rail rimangono consumer dati interni, senza un secondo rendering.
+Il fascicolo conserva il suo resoconto completo. Menu, dialoghi, Silenzio e
+Assenza non ricevono la fascia sopra i loro overlay. Il dettaglio Segni
+restituisce focus al comando di consultazione.
+
+La posta mantiene oggetti bassi e numero dominante, senza duplicare l'HUD.
+Vessa usa un busto 140x210. La notifica Segno ha uno spazio riservato fra voce
+e oggetti (x520, y310, larghezza680, altezza100 nella composizione 1280x720),
+con ripristino della geometria precedente all'uscita. Focus e barre di blocco
+seguono il target fermo, anche quando la pelle passiva dell'oggetto si solleva.
+
+Titoli 28/26 px, azioni compatte 22 px, corpo 17 px, servizio almeno 15 px:
+serif regolare comune e sans di lettura. Il kit gestisce il wrapping del testo
+semantico nativo senza cambiare il rettangolo interattivo. Le descrizioni
+storiche della posta e dei contatori sotto sono sostituite da questo pass.
+Prove: `docs/support/art_unification_2026-10-24.md`.
+
 ## Baseline
 
 Giudizio Manifesto, 9 ottobre: pannello trasparente `820x400`, offset
@@ -56,6 +78,18 @@ Il layout deve tollerare italiano, inglese e spagnolo senza font scalato con la
 larghezza viewport.
 
 ## Struttura
+
+Eccezione Incasso/Rilancio, 22 ottobre 2026: la scena adotta una composizione
+logica 1280x720 scalata uniformemente a 1920x1080. Gloria e dieci tacche di
+Pressione sono nella scena; Arena, Bando, Favore, Denari e accesso ai Segni
+occupano il bordo superiore. I precedenti HUD laterali sono nascosti soltanto
+durante questa fase e ripristinati all'uscita. Quietanza e sigillo sono
+oggetti pittorici separati; compare il Marchio quando l'incasso e' bloccato.
+I target nativi restano fermi: si muove solo la pelle passiva dell'oggetto.
+Note, cause dei blocchi e titoli hanno spazio riservato anche in EN/ES.
+Questa eccezione sostituisce la precedente ricetta a colonne della posta,
+senza propagare il layout alle altre fasi. Prove:
+`docs/support/living_verdict_2026-10-22.md`.
 
 - L'oggetto attivo occupa il centro funzionale.
 - Titolo, conseguenza e gesto appartengono alla stessa superficie.

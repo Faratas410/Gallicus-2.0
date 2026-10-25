@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/ui/menu_ambience.gd" id="4_menu_ambience"]
-[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_chamber.png" id="5_menu_base"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/portico_unified.png" id="5_menu_base"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="6"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_panel_main.tres" id="7"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_normal.tres" id="8"]
@@ -292,6 +292,8 @@ alignment = 1
 theme_override_constants/separation = 12
 
 [node name="CondanneTabButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox"]
+custom_minimum_size = Vector2(240, 52)
+size_flags_horizontal = 3
 text = "CONDANNE"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")
@@ -299,6 +301,8 @@ theme_override_styles/pressed = ExtResource("10")
 theme_override_styles/disabled = ExtResource("11")
 
 [node name="MuseoTabButton" type="Button" parent="MenuLayer/MainMenu/AchievementsPanel/AchievementsCenter/AchievementsVBox/TabsHBox"]
+custom_minimum_size = Vector2(240, 52)
+size_flags_horizontal = 3
 text = "MUSEO"
 theme_override_styles/normal = ExtResource("8")
 theme_override_styles/hover = ExtResource("9")

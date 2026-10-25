@@ -20,7 +20,7 @@ const SPEAKERS: Dictionary = {
   "lauro": {
     "name": "Lauro",
     "role": "Storno cantastorie",
-    "portrait": "res://assets/ui/generated/dialogue_lauro.png"
+    "portrait": "res://assets/ui/generated/dialogue_lauro_cutout.png"
   },
   "registry": {
     "name": "Registro",

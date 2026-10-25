@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/betting_circle_ui.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_counter.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_counter_unified.png" id="4"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="8"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_betting_title.tres" id="10"]
 [ext_resource type="FontVariation" path="res://assets/ui/fonts/italiana_regular_font.tres" id="11_book_font"]

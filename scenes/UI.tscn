@@ -8,9 +8,9 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_pressed.tres" id="14"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_button_primary_disabled.tres" id="15"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_panel_main.tres" id="16"]
-[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_counter.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_counter_unified.png" id="17"]
 [ext_resource type="Theme" path="res://assets/ui/theme/official_theme.tres" id="18"]
-[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_counter.png" id="19_registry_ritual"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/registry_counter_unified.png" id="19_registry_ritual"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_banner.tres" id="20_verdict_banner"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_detail.tres" id="21_verdict_detail"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_verdict_body.tres" id="22_verdict_body"]
@@ -59,7 +59,10 @@
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_counter_empty.tres" id="counter_empty"]
 [ext_resource type="StyleBox" path="res://assets/ui/official/styleboxes/sb_counter_section.tres" id="counter_section"]
 [ext_resource type="Texture2D" path="res://assets/ui/generated/registry_wax_trace.png" id="wax_trace"]
-[ext_resource type="Texture2D" path="res://assets/ui/generated/arena_illustrated_sample.png" id="arena_illustrated"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/arena_unified.png" id="arena_illustrated"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/generated/crowd_unified.png" id="crowd_unified"]
+[ext_resource type="Texture2D" path="res://assets/ui/generated/portico_unified.png" id="portico_unified"]
 
 [ext_resource type="Script" path="res://scripts/ui/registry_imprint.gd" id="registry_imprint"]
 [ext_resource type="Script" path="res://scripts/ui/manifesto_verdict.gd" id="manifesto_view"]
@@ -862,7 +865,7 @@ color = Color(0, 0, 0, 0.56)
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-texture = ExtResource("arena_illustrated")
+texture = ExtResource("crowd_unified")
 texture_filter = 0
 expand_mode = 1
 stretch_mode = 5
@@ -1523,7 +1526,7 @@ color = Color(0, 0, 0, 0)
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-texture = ExtResource("19_registry_ritual")
+texture = ExtResource("portico_unified")
 texture_filter = 0
 expand_mode = 1
 stretch_mode = 5

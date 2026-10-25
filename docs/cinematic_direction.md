@@ -1,5 +1,17 @@
 # Gallicus Cinematic Direction
 
+## Raccordo del 24 ottobre 2026
+
+Il pass di uniformazione usa entrate in dissolvenza, senza scala o traslazione
+dei pannelli interattivi. Resta l'apertura del libro con input disabilitato.
+Impatto, pip e particelle sono passivi e cancellabili; niente shake della UI.
+Movimento ridotto interrompe anche effetti gia' in corso. Il congedo resta
+di sei secondi, ora nel portico della famiglia comune, poi nero e sole utility
+canoniche. Il ritratto di Lauro segue il cast; non cambia eleggibilita', testo,
+lettura manuale o timing delle conversazioni. Le descrizioni storiche delle
+entrate a 4 px/0,99 sotto sono sostituite da questo trattamento.
+Prove: `docs/support/art_unification_2026-10-24.md`.
+
 ## Funzione
 
 Le cinematiche collegano cambi di stato che una singola schermata non puo'

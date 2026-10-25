@@ -5,10 +5,10 @@ extends RefCounted
 const Palette = preload("res://scripts/ui/manifesto_palette.gd")
 const Surface = preload("res://scripts/ui/manifesto_action_surface.gd")
 const Document = preload("res://scripts/ui/manifesto_document_surface.gd")
-const DISPLAY_FONT_PATH: String = "res://assets/ui/fonts/font_manifesto.tres"
+const DISPLAY_FONT_PATH: String = "res://assets/ui/fonts/font_verdict.tres"
 const DISPLAY_FONT = preload(DISPLAY_FONT_PATH)
 const BODY_FONT = preload("res://assets/ui/fonts/font_body.tres")
-const TITLE_LARGE: int = 40
+const TITLE_LARGE: int = 28
 const TITLE_SMALL: int = 26
 const ACTION_COMPACT: int = 22
 const BODY_SIZE: int = 17
@@ -116,8 +116,13 @@ static func apply_action(button: Button, material: StringName, compact: bool = f
 	button.add_theme_stylebox_override("focus", focus)
 	# Size before face: never shape the display face at an inherited size.
 	button.add_theme_constant_override("outline_size", 0)
-	button.add_theme_font_size_override("font_size", SERVICE_SIZE if body_text else ACTION_COMPACT if compact else 1)
-	button.add_theme_font_override("font", BODY_FONT if body_text else DISPLAY_FONT)
+	# Keep the transparent semantic text wrapped at a real reading size.
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.add_theme_font_size_override("font_size", SERVICE_SIZE if body_text else ACTION_COMPACT)
+	# Expanded actions draw PrintedTitle; leave the invisible semantic face
+	# alone. Swapping that unused face during boot invalidates a Godot 4.6 RID.
+	if compact or body_text:
+		button.add_theme_font_override("font", BODY_FONT if body_text else DISPLAY_FONT)
 	button.modulate = Color.WHITE
 	for state: String in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_disabled_color"]:
 		button.add_theme_color_override(state, pigment if compact else Color.TRANSPARENT)
@@ -378,14 +383,31 @@ static func apply_dialog(dialog: AcceptDialog) -> void:
 	var ok: Button = dialog.get_ok_button()
 	if ok != null:
 		apply_primary_button(ok)
+		# AcceptDialog sizes its native button from its minimum, unlike our rows.
+		ok.autowrap_mode = TextServer.AUTOWRAP_OFF
+		ok.custom_minimum_size = Vector2(180, 52)
 
 static func animate_panel_in(panel: CanvasItem, reduced_motion: bool) -> void:
-	# Sober profile: panels only dissolve; existing ritual entries keep theirs.
+	# One opacity tween per surface; toggling reduced motion settles it too.
+	if panel.has_meta("kit_enter_tween"):
+		var previous: Tween = panel.get_meta("kit_enter_tween")
+		if is_instance_valid(previous): previous.kill()
+	if not panel.has_meta("kit_motion_wired"):
+		panel.set_meta("kit_motion_wired", true)
+		var panel_ref: WeakRef = weakref(panel)
+		panel.get_node("/root/GameEvents").settings_changed.connect(func(payload: Dictionary) -> void:
+			var target: CanvasItem = panel_ref.get_ref()
+			if target != null and bool(payload.get("reduced_motion", false)):
+				if target.has_meta("kit_enter_tween"):
+					var running: Tween = target.get_meta("kit_enter_tween")
+					if is_instance_valid(running): running.kill()
+				target.modulate.a = 1.0)
 	if reduced_motion:
 		panel.modulate.a = 1.0
 		return
 	panel.modulate.a = 0.0
 	var tween: Tween = panel.create_tween()
+	panel.set_meta("kit_enter_tween", tween)
 	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.set_ease(Tween.EASE_OUT)

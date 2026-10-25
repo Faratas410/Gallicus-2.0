@@ -1,5 +1,23 @@
 # UI Boundary Model — Level 3
 
+## Incasso/Rilancio: arena viva, 22 ottobre 2026
+
+La UI resta reattiva: Posta, Gloria, Corruzione, conversione della quietanza,
+Pressione e blocchi derivano dai payload esistenti. Il presenter
+`scripts/ui/manifesto_verdict.gd` dispone gli oggetti e il contesto;
+`scripts/ui/verdict_object.gd` disegna la pelle dei Button nativi;
+`scripts/ui/verdict_atmosphere.gd` anima livelli passivi con tempo locale
+deterministico, senza consumare RNG gameplay.
+
+Incasso imprime la quietanza; Rilancio aggiunge una seconda incisione
+parallela nella cera, senza crepa e senza acclamazione di vittoria.
+Un movimento di approvazione o cedimento puo' derivare solo dall'ultimo
+`seal_strike_resolved` autorevole. Nessun ritardo della fase e nessun
+premio, tiro o esito sono introdotti dalla presentazione. Le richieste
+`request_pyl_cashout`, `request_pyl_double` e `request_pyl_condanna`,
+il lock e il watchdog esistenti restano invariati. L'accesso ai Segni
+riusa il dettaglio gia' presente. Le nuove battute di Vessa sono in IT/EN/ES.
+
 ## Phase Containers vs Event Queue Overlays
 
 Level 3 UI distingue esplicitamente tra:
@@ -101,6 +119,31 @@ All changes to systems described here must update this document in the same PR.
 - [Arena tension](#arena-tension)
 
 ## Object-First Player-Facing Contract
+
+### Uniformazione richiesta - 24 ottobre 2026
+
+L'utente autorizza il raccordo artistico completo dopo l'audit. La fascia
+persistente comune sostituisce rail/colonna laterale e l'eccezione della sola
+posta: Arena, Pressione (dieci tacche), Catena, Favore, Denari, Segni e Bando
+mantengono posizione nelle fasi attive. I consumer dati esistenti conservano
+payload e owner; il nuovo header li legge senza calcolare economia o outcome.
+Le schermate narrative e terminali conservano copertura e focus esclusivi.
+
+Serif regolare condivisa, corpo sans, materiali carta/inchiostro/cera, focus
+a regola da 4 px e blocco con due barre e causa scritta valgono anche per
+gli oggetti pittorici della posta e le utility terminali. La consultazione
+Segni restituisce focus al suo comando. Font fisso OFL e vedute originali
+mantengono rispettivamente la forma della Roboto Serif adottata e lo stesso
+luogo. Dettagli: `docs/art_direction.md`, `docs/layout_rules.md`.
+
+Nessun effetto sposta CanvasLayer, testo o target abilitati. Le entrate
+usano dissolvenza; il libro puo' aprirsi mentre i comandi sono disabilitati.
+Impatto = breve luce e polvere locale. Movimento ridotto interrompe anche
+conteggio, gauge, particelle, pip, accenti e tween in corso, con valori finali
+immediati e dissolvenze al massimo 0,08 s. Il trattamento materiale comune
+legge soltanto la presentazione autorevole; non cambia ramp, Ere, flow,
+segnali o save. Le descrizioni storiche incompatibili sotto sono superate.
+Prove: `docs/support/art_unification_2026-10-24.md`.
 
 Le azioni gameplay devono essere progettate secondo:
 

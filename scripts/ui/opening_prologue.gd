@@ -3,7 +3,7 @@ extends CanvasLayer
 # Legacy node name retained. RunManager supplies the eligible, persisted beat.
 const Catalog = preload("res://scripts/content/campaign_dialogues.gd")
 const Kit = preload("res://scripts/ui/manifesto_kit.gd")
-const CHAMBER: Texture2D = preload("res://assets/ui/generated/registry_chamber.png")
+const CHAMBER: Texture2D = preload("res://assets/ui/generated/portico_unified.png")
 const READ_GUARD: float = 0.5
 var _port: RunManagerUiPort
 var _surface: Control

@@ -4,6 +4,7 @@ Generated full-frame RGB artwork replaces the former transparent silhouettes.
 The interaction and scene-size checks remain in each object contract.
 """
 from pathlib import Path
+import hashlib
 import json
 import re
 import struct
@@ -83,6 +84,13 @@ def validate_family(family: str) -> None:
     assert bindings == FAMILIES[family], f"{family}: missing state material"
 
 def validate_theme() -> None:
+    static_font = ROOT / "assets/ui/official/typography/roboto_serif/GallicusSerif-Regular.ttf"
+    receipt = json.loads(static_font.with_suffix(".json").read_text(encoding="utf-8"))
+    assert receipt["output"] == static_font.name, "title font receipt names another output"
+    assert receipt["sha256"] == hashlib.sha256(static_font.read_bytes()).hexdigest(), "title font receipt is stale"
+    source_font = static_font.with_name(receipt["source"])
+    assert receipt["source_sha256"] == hashlib.sha256(source_font.read_bytes()).hexdigest(), "title font source changed"
+    assert receipt["axes"] == {"wdth": 100, "opsz": 32, "wght": 400, "GRAD": 0}, "title font axes differ from art direction"
     text = (ROOT / "assets/ui/theme/official_theme.tres").read_text(encoding="utf-8")
     assert "theme_types/" not in text, "Theme dictionaries are not Godot resource properties"
     for token in ("Label/colors/font_color", "Button/styles/normal", "Button/styles/focus", "OptionButton/styles/normal", "ProgressBar/styles/fill"):
@@ -95,7 +103,7 @@ def validate_theme() -> None:
             if source.suffix not in (".gd", ".tscn", ".tres") or "ci" in source.parts:
                 continue
             for path in re.findall(r'res://[^"\s]+\.(?:png|jpg|webp|svg|ttf|otf)', source.read_text(encoding="utf-8")):
-                is_title_font = path in {"res://assets/ui/official/typography/LibreBaskerville.ttf", "res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf"}
+                is_title_font = path in {"res://assets/ui/official/typography/LibreBaskerville.ttf", "res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf", "res://assets/ui/official/typography/roboto_serif/GallicusSerif-Regular.ttf"}
                 assert path.startswith("res://assets/ui/generated/") or is_title_font, f"{source}: retired visual dependency {path}"
                 assert (ROOT / path.removeprefix("res://")).is_file(), f"{source}: missing visual {path}"
                 if is_title_font:

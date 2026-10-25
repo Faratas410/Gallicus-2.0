@@ -12,7 +12,7 @@ const THEMES: Dictionary = {
 	},
 	ARENA_DEBT: {
 		"title": "Arena del Debito",
-		"subtitle": "Il debito non muore con te.",
+		"subtitle": "Qui il conto ti segue.",
 		"bg_texture_path": "",
 		"overlay_texture_path": "",
 	},

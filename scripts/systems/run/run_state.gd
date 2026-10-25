@@ -109,6 +109,8 @@ var ledger_lost: int = 0
 var bando_quota: int = 0
 var bando_deadline: int = 0
 var bando_status: String = ""
+# Set when the percorso closes in a loss while the bando was still open (Non abbastanza).
+var bando_reachable_at_close: bool = false
 # The chain: seals held in a row this percorso; a broken seal resets it.
 var seal_chain: int = 0
 # The longest chain of the percorso: Lauro sings it in the gesta.
@@ -228,6 +230,7 @@ func reset() -> void:
 	bando_quota = 0
 	bando_deadline = 0
 	bando_status = ""
+	bando_reachable_at_close = false
 	seal_chain = 0
 	seal_chain_peak = 0
 	scar_shown_this_run = false

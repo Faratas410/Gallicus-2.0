@@ -358,11 +358,12 @@ Current MP3 files under `res://assets/audio/`:
 - HUD includes a sprite-backed `GloryPanel` with numeric `GloryValueLabel` at `HUD/SafeMargin/TopRow/LeftColumn/GloryPanel/...`; UI updates it reactively from RunManager-emitted state payloads without adding gameplay authority to UI.
 - Player-facing pressure contract: the only numeric pressure meter shown to players is `PRESSIONE X/10`, sourced from RunManager `RunState.escalation_level` via `GameEvents.escalation_changed(level, max_value)`.
 - Pressure HUD placement is the bottom `HUD/PressureRail`, not the top-left stat stack; the meter should read as ritual risk feedback, not debug telemetry.
+- Balance row (October 2026): `HUD/PressureRail` opens with `BalanceRow`, built in `ui_root.gd`, six cells in a fixed order shown in every run phase, betting and banco included: `In posta N Gloria`, `Pressione X/10`, `Favore +N`, `Segni N`, `Conto N Denari`, `Arena N di M`. Each cell carries a tooltip saying what the value does; Pressione 6+, negative Favore and debt take the lightened wax. The old `PRESSIONE X/10` caption line stays in the scene but hidden; `PressureStateLabel` below the bar keeps the crowd mood and the chain. The Push Your Luck corner label stays empty, since the row already carries its numbers. The right column (Bando, Gradinata, Segni) stays visible while choosing the pact.
 - `RunState.audience_pressure` remains runtime-internal push-your-luck policy state. It must not be presented as numeric `Pressione` in HUD, Push Your Luck, or END_RUN surfaces.
 - Player-facing text follows `docs/canon/GLOSSARY_ENTITIES.md`: `run`, `escalation`, `cashout`, and `double` remain technical terms; visible UI copy should use `percorso`, `pressione`, `incassa/incasso`, and `rilancia`/button `RADDOPPIA`.
 - Pressure presentation thresholds are UI-only labels: `0-2` under control, `3-5` warming crowd, `6-8` high risk, `9-10` out of control. These labels do not define gameplay rules.
 - Push Your Luck must show current `PRESSIONE X/10` plus the threshold label and must describe `RADDOPPIA` as `Pressione +1`; `INCASSA` must state that it closes/records the result.
-- Push Your Luck must expose a compact receipt for `Posta`, `Gloria`, and `Corruzione`. `Posta` is player-facing calculated value, not persisted state; it represents the Glory currently collectable from the active wager.
+- Push Your Luck must expose a compact receipt for `Posta` and `Gloria`. `Posta` is player-facing calculated value, not persisted state; it represents the Glory currently collectable from the active wager. `Corruzione` stays hidden (decided October 2026): it still moves under the hood and shapes the Registry's closing, but no Push Your Luck line, cashout note, or tooltip shows its number or its relief.
 - UI resta reattiva per la ricevuta Push Your Luck: `res://scripts/ui/ui_root.gd` consumes RunManager payload fields such as `stake_glory`, `cashout_glory_delta`, and `double_next_stake_glory`; it must not recompute reward tiers, cashout modifiers, or corruption relief.
 - Push Your Luck maps its three existing intents to object-first surfaces: cashout uses the quietanza, condanna uses the condemnation mark, and double uses the second-incision wax tablet. The double CTA remains `RADDOPPIA`; activation seals the presentational second-incision state synchronously before emitting the unchanged `request_pyl_double` intent and never delays the intent for motion.
 - END_RUN must show peak pressure as `Pressione massima: X/10`, derived from run stats `max_escalation` when available.
@@ -566,7 +567,7 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
   `LA GRADINATA`, a favour bar from -5 to +5 (`CrowdFavorBar`, pressure-bar
   styles), the favour with its band as body (`Favore +2. Ben disposta: ...`)
   and the last price paid as a one-line note with full tooltip. A triumph or a riot replaces the note with
-  `LA GRADINATA TI PORTA: posta +2.` or
+  `LA GRADINATA TI PORTA: il favore resta a +4.` or
   `LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.` It is hidden outside a
   percorso and in ending mode.
 - Reactive only: it renders `crowd_favor_changed` and never computes favour.

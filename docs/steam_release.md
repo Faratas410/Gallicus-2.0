@@ -14,8 +14,8 @@ Snapshot del 6 settembre 2026:
 | Gioco | `DEVELOPMENT` | CP-03 e validazione completa della campagna aperti |
 | Build locale | export Windows con pass audiovisivo e percorso da tastiera verificati localmente | `docs/support/av_pass_2026-09-06.md`; anomalia cold import Windows aperta |
 | Checkpoint Linux della nuova build | aperto | le firme CP-02 appartengono ai loro commit |
-| Asset originali | 17 raster ImageGen e 31 audio da sintesi originale | manifest in `assets/ui/generated/` e `assets/audio/original/` |
-| Diritti, crediti e audio | gate aperto; MP3 precedenti esclusi dalla build | provenienza registrata; ascolto umano, crediti e verifica finale da completare |
+| Asset originali | 17 raster ImageGen; 7 loop e 33 cue montati da registrazioni CC0/CC BY 3.0 | manifest in `assets/ui/generated/` e `assets/audio/manifest.json` |
+| Diritti, crediti e audio | gate aperto; MP3 precedenti esclusi dalla build | fonti e licenze audio in `docs/audio_credits.md` (tre attribuzioni CC BY 3.0 da riportare nei crediti); ascolto umano e verifica finale da completare |
 | Partner, AppID, fee, permessi | non verificati | leggere lo stato Steamworks con il titolare |
 | Store, Coming Soon, review build | non verificati | registrare stato e data dal portale |
 | Data e prezzo | non confermati in questo percorso | decisione del titolare |

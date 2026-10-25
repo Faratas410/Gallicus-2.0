@@ -41,6 +41,8 @@ SIGNOFF_SURFACE_LOCAL_DIAGNOSTIC = "local_diagnostic_non_signoff"
 
 KNOWN_WARNING_ALLOWLIST = (
     "ObjectDB instances leaked at exit",
+    # Godot 4.7 wording of the same exit-time leak notice.
+    "ObjectDB instances were leaked at exit",
     "core/object/object.cpp",
 )
 

@@ -43,7 +43,7 @@ EXPECTED_COPY = {
     },
     "La gradinata attende il gesto.": {
         "it": "La gradinata attende il gesto.",
-        "en": "The crowd awaits the gesture.",
+        "en": "The stands await the gesture.",
         "es": "La grada espera el gesto.",
     },
     "SEGNI": {"it": "SEGNI", "en": "MARKS", "es": "MARCAS"},

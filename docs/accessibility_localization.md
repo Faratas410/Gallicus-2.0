@@ -76,6 +76,27 @@ entrare nel sistema di localizzazione nello stesso blocco che la introduce.
   scala. Titolo, esito, pressione, patti, condanne, ultima voce e route sono
   localizzati in IT/EN/ES al confine UI.
 
+### Glossario IT/EN/ES (ottobre 2026)
+
+| IT | EN | ES | Nota |
+| --- | --- | --- | --- |
+| percorso | path | recorrido | mai "run" nel testo giocatore |
+| via (della Prudenza/dell'Azzardo) | way | vía | "CHOOSE THE WAY" |
+| fascicolo | dossier | expediente | mai "case file" |
+| Registro | Registry | Registro | mai "Register" |
+| marchio | brand | estigma | l'oggetto della condanna |
+| segno | Mark | Marca | maiuscola come in IT |
+| condanna | sentence | condena | voce dell'Archivio |
+| gradinata | stands | grada | singolare in ES |
+| posta | stake | apuesta | |
+| quietanza | receipt | recibo | |
+| Favore | Favour | Favor | grafia britannica in EN |
+| Denari | Denarii | Denarios | |
+| bando (di Orvo) | bando | bando | nome proprio del sistema |
+| gradino | step | peldaño | scala dei bandi |
+| catena | chain | cadena | |
+| gesta | deed | gesta | |
+
 ## QA linguistica
 
 Per ogni lingua:

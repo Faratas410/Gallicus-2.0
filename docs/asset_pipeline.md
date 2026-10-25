@@ -161,17 +161,15 @@ Il manifest immagini contiene ora 17 raster: il nuovo `ritual_dust` RGBA
 rimane integro a 1254x1254; l'import Godot usa `process/size_limit=256` per
 l'uso VFX. Si anima la texture nel motore, senza generare ogni frame.
 
-La raccolta audio e' ricostruibile con `python tools/generate_original_audio.py`
-in un ambiente NumPy. Cinque WAV musicali e il battito sono in
-`assets/audio/original/`; i 25 SFX sostituiscono i WAV negli stessi path per
-preservare i contratti. Il manifest originale registra tutti i 31 output.
-La CI controlla i file consegnati con sola libreria standard, senza installare
-NumPy o rigenerare audio. Budget source audio: meno di 24 MiB.
+La raccolta audio procedurale del 6 settembre e' stata sostituita il 21 ottobre
+2026 dalla raccolta **Sabbia e Bronzo**: vedi la sezione omonima in
+`docs/audio_direction.md`. Musica e beds della gradinata sono OGG in
+`assets/audio/score/`, i cue sono WAV in `assets/audio/sfx/`, l'inventario
+con hash e' `assets/audio/manifest.json` e i crediti sono in
+`docs/audio_credits.md`. Budget source audio: meno di 32 MiB.
 
-Gli MP3 precedenti sono esclusi dal preset. Il controllo pack carica anche
-31 stream originali e rifiuta MP3 residui. Produzione originale e rimozione
-delle dipendenze audio precedenti non sostituiscono il completamento dei
-nomi da accreditare o il controllo finale di provenienza del pacchetto.
+Gli MP3 precedenti sono esclusi dal preset. Il controllo pack carica i 40
+stream del manifest e rifiuta MP3 residui.
 
 ## Congedo del Registro - 12 settembre 2026
 

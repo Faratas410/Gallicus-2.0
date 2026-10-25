@@ -134,6 +134,21 @@ func get_unlocked_ids() -> Array[StringName]:
 		load_profile()
 	return _unlocked_ids.duplicate()
 
+# A new campaign after the Absence (or whenever the player asks): everything the
+# player earned starts over, the Archive of condanne and the first-run prologue and
+# rite included. Only the settings (language, audio, video, motion) stay.
+func reset_campaign() -> void:
+	if not _profile_loaded:
+		load_profile()
+	_meta = _get_default_meta()
+	_unlocked_ids.clear()
+	_settings["campaign_dialogues_seen"] = []
+	_settings["opening_prologue_seen"] = false
+	_settings["rite_learned"] = false
+	_profile_dirty = true
+	save_profile()
+	clear_run()
+
 func get_settings() -> Dictionary:
 	if not _profile_loaded:
 		load_profile()

@@ -12,6 +12,8 @@ var _departure: TextureRect
 var _exit_button: Button
 var _credits_button: Button
 var _credits: AcceptDialog
+var _new_campaign_button: Button
+var _new_campaign_confirm: ConfirmationDialog
 var _elapsed: float = 0.0
 var _status_label: Label
 var _status_key: String = ""
@@ -69,6 +71,16 @@ func _ready() -> void:
 	Kit.apply_dialog(_credits)
 	_credits_button.pressed.connect(func() -> void: _credits.popup_centered(Vector2i(720, 460)))
 	_credits.confirmed.connect(func() -> void: _credits_button.grab_focus())
+	# The Absence closes this campaign for good; a new one starts from nothing but the settings.
+	_new_campaign_button = _make_utility("NewCampaign", "NUOVA CAMPAGNA", -160.0, 160.0)
+	_new_campaign_button.offset_top = -152.0
+	_new_campaign_button.offset_bottom = -100.0
+	_new_campaign_confirm = ConfirmationDialog.new()
+	_new_campaign_confirm.theme = credits_theme
+	add_child(_new_campaign_confirm)
+	_new_campaign_button.pressed.connect(func() -> void: _new_campaign_confirm.popup_centered(Vector2i(720, 320)))
+	_new_campaign_confirm.confirmed.connect(_request_new_campaign)
+	_new_campaign_confirm.canceled.connect(func() -> void: _new_campaign_button.grab_focus())
 	_heartbeat = AudioStreamPlayer.new()
 	_heartbeat.name = "TerminalHeartbeat"
 	_heartbeat.bus = "SFX"
@@ -86,6 +98,7 @@ func _ready() -> void:
 	GameEvents.run_started.connect(_hide_surface)
 	GameEvents.request_show_main_menu.connect(_hide_surface)
 	GameEvents.settings_changed.connect(_on_settings_changed)
+	GameEvents.campaign_reset.connect(_on_campaign_reset)
 	call_deferred("_restore_terminal")
 
 func _restore_terminal() -> void:
@@ -107,6 +120,7 @@ func _show_surface(terminal: bool, show_departure: bool = true) -> void:
 	_return_button.hide()
 	_exit_button.hide()
 	_credits_button.hide()
+	_new_campaign_button.hide()
 	_departure.hide()
 	set_process_input(true)
 	_black.grab_focus()
@@ -169,7 +183,7 @@ func _return_to_menu() -> void:
 func _play_heartbeat() -> void:
 	if _heartbeat.playing:
 		return
-	var stream: AudioStreamWAV = preload("res://assets/audio/original/terminal_heartbeat.wav")
+	var stream: AudioStreamWAV = preload("res://assets/audio/sfx/terminal_heartbeat.wav")
 	stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 	stream.loop_end = int(stream.get_length() * stream.mix_rate)
 	_heartbeat.stream = stream
@@ -199,6 +213,23 @@ func _refresh_text() -> void:
 	_credits.title = tr("CREDITI")
 	_credits.dialog_text = tr("CREDITS_BODY")
 	_credits.ok_button_text = tr("CHIUDI")
+	_new_campaign_button.text = tr("NUOVA CAMPAGNA")
+	_new_campaign_confirm.title = tr("NUOVA CAMPAGNA")
+	_new_campaign_confirm.dialog_text = tr("NEW_CAMPAIGN_CONFIRM_BODY")
+	_new_campaign_confirm.ok_button_text = tr("AZZERA LA CAMPAGNA")
+	_new_campaign_confirm.cancel_button_text = tr("ANNULLA")
+
+func _request_new_campaign() -> void:
+	_new_campaign_button.disabled = true
+	GameEvents.request_reset_campaign.emit()
+
+func _on_campaign_reset() -> void:
+	if not _terminal:
+		return
+	_terminal = false
+	_new_campaign_button.disabled = false
+	_hide_surface()
+	GameEvents.request_show_main_menu.emit()
 
 func _exit_game() -> void:
 	_exit_button.disabled = true
@@ -234,6 +265,10 @@ func _finish_departure() -> void:
 	_play_heartbeat()
 	_exit_button.show()
 	_credits_button.show()
+	_new_campaign_button.show()
+	_new_campaign_button.focus_neighbor_bottom = _exit_button.get_path()
+	_exit_button.focus_neighbor_top = _new_campaign_button.get_path()
+	_credits_button.focus_neighbor_top = _new_campaign_button.get_path()
 	_exit_button.focus_neighbor_left = _credits_button.get_path()
 	_exit_button.focus_previous = _credits_button.get_path()
 	_exit_button.focus_next = _credits_button.get_path()
@@ -243,14 +278,17 @@ func _finish_departure() -> void:
 	_exit_button.grab_focus()
 
 func _input(event: InputEvent) -> void:
-	if not _black.visible or _credits.visible:
+	if not _black.visible or _credits.visible or _new_campaign_confirm.visible:
 		return
 	# Confine input to the terminal surface; never operate the covered dossier.
 	if event is InputEventKey or event is InputEventAction:
 		if event.is_action_pressed("ui_accept"):
 			var focused: Control = get_viewport().gui_get_focus_owner()
-			if focused in [_return_button, _exit_button, _credits_button] and focused.is_visible_in_tree():
+			if focused in [_return_button, _exit_button, _credits_button, _new_campaign_button] and focused.is_visible_in_tree():
 				(focused as Button).pressed.emit()
+		elif _terminal and not _departure.visible and (event.is_action_pressed("ui_up") or event.is_action_pressed("ui_down")):
+			if _new_campaign_button.has_focus(): _exit_button.grab_focus()
+			else: _new_campaign_button.grab_focus()
 		elif _terminal and not _departure.visible and (event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right") or event.is_action_pressed("ui_focus_next") or event.is_action_pressed("ui_focus_prev")):
 			if _exit_button.has_focus(): _credits_button.grab_focus()
 			else: _exit_button.grab_focus()

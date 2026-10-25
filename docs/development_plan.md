@@ -26,6 +26,12 @@ Prima dell'accettazione audiovisiva: correggere motion/accessibilita', poi
 valutare una sequenza artistica comune preservando la scelta recente della
 posta. Stage Core Playable Candidate, checkpoint Linux e gate umani invariati.
 
+Motore del 20 ottobre 2026: il progetto passa a Godot 4.7.2 su richiesta di
+Marco (`project.godot`, workflow CI, comandi di `docs/testing.md`, script
+`.cmd` locali). Gli eseguibili e i template 4.6 non si usano più; i report in
+`docs/support/` datati prima di questa data restano evidenze dei comandi 4.6.2
+con cui furono prodotti. Export Windows: servono i template 4.7.2.
+
 15 ottobre 2026: pass Manifesto 4-7 gia' integrato nel commit `b81a4fc`.
 Verifica locale 720p/1080p con Godot 4.7.2 e renderer reale; corretti tab
 dell'Archivio, righe sulle schede, checkbox duplicati e nota ES del banco.

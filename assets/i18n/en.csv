@@ -9,12 +9,12 @@ Quanto vale fermarsi?,What is stopping worth?
 "Il banco è qui. Il permesso, oggi, lo tiene la gradinata.","The counter is here. Today the stands hold the permission."
 INCASSATA,COLLECTED
 REGISTRATA,RECORDED
-CONTINUA,Continue
+CONTINUA,CONTINUE
 Nessuna partita salvata.,No saved game.
 ENTRA NELL'ARENA,ENTER THE ARENA
-CARICA PARTITA,Load Game
+CARICA PARTITA,LOAD GAME
 ARCHIVIO,ARCHIVE
-OPZIONI,OPTIONS
+OPZIONI,SETTINGS
 CREDITI,CREDITS
 ARCHIVIO DELLE CONDANNE,Archive of Sentences
 Registro consultivo. Nessuna ricompensa.,Consultation log. No rewards.
@@ -22,9 +22,9 @@ CONDANNE,SENTENCES
 MUSEO,MUSEUM
 PATTI DISPONIBILI (LIVELLO 3),Available Pacts (Level 3)
 - Nessun patto disponibile.,- No pacts available.
-ARENE TEMATICHE,Themed Arenas
+ARENE TEMATICHE,THEMED ARENAS
 - Nessuna arena disponibile.,- No arenas available.
-VOCI DEL PUBBLICO,Crowd Lines
+VOCI DEL PUBBLICO,CROWD VOICES
 Voci base: %d,Base lines: %d
 Voci dure: %s,Harsh lines: %s
 SBLOCCATE,Unlocked
@@ -76,7 +76,6 @@ Pressione +1. Continua alla prossima arena con posta aumentata.,Pressure +1. Con
 La folla osserva.,The crowd watches.
 La folla pretende un altro rilancio.,The crowd demands another raise.
 La folla resta in ascolto.,The crowd is still listening.
-Stato del percorso: Gloria %d | Corruzione %d | %s,Path status: Glory %d | Corruption %d | %s
 Incasso sotto richiesta della folla: x%.2f,Cashout under crowd demand: x%.2f
 CICATRICE APPLICATA,SCAR APPLIED
 Il patto viene giudicato...,The pact is being judged...
@@ -110,7 +109,7 @@ Disponibile dopo l'arena in corso.,Available after the current arena.
 x1,x1
 Incassa ora o rilancia il rischio,Cash in now or raise the risk
 PRENDI LA QUIETANZA,TAKE THE RECEIPT
-RICEVI IL MARCHIO,RECEIVE THE MARK
+RICEVI IL MARCHIO,RECEIVE THE BRAND
 CONDANNA,SENTENCE
 NESSUN REWARD,NO REWARD
 RADDOPPIA,DOUBLE
@@ -174,9 +173,9 @@ CONDANNA: %s,SENTENCE: %s
 SELEZIONE GESTO,GESTURE SELECTION
 La folla osserva la tua scelta.,The crowd watches your choice.
 Arena speciale,Special arena
-Firma una via. Il Registro annota il prezzo.,Sign a path. The Registry records the price.
+Firma una via. Il Registro annota il prezzo.,Sign one way. The Registry records the price.
 Clausola non esposta.,Clause not exposed.
-Firma focus: %s | Clausola: %s,Signature focus: %s | Clause: %s
+Firma focus: %s | Clausola: %s,Pact under review: %s. Clause: %s
 Cicatrice,Scar
   Effetto: %s,  Effect: %s
   Origine: %s,  Origin: %s
@@ -189,7 +188,7 @@ Corruzione,Corruption
 Gloria,Glory
 Cicatrici,Scars
 Pattern,Pattern
-Fascicolo chiuso,File closed
+Fascicolo chiuso,Dossier closed
 Il registro è aperto.,The registry is open.
 Incassa la posta o rischiala nel prossimo rilancio.,Bank the stake or risk it on the next raise.
 La condanna chiude il ciclo senza premio.,The sentence closes the cycle without reward.
@@ -213,12 +212,10 @@ Stato: richiesta rilancio non disponibile.,Status: raise request unavailable.
 Stato: richiesta non accettata. Scegli di nuovo.,Status: request not accepted. Choose again.
 POSTA VIVA: +%d Gloria,LIVE STAKE: +%d Glory
 GLORIA: %d,GLORY: %d
-CORRUZIONE: %d,CORRUPTION: %d
 Ottieni +%d Gloria,Gain +%d Glory
-Corruzione -%d,Corruption -%d
-chiudi il registro,close the registry
+chiudi il registro,The Registry closes.
 Prossima posta: +%d Gloria. Pressione +%d.,Next stake: +%d Glory. Pressure +%d.
-Perdi la posta di +%d Gloria. Il percorso si chiude.,You lose the +%d Glory stake. The path closes.
+Perdi la posta di +%d Gloria. Il percorso si chiude.,You lose the %d Glory stake. The path closes.
 FIRMA,SIGN
 MOSTRA IL PATTO,SHOW THE PACT
 APRI IL REGISTRO,OPEN THE REGISTRY
@@ -229,8 +226,8 @@ Il Registro è pronto per la firma.,The Registry is ready for a signature.
 Ogni patto lascia un segno.,Every pact leaves a mark.
 APRI,OPEN
 Apri il registro.,Open the registry.
-Il registro è chiuso. Aprilo per scegliere la via.,The registry is closed. Open it to choose the path.
-SCEGLI LA VIA,CHOOSE THE PATH
+Il registro è chiuso. Aprilo per scegliere la via.,The registry is closed. Open it to choose the way.
+SCEGLI LA VIA,CHOOSE THE WAY
 Leggi la promessa e il costo. Poi firma.,Read the promise and the cost. Then sign.
 CONDIZIONE,CONDITION
 PATTO,PACT
@@ -248,15 +245,15 @@ Elementi mancanti:,Missing elements:
 Torna al menu e riavvia.,Return to menu and restart.
 PATTO SIGILLATO,PACT SEALED
 La pietra ha preso la firma.,The stone has taken the signature.
-La gradinata attende il gesto.,The crowd awaits the gesture.
+La gradinata attende il gesto.,The stands await the gesture.
 SEGNI,MARKS
 Registro pulito: nessun segno inciso.,Clean Registry: no mark inscribed.
-ATTO DAVANTI ALLA GRADINATA,ACT BEFORE THE CROWD
+ATTO DAVANTI ALLA GRADINATA,ACT BEFORE THE STANDS
 ABBASSA LO SGUARDO,LOWER YOUR GAZE
-SFIDA LA GRADINATA,CHALLENGE THE CROWD
+SFIDA LA GRADINATA,CHALLENGE THE STANDS
 Il Registro annota misura.,The Registry records restraint.
 Il Registro annota esposizione.,The Registry records exposure.
-La gradinata pesa il tuo respiro.,The crowd weighs your breath.
+La gradinata pesa il tuo respiro.,The stands weigh your breath.
 La gradinata si quieta: il Registro vede prudenza.,The stands grow quiet: the Registry sees restraint.
 Trattieni il gesto. L'arena concede ancora margine.,Hold back the gesture. The arena still allows some margin.
 Non cercano vanto: aspettano se saprai durare.,They seek no boasting: they wait to see if you can endure.
@@ -286,16 +283,16 @@ COLPISCI,STRIKE
 COLPISCI ANCORA,STRIKE AGAIN
 SIGILLATO,SEALED
 VERBALE INCISO - IL REGISTRO PUÒ AVANZARE,RECORD CARVED - THE REGISTRY MAY ADVANCE
-FASCICOLO CHIUSO - COMPROMISSIONE,CASE FILE CLOSED - COMPROMISE
-FASCICOLO CHIUSO - ASCESA,CASE FILE CLOSED - ASCENT
-FASCICOLO CHIUSO - CONSUMO,CASE FILE CLOSED - ATTRITION
-FASCICOLO CHIUSO - PATTERN,CASE FILE CLOSED - PATTERN
-FASCICOLO CHIUSO,CASE FILE CLOSED
+FASCICOLO CHIUSO - COMPROMISSIONE,DOSSIER CLOSED - COMPROMISE
+FASCICOLO CHIUSO - ASCESA,DOSSIER CLOSED - ASCENT
+FASCICOLO CHIUSO - CONSUMO,DOSSIER CLOSED - ATTRITION
+FASCICOLO CHIUSO - PATTERN,DOSSIER CLOSED - PATTERN
+FASCICOLO CHIUSO,DOSSIER CLOSED
 Il Registro conserva la traccia del percorso.,The Registry preserves the record of the path.
-Il Registro chiude il fascicolo e classifica l'esito.,The Registry closes the case file and classifies the outcome.
+Il Registro chiude il fascicolo e classifica l'esito.,The Registry closes the dossier and classifies the outcome.
 Posta incassata. Il percorso è chiuso.,Stake banked. The path is closed.
 Il patto regge: il percorso può proseguire.,The pact holds: the path may continue.
-Condanna iscritta. I segni restano nel fascicolo.,Condemnation entered. The marks remain in the case file.
+Condanna iscritta. I segni restano nel fascicolo.,Sentence entered. The Marks remain in the dossier.
 Pressione massima: %d/%d.,Peak pressure: %d/%d.
 Patti e sblocchi sono stati aggiornati nell'Archivio.,Pacts and unlocks have been updated in the Archive.
 %d condanne archiviate; il dettaglio resta nell'Archivio.,%d sentences archived; details remain in the Archive.
@@ -333,7 +330,7 @@ consumo completo,complete attrition
 libertà registrata,liberty recorded
 caduta amministrativa,administrative fall
 non definito,undefined
-Fascicolo aggiornato. Valutazione sospesa.,Case file updated. Assessment suspended.
+Fascicolo aggiornato. Valutazione sospesa.,Dossier updated. Assessment suspended.
 Atto registrato. Campione insufficiente.,Record filed. Insufficient sample.
 Dati acquisiti. Analisi in corso.,Data acquired. Analysis in progress.
 Aggiornamento completato. Nessuna conclusione emessa.,Update complete. No conclusion issued.
@@ -345,37 +342,37 @@ Registrazione valida. Sentenza non autorizzata.,Valid record. Sentence not autho
 Traiettoria non stabilizzata. Attendere ulteriori eventi.,Trajectory not stabilized. Await further events.
 Documento acquisito. Il Registro non conclude.,Document acquired. The Registry does not conclude.
 Pattern non consolidato. Prosecuzione richiesta.,Pattern not consolidated. Continuation required.
-fascicolo registrato,case file recorded
-Soglia di deviazione superata. Fascicolo chiuso.,Deviation threshold exceeded. Case file closed.
+fascicolo registrato,dossier recorded
+Soglia di deviazione superata. Fascicolo chiuso.,Deviation threshold exceeded. Dossier closed.
 Corruzione confermata. Archiviazione definitiva.,Corruption confirmed. Final filing complete.
 Indice di compromissione: critico. Sentenza emessa.,Compromise index: critical. Sentence issued.
 Integrità del soggetto: insufficiente. Caso concluso.,Subject integrity: insufficient. Case concluded.
 Deriva irreversibile rilevata. Il Registro conclude.,Irreversible drift detected. The Registry concludes.
-Evidenza prevalente: debito. Fascicolo definito.,Prevailing evidence: debt. Case file defined.
+Evidenza prevalente: debito. Fascicolo definito.,Prevailing evidence: debt. Dossier defined.
 Profilo compromesso. Non sono richiesti ulteriori dati.,Profile compromised. No further data required.
 Scostamento oltre limite. Atto finale registrato.,Deviation beyond limit. Final record filed.
-Indice di gloria: eccedente. Fascicolo chiuso.,Glory index: exceeding. Case file closed.
+Indice di gloria: eccedente. Fascicolo chiuso.,Glory index: exceeding. Dossier closed.
 Rilevanza confermata. Archiviazione definitiva.,Relevance confirmed. Final filing complete.
 Profilo di eccezione registrato. Sentenza emessa.,Exceptional profile recorded. Sentence issued.
 Valore del soggetto: determinato. Caso concluso.,Subject value: determined. Case concluded.
 Evidenza prevalente: ascesa. Il Registro conclude.,Prevailing evidence: ascent. The Registry concludes.
-Traccia storica sufficiente. Fascicolo definito.,Historical record sufficient. Case file defined.
-Comportamento coerente con grandezza. Atto finale registrato.,Behavior consistent with greatness. Final record filed.
+Traccia storica sufficiente. Fascicolo definito.,Historical record sufficient. Dossier defined.
+Comportamento coerente con grandezza. Atto finale registrato.,Behaviour consistent with greatness. Final record filed.
 Risultato consolidato. Non sono richiesti ulteriori dati.,Outcome consolidated. No further data required.
-Danno permanente rilevato. Fascicolo chiuso.,Permanent damage detected. Case file closed.
+Danno permanente rilevato. Fascicolo chiuso.,Permanent damage detected. Dossier closed.
 Cicatrici critiche registrate. Archiviazione definitiva.,Critical scars recorded. Final filing complete.
 Stato del soggetto: degradato. Sentenza emessa.,Subject state: degraded. Sentence issued.
 Accumulo irreversibile. Caso concluso.,Irreversible accumulation. Case concluded.
 Integrità fisica compromessa. Il Registro conclude.,Physical integrity compromised. The Registry concludes.
-Evidenza prevalente: consumo. Fascicolo definito.,Prevailing evidence: attrition. Case file defined.
+Evidenza prevalente: consumo. Fascicolo definito.,Prevailing evidence: attrition. Dossier defined.
 Segni sufficienti. Non sono richiesti ulteriori dati.,Sufficient marks. No further data required.
 Profilo stabilizzato su consumo. Atto finale registrato.,Profile stabilized on attrition. Final record filed.
-Campione minimo raggiunto. Fascicolo chiuso.,Minimum sample reached. Case file closed.
+Campione minimo raggiunto. Fascicolo chiuso.,Minimum sample reached. Dossier closed.
 Pattern confermato. Archiviazione definitiva.,Pattern confirmed. Final filing complete.
-Coerenza comportamentale stabilita. Sentenza emessa.,Behavioral consistency established. Sentence issued.
+Coerenza comportamentale stabilita. Sentenza emessa.,Behavioural consistency established. Sentence issued.
 Traiettoria consolidata. Caso concluso.,Trajectory consolidated. Case concluded.
 Dati sufficienti per definizione. Il Registro conclude.,Sufficient data for classification. The Registry concludes.
-Ripetizione significativa rilevata. Fascicolo definito.,Significant repetition detected. Case file defined.
+Ripetizione significativa rilevata. Fascicolo definito.,Significant repetition detected. Dossier defined.
 Profilo determinato per frequenza. Atto finale registrato.,Profile determined by frequency. Final record filed.
 Analisi completata. Non sono richiesti ulteriori dati.,Analysis complete. No further data required.
 +%d altre,+%d more
@@ -415,7 +412,7 @@ Continui. Ora ti vogliono sanguinare.,You continue. Now they want to see you ble
 Così finisci. La folla non ti piange.,This is how you end. The crowd does not mourn you.
 È finita. Il pubblico prende il tuo nome.,It is over. The crowd takes your name.
 È finita. Solo occhi fermi.,It is over. Only fixed eyes remain.
-Fine della corsa. Il silenzio resta.,The run is over. The silence remains.
+Fine della corsa. Il silenzio resta.,The path is over. The silence remains.
 Fine violenta. La folla ha ciò che voleva.,A violent end. The crowd got what it wanted.
 Firma asciutta. Ti contano come errore.,A dry signature. They count you as a mistake.
 Firma e alza il rischio. Ti chiedono il salto.,Sign and raise the risk. They demand the leap.
@@ -436,7 +433,7 @@ Hai scelto di restare. Non chiamarla coraggio.,You chose to stay. Do not call it
 Hai scelto l'uscita. La folla ti mette il conto.,You chose the exit. The crowd hands you the bill.
 Hai segnato il destino. Ti vogliono a terra.,You marked your fate. They want you on the ground.
 Hai spento il delirio. Ora ti chiedono sangue.,You ended the frenzy. Now they demand blood.
-Hai spento la corsa. La folla voleva il salto.,You stopped the run. The crowd wanted the leap.
+Hai spento la corsa. La folla voleva il salto.,You closed the path. The crowd wanted the leap.
 Il brusio non concede riparo.,The murmur offers no shelter.
 Il delirio ti brucia addosso.,The frenzy burns against you.
 Il patto accende la folla. Spingi ora.,The pact ignites the crowd. Push now.
@@ -484,7 +481,7 @@ Ti alzano in alto per pesare la caduta.,They lift you high to weigh the fall.
 Ti fermi mentre urlano. Ora è delusione.,You stop while they roar. Now comes disappointment.
 Ti fermi qui. Nessuno ti segue.,You stop here. No one follows you.
 Ti osservano e aspettano l'errore.,They watch you and wait for the mistake.
-Ti seguono senza pietà né favore.,They follow you without pity or favor.
+Ti seguono senza pietà né favore.,They follow you without pity or favour.
 Ti sei fermato in alto. Ti lasciano cadere.,You stopped at the top. They let you fall.
 Ti sei fermato. Troppo presto per essere pulito.,You stopped. Too early to be clean.
 Ti sei tirato indietro. La folla non dimentica.,You pulled back. The crowd does not forget.
@@ -502,7 +499,7 @@ Campionamento incompleto.,Incomplete sampling.
 Deviazione contenuta.,Deviation contained.
 Esito previsto.,Expected outcome.
 Deviazione improbabile.,Deviation unlikely.
-VIA DELLA PRUDENZA,PATH OF PRUDENCE
+VIA DELLA PRUDENZA,WAY OF PRUDENCE
 "Tieni il margine. Ricompensa bassa, pressione stabile.","Keep a margin. Low reward, steady pressure."
 "Ricompensa contenuta: registri poco, ma tieni margine e pressione sotto controllo.","Modest reward: record little, but keep a margin and control the pressure."
 Vinci l'arena senza rilanciare la pressione.,Win the arena without raising the pressure.
@@ -510,14 +507,14 @@ Vinci l'arena senza rilanciare la pressione.,Win the arena without raising the p
 La folla non esulta, ma il Registro resta aperto.
 L'arena lascia comunque il segno.
 Effetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.","You chose a margin.
-The crowd does not cheer, but the Register stays open.
+The crowd does not cheer, but the Registry stays open.
 The arena still leaves its mark.
 Effect: CRACKED BONES scar; future wagers remain risky."
 Hai scelto il margine.,You chose a margin.
-"La folla non esulta, ma il Registro resta aperto.","The crowd does not cheer, but the Register stays open."
+"La folla non esulta, ma il Registro resta aperto.","The crowd does not cheer, but the Registry stays open."
 L'arena lascia comunque il segno.,The arena still leaves its mark.
 "Effetto: cicatrice OSSA INCRINATE, ogni futura scommessa più rischiosa.",Effect: CRACKED BONES scar; every future wager is riskier.
-VIA DELL'HYBRIS,PATH OF HUBRIS
+VIA DELL'HYBRIS,WAY OF HUBRIS
 "Spingi oltre. Ritorno alto, margine nullo.","Push further. High return, no margin."
 "Ricompensa alta: moltiplica la posta, ma ogni rilancio alza la pressione.","High reward: multiply the stake, but every double raises the pressure."
 Vinci l'arena accettando che il fallimento chiuda il percorso.,Win the arena knowing failure ends the path.
@@ -531,16 +528,16 @@ Effect: the path closes without appeal."
 Hai promesso tutto.,You promised everything.
 Non esiste margine.,There is no margin.
 Effetto: il percorso si chiude senza appello.,Effect: the path closes without appeal.
-Firmi e rinunci alla via facile. Il debito resta aperto.,You sign away the easy path. The debt stays open.
+Firmi e rinunci alla via facile. Il debito resta aperto.,You sign and give up the easy way. The debt stays open.
 Vinci l'arena e non spezzare la promessa.,Win the arena without breaking the promise.
 "Il sigillo non si scioglie.
 Ogni passo stringe il debito.
 Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.","The seal does not dissolve.
 Each step tightens the debt.
-Effect: DEBT BRAND scar; every future wager weighs more."
+Effect: BRAND OF DEBT scar; every future wager weighs more."
 Il sigillo non si scioglie.,The seal does not dissolve.
 Ogni passo stringe il debito.,Each step tightens the debt.
-"Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",Effect: DEBT BRAND scar; every future wager weighs more.
+"Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.",Effect: BRAND OF DEBT scar; every future wager weighs more.
 Iscrivi il tuo nome nel registro rosso.,Enter your name in the red ledger.
 Vinci l'arena sapendo che ogni colpo ha un prezzo.,Win the arena knowing every strike has a price.
 "Il libro chiede sangue.
@@ -557,10 +554,10 @@ Vinci l'arena e lascia il pubblico in estasi.,Win the arena and leave the crowd 
 Un passo falso diventa scherno.
 Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.","The crowd demands a spectacle.
 One false step becomes mockery.
-Effect: SHAME BRAND scar; harsher arenas."
+Effect: BRAND OF SHAME scar; harsher arenas."
 La folla pretende spettacolo.,The crowd demands a spectacle.
 Un passo falso diventa scherno.,One false step becomes mockery.
-"Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",Effect: SHAME BRAND scar; harsher arenas.
+"Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.",Effect: BRAND OF SHAME scar; harsher arenas.
 Rilanci oltre il respiro.,Wager beyond your last breath.
 Vinci l'arena con il cuore in gola.,Win the arena with your heart in your throat.
 "Ogni colpo è l'ultimo.
@@ -584,7 +581,7 @@ Giuri e consegni il futuro.,Swear the oath and surrender the future.
 Ogni passo pesa il doppio.
 Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.","The oath tightens the chain.
 Each step weighs twice as much.
-Effect: DEBT BRAND scar; every future wager weighs more."
+Effect: BRAND OF DEBT scar; every future wager weighs more."
 Il giuramento stringe la catena.,The oath tightens the chain.
 Ogni passo pesa il doppio.,Each step weighs twice as much.
 Offri pietà come spettacolo.,Offer mercy as a spectacle.
@@ -592,7 +589,7 @@ Offri pietà come spettacolo.,Offer mercy as a spectacle.
 Il pubblico pretende il crollo.
 Effetto: cicatrice MARCHIO DELLA VERGOGNA, arene più dure.","Mercy is a trap.
 The crowd demands collapse.
-Effect: SHAME BRAND scar; harsher arenas."
+Effect: BRAND OF SHAME scar; harsher arenas."
 La misericordia è una trappola.,Mercy is a trap.
 Il pubblico pretende il crollo.,The crowd demands collapse.
 "Paghi per tacere, firmi comunque.","You pay for silence, but still sign."
@@ -601,7 +598,7 @@ Vinci l'arena senza cercare scuse.,Win the arena without seeking excuses.
 La catena non si allenta.
 Effetto: cicatrice MARCHIO DEL DEBITO, ogni futura scommessa pesa di più.","Silence costs more than words.
 The chain does not loosen.
-Effect: DEBT BRAND scar; every future wager weighs more."
+Effect: BRAND OF DEBT scar; every future wager weighs more."
 Il silenzio costa più della parola.,Silence costs more than words.
 La catena non si allenta.,The chain does not loosen.
 Il pubblico è dalla tua parte. Sempre.,The crowd is on your side. Always.
@@ -615,7 +612,7 @@ Effect: SEVERE scar; the path is compromised."
 Respiri corto.,Your breath is short.
 Il destino pesa sulle ossa.,Fate weighs on your bones.
 SIGILLO DI CERA,WAX SEAL
-"Il debito resta aperto, ma il Registro concede margine.","The debt stays open, but the Register grants a margin."
+"Il debito resta aperto, ma il Registro concede margine.","The debt stays open, but the Registry grants a margin."
 LIBRO DI SANGUE,BLOOD LEDGER
 Il tributo alza la posta e sporca ogni vittoria.,The tribute raises the stake and stains every victory.
 BANCHETTO DELLA FOLLA,CROWD FEAST
@@ -648,7 +645,7 @@ Hai rifiutato l'incasso quando potevi fermarti.,You refused to cash out when you
 "Il pubblico aveva gia contato le monete.
 Tu hai chiuso il pugno.","The crowd had already counted the coins.
 You closed your fist."
-Hai rifiutato l'incasso piu di una volta nella stessa run.,You refused to cash out more than once in the same run.
+Hai rifiutato l'incasso piu di una volta nella stessa run.,You refused to cash out more than once on the same path.
 "La folla ha smesso di gridare.
 Ha iniziato a guardare.","The crowd stopped shouting.
 It started watching."
@@ -656,7 +653,7 @@ Hai continuato a rilanciare quando il rischio era ormai evidente.,You kept raisi
 "Non era piu una scommessa.
 Era una dimostrazione.","It was no longer a wager.
 It was a demonstration."
-Hai rilanciato e perso il percorso subito dopo.,You raised the stakes and lost the run immediately afterward.
+Hai rilanciato e perso il percorso subito dopo.,You raised the stakes and your path closed right after.
 "Il silenzio dell'arena
 e durato piu del previsto.","The silence in the arena
 lasted longer than expected."
@@ -666,15 +663,15 @@ Hai firmato un patto che ha chiuso il percorso.,You signed a pact that closed th
 "La sentenza era scritta.
 Hai solo aggiunto il nome.","The sentence was written.
 You only added your name."
-Hai scelto una condanna senza ricevere alcun reward.,You chose a sentence without receiving any reward.
+Hai ricevuto il marchio e lasciato la posta sulla sabbia.,You received the brand and left the stake on the sand.
 "Nessun premio sul banco.
 La condanna è iscritta.","No reward on the counter.
-The condemnation is entered."
-Hai perso il percorso a causa diretta di un patto firmato.,You lost the run as a direct result of a signed pact.
+The sentence is entered."
+Hai ricevuto il marchio mentre un patto teneva chiusa la quietanza.,You received the brand while a pact kept the receipt closed.
 "Il costo era nel patto.
 Ora è nel fascicolo.","The cost was in the pact.
-Now it is in the case file."
-Hai continuato una run nonostante le tue condizioni critiche.,You continued a run despite your critical condition.
+Now it is in the dossier."
+Hai continuato una run nonostante le tue condizioni critiche.,You kept to the path despite your critical condition.
 Il corpo era gia un avviso.,Your body was already a warning.
 Hai evitato la chiusura per un soffio.,You narrowly escaped closure.
 "Il pubblico ha sospirato.
@@ -686,9 +683,9 @@ Le firme restano dove sono.","The receipt bears the amount banked.
 The signatures stay where they are."
 Hai incassato con un livello di rischio estremamente alto.,You cashed out at an extremely high level of risk.
 Questa volta.,This time.
-Hai perso la tua prima run.,You lost your first run.
+Hai perso un percorso per la prima volta.,You lost a path for the first time.
 L'arena non fa sconti ai nuovi.,The arena makes no allowances for newcomers.
-Hai perso il percorso vicino a una soglia decisiva.,You lost the run close to a decisive threshold.
+Il percorso si è chiuso con il bando di Orvo ancora aperto.,Your path closed with Orvo's bando still open.
 "Il percorso si è chiuso.
 Il verbale si ferma qui.","The path has closed.
 The record stops here."
@@ -696,9 +693,9 @@ Hai preso una decisione rischiosa un attimo prima della fine.,You made a risky d
 "L’ultimo rischio è iscritto.
 Dopo, il verbale si chiude.","The last risk is entered.
 After it, the record closes."
-Hai perso il percorso senza errori meccanici evidenti.,You lost the run without any obvious mechanical mistakes.
+Hai ricevuto il marchio senza aver mai rilanciato.,You received the brand without ever raising.
 Nessuno ha barato.,No one cheated.
-Hai completato una run.,You completed a run.
+Hai completato una run.,You completed a path.
 Il percorso ha una copia nel Registro.,The path has a copy in the Registry.
 Hai attirato l'attenzione totale della folla.,You drew the full attention of the crowd.
 Non eri piu solo.,You were no longer alone.
@@ -706,19 +703,19 @@ Il pubblico ha iniziato a riconoscerti.,The crowd began to recognize you.
 Ora sanno chi sei.,Now they know who you are.
 Sei tornato all'arena dopo una sconfitta.,You returned to the arena after a defeat.
 L'arena e ancora li.,The arena is still there.
-Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,The Registry closed the dossier for compromise.
+Il Registro ha chiuso il fascicolo per compromissione (ending_corruption).,"The Registry closed the dossier for compromise: four Marks, or a debt with Vessa."
 "La deviazione ha superato la soglia.
 Il Registro ha emesso chiusura definitiva.","The deviation exceeded the threshold.
 The Registry ordered final closure."
-Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,The Registry closed the dossier for ascension.
+Il Registro ha chiuso il fascicolo per ascesa (ending_glory).,The Registry closed the dossier for ascension: 40 Glory banked on one path.
 "L'evidenza di ascesa e risultata prevalente.
 Il fascicolo e stato definito.","The evidence of ascension prevailed.
 The dossier was settled."
-Il Registro ha chiuso il fascicolo per consumo (ending_scars).,The Registry closed the dossier for exhaustion.
+Il Registro ha chiuso il fascicolo per consumo (ending_scars).,The Registry closed the dossier for exhaustion: three Marks on the body.
 "L'accumulo di consumo e stato ritenuto definitivo.
 Il Registro ha concluso l'atto.","The accumulated wear was deemed final.
 The Registry concluded the record."
-Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,The Registry closed the dossier for an established pattern.
+Il Registro ha chiuso il fascicolo per pattern consolidato (ending_pattern).,The Registry closed the dossier for an established pattern: no other closing applied.
 "La ripetizione e risultata sufficiente.
 La classificazione è stata archiviata.","The repetition was sufficient.
 The classification was archived."
@@ -851,7 +848,7 @@ PRECEDENTE: FELIX GALLICUS.","ANALOGOUS CASE DETECTED.
 PRECEDENT: FELIX GALLICUS."
 "PRECEDENTE: FELIX GALLICUS.
 FASCICOLO ANCORA APERTO.","PRECEDENT: FELIX GALLICUS.
-FILE STILL OPEN."
+DOSSIER STILL OPEN."
 NESSUNA ULTERIORE DECISIONE RILEVANTE.,NO FURTHER RELEVANT DECISIONS.
 In posta %d Gloria,%d Glory at stake
 Arena %d di %d,Arena %d of %d
@@ -900,7 +897,7 @@ Ostile: blocca la quietanza.,Hostile: it blocks the receipt.
 Fredda: la quietanza rende meno.,Cold: the receipt pays less.
 Ben disposta: il sigillo regge un po' di più.,Well disposed: the seal holds a little more often.
 Ti acclama: il sigillo regge di più.,Cheering you: the seal holds more often.
-LA GRADINATA TI PORTA: posta +2.,THE STANDS CARRY YOU: stake +2.
+LA GRADINATA TI PORTA: il favore resta a +4.,THE STANDS CARRY YOU: Favour holds at +4.
 "LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.","THE STANDS TURN ON YOU: a Mark, Pressure +1."
 Scambio %d di %d:,Exchange %d of %d:
 Rivolta della gradinata,The stands turned
@@ -915,7 +912,7 @@ Favore +2.,Favour +2.
 Pressione -2.,Pressure -2.
 "Se il sigillo cede, la posta resta.","If the seal breaks, the stake stays."
 Conto in debito. Salda con la quietanza per riaprire il banco.,Account in debt. Settle it with a receipt to reopen the counter.
-"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","If the seal breaks, the stake stays. Does not cover the Path of Hubris."
+"Se il sigillo cede, la posta resta. Non copre la Via dell'Hybris.","If the seal breaks, the stake stays. Does not cover the Way of Hubris."
 In debito: il banco è chiuso finché una quietanza non salda il conto.,In debt: the counter stays closed until a receipt settles the account.
 La posta di questa arena è assicurata.,This arena's stake is insured.
 La gradinata lancia monete: Denari +%d.,The stands throw coins: Denarii +%d.
@@ -962,7 +959,7 @@ Riga già iscritta.","COPY REJECTED
 Line already entered."
 "Questa invece è ancora qui. Tre lame, e non sono riuscito a toglierla.","But this one is still here. Three blades, and I have not managed to remove it."
 Che cosa dice?,What does it say?
-Un nome. Il fascicolo è aperto. Non ho altro da trascrivere.,A name. The case file is open. I have nothing else to transcribe.
+Un nome. Il fascicolo è aperto. Non ho altro da trascrivere.,A name. The dossier is open. I have nothing else to transcribe.
 Lascia stare la lama. Io il posto lo tengo ancora.,Put the blade down. I am still keeping the seat.
 Vessa: Il conto è aperto.,Vessa: The account is open.
 Nerio: La cifra l’ho copiata. Ora puoi riprenderlo.,Nerio: I copied the figure. You can take it back now.
@@ -993,7 +990,7 @@ Il posto tenuto,The kept seat
 Aspetto che si siedano. Dopo la tolgo. Tanto lì non si mette nessuno.,I wait until they sit down. Then I move it. Nobody sits there anyway.
 Chi ci sedeva?,Who used to sit there?
 Uno che chiudeva ogni bando. Orvo non faceva in tempo a bandire il successivo.,Someone who closed every bando. Orvo could barely announce the next one in time.
-Manca la chiusura del fascicolo. Non l’ho mai ricevuta da copiare.,The closing entry is missing from the case file. I never received it to copy.
+Manca la chiusura del fascicolo. Non l’ho mai ricevuta da copiare.,The closing entry is missing from the dossier. I never received it to copy.
 Io l’ho visto alzarsi. Il posto era ancora caldo. La chiusura non c’è stata.,I saw them get up. The seat was still warm. There was no closing.
 Il passo,The footstep
 "Quel passo, oggi. Si è fermato sulla stessa pietra.",Those footsteps today. They stopped on the same stone.
@@ -1008,7 +1005,7 @@ Ho messo la tua copia accanto a quella riga. Hanno la stessa pendenza.,I set you
 Corrispondenza parziale.","COMPARISON IN PROGRESS
 Partial match."
 Parziale. Le separi o no?,Partial. Can you separate them or not?
-La pendenza coincide. Non basta per metterle nello stesso fascicolo.,The slant matches. That is not enough to put them in the same case file.
+La pendenza coincide. Non basta per metterle nello stesso fascicolo.,The slant matches. That is not enough to put them in the same dossier.
 Il posto è sempre lì. Non aspetta te. Lo tengo io.,The seat is still there. It is not waiting for you. I am keeping it.
 Tengo le copie qui. Non le ho ancora archiviate.,I am keeping the copies here. I have not filed them yet.
 BANDO DI ORVO,ORVO'S BANDO
@@ -1037,7 +1034,7 @@ Bando mancato: nessun gradino.,Bando missed: no rung.
 %d Gloria incassate,%d Glory banked
 FERITA APERTA,OPEN WOUND
 OSSA INCRINATE,CRACKED BONES
-MARCHIO DELLA VERGOGNA,MARK OF SHAME
+MARCHIO DELLA VERGOGNA,BRAND OF SHAME
 ARMATURA ARRUGGINITA,RUSTED ARMOUR
 MARCHIO DEL DEBITO,BRAND OF DEBT
 OCCHIO PERDUTO,LOST EYE
@@ -1049,7 +1046,7 @@ Pressione più severa.,Harsher pressure.
 Il perfetto è più raro.,A perfect outcome is rarer.
 Tenuta rituale ridotta e recupero meno efficace.,Reduced ritual endurance and less effective recovery.
 Avanzamento piu lento e margine di errore ridotto.,Slower progress and less room for error.
-Aumenta la probabilita di condanna.,Increases the chance of condemnation.
+Aumenta la probabilita di condanna.,Increases the chance of a sentence.
 Le conseguenze avverse sono piu probabili.,Adverse consequences are more likely.
 La pressione pesa di più.,Pressure takes a greater toll.
 Peggiora le chance di esiti puliti.,Reduces the chance of a clean outcome.
@@ -1154,3 +1151,35 @@ Nerio: Nessuna. Una copia.,Nerio: None. A copy.
 "Quietanza versata contro il debito: Denari +%d, il doppio.","Receipt deposited against the debt: Denarii +%d, double."
 "In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","In debt: the counter stays closed until the account is even. Every receipt deposited in debt counts double."
 Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Account in debt. The receipt counts double; settle the account to reopen the counter.
+Arena Muta,Mute Arena
+Arena di Cenere,Ash Arena
+Arena del Disprezzo,Arena of Contempt
+Arena della Vergogna,Arena of Shame
+La Pressione sale di uno prima del sigillo.,Pressure rises by one before the seal.
+"Se il patto regge, +1 Gloria. In ogni caso resta un Segno.","If the pact holds, +1 Glory. Either way a Mark remains."
+Dopo il responso la quietanza è vietata: la gradinata vuole un'altra arena.,After the verdict the receipt is forbidden: the stands want another arena.
+La vergogna costa Favore: la gradinata si raffredda di uno.,Shame costs Favour: the stands cool by one.
+Qui il conto ti segue.,Here the account follows you.
+Nessuno ti applaude. Nessuno ti salva.,No one applauds. No one saves you.
+Il sangue è l’unica valuta accettata.,Blood is the only currency accepted.
+Come si ottiene:,How to obtain it:
+Pagina sigillata: si apre al gradino %d della scala dei bandi.,Sealed page: it opens at step %d of the bando ladder.
+Esito incasso: +%d Gloria,Cash-out bonus: +%d Glory
+NUOVA CAMPAGNA,NEW CAMPAIGN
+AZZERA LA CAMPAGNA,RESET THE CAMPAIGN
+CONFERMA: AZZERA,CONFIRM: RESET
+CAMPAGNA AZZERATA,CAMPAIGN RESET
+ANNULLA,CANCEL
+"Riparte tutto: Registro, conto di Vessa, scala dei bandi, racconti e Archivio delle condanne. Restano solo le impostazioni.","Everything starts over: the Registry, Vessa's account, the bando ladder, the tales and the Archive of sentences. Only the settings stay."
+Campagna azzerata. Restano solo le impostazioni.,Campaign reset. Only the settings stay.
+NEW_CAMPAIGN_CONFIRM_BODY,"The Registry does not return. A new dossier opens.
+Everything starts over, the Archive of sentences too.
+Only the settings stay."
+Pressione %d/%d,Pressure %d/%d
+Favore %+d,Favour %+d
+Segni %d,Marks %d
+"La Gloria in gioco. La quietanza la incassa; se il sigillo cede, si perde.","The Glory at stake. The receipt banks it; if the seal breaks, it is lost."
+"Quanto stringe la gradinata. Più è alta, più il sigillo rischia di cedere. Rilanci e sfide la alzano.","How hard the stands press. The higher it is, the more the seal risks breaking. Raises and challenges push it up."
+Quanto ti sostiene la gradinata.,How much the stands back you.
+I costi rimasti sul corpo. Pesano sui prossimi sigilli.,The costs left on the body. They weigh on the next seals.
+Il conto con Vessa: si spende al banco. Sotto zero il banco chiude.,Your account with Vessa: spend it at the counter. Below zero the counter closes.

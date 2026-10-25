@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static guard for Push Your Luck Posta/Gloria/Corruzione counter contract."""
+"""Static guard for Push Your Luck Posta/Gloria counter contract (Corruzione stays hidden)."""
 
 from __future__ import annotations
 
@@ -64,7 +64,7 @@ def main() -> int:
         "func _compute_cashout_glory",
         "func _format_push_luck_receipt_text",
         "%d GLORIA IN POSTA",
-        "CORRUZIONE: %d",
+        "Conto %d Denari",
         "func _format_cashout_note",
         "func _format_double_note",
         "func _format_condanna_note",
@@ -86,7 +86,7 @@ def main() -> int:
     for token in [
         "Posta",
         "Gloria",
-        "Corruzione",
+        "Corruzione` stays hidden",
         "UI resta reattiva",
     ]:
         if token not in ui_canon:
@@ -99,6 +99,15 @@ def main() -> int:
     ]:
         if token not in mechanics:
             return fail(f"MECHANICS_UNIFIED.md missing PYL counter mechanics token: {token}")
+
+    for token in [
+        "CORRUZIONE: %d",
+        "Corruzione -%d",
+        "Esito incasso: -%d Corruzione",
+        "Corruzione %d |",
+    ]:
+        if token in run_manager or token in ui_root:
+            return fail(f"Corruzione must stay hidden on Push Your Luck: {token}")
 
     print("[OK][PYL_COUNTER_CONTRACT] push-your-luck counter guard passed")
     return 0

@@ -36,20 +36,20 @@ func _inspect() -> void:
 		var texture: Texture2D = load(source) as Texture2D
 		if texture == null or texture.get_width() <= 0 or texture.get_height() <= 0:
 			_failures.append("Image does not load: " + source)
-	var audio_manifest: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://assets/audio/original/manifest.json"))
+	var audio_manifest: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://assets/audio/manifest.json"))
 	var audio_count: int = 0
 	if audio_manifest is Dictionary and audio_manifest.get("assets") is Array:
 		for asset: Dictionary in audio_manifest.assets:
 			var source: String = str(asset.get("path", ""))
 			var stream: AudioStream = load(source) as AudioStream
 			if stream == null or stream.get_length() <= 0.0:
-				_failures.append("Original audio does not load: " + source)
+				_failures.append("Score or cue does not load: " + source)
 			else:
 				audio_count += 1
 	else:
-		_failures.append("Export has no valid original audio manifest")
-	if audio_count != 31:
-		_failures.append("Original audio inventory is incomplete")
+		_failures.append("Export has no valid audio manifest")
+	if audio_count != 40:
+		_failures.append("Audio inventory is incomplete")
 	for path: String in _paths:
 		if path.ends_with(".mp3") or path.ends_with(".mp3.import") or path.ends_with(".mp3str"):
 			_failures.append("Retired soundtrack in export: " + path)

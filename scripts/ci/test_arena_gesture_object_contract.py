@@ -27,7 +27,7 @@ STATES = ("normal", "focus", "pressed", "selected", "disabled")
 EXPECTED_COPY = {
     "ATTO DAVANTI ALLA GRADINATA": {
         "it": "ATTO DAVANTI ALLA GRADINATA",
-        "en": "ACT BEFORE THE CROWD",
+        "en": "ACT BEFORE THE STANDS",
         "es": "ACTO ANTE LA GRADA",
     },
     "ABBASSA LO SGUARDO": {
@@ -37,7 +37,7 @@ EXPECTED_COPY = {
     },
     "SFIDA LA GRADINATA": {
         "it": "SFIDA LA GRADINATA",
-        "en": "CHALLENGE THE CROWD",
+        "en": "CHALLENGE THE STANDS",
         "es": "DESAFÍA A LA GRADA",
     },
     "Il Registro annota misura.": {
@@ -305,7 +305,7 @@ def _assert_crowd_exchanges() -> None:
         "La gradinata trattiene il fiato.",
         "Scambio %d di %d:",
         "Favore %+d.",
-        "LA GRADINATA TI PORTA: posta +2.",
+        "LA GRADINATA TI PORTA: il favore resta a +4.",
         "LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.",
     ):
         for locale in ("it", "en", "es"):

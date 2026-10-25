@@ -37,7 +37,12 @@ func _run() -> void:
 	await create_timer(0.20).timeout
 	_expect(int(players[0].playing) + int(players[1].playing) == 1, "outgoing voice not stopped")
 	for player: AudioStreamPlayer in players:
-		_expect(player.stream is AudioStreamWAV and player.stream.loop_mode == AudioStreamWAV.LOOP_FORWARD, "score loop not configured")
+		_expect(player.stream is AudioStreamOggVorbis and player.stream.loop, "score loop not configured")
+	var crowd: Dictionary = music.get("_crowd")
+	_expect(crowd.size() == 2 and (crowd["rhythm"] as AudioStreamPlayer).bus == "Ambience", "gradinata beds not on the Ambience bus")
+	music.call("_on_escalation_changed", 10, 10)
+	await create_timer(0.05).timeout
+	_expect((crowd["murmur"] as AudioStreamPlayer).playing and (crowd["rhythm"] as AudioStreamPlayer).playing, "full Pressione did not raise the gradinata")
 	var sfx: Node = root.get_node("SfxBus")
 	var sfx_players: Array = sfx.get("_players")
 	_expect(sfx_players.size() == 6, "SFX pool exceeded six voices")
@@ -83,6 +88,8 @@ func _run() -> void:
 	sfx.call("_on_run_ended", "REGISTRY_SILENCE", {})
 	music.call("_on_run_phase_changed", Phase.MAIN_MENU)
 	_expect(not players[0].playing and not players[1].playing, "phase callback revived music during Silence")
+	for crowd_player: AudioStreamPlayer in crowd.values():
+		_expect(not crowd_player.playing, "gradinata survived Silence")
 	for player: AudioStreamPlayer in sfx_players:
 		_expect(not player.playing, "ritual audio tail survived Silence")
 	music.call("_on_request_show_main_menu")

@@ -319,6 +319,12 @@ var scars_panel: Control = null
 var crowd_favor_panel: Control = null
 var _gesture_exchange: Dictionary = {}
 var _ledger_denari: int = 0
+var _crowd_favor_value: int = 0
+var _scars_count: int = 0
+# The balance row: the five numbers a bet weighs, always in the rail.
+var balance_row: HBoxContainer = null
+var _balance_cells: Dictionary = {}
+const BALANCE_CELL_KEYS: Array[String] = ["posta", "pressure", "favor", "scars", "ledger", "arena"]
 var crowd_favor_bar: ProgressBar = null
 var crowd_favor_body: Label = null
 var crowd_favor_note: Label = null
@@ -1816,22 +1822,65 @@ func _update_escalation_bar() -> void:
 		push_luck_panel.call("present_pressure", clamped_level)
 
 func _format_run_status_line(pressure_level: int) -> String:
-	# One persistent place for the run's stakes: mood, earned Glory and arena.
+	# Under the balance row: the crowd's mood and the chain, in words.
+	_refresh_balance_row(pressure_level)
 	var parts: Array[String] = [_get_pressure_state_text(pressure_level)]
-	if _run_manager_port != null and _run_manager_port.has_manager():
-		var arena_index: int = _run_manager_port.get_arena_index()
-		if arena_index > 0:
-			parts.append(tr("In posta %d Gloria") % _run_manager_port.get_run_stake())
-			var chain_multiplier: float = _run_manager_port.get_seal_chain_multiplier()
-			if chain_multiplier > 1.0:
-				parts.append(tr("Catena %s") % _chain_multiplier_text(chain_multiplier))
-			parts.append(tr("Conto %d Denari") % _ledger_denari)
-			var arena_limit: int = _run_manager_port.get_arena_limit()
-			if arena_limit > 0:
-				parts.append(tr("Arena %d di %d") % [arena_index, arena_limit])
-			else:
-				parts.append(tr("Arena %d") % arena_index)
+	if _run_manager_port != null and _run_manager_port.has_manager() and _run_manager_port.get_arena_index() > 0:
+		var chain_multiplier: float = _run_manager_port.get_seal_chain_multiplier()
+		if chain_multiplier > 1.0:
+			parts.append(tr("Catena %s") % _chain_multiplier_text(chain_multiplier))
 	return "  ·  ".join(parts)
+
+func _build_balance_row() -> void:
+	# Marco, October 2026: the numbers a bet weighs stay visible in every phase,
+	# always in the same order. The right column keeps the detail behind them.
+	if balance_row != null or escalation_label == null:
+		return
+	var row_parent: Node = escalation_label.get_parent().get_parent()
+	balance_row = HBoxContainer.new()
+	balance_row.name = "BalanceRow"
+	balance_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	balance_row.add_theme_constant_override("separation", 34)
+	row_parent.add_child(balance_row)
+	row_parent.move_child(balance_row, 0)
+	for key: String in BALANCE_CELL_KEYS:
+		var cell := Label.new()
+		cell.name = "Balance_%s" % key
+		cell.mouse_filter = Control.MOUSE_FILTER_STOP
+		ManifestoKit.apply_body(cell)
+		cell.add_theme_font_size_override("font_size", 16)
+		balance_row.add_child(cell)
+		_balance_cells[key] = cell
+	# The pressure cell now carries "Pressione X/10"; the old caption line stays hidden.
+	(escalation_label.get_parent() as CanvasItem).visible = false
+
+func _refresh_balance_row(pressure_level: int) -> void:
+	if balance_row == null:
+		return
+	var safe_max: int = _get_pressure_max(_escalation_max)
+	var in_run: bool = _run_manager_port != null and _run_manager_port.has_manager()
+	var arena_index: int = _run_manager_port.get_arena_index() if in_run else 0
+	var stake: int = _run_manager_port.get_run_stake() if in_run else 0
+	_set_balance_cell("posta", tr("In posta %d Gloria") % stake, tr("La Gloria in gioco. La quietanza la incassa; se il sigillo cede, si perde."), false, arena_index > 0)
+	_set_balance_cell("pressure", tr("Pressione %d/%d") % [clampi(pressure_level, 0, safe_max), safe_max], tr("Quanto stringe la gradinata. Più è alta, più il sigillo rischia di cedere. Rilanci e sfide la alzano."), pressure_level >= 6)
+	_set_balance_cell("favor", tr("Favore %+d") % _crowd_favor_value, "%s %s" % [tr("Quanto ti sostiene la gradinata."), tr(_crowd_favor_band_text(_crowd_favor_value))], _crowd_favor_value < 0)
+	_set_balance_cell("scars", tr("Segni %d") % _scars_count, tr("I costi rimasti sul corpo. Pesano sui prossimi sigilli."), false)
+	_set_balance_cell("ledger", tr("Conto %d Denari") % _ledger_denari, tr("Il conto con Vessa: si spende al banco. Sotto zero il banco chiude."), _ledger_denari < 0)
+	var arena_text: String = ""
+	if arena_index > 0:
+		var arena_limit: int = _run_manager_port.get_arena_limit()
+		arena_text = tr("Arena %d di %d") % [arena_index, arena_limit] if arena_limit > 0 else tr("Arena %d") % arena_index
+	_set_balance_cell("arena", arena_text, "", false, arena_index > 0)
+
+func _set_balance_cell(key: String, text: String, tooltip: String, warning: bool, shown: bool = true) -> void:
+	var cell := _balance_cells.get(key) as Label
+	if cell == null:
+		return
+	cell.text = text
+	cell.tooltip_text = tooltip
+	cell.visible = shown and text != ""
+	# Warning values take the wax; the wording still carries the sign.
+	cell.add_theme_color_override("font_color", Palette.WAX.lightened(0.45) if warning else Palette.IVORY)
 
 func _get_pressure_max(max_value: int) -> int:
 	return maxi(max_value, 10)
@@ -2230,11 +2279,12 @@ func _on_resolve_ritual_strike_pressed() -> void:
 		_recover_judgment_seal_request_lock()
 
 func _on_crowd_favor_changed(payload: Dictionary) -> void:
-	# The rail reads the posta too: a triumph adds to it.
-	_update_escalation_bar()
 	var favor: int = int(payload.get("favor", 0))
 	for presence: Node in get_tree().get_nodes_in_group("arena_presence"):
 		presence.set("favor", favor)
+	_crowd_favor_value = favor
+	# The rail reads the favour too: after a triumph it settles at +4.
+	_update_escalation_bar()
 	var event: String = str(payload.get("event", ""))
 	var note: String = str(payload.get("note", ""))
 	if crowd_favor_bar != null:
@@ -2252,7 +2302,7 @@ func _on_crowd_favor_changed(payload: Dictionary) -> void:
 		crowd_favor_body.text = "%s %s" % [tr("Favore %+d.") % favor, tr(_crowd_favor_band_text(favor))]
 	if crowd_favor_note != null:
 		if event == "triumph":
-			crowd_favor_note.text = tr("LA GRADINATA TI PORTA: posta +2.")
+			crowd_favor_note.text = tr("LA GRADINATA TI PORTA: il favore resta a +4.")
 		elif event == "riot":
 			crowd_favor_note.text = tr("LA GRADINATA SI RIVOLTA: un Segno, Pressione +1.")
 		else:
@@ -2276,7 +2326,7 @@ func _on_ledger_changed(payload: Dictionary) -> void:
 	if _impact == null or delta == 0:
 		return
 	if delta > 0:
-		_impact_at_control(pressure_state_label, IMPACT_COIN, 10 + 4 * delta, 3.0)
+		_impact_at_control(_balance_cells.get("ledger", pressure_state_label) as Control, IMPACT_COIN, 10 + 4 * delta, 3.0)
 	else:
 		_impact.shake(6.0 + 2.0 * float(absi(delta)), 0.25)
 		_impact.flash(IMPACT_ASH, 0.12, 0.3)
@@ -2778,8 +2828,8 @@ func _update_special_arena_ui() -> void:
 	if _special_arena_payload.is_empty():
 		special_arena_label.visible = false
 		return
-	var title: String = str(_special_arena_payload.get("title", tr("Arena speciale")))
-	var desc: String = str(_special_arena_payload.get("description", ""))
+	var title: String = tr(str(_special_arena_payload.get("title", "Arena speciale")))
+	var desc: String = tr(str(_special_arena_payload.get("description", "")))
 	if desc != "":
 		special_arena_label.text = "%s\n%s" % [title, desc]
 	else:
@@ -2799,8 +2849,8 @@ func _update_arena_theme_ui() -> void:
 		if arena_theme_subtitle_panel != null:
 			arena_theme_subtitle_panel.visible = false
 		return
-	var title: String = str(_arena_theme_payload.get("title", ""))
-	var subtitle: String = str(_arena_theme_payload.get("subtitle", ""))
+	var title: String = tr(str(_arena_theme_payload.get("title", "")))
+	var subtitle: String = tr(str(_arena_theme_payload.get("subtitle", "")))
 	if arena_theme_title_label != null:
 		arena_theme_title_label.text = title
 		arena_theme_title_label.visible = title != ""
@@ -2844,14 +2894,16 @@ func _on_scar_applied(scar: Dictionary) -> void:
 	_show_scar_popup(scar)
 
 func _refresh_scars_ui(scars: Array) -> void:
+	_scars_count = scars.size()
+	_update_escalation_bar()
 	if scars_label == null:
 		return
-	var suppress_for_betting: bool = betting_circle != null and betting_circle.visible
 	if scars_panel != null:
 		if _ending_mode_active:
 			scars_panel.visible = false
 			return
-		scars_panel.visible = not suppress_for_betting
+		# Segni stay in the right column while you choose the pact, like Bando and Gradinata.
+		scars_panel.visible = true
 		# The margin stays fixed; overflow is handled by ScarsScroll.
 		var title := scars_panel.get_node("ScarsVBox/ScarsTitlePanel/ScarsTitle") as Label
 		title.text = "%s · %d" % [tr("SEGNI"), scars.size()]
@@ -2879,7 +2931,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 		var origin: String = str(scar.get("origin", ""))
 		if visual_tag != "":
 			summary_lines.append(tr(str(scar.get("name", "Cicatrice"))))
-			detail_lines.append("- %s" % visual_tag)
+			detail_lines.append("- %s" % tr(visual_tag))
 		else:
 			summary_lines.append("- %s" % tr("Cicatrice"))
 			detail_lines.append("- %s" % tr("Cicatrice"))
@@ -2893,7 +2945,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 		if effect_text != "":
 			detail_lines.append(tr("  Effetto: %s") % effect_text)
 		if origin != "":
-			detail_lines.append(tr("  Origine: %s") % origin)
+			detail_lines.append(tr("  Origine: %s") % tr(origin))
 		detail_lines.append("")
 	if summary_lines.size() > 0 and summary_lines[summary_lines.size() - 1] == "":
 		summary_lines.remove_at(summary_lines.size() - 1)
@@ -3061,11 +3113,10 @@ func _format_push_luck_receipt_text(meta: Dictionary) -> String:
 	# Gloria is banked only by the quietanza, so the live posta is the run's value.
 	return tr("%d GLORIA IN POSTA") % stake_glory
 
-func _format_cashout_note(cashout_glory_delta: int, cashout_corruption_delta: int) -> String:
+func _format_cashout_note(cashout_glory_delta: int, _cashout_corruption_delta: int) -> String:
 	var parts: Array[String] = []
 	parts.append(tr("Ottieni +%d Gloria") % maxi(cashout_glory_delta, 0))
-	if cashout_corruption_delta > 0:
-		parts.append(tr("Corruzione -%d") % cashout_corruption_delta)
+	# Corruzione stays hidden: it shapes the Registry's closing, not the player's arithmetic.
 	parts.append(tr("chiudi il registro"))
 	return "\n".join(parts)
 
@@ -3088,8 +3139,9 @@ func _apply_push_luck_payload(payload: RunUiPayload) -> void:
 	if push_luck_title != null:
 		push_luck_title.text = str(payload.title if payload.title != "" else tr("SPINGI LA SORTE"))
 	if push_luck_info != null:
-		push_luck_info.text = tr("CORRUZIONE: %d") % maxi(int(meta.get("current_corruption", 0)), 0)
-		push_luck_info.show()
+		# The balance row in the rail already carries Gloria, Denari and the rest.
+		push_luck_info.text = ""
+		push_luck_info.hide()
 		push_luck_title.show()
 		push_luck_details.show()
 	var doom_text: String = str(meta.get("next_doom", ""))
@@ -4574,7 +4626,6 @@ func _apply_betting_overlay_visual_suppression() -> void:
 	if scars_panel != null:
 		_betting_overlay_scars_visible_before = scars_panel.visible
 		_betting_overlay_scars_visibility_cached = true
-		scars_panel.visible = false
 	if scars_detail_panel != null:
 		scars_detail_panel.visible = false
 	if arena_theme_title_panel != null:
@@ -4817,6 +4868,7 @@ func _apply_manifesto_print() -> void:
 		if label != null:
 			ManifestoKit.apply_body(label)
 			label.add_theme_font_size_override("font_size", 16)
+	_build_balance_row()
 	if scars_label != null:
 		ManifestoKit.apply_body(scars_label)
 	var scars_scroll := get_node_or_null("HUD/ScarsPanel/ScarsVBox/ScarsScroll") as ScrollContainer
@@ -4843,6 +4895,12 @@ func _apply_manifesto_print() -> void:
 		if label != null:
 			label.add_theme_font_override("font", ManifestoKit.DISPLAY_FONT)
 			label.add_theme_constant_override("outline_size", 0)
+	# The title takes the kit display face like every Manifesto surface
+	# (size before face). The outcome keeps its scene face: overriding it
+	# still makes Godot 4.7.2 fail shaping (fd null) on the posta commands.
+	if verdict_header != null:
+		verdict_header.add_theme_font_size_override("font_size", ManifestoKit.TITLE_LARGE)
+		verdict_header.add_theme_font_override("font", ManifestoKit.DISPLAY_FONT)
 	if verdict_sentence_label != null:
 		verdict_sentence_label.add_theme_font_override("font", ManifestoKit.BODY_FONT)
 		verdict_sentence_label.add_theme_constant_override("outline_size", 0)

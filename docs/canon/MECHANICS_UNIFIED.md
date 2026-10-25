@@ -1282,7 +1282,16 @@ most one double. Provoke remains armed until classification has been emitted.
 Campaign parameters belong to docs/canon/REGISTRY_SYSTEM_SPEC.md. Signature
 and era may bias offer selection within eligibility, never payout or outcome
 odds. Silence takes precedence at run closure, grants no closing unlock and
-advances exactly one Era. Absence is final.
+advances exactly one Era. Absence is final for that campaign: the terminal
+surface offers NUOVA CAMPAGNA and Settings offer AZZERA LA CAMPAGNA (October
+2026). Both send `request_reset_campaign`; RunManager accepts it only in
+MAIN_MENU, NONE or GAME_OVER and calls `SaveManager.reset_campaign`, which
+restores the default meta (Registry era, pressure and evolution, Vessa's
+ledger, bando step and acclaim, gesta) and clears every unlocked id (the
+Archive of condanne and `registry_precedent`), the campaign dialogues seen,
+the opening prologue, the learned rite and the run save. Only the settings
+(language, audio, video, motion) stay, as Marco chose on 2026-10-20.
+RunManager reloads its cached Registry state and emits `campaign_reset`.
 
 ## Loop rivisto (ottobre 2026)
 
@@ -1378,8 +1387,9 @@ gradinata e dal favore visibile.
   (`CROWD_FAVOR_SEAL_STEP`, 0,02 per punto, da -0,1 a +0,1) e mantiene le
   soglie di prima: a 0 o meno la quietanza rende meno, a -3 o meno è bloccata.
   Il responso lo sposta di ±2 senza mai portarlo agli estremi. Negli scambi,
-  arrivare a +5 è un trionfo (`LA GRADINATA TI PORTA`: posta +2 subito,
-  favore a +3); arrivare a -5 è una rivolta (`LA GRADINATA SI RIVOLTA`: Segno
+  arrivare a +5 è un trionfo (`LA GRADINATA TI PORTA`: Denari +3 e il
+  favore scende a +4; da ottobre 2026 il trionfo non dà più posta e conta
+  solo quando ci si arriva); arrivare a -5 è una rivolta (`LA GRADINATA SI RIVOLTA`: Segno
   Marchio della vergogna e Pressione +1, o Pressione +2 se il Segno c'è già;
   favore a -2). La UI lo mostra nel riquadro in alto a sinistra
   (`CrowdFavorPanel`) tramite `crowd_favor_changed`.
@@ -1456,8 +1466,11 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   palio dopo il congedo. Il libro base dei patti (Prudenza, Hybris e le pagine
   `CONDANNA_FIRMATO`, `BASE_PACT_UNLOCKS`) e' aperto dal primo percorso; solo
   la scala apre le pagine sigillate: gradino 3 `CONDANNA_ANCORA`, gradino 6
-  `CONDANNA_MI_SONO_FERMATO` (`BANDO_PACT_STEPS`). Le vecchie regole di
-  sblocco non le aprono piu'. L'offerta del Registro contiene solo le pagine
+  `CONDANNA_MI_SONO_FERMATO`, gradino 9 `CONDANNA_NON_DOVEVO_PROVARCI` (il
+  patto che mente, dal 20 ottobre 2026) (`BANDO_PACT_STEPS`). Le vecchie regole
+  di sblocco non le aprono piu'. Nell'Archivio una pagina sigillata mostra il
+  nome e il gradino che la apre, non i termini
+  (`get_level3_pact_open_step`). L'offerta del Registro contiene solo le pagine
   aperte (`_is_level3_bet_offerable`: sblocco e Segni richiesti). Con solo
   Prudenza e Hybris all'inizio, chi ama il rischio finiva nell'Hybris e a zero
   Gloria (52-82% dei percorsi in simulazione): per questo il libro base resta
@@ -1483,3 +1496,69 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   scadenza, stato, posta, prossimo bando, racconto o patti in palio). La UI
   lo mostra nel riquadro in basso a sinistra (`BandoPanel`), sul Registro
   chiuso e nel fascicolo; la catena sta nel rail e nel testo del sigillo.
+
+## Archivio delle condanne (ottobre 2026)
+
+Revisione del 20 ottobre 2026 (thread "Scrittura, economia e sblocchi"), fatta
+da un profilo vuoto. Ogni condanna dell'Archivio risponde a un solo modo di
+giocare, quello che la sua riga dichiara; una sconfitta non ne apre piu' sei
+insieme. Le condanne restano senza premio (Archivio consultivo), salvo i
+cancelli gia' esistenti indicati nell'ultima colonna.
+
+| Condanna | Si ottiene quando | Apre anche |
+| --- | --- | --- |
+| Firmato | si firma il primo patto | - |
+| Non mi fermerò / Ancora | si rilancia con la quietanza aperta, una o due volte nello stesso percorso | - |
+| Finché regge | si rilancia con Pressione 6 o piu' | - |
+| So come finisce | si rilancia portando 3 Segni o piu' | Arena del Silenzio |
+| Ho visto abbastanza / Mi sono fermato | quietanza dopo un rilancio o a Pressione 4+; quietanza a Pressione 7+ | - |
+| Non oggi | regge il sigillo della Via dell'Hybris | - |
+| È finita così | la prima sconfitta, quando arriva (prima era solo la sconfitta al primo percorso, quindi mancabile per sempre) | Arena del Sangue, "Non sarà l'ultima" |
+| Non sarà l'ultima | si rientra nell'arena dopo una sconfitta | - |
+| L'ho accettato | si riceve il marchio (prima non aveva nessun trigger) | - |
+| Era il prezzo | si riceve il marchio mentre un patto tiene chiusa la quietanza | - |
+| Non è colpa loro | si riceve il marchio senza aver mai rilanciato nel percorso | - |
+| Sapevo cosa stavo facendo | un patto chiude il percorso (Hybris spezzata) | - |
+| Non dovevo provarci | si perde subito dopo un rilancio | - |
+| Troppo tardi | si perde dopo una scelta rischiosa non ancora risolta | - |
+| Non abbastanza | il percorso si chiude in perdita con il bando ancora aperto | - |
+| Ricordato | si chiude un percorso | - |
+| Visto dal pubblico / Il tuo nome | Favore 3+ (o folla a caccia); di nuovo in un percorso successivo | voci dure della gradinata |
+| Registro: Compromissione, Ascesa, Consumo, Pattern | chiusura del fascicolo con almeno 3 patti: 4 Segni o conto di Vessa in debito, poi 40 Gloria incassate, poi 3 Segni, altrimenti Pattern | voce d'archivio |
+
+Le soglie di Pressione 3, 5 e 7 non aprono piu' condanne e, dal ribilanciamento
+di ottobre 2026, non aggiungono Corruzione.
+
+## Ribilanciamento (ottobre 2026)
+
+Scelte di Marco del 21 ottobre 2026 sulla proposta con il simulatore di campagna
+(proposte A, D, E; B e C respinte).
+
+- **A. Corruzione dentro i Segni.** `RunState.corruption` non accumula piu'
+  nulla di nascosto: vale `Segni visibili x CORRUPTION_PER_SEGNO` (3), letto da
+  `scars_payload` a ogni aggiornamento dei Segni (`_sync_corruption_from_segni`).
+  Rilanci, patti forti, soglie di Pressione, provocazioni fallite e sconfitte
+  costose non aggiungono piu' Corruzione e la quietanza non la scala piu'. La
+  scala resta quella delle regole dei finali (`data/ending_rules.gd`: 5, 8, 10),
+  cioe' 2, 3 e 4 Segni.
+- **E. Chiusure del Registro sui numeri visibili.** Con almeno 3 patti:
+  Compromissione con 4 Segni o con il conto di Vessa in debito; poi Ascesa con
+  40 Gloria incassate nel percorso; poi Consumo con 3 Segni; altrimenti Pattern.
+  Le condizioni delle quattro condanne REGISTRO_* lo dicono al giocatore.
+- **D. Fonti di posta.** Il trionfo della gradinata non mette piu' posta: il
+  favore scende a +4 (`CROWD_TRIUMPH_SETTLE`) e il trionfo scatta solo quando
+  ci si arriva (Denari +3 invariati). Il bonus per arena attraversata resta
+  dentro il valore del sigillo, come gia' mostrato nel testo del sigillo.
+
+Simulatore di campagna (`tools/campaign_sim.gd`, circa 42 percorsi fino
+all'Assenza per stile), prima e dopo:
+
+| Stile | Chiusure prima | Chiusure dopo | Incasso mediano | Denari max |
+| --- | --- | --- | --- | --- |
+| bando | Compromissione 32, Pattern 10 | Pattern 20, Consumo 10, Ascesa 6, Compromissione 5 | 21 -> 17 | 59 -> 50 |
+| prudente | Compromissione 17, Pattern 25 | Pattern 39, Compromissione 1 | 12 -> 10 | 51 -> 27 |
+| scarno | Compromissione 21, Pattern 19 | Pattern 38, Consumo 2 | 14 -> 14 | 50 -> 58 |
+
+Varianti scartate: favore fermo a +5 dopo il trionfo (Denari max 100, scala
+completa al percorso 8: troppo generosa) e favore a +3 (una sola Ascesa).
+

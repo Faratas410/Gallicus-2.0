@@ -1,6 +1,50 @@
 # Gallicus Testing
 
+## Uniformazione artistica - 24 ottobre 2026
+
+`scripts/ci/run_art_uniformity_contract.py --godot-bin <Godot>` esegue il
+contratto dedicato su profilo isolato; il playbook lo include nel percorso
+runtime. Verifica trasformazioni canvas, cancellazione di effetti gia' avviati
+attraverso l'opzione reale, conteggio/gauge, particelle, fascia persistente
+e materiale comune nei tre stadi della ramp. La sonda non cambia l'economia.
+
+Affiancare matrici counter/utility/posta in IT/EN/ES, 720p/1080p, ispezione
+dei nuovi ritratti e prove naturali KEYBOARD_FULL_RUN/CASHOUT/DOUBLE/CONDANNA.
+La notifica Segno deve restare separata da numero, voce e oggetti. Controllare
+il focus anche con le trasformazioni canvas, non solo `get_global_rect()`.
+Il fixture della posta ora libera audio/scena prima di quit. Catture e limiti:
+`docs/support/art_unification_2026-10-24.md`.
+
+Incasso/Rilancio, 22 ottobre 2026: fixture dedicata
+`tools/living_verdict_capture.gd -- --all-languages`, con profilo usa e
+getta, desktop privato non attivato e Godot 4.6.2. Produce stati disponibili,
+focus, quietanza impressa, seconda incisione, blocchi, posta lunga e
+movimento a 1280x720 e 1920x1080. Controlla testo entro i target,
+doppio click, focus che salta azioni bloccate e movimento ridotto.
+Affiancare le route CASHOUT, DOUBLE, CONDANNA e KEYBOARD_FULL_RUN.
+Receipts, confronto e limiti: `docs/support/living_verdict_2026-10-22.md`.
+
 ## Principio
+
+Compatibilita' locale del 15 ottobre 2026: Godot
+`4.7.2.stable.official.ed1daf0bf`, Windows, renderer Vulkan/Forward+ reale,
+IT/EN/ES a 1280x720 e 1920x1080. La baseline canonica CI resta 4.6.2.
+Report: `docs/support/manifesto_visual_review_2026-10-15.md`.
+`tools/manifesto_review_capture.gd -- --capture-dir=<directory>` aggiunge
+62 fixture di menu, opzioni, focus slider, popup nativi, crediti, Archivio,
+tooltip, Museo, prima battuta del dialogo e sezione utility del campionario.
+Aprire le utility passa dai segnali dei Button reali; il dialogo e' una
+fixture esplicita, distinta dal contratto che attraversa l'overlay reale.
+Controlla dimensioni effettive delle immagini, contenimento dei target e
+testo del dialogo. Le impostazioni riapplicano la risoluzione salvata: il
+capture ripristina la dimensione della matrice prima di ogni screenshot.
+
+La chiusura riuscita del driver smoke ferma e scollega i player audio e
+attende 0.2 s prima del quit: Godot 4.7.2 tratteneva i riferimenti di playback
+se il processo terminava durante il crossfade del ritorno al menu. La cura
+e' limitata al driver; validator, outcome, seed e comportamento normale non
+cambiano. La fixture CP-02 libera esplicitamente i due SaveManager creati
+fuori dalla SceneTree; conserva la prova intenzionale del JSON malformato.
 
 Giudizio e sigillo, 9 ottobre: `tools/counter_layout_capture.gd --
 --judgment-only` produce 52 viste IT, 720p/1080p e motion normale/ridotto.

@@ -28,6 +28,9 @@ func _ready() -> void:
 	button.mouse_exited.connect(_trace_accent)
 	button.focus_entered.connect(_trace_accent)
 	button.focus_exited.connect(_trace_accent)
+	GameEvents.settings_changed.connect(func(payload: Dictionary) -> void:
+		if bool(payload.get("reduced_motion", false)):
+			_trace_accent())
 
 func _trace_accent() -> void:
 	# Sober profile: no scale or offset; the line is drawn left to right.

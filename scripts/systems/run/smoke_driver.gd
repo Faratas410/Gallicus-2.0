@@ -18,6 +18,16 @@ var _new_run_requested: bool = false
 var _step_logged_run_init: bool = false
 var _gate_quit_requested: bool = false
 
+static func shutdown(tree: SceneTree) -> void:
+	# The smoke exits immediately after a route sound and music crossfade.
+	# Let the audio server release playback references before engine teardown.
+	for node: Node in tree.root.find_children("*", "AudioStreamPlayer", true, false):
+		var player := node as AudioStreamPlayer
+		player.stop()
+		player.stream = null
+	await tree.create_timer(0.2).timeout
+	tree.quit(0)
+
 func is_smoke_mode() -> bool:
 	return OS.get_environment("GALLICUS_SMOKE") == "1"
 

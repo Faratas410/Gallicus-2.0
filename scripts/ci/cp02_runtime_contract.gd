@@ -87,6 +87,9 @@ func _run_contract() -> void:
 		"legacy named flow step was not normalized"
 	)
 	_expect(FlowStepContractScript.normalize_boundary_value(&"UNKNOWN_STEP", false, true) == &"", "unknown flow step was not rejected")
+	# These standalone fixture nodes never enter the tree; release them here.
+	profile.free()
+	reloaded_profile.free()
 
 func _expect(condition: bool, message: String) -> void:
 	if condition:

@@ -14,7 +14,7 @@ const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Leggi la promessa e il costo. Poi firma."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
 const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
-const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_counter.png")
+const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_counter_unified.png")
 const REGISTRY_TABLE_STATE_NORMAL: StringName = &"normal"
 const REGISTRY_TABLE_STATE_FOCUS: StringName = &"focus"
 const REGISTRY_TABLE_STATE_PRESSED: StringName = &"pressed"
@@ -135,6 +135,7 @@ func _apply_manifesto_surfaces() -> void:
 		Kit.apply_page_selection(button)
 	for label: Label in [header_label, intro_body, intro_seal, banco_note]:
 		Kit.apply_label(label)
+	banco_note.add_theme_font_size_override("font_size", Kit.SERVICE_SIZE)
 	for label: Label in [intro_text, banco_title]:
 		Kit.apply_label(label, &"title")
 	banco_title.add_theme_font_size_override("font_size", Kit.ACTION_COMPACT)

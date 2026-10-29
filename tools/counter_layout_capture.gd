@@ -98,8 +98,10 @@ func _validate_layout(label: String) -> void:
 				var action_note := card.get_child(1).get_child(0) as Label
 				_check(action_note.get_global_rect().position.y + action_note.get_line_count() * action_note.get_line_height() <= card.get_global_rect().end.y - 8, label + " note lacks bottom padding")
 				for margin: Control in side:
-					_check(not card.get_global_rect().intersects(margin.get_global_rect()), label + " action hits margin")
-				_check(not card.get_global_rect().intersects(rail.get_global_rect()), label + " action hits footer")
+					if margin.is_visible_in_tree():
+						_check(not card.get_global_rect().intersects(margin.get_global_rect()), label + " action hits margin")
+				if rail.is_visible_in_tree():
+					_check(not card.get_global_rect().intersects(rail.get_global_rect()), label + " action hits footer")
 	var circle: Control = scene.get_node("UI/UI_RunRoot/BettingCircle")
 	if circle.visible:
 		var book: Control = circle.get("book_frame")

@@ -3,6 +3,18 @@
 Questo e' l'entrypoint operativo del progetto. Gallicus ha un solo target di
 prodotto: **Gallicus 1.0**, una campagna rituale finita da pubblicare su Steam.
 
+Uniformazione richiesta dopo l'audit del 24 ottobre: ambienti, cast, UI e
+motion in [uniformazione artistica](support/art_unification_2026-10-24.md).
+La consegna distingue il candidato locale dai gate Linux e umani.
+
+Audit artistico e animazioni del 24 ottobre sul candidato locale corrente:
+[coerenza trasversale, cast e motion](support/art_audit_2026-10-24.md).
+Include catture nuove e difetti riprodotti; nessuna correzione runtime o
+nuova approvazione artistica, gate di roadmap invariati.
+
+Pass locale Incasso/Rilancio del 22 ottobre: riferimento, asset e prove in
+[Arena viva](support/living_verdict_2026-10-22.md).
+
 La documentazione attiva non usa versioni intermedie per descrivere il
 progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
@@ -44,6 +56,16 @@ progresso. Le fasi di lavoro hanno nomi operativi e gate verificabili.
 
 ## Autorita'
 
+Studio HTML della fascia di stato superiore, 22 ottobre 2026: proposta
+interattiva per Incasso/Rilancio, da valutare prima dell'integrazione in Godot.
+Perimetro e prove in `docs/support/hud_html_study_2026-10-22.md`.
+
+Verifica visiva Manifesto del 15 ottobre 2026, dopo il merge dei pacchetti
+4-7 su `main`: correzioni locali a Archivio, schede di lettura, checkbox e
+nota del banco. Prove con Godot 4.7.2 ufficiale, IT/EN/ES, 720p e 1080p:
+`docs/support/manifesto_visual_review_2026-10-15.md`.
+Questa verifica di compatibilita' locale non cambia la baseline CI 4.6.2.
+
 Kit UI Manifesto riutilizzabile, 9 ottobre 2026: token, superfici e azioni
 condivisi tra posta e comandi del fascicolo, con campionario interattivo.
 API, perimetro e prove in `docs/support/ui_kit_2026-10-09.md`.
@@ -56,8 +78,10 @@ Pacchetto 1 implementato e verificato localmente:
 Pacchetto 2 implementato e verificato localmente:
 `docs/support/manifesto_pact_crowd_2026-10-09.md`.
 Pacchetto 3 implementato e verificato localmente:
-`docs/support/manifesto_judgment_2026-10-09.md`. Prossimo pacchetto:
-Fascicolo, HUD e dettaglio Segni. Revisione umana e checkpoint Linux rimangono aperti.
+`docs/support/manifesto_judgment_2026-10-09.md`. I pacchetti successivi
+Fascicolo/HUD/Segni, utility, Archivio e narrativa sono integrati in `main`;
+consegna storica in `docs/support/manifesto_atto_a_stampa_2026-10-10.md`.
+Revisione umana e checkpoint Linux del candidato rimangono aperti.
 
 Integrazione locale dei contesti del 7 e 8 ottobre 2026, con risoluzione dei
 conflitti fra UI/editoriale e Lauro/benchmark:

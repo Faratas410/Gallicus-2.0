@@ -3,6 +3,7 @@ extends Control
 
 const Palette = preload("res://scripts/ui/manifesto_palette.gd")
 const Print = preload("res://scripts/ui/manifesto_primitives.gd")
+const PAPER = preload("res://assets/ui/generated/registry_paper.png")
 var surface_role: StringName = &"paper"
 var selected: bool = false
 
@@ -17,21 +18,23 @@ func _draw() -> void:
 	var paper: bool = surface_role == &"paper"
 	var pigment: Color = Palette.INK if paper else Palette.IVORY
 	var rect := Rect2(Vector2.ZERO, size)
+	# PanelContainer fits passive children inside its content margins too.
+	# Restore the sheet's outer extent so its rules stay outside the text.
+	if get_parent() is PanelContainer:
+		var style: StyleBox = get_parent().get_theme_stylebox("panel")
+		var inset := Vector2(style.get_content_margin(SIDE_LEFT), style.get_content_margin(SIDE_TOP))
+		var end_inset := Vector2(style.get_content_margin(SIDE_RIGHT), style.get_content_margin(SIDE_BOTTOM))
+		rect = Rect2(-inset, size + inset + end_inset)
 	if not paper:
 		# PanelContainer places this passive child in its padded content rect.
 		# Extend ink into that padding; rules would run through the body copy.
 		Print.slab(self, rect.grow(8), Palette.INK, 1)
 		return
-	# The sheet covers the whole panel, padding included, so the reading
-	# margin stays inside the paper and clear of the fine rules.
-	var host := get_parent() as PanelContainer
-	if host != null:
-		var margin: StyleBox = host.get_theme_stylebox("panel")
-		if margin != null:
-			rect = Rect2(-margin.get_margin(SIDE_LEFT), -margin.get_margin(SIDE_TOP), size.x + margin.get_minimum_size().x, size.y + margin.get_minimum_size().y)
-	Print.slab(self, rect, Palette.IVORY, 1)
+	Print.slab(self, rect, Palette.IVORY if paper else Palette.INK, 1)
+	draw_texture_rect(PAPER, rect.grow(-2), false, Color(1, 1, 1, 0.15))
 	# Fine rules keep the reading field calm and reserve wax for signatures.
-	draw_line(rect.position + Vector2(8, 8), Vector2(rect.end.x - 8, rect.position.y + 8), pigment, 1)
-	draw_line(Vector2(rect.position.x + 8, rect.end.y - 8), rect.end - Vector2(8, 8), pigment, 1)
+	var ruled: Rect2 = rect.grow(-8)
+	draw_line(ruled.position, Vector2(ruled.end.x, ruled.position.y), pigment, 1)
+	draw_line(Vector2(ruled.position.x, ruled.end.y), ruled.end, pigment, 1)
 	if selected:
-		draw_line(rect.position + Vector2(8, 16), Vector2(rect.position.x + 8, rect.end.y - 16), pigment, 4)
+		draw_line(ruled.position + Vector2(0, 8), Vector2(ruled.position.x, ruled.end.y - 8), pigment, 4)

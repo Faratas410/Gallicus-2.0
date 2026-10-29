@@ -1282,7 +1282,7 @@ func _get_smoke_selected_bet_id() -> String:
 	return ""
 
 func _smoke_quit_gate() -> void:
-	get_tree().quit(0)
+	SmokeDriverScript.shutdown(get_tree())
 
 func _smoke_tick(now_msec: int) -> void:
 	if _smoke_timeout_deadline_msec > 0 and now_msec >= _smoke_timeout_deadline_msec:

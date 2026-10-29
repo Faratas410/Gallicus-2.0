@@ -10,18 +10,52 @@ verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
 ## Stato corrente
 
+25 ottobre 2026: il lavoro locale del 22-24 ottobre e' stato portato su un ramo
+e unito con `origin/main` (Godot 4.7.2, riequilibrio, audio). Su richiesta
+dell'utente e' attiva una prova pixel art sul solo rito di giudizio; regole e
+limiti in `docs/art_direction.md`, sezione "Prova pixel art - 25 ottobre 2026".
+Prossimo passo: valutazione umana della prova in movimento, poi decisione se
+estenderla a banco, gradinata e posta.
+
+24 ottobre 2026, pass successivo all'audit richiesto dall'utente: uniformazione
+di ambienti/cast, tipografia, fascia persistente, focus e animazioni; corretti
+shake della UI e cancellazione degli effetti in Movimento ridotto.
+Mandato e verifiche in `docs/support/art_unification_2026-10-24.md`.
+Core Playable Candidate invariato; prossima accettazione: revisione umana del
+candidato locale, commit manuale e checkpoint Linux. Nessun gate umano chiuso.
+
+24 ottobre 2026: audit trasversale della direzione artistica sul working tree
+locale, incluse le modifiche Incasso/Rilancio del 22 ottobre. Report e prove:
+`docs/support/art_audit_2026-10-24.md`. Riprodotti shake dell'intera UI e
+interruzione incompleta di Movimento ridotto; raccordo aperto fra cast,
+ambienti, tipografia e HUD. Nessun runtime modificato da questo audit.
+Prima dell'accettazione audiovisiva: correggere motion/accessibilita', poi
+valutare una sequenza artistica comune preservando la scelta recente della
+posta. Stage Core Playable Candidate, checkpoint Linux e gate umani invariati.
+
 Motore del 20 ottobre 2026: il progetto passa a Godot 4.7.2 su richiesta di
 Marco (`project.godot`, workflow CI, comandi di `docs/testing.md`, script
 `.cmd` locali). Gli eseguibili e i template 4.6 non si usano più; i report in
 `docs/support/` datati prima di questa data restano evidenze dei comandi 4.6.2
 con cui furono prodotti. Export Windows: servono i template 4.7.2.
 
+15 ottobre 2026: pass Manifesto 4-7 gia' integrato nel commit `b81a4fc`.
+Verifica locale 720p/1080p con Godot 4.7.2 e renderer reale; corretti tab
+dell'Archivio, righe sulle schede, checkbox duplicati e nota ES del banco.
+Il driver smoke rilascia l'audio prima di uscire; nessuna regola di run cambia.
+Report, prove e limiti: `docs/support/manifesto_visual_review_2026-10-15.md`.
+Stage invariato: Core Playable Candidate. Prossimo passo: revisione umana
+del candidato, commit manuale e checkpoint Linux; poi le sessioni CP-03.
+La baseline tecnica/CI 4.6.2 resta invariata: 4.7.2 e' verificata localmente.
+I paragrafi datati successivi conservano la sequenza storica delle consegne.
+
 Pacchetto 3 Manifesto del 9 ottobre 2026: giudizio a due colonne, verbale
 compatto e sigillo nativo stabile. Cera e tre incavi restano sul proprio
 oggetto; il kit serve tipografia, supporti e comando ausiliario. Invio sui
 due Button conserva la rispettiva richiesta, con lock precedente all'emissione.
 Evidenze e limiti: `docs/support/manifesto_judgment_2026-10-09.md`.
-Prossimo pacchetto: Fascicolo, HUD e dettaglio Segni. Gate Linux e umani aperti.
+Prossimo pacchetto di allora: Fascicolo, HUD e dettaglio Segni, poi integrato
+con i pacchetti 4-7. Gate Linux e umani aperti.
 
 Pacchetto 2 Manifesto del 9 ottobre 2026: Patto e Gradinata migrati al kit,
 tavoletta di lettura con un solo gesto e risposte al margine basso dell'arena.
@@ -48,8 +82,8 @@ nessuna implementazione aggiunta da questa preparazione, nessun gate chiuso.
 4-7 del Manifesto implementati sul branch `claude/ui-pass` con PR verso main,
 su mandato esplicito. Fascicolo/HUD/Segni, menu/impostazioni/crediti,
 Archivio e prologo usano il kit; rimossa la scala hover 1.02 del menu;
-terminale/Assenza esclusi. Verifica solo headless verde; prossimo passo:
-revisione visiva locale 720p/1080p e merge da parte di Marco. Report:
+terminale/Assenza esclusi. Verifica iniziale solo headless verde; merge
+successivamente completato in `b81a4fc`, review locale il 15 ottobre. Report:
 `docs/support/manifesto_atto_a_stampa_2026-10-10.md`.
 
 9 ottobre 2026: primo nucleo del kit Manifesto implementato e verificato

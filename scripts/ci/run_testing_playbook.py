@@ -227,6 +227,7 @@ def main() -> int:
             results.append(_run_step("godot_import_headless", _godot_import_step(godot_bin), output_dir))
         results.append(_run_step("cp02_runtime_contract", _cp02_runtime_contract_step(godot_bin), output_dir))
         results.append(_run_step("audit_runtime_contract", [sys.executable, "scripts/ci/run_audit_runtime_contract.py", "--godot-bin", godot_bin], output_dir))
+        results.append(_run_step("art_uniformity_contract", [sys.executable, "scripts/ci/run_art_uniformity_contract.py", "--godot-bin", godot_bin], output_dir))
         results.append(_run_step("av_runtime_contract", [sys.executable, "scripts/ci/run_av_runtime_contract.py", "--godot-bin", godot_bin], output_dir))
         results.append(_run_step("campaign_runtime_contract", [sys.executable, "scripts/ci/run_campaign_runtime_contract.py", "--godot-bin", godot_bin, "--output-dir", str(output_dir / "campaign")], output_dir))
         for scenario in scenarios:

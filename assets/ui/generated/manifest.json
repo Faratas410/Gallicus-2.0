@@ -321,6 +321,157 @@
       "date": "2026-10-07",
       "sha256": "f0bf2a34d01365717bac2b1a2e5908fecf2d046de0919b6004c084d766b2a322",
       "role": "Placeholder portrait for illustrated campaign dialogue; replace with generated art from the prompt above."
+    },
+    {
+      "name": "verdict_owl_seal",
+      "source": "exec-caea3f40-d7a1-419a-9abf-778a90a2eb84.png",
+      "tool": "built-in image_gen",
+      "prompt": "Game production asset, stylized-concept. One isolated large dark oxblood red beeswax seal, front view slightly elliptical, genuinely transparent background. Weathered tactile hand-painted realism for a sombre Roman fantasy game populated by owls and roosters. Irregular poured wax lobes, thick heavy raised rim with very small owl-eye and feather engravings around the outer ring, one thin deliberate stylus incision near bottom rim. Central 65 percent must be blank smooth dark wax to overlay game UI text. Warm raking torch light from upper left, tactile nicks, no gloss plastic, no human imagery. Single object centered with generous transparent padding. No text, no letters, no numbers, no crack splitting the seal, no background, no rectangular frame. Wide enough center to hold two lines. Asset fills 90 percent canvas.",
+      "path": "res://assets/ui/generated/verdict_owl_seal.png",
+      "date": "2026-10-22",
+      "sha256": "554b3abb9b186bfe1e907e77e174597cc5c8c5a87403aba00b21d45372df9380",
+      "dimensions": [
+        1312,
+        1199
+      ],
+      "consumer": "scripts/ui/verdict_object.gd",
+      "provenance": "Original project asset; generated via built-in ImageGen",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "verdict_avian_crowd",
+      "source": "exec-65a84782-2d84-4f0d-b7ea-61088e39341f.png",
+      "tool": "built-in image_gen",
+      "prompt": "Production game asset: one wide panoramic strip of tightly packed spectator heads and upper shoulders, exclusively owls and roosters, no humans whatsoever, no human heads, no human hands, no humanoid bodies. A lively irregular crowd of realistic avian feather heads with owl ear tufts, owl facial disks, rooster combs and curved beaks. Viewed from front at slight low angle, one or two overlapping rows. Painterly dark Roman fantasy realism. Almost silhouetted in very dark brown and charcoal shadows, only subtle warm torch rim highlights on combs, feathers and beaks. No cartoon icons, no outlines, no logos, no text, no arena or seating background. Natural varied sizes and orientations, organic irregular spacing. Bottom softly dark and feathered. Transparent background, clean separate crowd layer for compositing over a stone amphitheater. Wide landscape 3:1 composition.",
+      "path": "res://assets/ui/generated/verdict_avian_crowd.png",
+      "date": "2026-10-22",
+      "sha256": "9d9b3c0b94930f0f79ad5202a6cc797d222746931415d9b32ebbf12907e4b55e",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "consumer": "scripts/ui/verdict_atmosphere.gd",
+      "provenance": "Original project asset; generated via built-in ImageGen",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "verdict_arena",
+      "source": "assets/backgrounds/sfondo_arena_principale.png",
+      "tool": "unchanged project source promoted for owner-requested mockup",
+      "prompt": "No generation or pixel edit: byte-identical copy of the existing arena used by the owner's reference. Crowd and flame effects remain separate layers.",
+      "path": "res://assets/ui/generated/verdict_arena.png",
+      "date": "2026-10-22",
+      "sha256": "f23bf2677d2b383601f1b741cdbd8cf9bf8a95aa6d8e159109b657c088270e48",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "consumer": "scripts/ui/verdict_atmosphere.gd",
+      "provenance": "Existing project source retained unchanged"
+    },
+    {
+      "name": "dialogue_lauro_cutout",
+      "source": "exec-cf6495d4-d54e-4740-9fa4-9e4eb6ef6eb7.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: style-transfer / identity-preserve. Production Gallicus game portrait, one transparent cutout portrait in 2:3 vertical composition. Image 1 is edit target Lauro the starling storyteller: preserve species identity, dark black-blue starling plumage with sparse pale speckles, slender pointed warm yellow-brown beak, dark eye, restrained muted burgundy Roman drape and small round aged bronze fastening. Image 2 Nerio is the STRICT reference for painterly technique, detailed feather grouping, believable avian anatomy, broad warm side light, restrained tactile matte cloth and bronze. Restyle ONLY Lauro to match Nerio's production quality. A dignified real avian starling bust with folded wings, three-quarter view toward the right; upright natural head with a true starling beak, no human anatomy, no hands, no mascot, no cartoon dot-eye or geometric triangle body. Crop from above head to mid torso with feathers and drape naturally ending at bottom; subject fills the frame comparably to Nerio. Remove the old background entirely. Genuinely transparent background, no rectangle, no glow, no black field, no atmospheric backing, no text, no frame. The entire new portrait must match the existing cast in value range, edge definition, detail, light direction and historical Roman ritual mood. No new character or item. Save output as production raster.",
+      "path": "res://assets/ui/generated/dialogue_lauro_cutout.png",
+      "date": "2026-10-24",
+      "sha256": "8482945bd523794b8bc7dc1dd8196573b1f42dfd12bc30d52c7f4c088b20567c",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "consumer": "scripts/content/arena_characters.gd; scripts/content/campaign_dialogues.gd",
+      "references": [
+        "assets/ui/generated/dialogue_lauro.png",
+        "assets/ui/generated/dialogue_nerio_cutout.png"
+      ],
+      "provenance": "Built-in ImageGen derivation of original project sources; original files retained unchanged.",
+      "alpha_extrema": [
+        0,
+        254
+      ]
+    },
+    {
+      "name": "arena_unified",
+      "source": "exec-6a1099d6-abd0-4049-aeaa-2ba8cdd9cfb5.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: precise-object-edit / style harmonization. Asset type: one production game environment, wide 16:9 landscape. Image 1 is edit target, the arena wall in Gallicus Incasso/Rilancio. Image 2 is supporting geography/material reference, the Registry counter facing the same Roman arena. Unify these as the SAME PLACE. Preserve image 1's central three Roman rounded arches with dark iron grilles, central gate, two restrained bronze wall lamps, muted dark-red owl standard on either side, warm limestone block construction and flat sandy lower foreground. Repaint with the same credible painterly material quality and broad warm daylight as image 2: warm limestone, soft olive-brown shadows, tactile but simplified stone, no photographic micrograin, matte bronze, no glossy rendering or fantasy dungeon. Open-air ancient Roman amphitheatre, upper curved stone seating clearly visible above the wall and a small pale cloudy sky band, illuminated in late warm afternoon rather than nighttime. Keep arena walls naturally darker behind pale game text but readable in midtones. Empty the stone seating: no baked crowd, no humans, no silhouettes, no animals, no portraits; audience layers will be added in engine. Remove all blood, gore, red stains and debris piles from the sand. Keep the lower half broad clear sand with sparse wear only. No foreground player, no book, no counter, no interactive-looking props, no text, no signs, no numbers, no UI. Match 16:9 game viewport, broad simple readable forms, no cinematic camera effects. This is the shared sand-level arena for judgment and risk, not a different location.",
+      "path": "res://assets/ui/generated/arena_unified.png",
+      "date": "2026-10-24",
+      "sha256": "095a765f4b7a2cba68d804a6a9f48e3ccbd869f629889e8792db2ec8d5bab383",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "consumer": "scenes/UI.tscn; scripts/ui/verdict_atmosphere.gd; scripts/scenes/arena/arena.gd",
+      "references": [
+        "assets/ui/generated/verdict_arena.png",
+        "assets/ui/generated/registry_counter.png"
+      ],
+      "provenance": "Built-in ImageGen derivation of original project sources; original files retained unchanged."
+    },
+    {
+      "name": "registry_counter_unified",
+      "source": "exec-784333b7-db3b-4a3b-ab4f-91004876020f.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: precise-object-edit. Production Gallicus background, ONE wide 16:9 landscape. Image 1 edit target Registry counter: keep composition exactly, full-width continuous matte basalt counter occupying lower 60 percent, simple clean empty work surface; two Roman limestone columns frame a central rounded arch looking across sand. Image 2 strict continuity reference for the SAME Roman arena: central dark iron gate beneath rounded arch and smaller flanking arches, two dull burgundy owl standards, warm limestone, curved stone seats. Replace only the distant arena view and harmonize the rendering to image 2 so those gates, standards, stone materials and afternoon light are recognizable from this counter camera. Eliminate photographic micrograin: selective painterly feather-like brush detail, broad matte stone values, warm bone highlights, olive-brown shadows, restrained bronze. No humans, no animals, no figures, no baked crowd, no blood. Remove books and plates already baked on counter corners; every interactive object will be drawn by game. Foreground counter empty and calm to hold native UI. Center arch beyond counter shows clear sand, curved tiered seating and that same gate opposite, no fantasy throne, no altar. No text, letters, numbers, UI, frames, logos or watermark. Same aspect and viewpoint as image1, credible continuous architecture, no PBR sheen, no camera effects.",
+      "path": "res://assets/ui/generated/registry_counter_unified.png",
+      "date": "2026-10-24",
+      "sha256": "90ce1edd915dd97c290f8697eb3569be9b1f2efd2f4e240bd80ee9303a3c08de",
+      "dimensions": [
+        1671,
+        941
+      ],
+      "consumer": "scenes/ui/BettingCircle.tscn; scenes/UI.tscn; scripts/ui/betting_circle_ui.gd",
+      "references": [
+        "assets/ui/generated/registry_counter.png",
+        "assets/ui/generated/arena_unified.png"
+      ],
+      "provenance": "Built-in ImageGen derivation of original project sources; original files retained unchanged."
+    },
+    {
+      "name": "crowd_unified",
+      "source": "exec-0bc5668a-306e-46e2-828e-41805fd3a307.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: historical-scene / identity-preserve environment continuation. Asset type: one wide 16:9 production game background. Reference is the exact arena to preserve: curved warm Roman limestone amphitheatre, central iron gate in rounded arch, two smaller grilles, two muted burgundy owl banners and small bronze torches. Create the CROWDWARD camera of this same location, from the sand looking slightly upward and 20 degrees to the right. The upper two thirds must show broad empty curved rows of stone benches clearly, including a quiet empty central seat among the benches; the lower third shows the same perimeter wall and limited sand. Keep the reference's afternoon light, warm bone highlights, olive-brown shadows, matte tactile painterly stone, believable material scale and architecture, no photographic noise or shiny PBR. Sparse avian crowd sprites will be placed by the game, so do not bake any humans, birds, silhouettes or bodies into the image. No new architecture, no throne, no forest, no other location, no statues, no blood, no text, no letters, no numbers, no UI and no watermark. Side standards remain recognizable; the central gate shifts modestly left due to the camera, establishing a change of gaze not a change of world. Calm surfaces support native text and low actions.",
+      "path": "res://assets/ui/generated/crowd_unified.png",
+      "date": "2026-10-24",
+      "sha256": "3916c5d413afd3b1fcbb10d5dbf1ee71d4a2290c42170312cf5066f578f77d97",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "consumer": "scenes/UI.tscn; scripts/scenes/arena/arena.gd",
+      "references": [
+        "assets/ui/generated/arena_unified.png"
+      ],
+      "provenance": "Built-in ImageGen derivation of original project sources; original files retained unchanged."
+    },
+    {
+      "name": "portico_unified",
+      "source": "exec-33ae69cb-cac4-4d9f-8a5f-e5e729bbceb4.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: precise-object-edit / environment continuity. ONE production game background wide 16:9. Image1 edit target is the empty Roman portico/threshold of Gallicus. Preserve its single large central rounded arch, stone columns and empty paved floor leading to the arena. Image2 is strict continuity reference for the arena visible THROUGH that arch: same warm curved limestone seating, central iron gate flanked by two smaller rounded arches and paired burgundy owl standards. Harmonize image1 architecture, arena view, material scale, warm afternoon daylight and painterly technique to image2. The portico should be shaded but readable, the central view across sand softly lit with broad simple values, muted red and matte bronze limited to the standards and lamps. Remove all books, tablets, shelves, writing, registers, loose props and administrative apparatus in the foreground and side walls. Empty portico floor in the lower third; no counter blocking the exit. No human, no bird, no silhouette, no crowd, no protagonist, no statue, no blood, no UI, no text, no letters, no numbers, no logo. This empty threshold is shared by menu, conversations, final dossier backdrop and unclassified departure; it must not look like a new location. Detailed painterly realism matching the feather portraits, no photographic micrograin, no glossy PBR, no depth of field, no cinematic effects.",
+      "path": "res://assets/ui/generated/portico_unified.png",
+      "date": "2026-10-24",
+      "sha256": "523f15a3f7409b33cd90fe0435ba1a558fd0f0a7b5c00723c2125d3318e9420e",
+      "dimensions": [
+        1671,
+        941
+      ],
+      "consumer": "scenes/Main.tscn; scenes/UI.tscn; scripts/ui/opening_prologue.gd; scripts/ui/registry_terminal_view.gd",
+      "references": [
+        "assets/ui/generated/registry_departure.png",
+        "assets/ui/generated/arena_unified.png"
+      ],
+      "provenance": "Built-in ImageGen derivation of original project sources; original files retained unchanged."
     }
   ]
 }

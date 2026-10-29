@@ -1,5 +1,21 @@
 # Gallicus Asset Pipeline
 
+## Famiglia raccordata - 24 ottobre 2026
+
+Cinque raster originali ImageGen aggiunti senza sovrascrivere le sorgenti:
+`arena_unified`, `crowd_unified`, `registry_counter_unified`, `portico_unified`,
+`dialogue_lauro_cutout`, sotto `assets/ui/generated/`. Il manifest conserva
+prompt effettivi, riferimenti, consumer, hash, dimensioni e alpha. Le vedute
+condividono archi, cancello, vessilli e luce; il cutout conserva l'identita'
+di Lauro. Non ci sono scritte localizzabili o figure nei fondali.
+
+`tools/build_ritual_font.py` deriva il TTF statico OFL Gallicus Serif dalla
+Roboto Serif gia' adottata. Tool di rigenerazione: fontTools 4.67.0, fuori
+dal runtime. File, hash sorgente/output e assi fissati sono nella ricevuta
+JSON accanto al font. OFL conservata, derivato rinominato, nessun font di
+sistema. `font_verdict.tres` e il wrapper Manifesto puntano alla stessa faccia.
+Dettagli e prove: `docs/support/art_unification_2026-10-24.md`.
+
 ## Principio
 
 Nel runtime entrano solo asset con ruolo, path, licenza e verifica definiti.

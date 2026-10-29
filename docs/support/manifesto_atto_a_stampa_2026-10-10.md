@@ -77,9 +77,10 @@ toccato: e' la superficie di Era 4 / Assenza (fuori perimetro).
 
 ## Ancora aperto
 
-- Catture prima/dopo 720p e 1080p (`manifesto_kit_capture.gd`,
-  `counter_layout_capture.gd`, sezione 5 del campionario) e revisione a
-  occhio sul PC locale: il pass non e' validato.
+- Aggiornamento 15 ottobre: merge completato in `b81a4fc`, catture locali
+  720p/1080p e correzioni eseguite con Godot 4.7.2. Evidenze e perimetro
+  effettivamente ispezionato in `docs/support/manifesto_visual_review_2026-10-15.md`.
+  Accettazione umana e checkpoint Linux del nuovo candidato restano aperti.
 - Contraddizioni tipografiche: Libre Baskerville vs RobotoSerif del kit,
   focus del tema legacy (bordo oro 2 px) ancora nei controlli non migrati;
   rinomina di `italiana_regular_font.tres` non eseguita (riferimenti in CI).

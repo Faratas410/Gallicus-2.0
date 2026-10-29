@@ -1,8 +1,88 @@
 # Gallicus Layout Rules
 
+Il caso del posto usa un foglio centrato e comandi nativi su ricevute: testo,
+conto, scelte e rinvio devono restare leggibili alle risoluzioni supportate e
+nelle tre lingue. Il focus non deve uscire dalle scelte visibili.
+Il dialogo di campagna conserva le proporzioni del layout 1280x720 anche a
+risoluzioni maggiori; la scala non aggiunge animazioni o nuove decisioni.
+
+## Incasso/Rilancio dopo la revisione utente
+
+Quietanza massima 360 x 180 px a 720p; testo con 24 px di margine laterale.
+Rilancio su cartiglio distinto dal sigillo, con tutti gli effetti leggibili.
+Importo a 42 px adattabile, Vessa e banco in un unico sprite poggiato sul
+parapetto. Il timbro registrato ha spazio sotto le conseguenze. Dettagli:
+`docs/support/verdict_review_2026-10-26.md`. Questa geometria supera il pass
+precedente della posta; focus e click conservano i target fissi.
+
+## Margini Banco dopo la revisione utente
+
+Servizi centrati nella parte chiara: margini orizzontali 10 percento e
+verticali 17 percento. Carta senza simboli estesa al centro tramite nine-slice;
+nessuna deformazione dei marchi. Il titolo Banco ha un cartiglio dedicato e
+centratura verticale, con altezza e font adattati alla viewport. Dorso e
+lettering: `docs/support/banco_review_2026-10-26.md`.
+
+## Banco e Incasso/Rilancio - 26 ottobre 2026
+
+Il Banco chiuso conserva il libro a destra: apertura sulla copertina, bando
+e tre ricevute a sinistra. Prezzo insieme al titolo, effetti completi, corpo
+16 px alla base 720p; assicurazione su carta piu alta. Nessuno scroll.
+La posta usa l'inset HUD di 128 px e testi nativi su carta/cera/ferro; Vessa
+resta separata dai target. Focus e blocchi non spostano oggetti o scrittura.
+Evidenze e geometrie correnti: `docs/support/pixel_banco_verdict_2026-10-26.md`.
+
+## Tre rituali pixel art - 26 ottobre 2026
+
+Patto, Gradinata e Rito usano la base 1280x592 sotto l'inset HUD di 128 px;
+scala uniforme, preservata anche dal ripristino di motion e dai resize.
+Il Patto ha una tavoletta centrale; la Gradinata due tessere con conseguenze
+complete; il Rito separa sigillo e verbale, con comando ausiliario fuori dal
+corpo scritto. Focus e lock non muovono i target. Corpo 18-20 px, comandi
+23-24 px e insegne 23-26 px nella base 720p. Specifiche ed evidenze in
+`docs/support/pixel_rituals_2026-10-26.md`; sostituisce le geometrie storiche
+di queste tre viste riportate sotto.
+
+## Registro volumetrico - 26 ottobre 2026
+
+Sostituisce la geometria Registro del 9 ottobre: il libro occupa la scena
+sotto la fascia comune, con inset di 128 px a 720p e scala coerente della
+fascia a 1080p. Pagine e target nativi restano fermi; ruota solo la pelle
+passiva del libro. Contratti compatti in RichTextLabel a inchiostro, senza
+scorrimento o scrollbar: tutti i termini devono entrare nella pagina.
+La lettura e' passiva; il focus resta sulle firme. Frecce destra/sinistra collegano
+le due firme. Il focus usa una regola inchiostro, il blocco due barre.
+Le offerte nuove azzerano l'animazione; Movimento ridotto apre
+subito il libro. Il banco resta accessibile accanto alla copertina chiusa.
+Dettagli: `docs/support/registry_volume_2026-10-26.md`.
+
+Scrittura sulle pagine: Fondamento Regular 18/20/28 px per corpo, rubriche
+e titoli; nota sulle condizioni in Italic 18 px, firma 24 px. Le rubriche non aggiungono
+una riga vuota: le lettere calligrafiche hanno gia' un'interlinea generosa.
+Il testo usa l'85% superiore della pagina, con separazione dalla firma.
+Premessa atmosferica e preambolo della condanna non sono ripetuti; restano
+probabilita', guadagno, perdita, effetto completo e condizioni correnti.
+Niente riduzione automatica del font, clipping o ellissi. Il font e'
+condiviso con l'eco della firma. Il fixture misura tutte le offerte attive.
+
 ## Fascia persistente comune - 24 ottobre 2026
 
-`scripts/ui/ritual_status_header.gd` mantiene Arena, Pressione a dieci tacche,
+Il trattamento GDR approvato il 26 ottobre sostituisce la fascia piatta qui
+descritta: `ritual_status_header.gd` rende le insegne in posizioni fisse,
+con la prima riga dei valori e il Bando/nota del Favore nella seconda.
+Il Registro e l'eco della firma condividono `CONTENT_TOP = 128`; stemma e
+tessera pendono oltre la fascia ai lati, fuori dai titoli centrali. La posta
+riserva lo spazio sotto la fascia a titolo, importo e voce, e sopprime il
+vecchio titolo ambientale che si sovrapponeva. Testo 15-19 px, numeri 30-34 px;
+solo importi lunghi si adattano fino a 18 px, conservando il segno negativo.
+Le dimensioni dei Label vengono ristabilite dopo gli aggiornamenti del font
+al resize, senza conservare gli ingombri della risoluzione precedente.
+La nota lunga del Favore ha copy compatto localizzato e tooltip completo.
+Segni e' un Button nativo con regola di focus/hover, disabilitato a Registro
+pulito; chiudere il dettaglio restituisce il focus alla tessera. Riferimento:
+`docs/support/hud_insegne_2026-10-26.md`.
+
+La precedente geometria del 24 ottobre manteneva Arena, Pressione a dieci tacche,
 Catena, Favore, Denari e Segni nella prima riga (82 px complessivi a 720p),
 Bando e spiegazione della fascia di Favore nella seconda. La geometria resta uguale nelle fasi attive; colonna
 laterale e rail rimangono consumer dati interni, senza un secondo rendering.
@@ -11,7 +91,8 @@ Assenza non ricevono la fascia sopra i loro overlay. Il dettaglio Segni
 restituisce focus al comando di consultazione.
 
 La posta mantiene oggetti bassi e numero dominante, senza duplicare l'HUD.
-Vessa usa un busto 140x210. La notifica Segno ha uno spazio riservato fra voce
+Con la fascia GDR Vessa usa un riquadro 140x154, con proporzioni preservate.
+La notifica Segno ha uno spazio riservato fra voce
 e oggetti (x520, y310, larghezza680, altezza100 nella composizione 1280x720),
 con ripristino della geometria precedente all'uscita. Focus e barre di blocco
 seguono il target fermo, anche quando la pelle passiva dell'oggetto si solleva.

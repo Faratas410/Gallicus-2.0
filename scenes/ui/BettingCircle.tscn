@@ -188,12 +188,12 @@ theme_override_font_sizes/font_size = 16
 text = "BANCO DI VESSA"
 horizontal_alignment = 1
 
-[node name="BancoRow" type="HBoxContainer" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel"]
+[node name="BancoRow" type="VBoxContainer" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel"]
 theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Btn_Banco_favor" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(182, 110)
+custom_minimum_size = Vector2(0, 100)
 size_flags_horizontal = 3
 focus_mode = 2
 theme_override_font_sizes/font_size = 15
@@ -205,7 +205,7 @@ theme_override_styles/disabled = ExtResource("18_button_disabled")
 text = ""
 
 [node name="Btn_Banco_pressure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(182, 110)
+custom_minimum_size = Vector2(0, 100)
 size_flags_horizontal = 3
 focus_mode = 2
 theme_override_font_sizes/font_size = 15
@@ -217,7 +217,7 @@ theme_override_styles/disabled = ExtResource("18_button_disabled")
 text = ""
 
 [node name="Btn_Banco_insure" type="Button" parent="CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow"]
-custom_minimum_size = Vector2(182, 110)
+custom_minimum_size = Vector2(0, 100)
 size_flags_horizontal = 3
 focus_mode = 2
 theme_override_font_sizes/font_size = 15

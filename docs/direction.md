@@ -25,9 +25,10 @@ L'intera campagna ne pone una seconda, mai scritta a schermo:
 **chi diventi a forza di ripeterlo?**
 
 Prima di te c'e' stato **Felix Gallicus**: ha fatto tutto correttamente e il
-Registro non e' riuscito a chiuderlo. Sulla gradinata il suo posto e' rimasto
-vuoto; Dima lo tiene ancora con una zampa. Il giocatore non ripercorre la sua
-strada: la incrocia nei margini.
+Registro non e' riuscito a chiuderlo. Sulla gradinata Dima tiene con una zampa
+un posto vuoto. Il legame con il precedente resta un'allusione, non una
+identita' provata. Il giocatore non ripercorre la sua strada: la incrocia nei
+margini.
 
 La campagna termina quando il soggetto e' scritto cosi' a fondo che non resta
 nulla da decidere. Il Registro tace, si guasta e infine cessa. L'arena resta,
@@ -115,7 +116,8 @@ Percorso (alcuni minuti): al massimo sette arene, limite visibile. Finisce con
 la quietanza, con il marchio quando la folla blocca l'incasso, o quando un
 patto chiude senza appello; poi il fascicolo dice cosa e' rimasto scritto.
 
-Campagna (2-4 ore): i percorsi giocati davvero (almeno due responsi) formano la
+Campagna (obiettivo circa 10 ore, ancora da verificare): i percorsi giocati
+davvero (almeno due responsi) formano la
 firma; quando la lettura si stabilizza, o quando l'Era ha raccolto abbastanza
 prove, arriva un Silenzio e il Registro cambia materia. Dopo quattro Silenzi
 resta l'Assenza. Chiudere subito non avvicina la fine.
@@ -194,10 +196,10 @@ run, escalation, opzione, conferma.
 
 - `RunManager` resta l'unica autorita' del flow, `GameEvents` il bus, la UI
   reagisce ai payload.
-- Nessuna modalita' endless o New Game+. Le sole aggiunte di ottobre 2026 sono
-  il conto di Vessa, il bando con la sua scala, la catena e la gesta piu' alta
-  di Lauro (solo presentazione); la catena vale solo
-  dentro un percorso e si azzera a ogni sigillo che cede.
+- Nessuna modalita' endless o New Game+. Conto, bando, catena e gesta restano
+  parte del rituale; i casi possono estendere la campagna se conservano scelta,
+  costo leggibile e le voci del mondo. La catena vale solo dentro un percorso
+  e si azzera a ogni sigillo che cede.
 - Il Registro non diventa personaggio; Felix non appare.
 - Firma, Ere e soglie del Silenzio non diventano contatori visibili.
 - Il timing del sigillo non influenza l'esito: conta solo quante volte si

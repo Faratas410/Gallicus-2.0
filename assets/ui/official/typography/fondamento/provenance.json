@@ -1,0 +1,17 @@
+{
+  "files": [
+    {
+      "file": "Fondamento-Italic.ttf",
+      "sha256": "8303c76ccfaf81a065c3653a1d559f76e8223a3200a79451d5dedd33cebbef9e",
+      "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/fondamento/Fondamento-Italic.ttf"
+    },
+    {
+      "file": "Fondamento-Regular.ttf",
+      "sha256": "ee03a7ccb3b7cdf3cd095d0cc34f9e70c16b1779cbc7c466bf9077323a6ea764",
+      "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/fondamento/Fondamento-Regular.ttf"
+    }
+  ],
+  "license": "SIL Open Font License 1.1",
+  "license_file": "OFL.txt",
+  "modified": false
+}

@@ -104,6 +104,9 @@ var crowd_riots: int = 0
 var banco_insured: bool = false
 var ledger_earned: int = 0
 var ledger_lost: int = 0
+var seat_case_deferred: bool = false
+var seat_inquiry_deferred: bool = false
+var seat_copy_deferred: bool = false
 # Orvo's bando for this percorso: bank at least `bando_quota` Gloria by arena
 # `bando_deadline`. Status: open, closed, lapsed (deadline passed), missed.
 var bando_quota: int = 0
@@ -227,6 +230,9 @@ func reset() -> void:
 	banco_insured = false
 	ledger_earned = 0
 	ledger_lost = 0
+	seat_case_deferred = false
+	seat_inquiry_deferred = false
+	seat_copy_deferred = false
 	bando_quota = 0
 	bando_deadline = 0
 	bando_status = ""
@@ -340,6 +346,9 @@ func to_dict() -> Dictionary:
 		"banco_insured": banco_insured,
 		"ledger_earned": ledger_earned,
 		"ledger_lost": ledger_lost,
+		"seat_case_deferred": seat_case_deferred,
+		"seat_inquiry_deferred": seat_inquiry_deferred,
+		"seat_copy_deferred": seat_copy_deferred,
 		"bando_quota": bando_quota,
 		"bando_deadline": bando_deadline,
 		"bando_status": bando_status,
@@ -453,6 +462,9 @@ func from_dict(d: Dictionary) -> void:
 	banco_insured = bool(d.get("banco_insured", false))
 	ledger_earned = maxi(int(d.get("ledger_earned", 0)), 0)
 	ledger_lost = maxi(int(d.get("ledger_lost", 0)), 0)
+	seat_case_deferred = d.get("seat_case_deferred", false) is bool and bool(d.get("seat_case_deferred", false))
+	seat_inquiry_deferred = d.get("seat_inquiry_deferred", false) is bool and bool(d.get("seat_inquiry_deferred", false))
+	seat_copy_deferred = d.get("seat_copy_deferred", false) is bool and bool(d.get("seat_copy_deferred", false))
 	bando_quota = maxi(int(d.get("bando_quota", 0)), 0)
 	bando_deadline = maxi(int(d.get("bando_deadline", 0)), 0)
 	bando_status = str(d.get("bando_status", ""))

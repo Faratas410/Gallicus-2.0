@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import csv
+import hashlib
+import json
 import math
 import re
 import struct
@@ -82,6 +84,18 @@ def _csv_value(locale: str, key: str) -> str:
 
 def _assert_textures() -> None:
     validate_family("registry_table")
+    manifest = json.loads(_read(ROOT / "assets/ui/generated/manifest.json"))
+    entries = {item["name"]: item for item in manifest["assets"]}
+    for name in ("registry_volume_book", "registry_volume_arena", "registry_volume_sprites"):
+        path = ROOT / "assets/ui/generated" / (name + ".png")
+        data = path.read_bytes()
+        entry = entries[name]
+        assert entry["sha256"] == hashlib.sha256(data).hexdigest(), f"{name}: stale provenance"
+        assert entry["prompt"] and entry["reference"] and entry["license"], f"{name}: incomplete provenance"
+        width, height = struct.unpack(">II", data[16:24])
+        assert [width, height] == [entry["width"], entry["height"]], f"{name}: dimensions changed"
+        if name != "registry_volume_arena":
+            assert data[25] == 6, f"{name}: alpha layer required"
 
 
 def _assert_scene_binding() -> None:

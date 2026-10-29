@@ -6,7 +6,7 @@ Gloria in posta,Gloria en juego
 Quanto vale fermarsi?,¿Cuánto vale detenerse?
 "VESSA, AL BANCO","VESSA, EN EL MOSTRADOR"
 "Posso scriverle adesso. Dopo, chissà. Anche lo zero si scrive.","Puedo anotarlas ahora. Después, quién sabe. El cero también se escribe."
-"Il banco è qui. Il permesso, oggi, lo tiene la gradinata.","El mostrador está aquí. Hoy el permiso lo tiene la grada."
+"Il banco è qui. Il permesso, oggi, lo tiene la gradinata.",El mostrador está aquí. Hoy el permiso lo tiene la grada.
 INCASSATA,COBRADA
 REGISTRATA,REGISTRADA
 CONTINUA,CONTINUAR
@@ -1020,7 +1020,7 @@ In palio nuovi patti nel Registro.,En juego: nuevos pactos en el Registro.
 Incassa %d Gloria entro l'arena %d.,Cobra %d de Gloria antes de la arena %d.
 Al bando chiuso: Denari +%d e un gradino.,Al cerrar el bando: Denarios +%d y un peldaño.
 Bando chiuso: gradino %d di %d.,Bando cerrado: peldaño %d de %d.
-Bando mancato: %d Gloria entro l'arena %d.,Bando fallido: %d de Gloria antes de la arena %d.
+Bando mancato: %d Gloria entro l'arena %d.,Recorrido cerrado sin cumplir el bando: %d de Gloria antes de la arena %d.
 Prossimo bando: %d Gloria entro l'arena %d.,Próximo bando: %d de Gloria antes de la arena %d.
 Il bando è scaduto.,El bando ha vencido.
 BANDO CHIUSO,BANDO CERRADO
@@ -1148,9 +1148,107 @@ Nerio: Nessuna. Una copia.,Nerio: Ninguna. Una copia.
 "Oggi, a favore del sigillo: %s.","Hoy, a favor del sello: %s."
 "Oggi, contro il sigillo: %s.","Hoy, en contra del sello: %s."
 "Oggi niente sposta il sigillo.","Hoy nada mueve el sello."
+A favore: %s.,A favor: %s.
+ARENA,ARENA
+CATENA,CADENA
+DENARI,DENARIOS
+FAVORE,FAVOR
+Ben disposta: aiuta un po' il sigillo.,Favorable: ayuda un poco al sello.
+Contro: %s.,En contra: %s.
 "Quietanza versata contro il debito: Denari +%d, il doppio.","Recibo ingresado contra la deuda: Denarios +%d, el doble."
 "In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","En deuda: el mostrador sigue cerrado hasta que la cuenta quede a cero. Cada recibo ingresado en deuda vale el doble."
-Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,En deuda: el recibo vale el doble. Salda para reabrir el mostrador.
+Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Cuenta en deuda. El recibo vale el doble; salda la cuenta para reabrir el mostrador.
+IL POSTO MISURATO,EL ASIENTO MEDIDO
+Vessa misura la fila per venderla. Dima indica il posto vuoto; Nerio mostra una copia che si ferma prima di quel posto. Come lo difendi?,Vessa mide la fila para venderla. Dima señala el asiento vacío; Nerio muestra una copia que termina antes de él. ¿Cómo lo defiendes?
+"RISERVA IL POSTO · 6 Denari
+Vessa ferma la vendita. Il conto diminuisce subito.","RESERVA EL ASIENTO · 6 denarios
+Vessa detiene la venta. Se descuenta ahora de tu cuenta."
+"PRESENTA LA TESTIMONIANZA · gratis
+Nei prossimi percorsi la Pressione iniziale aumenta di 1, fino al prossimo Silenzio.","PRESENTA EL TESTIMONIO · gratis
+La Presión inicial aumenta en 1 en los próximos recorridos hasta el próximo Silencio."
+RIMANDA AL PROSSIMO PERCORSO,APLAZAR AL PRÓXIMO RECORRIDO
+Vessa ritira il righello. Dima tiene il posto; Nerio lascia bianco il margine della copia.,Vessa retira la regla. Dima guarda el asiento; Nerio deja en blanco el margen de la copia.
+Dima indica il posto davanti alla gradinata. Nerio lascia bianco il margine; la folla ricorda chi ha parlato.,Dima señala el asiento ante las gradas. Nerio deja el margen en blanco; la multitud recuerda quién habló.
+Il posto e' stato riservato con il conto di Vessa.,El asiento se reservó con la cuenta de Vessa.
+Dima ha testimoniato davanti alla gradinata per il posto vuoto.,Dima declaró ante las gradas por el asiento vacío.
+La ricevuta piegata,El recibo doblado
+"Vessa ha fermato il righello. Mi ha dato questa ricevuta: tienila tu, ha detto.",Vessa ha detenido la regla. Me ha dado este recibo y me ha dicho que lo guarde.
+Il posto è pagato. Perché la pieghi proprio lì?,El asiento está pagado. ¿Por qué lo doblas justo ahí?
+"C'è un foro sul margine. La piega passa di lì, ma il foglio sotto non c'è.","Hay un agujero en el margen. El pliegue pasa por ahí, pero falta la hoja de debajo."
+La copia del Registro finisce prima del foro. Avevo ricevuto solo quella parte.,La copia del Registro termina antes del agujero. Solo recibí esa parte.
+"E da quella copia puoi sapere chi sedeva lì?","¿Y esa copia permite saber quién se sentaba allí?"
+"Lascio la ricevuta sul posto. Se torna il foglio sotto, sapremo dove attaccarlo.","Dejo el recibo en el asiento. Si vuelve la hoja que falta, sabremos dónde sujetarla."
+La voce nella fila,La voz en la fila
+Ho indicato il posto davanti a tutti. La prima fila ha smesso di contare le monete.,Señalé el asiento ante todos. La primera fila dejó de contar monedas.
+E dopo? Ti hanno lasciata parlare?,¿Y después? ¿Te dejaron hablar?
+Una voce ha detto che il foglio era più lungo. Poi la gradinata ha coperto il resto.,Una voz dijo que la hoja era más larga. Luego las gradas taparon el resto.
+La copia che ho ricevuto finisce prima del posto. Sul margine c'è un foro senza fermaglio.,La copia que recibí termina antes del asiento. Hay un agujero sin broche en el margen.
+Chi ha parlato era nella prima fila. La prossima volta ascolterò da lì.,Quien habló estaba en la primera fila. La próxima vez escucharé desde allí.
+Copia: Nerio ha ricevuto solo la parte che termina prima del posto.,Copia: Nerio solo recibió la parte que termina antes del asiento.
+La copia di Nerio aspetta di essere letta.,La copia de Nerio espera a que la leas.
+"Ricevuta: c'è un foro sul margine, ma il foglio sotto manca.","Recibo: hay un agujero en el margen, pero falta la hoja de debajo."
+Voce: dalla prima fila qualcuno ricorda un foglio più lungo.,Voz: alguien de la primera fila recuerda una hoja más larga.
+La seconda traccia aspetta di essere esaminata.,La segunda pista espera a que la examines.
+LEGGI LA COPIA DI NERIO,LEE LA COPIA DE NERIO
+ESAMINA LA RICEVUTA,EXAMINA EL RECIBO
+ASCOLTA LA VOCE DELLA FILA,ESCUCHA LA VOZ DE LA FILA
+CONFRONTA LE TRACCE,COMPARA LAS PISTAS
+CHE COSA PUOI SCRIVERE?,¿QUÉ PUEDES ANOTAR?
+Nessuna delle due tracce nomina chi sedeva lì. Rileggi ciò che è rimasto.,Ninguna de las pistas dice quién se sentaba allí. Vuelve a leer lo que queda.
+MANCA UNA PARTE DELLA COPIA,FALTA UNA PARTE DE LA COPIA
+LA COPIA IDENTIFICA CHI SEDEVA,LA COPIA IDENTIFICA A QUIEN SE SENTABA
+Annotato: manca una parte della copia. Il nome di chi sedeva resta senza prova.,Anotado: falta una parte de la copia. El nombre de quien se sentaba sigue sin probarse.
+La copia è incompleta; il nome di chi sedeva non è provato.,La copia está incompleta; el nombre de quien se sentaba no está probado.
+LE TRACCE DEL POSTO,LAS PISTAS DEL ASIENTO
+Hai esaminato la copia e la seconda traccia. Quale conclusione puoi sostenere?,Has examinado la copia y la segunda pista. ¿Qué conclusión puedes respaldar?
+RILEGGI LE TRACCE,VUELVE A LEER LAS PISTAS
+Il margine piegato,El margen doblado
+Ho lasciato la ricevuta sul posto. Stanotte qualcuno l'ha ripiegata sul foro.,Dejé el recibo en el asiento. Anoche alguien lo dobló sobre el agujero.
+Hai visto chi?,¿Viste quién?
+No. Ma la piega non era la mia. Io la lascio sempre aperta.,No. Pero ese no era mi doblez. Yo siempre lo dejo abierto.
+"La mia copia si ferma qui. Posso segnare il margine, non chi l'ha toccato.","Mi copia termina aquí. Puedo marcar el margen, no quién lo tocó."
+E la ricevuta?,¿Y el recibo?
+"La tengo sul posto. Se torna un'altra mano, troverà ancora il foro.","Lo dejaré en el asiento. Si vuelve otra mano, encontrará de nuevo el agujero."
+La fila ascolta,La fila escucha
+"Sono tornata nella prima fila. Alla domanda sul foglio, nessuno ha detto il proprio nome.","Volví a la primera fila. Al preguntar por la hoja, nadie dijo su nombre."
+E quella voce?,¿Y aquella voz?
+"Non l'ho ritrovata. Qualcuno ha fatto spazio accanto a me, senza parlare.","No la encontré. Alguien me hizo sitio a su lado, sin hablar."
+Nella copia posso lasciare il margine aperto. Non posso scrivere chi ha parlato.,En la copia puedo dejar abierto el margen. No puedo escribir quién habló.
+La fila ha sentito la domanda.,La fila oyó la pregunta.
+"Sì. La prossima volta lascio spazio anch'io, se qualcuno vuole rispondere.","Sí. La próxima vez yo también haré sitio, por si alguien quiere responder."
+ASCOLTA LA RISPOSTA,ESCUCHA LA RESPUESTA
+DOVE RESTA IL MARGINE?,¿DÓNDE QUEDA EL MARGEN?
+Dima tiene l'annotazione sulla lacuna. Vessa chiede un pagamento per trascriverla anche nella copia di Nerio.,Dima guarda la nota sobre la laguna. Vessa pide un pago para transcribirla también en la copia de Nerio.
+"TRASCRIVI PER NERIO · 5 Denari
+Dima conserva l'annotazione; Nerio ne riceve una copia.","TRANSCRIBE PARA NERIO · 5 denarios
+Dima conserva la nota; Nerio recibe una copia."
+"LASCIA A DIMA · gratis
+Dima conserva l'annotazione; Nerio non ne riceve una copia.","DEJA A DIMA · gratis
+Dima conserva la nota; Nerio no recibe una copia."
+Dima tiene l'annotazione. Nerio ne riceve una copia nel suo fascicolo.,Dima guarda la nota. Nerio recibe una copia para su expediente.
+Dima tiene l'annotazione. Il fascicolo di Nerio resta senza quella copia.,Dima guarda la nota. El expediente de Nerio queda sin esa copia.
+Il margine copiato,El margen copiado
+Ho trascritto la tua annotazione sul margine. Non è il foglio che manca.,He transcrito tu nota en el margen. No es la hoja que falta.
+"La mia resta qui, vicino al posto.","La mía se queda aquí, junto al asiento."
+"Se una sparisce, l'altra può ancora parlare?","Si una desaparece, ¿la otra aún puede hablar?"
+Può mostrare che abbiamo trovato una lacuna. Non può dire chi sedeva.,Puede mostrar que encontramos una laguna. No puede decir quién se sentaba.
+Il foglio di Dima,La hoja de Dima
+Nel mio fascicolo non c'è una copia dell'annotazione.,En mi expediente no hay una copia de la nota.
+"La tengo io, accanto al posto. Il margine è piegato verso l'interno.",La guardo junto al asiento. El margen está doblado hacia dentro.
+Se qualcuno la chiede?,¿Y si alguien la pide?
+"Può guardarla qui. Non gli dirà chi sedeva, ma vedrà quello che manca.","Puede mirarla aquí. No le dirá quién se sentaba, pero verá lo que falta."
+Nerio: La nota è nella mia copia.,Nerio: La nota está en mi copia.
+Dima: La mia resta al posto.,Dima: La mía sigue junto al asiento.
+Nerio: La mia copia non ha la nota.,Nerio: Mi copia no tiene la nota.
+Dima: La tengo qui.,Dima: La guardo aquí.
+Dima tiene l'annotazione. Vessa riconosce la copia di Nerio come prova per la polizza.,Dima guarda la nota. Vessa acepta la copia de Nerio como prueba para la póliza.
+"TRASCRIVI PER NERIO · 5 Denari
+Nerio riceve la copia. Polizza -1 Denaro fino al prossimo Silenzio.","TRANSCRIBE PARA NERIO · 5 denarios
+Nerio recibe la copia. Póliza -1 denario hasta el próximo Silencio."
+Vessa sconta la polizza di 1 Denaro fino al prossimo Silenzio.,Vessa rebaja la póliza 1 denario hasta el próximo Silencio.
+ASSICURA LA POSTA · SCONTO,ASEGURA LA APUESTA · DESCUENTO
+Il prossimo Silenzio non ha una data fissata.,El próximo Silencio no tiene una fecha fijada.
+La polizza costa 1 Denaro in meno fino al prossimo Silenzio.,La póliza cuesta 1 denario menos hasta el próximo Silencio.
 Arena Muta,Arena Muda
 Arena di Cenere,Arena de Ceniza
 Arena del Disprezzo,Arena del Desprecio

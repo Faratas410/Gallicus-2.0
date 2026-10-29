@@ -1,5 +1,83 @@
 # Gallicus Testing
 
+## Chiusura audio nei contratti di campagna
+
+`audio_abrupt_shutdown_contract.gd` chiude subito dopo aver avviato una voce;
+il runner deve verificare sia il marker sia l'assenza di errori e leak. Anche
+`audio_shutdown_contract.gd` avvia una voce, programma una risposta ritardata,
+poi verifica lo stop del pool, l'annullamento del richiamo e la ripresa dei
+richiami richiesti dopo lo stop. I contratti brevi
+di campagna usano `audio_test_teardown.gd`: interrompe i suoni e lascia al
+driver tempo reale per rilasciare i playback prima di terminare il processo.
+Il runner verifica anche `seat_reset_alignment_contract.gd` su profilo isolato,
+incluso il ricaricamento dopo il reset della campagna.
+Questo non sostituisce una verifica della chiusura durante l'uso umano ne'
+un ascolto dell'audio, e non attenua il rifiuto del runner in presenza di errori.
+
+## Revisione Incasso/Rilancio: evidenze correnti
+
+Il runner `tools/living_verdict_capture.gd` verifica anche che titolo ed
+effetti restino entro il supporto fisico con margine interno, per IT/EN/ES
+e 720p/1080p. Catture in artifacts/verdict_review/final; handoff e risultati
+in `docs/support/verdict_review_2026-10-26.md`.
+
+## Revisione Banco: evidenze correnti
+
+`tools/pixel_banco_capture.gd` salva ora in artifacts/banco_review/final.
+`tools/registry_volume_capture.gd` accetta --capture-dir per preservare
+le evidenze precedenti. Confronto dei sette commenti e verifiche in
+`docs/support/banco_review_2026-10-26.md`.
+
+## Banco e posta pixel art - 26 ottobre 2026
+
+Eseguire `tools/pixel_banco_capture.gd` e `tools/living_verdict_capture.gd`
+(con `--all-languages`) nel renderer reale e con profilo isolato. Il primo
+copre saldo/blocchi/acquisto nativo e testo sulle ricevute; il secondo focus,
+doppio clic, tre azioni, importi lunghi e movimento ridotto. Proteggere libro
+e firma con `tools/registry_volume_capture.gd`; il vecchio registry-only del
+counter capture contiene asserzioni sulla precedente selezione dei fogli.
+Aggiungere OF-01/02/03, ROUTE_CASHOUT/DOUBLE/CONDANNA, KEYBOARD_FULL_RUN e art
+uniformity. Handoff: `docs/support/pixel_banco_verdict_2026-10-26.md`.
+
+## Patto, Gradinata e Rito pixel art - 26 ottobre 2026
+
+Eseguire `tools/pixel_ritual_capture.gd` con Godot 4.6.2, renderer reale e
+APPDATA/LOCALAPPDATA isolati. Copre IT/EN/ES a 720p/1080p, stati densi,
+scala sotto HUD, ritorno a 720p, testo entro carta e separazione dai comandi;
+riusa anche il percorso nativo firma -> Patto -> folla -> Rito -> posta.
+Affiancare OF-07/08/09, art uniformity e KEYBOARD_FULL_RUN. Screenshot e
+summary in `artifacts/pixel_ritual/final/`, handoff in
+`docs/support/pixel_rituals_2026-10-26.md`. Distinguere fixture di presentazione,
+route col manager e accettazione umana.
+
+## Fascia GDR Insegne - 26 ottobre 2026
+
+`tools/hud_insegne_capture.gd` parte dalla Main reale con profilo isolato,
+poi usa fixture UI esplicite per Pressione 0/5/10, Favore ostile/intermedio/
+alto, conto positivo a cinque cifre e negativo, stati del Bando e Segni.
+IT/EN/ES a 720p/1080p, anche resize inverso. Misura etichette nei rettangoli
+della pelle, copia completa, Enter sul dettaglio e ritorno focus senza
+intenti di firma; cattura Registro, consultazione e posta. Non e' una prova
+economica. Il fixture del Registro protegge tutti i contratti senza scroll
+con il nuovo inset. Affiancare art uniformity e KEYBOARD_FULL_RUN per il
+percorso naturale; esiti locali in `docs/support/hud_insegne_2026-10-26.md`.
+
+## Registro volumetrico - 26 ottobre 2026
+
+`tools/registry_volume_capture.gd` attraversa Main -> Nuova partita ->
+dialogo -> Registro, in profilo usa e getta. Eseguire con Godot 4.6.2,
+`--script res://tools/registry_volume_capture.gd`; aggiungere `-- --capture`
+con renderer reale per le PNG in `artifacts/registry_volume/`. Copre
+IT/EN/ES a 720p/1080p, apertura, focus, assenza di scroll e clipping, interruzione,
+Movimento ridotto e firma con Enter accettata dal manager. Non usa il
+salvataggio personale: APPDATA e LOCALAPPDATA vanno in cartelle di test.
+La matrice compatta misura anche ogni offerta attiva con condizioni neutre,
+Favore positivo/negativo, Pressione 10 e Segni, verificando che l'effetto
+completo della condanna rimanga leggibile. `longest_*` cattura la pagina
+piu' alta; `page_layouts` nel report conserva altezze e spazio disponibile.
+Contratti statici OF-05/06, motion e smoke KEYBOARD_FULL_RUN completano la
+verifica; prova fisica del controller e ritmo restano accettazione umana.
+
 ## Uniformazione artistica - 24 ottobre 2026
 
 `scripts/ci/run_art_uniformity_contract.py --godot-bin <Godot>` esegue il
@@ -110,6 +188,13 @@ Le immagini devono essere ispezionate: la sola geometria non prova visibilita'.
 nessuno compaia al gradino 0 prima dell'Era 1, che i racconti del posto vuoto
 arrivino con la loro Era e prima del congedo, che non si ripetano e che nessuno
 segua il congedo; il runner AV gli concede 150 secondi.
+`scripts/ci/campaign_story_order_contract.gd` verifica inoltre che un racconto
+gia' guadagnato sia mostrato prima del congedo, a partire dalla UI reale.
+Il contratto dei dialoghi controlla anche che, quando il caso del posto si
+apre dopo una scena, il focus passi alla testimonianza e torni al Registro
+dopo il rinvio. Per le prove di bilanciamento `tools/campaign_sim.gd` accetta
+un saldo iniziale e una policy per il caso; richiede sempre un profilo isolato
+e non rappresenta una sessione umana.
 Una build esportata va guardata anche dal pacchetto: `--main-pack <Gallicus.exe>`
 con il binario Linux carica le scene convertite come le vede Windows. Il 7
 ottobre 2026 solo cosi' si e' riprodotto il libro del Registro in alto a
@@ -625,8 +710,45 @@ traduzione dinamica dell'Archivio e focus confinato anche con le frecce.
 
 ## Campaign completion pass - 12 settembre 2026
 
+Il contratto `scripts/ci/seat_case_runtime_contract.gd`, eseguito su profilo
+isolato dal runner campagna, verifica presentazione, rinvio, debito,
+testimonianza, durata della Pressione, riserva pagata, doppio invio e reload.
+Verifica anche i due seguiti, l'assenza di ripetizioni e il resume dopo il
+pagamento ma prima della conferma. Il percorso completo rimanda una volta e
+poi sceglie la testimonianza, verificando che il seguito compaia naturalmente.
+`tools/seat_case_capture.gd` produce fixture IT/EN/ES a 960x540, 720p e 1080p;
+`tools/seat_followup_capture.gd` controlla tutte le battute IT/EN/ES e produce
+fixture dei seguiti alle due risoluzioni maggiori.
+`scripts/ci/seat_inquiry_runtime_contract.gd` verifica ordine libero delle
+letture, rinvio e resume, ipotesi non sostenuta, rilettura, conclusione e
+Archivio su entrambe le vie. `tools/seat_inquiry_capture.gd` produce fixture
+IT/EN/ES del confronto a 720p e 1080p.
+`scripts/ci/seat_memory_runtime_contract.gd` verifica che il seguito della
+copia richieda l'indagine, rispecchi la via scelta, si ripresenti se interrotto
+e non si ripeta dopo lettura e reload; esercita inoltre la risposta nello stesso
+percorso dopo l'annotazione. `tools/seat_memory_capture.gd` controlla
+le battute tradotte e produce fixture IT/EN/ES a 720p e 1080p.
+`scripts/ci/seat_copy_runtime_contract.gd` verifica il prerequisito della
+trascrizione, il rinvio con resume, la via gratuita in debito, il pagamento
+una sola volta, i due riscontri e l'Archivio. Verifica anche il prezzo effettivo
+e l'acquisto della polizza scontata, la scadenza, la migrazione del profilo
+pagato precedente, i dati invalidi, l'Assenza e la rimozione dello sconto scaduto
+dall'Archivio. `tools/seat_copy_capture.gd` e
+`tools/seat_copy_followup_capture.gd` producono fixture nelle tre lingue.
+`tools/seat_policy_bank_capture.gd` mostra prezzo e sconto nel Banco IT/EN/ES;
+il simulatore conta le polizze effettivamente acquistate con sconto.
+`scripts/ci/seat_copy_echo_contract.gd` verifica entrambi gli scambi reattivi,
+determinismo, silenzio e leggibilita' della superficie IT/EN/ES.
+le fixture non sostituiscono l'osservazione umana del percorso.
+
 `scripts/ci/run_campaign_runtime_contract.py --godot-bin <Godot>` percorre
 la UI reale da profilo isolato fino all'Assenza, senza inserire storie o esiti.
+Prima esegue `scripts/ci/crowd_seed_runtime_contract.gd`: verifica che gli
+intenti della folla dipendano dal seed salvato, anche dopo serializzazione e
+ricostruzione dello stato, non dall'orologio o dall'ambiente smoke.
+Esegue anche `scripts/ci/ledger_settlement_runtime_contract.gd` su un profilo
+separato: a parita' di quietanza un bando che porta il conto sopra zero non
+deve eliminare il beneficio previsto per un debito preesistente.
 Controlla quattro checkpoint, risorse al resume, identita' campione/fascicolo,
 quattro Silenzi e avvio terminale in un secondo processo. Il playbook e il job
 runtime Linux eseguono lo stesso contratto; il budget dei tre job resta invariato.

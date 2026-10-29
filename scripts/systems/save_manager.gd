@@ -298,6 +298,75 @@ func set_ledger_denari(value: int) -> void:
 	_profile_dirty = true
 	save_profile()
 
+func get_seat_case() -> Dictionary:
+	if not _profile_loaded:
+		load_profile()
+	return (_meta.get("seat_case", {"choice": "", "era": -1}) as Dictionary).duplicate()
+
+func resolve_seat_case(choice: String, era: int, price: int) -> bool:
+	if not _profile_loaded:
+		load_profile()
+	if get_seat_case().choice != "" or choice not in ["reserve", "witness"] or era < 0 or era >= 4:
+		return false
+	if price < 0 or (choice == "reserve" and (price != 6 or get_ledger_denari() < price)) or (choice == "witness" and price != 0):
+		return false
+	# Choice and payment share one profile write; neither can be replayed alone.
+	_meta["ledger_denari"] = _sanitize_ledger_denari(get_ledger_denari() - price)
+	_meta["seat_case"] = {"choice": choice, "era": era}
+	_profile_dirty = true
+	save_profile()
+	return true
+
+func get_seat_inquiry() -> Dictionary:
+	if not _profile_loaded:
+		load_profile()
+	return (_meta.get("seat_inquiry", {"seen": 0, "complete": false}) as Dictionary).duplicate()
+
+func mark_seat_evidence(bit: int) -> bool:
+	if bit not in [1, 2] or str(get_seat_case().choice) == "":
+		return false
+	var inquiry := get_seat_inquiry()
+	if bool(inquiry.complete):
+		return false
+	var seen: int = int(inquiry.seen) | bit
+	if seen != int(inquiry.seen):
+		_meta["seat_inquiry"] = {"seen": seen, "complete": false}
+		_profile_dirty = true
+		save_profile()
+	return true
+
+func complete_seat_inquiry() -> bool:
+	var inquiry := get_seat_inquiry()
+	if str(get_seat_case().choice) == "" or int(inquiry.seen) != 3 or bool(inquiry.complete):
+		return false
+	_meta["seat_inquiry"] = {"seen": 3, "complete": true}
+	_profile_dirty = true
+	save_profile()
+	return true
+
+func get_seat_copy() -> String:
+	if not _profile_loaded:
+		load_profile()
+	return str(_meta.get("seat_copy", ""))
+
+func get_seat_copy_era() -> int:
+	if not _profile_loaded:
+		load_profile()
+	return int(_meta.get("seat_copy_era", -1))
+
+func resolve_seat_copy(choice: String) -> bool:
+	if not bool(get_seat_inquiry().complete) or get_seat_copy() != "" or choice not in ["copy", "keep"]:
+		return false
+	var price := 5 if choice == "copy" else 0
+	if get_ledger_denari() < price and price > 0:
+		return false
+	_meta["ledger_denari"] = _sanitize_ledger_denari(get_ledger_denari() - price)
+	_meta["seat_copy"] = choice
+	_meta["seat_copy_era"] = get_registry_era() if choice == "copy" else -1
+	_profile_dirty = true
+	save_profile()
+	return true
+
 func _sanitize_ledger_denari(value: int) -> int:
 	return clampi(value, -999, 9999)
 
@@ -563,6 +632,10 @@ func _get_default_meta() -> Dictionary:
 		"registry_era": 0,
 		"registry_evolution": RegistryEvolutionScript.defaults(),
 		"ledger_denari": 0,
+		"seat_case": {"choice": "", "era": -1},
+		"seat_inquiry": {"seen": 0, "complete": false},
+		"seat_copy": "",
+		"seat_copy_era": -1,
 		"bando_step": 0,
 		"bando_acclaim": false,
 		"gesta_best": {"glory": 0, "arenas": 0},
@@ -694,6 +767,35 @@ func _load_meta_from_profile(data: Dictionary) -> void:
 		needs_save = true
 	# Profiles older than the ledger start with an empty account.
 	sanitized["ledger_denari"] = _sanitize_ledger_denari(int(meta_value.get("ledger_denari", 0)))
+	var seat_value: Variant = meta_value.get("seat_case", {})
+	if seat_value is Dictionary:
+		var seat_choice: Variant = seat_value.get("choice", "")
+		var seat_era: Variant = seat_value.get("era", -1)
+		if seat_choice is String and seat_choice in ["reserve", "witness"] and (seat_era is int or seat_era is float):
+			if is_finite(float(seat_era)) and float(seat_era) == float(int(seat_era)) and int(seat_era) >= 0 and int(seat_era) < 4:
+				sanitized["seat_case"] = {"choice": seat_choice, "era": int(seat_era)}
+	var inquiry_value: Variant = meta_value.get("seat_inquiry", {})
+	if inquiry_value is Dictionary and str(sanitized["seat_case"].choice) != "":
+		var seen_value: Variant = inquiry_value.get("seen", 0)
+		if (seen_value is int or seen_value is float) and is_finite(float(seen_value)) and float(seen_value) == float(int(seen_value)) and int(seen_value) >= 0 and int(seen_value) <= 3:
+			var seen: int = int(seen_value)
+			var done_value: Variant = inquiry_value.get("complete", false)
+			sanitized["seat_inquiry"] = {"seen": seen, "complete": seen == 3 and done_value is bool and bool(done_value)}
+	if bool(sanitized["seat_inquiry"].complete) and meta_value.get("seat_copy", "") is String:
+		var copy_choice: String = str(meta_value.get("seat_copy", ""))
+		if copy_choice in ["copy", "keep"]:
+			sanitized["seat_copy"] = copy_choice
+	if sanitized["seat_copy"] == "copy":
+		if not meta_value.has("seat_copy_era"):
+			# Earlier paid copies did not record when they were made. Honour
+			# them for the current unfinished Era, without reviving at Absence.
+			var current_era := int(sanitized["registry_era"])
+			sanitized["seat_copy_era"] = current_era if current_era < 4 else -1
+			needs_save = true
+		else:
+			var saved_era: Variant = meta_value.get("seat_copy_era")
+			if (saved_era is int or saved_era is float) and is_finite(float(saved_era)) and float(saved_era) == float(int(saved_era)) and int(saved_era) >= 0 and int(saved_era) < 4:
+				sanitized["seat_copy_era"] = int(saved_era)
 	# Profiles older than the bandi start at the foot of the ladder.
 	sanitized["bando_step"] = _sanitize_bando_step(int(meta_value.get("bando_step", 0)))
 	sanitized["bando_acclaim"] = bool(meta_value.get("bando_acclaim", false))

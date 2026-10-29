@@ -6,6 +6,8 @@ const BACKGROUNDS: Array[String] = [
 	"res://assets/ui/generated/crowd_unified.png",
 	"res://assets/ui/generated/registry_counter_unified.png",
 	"res://assets/ui/generated/portico_unified.png",
+	"res://assets/ui/generated/registry_volume_arena.png",
+	"res://assets/ui/generated/verdict_arena_v2.png",
 ]
 static func apply(background: TextureRect, fade: float) -> void:
 	var material := background.material as ShaderMaterial

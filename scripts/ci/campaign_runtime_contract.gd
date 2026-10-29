@@ -16,6 +16,11 @@ var capture_dir: String = ""
 var captured: Dictionary = {}
 var catalog_scars_applied: int = 0
 var dialogues_seen: Dictionary = {}
+var seat_case_deferrals: int = 0
+var seat_case_testified: bool = false
+var seat_inquiry_completed: bool = false
+var seat_copy_completed: bool = false
+var seat_copy_paid: bool = false
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -43,6 +48,8 @@ func _run() -> void:
 		if argument.begins_with("--capture-dir="):
 			capture_dir = argument.trim_prefix("--capture-dir=")
 			DirAccess.make_dir_recursive_absolute(capture_dir)
+		elif argument == "--copy-paid":
+			seat_copy_paid = true
 	Engine.time_scale = 12.0
 	root.get_node("GameEvents").run_ended.connect(_ended)
 	root.get_node("GameEvents").scar_applied.connect(func(scar: Dictionary) -> void:
@@ -62,6 +69,7 @@ func _run() -> void:
 		scene.queue_free()
 		await create_timer(3.0).timeout
 		if not failed: print("CAMPAIGN_TERMINAL_REBOOT_OK")
+		await preload("res://scripts/ci/audio_test_teardown.gd").finish(self)
 		quit(1 if failed else 0)
 		return
 	await _capture("00_menu")
@@ -93,6 +101,37 @@ func _run() -> void:
 				elif int(dialogues_seen[dialogue_id]) != index + 1:
 					_fail("completed campaign dialogue repeated: " + dialogue_id)
 				_press("AdvanceDialogue")
+				continue
+			var case_ui: Node = conversation.get_node("SeatCase")
+			if bool(case_ui.get("active")) and str(case_ui.get("mode")) == "copy":
+				if seat_copy_paid and not _available("Btn_Seat_Reserve"):
+					_press("Btn_Seat_Defer")
+				else:
+					_press("Btn_Seat_Reserve" if seat_copy_paid else "Btn_Seat_Witness")
+					seat_copy_completed = save.get_seat_copy() == ("copy" if seat_copy_paid else "keep")
+					if seat_copy_paid and seat_copy_completed and int(manager.call("_banco_price", "insure")) != 4 + save.get_registry_era():
+						_fail("paid copy did not discount the policy")
+				continue
+			if bool(case_ui.get("active")) and str(case_ui.get("mode")) == "inquiry":
+				var evidence_seen: int = int(case_ui.get("inquiry").get("seen", 0))
+				if (evidence_seen & 1) == 0:
+					_press("Btn_Seat_Reserve")
+				elif (evidence_seen & 2) == 0:
+					_press("Btn_Seat_Witness")
+				else:
+					_press("Btn_Seat_Continue")
+				continue
+			if bool(case_ui.get("active")) and str(case_ui.get("mode")) == "question":
+				_press("Btn_Seat_Reserve")
+				seat_inquiry_completed = bool(save.get_seat_inquiry().complete)
+				continue
+			if seat_case_deferrals > 0 and not seat_case_testified and _press("Btn_Seat_Witness"):
+				seat_case_testified = true
+				continue
+			if _press("Btn_Seat_Defer"):
+				seat_case_deferrals += 1
+				continue
+			if _press("Btn_Seat_Continue"):
 				continue
 			if index == 4 and step in ["BET_OFFER", "BET_SIGNED", "INTERMEDIATE_CHOICE", "PUSH_LUCK"] and not resumed.has(step):
 				var before: Dictionary = run.to_dict()
@@ -192,6 +231,7 @@ func _run() -> void:
 		if gap or heard <= previous_run:
 			_fail("racconti out of ladder order: " + str(dialogues_seen))
 		previous_run = heard
+	check_seat_case_reached()
 	print("CAMPAIGN_DIALOGUES=", JSON.stringify(dialogues_seen), " BANDO_STEP=", save.get_bando_step())
 	if save.get_registry_era() == 4:
 		var terminal: Node = scene.get_node("UI/RegistryTerminalView")
@@ -217,11 +257,29 @@ func _run() -> void:
 	scene.queue_free()
 	await create_timer(3.0).timeout
 	if not failed: print("CAMPAIGN_RUNTIME_CONTRACT_OK")
+	await preload("res://scripts/ci/audio_test_teardown.gd").finish(self)
 	quit(1 if failed else 0)
 
 func _available(name: String) -> bool:
 	var button: Button = scene.find_child(name, true, false) as Button
 	return button != null and button.is_visible_in_tree() and not button.disabled
+
+func check_seat_case_reached() -> void:
+	if seat_case_deferrals == 0:
+		_fail("the seat case never appeared in the campaign")
+	if not seat_case_testified or not dialogues_seen.has("seat_witness_followup"):
+		_fail("the testimony follow-up never appeared in the campaign")
+	if not seat_inquiry_completed:
+		_fail("the seat inquiry was not completed in the campaign")
+	if not seat_copy_completed:
+		_fail("the copy decision was not completed in the campaign")
+	var expected_copy: String = "seat_copy_for_nerio" if seat_copy_paid else "seat_copy_for_dima"
+	var wrong_copy: String = "seat_copy_for_dima" if seat_copy_paid else "seat_copy_for_nerio"
+	if not dialogues_seen.has(expected_copy) or dialogues_seen.has(wrong_copy):
+		_fail("the copy choice did not produce its own response")
+	if not dialogues_seen.has("seat_voice_after_inquiry") or dialogues_seen.has("seat_receipt_after_inquiry"):
+		_fail("the testimony inquiry did not produce its own response")
+	print("CAMPAIGN_SEAT_CASE_DEFERRALS=", seat_case_deferrals)
 
 func _fail(message: String) -> void:
 	failed = true

@@ -291,6 +291,68 @@ const SEQUENCES: Dictionary = {
       }
     ]
   },
+  "seat_reserved_followup": {
+    "title": "La ricevuta piegata",
+    "lines": [
+      {"speaker": "dima", "text": "Vessa ha fermato il righello. Mi ha dato questa ricevuta: tienila tu, ha detto."},
+      {"speaker": "rugo", "text": "Il posto è pagato. Perché la pieghi proprio lì?"},
+      {"speaker": "dima", "text": "C'è un foro sul margine. La piega passa di lì, ma il foglio sotto non c'è."},
+      {"speaker": "nerio", "text": "La copia del Registro finisce prima del foro. Avevo ricevuto solo quella parte."},
+      {"speaker": "rugo", "text": "E da quella copia puoi sapere chi sedeva lì?"},
+      {"speaker": "dima", "text": "Lascio la ricevuta sul posto. Se torna il foglio sotto, sapremo dove attaccarlo."}
+    ]
+  },
+  "seat_witness_followup": {
+    "title": "La voce nella fila",
+    "lines": [
+      {"speaker": "dima", "text": "Ho indicato il posto davanti a tutti. La prima fila ha smesso di contare le monete."},
+      {"speaker": "rugo", "text": "E dopo? Ti hanno lasciata parlare?"},
+      {"speaker": "dima", "text": "Una voce ha detto che il foglio era più lungo. Poi la gradinata ha coperto il resto."},
+      {"speaker": "nerio", "text": "La copia che ho ricevuto finisce prima del posto. Sul margine c'è un foro senza fermaglio."},
+      {"speaker": "rugo", "text": "E da quella copia puoi sapere chi sedeva lì?"},
+      {"speaker": "dima", "text": "Chi ha parlato era nella prima fila. La prossima volta ascolterò da lì."}
+    ]
+  },
+  "seat_receipt_after_inquiry": {
+    "title": "Il margine piegato",
+    "lines": [
+      {"speaker": "dima", "text": "Ho lasciato la ricevuta sul posto. Stanotte qualcuno l'ha ripiegata sul foro."},
+      {"speaker": "rugo", "text": "Hai visto chi?"},
+      {"speaker": "dima", "text": "No. Ma la piega non era la mia. Io la lascio sempre aperta."},
+      {"speaker": "nerio", "text": "La mia copia si ferma qui. Posso segnare il margine, non chi l'ha toccato."},
+      {"speaker": "rugo", "text": "E la ricevuta?"},
+      {"speaker": "dima", "text": "La tengo sul posto. Se torna un'altra mano, troverà ancora il foro."}
+    ]
+  },
+  "seat_voice_after_inquiry": {
+    "title": "La fila ascolta",
+    "lines": [
+      {"speaker": "dima", "text": "Sono tornata nella prima fila. Alla domanda sul foglio, nessuno ha detto il proprio nome."},
+      {"speaker": "rugo", "text": "E quella voce?"},
+      {"speaker": "dima", "text": "Non l'ho ritrovata. Qualcuno ha fatto spazio accanto a me, senza parlare."},
+      {"speaker": "nerio", "text": "Nella copia posso lasciare il margine aperto. Non posso scrivere chi ha parlato."},
+      {"speaker": "rugo", "text": "La fila ha sentito la domanda."},
+      {"speaker": "dima", "text": "Sì. La prossima volta lascio spazio anch'io, se qualcuno vuole rispondere."}
+    ]
+  },
+  "seat_copy_for_nerio": {
+    "title": "Il margine copiato",
+    "lines": [
+      {"speaker": "nerio", "text": "Ho trascritto la tua annotazione sul margine. Non è il foglio che manca."},
+      {"speaker": "dima", "text": "La mia resta qui, vicino al posto."},
+      {"speaker": "rugo", "text": "Se una sparisce, l'altra può ancora parlare?"},
+      {"speaker": "nerio", "text": "Può mostrare che abbiamo trovato una lacuna. Non può dire chi sedeva."}
+    ]
+  },
+  "seat_copy_for_dima": {
+    "title": "Il foglio di Dima",
+    "lines": [
+      {"speaker": "nerio", "text": "Nel mio fascicolo non c'è una copia dell'annotazione."},
+      {"speaker": "dima", "text": "La tengo io, accanto al posto. Il margine è piegato verso l'interno."},
+      {"speaker": "rugo", "text": "Se qualcuno la chiede?"},
+      {"speaker": "dima", "text": "Può guardarla qui. Non gli dirà chi sedeva, ma vedrà quello che manca."}
+    ]
+  },
   "footstep": {
     "title": "Il passo",
     "lines": [

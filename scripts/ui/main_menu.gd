@@ -371,6 +371,20 @@ func _build_museo_list() -> void:
 		arena_themes = _run_manager_port.get_available_arena_themes()
 		harsh_unlocked = _run_manager_port.is_harsh_crowd_unlocked()
 	_add_museo_item(tr("Il fascicolo conserva gli esiti. Qui ritrovi i vincoli delle promesse disponibili."))
+	if _run_manager_port != null:
+		var seat_choice: String = str(_run_manager_port.get_seat_case_record().get("choice", ""))
+		if seat_choice in ["reserve", "witness"]:
+			_add_museo_header(tr("IL POSTO MISURATO"))
+			_add_museo_item(tr("Il posto e' stato riservato con il conto di Vessa.") if seat_choice == "reserve" else tr("Dima ha testimoniato davanti alla gradinata per il posto vuoto."))
+			if bool(_run_manager_port.get_seat_inquiry_record().get("complete", false)):
+				_add_museo_item(tr("La copia è incompleta; il nome di chi sedeva non è provato."))
+			var copy_choice := _run_manager_port.get_seat_copy_record()
+			if copy_choice == "copy":
+				_add_museo_item(tr("Dima tiene l'annotazione. Nerio ne riceve una copia nel suo fascicolo."))
+				if _run_manager_port.get_seat_copy_discount_active():
+					_add_museo_item(tr("La polizza costa 1 Denaro in meno fino al prossimo Silenzio."))
+			elif copy_choice == "keep":
+				_add_museo_item(tr("Dima tiene l'annotazione. Il fascicolo di Nerio resta senza quella copia."))
 	_add_museo_header(tr("PRESENZE DELL’ARENA"))
 	for character: Dictionary in ArenaCharacters.CHARACTERS:
 		_add_character_entry(character)
@@ -1168,6 +1182,7 @@ func _apply_manifesto_skin() -> void:
 	for label: Label in [brightness_value, language_value, master_volume_value, music_volume_value, sfx_volume_value, resolution_value]:
 		(label.get_parent() as Control).add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 		Kit.apply_muted(label)
+		label.add_theme_font_size_override("font_size", Kit.CONTROL_SIZE)
 	for slider: HSlider in [brightness_slider, master_volume_slider, music_volume_slider, sfx_volume_slider]:
 		Kit.apply_slider(slider)
 	for option: OptionButton in [language_option, resolution_option]:

@@ -130,13 +130,19 @@ def _assert_runtime_contract() -> None:
         raise AssertionError("promise selection must not move or resize the target")
     state_helper = _function_body(source, "_set_promise_signature_state")
     for token in (
-        'Kit.apply_action(button, &"wax", true, state == PROMISE_SIGNATURE_STATE_SIGNED',
-        "state == PROMISE_SIGNATURE_STATE_SELECTED)",
+        'button.add_theme_stylebox_override(style, StyleBoxEmpty.new())',
+        'button.add_theme_color_override(color, Color("45271c"))',
         'button.text = "FIRMA"',
         "set_meta(PROMISE_SIGNATURE_STATE_META, state)",
     ):
         if token not in state_helper:
             raise AssertionError(f"promise state helper missing token: {token}")
+    if 'GameEvents.bet_placed.connect(_on_signature_accepted)' not in source:
+        raise AssertionError("ink feedback must follow manager acceptance")
+    for path in ("registry_volume.gd", "registry_signature_overlay.gd"):
+        presentation = _read(ROOT / "scripts/ui" / path)
+        if "request_place_bet.emit" in presentation or "RunManager." in presentation:
+            raise AssertionError("ink presentation must not own gameplay")
     if "registered" in selection or "PROMISE_SIGNATURE_STATE_SIGNED" in selection:
         raise AssertionError("consulting a page must never register its signature")
 

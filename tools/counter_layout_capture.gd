@@ -116,7 +116,7 @@ func _validate_layout(label: String) -> void:
 				var overflow: bool = text.get_content_height() > text.size.y + 1
 				_check(not overflow or text.scroll_active, label + " contract text clipped")
 				metrics.append({"capture": label, "node": text.name, "height": text.size.y, "content_height": text.get_content_height(), "scroll": text.scroll_active})
-		for button: Button in (circle.get("banco_row") as HBoxContainer).get_children():
+		for button: Button in (circle.get("banco_row") as BoxContainer).get_children():
 			if button.is_visible_in_tree():
 				_check(book.get_global_rect().encloses(button.get_global_rect()), label + " bank service outside document")
 				_check(button.get_global_rect().grow(1).encloses(button.get_node("ManifestoSurface").get_global_rect()) if button.has_node("ManifestoSurface") else true, label + " service skin outside target")
@@ -349,7 +349,7 @@ func _run_registry_matrix(menu: Node, circle: Node, dialogue: Node, ui: Node, ma
 						items.append(item)
 					circle.call("_on_ledger_changed", {"banco": {"denari": balance, "open": true, "in_debt": balance < 0, "items": items}})
 					await _capture("registry_bank_%d_%s" % [balance, suffix])
-					var service: Button = (circle.get("banco_row") as HBoxContainer).get_child(0)
+					var service: Button = (circle.get("banco_row") as BoxContainer).get_child(0)
 					_mouse_button(service.get_global_rect().get_center(), true)
 					_mouse_button(service.get_global_rect().get_center(), false)
 					await process_frame

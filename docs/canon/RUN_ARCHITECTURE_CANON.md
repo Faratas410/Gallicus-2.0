@@ -8,6 +8,37 @@ Last merged from: legacy:run_architecture_ledger, legacy:runtime_architecture_sp
 
 ## Canon Contract
 
+Il caso `seat_kept` si presenta al primo `BET_PRESENT` di un percorso, dopo
+il dialogo eventuale. `RunManager` valida `request_seat_case_choice` e invia
+`seat_case_resolved`; la UI mostra il foglio e invia gli intenti. Il profilo
+registra scelta, Era e addebito in un'unica scrittura. La pressione della
+testimonianza viene applicata all'apertura dei percorsi successivi nella
+stessa Era e viene conservata nei checkpoint ordinari della run.
+L'esito seleziona un seguito narrativo, presentato tramite il checkpoint
+dialogo esistente dopo la conferma; se la sessione si interrompe prima, il
+seguito non letto riappare al resume. I dialoghi letti restano nel profilo.
+Il confronto delle tracce usa `request_seat_inquiry_action` e
+`seat_inquiry_changed`: RunManager verifica la fase e le due letture prima
+di accettare la conclusione. Il rinvio appartiene al checkpoint della run;
+letture e conclusione appartengono al profilo.
+Dopo la conclusione, il gesto `ASCOLTA LA RISPOSTA` propone subito la scena
+coerente con la via scelta, prima di riprendere il rito. L'id letto e'
+conservato nel profilo con gli altri dialoghi; interrompere la scena non la
+segna come letta e la ripresa la ripropone.
+Dopo tale risposta, `request_seat_copy_choice` permette di pagare 5 Denari
+per trascrivere l'annotazione anche per Nerio, lasciarla solo a Dima senza
+pagare o rinviare. RunManager valida la fase, SaveManager scrive la scelta e
+l'eventuale addebito insieme, e `seat_copy_resolved` aggiorna la UI. Il rinvio
+appartiene al checkpoint; la scelta al profilo. Un dialogo e l'Archivio mostrano
+la destinazione senza identificare l'assente. La copia pagata registra anche
+l'Era: RunManager deriva il prezzo della polizza ridotto di 1 Denaro solo in
+quella stessa Era, senza modificare la copertura o applicare lo sconto al resume
+come nuovo addebito. I profili precedenti con copia pagata migrano nell'Era
+corrente se la campagna non e' terminata.
+Negli scambi della prima arena, per un quarto dei seed di percorso, la query
+di presentazione puo' usare due battute dipendenti da `meta.seat_copy`.
+La selezione e' deterministica, non modifica lo stato e resta muta in Silenzio.
+
 This document is authoritative for its category.
 No other file may redefine these concepts.
 All changes to systems described here must update this document in the same PR.
@@ -636,6 +667,8 @@ only at arena 1 / BET_PRESENT, after the existing BET_OFFER checkpoint.
 The eligible id is entry at era 0 with zero completed samples, middle from
 era 2, departure from era 3. Later stages take precedence. Already seen
 scenes, active Silence and era 4 yield no payload. No RNG or outcome changes.
+Before departure, due empty-seat tales and already-earned bando tales take
+precedence in catalog order; after departure, earlier tales do not replay.
 OpeningPrologue reacts after run_started or a successful Continue; no new
 phase is introduced. request_dismiss_campaign_dialogue(id) reaches RunManager,
 which validates the eligible id and persists acknowledgment through SaveManager.

@@ -3,10 +3,13 @@ extends Panel
 const Kit = preload("res://scripts/ui/manifesto_kit.gd")
 const Atmosphere = preload("res://scripts/ui/verdict_atmosphere.gd")
 const ObjectSkin = preload("res://scripts/ui/verdict_object.gd")
+const Writing = preload("res://scripts/ui/registry_handwriting.gd")
+const Paper = preload("res://scripts/ui/banco_paper.gd")
+const Lettering = preload("res://scripts/ui/registry_lettering.gd")
 const TYPE = preload("res://assets/ui/fonts/font_verdict.tres")
 const IVORY := Color("e7ddc5")
 const ROOT_PATH := "Box_PUSH_YOUR_LUCK/"
-const HUD_NAMES := ["BandoPanel", "CrowdFavorPanel", "ScarsPanel", "PressureRail"]
+const HUD_NAMES := ["BandoPanel", "CrowdFavorPanel", "ScarsPanel", "PressureRail", "ArenaThemeTitleLabelPanel", "ArenaThemeSubtitleLabelPanel"]
 var ui: CanvasLayer
 var active := false
 var pressure := 0
@@ -20,6 +23,8 @@ var voice: Label
 var voice_name: Label
 var chain: Label
 var pressure_label: Label
+var voice_paper: Control
+var amount_paper: Control
 var portrait: TextureRect
 var scars: Button
 var atmosphere: Control
@@ -35,11 +40,15 @@ var saved_notice: Dictionary = {}
 
 func _ready() -> void:
 	ui = get_parent().get_parent().get_parent() as CanvasLayer
-	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	choices = get_node(ROOT_PATH + "Box_PUSH_YOUR_LUCK_CHOICES")
 	atmosphere = Atmosphere.new()
+	atmosphere.pixel_arena = true
 	add_child(atmosphere)
 	move_child(atmosphere, 0)
+	amount_paper = _paper()
+	move_child(amount_paper, 1)
+	voice_paper = _paper()
 	caption = _label("StakeCaption", 20)
 	context = _label("ArenaContext", 15)
 	bando = _label("BandoContext", 15)
@@ -52,15 +61,16 @@ func _ready() -> void:
 	# Persistent metrics now live at the same coordinates in every ritual.
 	for item: Control in [context, bando, purse, pressure_label]: item.hide()
 	voice_name = _label("VessaName", 15)
-	voice = _label("VessaVoice", 21)
+	voice = _label("VessaVoice", 19)
 	portrait = TextureRect.new()
 	portrait.name = "VessaPortrait"
-	portrait.texture = preload("res://assets/ui/generated/dialogue_vessa_cutout.png")
-	portrait.material = preload("res://assets/ui/official/portrait_grounding.tres")
+	portrait.texture = preload("res://assets/ui/generated/vessa_counter_pixel.png")
+
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(portrait)
+	move_child(portrait, 2)
 	scars = Button.new()
 	scars.name = "ScarsToken"
 	scars.pressed.connect(func() -> void: ui.call("_show_scars_detail"))
@@ -87,6 +97,18 @@ func _ready() -> void:
 				hud.hide())
 	_layout()
 	set_process(false)
+
+func _paper() -> Control:
+	var paper := Paper.new()
+	add_child(paper)
+	return paper
+
+func _ink(label: Label) -> void:
+	label.add_theme_font_override("font", Writing.FONT)
+	label.add_theme_color_override("font_color", Writing.INK)
+	label.add_theme_color_override("font_shadow_color", Color.TRANSPARENT)
+	label.add_theme_constant_override("outline_size", 0)
+	label.material = Writing.material()
 
 func _label(node_name: String, font_size: int) -> Label:
 	var label := Label.new()
@@ -262,7 +284,7 @@ func _remember_registered_gesture(button: Button, note: Label, key: String) -> v
 	echo.position = button.get_global_rect().position
 	echo.size = button.size
 	echo.z_index = 100
-	echo.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	echo.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		echo.add_theme_stylebox_override(state, StyleBoxEmpty.new())
 	var skin := ObjectSkin.new()
@@ -312,34 +334,41 @@ func _layout() -> void:
 	_place(scars, Rect2(w - 130, 12, 110, 42))
 	scars.add_theme_font_size_override("font_size", roundi(16 * factor))
 	scars.add_theme_font_override("font", TYPE)
-	_place(get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_TITLEPanel"), Rect2(72, 92, 590, 50))
+	_place(get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_TITLEPanel"), Rect2(365, 135, 550, 48))
 	Kit.apply_label(ui.get("push_luck_title"), &"title")
+	ui.get("push_luck_title").horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ui.get("push_luck_title").set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui.get("push_luck_title").add_theme_font_override("font", TYPE)
-	ui.get("push_luck_title").add_theme_font_size_override("font_size", roundi(32 * factor))
-	_place(get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel"), Rect2(70, 143, 255, 145))
+	Lettering.apply(ui.get("push_luck_title"), roundi(26 * factor))
+	_place(get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_SUBTITLEPanel"), Rect2(150, 264, 250, 60))
 	var stake: Label = ui.get("push_luck_details")
-	var font_size := 142
-	while font_size > 48 and TYPE.get_string_size(str(target_amount), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > 250:
+	var font_size := 42
+	while font_size > 28 and Writing.FONT.get_string_size(str(target_amount), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > 230:
 		font_size -= 2
 	stake.add_theme_font_override("font", TYPE)
 	stake.add_theme_font_size_override("font_size", roundi(font_size * factor))
-	_place(caption, Rect2(78, 284, 220, 32))
+	_place(caption, Rect2(150, 232, 250, 30))
 	_place(chain, Rect2(340, 225, 230, 46))
-	_place(get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_BODYPanel"), Rect2(78, 322, 300, 30))
+	_place(get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_BODYPanel"), Rect2(150, 329, 250, 27))
 	Kit.apply_label(ui.get("push_luck_info"), &"body")
 	ui.get("push_luck_info").add_theme_font_override("font", TYPE)
 	ui.get("push_luck_info").add_theme_font_size_override("font_size", roundi(16 * factor))
 	_place(pressure_label, Rect2(78, 365, 160, 36))
-	_place(portrait, Rect2(w - 530, 108, 140, 210))
-	_place(voice_name, Rect2(w - 365, 112, 290, 28))
-	_place(voice, Rect2(w - 365, 154, 290, 142))
+	_place(amount_paper, Rect2(118, 218, 315, 152))
+	_place(voice_paper, Rect2(w - 350, 232, 292, 148))
+	for written: Label in [stake, caption, voice, voice_name, ui.get("push_luck_info")]: _ink(written)
+	for centered: Label in [stake, caption, ui.get("push_luck_info")]: centered.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_place(portrait, Rect2(w - 660, 195, 615, 300))
+	_place(voice_name, Rect2(w - 326, 246, 244, 26))
+	_place(voice, Rect2(w - 326, 279, 244, 82))
 	if active:
-		_place(ui.get("scar_popup_panel"), Rect2(520, 310, w - 600, 100))
+		# Keep the notice between the stake and Vessa's paper, above the choices.
+		_place(ui.get("scar_popup_panel"), Rect2(440, 305, 480, 110))
 	_place(get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_FOOTERPanel"), Rect2(78, h - 36, w - 156, 30))
 	ui.get("push_luck_audience_reason").add_theme_font_size_override("font_size", roundi(15 * factor))
 	ui.get("push_luck_audience_reason").add_theme_font_override("font", TYPE)
 	get_node(ROOT_PATH + "Lbl_PUSH_YOUR_LUCK_HINTPanel").hide()
-	_place(choices, Rect2(65, h - 286, w - 130, 238))
+	_place(choices, Rect2(65 if ui.get("push_luck_condanna_button").visible else 160, h - 270, w - (130 if ui.get("push_luck_condanna_button").visible else 320), 224))
 	choices.add_theme_constant_override("separation", roundi(24 * factor))
 	_layout_cards()
 
@@ -359,24 +388,29 @@ func _layout_cards() -> void:
 			continue
 		var width := column.size.x / factor
 		var seal := key == "double"
-		var left := 102.0 if key == "cashout" else 28.0
-		var title_rect := Rect2(left, 52, width - left - 32, 73)
-		var note_rect := Rect2(left, 126, width - left - 30, 91)
-		if seal and not dense:
-			title_rect = Rect2(25, 85, 220, 65)
-			note_rect = Rect2(266, 91, width - 282, 120)
-		elif seal:
-			title_rect = Rect2(45, 50, width - 90, 55)
-			note_rect = Rect2(32, 145, width - 64, 86)
+		var support: Rect2 = ObjectSkin.support_rect(key, width)
+		var left: float = support.position.x + (support.size.x * 0.23 if key == "condanna" else 24)
+		var text_width: float = support.end.x - left - 24
+		var title_rect := Rect2(left, 43, text_width, 43)
+		var note_rect := Rect2(left, 91, text_width, 98)
+		var taken := key == "cashout" and bool(button.get_meta(&"registry_receipt_taken", false))
+		if taken: note_rect = Rect2(left, 84, text_width, 78)
 		_place(title, title_rect)
 		title.text = tr("Prendi la quietanza") if key == "cashout" else tr("Raddoppia") if seal else tr("Ricevi il marchio")
 		title.add_theme_font_override("font", TYPE)
-		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if seal else HORIZONTAL_ALIGNMENT_LEFT
-		title.add_theme_font_size_override("font_size", roundi((24 if dense else 30) * factor))
+		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		title.add_theme_font_size_override("font_size", roundi((22 if dense else 24) * factor))
 		_place(note.get_parent(), note_rect)
 		for side in ["left", "right", "top", "bottom"]:
 			note.get_parent().add_theme_constant_override("margin_" + side, 0)
-		note.add_theme_font_size_override("font_size", roundi((15 if dense else 17) * factor))
+		note.add_theme_font_size_override("font_size", roundi((16 if dense or taken else 18) * factor))
+		if key != "condanna":
+			_ink(title)
+			_ink(note)
+		else:
+			Lettering.apply(title, roundi(20 * factor))
+		note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		note.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		var skin: Control = button.get_node_or_null("VerdictObject")
 		if skin:
 			skin.set("dense", dense)

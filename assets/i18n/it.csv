@@ -1020,7 +1020,7 @@ In palio nuovi patti nel Registro.,In palio nuovi patti nel Registro.
 Incassa %d Gloria entro l'arena %d.,Incassa %d Gloria entro l'arena %d.
 Al bando chiuso: Denari +%d e un gradino.,Al bando chiuso: Denari +%d e un gradino.
 Bando chiuso: gradino %d di %d.,Bando chiuso: gradino %d di %d.
-Bando mancato: %d Gloria entro l'arena %d.,Bando mancato: %d Gloria entro l'arena %d.
+Bando mancato: %d Gloria entro l'arena %d.,Percorso chiuso senza completare il bando: %d Gloria entro l'arena %d.
 Prossimo bando: %d Gloria entro l'arena %d.,Prossimo bando: %d Gloria entro l'arena %d.
 Il bando è scaduto.,Il bando è scaduto.
 BANDO CHIUSO,BANDO CHIUSO
@@ -1148,9 +1148,107 @@ Nerio: Nessuna. Una copia.,Nerio: Nessuna. Una copia.
 "Oggi, a favore del sigillo: %s.","Oggi, a favore del sigillo: %s."
 "Oggi, contro il sigillo: %s.","Oggi, contro il sigillo: %s."
 "Oggi niente sposta il sigillo.","Oggi niente sposta il sigillo."
+"A favore: %s.","A favore: %s."
+ARENA,ARENA
+CATENA,CATENA
+DENARI,DENARI
+FAVORE,FAVORE
+"Ben disposta: aiuta un po' il sigillo.","Ben disposta: aiuta un po' il sigillo."
+"Contro: %s.","Contro: %s."
 "Quietanza versata contro il debito: Denari +%d, il doppio.","Quietanza versata contro il debito: Denari +%d, il doppio."
 "In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio."
 Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.
+IL POSTO MISURATO,IL POSTO MISURATO
+Vessa misura la fila per venderla. Dima indica il posto vuoto; Nerio mostra una copia che si ferma prima di quel posto. Come lo difendi?,Vessa misura la fila per venderla. Dima indica il posto vuoto; Nerio mostra una copia che si ferma prima di quel posto. Come lo difendi?
+"RISERVA IL POSTO · 6 Denari
+Vessa ferma la vendita. Il conto diminuisce subito.","RISERVA IL POSTO · 6 Denari
+Vessa ferma la vendita. Il conto diminuisce subito."
+"PRESENTA LA TESTIMONIANZA · gratis
+Nei prossimi percorsi la Pressione iniziale aumenta di 1, fino al prossimo Silenzio.","PRESENTA LA TESTIMONIANZA · gratis
+Nei prossimi percorsi la Pressione iniziale aumenta di 1, fino al prossimo Silenzio."
+RIMANDA AL PROSSIMO PERCORSO,RIMANDA AL PROSSIMO PERCORSO
+Vessa ritira il righello. Dima tiene il posto; Nerio lascia bianco il margine della copia.,Vessa ritira il righello. Dima tiene il posto; Nerio lascia bianco il margine della copia.
+Dima indica il posto davanti alla gradinata. Nerio lascia bianco il margine; la folla ricorda chi ha parlato.,Dima indica il posto davanti alla gradinata. Nerio lascia bianco il margine; la folla ricorda chi ha parlato.
+Il posto e' stato riservato con il conto di Vessa.,Il posto è stato riservato con il conto di Vessa.
+Dima ha testimoniato davanti alla gradinata per il posto vuoto.,Dima ha testimoniato davanti alla gradinata per il posto vuoto.
+La ricevuta piegata,La ricevuta piegata
+"Vessa ha fermato il righello. Mi ha dato questa ricevuta: tienila tu, ha detto.","Vessa ha fermato il righello. Mi ha dato questa ricevuta: tienila tu, ha detto."
+Il posto è pagato. Perché la pieghi proprio lì?,Il posto è pagato. Perché la pieghi proprio lì?
+"C'è un foro sul margine. La piega passa di lì, ma il foglio sotto non c'è.","C'è un foro sul margine. La piega passa di lì, ma il foglio sotto non c'è."
+La copia del Registro finisce prima del foro. Avevo ricevuto solo quella parte.,La copia del Registro finisce prima del foro. Avevo ricevuto solo quella parte.
+"E da quella copia puoi sapere chi sedeva lì?","E da quella copia puoi sapere chi sedeva lì?"
+"Lascio la ricevuta sul posto. Se torna il foglio sotto, sapremo dove attaccarlo.","Lascio la ricevuta sul posto. Se torna il foglio sotto, sapremo dove attaccarlo."
+La voce nella fila,La voce nella fila
+Ho indicato il posto davanti a tutti. La prima fila ha smesso di contare le monete.,Ho indicato il posto davanti a tutti. La prima fila ha smesso di contare le monete.
+E dopo? Ti hanno lasciata parlare?,E dopo? Ti hanno lasciata parlare?
+Una voce ha detto che il foglio era più lungo. Poi la gradinata ha coperto il resto.,Una voce ha detto che il foglio era più lungo. Poi la gradinata ha coperto il resto.
+La copia che ho ricevuto finisce prima del posto. Sul margine c'è un foro senza fermaglio.,La copia che ho ricevuto finisce prima del posto. Sul margine c'è un foro senza fermaglio.
+Chi ha parlato era nella prima fila. La prossima volta ascolterò da lì.,Chi ha parlato era nella prima fila. La prossima volta ascolterò da lì.
+Copia: Nerio ha ricevuto solo la parte che termina prima del posto.,Copia: Nerio ha ricevuto solo la parte che termina prima del posto.
+La copia di Nerio aspetta di essere letta.,La copia di Nerio aspetta di essere letta.
+"Ricevuta: c'è un foro sul margine, ma il foglio sotto manca.","Ricevuta: c'è un foro sul margine, ma il foglio sotto manca."
+Voce: dalla prima fila qualcuno ricorda un foglio più lungo.,Voce: dalla prima fila qualcuno ricorda un foglio più lungo.
+La seconda traccia aspetta di essere esaminata.,La seconda traccia aspetta di essere esaminata.
+LEGGI LA COPIA DI NERIO,LEGGI LA COPIA DI NERIO
+ESAMINA LA RICEVUTA,ESAMINA LA RICEVUTA
+ASCOLTA LA VOCE DELLA FILA,ASCOLTA LA VOCE DELLA FILA
+CONFRONTA LE TRACCE,CONFRONTA LE TRACCE
+CHE COSA PUOI SCRIVERE?,CHE COSA PUOI SCRIVERE?
+Nessuna delle due tracce nomina chi sedeva lì. Rileggi ciò che è rimasto.,Nessuna delle due tracce nomina chi sedeva lì. Rileggi ciò che è rimasto.
+MANCA UNA PARTE DELLA COPIA,MANCA UNA PARTE DELLA COPIA
+LA COPIA IDENTIFICA CHI SEDEVA,LA COPIA IDENTIFICA CHI SEDEVA
+Annotato: manca una parte della copia. Il nome di chi sedeva resta senza prova.,Annotato: manca una parte della copia. Il nome di chi sedeva resta senza prova.
+La copia è incompleta; il nome di chi sedeva non è provato.,La copia è incompleta; il nome di chi sedeva non è provato.
+LE TRACCE DEL POSTO,LE TRACCE DEL POSTO
+Hai esaminato la copia e la seconda traccia. Quale conclusione puoi sostenere?,Hai esaminato la copia e la seconda traccia. Quale conclusione puoi sostenere?
+RILEGGI LE TRACCE,RILEGGI LE TRACCE
+Il margine piegato,Il margine piegato
+Ho lasciato la ricevuta sul posto. Stanotte qualcuno l'ha ripiegata sul foro.,Ho lasciato la ricevuta sul posto. Stanotte qualcuno l'ha ripiegata sul foro.
+Hai visto chi?,Hai visto chi?
+No. Ma la piega non era la mia. Io la lascio sempre aperta.,No. Ma la piega non era la mia. Io la lascio sempre aperta.
+"La mia copia si ferma qui. Posso segnare il margine, non chi l'ha toccato.","La mia copia si ferma qui. Posso segnare il margine, non chi l'ha toccato."
+E la ricevuta?,E la ricevuta?
+"La tengo sul posto. Se torna un'altra mano, troverà ancora il foro.","La tengo sul posto. Se torna un'altra mano, troverà ancora il foro."
+La fila ascolta,La fila ascolta
+"Sono tornata nella prima fila. Alla domanda sul foglio, nessuno ha detto il proprio nome.","Sono tornata nella prima fila. Alla domanda sul foglio, nessuno ha detto il proprio nome."
+E quella voce?,E quella voce?
+"Non l'ho ritrovata. Qualcuno ha fatto spazio accanto a me, senza parlare.","Non l'ho ritrovata. Qualcuno ha fatto spazio accanto a me, senza parlare."
+Nella copia posso lasciare il margine aperto. Non posso scrivere chi ha parlato.,Nella copia posso lasciare il margine aperto. Non posso scrivere chi ha parlato.
+La fila ha sentito la domanda.,La fila ha sentito la domanda.
+"Sì. La prossima volta lascio spazio anch'io, se qualcuno vuole rispondere.","Sì. La prossima volta lascio spazio anch'io, se qualcuno vuole rispondere."
+ASCOLTA LA RISPOSTA,ASCOLTA LA RISPOSTA
+DOVE RESTA IL MARGINE?,DOVE RESTA IL MARGINE?
+Dima tiene l'annotazione sulla lacuna. Vessa chiede un pagamento per trascriverla anche nella copia di Nerio.,Dima tiene l'annotazione sulla lacuna. Vessa chiede un pagamento per trascriverla anche nella copia di Nerio.
+"TRASCRIVI PER NERIO · 5 Denari
+Dima conserva l'annotazione; Nerio ne riceve una copia.","TRASCRIVI PER NERIO · 5 Denari
+Dima conserva l'annotazione; Nerio ne riceve una copia."
+"LASCIA A DIMA · gratis
+Dima conserva l'annotazione; Nerio non ne riceve una copia.","LASCIA A DIMA · gratis
+Dima conserva l'annotazione; Nerio non ne riceve una copia."
+Dima tiene l'annotazione. Nerio ne riceve una copia nel suo fascicolo.,Dima tiene l'annotazione. Nerio ne riceve una copia nel suo fascicolo.
+Dima tiene l'annotazione. Il fascicolo di Nerio resta senza quella copia.,Dima tiene l'annotazione. Il fascicolo di Nerio resta senza quella copia.
+Il margine copiato,Il margine copiato
+Ho trascritto la tua annotazione sul margine. Non è il foglio che manca.,Ho trascritto la tua annotazione sul margine. Non è il foglio che manca.
+"La mia resta qui, vicino al posto.","La mia resta qui, vicino al posto."
+"Se una sparisce, l'altra può ancora parlare?","Se una sparisce, l'altra può ancora parlare?"
+Può mostrare che abbiamo trovato una lacuna. Non può dire chi sedeva.,Può mostrare che abbiamo trovato una lacuna. Non può dire chi sedeva.
+Il foglio di Dima,Il foglio di Dima
+Nel mio fascicolo non c'è una copia dell'annotazione.,Nel mio fascicolo non c'è una copia dell'annotazione.
+"La tengo io, accanto al posto. Il margine è piegato verso l'interno.","La tengo io, accanto al posto. Il margine è piegato verso l'interno."
+Se qualcuno la chiede?,Se qualcuno la chiede?
+"Può guardarla qui. Non gli dirà chi sedeva, ma vedrà quello che manca.","Può guardarla qui. Non gli dirà chi sedeva, ma vedrà quello che manca."
+Nerio: La nota è nella mia copia.,Nerio: La nota è nella mia copia.
+Dima: La mia resta al posto.,Dima: La mia resta al posto.
+Nerio: La mia copia non ha la nota.,Nerio: La mia copia non ha la nota.
+Dima: La tengo qui.,Dima: La tengo qui.
+Dima tiene l'annotazione. Vessa riconosce la copia di Nerio come prova per la polizza.,Dima tiene l'annotazione. Vessa riconosce la copia di Nerio come prova per la polizza.
+"TRASCRIVI PER NERIO · 5 Denari
+Nerio riceve la copia. Polizza -1 Denaro fino al prossimo Silenzio.","TRASCRIVI PER NERIO · 5 Denari
+Nerio riceve la copia. Polizza -1 Denaro fino al prossimo Silenzio."
+Vessa sconta la polizza di 1 Denaro fino al prossimo Silenzio.,Vessa sconta la polizza di 1 Denaro fino al prossimo Silenzio.
+ASSICURA LA POSTA · SCONTO,ASSICURA LA POSTA · SCONTO
+Il prossimo Silenzio non ha una data fissata.,Il prossimo Silenzio non ha una data fissata.
+La polizza costa 1 Denaro in meno fino al prossimo Silenzio.,La polizza costa 1 Denaro in meno fino al prossimo Silenzio.
 Arena Muta,Arena Muta
 Arena di Cenere,Arena di Cenere
 Arena del Disprezzo,Arena del Disprezzo

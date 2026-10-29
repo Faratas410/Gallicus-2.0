@@ -1406,6 +1406,27 @@ gradinata e dal favore visibile.
 
 ## Economia di fondo (ottobre 2026)
 
+### Il posto misurato (28 ottobre 2026)
+
+Dopo il racconto `seat_kept`, al primo ingresso utile del percorso il soggetto
+puo' riservare il posto per 6 Denari oppure presentare la testimonianza senza
+spesa. La seconda via aggiunge Pressione iniziale +1 ai percorsi iniziati
+successivamente, fino al prossimo Silenzio; si somma all'eventuale pressione
+da debito. Il percorso in corso non riceve l'aumento. La prima via richiede
+saldo almeno 6 e addebita subito. Si puo' rimandare al percorso successivo,
+anche in debito. La scelta e' unica, registrata insieme all'addebito nel
+profilo, e visibile nell'Archivio. Entrambe le vie mantengono la medesima
+informazione sul posto; cambiano costo e risposta dei personaggi.
+
+Dopo il seguito della via scelta, il soggetto puo' leggere la copia di Nerio
+ed esaminare la ricevuta oppure ascoltare la voce della fila. Le due tracce
+possono essere aperte in qualunque ordine e restano consultabili dopo la
+ripresa. Solo dopo entrambe si puo' confrontarle: la conclusione sostenuta e'
+che manca parte della copia, non che essa identifichi chi sedeva. Un'ipotesi
+non sostenuta riceve spiegazione; si possono rileggere le tracce e correggere
+senza costo. La
+conclusione e' registrata nell'Archivio; si puo' rimandare al prossimo percorso.
+
 Chiesta da Marco ("un sistema che premi o punisca il giocatore"), scelta
 "entrambi": un conto che sopravvive ai percorsi e si spende dentro il
 percorso. Proposta e simulazioni: `docs/support/arena_attiva_2026-10-06.md`.
@@ -1430,14 +1451,24 @@ percorso. Proposta e simulazioni: `docs/support/arena_attiva_2026-10-06.md`.
 - **Debito.** Con il conto sotto zero il banco e' chiuso e ogni percorso parte
   con Pressione +1. A -10 o meno il percorso parte con il Segno Marchio del
   debito (origine "Debito con Vessa"). Il debito si salda solo con le entrate;
-  finche' il conto e' sotto zero una quietanza versa il doppio dei Denari
+  se il conto e' sotto zero alla chiusura del percorso una quietanza versa il doppio dei Denari
   (`LEDGER_DEBT_DEPOSIT_MULTIPLIER`), e il banco chiuso lo dice.
+  La condizione si valuta prima del premio del bando: chiudere un bando non
+  deve cancellare il raddoppio della stessa quietanza passando sopra zero.
   Il debito non scende sotto -20 Denari (`LEDGER_DEBT_FLOOR`): Vessa non presta
   oltre, cosi' una campagna puo' sempre risalire.
 - **Visibilita'.** Il conto sta nel rail (`Conto N Denari`); il banco lo ripete
   nel titolo. `ledger_changed` porta saldo, variazione, nota e vista del banco.
 
 ## Bando, scala e catena (ottobre 2026)
+
+Dopo il confronto del posto e la risposta degli abitanti, la trascrizione
+dell'annotazione per Nerio costa 5 Denari; Dima mantiene la sua. Lasciarla
+soltanto a Dima e' gratuita anche in debito. Il rinvio vale per il percorso
+in corso e la scelta e' registrata nel profilo e nell'Archivio. Il conto non
+puo' essere addebitato due volte per la stessa scelta. Vessa riconosce la copia
+come prova e sconta di 1 Denaro ogni polizza del Banco fino al prossimo Silenzio;
+il prezzo scontato e' visibile prima dell'acquisto. L'altra via non ha sconto.
 
 Chiesti da Marco ("Perche' scommettere? Perche' continuare?"), scelta "tutti e
 quattro": bando di Orvo, scala dei bandi, il posto vuoto nei racconti e
@@ -1461,7 +1492,8 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   `docs/canon/LORE_UNIFIED.md`). I quattro del posto vuoto hanno anche un'Era
   (`"era"` in `CampaignDialogues.TALES`: 1 per `seat_kept` e `footstep`, 2 per
   `open_strophe` e `slope`): da quell'Era arrivano senza bando, e a Era 3 il
-  congedo (`departure`) aspetta che siano stati raccontati. Un racconto gia'
+  congedo (`departure`) aspetta che siano stati raccontati, insieme ai racconti
+  gia' guadagnati salendo la scala. Un racconto gia'
   raccontato non viene piu' annunciato come premio, e nessun racconto e' in
   palio dopo il congedo. Il libro base dei patti (Prudenza, Hybris e le pagine
   `CONDANNA_FIRMATO`, `BASE_PACT_UNLOCKS`) e' aperto dal primo percorso; solo

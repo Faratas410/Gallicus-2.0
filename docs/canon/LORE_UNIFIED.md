@@ -40,7 +40,16 @@ stabilisce la specie del giocatore o di Felix.
 Gli scambi avvengono fra abitanti e amministratori attorno alla firma gia' apposta e al gesto
 pubblico ancora da compiere. Non assegnano parole al giocatore, non giudicano
 gli esiti e non raccontano cosmologia, Ere o come ottenere il Silenzio.
-Non aggiungono missioni, alleanze, ricompense o risposte selezionabili.
+Le conversazioni illustrate originarie non aggiungono missioni, alleanze,
+ricompense o risposte selezionabili. Il caso giocabile del posto, aggiunto per
+l'espansione della campagna, permette invece gesti e scelte sulle tracce: non
+assegna parole al soggetto, non prova l'identita' dell'assente e non trasforma
+gli abitanti in portavoce del Registro.
+La conclusione del confronto riceve un seguito coerente con la ricevuta o la
+voce, senza identificare chi ha piegato la carta o chi ha parlato nella fila.
+La nota sulla lacuna puo' restare soltanto a Dima oppure essere trascritta
+anche per Nerio; entrambi riconoscono che essa non e' il foglio mancante.
+Vessa riconosce la copia come prova per una polizza, senza attribuirle un nome.
 Felix non compare, non parla e non riceve una biografia.
 
 Quando l'ambiente si rarefa', gli stessi rapporti diventano piu'

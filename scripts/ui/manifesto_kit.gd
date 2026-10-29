@@ -89,6 +89,9 @@ static func apply_judgment(panel: Control) -> void:
 	apply_action(box.get_node("Btn_RESOLUTION_NEXT"), &"ink", true)
 
 static func apply_action(button: Button, material: StringName, compact: bool = false, registered: bool = false, title_size: int = TITLE_LARGE, selected: bool = false, body_text: bool = false) -> void:
+	if button.has_node("PixelRitualObject"):
+		button.get_node("PixelRitualObject").sync_copy()
+		return
 	var surface := button.get_node_or_null("ManifestoSurface") as Control
 	if surface == null:
 		surface = Surface.new()
@@ -172,6 +175,9 @@ static func create_choice(text_key: String, note_key: String, material: StringNa
 	return button
 
 static func apply_response(button: Button, material: StringName, selected: bool = false) -> void:
+	if button.has_node("PixelRitualObject"):
+		button.get_node("PixelRitualObject").sync_copy()
+		return
 	# Native text retains the full accessible/localized act and its price.
 	apply_action(button, material, false, false, ACTION_COMPACT, selected)
 	var lines: PackedStringArray = button.text.split("\n", false, 1)

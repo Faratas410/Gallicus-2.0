@@ -472,6 +472,204 @@
         "assets/ui/generated/arena_unified.png"
       ],
       "provenance": "Built-in ImageGen derivation of original project sources; original files retained unchanged."
+    },
+    {
+      "name": "registry_volume_book",
+      "source": "exec-3f78e37e-b4fc-488b-a46e-92efca4a4abf.png",
+      "reference": "exec-d8c362d0-febd-49c9-9e0c-a58b4a5916b0.png",
+      "path": "res://assets/ui/generated/registry_volume_book.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Production sprite for the SAME approved Gallicus UI. Extract ONLY the open thick book from image 1 with genuine alpha transparency outside its silhouette. Preserve its front-facing two pages, exact proportions, thick stacked paper layers, central binding, red leather, gold corner hardware and rich pixel art, same warm lighting. Remove ALL lettering, titles, body text, signature labels, underline rules and owl stamps from BOTH pages: leave continuous calm ivory paper for live game text. No pen, no signature. Remove entire arena, characters, table, banner and cloth outside the book. Book centered and fills frame with small transparent margin. Landscape output close to 1620x972. Do not redesign book or flatten its volume.",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1619,
+      "height": 971,
+      "alpha": true,
+      "sha256": "b9755090f4a6f99c8361ee67e6bedc3311a5d6ab495feabef8c7c3741046aaec",
+      "license": "Original AI-generated project artwork; no third-party source artwork.",
+      "consumer": "scenes/ui/BettingCircle.tscn; scripts/ui/registry_volume.gd; registry_signature_overlay.gd"
+    },
+    {
+      "name": "registry_volume_arena",
+      "source": "exec-d800579e-05c6-4a50-a02f-8da27237c179.png",
+      "reference": "exec-e42b8aa5-54fd-416f-b3a1-d2b784926b52.png",
+      "path": "res://assets/ui/generated/registry_volume_arena.png",
+      "prompt": "Use case precise-object-edit. Production background layer for the approved Gallicus pixel-art Registry scene. Change ONLY the letters IL REGISTRO on the top red banner: erase lettering and restore matching blank red velvet there. Preserve the gold underline ornament, banner, exact composition and framing, both owl officials, avian crowd, arena architecture, empty stone counter and cloth, lighting, all pixel-art detail. No new words or objects, no book. Same dimensions as input.",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1619,
+      "height": 971,
+      "alpha": false,
+      "sha256": "11a928cdafd54619e5636605912b1ab8b2a34256ffda3443d80b874532ec8719",
+      "license": "Original AI-generated project artwork; no third-party source artwork.",
+      "consumer": "scenes/ui/BettingCircle.tscn; scripts/ui/registry_volume.gd; registry_signature_overlay.gd"
+    },
+    {
+      "name": "registry_volume_sprites",
+      "source": "exec-03f89613-7ec8-49b0-9016-d6c8402e05b7.png",
+      "reference": "exec-bbfcbbd1-af4c-4bdd-a2da-22316034554d.png",
+      "path": "res://assets/ui/generated/registry_volume_sprites.png",
+      "prompt": "Use case precise-object-edit. Production sprite sheet for Gallicus. Preserve EXACTLY the two objects, their positions, sizes, pixel art and lighting from image 1: red leather gold-corner book front cover on left and diagonal bronze writing pen on right. Change ONLY: erase the word REGISTRO from cover leaving uninterrupted dark red leather (text will be rendered by game); remove ALL surrounding glow or colored haze so background outside both objects is fully alpha transparent. Keep owl symbolic crest and gold line ornaments. Do not move or resize objects. Same 1536x1024 frame.",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true,
+      "sha256": "b3f607cfc235d8b710772685a091eb037a187b1bf3fe2d8b4e80d8631be0c035",
+      "license": "Original AI-generated project artwork; no third-party source artwork.",
+      "consumer": "scenes/ui/BettingCircle.tscn; scripts/ui/registry_volume.gd; registry_signature_overlay.gd"
+    },
+    {
+      "name": "ritual_hud_insegne",
+      "source": "exec-4970964f-69bb-4cd0-851b-a8a25c946af7.png",
+      "reference": "docs/support/ui_reference_2026-10-25/hud-insegne-proposta-2026-10-26.png",
+      "path": "res://assets/ui/generated/ritual_hud_insegne.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "prompt": "Use case: precise-object-edit / background-extraction. Production transparent UI skin for Gallicus Godot game. Input is the approved exact full-screen mockup. Preserve the exact HUD artwork in the TOP STRIP of the input: owl crest on red hanging pennant, bronze-framed ten-cell pressure gauge, small iron chain in dark backing, leather purse and bronze coins, gold laurel/crowd symbol on dark backing, ivory tally token with red string, thin ivory parchment writ beneath the gauge and chain, dark back strip beneath currency/favor. Keep their exact pixel-art rendering, positions, dimensions, gold edges, reds, leather volume and lighting.\nChange ONLY:\n1) Erase ALL text, letters, numerals, punctuation and counting marks from this HUD, restoring calm underlying materials. Remove ARENA 1/7, PRESSIONE 0/10, CATENA x1, DENARI 0, FAVORE +0, SEGNI 0, the whole BANDO sentence and whole Fredda sentence. Keep owl/laurel symbols, chain links, coins and ten EMPTY pressure sockets.\n2) Remove EVERY element outside the top HUD: remove the arena, characters, red SCEGLI LA VIA banner, book, table, all lower illustration. Replace with genuine alpha transparency. The header's original brick mounting across the top edge can remain only as part of its narrow backing, down to the bottom of the thin writ. Outside the silhouettes of hanging pennant, token and top backing must be transparent.\nOutput EXACT SAME 1672x941 full canvas and composition as input: the HUD remains only at y=0..200, x=0..1671, its original size; all y>205 entirely transparent. DO NOT crop tight, enlarge the HUD to fill the image or centre it vertically. Game code aligns native text and pressure fill at source coordinates. Preserve all original shapes and locations. No text anywhere, no new objects, no checkerboard baked in.",
+      "width": 1672,
+      "height": 941,
+      "alpha": true,
+      "runtime_region": [
+        0,
+        0,
+        1672,
+        220
+      ],
+      "sha256": "a5d803c5b363b5d1aabd636c3032cb3117480926c7f478ec7242e9326e0d9feb",
+      "license": "Original AI-generated project artwork; no third-party source artwork.",
+      "consumer": "scripts/ui/ritual_status_header.gd"
+    },
+    {
+      "name": "ritual_objects_pixel",
+      "source": "exec-2762dbb7-9636-407c-b8dc-2850d07728b6.png",
+      "path": "res://assets/ui/generated/ritual_objects_pixel.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "prompt": "Use case: stylized-concept. Production asset: ONE transparent 2x2 sprite atlas for Gallicus RPG, no text whatsoever. Reference image 1 is the approved pixel art palette/style and rich volume; reference image 2 shows the intended basalt rite object. Create four separated sprites, each entirely inside its own equal quadrant with 5 percent transparent gutters, no other background. Top left: front-facing thick crimson leather writing tablet with brass corners, curled ivory parchment secured on it, large absolutely blank quiet writing area covering 80 percent of face, small closed red wax owl seal at bottom right, believable page thickness. Top right: imposing squat three-dimensional basalt plinth, warm rimlight, circular large crimson owl wax seal on upper face and a bronze mallet resting diagonally on top, lower face quiet dark stone for later native game label, no letters. Bottom left: broad ivory parchment mounted on a thick ochre bronze voting tablet, slight bevel and curled ragged edges, small bowed feather relief centered at upper edge, most of parchment absolutely blank for native text. Bottom right: broad ivory parchment mounted on deep crimson leather voting tablet with ornate bronze corner pieces, upright feather relief centered at upper edge, blank parchment center. Every sprite front facing with thick side/bottom edges; all text surfaces perfectly frontal and large. Chunky crisp high quality pixel art with restrained clusters, gold/brass/crimson/ivory/purple shadows like reference; no photorealism, no blur, no vector shapes, no UI panels or buttons, no labels, no watermark. All four sprites entirely on true transparent alpha, do not paint a checkerboard. Sprite sheet square, each object fills its quadrant but never crosses gutter. Runtime will crop exact quadrants.",
+      "references": [
+        "assets/ui/generated/registry_volume_arena.png",
+        "docs/support/ui_reference_2026-10-25/rito.png"
+      ],
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "sha256": "723a6e40ef2f7d5a0f0ee1945e966792ba0ebf723cad28c53bdc5ab8f65beb42",
+      "license": "Original AI-generated project artwork; no third-party source artwork.",
+      "consumer": "scripts/ui/ritual_pixel_object.gd"
+    },
+    {
+      "name": "banco_verdict_pixel",
+      "source": "exec-63651506-e2a2-48bc-97dd-8311ca4372d1.png",
+      "prompt": "Use case: stylized-concept. Create ONE production transparent 2x2 sprite atlas for Gallicus game. Image 1 is Vessa's identity reference ONLY: retain her barn owl white heart-shaped face, brown feather pattern, dark brown Roman shawl, bronze collar and small tray of coins. Image 2 is the exact approved pixel-art rendering, palette, chunky volume and warm lighting to match. Four equal separated quadrants, sprites wholly contained within own quadrant, transparent gutters. TOP LEFT: front-facing wide ivory receipt parchment, curled torn layered edges, subtle thickness, tiny bronze coin clasp and small red wax seal confined to leftmost 12 percent; the remaining 80 percent is quiet completely blank parchment. TOP RIGHT: thick round deep crimson wax medallion with a small owl crest only at very top and braided wax perimeter; broad plain smooth crimson center and bottom 70 percent blank for native game text; full silhouette. BOTTOM LEFT: front-facing wide dark iron condemnation plaque with bronze rim, deep red stamped wax impression confined to far left 15 percent, center and right broad empty dark metal. BOTTOM RIGHT: pixel-art Vessa half-body cutout with coin tray, identity from image1 and style from image2, friendly reserved clerk, looking slightly toward viewer-left. NO typography, no text, no numbers, no labels, no UI controls. True alpha transparency around all four objects, no checkerboard painted in. Crisp pixel clusters, rich depth, brass highlight, ivory paper, crimson wax and purple shadows. No photorealism, no blur, no vector graphics. All surfaces frontal enough for readable native text. Square atlas with equal 2x2 quadrants.",
+      "references": [
+        "assets/ui/generated/dialogue_vessa_cutout.png",
+        "assets/ui/generated/registry_volume_arena.png"
+      ],
+      "consumer": "scripts/ui/banco_pixel_art.gd",
+      "path": "res://assets/ui/generated/banco_verdict_pixel.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "sha256": "3a54cd428a0f17960822aa26b924db2abf51c59190460be6b5f5b16989e5e843",
+      "license": "Original AI-generated project artwork; no third-party source artwork."
+    },
+    {
+      "name": "vessa_pixel",
+      "source": "exec-47f1780d-a1fd-4007-9351-79f9259ced53.png",
+      "prompt": "Extract and recreate ONLY Vessa, the barn owl clerk in the bottom right of the reference. Single half-body pixel-art cutout centered, entire silhouette and coin tray intact with generous transparent margins on all sides. Keep identical white heart-shaped face, brown feathers, dark Roman brown shawl, bronze collar, tray with gold and silver coins, warm golden lighting, rich crisp chunky pixel art. Remove ALL other objects: absolutely no plaque, seal, parchment, UI, lettering or background. True alpha transparency. Match this character exactly, clean standalone production game sprite.",
+      "references": [
+        "assets/ui/generated/banco_verdict_pixel.png"
+      ],
+      "consumer": "scripts/ui/manifesto_verdict.gd",
+      "path": "res://assets/ui/generated/vessa_pixel.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "sha256": "1523254243788c5b425e14dafa1e0976b6d0edd6ae42ed76c68770bc05b92b0e",
+      "license": "Original AI-generated project artwork; no third-party source artwork."
+    },
+    {
+      "name": "banco_paper_v2",
+      "source": "exec-15d8fa12-c9ab-4d12-98bb-7ab930f23c08.png",
+      "prompt": "Use case: stylized-concept. Production Godot game UI sprite, ONE blank horizontal ivory parchment slip. Rich crisp chunky pixel art matching medieval Roman crimson/gold Gallicus game, warm ivory, subtle amber ragged edges, restrained purple-brown shadow underneath, visibly thick paper layers. Front-on flat writing face. Long wide horizontal silhouette approximately 5:1 aspect, centered on transparent canvas, generous alpha margins. Broad quiet pale white-ivory central writing area 85 percent width and 75 percent height; paper edges very narrow, no large curls, no scroll rollers, no heavy dark stained borders. Absolutely NO seals, emblems, ribbons, metal, badges, coins, symbols or text. No letters or UI. This is a reusable nine-slice paper support: fine consistent edge thickness on all sides, small asymmetric nicks, large uninterrupted center. Real transparency outside silhouette. Sharp pixel clusters, not realistic or vector.",
+      "consumer": "scripts/ui/banco_paper.gd",
+      "path": "res://assets/ui/generated/banco_paper_v2.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 2172,
+      "height": 724,
+      "alpha": true,
+      "sha256": "d4888eb7588fd72b35898febb46805039dc8ccfcd3a8940b0d491a7b0a33e657",
+      "license": "Original AI-generated project artwork; no third-party source artwork."
+    },
+    {
+      "name": "registry_volume_sprites_v2",
+      "source": "exec-4b0519be-dd32-4457-b40c-ec725fbc4fe4.png",
+      "prompt": "Use case: precise-object-edit. Edit this production pixel art sprite sheet. Preserve EXACT canvas 1536x1024, the pen on the right with its exact position and shape, the entire red cover front, owl laurel crest, four bronze corner plates, blank two horizontal title rules, pixel palette, and all positions. Change ONLY the LEFT SPINE of the red book: remove ALL repeated chunky golden ring bands running down the left vertical side. Replace that whole bulky cylindrical striped spine with a slim straight continuous deep burgundy leather binding, subtle stitched seam and TWO understated leather raised bands, warm restrained edge light, convincing depth. Spine should be a narrow 45px strip from x140 to185, avoid bright metal except the retained four existing corner plates on cover. Keep book outer silhouette x110..775 y80..930 so existing runtime region is valid, but slim leather edge blends inside that silhouette. Keep perfectly front-facing cover and all other details, no perspective rotation. True transparent background, preserve source alpha and pen transparency, no colored haze outside silhouette. No text added. Crisp pixel art, not photorealistic. Main fix: sober continuous leather hinge instead of a metal-ring binder.",
+      "references": [
+        "assets/ui/generated/registry_volume_sprites.png"
+      ],
+      "consumer": "scripts/ui/registry_volume.gd (cover only; pen stays on original atlas)",
+      "path": "res://assets/ui/generated/registry_volume_sprites_v2.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true,
+      "sha256": "332e07b44c38f91ccea51d687ed1ba0cb0c70051db9ed2fceff8486a23c250cc",
+      "license": "Original AI-generated project artwork; no third-party source artwork."
+    },
+    {
+      "name": "bando_single_seal",
+      "source": "exec-43cf09ae-489e-47bd-9b04-97a97fb8920b.png",
+      "prompt": "Use case: stylized-concept. ONE isolated red wax seal for the bando of a Roman owl-arena pixel art game. Round crimson wax disk, irregular organic poured rim with thick visible bevel, ONE simple owl face impressed as a recessed shape IN the center of the wax. Monochrome red relief with warm amber rim light, no gold badge, no medallion mounted above it, no crest above it, no second symbol, no ribbon, no paper. Exactly ONE unified wax mark. Crisp chunky pixel clusters with rich volume, consistent with burgundy/brass medieval pixel art. Centered complete circular silhouette, empty true transparent alpha background on all sides. No letters, numbers or text. Square canvas.",
+      "consumer": "scripts/ui/betting_circle_ui.gd",
+      "path": "res://assets/ui/generated/bando_single_seal.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "sha256": "c62cf5410d7ca8fe3b4755910eca863f6f89b0298f3a3c73125e50fe64bb6ed1",
+      "license": "Original AI-generated project artwork; no third-party source artwork."
+    },
+    {
+      "name": "verdict_arena_v2",
+      "source": "exec-438d09f1-ff4f-4e78-8276-8e63d93eef03.png",
+      "prompt": "Use case: precise-object-edit. Edit target: this Gallicus pixel-art arena background. Preserve EXACT composition, dimensions 1620x972, crimson blank title banner top center, arches and crowds, warm lighting, stone foreground counter and cloth. Remove ONLY the large owl judge on the far RIGHT balcony, including its head, body, hands, scroll. Reconstruct a naturally empty stone balcony with a small folded dark crimson cloth and existing stone architecture. Keep the single owl judge on the LEFT exactly intact. No replacement character on right; no mirrored duplicates. All other pixels/style/composition should remain as close to input as possible. No text. Crisp chunky pixel art.",
+      "references": [
+        "assets/ui/generated/registry_volume_arena.png"
+      ],
+      "consumer": "scripts/ui/verdict_atmosphere.gd",
+      "path": "res://assets/ui/generated/verdict_arena_v2.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1619,
+      "height": 971,
+      "alpha": false,
+      "sha256": "7f2713f3d1b24e3a84265b49eafed6fcc43a8490c57572c1a317ec12d627a00b",
+      "license": "Original AI-generated project artwork; no third-party source artwork."
+    },
+    {
+      "name": "vessa_counter_pixel",
+      "source": "exec-665866b2-15a0-47d1-bdb3-a02390e84419.png",
+      "prompt": "Use case: precise-object-edit. Input is identity reference for Vessa, barn owl clerk: keep white heart face, brown feathers, dark brown Roman shawl, bronze collar, her tray of three coins. Create a single complete production game cutout of Vessa physically seated BEHIND her real merchant's counter, wings and coin tray RESTING on the thick countertop. The dark walnut counter is broad and horizontal, brass corners, deep chunky wood volume, restrained burgundy fabric hanging over front, full solid paneled front down to bottom; no thin legs, no detached tabletop. Counter occupies bottom third, Vessa upper-left half; leave right half of countertop free. Show contact shadows between wings/tray and wood. Full object silhouette, minimal empty alpha margins, horizontal 2:1 composition. Identical rich crisp pixel-art clusters and warm lighting, brown crimson brass ivory palette. No lettering, no paper UI, no other people, no background environment. True transparent alpha outside unified Vessa-and-counter silhouette. No floating torso: counter occludes entire lower body, supported physical pose.",
+      "references": [
+        "assets/ui/generated/vessa_pixel.png"
+      ],
+      "consumer": "scripts/ui/manifesto_verdict.gd",
+      "path": "res://assets/ui/generated/vessa_counter_pixel.png",
+      "tool": "built-in image_gen",
+      "date": "2026-10-26",
+      "width": 1774,
+      "height": 887,
+      "alpha": true,
+      "sha256": "49b62fd6accf647b504fd525103deadd15863497e8e8a40d4cce6bb687b065b2",
+      "license": "Original AI-generated project artwork; no third-party source artwork."
     }
   ]
 }

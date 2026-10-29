@@ -8,7 +8,124 @@ Steam e lancio seguono `docs/steam_release.md`. Le fasi sono gate produttivi,
 non versioni distribuibili. Una fase e' chiusa solo quando i suoi criteri sono
 verificati; il lavoro successivo non deve mascherare blocker precedenti.
 
+29 ottobre: lettura dell'anima, rischi e criteri di progettazione in
+`docs/support/anima_gallicus_2026-10-29.md`; il report resta una base di lavoro,
+non un'accettazione umana del tono o del coinvolgimento.
+
 ## Stato corrente
+
+Revisione pre-commit del 29 ottobre: correzioni e perimetro del working tree,
+con le decisioni ancora aperte, in
+`docs/support/revisione_pre_commit_10_ore_2026-10-29.md`. L'obiettivo delle
+dieci ore rimane in pausa; nessun gate umano e' chiuso dal commit.
+
+29 ottobre: PR #541 unita; il lavoro sulle dieci ore e' stato revisionato a
+partire dal merge `8a298b3`. Le prove
+economiche precedenti il riequilibrio restano storiche e vanno rifatte; stato,
+verifiche e gate aperti in `docs/support/sospensione_10_ore_2026-10-29.md`.
+
+28 ottobre 2026: nuovo obiettivo richiesto, una campagna di circa 10 ore,
+con revisione di economia, meccaniche, percorso e coerenza delle schermate.
+L'espansione e' autorizzata dalla richiesta; i gate Linux e umani non sono
+chiusi. Baseline, ipotesi e ordine di lavoro in
+`docs/support/campagna_economia_2026-10-28.md`.
+Le precedenti indicazioni di attendere CP-03 prima di espandere la campagna
+restano requisiti di accettazione, non un divieto sul lavoro ora richiesto.
+Prima correzione economica: il premio del bando non annulla il beneficio sul
+debito della stessa quietanza; contratto runtime dedicato e confronto degli
+stili in `docs/support/campagna_economia_2026-10-28.md`. Il traguardo delle
+dieci ore e' ancora aperto: il contenuto esteso, le schermate e la durata
+umana non sono ancora completati o accettati.
+
+Primo caso giocabile: `Il posto misurato` collega il racconto del posto vuoto
+al conto e alla Pressione. Due vie e rinvio, con registrazione nel profilo e
+richiamo in Archivio; specifica e limiti in
+`docs/support/campagna_economia_2026-10-28.md`. Il caso non dimostra ancora la
+durata o il coinvolgimento della campagna da dieci ore.
+Il seguito di ciascuna via racconta la stessa lacuna da due prospettive e
+lascia un indizio diverso; le due scene restano una prima espansione locale.
+Il confronto giocabile delle tracce consente di annotare la lacuna e conserva
+la conclusione; non esaurisce l'indagine ne' certifica la durata del gioco.
+Il seguito mostra due reazioni diverse alla traccia, in base alla scelta gia'
+fatta; non identifica l'assente e non chiude l'indagine della campagna estesa.
+Una nuova scelta permette di lasciare l'annotazione a Dima o pagare la copia per
+Nerio, con riscontri e memoria distinti. La copia funge anche da prova per uno
+sconto temporaneo sulla polizza; peso economico e interesse restano da valutare
+con persone. Un breve scambio della prima arena puo' riprendere la
+destinazione scelta; non modifica il rito o il rischio del sigillo.
+L'obiettivo e' stato messo in pausa su richiesta il 29 ottobre. La campagna
+integrata passa sul candidato con la priorita' dei racconti corretta; la
+chiusura audio e' stata corretta e verificata localmente. Stato e prossime attivita' sono in
+`docs/support/sospensione_10_ore_2026-10-29.md`; prove e dettagli economici in
+`docs/support/campagna_economia_2026-10-28.md`.
+
+26 ottobre 2026, recepiti i cinque commenti su Incasso/Rilancio: giudice unico,
+Vessa al banco, carta compatta e lettering coerente entro i supporti.
+Consegna locale in `docs/support/verdict_review_2026-10-26.md`; gate invariati.
+
+26 ottobre 2026, recepiti i sette commenti sul Banco: marchio unico, carta
+con margini interni, insegna leggibile, dorso in cuoio e lettering consumato.
+Consegna locale in `docs/support/banco_review_2026-10-26.md`; gate invariati.
+
+26 ottobre 2026, Banco e Incasso/Rilancio uniformati al Registro nel candidato
+locale. Ricevute compatte, Vessa pixel art e oggetti della posta; handoff in
+`docs/support/pixel_banco_verdict_2026-10-26.md`. Prossimo gruppo: Dettaglio
+Segni e Fascicolo, poi ingresso e consultazione. Gate Linux e umani aperti.
+
+26 ottobre 2026, seguito autorizzato dell'inventario: Patto, Gradinata e Rito
+portati nella famiglia pixel art del Registro, con testi nativi e stessi
+intenti/flow. Handoff in `docs/support/pixel_rituals_2026-10-26.md`.
+Prossimo gruppo visivo: Banco e Incasso/Rilancio. Core Playable Candidate e
+gate Linux/umani invariati; nessuna estensione automatica alla pubblicazione.
+
+26 ottobre 2026, richiesta di uniformazione di tutte le schermate: inventario
+visivo aggiornato rispetto a Registro e HUD approvati, con catture native e
+galleria in `docs/support/ui_coherence_2026-10-26.md`. Primo gruppo da rivedere:
+Patto, Gradinata e Rito; poi Banco e Incasso/Rilancio. Questa consegna e un
+audit, senza modifiche runtime o chiusura dei gate Linux/umani.
+
+26 ottobre 2026, seguito approvato dall'utente: fascia GDR Insegne dell'arena
+integrata nel candidato locale. Dati reattivi, Segni consultabili, stessa
+posizione nelle fasi attive, raccordo del Registro e della posta. Handoff
+in `docs/support/hud_insegne_2026-10-26.md`; Core Playable Candidate e gate
+Linux/umani invariati.
+
+26 ottobre 2026, Registro compatto: rimossi scrollbar e preamboli ripetuti,
+con termini completi e font invariato. Fascia GDR proposta come reference
+separata, non integrata. File e verifiche nel seguito di
+`docs/support/registry_volume_2026-10-26.md`; gate invariati.
+
+26 ottobre 2026, seguito tipografico del Registro: scrittura Fondamento
+Regular/Italic, seppia e grana statica leggera sulle pagine e durante la
+firma. Font e licenza inclusi nel progetto; verifiche IT/EN/ES e dettagli
+nel report `docs/support/registry_volume_2026-10-26.md`. Gate invariati.
+
+26 ottobre 2026, autorizzazione in game: Registro volumetrico e firma a
+inchiostro integrati nella schermata reale. Apertura proiettata, contratti
+IT/EN/ES nativi, input e movimento ridotto; accettazione immediata del patto
+ancora di RunManager. Consegna e verifiche in
+`docs/support/registry_volume_2026-10-26.md`. Core Playable Candidate invariato;
+prossimo passo: revisione del candidato in gioco e checkpoint Linux.
+L'integrazione riguarda il Registro; Patto/Rito/Incasso non sono estesi
+automaticamente dal consenso alla reference del libro.
+
+26 ottobre 2026: approvata anche l'animazione volumetrica del Registro come
+reference visiva. Preparata la proposta successiva del Patto, ancora da
+valutare, in `docs/support/ui_reference_2026-10-25/patto-proposta-2026-10-26.png`;
+decisione e limiti in `docs/art_direction.md`. Prosegue l'esplorazione delle
+schermate, senza integrazione runtime o chiusura di gate produttivi.
+Corretto nella stessa reference il bordo della copertina sinistra durante
+l'apertura, eliminando la striscia di carta sporgente segnalata dall'utente.
+
+25 ottobre 2026: approvata la reference UI pixel art teatrale, con Registro
+frontale e firma a inchiostro. Corretto il ritaglio del bordo nell'animazione;
+reference salvate in `docs/support/ui_reference_2026-10-25/`, decisione e limiti
+in `docs/art_direction.md`. Prossimo passo visivo: usare questa base per la
+revisione delle altre schermate, senza estendere automaticamente l'approvazione
+al runtime. Stage Core Playable Candidate e gate Linux/umani invariati.
+Raffinamento successivo: approvato il libro piu' volumetrico nella reference
+statica e preparata la relativa animazione, approvata il 26 ottobre, in
+`docs/support/ui_reference_2026-10-25/registro-volume.html`.
 
 25 ottobre 2026: il lavoro locale del 22-24 ottobre e' stato portato su un ramo
 e unito con `origin/main` (Godot 4.7.2, riequilibrio, audio). Su richiesta
@@ -845,7 +962,8 @@ Gate:
 - Silenzio non farmabile, fissazione stabile e ramp di tre run verificata;
 - nessuna ricompensa o probabilita' outcome alterata dall'Era;
 - nuova run rifiutata dopo l'Assenza;
-- campagna completabile con durata proiettata nel target 2-4 ore.
+- campagna completabile con durata target di circa 10 ore, da misurare in
+  sessioni umane; le simulazioni accelerate non attestano la durata.
 
 ## 5. Content & Readability
 

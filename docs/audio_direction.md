@@ -1,5 +1,16 @@
 # Gallicus Audio Direction
 
+## Chiusura del pool SFX
+
+`SfxBus.stop_all()` interrompe le voci del pool, rilascia gli stream associati
+e invalida le risposte della folla programmate prima dello stop usando una
+generazione; i richiami successivi restano validi anche nello stesso millisecondo. `_exit_tree`
+applica la stessa pulizia prima di rilasciare il pool e la cache; se una voce
+aveva uno stream assegnato, lascia 250 ms reali al driver durante l'uscita,
+senza introdurre attesa durante il gioco. Le verifiche
+headless attendono anche l'elaborazione asincrona del driver in tempo reale:
+la chiusura del processo non e' una prova di ascolto o di qualita' sonora.
+
 ## Tesi sonora
 
 L'audio deve far percepire peso, procedura e conseguenza. Ogni suono nasce da

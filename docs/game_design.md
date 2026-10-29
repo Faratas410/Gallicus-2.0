@@ -77,7 +77,9 @@ La progressione persistente riguarda conoscenza e classificazione:
 
 ## Durata e ritmo
 
-- Prima campagna target: 2-4 ore.
+- Prima campagna target: circa 10 ore, richiesta il 28 ottobre 2026. La durata
+  effettiva e la varieta' necessaria non sono ancora validate: piano di misura
+  e problemi economici in `docs/support/campagna_economia_2026-10-28.md`.
 - Una run deve essere abbastanza breve da invitare una nuova promessa.
 - Ogni run deve produrre almeno una conseguenza o informazione memorabile.
 - Le transizioni tra Ere non devono sembrare capitoli dichiarati.
@@ -87,7 +89,6 @@ La progressione persistente riguarda conoscenza e classificazione:
 
 - combat, nemici o controlli avatar real-time;
 - build, equipaggiamento o skill tree;
-- economia espandibile;
 - missioni giornaliere o loop infinito;
 - personificazione morale del Registro;
 - Felix come guida, boss o modello da imitare.

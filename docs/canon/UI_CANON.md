@@ -1,5 +1,24 @@
 # UI Boundary Model — Level 3
 
+## Il posto misurato - 28 ottobre 2026
+
+Un foglio riprende la carta del Banco e contiene le due testimonianze, il
+saldo, due scelte e la possibilita' di rimandare. Il comando non pagabile e'
+disabilitato; la testimonianza resta disponibile in debito. Un riscontro
+diverso per scelta precede il ritorno al rito. L'Archivio ricorda la via.
+La superficie e' reattiva: eleggibilita', addebito e conseguenze sono decisi
+da RunManager e persistiti da SaveManager.
+Lo stesso foglio presenta le due tracce, ne mostra il contenuto quando sono
+esaminate e abilita il confronto dopo entrambe. La conclusione non sostenuta
+mostra una spiegazione e consente di rileggere e correggere; la conclusione sostenuta viene
+registrata e il rinvio mantiene le letture gia' fatte. Lo stesso foglio offre
+poi la trascrizione per Nerio o la custodia
+di Dima, indica costo e destinazione prima della scelta e permette il rinvio.
+In debito il comando a pagamento e' disabilitato; quello gratuito resta attivo.
+La trascrizione dichiara anche lo sconto di 1 Denaro sulla polizza fino al
+prossimo Silenzio e che la sua data non e' fissata. Il Banco mostra il prezzo
+effettivo e segnala lo sconto; l'Archivio lo ricorda soltanto mentre e' attivo.
+
 ## Incasso/Rilancio: arena viva, 22 ottobre 2026
 
 La UI resta reattiva: Posta, Gloria, Corruzione, conversione della quietanza,
@@ -128,6 +147,17 @@ posta: Arena, Pressione (dieci tacche), Catena, Favore, Denari, Segni e Bando
 mantengono posizione nelle fasi attive. I consumer dati esistenti conservano
 payload e owner; il nuovo header li legge senza calcolare economia o outcome.
 Le schermate narrative e terminali conservano copertura e focus esclusivi.
+
+Il 26 ottobre la fascia adotta la reference GDR approvata: stemma Arena,
+scala di bronzo con dieci incavi della Pressione, Catena, borsa Denari,
+Favore, tessera Segni e Bando su pergamena. La pelle e' un raster passivo;
+testi localizzati, valori e riempimento restano nativi. Il contatore Segni
+usa metadata numerico della vista esistente, senza estrarlo dal testo
+tradotto. Nessun nuovo intent, economia, campo persistente o fase.
+La tessera pulita e' disabilitata con causa nel tooltip; quando contiene
+Segni apre il dettaglio esistente e ne recupera il focus alla chiusura.
+La posizione resta fissa anche con Movimento ridotto. Geometria e prove:
+`docs/layout_rules.md`, `docs/support/hud_insegne_2026-10-26.md`.
 
 Serif regolare condivisa, corpo sans, materiali carta/inchiostro/cera, focus
 a regola da 4 px e blocco con due barre e causa scritta valgono anche per
@@ -419,37 +449,51 @@ Runtime enforcement note (Level 3): enemy health-bar UI wiring/assets are remove
 
 ## BettingCircle Registry table contract (OF-05)
 - Runtime scene: `res://scenes/ui/BettingCircle.tscn`.
-- The two-leaf Registry table preserves the established open-book composition
-  while reading as basalt, bronze and limestone rather than a fantasy spellbook.
-  It must not be replaced by generic modal cards.
+- The Registry uses the authorized volumetric pixel-art book (2026-10-26):
+  layered ivory pages, red leather, bronze corners and a fixed avian arena.
+  It must not be replaced by generic modal cards. A passive projected cover
+  opens in 1.25 seconds; reduced motion shows the readable open book immediately.
 - Opening the table is UI-only presentation: it emits no new intent and does not
   alter the prepared offer payload. Signing still emits the existing
   `request_place_bet` intent.
-- Each page renders one unified `RichTextLabel` contract block (`Rtl_Left_Contract`, `Rtl_Right_Contract`) containing title, subtitle, condanna, condition, and pact copy.
+- Each page renders one unified `RichTextLabel` contract block (`Rtl_Left_Contract`, `Rtl_Right_Contract`) containing title, odds/reward, loss, complete mechanical consequence and current seal conditions. The compact paper layout omits the atmospheric subtitle and doom preamble; catalog content is retained.
+- The 2026-10-26 handwriting pass uses bundled Fondamento Regular/Italic
+  on these page blocks and signature actions: 18 px body, 20 px headings,
+  28 px titles, 24 px signature. Display headings use sentence case after
+  localization; source keys and contract data stay unchanged. Dark sepia
+  ink has faint stationary density variation, with no shadows, blur or glyph
+  movement. The accepted-signature echo uses the same text adapter.
 - Local fragmented render paths (`Lbl_*_Title`, `Rtl_*_Bet`, `Rtl_*_Explain`) are retired because they create scrollbars, duplicated spacing, and overlay-like text drift.
 - Manifesto Registry contracts use ink on ivory inside the two-leaf ink
   support (2026-10-09). Body copy retains contrast in every state; selection
   adds a rule instead of tinting the whole page. The shared reading surface
-  has no registered mark. Long contracts scroll within the existing
-  RichTextLabel while the signature remains fixed outside it; new offers
-  reset the scroll. Non-scrolling text passes input to the page selector.
+  has no registered mark. Contracts must fit without scrolling, ellipsis
+  or smaller type; the reading area uses the top 85% of each page, with
+  the signature fixed below it. Passive text passes input to the page
+  selector and does not enter keyboard focus. Validate all active offers
+  in IT/EN/ES, including adverse conditions, at 720p and 1080p.
 - Scope guard: this is presentation-only. BettingCircle still consumes prepared offer payloads and does not own bet selection authority beyond emitting the existing sign intent.
 
 ## BettingCircle promise signature contract (OF-06)
 
 - Runtime scene: `res://scenes/ui/BettingCircle.tscn`.
 - `Btn_Sign_Left` and `Btn_Sign_Right` are technical input nodes presented as
-  wax signature cartouches inside the two existing Registry recesses.
+  ink subscription rules directly on the two pages (2026-10-26).
 - States are normal, focus, pressed, selected, signed and disabled. They share
   identical geometry; selection and signing must not scale or move the target.
-- Since 2026-10-09 the native signature Button consumes the Manifesto kit:
-  selected has outlined cuts and a rule, signed alone has filled cuts, and
-  disabled has two bars. Native Button text is the single CTA; the legacy
-  Lbl_Sign bindings stay hidden. The local signed feedback retains its
-  original timing before intent emission and is not a new save confirmation.
+- A thin rule identifies selection, a thicker rule identifies focus/hover,
+  and disabled has two bars. Native Button text is the single CTA; the legacy
+  Lbl_Sign bindings stay hidden. Selection never prints a signature.
+  The existing accepted `bet_placed` event starts a passive 0.65-second
+  stylus/ink echo, after immediate intent emission. It owns no phase or save
+  timing. Reduced motion displays the completed ink for 0.15 seconds.
+  Menu, new run, run end and pact close cancel the echo. It blocks click-through
+  only while visible; confirm skips it and reaches the existing pact input
+  in the same frame. It never postpones a manager transition, and is shorter
+  than the existing 0.7-second minimum pact ritual.
 - `FIRMA`, `SIGN` and `FIRMAR` remain Godot-rendered CTA copy, never baked into
   the textures.
-- On activation the selected cartouche enters signed state, the existing
+- On activation the selected subscription enters signed state, the existing
   decision lock is applied, cue `registry_promise_sign` plays and the unchanged
   `request_place_bet` intent is emitted. No presentation `await` may delay the
   intent.

@@ -6,6 +6,7 @@ const RitualEnvironment = preload("res://scripts/ui/ritual_environment.gd")
 const PixelScene = preload("res://scripts/ui/pixel_scene.gd")
 const ArenaPresence = preload("res://scripts/ui/verdict_atmosphere.gd")
 const StatusHeader = preload("res://scripts/ui/ritual_status_header.gd")
+const PixelRitualStage = preload("res://scripts/ui/ritual_pixel_stage.gd")
 
 # -----------------------------------------------------------------------------
 # ROLE / OWNERSHIP
@@ -552,6 +553,9 @@ func _ready() -> void:
 	_wire_ritual_advance_buttons()
 	_wire_intro_phase_buttons()
 	_apply_manifesto_print()
+	PixelRitualStage.install(self, pact_sealed_panel, "FIRST_REACTION")
+	PixelRitualStage.install(self, intermediate_choice_panel, "MID_CHOICE")
+	PixelRitualStage.install(self, resolve_ritual_panel, "RESOLUTION")
 	_install_arena_presence()
 	var status_header := StatusHeader.new()
 	status_header.name = "RitualStatusHeader"
@@ -1019,6 +1023,8 @@ func show_countdown(seconds: int = 3) -> void:
 func _install_arena_presence() -> void:
 	for path: String in ["UI_RunRoot/Phase_RESOLUTION/ResolveBackdrop", "UI_RunRoot/Phase_MID_CHOICE/MidChoiceBackdrop"]:
 		var backdrop: Control = get_node(path)
+		if backdrop is TextureRect and backdrop.texture == PixelRitualStage.ARENA:
+			continue # This arena already contains the pixel-art crowd and judges.
 		var presence := ArenaPresence.new()
 		presence.name = "ArenaPresence"
 		presence.draw_background = false
@@ -2498,6 +2504,9 @@ func _impact_at_control(control: Control, color: Color, amount: int, strength: f
 	_impact.burst(control.get_global_rect().get_center(), color, amount, 360.0)
 
 func _on_bet_placed_impact(_bet_id: String, _stake: int, _odds: float) -> void:
+	# The Registry now acknowledges acceptance with its own ink/stylus echo.
+	if betting_circle != null:
+		return
 	# The signature presses into the wax: a stamp, not a click.
 	if _impact == null:
 		return
@@ -2565,6 +2574,8 @@ func _is_resolution_ritual_on_beat() -> bool:
 	return beat_distance <= RESOLUTION_RITUAL_HIT_WINDOW_SECONDS
 
 func _apply_resolution_ritual_strike_feedback(on_beat: bool, held: bool = true) -> void:
+	if resolve_ritual_strike_button != null:
+		resolve_ritual_strike_button.set_meta("pixel_wax_held", held)
 	var mark_index: int = _resolve_ritual_strike_count - 1
 	if mark_index >= 0 and mark_index < resolve_ritual_seal_pips.size():
 		var pip: Panel = resolve_ritual_seal_pips[mark_index]
@@ -2668,8 +2679,12 @@ func _reset_judgment_seal_state() -> void:
 	if resolve_ritual_strike_button == null:
 		return
 	resolve_ritual_strike_button.set_meta(JUDGMENT_SEAL_STATE_META, 0)
+	resolve_ritual_strike_button.set_meta("pixel_wax_held", true)
 	resolve_ritual_strike_button.modulate = Color.WHITE
 	resolve_ritual_strike_button.scale = Vector2.ONE
+	if resolve_ritual_strike_button.has_node("PixelRitualObject"):
+		resolve_ritual_strike_button.get_node("PixelRitualObject").sync_copy()
+		return
 	resolve_ritual_strike_button.add_theme_stylebox_override("normal", JUDGMENT_SEAL_STYLE_NORMAL)
 	resolve_ritual_strike_button.add_theme_stylebox_override("hover", JUDGMENT_SEAL_STYLE_FOCUS)
 	resolve_ritual_strike_button.add_theme_stylebox_override("focus", JUDGMENT_SEAL_STYLE_FOCUS)
@@ -2680,6 +2695,9 @@ func _set_judgment_seal_state(strike_count: int) -> void:
 	if resolve_ritual_strike_button == null:
 		return
 	resolve_ritual_strike_button.set_meta(JUDGMENT_SEAL_STATE_META, strike_count)
+	if resolve_ritual_strike_button.has_node("PixelRitualObject"):
+		resolve_ritual_strike_button.get_node("PixelRitualObject").sync_copy()
+		return
 	var style: StyleBox = null
 	if strike_count == 1:
 		style = JUDGMENT_SEAL_STYLE_STRIKE_1
@@ -2840,6 +2858,10 @@ func _update_special_arena_ui() -> void:
 func _update_arena_theme_ui() -> void:
 	if arena_theme_title_label == null and arena_theme_subtitle_label == null:
 		return
+	if _pixel_ritual_visible():
+		arena_theme_title_panel.hide()
+		arena_theme_subtitle_panel.hide()
+		return
 	if _arena_theme_payload.is_empty():
 		if arena_theme_title_label != null:
 			arena_theme_title_label.visible = false
@@ -2907,6 +2929,7 @@ func _refresh_scars_ui(scars: Array) -> void:
 		scars_panel.visible = true
 		# The margin stays fixed; overflow is handled by ScarsScroll.
 		var title := scars_panel.get_node("ScarsVBox/ScarsTitlePanel/ScarsTitle") as Label
+		title.set_meta("scar_count", scars.size())
 		title.text = "%s · %d" % [tr("SEGNI"), scars.size()]
 	if scars.is_empty():
 		scars_label.text = tr("Registro pulito: nessun segno inciso.")
@@ -4273,6 +4296,9 @@ func _restore_panel_motion_base(panel: CanvasItem) -> void:
 	var control: Control = panel as Control
 	if control == null:
 		return
+	if control.has_node("PixelRitualStage"):
+		control.get_node("PixelRitualStage").layout()
+		return
 	_set_panel_motion_shift(control, 0.0)
 	control.scale = Vector2.ONE
 
@@ -4567,7 +4593,15 @@ func _reset_bet_confirmation() -> void:
 			break
 	_refresh_bet_selection_visuals()
 
+func _pixel_ritual_visible() -> bool:
+	for panel: Control in [pact_sealed_panel, intermediate_choice_panel, resolve_ritual_panel]:
+		if panel != null and panel.is_visible_in_tree(): return true
+	return false
+
 func _refresh_modal_dimmer() -> void:
+	if _pixel_ritual_visible():
+		arena_theme_title_panel.hide()
+		arena_theme_subtitle_panel.hide()
 	if modal_dimmer == null:
 		return
 	if _ending_mode_active:

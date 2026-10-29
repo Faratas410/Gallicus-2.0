@@ -19,6 +19,33 @@ successive identiche prima/dopo il round-trip JSON.
 
 ## Principio
 
+Il profilo conserva `meta.seat_case` come `{choice, era}`: choice vuoto e
+era -1 per profili precedenti, oppure `reserve`/`witness` e un'Era 0..3.
+Valori non validi tornano allo stato non risolto. La risoluzione scrive scelta
+ed eventuale addebito nella stessa transazione del profilo; la testimonianza
+si applica alle nuove run nella stessa Era, non viene riapplicata al resume.
+Il checkpoint RunState aggiunge `seat_case_deferred` (bool, default false):
+un rinvio resta valido se si riprende lo stesso percorso e si azzera in una
+nuova run. I salvataggi precedenti sono leggibili senza migrazione distruttiva.
+`meta.seat_inquiry` conserva `seen` (bit 1 copia, bit 2 ricevuta o voce) e
+`complete` (solo dopo entrambe); i profili precedenti partono da 0/false.
+Il checkpoint aggiunge `seat_inquiry_deferred` (bool, default false), distinto
+dal rinvio del caso. Le letture restano nel profilo attraverso la ripresa.
+I due ID `seat_reserved_followup` e `seat_witness_followup` usano il catalogo
+e `settings.campaign_dialogues_seen` gia' esistenti, senza nuovi campi save.
+Anche `seat_receipt_after_inquiry` e `seat_voice_after_inquiry` riusano quel
+catalogo e la stessa lista; vengono proposti solo dopo il confronto completato
+e in base alla via registrata nel profilo.
+`meta.seat_copy` e' vuoto nei vecchi profili, oppure `copy` o `keep` dopo il
+confronto; il valore e' valido solo se l'indagine e' completa. La scelta `copy`
+e l'addebito di 5 Denari condividono una scrittura del profilo. Il checkpoint
+aggiunge `seat_copy_deferred` (bool, default false); si azzera alla nuova run.
+I dialoghi `seat_copy_for_nerio` e `seat_copy_for_dima` usano la lista esistente.
+`meta.seat_copy_era` registra l'Era in cui e' pagata la copia, o -1 altrimenti.
+Una copia pagata in un profilo precedente a questo campo riceve lo sconto per
+l'Era corrente ancora aperta; in Assenza non viene riattivata. Valori invalidi
+non attivano lo sconto. Il prezzo della polizza e' derivato, non salvato.
+
 I dati devono essere strutturati, deterministici e consumati da un owner chiaro.
 Questo documento descrive le superfici operative; i canon restano autoritativi.
 

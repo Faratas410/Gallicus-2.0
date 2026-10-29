@@ -1350,6 +1350,9 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"request_new_run", &"_on_request_new_run", true],
 		[&"request_ritual_advance", &"_on_request_ritual_advance", true],
 		[&"request_dismiss_campaign_dialogue", &"_on_request_dismiss_campaign_dialogue", false],
+		[&"request_seat_case_choice", &"_on_request_seat_case_choice", true],
+		[&"request_seat_inquiry_action", &"_on_request_seat_inquiry_action", true],
+		[&"request_seat_copy_choice", &"_on_request_seat_copy_choice", true],
 		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
 		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
 		[&"request_mid_choice_select", &"_on_request_mid_choice_select", true],
@@ -2511,7 +2514,7 @@ func _pick_crowd_intent() -> void:
 	# Seeded by run, arena and exchange, so a resumed exchange shows the same
 	# intent; the crowd never repeats itself twice in a row.
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = _get_run_seed_value() + _run_state.arena_index * 97 + _run_state.crowd_exchange_index * 13 + 101
+	rng.seed = _run_state.run_seed + _run_state.arena_index * 97 + _run_state.crowd_exchange_index * 13 + 101
 	var candidates: Array[String] = []
 	for intent_id: String in CROWD_INTENT_ORDER:
 		if intent_id != _run_state.crowd_intent:
@@ -2630,6 +2633,9 @@ func _open_ledger_for_run() -> void:
 	_run_state.ledger_lost = 0
 	if not LEDGER_PERSISTS:
 		SaveManager.set_ledger_denari(0)
+	var seat_case: Dictionary = SaveManager.get_seat_case()
+	if str(seat_case.choice) == "witness" and int(seat_case.era) == _registry_era:
+		_shift_escalation(1)
 	var balance: int = _ledger_balance()
 	if balance < 0:
 		# The debt follows the subject into the sand.
@@ -2641,11 +2647,12 @@ func _open_ledger_for_run() -> void:
 	_emit_ledger("", 0)
 
 func _settle_ledger_at_run_end(reason: String) -> void:
-	# The bando settles first: a closed one adds its Denari above the quietanza.
+	# Determine debt relief before the bando reward can cross the zero boundary.
+	var debt_at_settlement: bool = _ledger_balance() < 0
 	_settle_bando_at_run_end(reason)
 	if reason == "CASH_OUT":
 		var deposit: int = floori(float(maxi(_run_state.glory, 0)) / float(LEDGER_CASHOUT_GLORY_PER_DENARO))
-		if deposit > 0 and _ledger_balance() < 0:
+		if deposit > 0 and debt_at_settlement:
 			_ledger_change(deposit * LEDGER_DEBT_DEPOSIT_MULTIPLIER, "Quietanza versata contro il debito: Denari +%d, il doppio.")
 		elif deposit > 0:
 			_ledger_change(deposit, "Quietanza versata: Denari +%d.")
@@ -2655,7 +2662,13 @@ func _settle_ledger_at_run_end(reason: String) -> void:
 
 func _banco_price(item_id: String) -> int:
 	var item: Dictionary = BANCO_ITEMS.get(item_id, {}) as Dictionary
-	return int(item.get("price", 0)) + SaveManager.get_registry_era() * BANCO_ERA_SURCHARGE
+	var price: int = int(item.get("price", 0)) + SaveManager.get_registry_era() * BANCO_ERA_SURCHARGE
+	if item_id == "insure" and _seat_copy_insurance_discount():
+		price -= 1
+	return maxi(price, 1)
+
+func _seat_copy_insurance_discount() -> bool:
+	return SaveManager.get_seat_copy() == "copy" and SaveManager.get_seat_copy_era() == SaveManager.get_registry_era() and can_start_run()
 
 func _banco_item_available(item_id: String) -> bool:
 	match item_id:
@@ -2676,7 +2689,7 @@ func get_banco_view() -> Dictionary:
 		var price: int = _banco_price(item_id)
 		items.append({
 			"id": item_id,
-			"title": str(item.get("title", "")),
+			"title": "ASSICURA LA POSTA · SCONTO" if item_id == "insure" and _seat_copy_insurance_discount() else str(item.get("title", "")),
 			"text": str(item.get("text", "")),
 			"price": price,
 			"available": open_now and price <= balance and _banco_item_available(item_id),
@@ -4552,6 +4565,12 @@ func get_character_dialogue(context: String) -> Array[String]:
 	if variants == 0:
 		return []
 	var silent: bool = not can_start_run() or _run_state.registry_silence_active
+	var copy_choice: String = SaveManager.get_seat_copy()
+	if not silent and context == "gesture" and _run_state.arena_index == 1 and posmod(_run_state.run_seed, 4) == 0 and catalog.SEAT_COPY_EXCHANGES.has(copy_choice):
+		var remembered: Array[String] = []
+		for line: String in catalog.SEAT_COPY_EXCHANGES[copy_choice]:
+			remembered.append(line)
+		return remembered
 	return catalog.lines(context, posmod(_run_state.run_seed, variants) + _run_state.arena_index, _registry_effect_progress() >= 2.0, silent)
 
 func get_campaign_dialogue() -> Dictionary:
@@ -4559,6 +4578,23 @@ func get_campaign_dialogue() -> Dictionary:
 	if not can_start_run() or _run_state.registry_silence_active or _phase != RunPhase.BET_PRESENT or _run_state.arena_index != 1:
 		return {}
 	var catalog = preload("res://scripts/content/campaign_dialogues.gd")
+	var seat_choice: String = str(SaveManager.get_seat_case().choice)
+	var seat_followup: String = "seat_reserved_followup" if seat_choice == "reserve" else "seat_witness_followup" if seat_choice == "witness" else ""
+	if seat_followup != "" and not SaveManager.has_seen_campaign_dialogue(seat_followup):
+		var followup: Dictionary = catalog.SEQUENCES[seat_followup].duplicate(true)
+		followup["id"] = seat_followup
+		return followup
+	var inquiry_followup: String = "seat_receipt_after_inquiry" if seat_choice == "reserve" else "seat_voice_after_inquiry" if seat_choice == "witness" else ""
+	if bool(SaveManager.get_seat_inquiry().complete) and inquiry_followup != "" and not SaveManager.has_seen_campaign_dialogue(inquiry_followup):
+		var response: Dictionary = catalog.SEQUENCES[inquiry_followup].duplicate(true)
+		response["id"] = inquiry_followup
+		return response
+	var copy_choice: String = SaveManager.get_seat_copy()
+	var copy_response: String = "seat_copy_for_nerio" if copy_choice == "copy" else "seat_copy_for_dima" if copy_choice == "keep" else ""
+	if copy_response != "" and not SaveManager.has_seen_campaign_dialogue(copy_response):
+		var copy_scene: Dictionary = catalog.SEQUENCES[copy_response].duplicate(true)
+		copy_scene["id"] = copy_response
+		return copy_scene
 	var samples: int = int(SaveManager.get_registry_evolution().get("samples", 0))
 	var bando_step: int = _bando_step()
 	var id: String = ""
@@ -4571,15 +4607,13 @@ func get_campaign_dialogue() -> Dictionary:
 	if id != "" and SaveManager.has_seen_campaign_dialogue(id):
 		id = ""
 	# Racconti are the prize of Orvo's ladder: one per percorso, never after the farewell.
-	# The empty-seat racconti are due from their Era anyway and hold the farewell back.
+	# Due empty-seat racconti and already-earned prizes both precede the farewell.
 	var farewell_heard: bool = SaveManager.has_seen_campaign_dialogue("departure")
 	if (id == "" and _registry_era < 3) or (id == "departure" and not farewell_heard):
 		for tale: Dictionary in catalog.TALES:
 			if SaveManager.has_seen_campaign_dialogue(str(tale.id)):
 				continue
 			var era_due: bool = tale.has("era") and _registry_era >= int(tale.era)
-			if id == "departure" and not era_due:
-				continue
 			if era_due or bando_step >= int(tale.step):
 				id = str(tale.id)
 				break
@@ -4588,6 +4622,101 @@ func get_campaign_dialogue() -> Dictionary:
 	var payload: Dictionary = catalog.SEQUENCES[id].duplicate(true)
 	payload["id"] = id
 	return payload
+
+func get_seat_case() -> Dictionary:
+	if not can_start_run() or _phase != RunPhase.BET_PRESENT or not _waiting_for_bet or _run_state.arena_index != 1:
+		return {}
+	if _run_state.seat_case_deferred or not SaveManager.has_seen_campaign_dialogue("seat_kept") or str(SaveManager.get_seat_case().choice) != "":
+		return {}
+	return {"available": true, "denari": _ledger_balance(), "reserve_available": _ledger_balance() >= 6}
+
+func get_seat_case_record() -> Dictionary:
+	return SaveManager.get_seat_case()
+
+func get_seat_inquiry() -> Dictionary:
+	if not can_start_run() or _phase != RunPhase.BET_PRESENT or not _waiting_for_bet or _run_state.arena_index != 1 or _run_state.seat_inquiry_deferred:
+		return {}
+	var choice: String = str(SaveManager.get_seat_case().choice)
+	var followup: String = "seat_reserved_followup" if choice == "reserve" else "seat_witness_followup" if choice == "witness" else ""
+	var inquiry: Dictionary = SaveManager.get_seat_inquiry()
+	if followup == "" or not SaveManager.has_seen_campaign_dialogue(followup) or bool(inquiry.complete):
+		return {}
+	return {"choice": choice, "seen": int(inquiry.seen)}
+
+func get_seat_inquiry_record() -> Dictionary:
+	return SaveManager.get_seat_inquiry()
+
+func get_seat_copy() -> Dictionary:
+	if not can_start_run() or _phase != RunPhase.BET_PRESENT or not _waiting_for_bet or _run_state.arena_index != 1 or _run_state.seat_copy_deferred:
+		return {}
+	var choice: String = str(SaveManager.get_seat_case().choice)
+	var response: String = "seat_receipt_after_inquiry" if choice == "reserve" else "seat_voice_after_inquiry" if choice == "witness" else ""
+	if response == "" or not bool(SaveManager.get_seat_inquiry().complete) or not SaveManager.has_seen_campaign_dialogue(response) or SaveManager.get_seat_copy() != "":
+		return {}
+	return {"denari": _ledger_balance(), "copy_available": _ledger_balance() >= 5}
+
+func get_seat_copy_record() -> String:
+	return SaveManager.get_seat_copy()
+
+func get_seat_copy_discount_active() -> bool:
+	return _seat_copy_insurance_discount()
+
+func _on_request_seat_copy_choice(choice: String) -> void:
+	if get_seat_copy().is_empty() or choice not in ["copy", "keep", "defer"]:
+		return
+	if choice == "defer":
+		_run_state.seat_copy_deferred = true
+		_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
+		GameEvents.seat_copy_resolved.emit({"choice": choice})
+		return
+	if not SaveManager.resolve_seat_copy(choice):
+		return
+	if choice == "copy":
+		_run_state.ledger_lost += 5
+		_emit_ledger("", -5)
+		_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
+	GameEvents.seat_copy_resolved.emit({"choice": choice})
+
+func _on_request_seat_inquiry_action(action: String) -> void:
+	var view := get_seat_inquiry()
+	if view.is_empty():
+		return
+	if action == "defer":
+		_run_state.seat_inquiry_deferred = true
+		_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
+		GameEvents.seat_inquiry_changed.emit({"result": "deferred"})
+		return
+	if action == "inspect_copy" or action == "inspect_trace":
+		if SaveManager.mark_seat_evidence(1 if action == "inspect_copy" else 2):
+			var current := get_seat_inquiry()
+			current["result"] = action
+			GameEvents.seat_inquiry_changed.emit(current)
+		return
+	if int(view.seen) != 3:
+		return
+	if action == "infer_identity":
+		view["result"] = "unsupported"
+		GameEvents.seat_inquiry_changed.emit(view)
+	elif action == "conclude_copy" and SaveManager.complete_seat_inquiry():
+		GameEvents.seat_inquiry_changed.emit({"result": "complete"})
+
+func _on_request_seat_case_choice(choice: String) -> void:
+	var case_view := get_seat_case()
+	if case_view.is_empty() or choice not in ["reserve", "witness", "defer"]:
+		return
+	if choice == "defer":
+		_run_state.seat_case_deferred = true
+		_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
+		GameEvents.seat_case_resolved.emit({"choice": choice})
+		return
+	var price := 6 if choice == "reserve" else 0
+	if not SaveManager.resolve_seat_case(choice, _registry_era, price):
+		return
+	if price > 0:
+		_run_state.ledger_lost += price
+		_emit_ledger("", -price)
+		_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
+	GameEvents.seat_case_resolved.emit({"choice": choice})
 
 func _on_request_dismiss_campaign_dialogue(id: String) -> void:
 	if str(get_campaign_dialogue().get("id", "")) == id and id != "":

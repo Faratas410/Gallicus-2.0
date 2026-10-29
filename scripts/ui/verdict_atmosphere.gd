@@ -3,6 +3,7 @@ extends Control
 const ARENA = preload("res://assets/ui/generated/arena_unified.png")
 const CROWD = preload("res://assets/ui/generated/verdict_avian_crowd.png")
 const RitualEnvironment = preload("res://scripts/ui/ritual_environment.gd")
+var pixel_arena := false
 var staging: StringName = &"risk"
 var draw_background := true
 var clock := 0.0
@@ -21,13 +22,16 @@ func _ready() -> void:
 	if draw_background:
 		_backdrop = TextureRect.new()
 		_backdrop.name = "SharedArenaBackdrop"
-		_backdrop.texture = ARENA
+		_backdrop.texture = preload("res://assets/ui/generated/verdict_arena_v2.png") if pixel_arena else ARENA
+		if pixel_arena: _backdrop.texture_filter = TEXTURE_FILTER_NEAREST
 		_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		_backdrop.stretch_mode = TextureRect.STRETCH_SCALE if pixel_arena else TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		_backdrop.mouse_filter = MOUSE_FILTER_IGNORE
 		_backdrop.show_behind_parent = true
 		add_child(_backdrop)
 		_backdrop.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
+	if pixel_arena and _backdrop:
+		_backdrop.offset_top = 128
 	GameEvents.settings_changed.connect(func(payload: Dictionary) -> void:
 		if bool(payload.get("reduced_motion", false)): _settle_motion())
 	GameEvents.seal_strike_resolved.connect(func(payload: Dictionary) -> void:
@@ -70,6 +74,13 @@ func _draw() -> void:
 	var h := size.y / s
 	draw_set_transform(Vector2.ZERO, 0, Vector2.ONE * s)
 	var wear := clampf(environment_fade / 0.21, 0.0, 1.0)
+	if pixel_arena:
+		if _backdrop: _backdrop.offset_top = 128 * s
+		for i in range(12):
+			var point := Vector2(fposmod(i * 137.1 + clock * 2, w), 150 + fposmod(i * 73.7 - clock, h - 150))
+			draw_rect(Rect2(point, Vector2.ONE * 2), Color(1, 0.8, 0.4, 0.12 + celebration * 0.15))
+		draw_set_transform(Vector2.ZERO)
+		return
 	# Feet stay planted. Sparse groups have individual, slow pivots and brief
 	# event reactions; they no longer bob up/down as a moving decorative band.
 	for i in range(5):

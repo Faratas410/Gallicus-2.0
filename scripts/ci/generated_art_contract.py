@@ -91,6 +91,12 @@ def validate_theme() -> None:
     source_font = static_font.with_name(receipt["source"])
     assert receipt["source_sha256"] == hashlib.sha256(source_font.read_bytes()).hexdigest(), "title font source changed"
     assert receipt["axes"] == {"wdth": 100, "opsz": 32, "wght": 400, "GRAD": 0}, "title font axes differ from art direction"
+    handwriting_dir = ROOT / "assets/ui/official/typography/fondamento"
+    handwriting_receipt = json.loads((handwriting_dir / "provenance.json").read_text(encoding="utf-8"))
+    handwriting_fonts = {item["file"]: item["sha256"] for item in handwriting_receipt["files"]}
+    assert set(handwriting_fonts) == {"Fondamento-Regular.ttf", "Fondamento-Italic.ttf"}, "handwriting font receipt incomplete"
+    for name, digest in handwriting_fonts.items():
+        assert hashlib.sha256((handwriting_dir / name).read_bytes()).hexdigest() == digest, f"handwriting font changed: {name}"
     text = (ROOT / "assets/ui/theme/official_theme.tres").read_text(encoding="utf-8")
     assert "theme_types/" not in text, "Theme dictionaries are not Godot resource properties"
     for token in ("Label/colors/font_color", "Button/styles/normal", "Button/styles/focus", "OptionButton/styles/normal", "ProgressBar/styles/fill"):
@@ -103,8 +109,7 @@ def validate_theme() -> None:
             if source.suffix not in (".gd", ".tscn", ".tres") or "ci" in source.parts:
                 continue
             for path in re.findall(r'res://[^"\s]+\.(?:png|jpg|webp|svg|ttf|otf)', source.read_text(encoding="utf-8")):
-                is_title_font = path in {"res://assets/ui/official/typography/LibreBaskerville.ttf", "res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf", "res://assets/ui/official/typography/roboto_serif/GallicusSerif-Regular.ttf", "res://assets/ui/official/typography/pixelify_sans/PixelifySans-Regular.ttf"}
-                # Pixel-art trial (25 Oct 2026): the closed palette is derived from the generated backgrounds by tools/build_pixel_palette.py.
+                is_title_font = path in {"res://assets/ui/official/typography/LibreBaskerville.ttf", "res://assets/ui/official/typography/roboto_serif/RobotoSerif.ttf", "res://assets/ui/official/typography/roboto_serif/GallicusSerif-Regular.ttf", "res://assets/ui/official/typography/fondamento/Fondamento-Regular.ttf", "res://assets/ui/official/typography/fondamento/Fondamento-Italic.ttf", "res://assets/ui/official/typography/pixelify_sans/PixelifySans-Regular.ttf"}
                 is_pixel_palette = path == "res://assets/ui/official/pixel_palette.png"
                 assert path.startswith("res://assets/ui/generated/") or is_title_font or is_pixel_palette, f"{source}: retired visual dependency {path}"
                 assert (ROOT / path.removeprefix("res://")).is_file(), f"{source}: missing visual {path}"

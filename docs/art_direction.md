@@ -1,5 +1,132 @@
 # Gallicus Art Direction
 
+## Il posto misurato - 28 ottobre 2026
+
+Il caso usa la carta a bordi pixel del Banco per il foglio e le ricevute delle
+scelte, con tipografia nativa e focus visibile; non introduce nuovi raster.
+La scena del Registro resta visibile dietro il foglio oscurato. Verifica e
+limiti: `docs/support/campagna_economia_2026-10-28.md`.
+
+## Revisione Incasso/Rilancio - 26 ottobre 2026
+
+Un solo giudice nel fondale; Vessa appoggiata a un banco completo. Quietanza
+compatta e rilancio scritto sul cartiglio accanto alla cera. Importo e carta
+in Fondamento, insegna con pigmento irregolare. Questa revisione aggiorna
+il pass della posta sotto: `docs/support/verdict_review_2026-10-26.md`.
+
+## Revisione Banco - 26 ottobre 2026
+
+Un solo sigillo sul bando, servizi su carta senza emblemi, dorso in cuoio
+continuo e lettering locale in oro irregolare su insegna/copertina. La carta
+usa bordi in nine-slice; il marchio separato conserva sempre le proporzioni.
+Questo seguito aggiorna il pass Banco sotto: `docs/support/banco_review_2026-10-26.md`.
+
+## Banco e posta pixel art - 26 ottobre 2026
+
+Banco e Incasso/Rilancio ora condividono la famiglia del Registro: ricevute
+scritte, medaglione di cera, marchio su ferro e Vessa pixel art. Il testo e
+nativo; gli oggetti frontali mantengono la scrittura sul supporto. Dettagli,
+asset ed evidenze in `docs/support/pixel_banco_verdict_2026-10-26.md`.
+Questo pass sostituisce le precedenti indicazioni visive per queste due viste.
+
+## Patto, Gradinata e Rito - 26 ottobre 2026
+
+Il seguito autorizzato dell'audit porta le tre fasi nella famiglia del Registro:
+arena aviana comune, tavoletta sigillata, due tessere e sigillo su basalto.
+Carta scritta con Fondamento, titoli sull'insegna e valori nativi; atlas senza
+testi incorporati. Questo pass supera la descrizione del 9/24 ottobre per
+queste tre viste. Asset, oggetti, verifiche e limiti in
+`docs/support/pixel_rituals_2026-10-26.md`. Banco, posta e utility restano distinti.
+
+## Registro in game - 26 ottobre 2026
+
+L'utente autorizza l'integrazione della reference volumetrica corretta.
+Il Registro reale adotta libro pixel art, pagine spesse, copertina in cuoio,
+arena aviana e firma a inchiostro. Tre layer senza testo incorporato sono
+in `assets/ui/generated/registry_volume_*.png`; titoli, condizioni e CTA
+restano testo Godot localizzato. La copertina ruota con un bordo di cuoio
+contenuto nella sagoma; il fondale resta fermo. Il passaggio di apertura
+dura 1,25 s e la risposta stilo/inchiostro 0,65 s, adattate al ritmo runtime.
+Non si riproducono i 12 s dello studio, che comprendevano tempi dimostrativi.
+Prove e perimetro: `docs/support/registry_volume_2026-10-26.md`.
+Questa autorizzazione supera il limite reference-only del Registro sotto;
+le altre schermate e i gate di accettazione restano distinti.
+
+Raffinamento della scrittura richiesto dall'utente: sulle pagine si usa
+Fondamento Regular, con Fondamento Italic per la nota sulle condizioni. Titoli in
+scrittura normale anziche' tutte maiuscole, corpo seppia scuro e lievissima
+variazione statica della densita' dell'inchiostro. Niente ombre, contorni,
+sfocatura o oscillazione delle lettere. La stessa resa prosegue durante la
+firma; fascia di stato e insegna mantengono i propri caratteri. Font 18 px
+nel corpo, 20 px per rubriche, 28 px per titoli e 24 px sulla firma.
+
+Il seguito compatto elimina scorrimento e ripetizioni atmosferiche dalla
+pagina mantenendo i termini completi. Proposta separata per la fascia GDR:
+`docs/support/ui_reference_2026-10-25/hud-insegne-proposta-2026-10-26.png`.
+Stemma Arena, Pressione in bronzo a dieci tacche, Catena in ferro, borsa
+Denari, Favore e tessera Segni; Bando su pergamena. Reference generata con
+ImageGen e approvata dall'utente: integrata nella fascia comune del candidato
+locale, con valori/testi nativi e nessun dato impresso nel raster. Prove e
+limiti in `docs/support/hud_insegne_2026-10-26.md`.
+Prompt e riferimento usato nel file `hud-insegne-prompt.txt` della stessa cartella.
+
+## Reference approvata per la revisione UI - 25 ottobre 2026
+
+L'utente sceglie la direzione pixel art teatrale con folla aviana e azioni
+incorporate negli oggetti. Il Registro frontale e la sottoscrizione a inchiostro,
+inclusa la sequenza apertura/firma, sono la base visiva approvata per rivedere
+le altre schermate. L'approvazione riguarda la reference, non il runtime.
+
+- [Registro e sottoscrizione](support/ui_reference_2026-10-25/registro.png):
+  libro esattamente frontale, lettere pixel integrate nella carta, lettura
+  prioritaria, bordi lavorati e centro delle pagine calmo. La firma usa una
+  riga di sottoscrizione e lo stilo; al gesto segue una breve sigla a inchiostro.
+- [Apertura e firma animate](support/ui_reference_2026-10-25/registro-animazione.html):
+  studio autonomo di 12 secondi, pausa, riavvio e cursore temporale. Il ritaglio
+  segue il contorno del libro, evitando strisce di fondale duplicate durante
+  l'apertura. La firma appare solo dopo il gesto, non durante il focus.
+- Raffinamento volumetrico successivo, approvato nella reference statica:
+  [libro con spessore](support/ui_reference_2026-10-25/registro-volume.png).
+  Pagine stratificate, piega centrale e copertina spessa conservano il testo
+  frontale. [Animazione volumetrica](support/ui_reference_2026-10-25/registro-volume.html):
+  copertina proiettata con bordo di taglio, ombra variabile, flessione e breve
+  assestamento delle pagine prima della firma. Fondale fisso e ritaglio sul
+  contorno evitano il precedente trascinamento dello scenario. Anteprima
+  ispezionata in apertura e firma, console senza errori; approvata dall'utente
+  il 26 ottobre 2026 come reference per continuare le altre schermate. La precedente resta
+  disponibile per confronto. Entrambe sono studi visivi, non animazioni Godot.
+  Correzione del 26 ottobre: il bordo della copertina sinistra usa cuoio entro
+  la propria sagoma, evitando il lembo di carta stirato durante la rotazione.
+  Apertura prima e dopo il passaggio di taglio e firma finale ricontrollate.
+- [Incasso e rilancio](support/ui_reference_2026-10-25/incasso-rilancio.png):
+  quietanza da prendere e seconda incisione, oggetti distinti nella stessa arena.
+- [Rito](support/ui_reference_2026-10-25/rito.png): sigillo fisico, forme
+  leggibili, spazio scenico e folla. Cera e gesto di incisione restano riferimenti
+  per rito/rilancio; non sono piu' il modello della firma nel libro.
+
+### Prossima schermata - Patto, 26 ottobre 2026
+
+[Proposta del Patto](support/ui_reference_2026-10-25/patto-proposta-2026-10-26.png),
+da sottoporre alla valutazione dell'utente: Registro chiuso sul banco,
+tavoletta con promessa gia' sottoscritta e azione esistente MOSTRA IL PATTO.
+Nessuna seconda firma. Volume su carta, copertina e supporti; superficie
+scritta frontale e inchiostro leggibile. Testo e sigla sono illustrativi:
+l'eventuale integrazione dovra' conservare contenuti reali e continuita'
+della firma, oltre all'avanzamento automatico quando il rito e' gia' appreso.
+Nessun cambio al flow o nuova interazione runtime in questa consegna.
+
+Le immagini hanno testi abbreviati, valori illustrativi e cast di concept:
+non sostituiscono dati, copy completo, identita' dei personaggi o contratti
+canonici. La revisione futura dovra' conservare tutti i contenuti necessari,
+IT/EN/ES, focus accessibile, Movimento ridotto e l'autorita' di RunManager.
+Questo orientamento guida le prossime proposte visive; le specifiche runtime
+del 24 ottobre restano la descrizione dell'implementazione esistente.
+
+Consegna locale su HEAD `b81a4fc`, working tree gia' modificato. Verifiche:
+apertura intermedia e firma ispezionate nel browser, pausa/seek e console;
+riferimenti documentali e scansione mojibake. Nessuna integrazione Godot,
+nessun gate Linux o playtest chiuso, nessun commit o push.
+
 ## Prova pixel art - 25 ottobre 2026
 
 Dopo i mockup del 25 ottobre l'utente ha scelto di valutare una direzione pixel

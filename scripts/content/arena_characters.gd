@@ -217,6 +217,14 @@ const DIALOGUES: Dictionary = {
   ]
 }
 
+# The custody of the annotation remains a memory of the inhabitants, not a
+# statement by the Register. Both exchanges are deliberately short enough for
+# the gesture surface and do not invent the identity of the absent person.
+const SEAT_COPY_EXCHANGES: Dictionary = {
+  "copy": ["Nerio: La nota è nella mia copia.", "Dima: La mia resta al posto."],
+  "keep": ["Nerio: La mia copia non ha la nota.", "Dima: La tengo qui."]
+}
+
 static func variant_count(context: String) -> int:
 	return DIALOGUES.get(context, []).size()
 

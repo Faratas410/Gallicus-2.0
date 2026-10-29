@@ -143,7 +143,13 @@ func _run() -> void:
 						await process_frame
 					else: await _input_action("ui_accept")
 				_check(not view.get("_active") and save.has_seen_campaign_dialogue(id), "last beat did not close and persist: " + id)
-				_check(root.gui_get_focus_owner().name == "Btn_Open_Book", "focus not restored")
+				var case_ui: Control = view.get_node("SeatCase")
+				if case_ui.visible:
+					_check(str(case_ui.get("mode")) == "case", "unexpected overlay after dialogue: " + id)
+					_check(case_ui.find_child("Btn_Seat_Witness", true, false).has_focus(), "seat choice lacks focus: " + id)
+					case_ui.find_child("Btn_Seat_Defer", true, false).pressed.emit()
+				var focus: Control = root.gui_get_focus_owner()
+				_check(focus != null and focus.name == "Btn_Open_Book", "focus not restored: " + id)
 	# Racconti wait their turn: one per percorso, never after the farewell.
 	save.commit_registry_evolution(0.0, 0, Evolution.defaults().merged({"samples": 20}, true))
 	manager.set("_registry_era", 0)

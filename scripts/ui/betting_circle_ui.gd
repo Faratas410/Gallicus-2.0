@@ -4,17 +4,22 @@ class_name BettingCircleUI
 const EMPTY_PAGE_TITLE: String = "---"
 const EMPTY_PAGE_BODY: String = "[i]Nessuna proposta disponibile.[/i]"
 const Kit = preload("res://scripts/ui/manifesto_kit.gd")
-const CONTRACT_TITLE_SIZE: int = Kit.CONTRACT_TITLE_SIZE
-const CONTRACT_HEADING_SIZE: int = Kit.CONTRACT_HEADING_SIZE
-const CONTRACT_TITLE_COLOR: Color = Kit.Palette.INK
-const CONTRACT_HOLDS_COLOR: Color = Kit.Palette.INK
-const CONTRACT_BREAKS_COLOR: Color = Kit.Palette.INK
-const CONTRACT_NOTE_COLOR: Color = Kit.Palette.INK
+const Handwriting = preload("res://scripts/ui/registry_handwriting.gd")
+const CONTRACT_TITLE_SIZE: int = Handwriting.TITLE_SIZE
+const CONTRACT_HEADING_SIZE: int = Handwriting.HEADING_SIZE
+const CONTRACT_TITLE_COLOR: Color = Handwriting.INK
+const CONTRACT_HOLDS_COLOR: Color = Handwriting.INK
+const CONTRACT_BREAKS_COLOR: Color = Handwriting.INK
+const CONTRACT_NOTE_COLOR: Color = Handwriting.INK
 const SCREEN_TITLE: String = "SCEGLI LA VIA"
 const SCREEN_SUBTITLE: String = "Leggi la promessa e il costo. Poi firma."
 const CLOSED_SCREEN_TITLE: String = "REGISTRO DELL'ARENA"
 const CLOSED_SCREEN_SUBTITLE: String = "Apertura del verbale"
-const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_counter_unified.png")
+const REGISTRY_RITUAL_BACKGROUND: Texture2D = preload("res://assets/ui/generated/registry_volume_arena.png")
+const Volume = preload("res://scripts/ui/registry_volume.gd")
+const InkAction = preload("res://scripts/ui/registry_ink_action.gd")
+const SignatureOverlay = preload("res://scripts/ui/registry_signature_overlay.gd")
+var _volume: Control
 const REGISTRY_TABLE_STATE_NORMAL: StringName = &"normal"
 const REGISTRY_TABLE_STATE_FOCUS: StringName = &"focus"
 const REGISTRY_TABLE_STATE_PRESSED: StringName = &"pressed"
@@ -59,7 +64,7 @@ const PAGE_IDLE_DRIFT_PIXELS: float = 1.4
 @onready var open_book_label: Label = $CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book/Lbl_Open_Book as Label
 @onready var banco_title: Label = $CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoTitle as Label
 @onready var banco_note: Label = $CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoNote as Label
-@onready var banco_row: HBoxContainer = $CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow as HBoxContainer
+@onready var banco_row: BoxContainer = $CenterContainer/BookFrame/ClosedIntro/BancoPanel/BancoRow as BoxContainer
 
 var selected_bet_id: StringName = &""
 var _betting_circle_options: Array[Dictionary] = []
@@ -86,6 +91,8 @@ func _ready() -> void:
 	_nodes_ready = true
 	visible = false
 	_apply_manifesto_surfaces()
+	_build_volume_presentation()
+	GameEvents.bet_placed.connect(_on_signature_accepted)
 	_refresh_localized_text()
 	left_select_button.pressed.connect(_on_select_left_pressed)
 	right_select_button.pressed.connect(_on_select_right_pressed)
@@ -130,7 +137,6 @@ func _apply_manifesto_surfaces() -> void:
 		Kit.apply_document(page.get_node("LeftPaper" if page == left_page else "RightPaper"))
 	for label: RichTextLabel in [left_contract_label, right_contract_label]:
 		Kit.apply_rich_text(label)
-		label.resized.connect(_refresh_contract_scroll.bind(label))
 	for button: Button in [left_select_button, right_select_button]:
 		Kit.apply_page_selection(button)
 	for label: Label in [header_label, intro_body, intro_seal, banco_note]:
@@ -147,10 +153,133 @@ func _apply_manifesto_surfaces() -> void:
 	right_sign_label.hide()
 	Kit.apply_action(open_book_button, &"paper", true)
 
-func _refresh_contract_scroll(label: RichTextLabel) -> void:
-	var overflowing: bool = label.get_content_height() > label.size.y
-	label.scroll_active = overflowing
-	label.mouse_filter = Control.MOUSE_FILTER_STOP if overflowing else Control.MOUSE_FILTER_IGNORE
+func _build_volume_presentation() -> void:
+	# Keep the HUD and all original native inputs. The illustration is passive.
+	var stage := book_frame.get_parent() as Control
+	stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	resized.connect(_layout_volume_stage)
+	_layout_volume_stage()
+	book_frame.custom_minimum_size = Vector2.ZERO
+	book_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	arena_background.texture = REGISTRY_RITUAL_BACKGROUND
+	arena_background.stretch_mode = TextureRect.STRETCH_SCALE
+	arena_background.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	get_node("OverlayDim").hide()
+	_volume = Volume.new()
+	_volume.name = "RegistryVolume"
+	book_frame.add_child(_volume)
+	book_frame.move_child(_volume, 0)
+	_volume.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for shell: Control in [open_book_bg, closed_book_bg]:
+		shell.self_modulate.a = 0.0
+		for child: CanvasItem in shell.get_children():
+			child.hide()
+	_place_on_book(header_label, Rect2(0.31, 0.012, 0.38, 0.065))
+	Kit.apply_label(header_label, &"title", Kit.Palette.IVORY)
+	preload("res://scripts/ui/registry_lettering.gd").apply(header_label, 25)
+	for index: int in range(2):
+		var page: Control = left_page if index == 0 else right_page
+		_place_on_book(page, Rect2(0.155 if index == 0 else 0.545, 0.235, 0.305, 0.55))
+		page.get_node("LeftPaper" if index == 0 else "RightPaper").hide()
+		var content := page.get_node("Content") as Control
+		_place_on_book(content, Rect2(0, 0, 1, 0.85))
+		var signature: Button = left_sign_button if index == 0 else right_sign_button
+		_place_on_book(signature, Rect2(0.06, 0.88, 0.88, 0.12))
+		var ink := InkAction.new()
+		ink.name = "InkRule"
+		signature.add_child(ink)
+		var selector: Button = left_select_button if index == 0 else right_select_button
+		selector.focus_mode = Control.FOCUS_NONE
+	left_sign_button.focus_neighbor_right = right_sign_button.get_path()
+	left_sign_button.focus_next = right_sign_button.get_path()
+	right_sign_button.focus_neighbor_left = left_sign_button.get_path()
+	right_sign_button.focus_next = left_sign_button.get_path()
+	# Closed-book services remain available beside the physical cover.
+	for portrait: String in ["OrvoPortrait", "VessaPortrait"]:
+		var node := closed_intro.get_node_or_null(portrait) as CanvasItem
+		if node != null: node.hide()
+	_place_on_book(open_book_button, Rect2(0.60, 0.34, 0.32, 0.13))
+	_place_on_book(banco_title.get_parent(), Rect2(0.035, 0.325, 0.45, 0.66))
+	var writ := preload("res://scripts/ui/banco_paper.gd").new()
+	writ.name = "BandoPaper"
+	closed_intro.add_child(writ)
+	closed_intro.move_child(writ, 0)
+	_place_on_book(writ, Rect2(0.035, 0.10, 0.45, 0.225))
+	# One independent seal, aspect preserved; the paper contains no badges.
+	var mark := TextureRect.new()
+	mark.name = "BandoSeal"
+	mark.texture = preload("res://assets/ui/generated/bando_single_seal.png")
+	mark.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	mark.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	mark.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	closed_intro.add_child(mark)
+	_place_on_book(mark, Rect2(0.052, 0.15, 0.056, 0.12))
+	_place_on_book(intro_text, Rect2(0.115, 0.125, 0.335, 0.05))
+	_place_on_book(intro_body.get_parent(), Rect2(0.115, 0.17, 0.335, 0.105))
+	_place_on_book(intro_seal.get_parent(), Rect2(0.115, 0.27, 0.335, 0.035))
+	var signboard := preload("res://scripts/ui/banco_paper.gd").new()
+	signboard.name = "BancoSignboard"
+	closed_intro.add_child(signboard)
+	closed_intro.move_child(signboard, 0)
+	_place_on_book(signboard, Rect2(0.035, 0.325, 0.45, 0.085))
+	for label: Label in [intro_text, intro_body, intro_seal]:
+		label.add_theme_font_override("font", Handwriting.FONT)
+		label.add_theme_color_override("font_color", Handwriting.INK)
+		label.add_theme_color_override("font_shadow_color", Color.TRANSPARENT)
+		label.material = Handwriting.material()
+		label.add_theme_font_size_override("font_size", 18)
+	for panel: Control in [intro_body.get_parent(), intro_seal.get_parent()]:
+		panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+		var old := panel.get_node_or_null("ManifestoDocument") as CanvasItem
+		if old: old.hide()
+	banco_title.get_parent().add_theme_constant_override("separation", 3)
+	banco_title.get_parent().alignment = BoxContainer.ALIGNMENT_BEGIN
+	banco_row.add_theme_constant_override("separation", 3)
+	banco_title.add_theme_font_size_override("font_size", 21)
+	banco_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	banco_title.add_theme_font_override("font", Handwriting.FONT)
+	banco_title.add_theme_color_override("font_color", Handwriting.INK)
+	banco_title.add_theme_color_override("font_shadow_color", Color.TRANSPARENT)
+	banco_title.material = Handwriting.material()
+	banco_title.custom_minimum_size.y = 50
+	banco_note.add_theme_font_size_override("font_size", 14)
+	for button: Button in banco_row.get_children():
+		var paper := preload("res://scripts/ui/banco_receipt.gd").new()
+		paper.name = "PixelRitualObject"
+		button.add_child(paper)
+	var engraving := preload("res://scripts/ui/registry_cover_action.gd").new()
+	engraving.tile = -2
+	engraving.name = "PixelRitualObject"
+	open_book_button.add_child(engraving)
+	open_book_label.hide()
+	for label: RichTextLabel in [left_contract_label, right_contract_label]:
+		Handwriting.apply(label)
+
+func _layout_volume_stage() -> void:
+	var inset: float = preload("res://scripts/ui/ritual_status_header.gd").CONTENT_TOP * minf(size.x / 1280.0, size.y / 720.0)
+	(book_frame.get_parent() as Control).offset_top = inset
+	arena_background.offset_top = inset
+	if banco_title != null:
+		var factor := minf(size.x / 1280.0, size.y / 720.0)
+		banco_title.custom_minimum_size.y = 50 * factor
+		banco_title.add_theme_font_size_override("font_size", roundi(21 * factor))
+
+func _place_on_book(control: Control, rect: Rect2) -> void:
+	control.set_anchor(SIDE_LEFT, rect.position.x)
+	control.set_anchor(SIDE_TOP, rect.position.y)
+	control.set_anchor(SIDE_RIGHT, rect.end.x)
+	control.set_anchor(SIDE_BOTTOM, rect.end.y)
+	for side: int in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		control.set_offset(side, 0)
+
+func _on_signature_accepted(bet_id: String, _stake: int, _odds: float) -> void:
+	# Acceptance, not hover or optimistic selection, creates the ink trace.
+	if not _submit_locked or bet_id != String(selected_bet_id):
+		return
+	var overlay := SignatureOverlay.new()
+	get_tree().current_scene.add_child(overlay)
+	overlay.present(self, 0 if selected_bet_id == _offer_id_at(0) else 1)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
@@ -162,7 +291,7 @@ func _notification(what: int) -> void:
 func _refresh_localized_text() -> void:
 	if header_label != null:
 		header_label.visible = true
-		header_label.text = "%s\n%s" % [tr(SCREEN_TITLE), tr(SCREEN_SUBTITLE)]
+		header_label.text = tr(CLOSED_SCREEN_TITLE if _awaiting_open_request else SCREEN_TITLE)
 	if left_sign_label != null:
 		left_sign_label.text = tr("FIRMA")
 	if right_sign_label != null:
@@ -267,6 +396,11 @@ func _render_banco() -> void:
 		banco_note.text = note
 
 func set_offers(bets: Array[Dictionary]) -> void:
+	var reopen: bool = visible and _nodes_ready
+	if _open_tween != null and _open_tween.is_valid():
+		_open_tween.kill()
+	if _contract_write_tween != null and _contract_write_tween.is_valid():
+		_contract_write_tween.kill()
 	_betting_circle_options = []
 	for bet in bets:
 		if _betting_circle_options.size() >= 2:
@@ -283,6 +417,8 @@ func set_offers(bets: Array[Dictionary]) -> void:
 	_apply_default_selection()
 	_render_pages()
 	_reset_button_state()
+	if reopen:
+		_show_closed_intro()
 
 func open() -> void:
 	reset()
@@ -318,6 +454,10 @@ func close() -> void:
 		GameEvents.modal_closed.emit("betting_circle")
 
 func reset() -> void:
+	if _open_tween != null and _open_tween.is_valid():
+		_open_tween.kill()
+	if _contract_write_tween != null and _contract_write_tween.is_valid():
+		_contract_write_tween.kill()
 	_reset_interaction_lock()
 	_refresh_from_catalog_if_empty()
 	_apply_default_selection()
@@ -342,27 +482,11 @@ func _play_open_animation() -> void:
 		return
 	_show_book_closed_state()
 	modulate = Color(1.0, 1.0, 1.0, 1.0)
-	book_frame.pivot_offset = book_frame.size * 0.5
-	_set_book_drop(BOOK_DROP_OFFSET.y)
-	book_frame.scale = _book_base_scale * Vector2(0.92, 0.92)
 	_open_tween = create_tween()
 	_open_tween.set_trans(Tween.TRANS_QUAD)
-	_open_tween.set_ease(Tween.EASE_OUT)
-	_open_tween.tween_method(_set_book_drop, BOOK_DROP_OFFSET.y, 0.0, BOOK_DROP_SECONDS)
-	_open_tween.parallel().tween_property(book_frame, "scale", _book_base_scale * Vector2(0.98, 0.98), BOOK_DROP_SECONDS)
-	_open_tween.tween_callback(Callable(self, "_begin_book_open_swap"))
-	_open_tween.tween_callback(Callable(self, "_show_book_open_shell"))
-	_open_tween.set_ease(Tween.EASE_OUT)
-	_open_tween.tween_property(book_frame, "scale", _book_base_scale * Vector2(1.012, 1.012), BOOK_OPEN_SECONDS)
-	_open_tween.parallel().tween_property(open_book_bg, "modulate:a", 1.0, BOOK_OPEN_SECONDS)
-	_open_tween.parallel().tween_property(closed_book_bg, "modulate:a", 0.0, BOOK_OPEN_SECONDS)
 	_open_tween.set_ease(Tween.EASE_IN_OUT)
-	_open_tween.tween_property(book_frame, "scale", _book_base_scale, BOOK_SETTLE_SECONDS)
-	_open_tween.tween_callback(Callable(self, "_reveal_book_content"))
-	for node: CanvasItem in _book_content_nodes:
-		var target_modulate: Color = _book_content_target_modulates.get(node, Color(1.0, 1.0, 1.0, 1.0)) as Color
-		_open_tween.parallel().tween_property(node, "modulate", target_modulate, BOOK_CONTENT_REVEAL_SECONDS)
-	_open_tween.tween_callback(Callable(self, "_start_contract_write_animation"))
+	_open_tween.tween_property(_volume, "opening", 1.0, 1.25)
+	_open_tween.tween_callback(_finish_open_animation)
 
 func _show_closed_intro() -> void:
 	if _open_tween != null and _open_tween.is_valid():
@@ -378,7 +502,7 @@ func _show_closed_intro() -> void:
 	if header_label != null:
 		header_label.visible = true
 		header_label.modulate = Color(1.0, 1.0, 1.0, 1.0)
-		header_label.text = "%s\n%s" % [tr(CLOSED_SCREEN_TITLE), tr(CLOSED_SCREEN_SUBTITLE)]
+		header_label.text = tr(CLOSED_SCREEN_TITLE)
 	_set_registry_background_active(true)
 	if book_frame != null:
 		book_frame.pivot_offset = book_frame.size * 0.5
@@ -460,7 +584,7 @@ func _reveal_book_content() -> void:
 
 func _show_book_content_immediate() -> void:
 	if header_label != null:
-		header_label.text = "%s\n%s" % [tr(SCREEN_TITLE), tr(SCREEN_SUBTITLE)]
+		header_label.text = tr(SCREEN_TITLE)
 	_set_registry_background_active(false)
 	for node: CanvasItem in _book_content_nodes:
 		node.visible = true
@@ -516,6 +640,8 @@ func _start_contract_write_animation() -> void:
 		_finish_open_animation()
 
 func _show_book_closed_state() -> void:
+	if _volume != null:
+		_volume.opening = 0.0
 	if open_book_bg != null:
 		open_book_bg.visible = false
 		open_book_bg.modulate.a = 0.0
@@ -543,6 +669,8 @@ func _show_book_open_shell() -> void:
 		closed_book_bg.visible = true
 
 func _show_book_open_state() -> void:
+	if _volume != null:
+		_volume.opening = 1.0
 	if open_book_bg != null:
 		open_book_bg.visible = true
 		open_book_bg.modulate.a = 1.0
@@ -667,10 +795,10 @@ func _apply_selection_visual() -> void:
 	right_selection_outline.visible = false
 	if left_page != null:
 		left_page.modulate = Color.WHITE
-		Kit.apply_document(left_page.get_node("LeftPaper"), &"paper", left_selected)
 	if right_page != null:
 		right_page.modulate = Color.WHITE
-		Kit.apply_document(right_page.get_node("RightPaper"), &"paper", right_selected)
+	left_sign_button.set_meta(&"page_selected", left_selected)
+	right_sign_button.set_meta(&"page_selected", right_selected)
 
 func _offer_id_at(index: int) -> StringName:
 	if index < 0 or index >= _betting_circle_options.size():
@@ -712,7 +840,17 @@ func _set_promise_signature_state(button: Button, state: StringName) -> void:
 		return
 	button.set_meta(PROMISE_SIGNATURE_STATE_META, state)
 	button.text = "FIRMA"
-	Kit.apply_action(button, &"wax", true, state == PROMISE_SIGNATURE_STATE_SIGNED, Kit.ACTION_COMPACT, state == PROMISE_SIGNATURE_STATE_SELECTED)
+	# Native accessible text and hit rectangle, with only an ink rule on paper.
+	for style: String in ["normal", "hover", "pressed", "disabled", "focus"]:
+		button.add_theme_stylebox_override(style, StyleBoxEmpty.new())
+	for color: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_disabled_color"]:
+		button.add_theme_color_override(color, Color("45271c"))
+	button.add_theme_font_override("font", Handwriting.FONT)
+	button.add_theme_font_size_override("font_size", 24)
+	if button.material == null:
+		button.material = Handwriting.material()
+	button.add_theme_constant_override("outline_size", 0)
+	button.queue_redraw()
 	var trace := button.get_node_or_null("WaxTrace") as TextureRect
 	if trace != null:
 		trace.hide()
@@ -792,8 +930,6 @@ func _apply_page(offer: Dictionary, contract_label: RichTextLabel) -> void:
 	if contract_label != null:
 		var localized: Dictionary = _map_offer_for_display(offer.source) if offer.has("source") else offer
 		contract_label.text = str(localized.get("contract", EMPTY_PAGE_BODY))
-		contract_label.scroll_to_line(0)
-		_refresh_contract_scroll.call_deferred(contract_label)
 
 func _refresh_from_catalog_if_empty() -> void:
 	if not _betting_circle_options.is_empty():
@@ -838,16 +974,15 @@ func _find_bet_data(bet_id: StringName) -> Dictionary:
 			return bet_data
 	return {}
 
-func _format_contract_body(title: String, subtitle: String, doom_text: String, condition_text: String, pact_text: String, bet_id: StringName = &"", stake_gain: int = -1, conditions: Dictionary = {}) -> String:
+func _format_contract_body(title: String, _subtitle: String, doom_text: String, condition_text: String, pact_text: String, bet_id: StringName = &"", stake_gain: int = -1, conditions: Dictionary = {}) -> String:
 	# Three levels only (docs/direction.md): title, the deal, then what holds and
 	# what breaks. Shared body typography preserves the existing BBCode content.
 	var lines: Array[String] = []
 	var title_text: String = tr(title.strip_edges())
 	if title_text != "":
-		lines.append("[center]%s[/center]" % Kit.format_heading(title_text, CONTRACT_TITLE_SIZE, CONTRACT_TITLE_COLOR))
-	var subtitle_text: String = tr(subtitle.strip_edges())
-	if subtitle_text != "":
-		lines.append("[center]%s[/center]" % _escape_bbcode(subtitle_text))
+		lines.append("[center]%s[/center]" % Handwriting.heading(title_text, CONTRACT_TITLE_SIZE, CONTRACT_TITLE_COLOR))
+	# A fixed paper page keeps the complete terms, without repeating the
+	# atmospheric subtitle or the doom preamble above their mechanical effect.
 	var holds: Array[String] = _translated_lines(condition_text)
 	var stake_terms: Dictionary = _stake_terms(bet_id, stake_gain)
 	if not stake_terms.is_empty():
@@ -856,9 +991,6 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 	if not holds.is_empty():
 		lines.append(_contract_heading(tr("SE IL PATTO REGGE"), CONTRACT_HOLDS_COLOR))
 		lines.append(_escape_bbcode(" ".join(holds)))
-		var today: String = _seal_conditions_text(conditions)
-		if today != "":
-			lines.append("[color=#%s]%s[/color]" % [CONTRACT_NOTE_COLOR.to_html(false), _escape_bbcode(today)])
 	var breaks: Array[String] = _translated_lines(doom_text)
 	if not breaks.is_empty():
 		lines.append(_contract_heading(tr("SE IL PATTO CEDE"), CONTRACT_BREAKS_COLOR))
@@ -867,8 +999,9 @@ func _format_contract_body(title: String, subtitle: String, doom_text: String, c
 		if not stake_terms.is_empty():
 			effect_line = "%s %s" % [str(stake_terms.breaks), effect_line]
 		lines.append(_escape_bbcode(effect_line))
-		if breaks.size() > 1:
-			lines.append("[color=#%s]%s[/color]" % [CONTRACT_NOTE_COLOR.to_html(false), _escape_bbcode(breaks[0])])
+	var today: String = _seal_conditions_text(conditions)
+	if today != "":
+		lines.append("[i]%s[/i]" % _escape_bbcode(today))
 	var pact_lines: Array[String] = _translated_lines(pact_text)
 	if not stake_terms.is_empty():
 		# The old reward blurb would contradict the stake line above.
@@ -897,9 +1030,9 @@ func _seal_conditions_text(conditions: Dictionary) -> String:
 		weighs.append(tr("i Segni"))
 	var parts: Array[String] = []
 	if not helps.is_empty():
-		parts.append(tr("Oggi, a favore del sigillo: %s.") % ", ".join(helps))
+		parts.append(tr("A favore: %s.") % ", ".join(helps))
 	if not weighs.is_empty():
-		parts.append(tr("Oggi, contro il sigillo: %s.") % ", ".join(weighs))
+		parts.append(tr("Contro: %s.") % ", ".join(weighs))
 	if parts.is_empty():
 		return tr("Oggi niente sposta il sigillo.")
 	return " ".join(parts)
@@ -922,7 +1055,7 @@ func _stake_terms(bet_id: StringName, stake_gain: int = -1) -> Dictionary:
 	return {"holds": holds, "breaks": breaks}
 
 func _contract_heading(text: String, color: Color) -> String:
-	return "\n" + Kit.format_heading(text, CONTRACT_HEADING_SIZE, color)
+	return Handwriting.heading(text, CONTRACT_HEADING_SIZE, color)
 
 func _translated_lines(source: String) -> Array[String]:
 	var result: Array[String] = []

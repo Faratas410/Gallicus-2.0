@@ -664,7 +664,7 @@ offset_right = 160
 offset_bottom = 245
 custom_minimum_size = Vector2(660, 390)
 
-[node name="Box_FIRST_REACTION" type="VBoxContainer" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION"]
+[node name="Box_FIRST_REACTION" type="Control" parent="UI_RunRoot/Phase_FIRST_REACTION/Panel_FIRST_REACTION"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 32.0
@@ -916,7 +916,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.03, 0.03, 0.04, 0.54)
 
-[node name="Box_MID_CHOICE" type="VBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
+[node name="Box_MID_CHOICE" type="Control" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
@@ -954,7 +954,7 @@ autowrap_mode = 2
 text = "ATTO DAVANTI ALLA GRADINATA"
 theme_override_fonts/font = ExtResource("11")
 
-[node name="Box_MID_CHOICE_CHOICES" type="HBoxContainer" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
+[node name="Box_MID_CHOICE_CHOICES" type="Control" parent="UI_RunRoot/Phase_MID_CHOICE/Panel_MID_CHOICE/Box_MID_CHOICE"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 16
 alignment = 1

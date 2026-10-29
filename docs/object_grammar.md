@@ -103,9 +103,9 @@ Se manca uno dei cinque elementi, l'azione non e' pronta.
 | Momento | Intento | Oggetto | Gesto | Feedback | Registrazione |
 | --- | --- | --- | --- | --- | --- |
 | Entrata | accettare l'esposizione | soglia dell'arena | oltrepassare | luce, porta, ambiente | accesso aperto |
-| Registro | consultare offerte | tavola del Registro | aprire | pietra che si scopre | offerte esposte |
-| Bet | indicare una promessa | tavola contrattuale | porre un segno | evidenza e suono secco | promessa selezionata |
-| Firma | vincolarsi | stilo, cera, sigillo | incidere/premere | cera, colpo, pulse | patto firmato |
+| Registro | consultare offerte | libro del Registro | aprire la copertina | pagine che si scoprono | offerte esposte |
+| Bet | indicare una promessa | pagina contrattuale | indicare | regola a inchiostro e suono secco | promessa selezionata |
+| Firma | vincolarsi | stilo e carta | sottoscrivere | tratto a inchiostro dopo accettazione | patto firmato |
 | Patto | riconoscere il vincolo | tavoletta sigillata | osservare/accettare | sigillo chiuso | patto convalidato |
 | Gesto | esporsi alla folla | tessera, sabbia o mano | mostrare/lasciare | reazione e pressione | gesto accettato |
 | Rito | forzare il responso | sigillo su pietra | colpire | impatto, crepa, riverbero | giudizio pesato |
@@ -172,6 +172,20 @@ Il primo blocco runtime e' push-your-luck:
 Gli intenti, i segnali e il flow restano invariati.
 
 ## Nuova grafica e chiusura della campagna
+
+Caso del posto: difendere il posto -> foglio di Vessa con le tracce di Dima
+e Nerio -> riservare, testimoniare o rimandare -> ricevuta e reazione ->
+conto e scelta registrati nel profilo e ricordati in Archivio. L'azione di
+testimoniare indica esplicitamente il costo di Pressione sui percorsi futuri.
+Confronto successivo: capire cosa manca -> copia e ricevuta o testimonianza ->
+esaminare entrambe e annotare solo cio' che e' provato -> spiegazione delle
+ipotesi non sostenute -> conclusione conservata nell'Archivio.
+Consegna del margine: decidere dove resta l'annotazione -> copia incompleta e
+foglio di Vessa -> pagare una trascrizione per Nerio o lasciare la sola
+annotazione a Dima -> conto aggiornato e polizza scontata di 1 Denaro fino al
+prossimo Silenzio, oppure nessuna spesa -> risposta dei personaggi e memoria in
+Archivio. Prezzo e conseguenze sono espliciti prima del gesto; si puo' rimandare
+o scegliere gratuitamente in debito.
 
 Il tema ImageGen conserva intenti e gesti OF-01..10: superfici originali,
 stessi comandi e registrazioni. Nessuna CTA rivela la firma. Nel Silenzio:

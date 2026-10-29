@@ -2,6 +2,18 @@
 
 ## Voce
 
+Nella fascia GDR la nota intermedia del Favore usa la forma breve
+"Ben disposta: aiuta un po' il sigillo." (IT/EN/ES), con la spiegazione
+completa nel tooltip. La banda resta determinata dal consumer esistente;
+questa e' soltanto una variante editoriale per lo spazio delle insegne.
+
+Registro compatto, 26 ottobre 2026: la pagina mostra titolo, probabilita' e
+ricompensa, perdita ed effetto meccanico completo, poi condizioni del sigillo.
+Non ripete sottotitolo atmosferico e preambolo della condanna, conservati
+nel catalogo. La nota usa "A favore: %s." / "Contro: %s." in IT/EN/ES,
+senza cambiare i valori ricevuti. Nessun termine viene troncato per farlo
+entrare nella pagina; nessuna riduzione automatica della scrittura.
+
 Gallicus parla con tono rituale, amministrativo e preciso. Il Registro non e'
 un narratore moderno: annota, pesa, confronta, convalida e conclude.
 
@@ -307,6 +319,34 @@ Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.
 
 ## Racconti - 7 ottobre 2026
 
+Caso successivo al racconto `seat_kept`: Vessa misura la fila, Dima indica il
+posto vuoto e Nerio mostra una copia che si interrompe prima di quel posto.
+Il soggetto puo' riservare il posto o presentare la testimonianza; i due
+riscontri e la riga in Archivio conservano la via scelta. La scelta puo'
+essere rimandata; il testo non presenta come certa l'identita' dell'assente.
+La riserva apre `seat_reserved_followup` (la ricevuta piegata); la
+testimonianza apre `seat_witness_followup` (la voce nella fila). Entrambi
+mostrano che manca un pezzo della copia e lasciano un filo diverso da seguire:
+il foro della ricevuta o la voce della prima fila. Il seguito appare dopo il
+riscontro e si riprende dopo un'interruzione senza ripetere il pagamento.
+Il confronto usa la copia di Nerio e, secondo la via scelta, la ricevuta o la
+voce della fila. Entrambe sostengono che la copia sia incompleta; nessuna
+dimostra il nome di chi sedeva. Una conclusione diversa viene respinta con una
+spiegazione, senza svelare o inventare l'identita' dell'assente.
+Dopo il confronto, la via della ricevuta mostra una piega non riconosciuta;
+la via della voce mostra Dima che torna in prima fila e trova spazio accanto
+a se'. Nerio puo' annotare il margine ma non inventare chi l'ha toccato o chi
+ha parlato. Il seguito dipende dalla scelta registrata e resta riprendibile.
+Il soggetto ascolta la risposta subito dopo aver annotato la lacuna, senza
+dover attendere un nuovo percorso che potrebbe non arrivare prima dell'Assenza.
+La destinazione dell'annotazione e' una seconda scelta: Vessa vende la
+trascrizione per Nerio a 5 Denari, oppure Dima tiene la sola annotazione senza
+spesa. Vessa riconosce la copia di Nerio come prova e sconta la polizza di un
+Denaro fino al prossimo Silenzio. I personaggi rispondono alla scelta, senza
+confermare l'identita'.
+La destinazione puo' tornare negli scambi della gradinata: Nerio e Dima
+ricordano se la sua copia contiene la nota, senza alterare gli esiti del rito.
+
 Su richiesta dell'utente ("aggiungi un po' di lore e racconti"), cinque scene
 di sei battute si aggiungono alle tre conversazioni illustrate, nello stesso
 catalogo e con gli stessi ritratti (Nerio, Rugo, Dima e il terminale). Con il
@@ -315,6 +355,10 @@ un gradino della scala dei bandi. Con Lauro il cantastorie (7 ottobre 2026)
 diventano dieci; quattro raccontano il posto vuoto (`seat_kept`, `footstep`,
 `open_strophe`, `slope`) e sono garantiti dalla campagna anche senza bando,
 dall'Era 1 i primi due e dall'Era 2 gli altri, sempre prima del congedo:
+
+Anche i racconti gia' ottenuti con i bandi attendono il loro turno prima del
+congedo. I racconti non ancora ottenuti non ritardano il congedo; una volta
+ascoltato, non vengono riproposte scene precedenti.
 
 | Id | Titolo | Gradino | Cosa racconta |
 | --- | --- | --- | --- |

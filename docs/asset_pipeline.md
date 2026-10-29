@@ -1,5 +1,37 @@
 # Gallicus Asset Pipeline
 
+## Insegne della fascia GDR - 26 ottobre 2026
+
+`assets/ui/generated/ritual_hud_insegne.png` e' la pelle senza testo della
+reference approvata, prodotta con ImageGen integrato. Originale RGBA
+1672x941 copiato senza ritocchi raster; il consumer usa solo la regione
+superiore 1672x220, mantenendo l'alpha dei bordi e ignorando il resto del
+canvas. Import lossless, senza mipmap, filtro nearest. Lettere, numeri e
+riempimento dei dieci incavi sono runtime. Prompt, hash, provenienza,
+regione e consumer sono in `assets/ui/generated/manifest.json`.
+
+## Font manoscritto del Registro - 26 ottobre 2026
+
+Fondamento Regular e Italic originali, non modificati, provengono dal
+[repository ufficiale Google Fonts](https://github.com/google/fonts/tree/main/ofl/fondamento).
+TTF, OFL e ricevuta con URL/hash sono in
+`assets/ui/official/typography/fondamento/`. Il preset Windows include
+esplicitamente il relativo OFL.txt. Uso limitato a contratti e firme del
+Registro; nessuna dipendenza da font installati o rete durante il gioco.
+`registry_ink.gdshader` varia solo la densita' statica al massimo del 6%
+nel colore e 4% nell'alpha, senza muovere i glifi o animare la lettura.
+
+## Layer Registro - 26 ottobre 2026
+
+`registry_volume_book.png`, `registry_volume_arena.png` e
+`registry_volume_sprites.png` derivano dalle reference approvate con il tool
+ImageGen integrato. Libro aperto e copertina/stilo conservano alpha; il
+fondale e' opaco. Nessuna lettera o dato gameplay e' incorporato. I tre PNG
+originali sono copiati senza ritocchi raster, importati lossless, senza
+mipmap e renderizzati nearest. Sorgenti, prompt effettivi, hash, dimensioni,
+provenienza e consumer sono nel manifest. Le reference HTML non entrano
+nel runtime. Uso e verifiche in `docs/support/registry_volume_2026-10-26.md`.
+
 ## Famiglia raccordata - 24 ottobre 2026
 
 Cinque raster originali ImageGen aggiunti senza sovrascrivere le sorgenti:

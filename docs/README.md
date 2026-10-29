@@ -1,7 +1,36 @@
 # Gallicus Documentation Operating System
 
+Identita' e direzione per l'espansione: [l'anima di Gallicus](support/anima_gallicus_2026-10-29.md).
+
+Obiettivo delle dieci ore in pausa: [stato e lavoro da completare](support/sospensione_10_ore_2026-10-29.md).
+
+Revisione prima del commit: [perimetro, correzioni e decisioni aperte](support/revisione_pre_commit_10_ore_2026-10-29.md).
+
+Revisione Incasso/Rilancio: [cinque correzioni, file e prove](support/verdict_review_2026-10-26.md).
+
+Revisione dei sette commenti sul Banco: [correzioni, asset e prove](support/banco_review_2026-10-26.md).
+
 Questo e' l'entrypoint operativo del progetto. Gallicus ha un solo target di
 prodotto: **Gallicus 1.0**, una campagna rituale finita da pubblicare su Steam.
+
+Reference UI approvata il 25 ottobre: Registro pixel art frontale, firma a
+inchiostro e animazione, con Rito e Incasso/Rilancio come famiglia visiva.
+Immagini e anteprima in [direzione artistica](art_direction.md#reference-approvata-per-la-revisione-ui---25-ottobre-2026).
+Registro autorizzato in game il 26 ottobre e integrato nel candidato locale:
+[integrazione e verifiche](support/registry_volume_2026-10-26.md).
+Le altre schermate restano reference per le prossime revisioni.
+
+Fascia GDR approvata e portata nel candidato locale il 26 ottobre:
+[Insegne dell'arena](support/hud_insegne_2026-10-26.md).
+
+Confronto aggiornato dopo l'approvazione di Registro e HUD:
+[schermate ancora incoerenti e ordine di uniformazione](support/ui_coherence_2026-10-26.md).
+Catture native e galleria locale; il redesign delle altre schermate resta da attuare.
+
+Secondo seguito implementato: [Banco e Incasso/Rilancio pixel art](support/pixel_banco_verdict_2026-10-26.md).
+
+Primo seguito implementato: [Patto, Gradinata e Rito pixel art](support/pixel_rituals_2026-10-26.md).
+Restano aperti gli altri gruppi dell'inventario.
 
 Uniformazione richiesta dopo l'audit del 24 ottobre: ambienti, cast, UI e
 motion in [uniformazione artistica](support/art_unification_2026-10-24.md).

@@ -20,10 +20,13 @@ var _active: bool = false
 var _elapsed: float = 0.0
 var _beat: int = 0
 var _payload: Dictionary = {}
+var _seat_case: Control
 
 func _ready() -> void:
 	layer = 90
 	_port = RunManagerUiPort.new(get_tree())
+	_seat_case = preload("res://scripts/ui/seat_case.gd").new()
+	add_child(_seat_case)
 	_surface = Control.new()
 	_surface.name = "CampaignDialogueSurface"
 	_surface.theme = preload("res://assets/ui/theme/official_theme.tres")
@@ -49,6 +52,9 @@ func _ready() -> void:
 	_stage.offset_right = 580
 	_stage.offset_top = -310
 	_stage.offset_bottom = 310
+	_stage.pivot_offset = Vector2(580, 310)
+	_surface.resized.connect(_layout_stage)
+	call_deferred("_layout_stage")
 	_image = TextureRect.new()
 	_image.name = "SpeakerPortrait"
 	_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -103,6 +109,13 @@ func _ready() -> void:
 	GameEvents.run_ended.connect(_on_run_ended)
 	GameEvents.settings_changed.connect(_on_settings_changed)
 
+func _layout_stage() -> void:
+	if _stage == null or not _stage.is_inside_tree():
+		return
+	var viewport := _stage.get_viewport_rect().size
+	var factor := minf(viewport.x / 1280.0, viewport.y / 720.0)
+	_stage.scale = Vector2.ONE * factor
+
 func _place(control: Control, rect: Rect2) -> void:
 	_stage.add_child(control)
 	control.position = rect.position
@@ -129,6 +142,7 @@ func _try_open() -> void:
 		return
 	var payload: Dictionary = _port.get_campaign_dialogue()
 	if payload.is_empty():
+		_seat_case.call("try_open")
 		return
 	_payload = payload
 	_beat = 0
@@ -181,6 +195,8 @@ func _finish() -> void:
 		return
 	GameEvents.request_dismiss_campaign_dialogue.emit(str(_payload.id))
 	_cancel()
+	if bool(_seat_case.call("try_open")):
+		return
 	var registry: Control = get_node("../UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book") as Control
 	if registry.is_visible_in_tree():
 		registry.grab_focus()

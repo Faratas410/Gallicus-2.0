@@ -35,6 +35,34 @@ func get_campaign_dialogue() -> Dictionary:
 	var manager: Node = _get_manager()
 	return manager.get_campaign_dialogue() if manager != null else {}
 
+func get_seat_case() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_seat_case() if manager != null else {}
+
+func get_seat_case_record() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_seat_case_record() if manager != null else {}
+
+func get_seat_inquiry() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_seat_inquiry() if manager != null else {}
+
+func get_seat_inquiry_record() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_seat_inquiry_record() if manager != null else {}
+
+func get_seat_copy() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_seat_copy() if manager != null else {}
+
+func get_seat_copy_record() -> String:
+	var manager: Node = _get_manager()
+	return manager.get_seat_copy_record() if manager != null else ""
+
+func get_seat_copy_discount_active() -> bool:
+	var manager: Node = _get_manager()
+	return bool(manager.get_seat_copy_discount_active()) if manager != null else false
+
 func is_visual_only() -> bool:
 	var manager: Node = _get_manager()
 	if manager == null:

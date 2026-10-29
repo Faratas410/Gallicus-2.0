@@ -92,7 +92,7 @@ var _sfx_bus_index: int = -1
 var _last_hover_ms: int = -120
 var _last_favor: int = 0
 var _last_cue_ms: Dictionary = {}
-var _silenced_at_ms: int = -1
+var _silence_generation: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -114,6 +114,25 @@ func _ready() -> void:
 		var settings_callable: Callable = Callable(self, "_on_settings_changed")
 		if not GameEvents.settings_changed.is_connected(settings_callable):
 			GameEvents.settings_changed.connect(settings_callable)
+
+func _exit_tree() -> void:
+	var had_playback := false
+	for player: AudioStreamPlayer in _players:
+		had_playback = had_playback or player.stream != null
+	stop_all()
+	# AudioServer releases stopped playbacks asynchronously. During tree exit
+	# there will be no more frames to drain them; let its thread finish before
+	# the engine tears down resources. This wait occurs only at shutdown.
+	if had_playback:
+		OS.delay_msec(250)
+	_players.clear()
+	_streams.clear()
+
+func stop_all() -> void:
+	_silence_generation += 1
+	for player: AudioStreamPlayer in _players:
+		player.stop()
+		player.stream = null
 
 func _ensure_sfx_bus() -> void:
 	_sfx_bus_index = AudioServer.get_bus_index(SFX_BUS_NAME)
@@ -200,9 +219,7 @@ func _get_stream(cue: StringName) -> AudioStream:
 
 func _on_run_ended(reason: String, _summary: Dictionary) -> void:
 	if reason == "REGISTRY_SILENCE" or reason == "REGISTRY_ABSENCE":
-		_silenced_at_ms = Time.get_ticks_msec()
-		for player: AudioStreamPlayer in _players:
-			player.stop()
+		stop_all()
 
 func _played_recently(cues: Array[StringName], window_ms: int) -> bool:
 	var now: int = Time.get_ticks_msec()
@@ -212,9 +229,9 @@ func _played_recently(cues: Array[StringName], window_ms: int) -> bool:
 	return false
 
 func _play_later(cue: StringName, delay: float) -> void:
-	var scheduled: int = Time.get_ticks_msec()
+	var generation: int = _silence_generation
 	await get_tree().create_timer(delay).timeout
-	if _silenced_at_ms < scheduled:
+	if generation == _silence_generation and is_inside_tree():
 		play_cue(cue)
 
 func _on_crowd_favor_changed(payload: Dictionary) -> void:

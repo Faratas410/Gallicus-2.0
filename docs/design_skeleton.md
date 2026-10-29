@@ -7,7 +7,8 @@ portato davanti a un apparato che registra promesse, rischio e irreversibilita'.
 Non controlla un avatar in combattimento: firma, espone gesti, accetta segni e
 costringe il Registro a produrre una classificazione.
 
-La prima campagna completa deve durare indicativamente 2-4 ore.
+La prima campagna completa ha come obiettivo circa 10 ore di contenuto
+significativo, da verificare con sessioni umane.
 
 ## Forma del prodotto
 
@@ -71,10 +72,10 @@ Da completare per 1.0:
 
 Prima di aggiungere altri sistemi della campagna, il loop singola-run esistente
 viene portato a una build interna completa, leggibile ed esportabile. Memoria,
-convergenza, Ere, Silenzi, cinematiche ed espansione contenuti restano congelati
-fino al playtest go/no-go di `CP-03` nel piano originario. La richiesta
-esplicita di bonifica del 4 settembre autorizza spine tecnica e tema
-originale; il gate umano rimane necessario. Questo gate non e' una release intermedia
+convergenza, Ere, Silenzi, cinematiche ed espansione contenuti erano congelati
+fino al playtest go/no-go di `CP-03` nel piano originario. La richiesta del 28
+ottobre autorizza l'espansione della campagna; il gate umano rimane necessario.
+Questo gate non e' una release intermedia
 e non riduce la promessa o la Definition of Done di Gallicus 1.0.
 
 La produzione segue cinque stage attivi verso 1.0: Core Playable Candidate,
@@ -109,7 +110,8 @@ essere preparati senza anticipare l'apertura degli stage runtime.
 Gallicus 1.0 e' finito quando:
 
 - una nuova persona completa la campagna senza guida live;
-- la durata mediana della prima campagna e' 2-4 ore;
+- la durata della prima campagna e' prossima a 10 ore in sessioni umane, senza
+  affidarsi a ripetizioni o attese artificialmente allungate;
 - ogni azione critica ha feedback visivo, audio e testuale;
 - Ere, Silenzi e Assenza rispettano il canon e persistono correttamente;
 - nessun contenuto player-facing usa fallback o placeholder;

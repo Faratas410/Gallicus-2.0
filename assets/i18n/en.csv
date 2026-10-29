@@ -1020,7 +1020,7 @@ In palio nuovi patti nel Registro.,Prize: new pacts in the Registry.
 Incassa %d Gloria entro l'arena %d.,Bank %d Glory by arena %d.
 Al bando chiuso: Denari +%d e un gradino.,On closing the bando: Denarii +%d and one step.
 Bando chiuso: gradino %d di %d.,Bando closed: step %d of %d.
-Bando mancato: %d Gloria entro l'arena %d.,Bando missed: %d Glory by arena %d.
+Bando mancato: %d Gloria entro l'arena %d.,Path closed without completing the bando: %d Glory by arena %d.
 Prossimo bando: %d Gloria entro l'arena %d.,Next bando: %d Glory by arena %d.
 Il bando è scaduto.,The bando has expired.
 BANDO CHIUSO,BANDO CLOSED
@@ -1148,9 +1148,107 @@ Nerio: Nessuna. Una copia.,Nerio: None. A copy.
 "Oggi, a favore del sigillo: %s.","Today, for the seal: %s."
 "Oggi, contro il sigillo: %s.","Today, against the seal: %s."
 "Oggi niente sposta il sigillo.","Today nothing moves the seal."
+"A favore: %s.","For the seal: %s."
+ARENA,ARENA
+CATENA,CHAIN
+DENARI,DENARII
+FAVORE,FAVOR
+"Ben disposta: aiuta un po' il sigillo.","Warm: the seal holds a little more."
+"Contro: %s.","Against: %s."
 "Quietanza versata contro il debito: Denari +%d, il doppio.","Receipt deposited against the debt: Denarii +%d, double."
 "In debito: il banco è chiuso finché il conto non torna in pari. Ogni quietanza versata in debito vale il doppio.","In debt: the counter stays closed until the account is even. Every receipt deposited in debt counts double."
 Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.,Account in debt. The receipt counts double; settle the account to reopen the counter.
+IL POSTO MISURATO,THE MEASURED SEAT
+Vessa misura la fila per venderla. Dima indica il posto vuoto; Nerio mostra una copia che si ferma prima di quel posto. Come lo difendi?,Vessa measures the row for sale. Dima points to the empty seat; Nerio shows a copy that ends before it. How do you defend it?
+"RISERVA IL POSTO · 6 Denari
+Vessa ferma la vendita. Il conto diminuisce subito.","RESERVE THE SEAT · 6 Denari
+Vessa stops the sale. Your account is charged now."
+"PRESENTA LA TESTIMONIANZA · gratis
+Nei prossimi percorsi la Pressione iniziale aumenta di 1, fino al prossimo Silenzio.","PRESENT THE TESTIMONY · free
+Starting Pressure rises by 1 on future journeys until the next Silence."
+RIMANDA AL PROSSIMO PERCORSO,DEFER UNTIL THE NEXT JOURNEY
+Vessa ritira il righello. Dima tiene il posto; Nerio lascia bianco il margine della copia.,Vessa withdraws the ruler. Dima holds the seat; Nerio leaves the margin of the copy blank.
+Dima indica il posto davanti alla gradinata. Nerio lascia bianco il margine; la folla ricorda chi ha parlato.,Dima points out the seat before the stands. Nerio leaves the margin blank; the crowd remembers who spoke.
+Il posto e' stato riservato con il conto di Vessa.,The seat was reserved using Vessa's account.
+Dima ha testimoniato davanti alla gradinata per il posto vuoto.,Dima testified before the stands for the empty seat.
+La ricevuta piegata,The folded receipt
+"Vessa ha fermato il righello. Mi ha dato questa ricevuta: tienila tu, ha detto.",Vessa stopped measuring. She gave me this receipt and told me to keep it.
+Il posto è pagato. Perché la pieghi proprio lì?,The seat is paid for. Why fold it right there?
+"C'è un foro sul margine. La piega passa di lì, ma il foglio sotto non c'è.","There is a hole in the margin. The fold passes through it, but the sheet underneath is gone."
+La copia del Registro finisce prima del foro. Avevo ricevuto solo quella parte.,The Registry copy ends before the hole. That was all I received.
+"E da quella copia puoi sapere chi sedeva lì?","And can that copy tell you who sat there?"
+"Lascio la ricevuta sul posto. Se torna il foglio sotto, sapremo dove attaccarlo.","I will leave the receipt on the seat. If the missing sheet returns, we will know where to fasten it."
+La voce nella fila,The voice in the row
+Ho indicato il posto davanti a tutti. La prima fila ha smesso di contare le monete.,I pointed to the seat before everyone. The front row stopped counting coins.
+E dopo? Ti hanno lasciata parlare?,And then? Did they let you speak?
+Una voce ha detto che il foglio era più lungo. Poi la gradinata ha coperto il resto.,A voice said the sheet had been longer. Then the stands drowned out the rest.
+La copia che ho ricevuto finisce prima del posto. Sul margine c'è un foro senza fermaglio.,The copy I received ends before the seat. There is a hole in the margin with no clasp.
+Chi ha parlato era nella prima fila. La prossima volta ascolterò da lì.,The speaker was in the front row. Next time I will listen from there.
+Copia: Nerio ha ricevuto solo la parte che termina prima del posto.,Copy: Nerio received only the part ending before the seat.
+La copia di Nerio aspetta di essere letta.,Nerio's copy is waiting to be read.
+"Ricevuta: c'è un foro sul margine, ma il foglio sotto manca.","Receipt: there is a hole in the margin, but the sheet beneath is missing."
+Voce: dalla prima fila qualcuno ricorda un foglio più lungo.,Voice: someone in the front row remembers a longer sheet.
+La seconda traccia aspetta di essere esaminata.,The second trace is waiting to be examined.
+LEGGI LA COPIA DI NERIO,READ NERIO'S COPY
+ESAMINA LA RICEVUTA,EXAMINE THE RECEIPT
+ASCOLTA LA VOCE DELLA FILA,LISTEN TO THE VOICE IN THE ROW
+CONFRONTA LE TRACCE,COMPARE THE TRACES
+CHE COSA PUOI SCRIVERE?,WHAT CAN YOU WRITE DOWN?
+Nessuna delle due tracce nomina chi sedeva lì. Rileggi ciò che è rimasto.,Neither trace names who sat there. Read what remains again.
+MANCA UNA PARTE DELLA COPIA,PART OF THE COPY IS MISSING
+LA COPIA IDENTIFICA CHI SEDEVA,THE COPY IDENTIFIES THE OCCUPANT
+Annotato: manca una parte della copia. Il nome di chi sedeva resta senza prova.,Recorded: part of the copy is missing. The occupant's name remains unproven.
+La copia è incompleta; il nome di chi sedeva non è provato.,The copy is incomplete; the occupant's name is unproven.
+LE TRACCE DEL POSTO,TRACES OF THE SEAT
+Hai esaminato la copia e la seconda traccia. Quale conclusione puoi sostenere?,You have examined the copy and the second trace. Which conclusion can you support?
+RILEGGI LE TRACCE,READ THE TRACES AGAIN
+Il margine piegato,The folded margin
+Ho lasciato la ricevuta sul posto. Stanotte qualcuno l'ha ripiegata sul foro.,I left the receipt on the seat. Someone folded it over the hole last night.
+Hai visto chi?,Did you see who?
+No. Ma la piega non era la mia. Io la lascio sempre aperta.,No. But that was not my fold. I always leave it open.
+"La mia copia si ferma qui. Posso segnare il margine, non chi l'ha toccato.","My copy ends here. I can mark the margin, not who touched it."
+E la ricevuta?,And the receipt?
+"La tengo sul posto. Se torna un'altra mano, troverà ancora il foro.","I'll keep it on the seat. If another hand returns, it will find the hole again."
+La fila ascolta,The row listens
+"Sono tornata nella prima fila. Alla domanda sul foglio, nessuno ha detto il proprio nome.","I went back to the front row. When I asked about the sheet, nobody gave their name."
+E quella voce?,And that voice?
+"Non l'ho ritrovata. Qualcuno ha fatto spazio accanto a me, senza parlare.","I didn't find it again. Someone made room beside me, without speaking."
+Nella copia posso lasciare il margine aperto. Non posso scrivere chi ha parlato.,I can leave the margin open in the copy. I cannot write down who spoke.
+La fila ha sentito la domanda.,The row heard the question.
+"Sì. La prossima volta lascio spazio anch'io, se qualcuno vuole rispondere.","Yes. Next time I'll make room too, if someone wants to answer."
+ASCOLTA LA RISPOSTA,HEAR THE RESPONSE
+DOVE RESTA IL MARGINE?,WHERE WILL THE MARGIN REMAIN?
+Dima tiene l'annotazione sulla lacuna. Vessa chiede un pagamento per trascriverla anche nella copia di Nerio.,Dima holds the note about the gap. Vessa asks for payment to transcribe it into Nerio's copy too.
+"TRASCRIVI PER NERIO · 5 Denari
+Dima conserva l'annotazione; Nerio ne riceve una copia.","COPY FOR NERIO · 5 Denarii
+Dima keeps the note; Nerio receives a copy."
+"LASCIA A DIMA · gratis
+Dima conserva l'annotazione; Nerio non ne riceve una copia.","LEAVE WITH DIMA · free
+Dima keeps the note; Nerio receives no copy."
+Dima tiene l'annotazione. Nerio ne riceve una copia nel suo fascicolo.,Dima keeps the note. Nerio receives a copy for his file.
+Dima tiene l'annotazione. Il fascicolo di Nerio resta senza quella copia.,Dima keeps the note. Nerio's file remains without that copy.
+Il margine copiato,The copied margin
+Ho trascritto la tua annotazione sul margine. Non è il foglio che manca.,I transcribed your note in the margin. It is not the missing sheet.
+"La mia resta qui, vicino al posto.","Mine stays here, beside the seat."
+"Se una sparisce, l'altra può ancora parlare?","If one disappears, can the other still speak?"
+Può mostrare che abbiamo trovato una lacuna. Non può dire chi sedeva.,It can show that we found a gap. It cannot say who sat there.
+Il foglio di Dima,Dima's sheet
+Nel mio fascicolo non c'è una copia dell'annotazione.,There is no copy of the note in my file.
+"La tengo io, accanto al posto. Il margine è piegato verso l'interno.",I keep it beside the seat. The margin is folded inward.
+Se qualcuno la chiede?,If someone asks for it?
+"Può guardarla qui. Non gli dirà chi sedeva, ma vedrà quello che manca.","They can look at it here. It won't tell them who sat there, but they'll see what is missing."
+Nerio: La nota è nella mia copia.,Nerio: The note is in my copy.
+Dima: La mia resta al posto.,Dima: Mine stays by the seat.
+Nerio: La mia copia non ha la nota.,Nerio: My copy has no note.
+Dima: La tengo qui.,Dima: I keep it here.
+Dima tiene l'annotazione. Vessa riconosce la copia di Nerio come prova per la polizza.,Dima keeps the note. Vessa accepts Nerio's copy as evidence for the policy.
+"TRASCRIVI PER NERIO · 5 Denari
+Nerio riceve la copia. Polizza -1 Denaro fino al prossimo Silenzio.","COPY FOR NERIO · 5 Denarii
+Nerio gets the copy. Insurance costs 1 Denarius less until the next Silence."
+Vessa sconta la polizza di 1 Denaro fino al prossimo Silenzio.,Vessa reduces the policy price by 1 Denarius until the next Silence.
+ASSICURA LA POSTA · SCONTO,INSURE THE STAKE · DISCOUNT
+Il prossimo Silenzio non ha una data fissata.,The next Silence has no fixed date.
+La polizza costa 1 Denaro in meno fino al prossimo Silenzio.,The policy costs 1 Denarius less until the next Silence.
 Arena Muta,Mute Arena
 Arena di Cenere,Ash Arena
 Arena del Disprezzo,Arena of Contempt

@@ -59,6 +59,15 @@ func _run() -> void:
 			ui.get("arena_theme_title_panel").hide()
 			ui.get("arena_theme_subtitle_panel").hide()
 			await _capture("choice_" + suffix, ui)
+			ui.call("_show_scar_popup", {"name": "OSSA INCRINATE", "effect_text": "Avanzamento più lento e margine di errore ridotto."})
+			await process_frame
+			var notice: Control = ui.get("scar_popup_panel")
+			var stage: Control = ui.get("push_luck_panel")
+			for protected: Control in [stage.get("voice_paper"), stage.get("amount_paper"), stage.get("choices")]:
+				if notice.get_global_rect().intersects(protected.get_global_rect()):
+					failures.append(suffix + " scar notice covers a decision surface")
+			await _capture("scar_notice_" + suffix, ui)
+			ui.call("_hide_scar_popup")
 			ui.get("push_luck_double_button").grab_focus()
 			await _capture("focus_" + suffix, ui)
 			if language == 0:
@@ -165,6 +174,13 @@ func _capture(label: String, ui: Node) -> void:
 			failures.append(label + " target outside viewport: " + key)
 		if button.is_visible_in_tree():
 			_check_content(button.get_parent(), button.get_parent().get_global_rect(), label + " " + key)
+			var skin: Control = button.get_node("VerdictObject")
+			var scale_factor: float = skin.get("factor")
+			var paper: Rect2 = skin.call("support_rect", key, button.size.x / scale_factor)
+			paper = Rect2(button.global_position + paper.position * scale_factor, paper.size * scale_factor)
+			for writing: Control in [button.get_node("PrintedTitle"), ui.get("push_luck_" + key + "_note")]:
+				if not paper.grow(-10 * scale_factor).encloses(writing.get_global_rect()):
+					failures.append(label + " text outside writing surface: " + key)
 			metrics.append({"capture": label, "action": key, "target": str(button.get_global_rect()), "note": str(ui.get("push_luck_" + key + "_note").get_global_rect())})
 
 func _check_content(node: Node, bounds: Rect2, label: String) -> void:

@@ -2367,12 +2367,13 @@ func _render_bando_panel() -> void:
 		bando_bar.max_value = float(quota)
 		bando_bar.value = float(quota if status == "closed" else mini(posta, quota))
 	if bando_body != null and bool(_bando_view.get("last", false)) and status != "open":
-		bando_body.text = tr("Ultimo bando chiuso: Lauro ne fa l'ultima strofa.") if status == "closed" else tr("Ultimo bando mancato: Lauro lo canta lo stesso.")
+		# The status sign holds one short line; the dossier tells Lauro's part.
+		bando_body.text = tr("Ultimo bando: chiuso.") if status == "closed" else tr("Ultimo bando: mancato.")
 	elif bando_body != null:
 		match status:
 			"closed":
 				if int(_bando_view.get("denari", 0)) <= 0:
-					bando_body.text = tr("Bando chiuso: il conto di Vessa è chiuso.")
+					bando_body.text = tr("Bando chiuso. Conto chiuso.")
 				else:
 					bando_body.text = tr("Bando chiuso: Denari +%d e un gradino.") % int(_bando_view.get("denari", 0))
 			"lapsed":

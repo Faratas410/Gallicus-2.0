@@ -226,7 +226,9 @@ func _load_run_from_path_result(path: String) -> Dictionary:
 		return _load_result(false, {}, path, "run_save_unreadable")
 	var text: String = file.get_as_text()
 	file.close()
-	var parsed: Variant = JSON.parse_string(text)
+	# A corrupt save is quarantined, not an engine error: parse quietly.
+	var json := JSON.new()
+	var parsed: Variant = json.data if json.parse(text) == OK else null
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return _load_result(false, {}, path, "corrupt_run_save")
 	var data: Dictionary = parsed as Dictionary

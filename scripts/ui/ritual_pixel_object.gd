@@ -73,7 +73,15 @@ func _layout() -> void:
 		heading.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	queue_redraw()
 
+func _notification(what: int) -> void:
+	# Shown in the middle of a frame: sync before it is drawn.
+	if what == NOTIFICATION_VISIBILITY_CHANGED and is_visible_in_tree():
+		_process(0.0)
+
 func _process(_delta: float) -> void:
+	# Hidden objects wait until they are shown again.
+	if button == null or not is_visible_in_tree():
+		return
 	var state := "%s|%s|%s|%s|%s|%s|%s|%s" % [button.text, button.has_focus(), button.is_hovered(), button.disabled, button.is_pressed(), button.get_meta("registry_judgment_seal_state", 0), button.get_meta("arena_gesture_choice_state", "normal"), button.get_meta("registry_pact_tablet_validated", false)]
 	if state != last_state:
 		last_state = state

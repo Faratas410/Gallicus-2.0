@@ -47,7 +47,15 @@ func sync_copy() -> void:
 	copy.size = Vector2(size.x * 0.80, size.y * 0.66)
 	queue_redraw()
 
+func _notification(what: int) -> void:
+	# Shown in the middle of a frame: sync before it is drawn.
+	if what == NOTIFICATION_VISIBILITY_CHANGED and is_visible_in_tree():
+		_process(0.0)
+
 func _process(_delta: float) -> void:
+	# Hidden receipts wait until they are shown again.
+	if button == null or not is_visible_in_tree():
+		return
 	var state := "%s|%s|%s|%s" % [button.text, button.disabled, button.has_focus(), button.is_hovered()]
 	if state != previous:
 		previous = state

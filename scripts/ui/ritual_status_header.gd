@@ -18,6 +18,10 @@ var scar_count: Label
 var captions: Dictionary[String, Label] = {}
 var factor := 1.0
 var _pressure_level := 0
+var _menu: Control
+var _locale := ""
+# Fitting the numbers changes theme overrides: redo it only when they change.
+var _fitted := ""
 
 func _ready() -> void:
 	ui = get_parent().get_parent() as CanvasLayer
@@ -101,6 +105,7 @@ func _layout() -> void:
 	_place(captions["SEGNI"], Rect2(1158, 58, 87, 25), 17)
 	_place(scar_count, Rect2(1158, 80, 87, 42), 34)
 	_place(scars, Rect2(1138, 12, 118, 126), 1)
+	_fitted = ""
 	queue_redraw()
 
 func _fit_number(label: Label, available_width: float) -> void:
@@ -111,11 +116,14 @@ func _fit_number(label: Label, available_width: float) -> void:
 	label.size.x = available_width * factor
 
 func _process(_delta: float) -> void:
-	var menu: Control = ui.get_parent().get_node("MenuLayer/MainMenu")
-	visible = not menu.is_visible_in_tree() and not bool(ui.get("_ending_mode_active")) and not ui.get("game_over_panel").is_visible_in_tree()
+	if _menu == null:
+		_menu = ui.get_parent().get_node("MenuLayer/MainMenu")
+	visible = not _menu.is_visible_in_tree() and not bool(ui.get("_ending_mode_active")) and not ui.get("game_over_panel").is_visible_in_tree()
 	if not visible: return
-	for key: String in captions:
-		captions[key].text = tr(key)
+	if TranslationServer.get_locale() != _locale:
+		_locale = TranslationServer.get_locale()
+		for key: String in captions:
+			captions[key].text = tr(key)
 	var port: RefCounted = ui.get("_run_manager_port")
 	if port != null and port.has_manager():
 		context.text = "%d / %d" % [port.get_arena_index(), port.get_arena_limit()]
@@ -138,9 +146,12 @@ func _process(_delta: float) -> void:
 	scars.text = source_title.text
 	scars.tooltip_text = ui.get("scars_label").text
 	scars.disabled = str(ui.get("_scars_detail_text")).is_empty()
-	_fit_number(account, 68)
-	_fit_number(scar_count, 87)
-	queue_redraw()
+	var fit_key := "%s|%s|%d|%f|%s|%s|%s" % [account.text, scar_count.text, _pressure_level, factor, scars.has_focus(), scars.is_hovered(), scars.button_pressed]
+	if fit_key != _fitted:
+		_fitted = fit_key
+		_fit_number(account, 68)
+		_fit_number(scar_count, 87)
+		queue_redraw()
 
 func _draw() -> void:
 	# Only the header region is consumed, not the unused transparent canvas.

@@ -639,7 +639,9 @@ func _load_profile_from_path(path: String) -> bool:
 		return false
 	var text: String = file.get_as_text()
 	file.close()
-	var parsed: Variant = JSON.parse_string(text)
+	# A damaged file is a handled case: parse without logging an engine error.
+	var json := JSON.new()
+	var parsed: Variant = json.data if json.parse(text) == OK else null
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return false
 	var data: Dictionary = parsed as Dictionary
@@ -995,7 +997,8 @@ func _load_run_from_path(path: String, out_payload: Dictionary) -> bool:
 		return false
 	var text: String = file.get_as_text()
 	file.close()
-	var parsed: Variant = JSON.parse_string(text)
+	var json := JSON.new()
+	var parsed: Variant = json.data if json.parse(text) == OK else null
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return false
 	var data: Dictionary = parsed as Dictionary

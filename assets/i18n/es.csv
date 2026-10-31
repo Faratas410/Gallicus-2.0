@@ -1011,7 +1011,7 @@ Tengo le copie qui. Non le ho ancora archiviate.,Guardo las copias aquí. Aún n
 BANDO DI ORVO,BANDO DE ORVO
 IL BANDO DI ORVO,EL BANDO DE ORVO
 %d di %d Gloria entro l'arena %d.,%d de %d Gloria antes de la arena %d.
-Bando chiuso: Denari +%d e un gradino.,Bando cerrado: Denarios +%d y un peldaño.
+Bando chiuso: Denari +%d e un gradino.,Cerrado: Denarios +%d y un peldaño.
 Scala completa: %d gradini.,Escala completa: %d peldaños.
 Gradino %d di %d.,Peldaño %d de %d.
 Gradino %d di %d,Peldaño %d de %d
@@ -1362,4 +1362,6 @@ Vessa ricorda la voce: Pressione +2.,Vessa recuerda la voz: Presión +2.
 "Ultimo bando: un gradino in meno, tutte le arene.","Último bando: un peldaño menos, todas las arenas."
 Ultimo bando chiuso: Lauro ne fa l'ultima strofa.,Último bando cerrado: Lauro hace de él la última estrofa.
 Ultimo bando mancato: Lauro lo canta lo stesso.,Último bando fallido: Lauro lo canta igualmente.
-Bando chiuso: il conto di Vessa è chiuso.,Bando cerrado: la cuenta de Vessa está cerrada.
+Bando chiuso. Conto chiuso.,Bando cerrado. Cuenta cerrada.
+Ultimo bando: chiuso.,Último bando: cerrado.
+Ultimo bando: mancato.,Último bando: fallido.

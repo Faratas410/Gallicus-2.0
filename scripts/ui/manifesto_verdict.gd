@@ -225,6 +225,9 @@ func _sync_context() -> void:
 	pressure_label.text = tr("PRESSIONE %d/%d") % [pressure, 10]
 
 func _process(_delta: float) -> void:
+	# The verdict lives all game long; it only reads its context while shown.
+	if not is_visible_in_tree():
+		return
 	if count_tween and count_tween.is_running() and ui.call("_is_reduced_motion"):
 		_on_settings_changed({"reduced_motion": true})
 	_sync_context()

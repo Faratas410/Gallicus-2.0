@@ -55,6 +55,10 @@ route col manager e accettazione umana.
 `tools/hud_insegne_capture.gd` parte dalla Main reale con profilo isolato,
 poi usa fixture UI esplicite per Pressione 0/5/10, Favore ostile/intermedio/
 alto, conto positivo a cinque cifre e negativo, stati del Bando e Segni.
+Dal 31 ottobre 2026 include anche bando chiuso a conto chiuso e ultimo bando
+chiuso o mancato; l'insegna usa testi brevi (in spagnolo "Cerrado: ..."),
+mentre il fascicolo conserva le frasi complete. Prima di questa modifica il
+fixture falliva in spagnolo sul bando chiuso, anche sul commit `de88fbc`.
 IT/EN/ES a 720p/1080p, anche resize inverso. Misura etichette nei rettangoli
 della pelle, copia completa, Enter sul dettaglio e ritorno focus senza
 intenti di firma; cattura Registro, consultazione e posta. Non e' una prova

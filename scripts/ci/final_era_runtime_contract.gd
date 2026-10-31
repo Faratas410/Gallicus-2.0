@@ -141,7 +141,7 @@ func _run() -> void:
 	check(restored.bando_quota == 38 and restored.bando_deadline == 7, "the eased bando was not kept in the checkpoint")
 	run.bando_status = "closed"
 	hud.call("_on_bando_changed", manager.get_bando_view())
-	check(str(hud.get("bando_body").text) == tr("Ultimo bando chiuso: Lauro ne fa l'ultima strofa.") and str(hud.call("_dossier_bando_line")) == tr("Ultimo bando chiuso: Lauro ne fa l'ultima strofa."), "the closed last bando promised Denari or another bando")
+	check(str(hud.get("bando_body").text) == tr("Ultimo bando: chiuso.") and str(hud.call("_dossier_bando_line")) == tr("Ultimo bando chiuso: Lauro ne fa l'ultima strofa."), "the closed last bando promised Denari or another bando")
 	run.bando_status = "closed"
 	var gesta: Dictionary = manager.call("_sing_gesta", false)
 	record = save.get_final_era()

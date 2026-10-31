@@ -105,10 +105,11 @@ func _run() -> void:
 			ui.get("scars_detail_close").pressed.emit()
 			await settle()
 			check(root.gui_get_focus_owner() == header.scars, "marks close lost focus")
-			for status: String in ["closed", "lapsed", "missed", "open"]:
-				ui.call("_on_bando_changed", {"status": status, "posta": 999, "quota": 1000, "deadline": 7, "denari": 12})
+			# Includes the closed account (no Denari) and Orvo's last bando.
+			for state: Array in [["closed", 12, false], ["closed", 0, false], ["closed", 0, true], ["missed", 0, true], ["lapsed", 12, false], ["missed", 12, false], ["open", 12, false]]:
+				ui.call("_on_bando_changed", {"status": state[0], "posta": 999, "quota": 1000, "deadline": 7, "denari": state[1], "last": state[2]})
 				await settle()
-				measure(suffix + status)
+				measure("%s%s_%d%s" % [suffix, state[0], state[1], "_last" if state[2] else ""])
 			circle.close()
 			ui.call("show_phase", RunPhaseContract.PUSH_YOUR_LUCK)
 			var payload: Dictionary = manager.call("_build_push_luck_payload", circle.get("selected_bet_id"))

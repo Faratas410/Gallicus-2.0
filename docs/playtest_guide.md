@@ -10,9 +10,27 @@ Verifica comprensione del ritual loop, oggetti, feedback e route.
 
 ### Campaign
 
-Durata target: 2-4 ore, con pause e resume consentiti.
+Obiettivo di prodotto: circa 10 ore di contenuto significativo, ancora da
+verificare; non assumere che il candidato attuale raggiunga questa durata.
+Consentire piu' sessioni, pause e resume; registrare tempo attivo e pause
+separatamente, oltre a blocchi, aiuti, abbandoni e ripetizione percepita.
 
 Verifica convergenza, Ere, Silenzi, contenuto e finale terminale.
+
+Misura del tempo attivo (31 ottobre 2026): il gioco scrive in locale
+`user://session_log.jsonl`, una riga per percorso chiuso con il tempo
+trascorso dentro il percorso a finestra attiva (esclusi menu e fascicolo),
+Era, chiusura, scene ascoltate e conto. Il file non viene inviato. Su Windows
+si trova nella cartella dati utente di Godot del progetto (`%APPDATA%`).
+Partire da un profilo pulito, poi riassumere la sessione con:
+
+```powershell
+python tools/session_timing_report.py <percorso di session_log.jsonl>
+```
+
+Il resoconto separa le campagne, riporta ore attive, minuti per Era, percorsi
+con scene e di solo rito, Denari e chiusure. Pause fuori dal gioco, aiuti,
+blocchi e abbandoni non sono nel file: annotarli a parte come sopra.
 
 ### Release
 

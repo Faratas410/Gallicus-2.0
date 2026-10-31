@@ -738,7 +738,30 @@ dall'Archivio. `tools/seat_copy_capture.gd` e
 `tools/seat_policy_bank_capture.gd` mostra prezzo e sconto nel Banco IT/EN/ES;
 il simulatore conta le polizze effettivamente acquistate con sconto.
 `scripts/ci/seat_copy_echo_contract.gd` verifica entrambi gli scambi reattivi,
-determinismo, silenzio e leggibilita' della superficie IT/EN/ES.
+determinismo, silenzio e leggibilita' della superficie IT/EN/ES; dal 31
+ottobre anche l'eco unica nel primo percorso dopo la scelta, la conservazione
+nel checkpoint e il silenzio dopo il congedo.
+`scripts/ci/seat_steps_era_contract.gd` (30 ottobre 2026, nel runner campagna)
+verifica un passo dell'arco per Era: nessun caso prima dell'Era 1, richiamo
+come prima scena dell'entrata, precedenza di scene d'Era e congedo, nessun
+richiamo accodato dopo un'altra scena anche dopo il resume, conseguenze nella
+stessa entrata, chiusura dell'arco, persistenza e traduzioni EN/ES dei
+richiami. I contratti di confronto e copia usano le Ere 2 e 3.
+`scripts/ci/final_era_runtime_contract.gd` (30 ottobre 2026, nel runner
+campagna) verifica lo smontaggio dell'ultima Era: dati del profilo e default,
+una scena per percorso secondo `era_runs`, foglio dell'ultima cifra in attivo,
+a zero e in debito, Banco chiuso e conto fermo, gradinata e voce ai percorsi
+successivi, ultimo bando a un gradino in meno su tutte le arene (anche dopo il
+checkpoint) con i testi del pannello e del fascicolo, ultima strofa, nessun
+bando dopo, ultima copia con
+le sole memorie presenti, congedo al quinto percorso, resume, Archivio, reset,
+copia del posto non piu' pagabile, traduzioni EN/ES e testo delle scene senza
+tagli a 720p e 1080p. Il contratto di campagna verifica l'ordine dello
+smontaggio fino all'Assenza. `scripts/ci/session_log_contract.gd` (31 ottobre
+2026, nel runner campagna) verifica che il tempo attivo cresca solo dentro un
+percorso, resti nel checkpoint e produca una riga completa per percorso nel
+registro locale. `tools/final_era_capture.gd` (non headless)
+produce le catture dei due fogli IT/EN/ES a 720p e 1080p.
 le fixture non sostituiscono l'osservazione umana del percorso.
 
 `scripts/ci/run_campaign_runtime_contract.py --godot-bin <Godot>` percorre
@@ -825,6 +848,20 @@ stampa una riga `SIM_RUN` per percorso e un `SIM_SUMMARY`. Usare un profilo
 isolato (`APPDATA`/`XDG_DATA_HOME`). Confrontare sempre con `--crowd=read`:
 `--crowd=bow` porta a rivolte e debito. Risultati del 7 ottobre 2026 in
 `docs/support/benchmark_bcde_2026-10-07.md`.
+
+`tools/run_economy_matrix.py` esegue il simulatore su seed e policy con un
+profilo isolato per campagna e conserva log e righe `SIM_RUN`. Per i confronti
+a un solo fattore accetta `--seeds`, `--policies`, `--seat`, `--copy` e
+`--initial-denari`, inoltrati senza modifiche al simulatore.
+`tools/economy_baseline_report.py` legge uno o piu' `summary.json` e produce
+tabelle per campagna e per Era, racconti mancati e percorso con piu' scene.
+Baseline del 29 ottobre 2026: `docs/support/baseline_economia_ritmo_2026-10-29.md`.
+Una campagna marcata `ObjectDB` o non valida resta nel resoconto come tale.
+Dal 31 ottobre il simulatore chiude come i contratti: tempo normale, stop
+dell'audio e 250 ms reali al driver (`scripts/ci/audio_test_teardown.gd`);
+prima chiudeva con un timer a velocita' 12x e circa meta' delle campagne
+parallele finiva con risorse ancora in uso. Ogni riga `SIM_RUN` riporta
+anche `samples` e `choices` dell'evoluzione del Registro.
 
 ## Pass UI Atto a stampa - 10 ottobre 2026
 

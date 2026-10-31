@@ -117,6 +117,36 @@ const SEQUENCES: Dictionary = {
       }
     ]
   },
+  # The last Era dismantles the apparatus, one scene per percorso before the farewell.
+  "final_ledger": {
+    "title": "Il conto chiuso",
+    "lines": [
+      {"speaker": "nerio", "text": "Vessa ha chiuso il libro dei conti. Mi ha dato l'ultima cifra da copiare."},
+      {"speaker": "rugo", "text": "E il banco?"},
+      {"speaker": "nerio", "text": "Vuoto. Niente polizze, niente favori."},
+      {"speaker": "dima", "text": "La cifra però resta. Di chi è, adesso?"},
+      {"speaker": "nerio", "text": "Vessa lo chiede a te. Prima che diventi solo inchiostro."}
+    ]
+  },
+  "final_bando": {
+    "title": "L'ultimo bando",
+    "lines": [
+      {"speaker": "rugo", "text": "Orvo ha la voce bassa, oggi. Dice che è l'ultimo bando."},
+      {"speaker": "dima", "text": "E dopo?"},
+      {"speaker": "lauro", "text": "Dopo canto io. Senza annuncio davanti."},
+      {"speaker": "rugo", "text": "Allora chiudilo bene. Dopo non c'è un altro foglio."}
+    ]
+  },
+  "final_copy": {
+    "title": "L'ultima copia",
+    "lines": [
+      {"speaker": "registry", "text": "COPIA FINALE\nUn foglio disponibile."},
+      {"speaker": "nerio", "text": "Mi resta un foglio. Uno solo, per tutto quello che hai firmato."},
+      {"speaker": "dima", "text": "Il posto lo ricordo io. Non serve scriverlo."},
+      {"speaker": "lauro", "text": "E io ho la canzone. Cambia ogni volta, ma resta."},
+      {"speaker": "nerio", "text": "Allora scegli tu cosa copio. Il resto lo tengono loro."}
+    ]
+  },
   "ledger": {
     "title": "Il conto di Vessa",
     "lines": [
@@ -353,6 +383,31 @@ const SEQUENCES: Dictionary = {
       {"speaker": "dima", "text": "Può guardarla qui. Non gli dirà chi sedeva, ma vedrà quello che manca."}
     ]
   },
+  # Recalls open each step of the empty-seat arc in its own Era.
+  "seat_case_recall": {
+    "title": "La fila misurata",
+    "lines": [
+      {"speaker": "rugo", "text": "Vessa è tornata con il righello. Misura la fila da questa parte."},
+      {"speaker": "dima", "text": "Il posto accanto è ancora vuoto. Se lo misura, lo mette in vendita."},
+      {"speaker": "nerio", "text": "La mia copia si ferma prima di quel posto. Il Registro chiede chi lo difende."}
+    ]
+  },
+  "seat_inquiry_recall": {
+    "title": "Il margine bianco",
+    "lines": [
+      {"speaker": "nerio", "text": "La copia è ancora sul mio banco. Il margine è rimasto bianco."},
+      {"speaker": "dima", "text": "E io ho ancora la mia traccia. Non le abbiamo mai messe una accanto all'altra."},
+      {"speaker": "rugo", "text": "Allora mettetele qui. Guardo anch'io."}
+    ]
+  },
+  "seat_copy_recall": {
+    "title": "Prima che chiudano i fogli",
+    "lines": [
+      {"speaker": "nerio", "text": "Il Registro scrive meno, adesso. Finché scrive, posso copiare la tua annotazione."},
+      {"speaker": "dima", "text": "Io la tengo accanto al posto. Lì la vedono tutti."},
+      {"speaker": "rugo", "text": "Una copia o due? Dopo il Silenzio non lo chiede più nessuno."}
+    ]
+  },
   "footstep": {
     "title": "Il passo",
     "lines": [
@@ -477,16 +532,18 @@ const SEQUENCES: Dictionary = {
 # follow one thread: the seat Dima keeps, and the strophe Lauro cannot close.
 # The racconti with an "era" carry the empty seat the farewell rests on: the
 # campaign tells them from that Era even without the bando, always before the
-# farewell. The ladder only brings them sooner.
+# farewell. The ladder only brings them sooner. Since 31 October the seats for
+# sale and the line Nerio cannot scrape are among them, so a prudent subject
+# hears every empty-seat racconto.
 const TALES: Array[Dictionary] = [
   {"id": "first_strophe", "step": 1},
   {"id": "ledger", "step": 2},
   {"id": "sand", "step": 3},
   {"id": "seat_kept", "step": 4, "era": 1},
   {"id": "call", "step": 5},
-  {"id": "seats", "step": 6},
+  {"id": "seats", "step": 6, "era": 1},
   {"id": "footstep", "step": 7, "era": 1},
   {"id": "open_strophe", "step": 8, "era": 2},
-  {"id": "scraping", "step": 9},
+  {"id": "scraping", "step": 9, "era": 2},
   {"id": "slope", "step": 10, "era": 2}
 ]

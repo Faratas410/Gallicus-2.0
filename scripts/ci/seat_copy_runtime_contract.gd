@@ -42,9 +42,12 @@ func send_key(code: Key) -> void:
 
 func _run() -> void:
 	save = root.get_node("SaveManager")
-	save.commit_registry_evolution(0.0, 1, {})
+	# The copy belongs to the last Era of the arc (SEAT_STEP_ERAS): insure costs 5 + 3.
+	save.commit_registry_evolution(0.0, 3, {})
 	for id: String in Dialogues.SEQUENCES:
-		save.mark_campaign_dialogue_seen(id)
+		# The last Era's dismantling has its own contract (final_era_runtime_contract.gd).
+		if id not in ["final_ledger", "final_bando", "final_copy"]:
+			save.mark_campaign_dialogue_seen(id)
 	check(save.resolve_seat_case("witness", 1, 0), "fixture case failed")
 	check(save.mark_seat_evidence(1) and save.mark_seat_evidence(2) and save.complete_seat_inquiry(), "fixture inquiry failed")
 	save.set_ledger_denari(-5)
@@ -89,7 +92,7 @@ func _run() -> void:
 	save.set("_profile_loaded", false)
 	save.load_profile()
 	check(save.get_seat_copy() == "keep" and manager.get_seat_copy().is_empty(), "free choice did not persist")
-	check(int(manager.call("_banco_price", "insure")) == 6, "free choice received paid discount")
+	check(int(manager.call("_banco_price", "insure")) == 8, "free choice received paid discount")
 	var menu: Node = scene.get_node("MenuLayer/MainMenu")
 	menu.call("_build_museo_list")
 	var found := false
@@ -101,13 +104,13 @@ func _run() -> void:
 	meta["seat_copy"] = ""
 	seen = save.get("_settings")["campaign_dialogues_seen"]
 	seen.erase("seat_copy_for_nerio")
-	save.set_ledger_denari(10)
+	save.set_ledger_denari(12)
 	manager.request_new_game()
 	await create_timer(0.8).timeout
 	press("Btn_Seat_Reserve")
-	check(save.get_seat_copy() == "copy" and save.get_ledger_denari() == 5, "paid copy not resolved")
+	check(save.get_seat_copy() == "copy" and save.get_ledger_denari() == 7, "paid copy not resolved")
 	root.get_node("GameEvents").request_seat_copy_choice.emit("copy")
-	check(save.get_ledger_denari() == 5, "copy charged twice")
+	check(save.get_ledger_denari() == 7, "copy charged twice")
 	press("Btn_Seat_Continue")
 	await create_timer(0.8).timeout
 	check(dialogue.get("_active") and str(dialogue.get("_payload").get("id", "")) == "seat_copy_for_nerio", "paid choice response missing")
@@ -121,18 +124,18 @@ func _run() -> void:
 	await create_timer(0.8).timeout
 	dialogue = scene.get_node("OpeningPrologue")
 	check(dialogue.get("_active") and str(dialogue.get("_payload").get("id", "")) == "seat_copy_for_nerio", "paid response did not survive resume")
-	check(save.get_ledger_denari() == 5 and int(manager.call("_banco_price", "insure")) == 5, "paid discount or balance changed on resume")
+	check(save.get_ledger_denari() == 7 and int(manager.call("_banco_price", "insure")) == 7, "paid discount or balance changed on resume")
 	dialogue.call("_finish")
 	menu = scene.get_node("MenuLayer/MainMenu")
 	save.set("_profile_loaded", false)
 	save.load_profile()
-	check(save.get_seat_copy() == "copy" and save.get_ledger_denari() == 5, "paid copy not persisted")
-	check(save.get_seat_copy_era() == 1 and int(manager.call("_banco_price", "insure")) == 5, "paid copy discount missing")
+	check(save.get_seat_copy() == "copy" and save.get_ledger_denari() == 7, "paid copy not persisted")
+	check(save.get_seat_copy_era() == 3 and int(manager.call("_banco_price", "insure")) == 7, "paid copy discount missing")
 	var insurance: Dictionary = {}
 	for item: Dictionary in manager.get_banco_view().items:
 		if str(item.id) == "insure":
 			insurance = item
-	check(int(insurance.get("price", -1)) == 5 and bool(insurance.get("available", false)) and str(insurance.get("title", "")).contains("SCONTO"), "discount not disclosed at banco")
+	check(int(insurance.get("price", -1)) == 7 and bool(insurance.get("available", false)) and str(insurance.get("title", "")).contains("SCONTO"), "discount not disclosed at banco")
 	root.get_node("GameEvents").request_banco_purchase.emit("insure")
 	check(save.get_ledger_denari() == 0 and bool(manager.get("_run_state").banco_insured), "discounted policy did not charge correctly")
 	menu.call("_build_museo_list")
@@ -145,9 +148,9 @@ func _run() -> void:
 			discount_found = true
 	check(found, "Archive lacks paid choice")
 	check(discount_found, "Archive lacks active discount")
-	save.commit_registry_evolution(0.0, 2, {})
-	manager.set("_registry_era", 2)
-	check(int(manager.call("_banco_price", "insure")) == 7, "discount survived the next Silence")
+	# A copy recorded in an earlier Era (older profiles) no longer discounts the policy.
+	save.get("_meta")["seat_copy_era"] = 2
+	check(int(manager.call("_banco_price", "insure")) == 8, "discount survived the next Silence")
 	menu.call("_build_museo_list")
 	await process_frame
 	for label: Label in menu.get("museo_vbox").find_children("*", "Label", true, false):
@@ -156,7 +159,7 @@ func _run() -> void:
 	var malformed: Dictionary = prior_meta.duplicate(true)
 	malformed.erase("seat_copy_era")
 	save.call("_load_meta_from_profile", {"meta": malformed})
-	check(save.get_seat_copy() == "copy" and save.get_seat_copy_era() == 2, "previous paid profile did not migrate")
+	check(save.get_seat_copy() == "copy" and save.get_seat_copy_era() == 3, "previous paid profile did not migrate")
 	malformed["registry_era"] = 4
 	save.call("_load_meta_from_profile", {"meta": malformed})
 	check(save.get_seat_copy_era() == -1 and not bool(manager.call("_seat_copy_insurance_discount")), "terminal profile gained a discount")

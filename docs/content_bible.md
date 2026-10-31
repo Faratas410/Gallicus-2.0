@@ -346,6 +346,40 @@ Denaro fino al prossimo Silenzio. I personaggi rispondono alla scelta, senza
 confermare l'identita'.
 La destinazione puo' tornare negli scambi della gradinata: Nerio e Dima
 ricordano se la sua copia contiene la nota, senza alterare gli esiti del rito.
+Dal 31 ottobre lo scambio avviene una sola volta, nel primo percorso dopo la
+scelta, e mai dopo il congedo, quando Dima ha gia' lasciato il posto.
+
+Dal 30 ottobre l'arco avanza di un passo per Era: caso dall'Era 1, confronto
+dall'Era 2, copia dall'Era 3. Ogni passo si apre con un richiamo di tre
+battute, come prima scena del percorso:
+
+| ID | Titolo | Era | Funzione |
+| --- | --- | ---: | --- |
+| `seat_case_recall` | La fila misurata | 1 | Vessa torna con il righello; il posto rischia la vendita e la copia si ferma prima |
+| `seat_inquiry_recall` | Il margine bianco | 2 | la copia e la traccia della via scelta non sono ancora state messe a confronto |
+| `seat_copy_recall` | Prima che chiudano i fogli | 3 | il Registro scrive meno; resta da decidere dove conservare l'annotazione |
+
+I richiami ricordano il problema senza anticipare la risposta del confronto,
+non nominano l'assente e valgono per entrambe le vie. Il caso non usa il
+richiamo quando segue nello stesso percorso il racconto `seat_kept`.
+
+## Ultima Era: lo smontaggio - 30 ottobre 2026
+
+Testi approvati dall'utente il 30 ottobre. Una scena per percorso, poi il
+congedo invariato. Vessa e Orvo sono citati e non parlano.
+
+| ID | Titolo | Percorso dell'Era | Parlano | Seguito |
+| --- | --- | ---: | --- | --- |
+| `final_ledger` | Il conto chiuso | 2 | Nerio, Rugo, Dima | foglio `L'ULTIMA CIFRA` |
+| `final_bando` | L'ultimo bando | 3 | Rugo, Dima, Lauro | il bando del percorso e' l'ultimo: un gradino in meno, tutte le arene |
+| `final_copy` | L'ultima copia | 4 | Registro, Nerio, Dima, Lauro | foglio `L'ULTIMO FOGLIO` |
+| `departure` | Il posto accanto | 5 | Nerio, Rugo, Dima | nessuno |
+
+Il foglio dell'ultima cifra offre: alla strofa di Lauro, alla gradinata, a
+Vessa; in debito: pagare con la voce o lasciare il debito scritto. Il foglio
+dell'ultima copia offre il posto, la gesta piu' alta e i Segni, solo se
+presenti. Le righe di esito e d'Archivio sono in `scripts/content/final_era.gd`;
+il fascicolo intitola `L'ULTIMA STROFA` la gesta del percorso dell'ultimo bando.
 
 Su richiesta dell'utente ("aggiungi un po' di lore e racconti"), cinque scene
 di sei battute si aggiungono alle tre conversazioni illustrate, nello stesso
@@ -354,7 +388,9 @@ bando di Orvo ("Perche' continuare?") diventano otto e ognuna e' il premio di
 un gradino della scala dei bandi. Con Lauro il cantastorie (7 ottobre 2026)
 diventano dieci; quattro raccontano il posto vuoto (`seat_kept`, `footstep`,
 `open_strophe`, `slope`) e sono garantiti dalla campagna anche senza bando,
-dall'Era 1 i primi due e dall'Era 2 gli altri, sempre prima del congedo:
+dall'Era 1 i primi due e dall'Era 2 gli altri, sempre prima del congedo.
+Dal 31 ottobre 2026 sono garantiti anche `seats` (Era 1) e `scraping` (Era 2),
+che lo stile prudente perdeva perche' legati ai gradini 6 e 9:
 
 Anche i racconti gia' ottenuti con i bandi attendono il loro turno prima del
 congedo. I racconti non ancora ottenuti non ritardano il congedo; una volta

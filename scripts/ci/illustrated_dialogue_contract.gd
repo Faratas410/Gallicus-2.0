@@ -39,6 +39,18 @@ func _era_tales() -> Array[String]:
 			ids.append(str(tale.id))
 	return ids
 
+func _gameplay_state() -> Dictionary:
+	# Playtime is a measure for the session log, not gameplay: reading may advance it.
+	var state: Dictionary = manager.get("_run_state").to_dict()
+	state.erase("active_msec")
+	return state
+
+func _before_farewell() -> Array[String]:
+	# The farewell waits for the empty-seat racconti and closes the last Era's dismantling.
+	var ids: Array[String] = _era_tales()
+	ids.append_array(["final_ledger", "final_bando", "final_copy"])
+	return ids
+
 func _new_entry(id: String) -> void:
 	root.get_node("GameEvents").request_show_main_menu.emit()
 	var era: int = {"entry":0, "middle":2, "departure":3}.get(id, 1)
@@ -55,8 +67,11 @@ func _new_entry(id: String) -> void:
 	if not Catalog.SEQUENCES.has(id) or ["entry", "middle", "departure"].has(id):
 		earlier_tales = []
 	if id == "departure":
-		# The farewell waits for the empty-seat racconti.
-		earlier_tales = _era_tales()
+		earlier_tales = _before_farewell()
+		evolution["era_runs"] = 4
+		# The farewell follows the last figure and the last copy, already decided.
+		save.resolve_final_ledger("vessa")
+		save.resolve_final_copy("gesta")
 	save.commit_registry_evolution(0.0, era, evolution)
 	manager.set("_registry_era", era)
 	var settings: Dictionary = save.get("_settings")
@@ -75,9 +90,9 @@ func _run() -> void:
 	save = root.get_node("SaveManager")
 	await _boot()
 	await _new_entry("entry")
-	var snapshot: Dictionary = manager.get("_run_state").to_dict()
+	var snapshot: Dictionary = _gameplay_state()
 	await _input_action("ui_accept")
-	_check(view.get("_beat") == 0 and manager.get("_run_state").to_dict() == snapshot, "entry click leaked through")
+	_check(view.get("_beat") == 0 and _gameplay_state() == snapshot, "entry click leaked through")
 	await create_timer(0.55).timeout
 	await _input_action("ui_accept")
 	_check(view.get("_beat") == 1, "Enter did not advance one beat")
@@ -92,7 +107,7 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	_check(view.get("_active") and view.get("_beat") == 0, "interrupted conversation did not resume from its beginning")
-	var resumed: Dictionary = manager.get("_run_state").to_dict()
+	var resumed: Dictionary = _gameplay_state()
 	for key: String in ["run_seed", "scar_rng_state", "glory", "corruption", "arena_index", "bets_history"]:
 		_check(snapshot[key] == resumed[key], "dialogue resume changed " + key)
 	await create_timer(0.55).timeout
@@ -116,7 +131,7 @@ func _run() -> void:
 					scenes.append(str(tale.id))
 			for id: String in scenes:
 				await _new_entry(id)
-				var before: Dictionary = manager.get("_run_state").to_dict()
+				var before: Dictionary = _gameplay_state()
 				for index: int in range(Catalog.SEQUENCES[id].lines.size()):
 					await create_timer(0.55 if index == 0 else 0.20).timeout
 					_check(view.get("_beat") == index, "unexpected beat")
@@ -127,7 +142,7 @@ func _run() -> void:
 					_check(body.get_line_count() * body.get_line_height() <= body.size.y + 1, "text clipped: " + tag)
 					_check(Rect2(Vector2.ZERO, Vector2(dimensions)).encloses(view.get("_stage").get_global_rect()), "stage outside viewport: " + tag)
 					_check(portrait.texture != null and portrait.size.x > 0 and portrait.texture.get_width() > 0, "portrait missing: " + tag)
-					_check(manager.get("_run_state").to_dict() == before, "reading changed gameplay: " + tag)
+					_check(_gameplay_state() == before, "reading changed gameplay: " + tag)
 					if language > 0:
 						_check(body.text != Catalog.SEQUENCES[id].lines[index].text, "untranslated beat: " + tag)
 					if captures != "":
@@ -160,10 +175,13 @@ func _run() -> void:
 	save.commit_registry_evolution(0.0, 1, Evolution.defaults().merged({"samples": 20}, true))
 	manager.set("_registry_era", 1)
 	_check(str(manager.get_campaign_dialogue().get("id", "")) == "seat_kept", "the Era did not bring the empty seat")
-	save.commit_registry_evolution(0.0, 3, Evolution.defaults().merged({"samples": 20}, true))
+	save.commit_registry_evolution(0.0, 3, Evolution.defaults().merged({"samples": 20, "era_runs": 4}, true))
 	manager.set("_registry_era", 3)
+	# A fresh entry: the last Era tells one scene per percorso.
+	manager.get("_run_state").campaign_scenes_heard.clear()
+	save.get("_settings")["campaign_dialogues_seen"] = ["final_ledger", "final_bando", "final_copy"]
 	_check(str(manager.get_campaign_dialogue().get("id", "")) == "seat_kept", "the farewell came before the empty seat")
-	save.get("_settings")["campaign_dialogues_seen"] = _era_tales()
+	save.get("_settings")["campaign_dialogues_seen"] = _before_farewell()
 	_check(str(manager.get_campaign_dialogue().get("id", "")) == "departure", "the farewell did not follow the empty seat")
 	save.commit_registry_evolution(0.0, 1, Evolution.defaults().merged({"samples": 20}, true))
 	manager.set("_registry_era", 1)
@@ -173,6 +191,8 @@ func _run() -> void:
 	var all_tales: Array[String] = []
 	for tale: Dictionary in Catalog.TALES:
 		all_tales.append(str(tale.id))
+	# The seat case's recall is a step of the arc, not a tale (seat_steps_era_contract.gd).
+	all_tales.append("seat_case_recall")
 	save.get("_settings")["campaign_dialogues_seen"] = all_tales
 	_check(manager.get_campaign_dialogue().is_empty(), "a heard tale replayed")
 	save.get("_settings")["campaign_dialogues_seen"] = []

@@ -27,7 +27,8 @@ func _run() -> void:
 	save = root.get_node("SaveManager")
 	save.commit_registry_evolution(0.0, 1, {})
 	for id: String in Dialogues.SEQUENCES:
-		if id not in ["seat_receipt_after_inquiry", "seat_voice_after_inquiry"]:
+		# The last Era's dismantling has its own contract (final_era_runtime_contract.gd).
+		if id not in ["seat_receipt_after_inquiry", "seat_voice_after_inquiry", "final_ledger", "final_bando", "final_copy"]:
 			save.mark_campaign_dialogue_seen(id)
 	save.set_ledger_denari(10)
 	check(save.resolve_seat_case("reserve", 1, 6), "reserve fixture failed")

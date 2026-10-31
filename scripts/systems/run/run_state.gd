@@ -1,6 +1,8 @@
 ﻿class_name RunState
 extends RefCounted
 
+const CampaignDialogues = preload("res://scripts/content/campaign_dialogues.gd")
+
 var run_seed: int = 0
 var arena_index: int = 0
 var escalation_level: int = 0
@@ -82,6 +84,9 @@ var forced_next_pact_archetype: StringName = &""
 var special_arena_cashout_lock_reason: String = ""
 var seen_by_crowd_before_run: bool = false
 var run_start_time_msec: int = 0
+# Playtime inside this percorso (focused window, outside menu and dossier),
+# kept across resumes for the local session log.
+var active_msec: int = 0
 var run_save_flow_step: StringName = &""
 var run_save_flow_bet_id: StringName = &""
 var glory: int = 0
@@ -107,6 +112,11 @@ var ledger_lost: int = 0
 var seat_case_deferred: bool = false
 var seat_inquiry_deferred: bool = false
 var seat_copy_deferred: bool = false
+# This percorso's first arena recalls where the seat annotation went (once per campaign).
+var seat_copy_echo: bool = false
+# Campaign scenes dismissed at this percorso's entry: a seat step recall opens
+# only an entry that has not told another scene yet.
+var campaign_scenes_heard: Array[String] = []
 # Orvo's bando for this percorso: bank at least `bando_quota` Gloria by arena
 # `bando_deadline`. Status: open, closed, lapsed (deadline passed), missed.
 var bando_quota: int = 0
@@ -214,6 +224,7 @@ func reset() -> void:
 	special_arena_cashout_lock_reason = ""
 	seen_by_crowd_before_run = false
 	run_start_time_msec = 0
+	active_msec = 0
 	run_save_flow_step = &""
 	run_save_flow_bet_id = &""
 	glory = 0
@@ -233,6 +244,8 @@ func reset() -> void:
 	seat_case_deferred = false
 	seat_inquiry_deferred = false
 	seat_copy_deferred = false
+	seat_copy_echo = false
+	campaign_scenes_heard = []
 	bando_quota = 0
 	bando_deadline = 0
 	bando_status = ""
@@ -330,6 +343,7 @@ func to_dict() -> Dictionary:
 		"special_arena_cashout_lock_reason": special_arena_cashout_lock_reason,
 		"seen_by_crowd_before_run": seen_by_crowd_before_run,
 		"run_start_time_msec": run_start_time_msec,
+		"active_msec": active_msec,
 		"run_save_flow_step": String(run_save_flow_step),
 		"run_save_flow_bet_id": String(run_save_flow_bet_id),
 		"glory": glory,
@@ -349,6 +363,8 @@ func to_dict() -> Dictionary:
 		"seat_case_deferred": seat_case_deferred,
 		"seat_inquiry_deferred": seat_inquiry_deferred,
 		"seat_copy_deferred": seat_copy_deferred,
+		"seat_copy_echo": seat_copy_echo,
+		"campaign_scenes_heard": campaign_scenes_heard.duplicate(),
 		"bando_quota": bando_quota,
 		"bando_deadline": bando_deadline,
 		"bando_status": bando_status,
@@ -446,6 +462,7 @@ func from_dict(d: Dictionary) -> void:
 	special_arena_cashout_lock_reason = str(d.get("special_arena_cashout_lock_reason", ""))
 	seen_by_crowd_before_run = bool(d.get("seen_by_crowd_before_run", false))
 	run_start_time_msec = int(d.get("run_start_time_msec", 0))
+	active_msec = maxi(int(d.get("active_msec", 0)), 0)
 	run_save_flow_step = StringName(str(d.get("run_save_flow_step", "")))
 	run_save_flow_bet_id = StringName(str(d.get("run_save_flow_bet_id", "")))
 	glory = int(d.get("glory", 0))
@@ -465,6 +482,13 @@ func from_dict(d: Dictionary) -> void:
 	seat_case_deferred = d.get("seat_case_deferred", false) is bool and bool(d.get("seat_case_deferred", false))
 	seat_inquiry_deferred = d.get("seat_inquiry_deferred", false) is bool and bool(d.get("seat_inquiry_deferred", false))
 	seat_copy_deferred = d.get("seat_copy_deferred", false) is bool and bool(d.get("seat_copy_deferred", false))
+	seat_copy_echo = d.get("seat_copy_echo", false) is bool and bool(d.get("seat_copy_echo", false))
+	campaign_scenes_heard = []
+	var heard: Variant = d.get("campaign_scenes_heard", [])
+	if heard is Array:
+		for scene_id: Variant in heard:
+			if scene_id is String and CampaignDialogues.SEQUENCES.has(scene_id) and not campaign_scenes_heard.has(scene_id):
+				campaign_scenes_heard.append(scene_id)
 	bando_quota = maxi(int(d.get("bando_quota", 0)), 0)
 	bando_deadline = maxi(int(d.get("bando_deadline", 0)), 0)
 	bando_status = str(d.get("bando_status", ""))

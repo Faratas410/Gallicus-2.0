@@ -14,6 +14,36 @@ non un'accettazione umana del tono o del coinvolgimento.
 
 ## Stato corrente
 
+29-30 ottobre: obiettivo delle dieci ore ripreso su richiesta dell'utente.
+Primo pacchetto eseguito senza cambi di gameplay: baseline economica su 24
+campagne simulate, mappa degli eventi e proposta per l'arco del posto in
+`docs/support/baseline_economia_ritmo_2026-10-29.md`. La campagna dura sempre
+42 percorsi, 29-32 dei quali senza scene; l'ultima Era non ha contenuto nuovo.
+30 ottobre: scelta la variante C, implementata e verificata localmente: l'arco
+del posto avanza di un passo per Era (caso 1, confronto 2, copia 3) con un
+richiamo per passo; playbook 52/52 su Windows. Prossimo passo: le altre
+decisioni del rapporto (lunghezza, contenuto dopo il congedo, racconti per chi
+gioca prudente, usi dei Denari, scambio ripetuto) e una sessione umana
+cronometrata. Checkpoint Linux e lettura umana dei richiami restano aperti.
+30 ottobre, smontaggio dell'ultima Era implementato: Vessa chiude il conto,
+Orvo l'ultimo bando con l'ultima strofa di Lauro, Nerio l'ultima copia, poi il
+congedo; playbook 52/52 su Windows. Dettagli, numeri e limiti in
+`docs/support/baseline_economia_ritmo_2026-10-29.md`.
+L'ultimo bando chiede ora un gradino in meno su tutte le 7 arene (opzione B);
+probabilita' reale e gradimento restano da misurare con persone.
+31 ottobre: tutti e sei i racconti del posto vuoto sono garantiti dalla loro
+Era (`seats` Era 1, `scraping` Era 2); nessuno stile simulato li perde.
+Lo scambio sulla copia compare una sola volta e mai dopo il congedo.
+Chiusura del pacchetto: lunghezza confermata a 42 percorsi contati, nessuna
+nuova meccanica dei Denari prima della prova umana, simulatore senza errori di
+chiusura, registro locale del tempo attivo pronto per la sessione cronometrata.
+Prossimo passo, umano: almeno una campagna cronometrata da profilo pulito
+secondo `docs/playtest_guide.md`; poi checkpoint Linux sul candidato.
+
+Proposta preparata per la ripresa: economia e ritmo prima dell'espansione,
+con metodo e gate in `docs/support/prossimo_goal_10_ore_2026-10-29.md`.
+La preparazione non riattiva l'obiettivo sospeso.
+
 Revisione pre-commit del 29 ottobre: correzioni e perimetro del working tree,
 con le decisioni ancora aperte, in
 `docs/support/revisione_pre_commit_10_ore_2026-10-29.md`. L'obiettivo delle

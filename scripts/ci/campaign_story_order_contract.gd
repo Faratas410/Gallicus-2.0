@@ -15,7 +15,8 @@ func check(condition: bool, message: String) -> void:
 
 func _run() -> void:
 	save = root.get_node("SaveManager")
-	save.commit_registry_evolution(0.0, 3, {})
+	# The farewell closes the dismantling of the last Era, from its fifth percorso.
+	save.commit_registry_evolution(0.0, 3, {"era_runs": 4})
 	# Only the first bando tale and the farewell remain unheard. The first step
 	# is already earned, so telling the farewell first would strand that prize.
 	for id: String in Dialogues.SEQUENCES:
@@ -37,6 +38,8 @@ func _run() -> void:
 	check(str(manager.get_campaign_dialogue().get("id", "")) == "first_strophe", "earned tale is lost behind the farewell")
 	dialogue.call("_finish")
 	check(save.has_seen_campaign_dialogue("first_strophe"), "entry UI did not persist the earned tale")
+	check(manager.get_campaign_dialogue().is_empty(), "the farewell stacked after another scene of the same percorso")
+	manager.get("_run_state").campaign_scenes_heard.clear() # The next percorso's entry.
 	check(str(manager.get_campaign_dialogue().get("id", "")) == "departure", "farewell must follow the earned tale")
 	root.get_node("GameEvents").request_dismiss_campaign_dialogue.emit("departure")
 	check(manager.get_campaign_dialogue().is_empty(), "farewell or tale repeated")

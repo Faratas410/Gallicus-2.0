@@ -8,6 +8,26 @@ Last merged from: legacy:run_architecture_ledger, legacy:runtime_architecture_sp
 
 ## Canon Contract
 
+Ultima Era (30 ottobre 2026): `get_campaign_dialogue()` sceglie la scena
+d'Era con `_final_scene_due()` secondo `FINAL_ERA_SCENES` e `era_runs`, solo
+se nessuna scena e' stata ascoltata nel percorso. `RunManager` valida
+`request_final_ledger_choice` e `request_final_copy_choice` (fase
+`BET_PRESENT`, prima arena, scena gia' vista, decisione non presa) e invia
+`final_ledger_resolved` e `final_copy_resolved`; SaveManager scrive scelta e
+saldo in un'unica operazione su `meta.final_era`. La conferma di `final_bando`
+segna l'ultimo bando come aperto; la chiusura del percorso, in `_sing_gesta`,
+lo registra chiuso o mancato insieme alla strofa. Dopo la chiusura del conto
+`_ledger_change` non modifica piu' il saldo, `get_banco_view` non offre voci e
+`_open_bando_for_run` non apre bandi dopo l'ultimo. La UI riusa il foglio del
+posto senza rinvio e il Banco mostra la chiusura; non decide nulla.
+
+I tre passi dell'arco del posto (caso, confronto, copia) sono aperti da
+`RunManager` solo dall'Era indicata in `SEAT_STEP_ERAS` e dopo il loro
+richiamo, che `get_campaign_dialogue()` propone dopo scene d'Era e racconti, e solo quando
+`RunState.campaign_scenes_heard` e' vuoto. La conferma di una scena
+(`request_dismiss_campaign_dialogue`) la aggiunge a quella lista del percorso e
+salva il checkpoint, cosi' la ripresa non accoda un richiamo dopo una scena
+gia' ascoltata. La UI non decide l'ordine: interroga RunManager.
 Il caso `seat_kept` si presenta al primo `BET_PRESENT` di un percorso, dopo
 il dialogo eventuale. `RunManager` valida `request_seat_case_choice` e invia
 `seat_case_resolved`; la UI mostra il foglio e invia gli intenti. Il profilo
@@ -35,9 +55,12 @@ l'Era: RunManager deriva il prezzo della polizza ridotto di 1 Denaro solo in
 quella stessa Era, senza modificare la copertura o applicare lo sconto al resume
 come nuovo addebito. I profili precedenti con copia pagata migrano nell'Era
 corrente se la campagna non e' terminata.
-Negli scambi della prima arena, per un quarto dei seed di percorso, la query
-di presentazione puo' usare due battute dipendenti da `meta.seat_copy`.
-La selezione e' deterministica, non modifica lo stato e resta muta in Silenzio.
+Negli scambi della prima arena la query di presentazione puo' usare due
+battute dipendenti da `meta.seat_copy`, una sola volta: dal 31 ottobre 2026
+`_prepare_seat_copy_echo()`, all'apertura del primo percorso dopo la scelta,
+segna `RunState.seat_copy_echo` e `meta.seat_copy_echoed`; il checkpoint
+conserva il percorso dell'eco per il resume. La query resta pura, muta in
+Silenzio e dopo il congedo.
 
 This document is authoritative for its category.
 No other file may redefine these concepts.

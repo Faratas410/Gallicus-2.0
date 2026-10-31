@@ -3,6 +3,7 @@ extends Control
 # Presentation only: RunManager validates choices and SaveManager commits them.
 const Paper = preload("res://scripts/ui/banco_paper.gd")
 const Writing = preload("res://scripts/ui/registry_handwriting.gd")
+const FinalEra = preload("res://scripts/content/final_era.gd")
 var port: RunManagerUiPort
 var title: Label
 var evidence: Label
@@ -60,6 +61,8 @@ func _ready() -> void:
 	GameEvents.seat_case_resolved.connect(_on_resolved)
 	GameEvents.seat_inquiry_changed.connect(_on_inquiry_changed)
 	GameEvents.seat_copy_resolved.connect(_on_copy_resolved)
+	GameEvents.final_ledger_resolved.connect(_on_final_resolved)
+	GameEvents.final_copy_resolved.connect(_on_final_resolved)
 	GameEvents.run_ended.connect(_on_run_ended)
 	GameEvents.request_show_main_menu.connect(_close)
 	hide()
@@ -110,6 +113,22 @@ func _button(parent: Control, node_name: String, rect: Rect2, choice: String) ->
 	return button
 
 func try_open() -> bool:
+	# The last Era's sheets come first: they follow their own scene and have no deferral.
+	var ledger_view := port.get_final_ledger()
+	var final_copy_view := port.get_final_copy() if ledger_view.is_empty() else {}
+	if not ledger_view.is_empty() or not final_copy_view.is_empty():
+		active = true
+		mode = "ledger" if not ledger_view.is_empty() else "final_copy"
+		show()
+		if mode == "ledger":
+			_render_final_ledger(ledger_view)
+		else:
+			_render_final_copy(final_copy_view)
+		call_deferred("_restore_focus_if_needed")
+		return true
+	_set_wide_third(false)
+	for button: Button in [reserve, witness, defer_button]:
+		button.disabled = false
 	var view := port.get_seat_case()
 	if view.is_empty():
 		inquiry = port.get_seat_inquiry()
@@ -167,11 +186,24 @@ func _restore_focus_if_needed() -> void:
 		reserve.grab_focus()
 	elif mode in ["case", "copy"]:
 		witness.grab_focus()
-	elif mode in ["case_result", "inquiry_result", "copy_result"]:
+	elif mode in ["ledger", "final_copy"]:
+		_first_enabled([witness, reserve, defer_button]).grab_focus()
+	elif mode in ["case_result", "inquiry_result", "copy_result", "final_result"]:
 		continue_button.grab_focus()
 
 func _choose(choice: String) -> void:
 	if not active:
+		return
+	if mode == "ledger":
+		var in_debt := not defer_button.visible
+		var ledger_choice := ("voice" if in_debt else "lauro") if choice == "reserve" else ("debt" if in_debt else "crowd") if choice == "witness" else "vessa" if choice == "defer" and not in_debt else ""
+		if ledger_choice != "":
+			GameEvents.request_final_ledger_choice.emit(ledger_choice)
+		return
+	if mode == "final_copy":
+		var copy_choice := "seat" if choice == "reserve" else "gesta" if choice == "witness" else "scars" if choice == "defer" else ""
+		if copy_choice != "":
+			GameEvents.request_final_copy_choice.emit(copy_choice)
 		return
 	if mode == "inquiry":
 		if choice == "continue" and int(inquiry.get("seen", 0)) == 3:
@@ -201,6 +233,92 @@ func _choose(choice: String) -> void:
 		_close(mode in ["case_result", "inquiry_result", "copy_result"])
 		return
 	GameEvents.request_seat_case_choice.emit(choice)
+
+func _set_wide_third(wide: bool) -> void:
+	# The last Era's sheets offer a third full choice where the others defer.
+	defer_button.size = Vector2(880, 80) if wide else Vector2(420, 64)
+
+func _first_enabled(buttons: Array[Button]) -> Button:
+	for button: Button in buttons:
+		if button.visible and not button.disabled:
+			return button
+	return buttons[0]
+
+func _chain_focus(buttons: Array[Button]) -> void:
+	var ring: Array[Button] = []
+	for button: Button in buttons:
+		if button.visible and not button.disabled:
+			ring.append(button)
+	for index: int in range(ring.size()):
+		var next_path := ring[(index + 1) % ring.size()].get_path()
+		var previous_path := ring[(index - 1 + ring.size()) % ring.size()].get_path()
+		ring[index].focus_next = next_path
+		ring[index].focus_neighbor_bottom = next_path
+		ring[index].focus_previous = previous_path
+		ring[index].focus_neighbor_top = previous_path
+
+func _render_final_ledger(view: Dictionary) -> void:
+	var in_debt := bool(view.get("in_debt", false))
+	var denari := int(view.get("denari", 0))
+	title.text = tr("L'ULTIMA CIFRA")
+	evidence.text = "%s\n\n%s" % [tr("Vessa chiude il banco. Da questo percorso il conto non cambia più: niente acquisti, niente quietanze in Denari. Dove va l'ultima cifra?"), tr("Conto %d Denari") % denari]
+	_set_wide_third(true)
+	if in_debt:
+		reserve.text = tr("PAGA CON LA VOCE\nIl debito si chiude. Il prossimo percorso parte con Pressione +2.")
+		witness.text = tr("LASCIA IL DEBITO SCRITTO\nIl Registro conserva il debito. Pressione +1 a ogni percorso, fino alla fine.")
+	else:
+		reserve.text = tr("ALLA STROFA DI LAURO · tutto il conto\nLauro mette per iscritto la gesta più alta. L'Archivio la conserva.")
+		witness.text = tr("ALLA GRADINATA · tutto il conto\nFavore +2 all'inizio di ogni percorso, fino alla fine.")
+		defer_button.text = tr("A VESSA · nessuna spesa\nVessa tiene il conto chiuso. Nessun effetto sul rito.")
+	reserve.disabled = not in_debt and denari <= 0
+	witness.disabled = not in_debt and denari <= 0
+	defer_button.disabled = false
+	reserve.show()
+	witness.show()
+	defer_button.visible = not in_debt
+	continue_button.hide()
+	_chain_focus([reserve, witness, defer_button])
+	_first_enabled([witness, reserve, defer_button]).grab_focus()
+
+func _render_final_copy(view: Dictionary) -> void:
+	var options: Array = view.get("options", []) as Array
+	title.text = tr("L'ULTIMO FOGLIO")
+	evidence.text = tr("Nerio può copiare una sola memoria. Quello che non copia resta a chi lo ricorda.")
+	_set_wide_third(true)
+	reserve.text = tr("IL POSTO\nNerio lo copia nell'ultimo foglio.")
+	witness.text = tr("LA GESTA PIÙ ALTA\nNerio la copia nell'ultimo foglio.")
+	defer_button.text = tr("I SEGNI\nNerio li copia nell'ultimo foglio.")
+	for button: Button in [reserve, witness, defer_button]:
+		button.disabled = false
+	reserve.visible = options.has("seat")
+	witness.visible = options.has("gesta")
+	defer_button.visible = options.has("scars")
+	continue_button.hide()
+	_chain_focus([reserve, witness, defer_button])
+	witness.grab_focus()
+
+func _on_final_resolved(payload: Dictionary) -> void:
+	if not active or mode not in ["ledger", "final_copy"]:
+		return
+	var choice := str(payload.get("choice", ""))
+	var lines: Array[String] = [tr(str(FinalEra.RESULTS.get(choice, "")))]
+	if mode == "final_copy":
+		for option: String in FinalEra.KEEPERS:
+			if option != choice and (option == "gesta" or (option == "seat" and reserve.visible) or (option == "scars" and defer_button.visible)):
+				lines.append(tr(str(FinalEra.KEEPERS[option])))
+	mode = "final_result"
+	reserve.hide()
+	witness.hide()
+	defer_button.hide()
+	_set_wide_third(false)
+	evidence.text = "\n\n".join(lines)
+	continue_button.text = tr("TORNA AL RITO")
+	continue_button.show()
+	continue_button.focus_next = continue_button.get_path()
+	continue_button.focus_previous = continue_button.get_path()
+	continue_button.focus_neighbor_top = continue_button.get_path()
+	continue_button.focus_neighbor_bottom = continue_button.get_path()
+	continue_button.grab_focus()
 
 func _render_copy(view: Dictionary) -> void:
 	title.text = tr("DOVE RESTA IL MARGINE?")
@@ -366,5 +484,7 @@ func _on_run_ended(_reason: String, _summary: Dictionary) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if active and event.is_action_pressed("ui_cancel"):
-		_choose("continue" if mode in ["case_result", "inquiry_result", "copy_result"] else "defer")
+		# The last Era's sheets cannot be deferred; Cancel only leaves their result.
+		if mode not in ["ledger", "final_copy"]:
+			_choose("continue" if mode in ["case_result", "inquiry_result", "copy_result", "final_result"] else "defer")
 		get_viewport().set_input_as_handled()

@@ -29,7 +29,7 @@ func _run() -> void:
 	meta["seat_inquiry"] = {"seen": 3, "complete": true}
 	var state: RunState = manager.get("_run_state")
 	state.arena_index = 1
-	state.run_seed = 4
+	state.seat_copy_echo = true
 	menu.hide()
 	ui.show()
 	for choice: String in ["copy", "keep"]:
@@ -61,9 +61,23 @@ func _run() -> void:
 					await create_timer(0.8).timeout
 					await RenderingServer.frame_post_draw
 					root.get_texture().get_image().save_png(capture_dir.path_join("%s_%s_%dx%d.png" % [choice, locale, dimensions.x, dimensions.y]))
-	state.run_seed = 5
-	check(manager.get_character_dialogue("gesture")[0] != "Nerio: La mia copia non ha la nota.", "memory ignored seed gate")
-	state.run_seed = 4
+	state.seat_copy_echo = false
+	check(manager.get_character_dialogue("gesture")[0] != "Nerio: La mia copia non ha la nota.", "memory spoke outside its percorso")
+	state.seat_copy_echo = true
+	var restored := RunState.new()
+	restored.from_dict(state.to_dict())
+	check(restored.seat_copy_echo, "the echo percorso was not kept in the checkpoint")
+	# Only the first percorso after the choice is marked, once per campaign.
+	meta["seat_copy_echoed"] = false
+	manager.call("_prepare_seat_copy_echo")
+	check(state.seat_copy_echo and save.get_seat_copy_echoed(), "the first percorso after the choice did not take the echo")
+	manager.call("_prepare_seat_copy_echo")
+	check(not state.seat_copy_echo, "the echo returned in a later percorso")
+	state.seat_copy_echo = true
+	save.mark_campaign_dialogue_seen("departure")
+	check(manager.get_character_dialogue("gesture").is_empty() or manager.get_character_dialogue("gesture")[0] != "Nerio: La mia copia non ha la nota.", "the echo spoke after the farewell")
+	var settings: Dictionary = save.get("_settings")
+	(settings["campaign_dialogues_seen"] as Array).erase("departure")
 	state.arena_index = 2
 	check(manager.get_character_dialogue("gesture")[0] != "Nerio: La mia copia non ha la nota.", "memory repeated outside first arena")
 	state.arena_index = 1

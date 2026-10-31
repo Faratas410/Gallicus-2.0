@@ -1431,6 +1431,9 @@ func _dossier_bando_line() -> String:
 	var status: String = str(_bando_view.get("status", ""))
 	if status == "":
 		return ""
+	if bool(_bando_view.get("last", false)):
+		# No bando follows the last one: only its outcome.
+		return tr("Ultimo bando chiuso: Lauro ne fa l'ultima strofa.") if status == "closed" else tr("Ultimo bando mancato: Lauro lo canta lo stesso.")
 	var parts: Array[String] = []
 	if status == "closed":
 		parts.append(tr("Bando chiuso: gradino %d di %d.") % [int(_bando_view.get("step", 0)), int(_bando_view.get("steps", 0))])
@@ -1507,7 +1510,10 @@ func _refresh_verdict_panel() -> void:
 		condanne_title.text = tr("NUOVE VOCI D'ARCHIVIO")
 	var crowd_title := get_node_or_null("UI_RunRoot/Phase_END_RUN/Panel_END_RUN/Box_END_RUN/Box_END_RUN_DETAILS/Box_END_RUN_CROWD/Lbl_END_RUN_CROWD_TITLEPanel/Lbl_END_RUN_CROWD_TITLE") as Label
 	if crowd_title != null:
-		crowd_title.text = tr("LA GESTA DI LAURO") if not _last_gesta.is_empty() else tr("ULTIMA VOCE")
+		if _last_gesta.is_empty():
+			crowd_title.text = tr("ULTIMA VOCE")
+		else:
+			crowd_title.text = tr("L'ULTIMA STROFA") if bool(_last_gesta.get("last", false)) else tr("LA GESTA DI LAURO")
 	if verdict_header != null:
 		var title_text: String = _last_finale_title.strip_edges()
 		if title_text == "":
@@ -2360,10 +2366,15 @@ func _render_bando_panel() -> void:
 	if bando_bar != null:
 		bando_bar.max_value = float(quota)
 		bando_bar.value = float(quota if status == "closed" else mini(posta, quota))
-	if bando_body != null:
+	if bando_body != null and bool(_bando_view.get("last", false)) and status != "open":
+		bando_body.text = tr("Ultimo bando chiuso: Lauro ne fa l'ultima strofa.") if status == "closed" else tr("Ultimo bando mancato: Lauro lo canta lo stesso.")
+	elif bando_body != null:
 		match status:
 			"closed":
-				bando_body.text = tr("Bando chiuso: Denari +%d e un gradino.") % int(_bando_view.get("denari", 0))
+				if int(_bando_view.get("denari", 0)) <= 0:
+					bando_body.text = tr("Bando chiuso: il conto di Vessa è chiuso.")
+				else:
+					bando_body.text = tr("Bando chiuso: Denari +%d e un gradino.") % int(_bando_view.get("denari", 0))
 			"lapsed":
 				bando_body.text = tr("Bando scaduto: nessun gradino.")
 			"missed":
@@ -2376,6 +2387,8 @@ func _render_bando_panel() -> void:
 func _bando_ladder_text(view: Dictionary) -> String:
 	var steps: int = int(view.get("steps", 12))
 	var step: int = int(view.get("step", 0))
+	if bool(view.get("last", false)):
+		return tr("Ultimo bando: un gradino in meno, tutte le arene.")
 	if bool(view.get("ladder_complete", false)):
 		return tr("Scala completa: %d gradini.") % steps
 	var lines: Array[String] = [tr("Gradino %d di %d.") % [mini(step + 1, steps), steps]]

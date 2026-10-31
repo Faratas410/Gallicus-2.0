@@ -18,6 +18,16 @@ In debito il comando a pagamento e' disabilitato; quello gratuito resta attivo.
 La trascrizione dichiara anche lo sconto di 1 Denaro sulla polizza fino al
 prossimo Silenzio e che la sua data non e' fissata. Il Banco mostra il prezzo
 effettivo e segnala lo sconto; l'Archivio lo ricorda soltanto mentre e' attivo.
+Dal 30 ottobre il foglio si apre un passo per Era, dopo il richiamo mostrato
+dalla conversazione esistente; la UI non sceglie quando: chiede a RunManager
+se il passo e' disponibile dopo la chiusura della scena.
+Nell'ultima Era lo stesso foglio presenta `L'ULTIMA CIFRA` e `L'ULTIMO
+FOGLIO`: tre scelte a piena larghezza (due in debito), nessun rinvio, Esc non
+chiude la scelta. Le voci non disponibili sono disabilitate o nascoste; il
+riscontro mostra l'esito e chi conserva le memorie non copiate. Il Banco
+chiuso nasconde le voci e lo dichiara nella nota; il fascicolo intitola
+`L'ULTIMA STROFA` la gesta del percorso dell'ultimo bando; l'Archivio aggiunge
+la sezione `L'ULTIMA ERA`.
 
 ## Incasso/Rilancio: arena viva, 22 ottobre 2026
 

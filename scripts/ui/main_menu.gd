@@ -15,6 +15,7 @@ const CondannaDataScript = preload("res://data/condanne.gd")
 const ArenaThemes = preload("res://data/arena_themes.gd")
 const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
 const ArenaCharacters = preload("res://scripts/content/arena_characters.gd")
+const FinalEra = preload("res://scripts/content/final_era.gd")
 const UIFactoryScript = preload("res://scripts/ui/ui_factory.gd")
 const Kit = preload("res://scripts/ui/manifesto_kit.gd")
 const Palette = preload("res://scripts/ui/manifesto_palette.gd")
@@ -358,6 +359,33 @@ func _create_condanna_entry_panel(text: String) -> PanelContainer:
 	entry_label.mouse_filter = Control.MOUSE_FILTER_STOP
 	return entry_panel
 
+func _final_era_lines(record: Dictionary, seat_known: bool) -> Array[String]:
+	# Vessa's last figure, Lauro's last strophe and what Nerio copied, as recorded.
+	var lines: Array[String] = []
+	var ledger := str(record.get("ledger", ""))
+	if FinalEra.RESULTS.has(ledger):
+		lines.append(tr(str(FinalEra.RESULTS[ledger])))
+		var best: Dictionary = record.get("gesta_best", {}) as Dictionary
+		if ledger == "lauro" and int(best.get("glory", 0)) > 0:
+			lines.append(tr(FinalEra.WRITTEN_GESTA) % [int(best.glory), maxi(int(best.get("arenas", 1)), 1)])
+	var bando := str(record.get("bando", ""))
+	if FinalEra.BANDO.has(bando):
+		var verses: Array[String] = []
+		for line_value: Variant in record.get("strophe", []) as Array:
+			var line: Dictionary = line_value as Dictionary
+			var verse: String = tr(str(line.get("key", "")))
+			if int(line.get("value", -1)) >= 0 and verse.contains("%d"):
+				verse = verse % int(line.value)
+			verses.append(verse)
+		lines.append("%s %s" % [tr(str(FinalEra.BANDO[bando])), " ".join(verses)])
+	var copy := str(record.get("copy", ""))
+	if FinalEra.RESULTS.has(copy):
+		lines.append(tr(str(FinalEra.RESULTS[copy])))
+		for option: String in ["seat", "gesta"]:
+			if option != copy and (option == "gesta" or seat_known):
+				lines.append(tr(str(FinalEra.KEEPERS[option])))
+	return lines
+
 func _build_museo_list() -> void:
 	if museo_vbox == null:
 		return
@@ -385,6 +413,11 @@ func _build_museo_list() -> void:
 					_add_museo_item(tr("La polizza costa 1 Denaro in meno fino al prossimo Silenzio."))
 			elif copy_choice == "keep":
 				_add_museo_item(tr("Dima tiene l'annotazione. Il fascicolo di Nerio resta senza quella copia."))
+		var final_lines := _final_era_lines(_run_manager_port.get_final_era_record(), seat_choice != "")
+		if not final_lines.is_empty():
+			_add_museo_header(tr("L'ULTIMA ERA"))
+			for line: String in final_lines:
+				_add_museo_item(line)
 	_add_museo_header(tr("PRESENZE DELL’ARENA"))
 	for character: Dictionary in ArenaCharacters.CHARACTERS:
 		_add_character_entry(character)

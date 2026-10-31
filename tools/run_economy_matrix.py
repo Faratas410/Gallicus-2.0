@@ -20,7 +20,7 @@ POLICIES = {
 }
 
 
-def execute(godot: Path, output: Path, seed: int, name: str) -> dict:
+def execute(godot: Path, output: Path, seed: int, name: str, extra: dict) -> dict:
     style, strike, shop = POLICIES[name]
     case = output / f"{name}_{seed}"
     case.mkdir(parents=True, exist_ok=True)
@@ -30,6 +30,7 @@ def execute(godot: Path, output: Path, seed: int, name: str) -> dict:
     command = [str(godot), "--headless", "--audio-driver", "Dummy", "--path", str(ROOT),
                "--script", "res://tools/campaign_sim.gd", "--", f"--seed={seed}",
                f"--style={style}", f"--strike={strike}", "--crowd=read", f"--shop={shop}"]
+    command += [f"--{key}={value}" for key, value in extra.items()]
     try:
         process = subprocess.run(command, cwd=ROOT, env=env, capture_output=True,
                                  text=True, encoding="utf-8", errors="replace", timeout=900)
@@ -39,18 +40,20 @@ def execute(godot: Path, output: Path, seed: int, name: str) -> dict:
                      if line.startswith("SIM_SUMMARY ")]
         dialogues = [line.removeprefix("SIM_DIALOGUES ") for line in log.splitlines()
                      if line.startswith("SIM_DIALOGUES ")]
-        rows = [line for line in log.splitlines() if line.startswith("SIM_RUN ")]
+        rows = [json.loads(line.removeprefix("SIM_RUN ")) for line in log.splitlines()
+                if line.startswith("SIM_RUN ")]
         summary = json.loads(summaries[0]) if len(summaries) == 1 else {}
         seen = json.loads(dialogues[0]) if len(dialogues) == 1 else {}
         ok = (process.returncode == 0 and "ERROR:" not in log and len(summaries) == 1
               and len(dialogues) == 1 and summary.get("absence") is True
               and summary.get("runs") == len(rows))
-        return {"seed": seed, "policy": name, "ok": ok, "exit": process.returncode,
-                "profile": str(profile), "summary": summary, "dialogues": seen,
+        return {"seed": seed, "policy": name, "extra": extra, "ok": ok,
+                "exit": process.returncode, "profile": str(profile), "summary": summary,
+                "dialogues": seen, "rows": rows,
                 "objectdb_warning": "ObjectDB instances leaked" in log}
     except (subprocess.TimeoutExpired, ValueError) as exc:
-        return {"seed": seed, "policy": name, "ok": False, "error": str(exc),
-                "profile": str(profile)}
+        return {"seed": seed, "policy": name, "extra": extra, "ok": False,
+                "error": str(exc), "profile": str(profile)}
 
 
 def main() -> int:
@@ -58,13 +61,21 @@ def main() -> int:
     parser.add_argument("--godot-bin", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--workers", type=int, default=2, choices=(1, 2))
+    parser.add_argument("--seeds", type=int, nargs="+", default=list(SEEDS))
+    parser.add_argument("--policies", nargs="+", default=list(POLICIES), choices=list(POLICIES))
+    # Single-factor comparisons: forwarded unchanged to tools/campaign_sim.gd.
+    parser.add_argument("--seat", choices=("defer", "reserve", "witness"))
+    parser.add_argument("--copy", choices=("defer", "copy", "keep"))
+    parser.add_argument("--initial-denari", type=int)
     args = parser.parse_args()
+    extra = {key: value for key, value in (("seat", args.seat), ("copy", args.copy),
+             ("initial-denari", args.initial_denari)) if value is not None}
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
     results = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = [pool.submit(execute, args.godot_bin.resolve(), output, seed, name)
-                   for seed in SEEDS for name in POLICIES]
+        futures = [pool.submit(execute, args.godot_bin.resolve(), output, seed, name, extra)
+                   for seed in args.seeds for name in args.policies]
         for future in as_completed(futures):
             result = future.result()
             results.append(result)

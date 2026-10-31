@@ -1406,7 +1406,58 @@ gradinata e dal favore visibile.
 
 ## Economia di fondo (ottobre 2026)
 
+### Smontaggio dell'ultima Era (30 ottobre 2026)
+
+Scelto dall'utente il 30 ottobre (opzione 1 di
+`docs/support/baseline_economia_ritmo_2026-10-29.md`). Nell'ultima Era il rito
+perde un pezzo dell'apparato a ogni percorso, nell'ordine di
+`FINAL_ERA_SCENES` e mai prima del percorso dell'Era indicato (`era_runs`
+dell'evoluzione del Registro). L'Era dura almeno cinque percorsi, quindi tutte
+le scene arrivano prima dell'ultimo Silenzio:
+
+1. percorso 1: eventuale copia del posto (costa Denari, quindi precede la chiusura);
+2. percorso 2, `final_ledger`: Vessa chiude il conto. Un foglio senza rinvio
+   chiede dove va l'ultima cifra. In attivo: tutto il conto alla strofa di
+   Lauro (l'Archivio scrive la gesta piu' alta), tutto il conto alla gradinata
+   (Favore +2 all'apertura di ogni percorso successivo) oppure a Vessa senza
+   spesa. Con saldo zero solo la terza via. In debito: pagare con la voce (il
+   debito si azzera, Pressione +2 una sola volta al percorso successivo) oppure
+   lasciarlo scritto (resta la pressione del debito a ogni percorso). Da quel
+   momento il Banco e' chiuso e il conto non cambia piu': nessuna entrata o
+   uscita, nemmeno quietanze, bandi, rivolte o debito. La copia del posto ancora
+   in sospeso non si puo' piu' pagare;
+3. percorso 3, `final_bando`: Orvo annuncia che il bando del percorso e'
+   l'ultimo, "con la voce bassa": da quel momento chiede il gradino
+   precedente della scala (38 Gloria con la scala completa, mai sotto il primo)
+   e concede tutte e 7 le arene (deciso il 30 ottobre, opzione B). Non paga
+   Denari ne' gradini, perche' il conto e' chiuso: la strofa di Lauro di quel
+   percorso diventa l'ultima strofa, chiuso o mancato il bando, ed e'
+   conservata; dal percorso dopo nessun bando. Con il conto chiuso ogni bando
+   chiuso lo dichiara senza promettere Denari;
+4. percorso 4, `final_copy`: Nerio copia una sola memoria fra quelle presenti
+   (il posto se l'arco e' iniziato, la gesta piu' alta, i Segni se la lettura
+   del Registro registra tolleranza ai Segni). Le altre restano a Dima, Lauro o
+   al corpo. Nessun rinvio;
+5. percorso 5, `departure`: il congedo, ultima scena della campagna.
+
+Ogni scena e' la prima della sua entrata e non si accoda ad altre; i racconti
+gia' guadagnati precedono ancora il congedo. Chi resta oltre il quinto
+percorso gioca un rito senza Banco ne' bandi fino al Silenzio.
+
 ### Il posto misurato (28 ottobre 2026)
+
+Ritmo deciso il 30 ottobre 2026 (variante C della baseline,
+`docs/support/baseline_economia_ritmo_2026-10-29.md`): l'arco avanza di un
+passo per Era. Il caso si apre dall'Era 1, il confronto delle tracce dall'Era 2,
+la scelta della copia dall'Era 3 (`SEAT_STEP_ERAS`). Ogni passo apre un'entrata
+propria con un breve richiamo (`seat_case_recall`, `seat_inquiry_recall`,
+`seat_copy_recall`), proposto solo se nessun'altra scena e' gia' stata
+ascoltata in quel percorso; scene d'Era e racconti dovuti hanno la precedenza.
+Il caso puo' seguire direttamente il racconto `seat_kept` nella stessa entrata,
+senza richiamo, se l'Era e' gia' almeno 1. Le scene di conseguenza (seguito,
+risposta, scena della copia) restano nella stessa entrata della scelta. Prezzi,
+alternative, rinvii e memoria non cambiano. Un passo non ancora fatto non
+anticipa il successivo: chi rinvia oltre l'ultima Era lascia l'arco incompleto.
 
 Dopo il racconto `seat_kept`, al primo ingresso utile del percorso il soggetto
 puo' riservare il posto per 6 Denari oppure presentare la testimonianza senza
@@ -1489,9 +1540,11 @@ catena. Proposta, simulazioni e numeri: `docs/support/motivazione_2026-10-07.md`
   gradinata parte da Favore +2 (`BANDO_ACCLAIM_FAVOR`). Dopo il dodicesimo
   gradino la scala e' completa e il bando resta a quota 42.
 - **Premi della scala.** I gradini da 1 a 10 aprono i dieci racconti (vedi
-  `docs/canon/LORE_UNIFIED.md`). I quattro del posto vuoto hanno anche un'Era
-  (`"era"` in `CampaignDialogues.TALES`: 1 per `seat_kept` e `footstep`, 2 per
-  `open_strophe` e `slope`): da quell'Era arrivano senza bando, e a Era 3 il
+  `docs/canon/LORE_UNIFIED.md`). I sei del posto vuoto hanno anche un'Era
+  (`"era"` in `CampaignDialogues.TALES`: 1 per `seat_kept`, `seats` e
+  `footstep`, 2 per `open_strophe`, `scraping` e `slope`; `seats` e `scraping`
+  dal 31 ottobre 2026, perche' lo stile prudente li perdeva): da quell'Era
+  arrivano senza bando, e a Era 3 il
   congedo (`departure`) aspetta che siano stati raccontati, insieme ai racconti
   gia' guadagnati salendo la scala. Un racconto gia'
   raccontato non viene piu' annunciato come premio, e nessun racconto e' in

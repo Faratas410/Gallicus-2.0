@@ -134,7 +134,8 @@ func _run() -> void:
 			"lost": manager.get("_run_state").ledger_lost, "era": save.get_registry_era(),
 			"corruption": int(manager.get("_run_state").corruption), "favor": int(manager.get("_run_state").audience_score),
 			"pressure_max": int(manager.get("_run_state").max_escalation), "scars": manager.get("_run_state").scars.size(),
-			"chain_peak": int(manager.get("_run_state").seal_chain_peak), "register": str(manager.call("_get_register_final_ending_key"))}, true)
+			"chain_peak": int(manager.get("_run_state").seal_chain_peak), "register": str(manager.call("_get_register_final_ending_key")),
+			"samples": int(save.get_registry_evolution().get("samples", 0)), "choices": manager.get("_run_state").bets_history.size()}, true)
 		rows.append(row)
 		print("SIM_RUN ", JSON.stringify(row))
 		if save.get_registry_era() == 4:
@@ -150,9 +151,14 @@ func _run() -> void:
 	summary["seat_case"] = save.get_seat_case()
 	summary["seat_inquiry"] = save.get_seat_inquiry()
 	summary["seat_copy"] = save.get_seat_copy()
+	summary["final_era"] = save.get_final_era()
 	print("SIM_SUMMARY ", JSON.stringify(summary))
+	# At 12x a SceneTree timer leaves the audio driver almost no real time to
+	# release its playbacks: close like the contracts do.
+	Engine.time_scale = 1.0
 	scene.queue_free()
-	await create_timer(1.0).timeout
+	await create_timer(0.5).timeout
+	await preload("res://scripts/ci/audio_test_teardown.gd").finish(self)
 	quit(0)
 
 func _summary(rows: Array[Dictionary]) -> Dictionary:
@@ -238,7 +244,10 @@ func _seat_action() -> bool:
 			if str(opts.copy) == "copy" and _available("Btn_Seat_Reserve"):
 				return _press("Btn_Seat_Reserve")
 			return _press("Btn_Seat_Defer")
-		"case_result", "inquiry_result", "copy_result":
+		"ledger", "final_copy":
+			# The last Era's sheets have no deferral: take the first offered choice.
+			return _press("Btn_Seat_Witness") or _press("Btn_Seat_Reserve") or _press("Btn_Seat_Defer")
+		"case_result", "inquiry_result", "copy_result", "final_result":
 			return _press("Btn_Seat_Continue")
 	return false
 

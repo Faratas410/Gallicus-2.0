@@ -389,7 +389,9 @@ func _render_banco() -> void:
 			Kit.apply_action(button, &"paper", true, false, Kit.ACTION_COMPACT, false, true)
 	if banco_note != null:
 		var note: String = _banco_note_text
-		if bool(_banco_view.get("in_debt", false)):
+		if bool(_banco_view.get("closed", false)):
+			note = tr("Vessa ha chiuso il banco. Il conto resta all'ultima cifra.")
+		elif bool(_banco_view.get("in_debt", false)):
 			note = tr("Conto in debito. La quietanza vale doppio; salda il conto per riaprire il banco.")
 		elif bool(_banco_view.get("insured", false)):
 			note = tr("La posta di questa arena è assicurata.")

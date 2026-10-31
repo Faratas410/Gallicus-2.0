@@ -158,6 +158,51 @@ def main() -> int:
     if echo_check.returncode != 0 or "SEAT_COPY_ECHO_CONTRACT_OK" not in echo_log or "ERROR:" in echo_log:
         print(echo_log)
         return 1
+    steps_profile = Path(tempfile.mkdtemp(prefix="steps_profile_", dir=output))
+    steps_env = env.copy()
+    steps_env["APPDATA"] = str(steps_profile)
+    steps_env["LOCALAPPDATA"] = str(steps_profile)
+    steps_env["XDG_DATA_HOME"] = str(steps_profile)
+    steps_check = subprocess.run(
+        [str(Path(args.godot_bin).resolve()), "--headless", "--audio-driver", "Dummy",
+         "--path", str(ROOT), "--script", "res://scripts/ci/seat_steps_era_contract.gd"],
+        cwd=ROOT, env=steps_env, capture_output=True, text=True, timeout=90,
+    )
+    steps_log = steps_check.stdout + steps_check.stderr
+    (output / "seat_steps_era.log").write_text(steps_log, encoding="utf-8")
+    if steps_check.returncode != 0 or "SEAT_STEPS_ERA_CONTRACT_OK" not in steps_log or "ERROR:" in steps_log:
+        print(steps_log)
+        return 1
+    final_profile = Path(tempfile.mkdtemp(prefix="final_era_profile_", dir=output))
+    final_env = env.copy()
+    final_env["APPDATA"] = str(final_profile)
+    final_env["LOCALAPPDATA"] = str(final_profile)
+    final_env["XDG_DATA_HOME"] = str(final_profile)
+    final_check = subprocess.run(
+        [str(Path(args.godot_bin).resolve()), "--headless", "--audio-driver", "Dummy",
+         "--path", str(ROOT), "--script", "res://scripts/ci/final_era_runtime_contract.gd"],
+        cwd=ROOT, env=final_env, capture_output=True, text=True, timeout=120,
+    )
+    final_log = final_check.stdout + final_check.stderr
+    (output / "final_era.log").write_text(final_log, encoding="utf-8")
+    if final_check.returncode != 0 or "FINAL_ERA_RUNTIME_CONTRACT_OK" not in final_log or "ERROR:" in final_log:
+        print(final_log)
+        return 1
+    session_profile = Path(tempfile.mkdtemp(prefix="session_log_profile_", dir=output))
+    session_env = env.copy()
+    session_env["APPDATA"] = str(session_profile)
+    session_env["LOCALAPPDATA"] = str(session_profile)
+    session_env["XDG_DATA_HOME"] = str(session_profile)
+    session_check = subprocess.run(
+        [str(Path(args.godot_bin).resolve()), "--headless", "--audio-driver", "Dummy",
+         "--path", str(ROOT), "--script", "res://scripts/ci/session_log_contract.gd"],
+        cwd=ROOT, env=session_env, capture_output=True, text=True, timeout=60,
+    )
+    session_log = session_check.stdout + session_check.stderr
+    (output / "session_log.log").write_text(session_log, encoding="utf-8")
+    if session_check.returncode != 0 or "SESSION_LOG_CONTRACT_OK" not in session_log or "ERROR:" in session_log:
+        print(session_log)
+        return 1
     command = [str(Path(args.godot_bin).resolve()), "--audio-driver", "Dummy",
                "--path", str(ROOT), "--script", "res://scripts/ci/campaign_runtime_contract.gd"]
     user_args = []

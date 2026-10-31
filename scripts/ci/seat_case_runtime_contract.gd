@@ -22,6 +22,10 @@ func _run() -> void:
 	isolated_save.free()
 	save.mark_campaign_dialogue_seen("entry")
 	save.mark_campaign_dialogue_seen("seat_kept")
+	# One Era-1 racconto (footstep) still precedes the case, as before seats joined the Era.
+	save.mark_campaign_dialogue_seen("seats")
+	# The Era-gated opening of each step is covered by seat_steps_era_contract.gd.
+	save.mark_campaign_dialogue_seen("seat_case_recall")
 	save.commit_registry_evolution(0.0, 1, {})
 	save.set_ledger_denari(-5)
 	var scene: Node = load("res://scenes/Main.tscn").instantiate()

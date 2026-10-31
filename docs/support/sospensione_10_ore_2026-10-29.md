@@ -1,5 +1,10 @@
 # Gallicus: stato alla sospensione dell'obiettivo - 29 ottobre 2026
 
+Ripresa: l'utente ha riattivato l'obiettivo il 29 ottobre. Il primo pacchetto
+(baseline e mappa degli eventi) e' in
+`docs/support/baseline_economia_ritmo_2026-10-29.md`; questo documento resta
+il passaggio di consegne della sospensione precedente.
+
 ## Allineamento della base - 29 ottobre 2026
 
 La PR #541 e' stata unita su richiesta; la revisione e' stata preparata sulla

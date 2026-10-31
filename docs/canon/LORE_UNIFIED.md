@@ -100,9 +100,10 @@ Dieci racconti illustrati riempiono il tratto fra la prima copia e la fine
 della seconda Era: compaiono all'inizio di un percorso, uno per volta, come
 premio dei gradini della scala dei bandi di Orvo (gradini 1-10, vedi
 `docs/canon/MECHANICS_UNIFIED.md`), dopo le scene d'Era che hanno la
-precedenza e mai dopo il congedo dell'ultima Era. I quattro racconti del posto
+precedenza e mai dopo il congedo dell'ultima Era. I sei racconti del posto
 vuoto sono garantiti dalla campagna: arrivano anche senza bando dall'Era 1
-(`seat_kept`, `footstep`) e dall'Era 2 (`open_strophe`, `slope`), e il congedo
+(`seat_kept`, `seats`, `footstep`) e dall'Era 2 (`open_strophe`, `scraping`,
+`slope`), e il congedo
 li aspetta tutti. Il bando li anticipa. Nessuno durante Silenzio o
 Assenza. Parlano Nerio, Rugo, Dima e Lauro; il terminale ha due soli inserti di stato
 ("COPIA RESPINTA", "CONFRONTO IN CORSO / Corrispondenza parziale."). Vessa e
@@ -1432,5 +1433,14 @@ Silenzio e non prevede il momento della cessazione. Durante Silenzio e
 Assenza nessuno parla e il terminale non produce stati. Felix resta assente.
 La scena finale scioglie il gesto di Dima, che lascia libero il posto, e il
 richiamo di Rugo, che rimane senza chiamare. Nessuna missione o scelta morale.
+
+Dal 30 ottobre 2026 il congedo non apre piu' l'ultima Era: la chiude, al
+quinto percorso, dopo tre scene che smontano l'apparato (`Il conto chiuso`,
+`L'ultimo bando`, `L'ultima copia`). Vessa e Orvo vi restano citati e non
+parlano; il terminale ha una sola riga di stato ("COPIA FINALE / Un foglio
+disponibile."). Le scelte riguardano dove va l'ultima cifra e quale memoria
+Nerio copia: ricordano il soggetto senza nominare l'assente e senza giudicare.
+Dopo il terzo Silenzio il Registro dichiara "NESSUNA ULTERIORE DECISIONE
+RILEVANTE"; le decisioni dell'ultima Era sono degli abitanti, non sue.
 
 Dettaglio e prove: `docs/support/illustrated_dialogues_2026-09-12.md`.

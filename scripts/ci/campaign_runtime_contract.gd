@@ -21,6 +21,7 @@ var seat_case_testified: bool = false
 var seat_inquiry_completed: bool = false
 var seat_copy_completed: bool = false
 var seat_copy_paid: bool = false
+var final_sheets: Dictionary = {}
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -103,6 +104,13 @@ func _run() -> void:
 				_press("AdvanceDialogue")
 				continue
 			var case_ui: Node = conversation.get_node("SeatCase")
+			if bool(case_ui.get("active")) and str(case_ui.get("mode")) in ["ledger", "final_copy"]:
+				# The last Era's sheets have no deferral: take the first offered choice.
+				var final_mode: String = str(case_ui.get("mode"))
+				if not (_press("Btn_Seat_Witness") or _press("Btn_Seat_Reserve") or _press("Btn_Seat_Defer")):
+					_fail("last Era sheet without a choice: " + final_mode)
+				final_sheets[final_mode] = index + 1
+				continue
 			if bool(case_ui.get("active")) and str(case_ui.get("mode")) == "copy":
 				if seat_copy_paid and not _available("Btn_Seat_Reserve"):
 					_press("Btn_Seat_Defer")
@@ -232,6 +240,7 @@ func _run() -> void:
 			_fail("racconti out of ladder order: " + str(dialogues_seen))
 		previous_run = heard
 	check_seat_case_reached()
+	check_final_era_dismantled(save)
 	print("CAMPAIGN_DIALOGUES=", JSON.stringify(dialogues_seen), " BANDO_STEP=", save.get_bando_step())
 	if save.get_registry_era() == 4:
 		var terminal: Node = scene.get_node("UI/RegistryTerminalView")
@@ -263,6 +272,21 @@ func _run() -> void:
 func _available(name: String) -> bool:
 	var button: Button = scene.find_child(name, true, false) as Button
 	return button != null and button.is_visible_in_tree() and not button.disabled
+
+func check_final_era_dismantled(save: Node) -> void:
+	# One piece per percorso, in order, and the farewell last, all before Absence.
+	var previous: int = 0
+	for scene_id: String in ["final_ledger", "final_bando", "final_copy", "departure"]:
+		var heard: int = int(dialogues_seen.get(scene_id, 0))
+		if heard <= previous:
+			_fail("last Era out of order: " + str(dialogues_seen))
+		previous = heard
+	if final_sheets.get("ledger", 0) != dialogues_seen.get("final_ledger", -1) or final_sheets.get("final_copy", 0) != dialogues_seen.get("final_copy", -1):
+		_fail("last Era sheets did not follow their scenes: " + str(final_sheets))
+	var record: Dictionary = save.get_final_era()
+	if str(record.ledger) == "" or str(record.copy) == "" or str(record.bando) not in ["closed", "missed"] or (record.strophe as Array).size() != 3:
+		_fail("last Era not recorded: " + str(record))
+	print("CAMPAIGN_FINAL_ERA=", JSON.stringify({"dialogues": dialogues_seen, "record": record}))
 
 func check_seat_case_reached() -> void:
 	if seat_case_deferrals == 0:

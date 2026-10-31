@@ -83,7 +83,7 @@ def main() -> int:
     if "_registry_era >= int(tale.era)" not in dialogue or 'id == "departure" and not farewell_heard' not in dialogue:
         raise AssertionError("the empty-seat racconti come with their Era and before the farewell")
     eras = re.findall(r'\{"id": "([a-z_]+)", "step": \d+, "era": (\d+)\}', _read(DIALOGUES))
-    if [tale for tale, _ in eras] != ["seat_kept", "footstep", "open_strophe", "slope"] or any(int(era) >= 3 for _, era in eras):
+    if [tale for tale, _ in eras] != ["seat_kept", "seats", "footstep", "open_strophe", "scraping", "slope"] or any(int(era) >= 3 for _, era in eras):
         raise AssertionError(f"the empty-seat racconti must be due before the farewell Era: {eras}")
 
     run_state = _read(RUN_STATE)

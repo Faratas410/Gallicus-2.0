@@ -42,7 +42,8 @@ func send_key(code: Key) -> void:
 
 func _run() -> void:
 	save = root.get_node("SaveManager")
-	save.commit_registry_evolution(0.0, 1, {})
+	# The comparison belongs to the second Era of the arc (SEAT_STEP_ERAS).
+	save.commit_registry_evolution(0.0, 2, {})
 	for id: String in Dialogues.SEQUENCES.keys():
 		save.mark_campaign_dialogue_seen(id)
 	save.set_ledger_denari(10)

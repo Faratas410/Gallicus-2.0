@@ -42,6 +42,34 @@ e l'addebito di 5 Denari condividono una scrittura del profilo. Il checkpoint
 aggiunge `seat_copy_deferred` (bool, default false); si azzera alla nuova run.
 I dialoghi `seat_copy_for_nerio` e `seat_copy_for_dima` usano la lista esistente.
 `meta.seat_copy_era` registra l'Era in cui e' pagata la copia, o -1 altrimenti.
+`meta.seat_copy_echoed` (bool, default false, valido solo con una copia
+registrata) segna che la gradinata ha gia' ricordato la destinazione; il
+checkpoint RunState aggiunge `seat_copy_echo` (bool, default false) per il
+percorso in cui quell'eco avviene.
+`meta.final_era` (30 ottobre 2026) registra lo smontaggio dell'ultima Era:
+`ledger` (vuoto, `lauro`, `crowd`, `vessa`, `voice`, `debt`), `amount` (saldo
+al momento della chiusura), `voice_pending` (solo con `voice`, finche' il
+percorso successivo non applica la Pressione), `bando` (vuoto, `open`,
+`closed`, `missed`), `strophe` (fino a tre versi `{key, value}` con chiavi del
+catalogo di Lauro) e `copy` (vuoto, `seat`, `gesta`, `scars`). I profili
+precedenti e i valori invalidi tornano ai default; `reset_campaign` li azzera.
+Le scene `final_ledger`, `final_bando` e `final_copy` usano
+`settings.campaign_dialogues_seen`.
+Il checkpoint RunState aggiunge `active_msec` (int, default 0, mai negativo):
+il tempo di gioco dentro il percorso a finestra attiva, escluso menu e
+fascicolo, conservato al resume. A ogni percorso chiuso RunManager aggiunge una
+riga JSON a `user://session_log.jsonl` (`ended_unix`, `era`, `silence`,
+`active_seconds`, `reason`, `arenas`, `scenes`, `bando`, `denari`, `earned`,
+`lost`). Il file e' una misura locale per i playtest: non entra nel profilo,
+non e' letto dal gioco, non viene inviato e sopravvive al reset della campagna.
+Il checkpoint RunState aggiunge `campaign_scenes_heard` (lista di id del
+catalogo, default vuota): le scene di campagna confermate nel percorso
+corrente. Id sconosciuti, duplicati o non stringa sono scartati; si azzera alla
+nuova run. I richiami `seat_case_recall`, `seat_inquiry_recall` e
+`seat_copy_recall` usano `settings.campaign_dialogues_seen`, senza nuovi campi
+del profilo. Un profilo con un passo dell'arco gia' iniziato in un'Era
+precedente alla regola resta valido: il passo riprende quando la sua Era e il
+richiamo lo consentono.
 Una copia pagata in un profilo precedente a questo campo riceve lo sconto per
 l'Era corrente ancora aperta; in Assenza non viene riattivata. Valori invalidi
 non attivano lo sconto. Il prezzo della polizza e' derivato, non salvato.

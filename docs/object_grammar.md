@@ -180,6 +180,12 @@ testimoniare indica esplicitamente il costo di Pressione sui percorsi futuri.
 Confronto successivo: capire cosa manca -> copia e ricevuta o testimonianza ->
 esaminare entrambe e annotare solo cio' che e' provato -> spiegazione delle
 ipotesi non sostenute -> conclusione conservata nell'Archivio.
+Ultima cifra (ultima Era): decidere dove va il conto -> libro chiuso di Vessa
+con il saldo -> consegnarlo a Lauro, alla gradinata o a Vessa (in debito:
+voce o debito scritto) -> Banco chiuso, effetto dichiarato sul rito ->
+`meta.final_era` e Archivio. Ultima copia: scegliere cosa resta scritto ->
+ultimo foglio di Nerio -> copiare il posto, la gesta piu' alta o i Segni ->
+riscontro di chi conserva il resto -> Archivio. Nessuno dei due fogli si rinvia.
 Consegna del margine: decidere dove resta l'annotazione -> copia incompleta e
 foglio di Vessa -> pagare una trascrizione per Nerio o lasciare la sola
 annotazione a Dima -> conto aggiornato e polizza scontata di 1 Denaro fino al

@@ -114,6 +114,17 @@ const BANCO_ITEMS: Dictionary = {
 }
 # Each Era the Registry asks one Denaro more for every service.
 const BANCO_ERA_SURCHARGE: int = 1
+# The empty-seat arc takes one step per Era: the case, the comparison of the
+# traces, the copy. Each step opens an entry of its own with a short recall.
+const SEAT_STEP_ERAS: Dictionary = {"case": 1, "inquiry": 2, "copy": 3}
+# The last Era dismantles the apparatus, one piece per percorso and never before
+# its percorso of the Era (registry era_runs). The seat copy, paid in Denari,
+# takes the first one. An Era lasts at least five percorsi, so the farewell
+# always comes before the last Silence.
+const FINAL_ERA: int = 3
+const FINAL_ERA_SCENES: Array[Array] = [["final_ledger", 1], ["final_bando", 2], ["final_copy", 3], ["departure", 4]]
+const FINAL_CROWD_FAVOR: int = 2
+const FINAL_VOICE_PRESSURE: int = 2
 
 # Hold chance of the second and third strike; the first strike is the arena roll.
 const SEAL_EXTRA_STRIKE_HOLD: Array[float] = [0.6, 0.45]
@@ -1337,7 +1348,9 @@ func _ready() -> void:
 	_start_smoke_timeout_timer()
 	call_deferred("_boot")
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if _counts_active_time():
+		_run_state.active_msec += roundi(delta * 1000.0)
 	_watchdog_tick()
 	if _is_smoke_mode():
 		_smoke_tick(Time.get_ticks_msec())
@@ -1353,6 +1366,8 @@ func _gameevents_bindings() -> Array[Array]:
 		[&"request_seat_case_choice", &"_on_request_seat_case_choice", true],
 		[&"request_seat_inquiry_action", &"_on_request_seat_inquiry_action", true],
 		[&"request_seat_copy_choice", &"_on_request_seat_copy_choice", true],
+		[&"request_final_ledger_choice", &"_on_request_final_ledger_choice", true],
+		[&"request_final_copy_choice", &"_on_request_final_copy_choice", true],
 		[&"request_intro_select_bet", &"_on_request_intro_select_bet", true],
 		[&"request_intro_confirm", &"_on_request_intro_confirm", true],
 		[&"request_mid_choice_select", &"_on_request_mid_choice_select", true],
@@ -1787,6 +1802,7 @@ func _start_level3_run() -> void:
 	GameEvents.run_started.emit()
 	_open_ledger_for_run()
 	_open_bando_for_run()
+	_prepare_seat_copy_echo()
 	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
 	start_arena()
@@ -2614,7 +2630,8 @@ func _ledger_balance() -> int:
 	return SaveManager.get_ledger_denari()
 
 func _ledger_change(delta: int, note: String) -> void:
-	if delta == 0:
+	# Once Vessa closes the book the last figure no longer moves.
+	if delta == 0 or _final_ledger_closed():
 		return
 	var before: int = _ledger_balance()
 	SaveManager.set_ledger_denari(maxi(before + delta, LEDGER_DEBT_FLOOR))
@@ -2636,6 +2653,14 @@ func _open_ledger_for_run() -> void:
 	var seat_case: Dictionary = SaveManager.get_seat_case()
 	if str(seat_case.choice) == "witness" and int(seat_case.era) == _registry_era:
 		_shift_escalation(1)
+	if str(SaveManager.get_final_era().ledger) == "crowd":
+		_run_state.audience_score = clampi(_run_state.audience_score + FINAL_CROWD_FAVOR, AUDIENCE_SCORE_MIN, AUDIENCE_SCORE_MAX - 1)
+		_check_audience_condanne()
+		_emit_crowd_favor("La gradinata ricorda l'ultima cifra: Favore +2.", "")
+	if SaveManager.consume_final_voice():
+		_shift_escalation(FINAL_VOICE_PRESSURE)
+		_emit_ledger("Vessa ricorda la voce: Pressione +2.", 0)
+		return
 	var balance: int = _ledger_balance()
 	if balance < 0:
 		# The debt follows the subject into the sand.
@@ -2682,9 +2707,13 @@ func _banco_item_available(item_id: String) -> bool:
 
 func get_banco_view() -> Dictionary:
 	var balance: int = _ledger_balance()
-	var open_now: bool = _phase == RunPhase.BET_PRESENT and _waiting_for_bet and balance >= 0
+	var closed: bool = _final_ledger_closed()
+	var open_now: bool = _phase == RunPhase.BET_PRESENT and _waiting_for_bet and balance >= 0 and not closed
 	var items: Array[Dictionary] = []
-	for item_id: String in BANCO_ITEM_ORDER:
+	var item_ids: Array[String] = BANCO_ITEM_ORDER.duplicate()
+	if closed:
+		item_ids.clear()
+	for item_id: String in item_ids:
 		var item: Dictionary = BANCO_ITEMS.get(item_id, {}) as Dictionary
 		var price: int = _banco_price(item_id)
 		items.append({
@@ -2698,6 +2727,7 @@ func get_banco_view() -> Dictionary:
 		"denari": balance,
 		"in_debt": balance < 0,
 		"open": open_now,
+		"closed": closed,
 		"insured": _run_state.banco_insured,
 		"items": items,
 	}
@@ -2720,6 +2750,11 @@ func _bando_deadline_for(step: int) -> int:
 	return mini(BANDO_FIRST_DEADLINE + clampi(step, 0, BANDO_LADDER.size() - 1) / BANDO_STEPS_PER_EXTRA_ARENA, PERCORSO_MAX_ARENAS)
 
 func _open_bando_for_run() -> void:
+	if str(SaveManager.get_final_era().bando) != "":
+		# Orvo announced his last bando: no further percorso opens one.
+		_run_state.bando_status = ""
+		_emit_bando("")
+		return
 	var step: int = _bando_step()
 	_run_state.bando_quota = _bando_quota_for(step)
 	_run_state.bando_deadline = _bando_deadline_for(step)
@@ -2732,6 +2767,14 @@ func _open_bando_for_run() -> void:
 		_check_audience_condanne()
 		_emit_crowd_favor("La gradinata ricorda il bando: Favore +2.", "")
 	_emit_bando("")
+
+func _ease_last_bando() -> void:
+	# Orvo's low voice: the last bando asks the rung below and the whole percorso.
+	if _run_state.bando_status != "open":
+		return
+	_run_state.bando_quota = BANDO_LADDER[maxi(clampi(_bando_step(), 0, BANDO_LADDER.size() - 1) - 1, 0)]
+	_run_state.bando_deadline = PERCORSO_MAX_ARENAS
+	_emit_bando("Ultimo bando: un gradino in meno, tutte le arene.")
 
 func _refresh_bando_deadline() -> void:
 	if _run_state.bando_status == "open" and _run_state.arena_index > _run_state.bando_deadline:
@@ -2786,7 +2829,8 @@ func get_bando_view() -> Dictionary:
 		"prize_tale": _bando_prize_tale(step),
 		"prize_pacts": BANDO_PACT_STEPS.values().has(step + 1),
 		"ladder_complete": step >= BANDO_LADDER.size(),
-		"denari": BANDO_DENARI,
+		"denari": 0 if _final_ledger_closed() else BANDO_DENARI,
+		"last": str(SaveManager.get_final_era().bando) == "open",
 	}
 
 func _emit_bando(note: String) -> void:
@@ -4441,6 +4485,8 @@ func _emit_run_finale() -> void:
 		return
 	_run_state.run_finale_emitted = true
 	_update_registry_meta_from_run()
+	# The evolution may already have advanced the Era: a Silence closes the Era just played.
+	_append_session_log(_registry_era - (1 if _should_emit_registry_silence() else 0))
 	if _should_emit_registry_silence():
 		return
 	var finale: Dictionary = _select_run_finale()
@@ -4499,8 +4545,13 @@ func _sing_gesta(register_final: bool) -> Dictionary:
 	if new_best:
 		SaveManager.set_gesta_best(glory, arenas)
 		best = SaveManager.get_gesta_best()
+	# The percorso of Orvo's last bando gives Lauro his last strophe, closed or not.
+	var last: bool = str(SaveManager.get_final_era().bando) == "open"
+	if last:
+		SaveManager.set_final_bando("closed" if _run_state.bando_status == "closed" else "missed", lines)
 	return {
 		"singer": CantastorieScript.SINGER,
+		"last": last,
 		"lines": lines,
 		"new_best": new_best,
 		"best_glory": int(best.get("glory", 0)),
@@ -4566,12 +4617,49 @@ func get_character_dialogue(context: String) -> Array[String]:
 		return []
 	var silent: bool = not can_start_run() or _run_state.registry_silence_active
 	var copy_choice: String = SaveManager.get_seat_copy()
-	if not silent and context == "gesture" and _run_state.arena_index == 1 and posmod(_run_state.run_seed, 4) == 0 and catalog.SEAT_COPY_EXCHANGES.has(copy_choice):
+	if not silent and context == "gesture" and _run_state.arena_index == 1 and _run_state.seat_copy_echo and not SaveManager.has_seen_campaign_dialogue("departure") and catalog.SEAT_COPY_EXCHANGES.has(copy_choice):
 		var remembered: Array[String] = []
 		for line: String in catalog.SEAT_COPY_EXCHANGES[copy_choice]:
 			remembered.append(line)
 		return remembered
 	return catalog.lines(context, posmod(_run_state.run_seed, variants) + _run_state.arena_index, _registry_effect_progress() >= 2.0, silent)
+
+const SESSION_LOG_PATH: String = "user://session_log.jsonl"
+
+func _counts_active_time() -> bool:
+	# Time spent playing a percorso: not the menu, not the dossier, not an unfocused window.
+	if _run_state == null or _run_state.run_finale_emitted or _phase in [RunPhase.NONE, RunPhase.MAIN_MENU, RunPhase.GAME_OVER]:
+		return false
+	return DisplayServer.get_name() == "headless" or DisplayServer.window_is_focused()
+
+func _append_session_log(era: int) -> void:
+	# Local playtest measure, one line per closed percorso; it never leaves the machine.
+	var line: Dictionary = {
+		"ended_unix": int(Time.get_unix_time_from_system()),
+		"era": era,
+		"silence": _run_state.registry_silence_active,
+		"active_seconds": int(_run_state.active_msec / 1000),
+		"reason": _run_state.run_end_reason,
+		"arenas": _run_state.arena_index,
+		"scenes": _run_state.campaign_scenes_heard.duplicate(),
+		"bando": _run_state.bando_status,
+		"denari": _ledger_balance(),
+		"earned": _run_state.ledger_earned,
+		"lost": _run_state.ledger_lost,
+	}
+	var file: FileAccess = FileAccess.open(SESSION_LOG_PATH, FileAccess.READ_WRITE if FileAccess.file_exists(SESSION_LOG_PATH) else FileAccess.WRITE)
+	if file == null:
+		return
+	file.seek_end()
+	file.store_line(JSON.stringify(line))
+	file.close()
+
+func _prepare_seat_copy_echo() -> void:
+	# The stands recall the annotation's destination once, in the first percorso
+	# after the choice; the run checkpoint keeps it for a resume.
+	_run_state.seat_copy_echo = SaveManager.get_seat_copy() != "" and not SaveManager.get_seat_copy_echoed() and not SaveManager.has_seen_campaign_dialogue("departure")
+	if _run_state.seat_copy_echo:
+		SaveManager.mark_seat_copy_echoed()
 
 func get_campaign_dialogue() -> Dictionary:
 	# Presentation at a persisted entry checkpoint; no new gameplay phase.
@@ -4598,8 +4686,8 @@ func get_campaign_dialogue() -> Dictionary:
 	var samples: int = int(SaveManager.get_registry_evolution().get("samples", 0))
 	var bando_step: int = _bando_step()
 	var id: String = ""
-	if _registry_era >= 3:
-		id = "departure"
+	if _registry_era >= FINAL_ERA:
+		id = _final_scene_due()
 	elif _registry_era >= 2:
 		id = "middle"
 	elif _registry_era == 0 and samples == 0:
@@ -4618,15 +4706,102 @@ func get_campaign_dialogue() -> Dictionary:
 				id = str(tale.id)
 				break
 	if id == "":
+		id = _seat_recall_due()
+	if id == "":
 		return {}
 	var payload: Dictionary = catalog.SEQUENCES[id].duplicate(true)
 	payload["id"] = id
 	return payload
 
+func _final_scene_due() -> String:
+	# One piece of the apparatus per percorso, as the first scene of its entry.
+	if not _run_state.campaign_scenes_heard.is_empty():
+		return ""
+	var era_runs: int = int(SaveManager.get_registry_evolution().get("era_runs", 0))
+	for scene: Array in FINAL_ERA_SCENES:
+		if SaveManager.has_seen_campaign_dialogue(str(scene[0])):
+			continue
+		return str(scene[0]) if era_runs >= int(scene[1]) else ""
+	return ""
+
+func _final_entry_open() -> bool:
+	return can_start_run() and _registry_era >= FINAL_ERA and _phase == RunPhase.BET_PRESENT and _waiting_for_bet and _run_state.arena_index == 1
+
+func _final_ledger_closed() -> bool:
+	return str(SaveManager.get_final_era().ledger) != ""
+
+func get_final_era_record() -> Dictionary:
+	var record: Dictionary = SaveManager.get_final_era()
+	record["gesta_best"] = SaveManager.get_gesta_best()
+	return record
+
+func get_final_ledger() -> Dictionary:
+	if not _final_entry_open() or not SaveManager.has_seen_campaign_dialogue("final_ledger") or _final_ledger_closed():
+		return {}
+	var balance: int = _ledger_balance()
+	return {"denari": balance, "in_debt": balance < 0}
+
+func _on_request_final_ledger_choice(choice: String) -> void:
+	var view := get_final_ledger()
+	if view.is_empty() or not SaveManager.resolve_final_ledger(choice):
+		return
+	if choice in ["lauro", "crowd"]:
+		_run_state.ledger_lost += int(view.denari)
+	_emit_ledger("", _ledger_balance() - int(view.denari))
+	_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
+	GameEvents.final_ledger_resolved.emit({"choice": choice, "amount": int(view.denari)})
+
+func _final_copy_options() -> Array[String]:
+	var options: Array[String] = []
+	if str(SaveManager.get_seat_case().choice) != "":
+		options.append("seat")
+	options.append("gesta")
+	# The body keeps no Segno between percorsi; the Registry's reading does.
+	var signature: Dictionary = SaveManager.get_registry_evolution().get("signature", {}) as Dictionary
+	if float(signature.get("scar_tolerance", 0.0)) > 0.0:
+		options.append("scars")
+	return options
+
+func get_final_copy() -> Dictionary:
+	if not _final_entry_open() or not SaveManager.has_seen_campaign_dialogue("final_copy") or str(SaveManager.get_final_era().copy) != "":
+		return {}
+	return {"options": _final_copy_options()}
+
+func _on_request_final_copy_choice(choice: String) -> void:
+	var view := get_final_copy()
+	if view.is_empty() or choice not in (view.options as Array) or not SaveManager.resolve_final_copy(choice):
+		return
+	_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
+	GameEvents.final_copy_resolved.emit({"choice": choice})
+
+func _seat_step_pending() -> String:
+	var choice: String = str(SaveManager.get_seat_case().choice)
+	if choice == "":
+		return "case" if SaveManager.has_seen_campaign_dialogue("seat_kept") else ""
+	if not bool(SaveManager.get_seat_inquiry().complete):
+		return "inquiry" if SaveManager.has_seen_campaign_dialogue("seat_reserved_followup" if choice == "reserve" else "seat_witness_followup") else ""
+	if SaveManager.get_seat_copy() == "":
+		return "copy" if SaveManager.has_seen_campaign_dialogue("seat_receipt_after_inquiry" if choice == "reserve" else "seat_voice_after_inquiry") else ""
+	return ""
+
+func _seat_recall_due() -> String:
+	# The recall is the first scene of its entry, never stacked after another one.
+	var step: String = _seat_step_pending()
+	if step == "" or _registry_era < int(SEAT_STEP_ERAS[step]) or not _run_state.campaign_scenes_heard.is_empty():
+		return ""
+	var recall: String = "seat_%s_recall" % step
+	return "" if SaveManager.has_seen_campaign_dialogue(recall) else recall
+
+func _seat_step_open(step: String) -> bool:
+	if _registry_era < int(SEAT_STEP_ERAS[step]):
+		return false
+	# The case may follow its own racconto in the same entry instead of a recall.
+	return SaveManager.has_seen_campaign_dialogue("seat_%s_recall" % step) or (step == "case" and _run_state.campaign_scenes_heard.has("seat_kept"))
+
 func get_seat_case() -> Dictionary:
 	if not can_start_run() or _phase != RunPhase.BET_PRESENT or not _waiting_for_bet or _run_state.arena_index != 1:
 		return {}
-	if _run_state.seat_case_deferred or not SaveManager.has_seen_campaign_dialogue("seat_kept") or str(SaveManager.get_seat_case().choice) != "":
+	if _run_state.seat_case_deferred or not SaveManager.has_seen_campaign_dialogue("seat_kept") or str(SaveManager.get_seat_case().choice) != "" or not _seat_step_open("case"):
 		return {}
 	return {"available": true, "denari": _ledger_balance(), "reserve_available": _ledger_balance() >= 6}
 
@@ -4639,7 +4814,7 @@ func get_seat_inquiry() -> Dictionary:
 	var choice: String = str(SaveManager.get_seat_case().choice)
 	var followup: String = "seat_reserved_followup" if choice == "reserve" else "seat_witness_followup" if choice == "witness" else ""
 	var inquiry: Dictionary = SaveManager.get_seat_inquiry()
-	if followup == "" or not SaveManager.has_seen_campaign_dialogue(followup) or bool(inquiry.complete):
+	if followup == "" or not SaveManager.has_seen_campaign_dialogue(followup) or bool(inquiry.complete) or not _seat_step_open("inquiry"):
 		return {}
 	return {"choice": choice, "seen": int(inquiry.seen)}
 
@@ -4651,9 +4826,9 @@ func get_seat_copy() -> Dictionary:
 		return {}
 	var choice: String = str(SaveManager.get_seat_case().choice)
 	var response: String = "seat_receipt_after_inquiry" if choice == "reserve" else "seat_voice_after_inquiry" if choice == "witness" else ""
-	if response == "" or not bool(SaveManager.get_seat_inquiry().complete) or not SaveManager.has_seen_campaign_dialogue(response) or SaveManager.get_seat_copy() != "":
+	if response == "" or not bool(SaveManager.get_seat_inquiry().complete) or not SaveManager.has_seen_campaign_dialogue(response) or SaveManager.get_seat_copy() != "" or not _seat_step_open("copy"):
 		return {}
-	return {"denari": _ledger_balance(), "copy_available": _ledger_balance() >= 5}
+	return {"denari": _ledger_balance(), "copy_available": _ledger_balance() >= 5 and not _final_ledger_closed()}
 
 func get_seat_copy_record() -> String:
 	return SaveManager.get_seat_copy()
@@ -4663,6 +4838,8 @@ func get_seat_copy_discount_active() -> bool:
 
 func _on_request_seat_copy_choice(choice: String) -> void:
 	if get_seat_copy().is_empty() or choice not in ["copy", "keep", "defer"]:
+		return
+	if choice == "copy" and _final_ledger_closed():
 		return
 	if choice == "defer":
 		_run_state.seat_copy_deferred = true
@@ -4721,6 +4898,13 @@ func _on_request_seat_case_choice(choice: String) -> void:
 func _on_request_dismiss_campaign_dialogue(id: String) -> void:
 	if str(get_campaign_dialogue().get("id", "")) == id and id != "":
 		SaveManager.mark_campaign_dialogue_seen(id)
+		if id == "final_bando":
+			# Orvo's announcement makes this percorso's bando the last one.
+			SaveManager.set_final_bando("open")
+			_ease_last_bando()
+		if not _run_state.campaign_scenes_heard.has(id):
+			_run_state.campaign_scenes_heard.append(id)
+			_autosave_run_checkpoint(RunSaveFlowStepContractScript.BET_OFFER, &"")
 
 func _registry_effect_progress() -> float:
 	if _registry_era <= 0:

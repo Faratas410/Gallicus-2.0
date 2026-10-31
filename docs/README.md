@@ -2,7 +2,11 @@
 
 Identita' e direzione per l'espansione: [l'anima di Gallicus](support/anima_gallicus_2026-10-29.md).
 
-Obiettivo delle dieci ore in pausa: [stato e lavoro da completare](support/sospensione_10_ore_2026-10-29.md).
+Obiettivo delle dieci ore ripreso: [baseline di economia e ritmo, decisioni aperte](support/baseline_economia_ritmo_2026-10-29.md).
+
+Stato alla sospensione precedente: [fatto e lavoro da completare](support/sospensione_10_ore_2026-10-29.md).
+
+Proposta per la ripresa: [prossimo goal, baseline economica e ritmo](support/prossimo_goal_10_ore_2026-10-29.md).
 
 Revisione prima del commit: [perimetro, correzioni e decisioni aperte](support/revisione_pre_commit_10_ore_2026-10-29.md).
 

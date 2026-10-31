@@ -3,6 +3,7 @@ extends Node
 const PROFILE_VERSION: int = 5
 const RegistryEvolutionScript = preload("res://scripts/systems/run/registry_evolution.gd")
 const CampaignDialogues = preload("res://scripts/content/campaign_dialogues.gd")
+const CantastorieScript = preload("res://scripts/content/cantastorie.gd")
 const PROFILE_PATH: String = "user://profile.save"
 const TMP_PATH: String = "%s.tmp" % PROFILE_PATH
 const BAK_PATH: String = "%s.bak" % PROFILE_PATH
@@ -354,6 +355,18 @@ func get_seat_copy_era() -> int:
 		load_profile()
 	return int(_meta.get("seat_copy_era", -1))
 
+func get_seat_copy_echoed() -> bool:
+	if not _profile_loaded:
+		load_profile()
+	return bool(_meta.get("seat_copy_echoed", false))
+
+func mark_seat_copy_echoed() -> void:
+	if get_seat_copy_echoed():
+		return
+	_meta["seat_copy_echoed"] = true
+	_profile_dirty = true
+	save_profile()
+
 func resolve_seat_copy(choice: String) -> bool:
 	if not bool(get_seat_inquiry().complete) or get_seat_copy() != "" or choice not in ["copy", "keep"]:
 		return false
@@ -427,6 +440,98 @@ func _sanitize_gesta_best(value: Variant) -> Dictionary:
 		"glory": clampi(int(source.get("glory", 0)), 0, 99999),
 		"arenas": clampi(int(source.get("arenas", 0)), 0, 99),
 	}
+
+# The last Era dismantles the apparatus: Vessa's last figure, Orvo's last bando
+# with Lauro's last strophe, and the one memory Nerio copies. Only RunManager writes.
+const FINAL_LEDGER_CHOICES: Array[String] = ["lauro", "crowd", "vessa", "voice", "debt"]
+const FINAL_BANDO_STATES: Array[String] = ["open", "closed", "missed"]
+const FINAL_COPY_CHOICES: Array[String] = ["seat", "gesta", "scars"]
+
+func get_final_era() -> Dictionary:
+	if not _profile_loaded:
+		load_profile()
+	return (_meta.get("final_era", _default_final_era()) as Dictionary).duplicate(true)
+
+func resolve_final_ledger(choice: String) -> bool:
+	# The last figure and its destination share one profile write.
+	var record := get_final_era()
+	var balance := get_ledger_denari()
+	if str(record.ledger) != "" or choice not in FINAL_LEDGER_CHOICES:
+		return false
+	if (balance < 0) != (choice in ["voice", "debt"]) or (choice in ["lauro", "crowd"] and balance <= 0):
+		return false
+	record["ledger"] = choice
+	record["amount"] = balance
+	record["voice_pending"] = choice == "voice"
+	if choice in ["lauro", "crowd", "voice"]:
+		_meta["ledger_denari"] = 0
+	_meta["final_era"] = record
+	_profile_dirty = true
+	save_profile()
+	return true
+
+func consume_final_voice() -> bool:
+	var record := get_final_era()
+	if not bool(record.voice_pending):
+		return false
+	record["voice_pending"] = false
+	_meta["final_era"] = record
+	_profile_dirty = true
+	save_profile()
+	return true
+
+func set_final_bando(state: String, strophe: Array = []) -> void:
+	var record := get_final_era()
+	if state not in FINAL_BANDO_STATES:
+		return
+	record["bando"] = state
+	record["strophe"] = _sanitize_final_strophe(strophe)
+	_meta["final_era"] = record
+	_profile_dirty = true
+	save_profile()
+
+func resolve_final_copy(choice: String) -> bool:
+	var record := get_final_era()
+	if str(record.copy) != "" or choice not in FINAL_COPY_CHOICES:
+		return false
+	record["copy"] = choice
+	_meta["final_era"] = record
+	_profile_dirty = true
+	save_profile()
+	return true
+
+func _default_final_era() -> Dictionary:
+	return {"ledger": "", "amount": 0, "voice_pending": false, "bando": "", "strophe": [], "copy": ""}
+
+func _sanitize_final_strophe(value: Variant) -> Array:
+	var lines: Array = []
+	if not value is Array:
+		return lines
+	var keys := CantastorieScript.all_keys()
+	for line: Variant in value:
+		if line is Dictionary and str(line.get("key", "")) in keys and lines.size() < 3:
+			var number: Variant = line.get("value", -1)
+			lines.append({"key": str(line.key), "value": int(number) if (number is int or number is float) and is_finite(float(number)) else -1})
+	return lines
+
+func _sanitize_final_era(value: Variant) -> Dictionary:
+	var record := _default_final_era()
+	if not value is Dictionary:
+		return record
+	var ledger: Variant = value.get("ledger", "")
+	if ledger is String and ledger in FINAL_LEDGER_CHOICES:
+		record["ledger"] = ledger
+		var amount: Variant = value.get("amount", 0)
+		record["amount"] = _sanitize_ledger_denari(int(amount)) if (amount is int or amount is float) and is_finite(float(amount)) else 0
+		record["voice_pending"] = ledger == "voice" and value.get("voice_pending", false) is bool and bool(value.get("voice_pending", false))
+	var bando: Variant = value.get("bando", "")
+	if bando is String and bando in FINAL_BANDO_STATES:
+		record["bando"] = bando
+		record["strophe"] = _sanitize_final_strophe(value.get("strophe", []))
+	var copy: Variant = value.get("copy", "")
+	if copy is String and copy in FINAL_COPY_CHOICES:
+		record["copy"] = copy
+	return record
 
 func set_language(value: String) -> void:
 	if not _profile_loaded:
@@ -636,9 +741,11 @@ func _get_default_meta() -> Dictionary:
 		"seat_inquiry": {"seen": 0, "complete": false},
 		"seat_copy": "",
 		"seat_copy_era": -1,
+		"seat_copy_echoed": false,
 		"bando_step": 0,
 		"bando_acclaim": false,
 		"gesta_best": {"glory": 0, "arenas": 0},
+		"final_era": _default_final_era(),
 	}
 
 func _sanitize_language(value: String) -> String:
@@ -796,11 +903,16 @@ func _load_meta_from_profile(data: Dictionary) -> void:
 			var saved_era: Variant = meta_value.get("seat_copy_era")
 			if (saved_era is int or saved_era is float) and is_finite(float(saved_era)) and float(saved_era) == float(int(saved_era)) and int(saved_era) >= 0 and int(saved_era) < 4:
 				sanitized["seat_copy_era"] = int(saved_era)
+	# The echo of the copy is told once; it needs a recorded destination.
+	var echoed: Variant = meta_value.get("seat_copy_echoed", false)
+	sanitized["seat_copy_echoed"] = sanitized["seat_copy"] != "" and echoed is bool and bool(echoed)
 	# Profiles older than the bandi start at the foot of the ladder.
 	sanitized["bando_step"] = _sanitize_bando_step(int(meta_value.get("bando_step", 0)))
 	sanitized["bando_acclaim"] = bool(meta_value.get("bando_acclaim", false))
 	# Profiles older than Lauro have no gesta yet.
 	sanitized["gesta_best"] = _sanitize_gesta_best(meta_value.get("gesta_best", {}))
+	# Profiles older than the dismantling of the last Era start with nothing closed.
+	sanitized["final_era"] = _sanitize_final_era(meta_value.get("final_era", {}))
 	if not needs_save:
 		if not is_equal_approx(float(meta_value.get("registry_pressure", 0.0)), float(sanitized["registry_pressure"])):
 			needs_save = true

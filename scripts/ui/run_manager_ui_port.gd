@@ -59,6 +59,18 @@ func get_seat_copy_record() -> String:
 	var manager: Node = _get_manager()
 	return manager.get_seat_copy_record() if manager != null else ""
 
+func get_final_ledger() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_final_ledger() if manager != null else {}
+
+func get_final_copy() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_final_copy() if manager != null else {}
+
+func get_final_era_record() -> Dictionary:
+	var manager: Node = _get_manager()
+	return manager.get_final_era_record() if manager != null else {}
+
 func get_seat_copy_discount_active() -> bool:
 	var manager: Node = _get_manager()
 	return bool(manager.get_seat_copy_discount_active()) if manager != null else false

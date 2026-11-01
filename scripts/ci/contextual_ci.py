@@ -44,6 +44,14 @@ STATIC = {
     'crowd': ('no_mojibake',),
     'settlement': ('ledger_economy', 'bando_ladder', 'i18n_contract', 'ui_reactive_surface', 'no_mojibake'),
     'seat': ('i18n_contract', 'res_paths', 'no_mojibake'),
+    'betting_ui': ('identity_resolver', 'level3_bet_offer', 'ledger_economy',
+                   'bando_ladder', 'promise_signature_object', 'registry_table_object',
+                   'ui_motion', 'ui_reactive_surface', 'i18n_contract', 'res_paths', 'no_mojibake'),
+    'localization': ('i18n_contract', 'textual_style', 'bando_ladder', 'ledger_economy',
+                     'arena_gesture_object', 'arena_threshold_object', 'condemnation_mark_object',
+                     'final_dossier_object', 'judgment_seal_object', 'pact_tablet_object',
+                     'promise_signature_object', 'receipt_object', 'registry_table_object',
+                     'second_incision_object', 'no_mojibake'),
     'doc_gameevents': ('gameevents_contract', 'bando_ladder'),
     'doc_ritual': ('ritual_loop_contract',),
     'doc_ui': ('pressure_presentation', 'push_luck_counter', 'textual_style', 'ui_motion'),
@@ -62,7 +70,20 @@ RUNTIME = {
              ('seat_memory_runtime_contract.gd', 'SEAT_MEMORY_RUNTIME_CONTRACT_OK'),
              ('seat_copy_runtime_contract.gd', 'SEAT_COPY_RUNTIME_CONTRACT_OK'),
              ('seat_steps_era_contract.gd', 'SEAT_STEPS_ERA_CONTRACT_OK')),
+    'betting_ui': (('audit_runtime_contract.gd', 'AUDIT_RUNTIME_CONTRACT_OK'),),
+    # Every runtime contract that lean ran and that reads translated text:
+    # exact strings, untranslated keys or localized presentation.
+    'localization': (('audit_runtime_contract.gd', 'AUDIT_RUNTIME_CONTRACT_OK'),
+                     ('av_runtime_contract.gd', 'AV_RUNTIME_CONTRACT_OK'),
+                     ('character_runtime_contract.gd', 'CHARACTER_RUNTIME_CONTRACT_OK'),
+                     ('illustrated_dialogue_contract.gd', 'ILLUSTRATED_DIALOGUE_CONTRACT_OK'),
+                     ('final_era_runtime_contract.gd', 'FINAL_ERA_RUNTIME_CONTRACT_OK'),
+                     ('seat_copy_echo_contract.gd', 'SEAT_COPY_ECHO_CONTRACT_OK'),
+                     ('seat_steps_era_contract.gd', 'SEAT_STEPS_ERA_CONTRACT_OK')),
 }
+RUNTIME_TIMEOUT = 90
+# Longer contracts keep the limits of their own runners.
+RUNTIME_TIMEOUTS = {'illustrated_dialogue_contract.gd': 150}
 
 
 def _function_lines(text: str) -> list[str | None]:
@@ -132,6 +153,21 @@ def select(changes: list[tuple[str, str]], read_file) -> dict:
             if path == 'scripts/systems/run_manager.gd':
                 return {'mode': 'full', 'reason': f'{status} {path}', 'groups': []}
             fallback = fallback or f'{status} {path}'
+        elif path in {f'assets/i18n/{locale}.{suffix}' for locale in ('it', 'en', 'es')
+                      for suffix in ('csv', 'csv.import', f'{locale}.translation')}:
+            groups.add('localization')
+        elif path == 'scripts/ui/betting_circle_ui.gd':
+            try:
+                before, after = read_file('base', path), read_file('head', path)
+                if changes_contract(before, after):
+                    return {'mode': 'full', 'reason': f'contract change in {path}', 'groups': []}
+                changed = changed_functions(before, after)
+            except (UnicodeError, subprocess.SubprocessError):
+                changed = None
+            if not changed or not changed.issubset({'_format_contract_body'}):
+                fallback = fallback or f'unmapped change in {path}'
+            else:
+                groups.add('betting_ui')
         elif path in ('scripts/audio/sfx_bus.gd', 'scripts/ui/seat_case.gd'):
             try:
                 sensitive = changes_contract(read_file('base', path), read_file('head', path))
@@ -139,7 +175,8 @@ def select(changes: list[tuple[str, str]], read_file) -> dict:
                 sensitive = True
             if sensitive:
                 return {'mode': 'full', 'reason': f'contract change in {path}', 'groups': []}
-            groups.add('audio' if path == 'scripts/audio/sfx_bus.gd' else 'seat')
+            groups.add({'scripts/audio/sfx_bus.gd': 'audio',
+                        'scripts/ui/seat_case.gd': 'seat'}[path])
         elif path == 'scripts/systems/run_manager.gd':
             try:
                 changed = changed_functions(read_file('base', path), read_file('head', path))
@@ -201,7 +238,8 @@ def run_runtime(groups: list[str], godot: str) -> None:
             env.update(APPDATA=temp, LOCALAPPDATA=temp, XDG_DATA_HOME=temp)
             result = subprocess.run([godot, '--headless', '--audio-driver', 'Dummy', '--path', str(ROOT),
                                      '--script', f'res://scripts/ci/{script}'], cwd=ROOT, env=env,
-                                    capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=90)
+                                    capture_output=True, text=True, encoding='utf-8', errors='replace',
+                                    timeout=RUNTIME_TIMEOUTS.get(script, RUNTIME_TIMEOUT))
             output = result.stdout + result.stderr
             print(output, flush=True)
             if result.returncode or marker not in output or 'ERROR:' in output or 'ObjectDB instances' in output:

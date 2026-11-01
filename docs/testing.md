@@ -266,7 +266,9 @@ checkpoint e per i gate sotto indicati, non come default di ogni patch.
 La selezione automatica GitHub usa `scripts/ci/contextual_ci.py` sull'intero
 intervallo del push, non solo sull'ultimo commit. Attualmente riconosce:
 documentazione, pool SFX, `scripts/ui/seat_case.gd`, `_pick_crowd_intent` e
-`_settle_ledger_at_run_end` in `RunManager`. Combina i controlli dei domini
+`_settle_ledger_at_run_end` in `RunManager`, `_format_contract_body` in
+`scripts/ui/betting_circle_ui.gd` e i file CSV, import e Translation delle tre
+lingue esistenti. Combina i controlli dei domini
 coinvolti e non avvia route o campagne estranee. Il piano e' visibile nei log;
 ogni contratto Godot usa un profilo isolato e controlla anche gli errori di
 chiusura. Il mapping CI e' deliberatamente piu' ristretto della tabella locale.
@@ -274,6 +276,16 @@ Per i documenti canonici e i contratti documentali che sono letti da test
 automatici, il planner aggiunge i rispettivi controlli: per esempio UI canon
 attiva i contratti di pressione, contatore, stile e motion; il contratto
 GameEvents attiva il validatore dei segnali e il controllo del bando.
+Per il testo del Registro e le lingue, i controlli includono i contratti statici
+che leggono quei dati e l'audit runtime del testo dei patti in IT/EN/ES. Le
+lingue attivano anche i contratti runtime che il profilo lean eseguiva e che
+leggono testo tradotto: AV (stringhe esatte), personaggi, dialoghi illustrati,
+ultima Era, eco della copia e passi del posto per Era. Lo
+stesso audit viene eseguito una sola volta se i due gruppi sono combinati. Le
+altre funzioni della schermata e il registro delle lingue restano nel profilo
+lean; modifiche ai contratti della schermata richiedono full. L'audit non prova
+che tutte le schermate siano tradotte correttamente o prive di clipping: restano
+necessarie le verifiche visuali e linguistiche appropriate.
 Un push successivo non cancella la verifica del push precedente: ogni run ha un
 gruppo di concorrenza distinto, cosi' nessun intervallo resta senza controlli.
 

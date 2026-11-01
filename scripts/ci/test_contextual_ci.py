@@ -59,6 +59,36 @@ def test_fail_closed():
     assert ci.plan(ci.ZERO, ci.ZERO)['mode'] == 'full'
 
 
+def test_betting_and_localization():
+    before = 'func _format_contract_body():\n\tvar width = 100\n'
+    after = before.replace('100', '120')
+    reader = lambda side, _: before if side == 'base' else after
+    ui = 'scripts/ui/betting_circle_ui.gd'
+    result = ci.select([('M', ui)], reader)
+    assert result['mode'] == 'contextual' and result['groups'] == ['betting_ui']
+    assert {'identity_resolver', 'level3_bet_offer', 'ledger_economy', 'bando_ladder',
+            'promise_signature_object', 'registry_table_object', 'ui_motion', 'i18n_contract'} <= set(ci.STATIC['betting_ui'])
+    assert ('audit_runtime_contract.gd', 'AUDIT_RUNTIME_CONTRACT_OK') in ci.RUNTIME['betting_ui']
+    for locale in ('it', 'en', 'es'):
+        for suffix in ('csv', 'csv.import', f'{locale}.translation'):
+            path = f'assets/i18n/{locale}.{suffix}'
+            assert ci.select([('M', path)], reader)['groups'] == ['localization']
+            assert ci.select([('D', path)], reader)['mode'] == 'lean'
+    assert {'i18n_contract', 'textual_style', 'bando_ladder', 'promise_signature_object'} <= set(ci.STATIC['localization'])
+    # Translations feed exact strings and untranslated-key checks beyond the pact page.
+    localized = {script for script, _ in ci.RUNTIME['localization']}
+    assert set(ci.RUNTIME['betting_ui']) <= set(ci.RUNTIME['localization'])
+    assert {'av_runtime_contract.gd', 'character_runtime_contract.gd', 'illustrated_dialogue_contract.gd',
+            'final_era_runtime_contract.gd', 'seat_copy_echo_contract.gd', 'seat_steps_era_contract.gd'} <= localized
+    assert ci.RUNTIME_TIMEOUTS['illustrated_dialogue_contract.gd'] >= 150
+    result = ci.select([('M', ui), ('M', 'assets/i18n/en.csv')], reader)
+    assert result['groups'] == ['betting_ui', 'localization']
+    assert ci.select([('M', ui)], lambda side, _: before if side == 'base' else after + '\tGameEvents.changed.emit()\n')['mode'] == 'full'
+    assert ci.select([('M', ui)], lambda side, _: before.replace('_format_contract_body', 'layout') if side == 'base' else after.replace('_format_contract_body', 'layout'))['mode'] == 'lean'
+    assert ci.select([('M', 'assets/i18n/languages.gd')], reader)['mode'] == 'lean'
+    assert ci.select([('M', ui), ('M', 'scripts/systems/save_manager.gd')], reader)['mode'] == 'full'
+
+
 def test_real_push_range():
     with tempfile.TemporaryDirectory(prefix='gallicus_ci_plan_') as temp:
         path = Path(temp)
@@ -69,6 +99,8 @@ def test_real_push_range():
         git('config', 'user.name', 'CI fixture')
         (path / 'docs').mkdir()
         (path / 'scripts' / 'audio').mkdir(parents=True)
+        (path / 'assets' / 'i18n').mkdir(parents=True)
+        (path / 'assets' / 'i18n' / 'en.csv').write_text('keys,en\nhello,Hello\n', encoding='utf-8')
         (path / 'docs' / 'a.md').write_text('old\n', encoding='utf-8')
         (path / 'scripts' / 'audio' / 'sfx_bus.gd').write_text('func play():\n\tvar value = 1\n', encoding='utf-8')
         git('add', '.')
@@ -97,6 +129,15 @@ def test_real_push_range():
             assert output.read_text(encoding='utf-8').splitlines() == ['mode=contextual', 'groups=audio,docs', 'runtime=true']
             result = ci.plan(head, latest)
             assert result['mode'] == 'contextual' and result['groups'] == ['audio'], result
+            (path / 'assets' / 'i18n' / 'en.csv').write_text('keys,en\nhello,Welcome\n', encoding='utf-8')
+            git('add', 'assets/i18n/en.csv')
+            git('commit', '-m', 'localization')
+            localized = git('rev-parse', 'HEAD')
+            result = ci.plan(latest, localized)
+            assert result['mode'] == 'contextual' and result['groups'] == ['localization'], result
+            output.unlink()
+            subprocess.run([sys.executable, str(script), 'plan', '--base', latest, '--head', localized], cwd=path, env=env, check=True, capture_output=True, text=True)
+            assert output.read_text(encoding='utf-8').splitlines() == ['mode=contextual', 'groups=localization', 'runtime=true']
             git('checkout', '--detach', head)
             result = ci.plan(base, head)
             assert result['mode'] == 'contextual' and result['groups'] == ['docs'], result
@@ -116,5 +157,6 @@ def test_real_push_range():
 if __name__ == '__main__':
     test_function_selection()
     test_fail_closed()
+    test_betting_and_localization()
     test_real_push_range()
     print('[OK][CONTEXTUAL_CI]')

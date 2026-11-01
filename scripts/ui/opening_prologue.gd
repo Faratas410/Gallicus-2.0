@@ -149,6 +149,7 @@ func _try_open() -> void:
 	_elapsed = 0.0
 	_active = true
 	_surface.show()
+	_hold_story(true)
 	_skip.disabled = true
 	_next.disabled = true
 	get_viewport().gui_release_focus()
@@ -188,15 +189,19 @@ func _advance() -> void:
 	_elapsed = READ_GUARD - 0.18
 	_next.disabled = true
 	_skip.disabled = true
+	_play_sfx(&"story_page")
 	_refresh_line()
 
 func _finish() -> void:
 	if not _active or _skip.disabled:
 		return
 	GameEvents.request_dismiss_campaign_dialogue.emit(str(_payload.id))
+	# The seat sheet opens before the dialogue lets go: the racconto carries on.
+	var followed: bool = bool(_seat_case.call("try_open"))
 	_cancel()
-	if bool(_seat_case.call("try_open")):
+	if followed:
 		return
+	_play_sfx(&"story_close")
 	var registry: Control = get_node("../UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book") as Control
 	if registry.is_visible_in_tree():
 		registry.grab_focus()
@@ -207,6 +212,17 @@ func _cancel() -> void:
 	_surface.hide()
 	set_process(false)
 	set_process_input(false)
+	_hold_story(false)
+
+func _hold_story(open: bool) -> void:
+	var score: Node = get_tree().get_first_node_in_group("music_director") if is_inside_tree() else null
+	if score != null:
+		score.call("set_story_overlay", &"dialogue", open)
+
+func _play_sfx(cue: StringName) -> void:
+	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
+	if sfx_bus != null and sfx_bus.has_method("play_cue"):
+		sfx_bus.call("play_cue", cue)
 
 func _on_settings_changed(_settings: Dictionary) -> void:
 	_refresh_line()

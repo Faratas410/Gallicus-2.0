@@ -1,6 +1,7 @@
 extends SceneTree
 
 const Phase = preload("res://scripts/contracts/run_phase_contract.gd")
+const Catalog = preload("res://scripts/content/bet_catalog.gd")
 
 var _failed: bool = false
 var _checks: int = 0
@@ -40,9 +41,20 @@ func _run() -> void:
 		_expect(player.stream is AudioStreamOggVorbis and player.stream.loop, "score loop not configured")
 	var crowd: Dictionary = music.get("_crowd")
 	_expect(crowd.size() == 2 and (crowd["rhythm"] as AudioStreamPlayer).bus == "Ambience", "gradinata beds not on the Ambience bus")
+	# Start from a calm path so that each risk source can be heard on its own.
+	music.set("_path_rank", 0)
+	music.set("_scar_count", 0)
+	music.set("_in_debt", false)
 	music.call("_on_escalation_changed", 10, 10)
 	await create_timer(0.05).timeout
 	_expect((crowd["murmur"] as AudioStreamPlayer).playing and (crowd["rhythm"] as AudioStreamPlayer).playing, "full Pressione did not raise the gradinata")
+	# Risk raises only the current section's ombra, on the Music bus.
+	var ombra: Dictionary = music.get("_ombra")
+	_expect((ombra["tense"] as AudioStreamPlayer).playing and not (ombra["safe"] as AudioStreamPlayer).playing and (ombra["tense"] as AudioStreamPlayer).bus == "Music", "risk did not raise the seal's ombra")
+	var quiet_db: float = float(music.get("_ombra_targets")["tense"])
+	music.call("_on_scars_updated", [{}, {}, {}])
+	music.call("_on_ledger_changed", {"denari": -5})
+	_expect(float(music.get("_ombra_targets")["tense"]) > quiet_db, "debt and Segni did not darken the ombra")
 	var sfx: Node = root.get_node("SfxBus")
 	var sfx_players: Array = sfx.get("_players")
 	_expect(sfx_players.size() == 6, "SFX pool exceeded six voices")
@@ -90,6 +102,8 @@ func _run() -> void:
 	_expect(not players[0].playing and not players[1].playing, "phase callback revived music during Silence")
 	for crowd_player: AudioStreamPlayer in crowd.values():
 		_expect(not crowd_player.playing, "gradinata survived Silence")
+	for shadow: AudioStreamPlayer in ombra.values():
+		_expect(not shadow.playing, "ombra survived Silence")
 	for player: AudioStreamPlayer in sfx_players:
 		_expect(not player.playing, "ritual audio tail survived Silence")
 	music.call("_on_request_show_main_menu")
@@ -130,6 +144,7 @@ func _verify_presentation(scene: Node) -> void:
 	Input.parse_input_event(event)
 	await process_frame
 	_expect(intro.get("_active"), "prologue skipped before 0.5 seconds")
+	_expect_score(scene, "story", "dialogue")
 	await create_timer(0.6).timeout
 	event = InputEventAction.new()
 	event.action = "ui_cancel"
@@ -242,6 +257,9 @@ func _verify_music_route(scene: Node) -> void:
 	await _press_route(scene, "Btn_Sign_" + side)
 	await create_timer(0.3).timeout
 	_expect_score(scene, "tense", "sealed pact")
+	var signed: StringName = StringName(str(scene.get_node("RunManager").get("_run_state").current_bet_id))
+	var expected_rank: int = 0 if Catalog.get_path_tag_for_bet_id(signed) == Catalog.PATH_UNKNOWN else int(Catalog.get_pact_family_profile(signed).get("rank", 0))
+	_expect(int(scene.get_node("MusicDirector").get("_path_rank")) == expected_rank, "signed pact did not set the ombra's path risk")
 	var character_before: String = str(scene.get_node("UI").get("pact_sealed_subtitle").text)
 	var character_lines: Array[String] = scene.get_node("RunManager").get_character_dialogue("pact")
 	_expect(character_lines.size() == 2 and character_before.contains(TranslationServer.translate(character_lines[0])), "real pact route omitted character dialogue")

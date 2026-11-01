@@ -307,36 +307,29 @@ overlays are removed, not represented by empty animated sprites.
 # UI Audio Map
 
 **Status:** SUPPORTING  
-**Scope:** UI-to-audio mood mapping for menu, arena, boss, and ending phases.  
+**Scope:** UI-to-audio mood mapping for menu, rite, push-your-luck, dossier and story overlays.\
 **Legacy source lineage:** legacy:audio_paths, legacy:ui_official_ledger  
-**Last updated:** 2026-02-11  
-**Notes:** Overlaps with: legacy:audio_paths.
+**Last updated:** 2026-11-01\
+**Notes:** Overlaps with: legacy:audio_paths. Owner: `docs/audio_direction.md`.
 
 ## Overlap
 - Overlaps with: legacy:audio_paths.
 
-## Main menu / idle ambience
-- Ambient2.mp3
-- Ambient4.mp3
-- Darkness.mp3
+The UI never picks a track. `MusicDirector` maps sections to the loops of the
+Sabbia e Bronzo collection in `res://assets/audio/score/`:
 
-## Arena tension
-- HellfireEchoes.mp3
-- Infernal.mp3
-- Doomfire.mp3
+- Menu: `atrium.ogg`
+- Arena and pact: `registry.ogg`
+- Seal and ritual: `inscription.ogg`
+- Push your luck: `threshold.ogg`
+- Dossier: `dossier.ogg`
+- Dialogue and seat sheets: `racconto.ogg`, held by the overlay while visible
+- Under arena, seal and push your luck: `registry_ombra.ogg`,
+  `inscription_ombra.ogg`, `threshold_ombra.ogg`, raised by the run's risk
+  (pact family, Pressione, debt, Segni); presentation only
 
-## Boss / escalation
-- TyrantsOfHell.mp3
-- MarchOfDemonicLegions.mp3
-- ApocalypticCarnage.mp3
-
-## End run / verdict
-- LamentOfTheFallen.mp3
-- ScreamsFromTheVoid.mp3
-
-## Credits
-- CreditsOrCutscene1.mp3
-- PianoMarch.mp3
+The 2026-02-11 MP3 mapping (action/horror tracks without documented
+provenance) was retired and the files removed on 2026-11-01.
 
 ## SOURCE: legacy:audio_paths
 
@@ -345,7 +338,7 @@ overlays are removed, not represented by empty animated sprites.
 **Status:** SUPPORTING  
 **Scope:** Canonical runtime audio path policy and tracked Music assets.  
 **Legacy source lineage:** docs/support/repo_map.md, legacy:ui_audio_map  
-**Last updated:** 2026-02-11  
+**Last updated:** 2026-11-01\
 **Notes:** Overlaps with: legacy:ui_audio_map.
 
 ## Overlap
@@ -354,41 +347,14 @@ overlays are removed, not represented by empty animated sprites.
 Canonical runtime audio location: `res://assets/audio/`.
 
 Rules:
-- All runtime audio references must use `res://assets/audio/<file>.mp3`.
-- Root-level references like `res://<file>.mp3` are not allowed.
-- This patch does not move or rename audio binaries; it only documents canonical paths.
-
-Current MP3 files under `res://assets/audio/`:
-- AbyssalEcho.mp3
-- Ambient1.mp3
-- Ambient2.mp3
-- Ambient3.mp3
-- Ambient4.mp3
-- Ambient5.mp3
-- Ambient6.mp3
-- ApocalypticCarnage.mp3
-- ClassicScream.mp3
-- CreditsOrCutscene1.mp3
-- DamnedSouls.mp3
-- Darkness.mp3
-- DemonicOverture.mp3
-- Diabolic.mp3
-- Doomfire.mp3
-- EclipseOfSouls.mp3
-- EternalDescent.mp3
-- Havoc.mp3
-- HellfireEchoes.mp3
-- Infernal.mp3
-- LamentOfTheFallen.mp3
-- MarchOfDemonicLegions.mp3
-- Necroverse.mp3
-- PianoMarch.mp3
-- RageRequiem.mp3
-- RagingInferno.mp3
-- ScreamsFromTheVoid.mp3
-- Tormentor.mp3
-- TyrantsOfHell.mp3
-- VoidSerpent.mp3
+- Loops live in `res://assets/audio/score/<name>.ogg`, cues in
+  `res://assets/audio/sfx/<name>.wav`.
+- Root-level references like `res://<file>.ogg` are not allowed.
+- Every shipped file is listed with hash and provenance in
+  `res://assets/audio/manifest.json`; sources and licences are in
+  `docs/audio_credits.md`.
+- No MP3 files remain under `res://assets/audio/`; the export preset still
+  excludes `assets/audio/*.mp3` and the pack check rejects any MP3 found.
 
 
 ## Run/HUD sprite-backed overlay labels (Patch 2 scope)

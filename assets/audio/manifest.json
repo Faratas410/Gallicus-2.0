@@ -1,6 +1,6 @@
 {
   "collection": "Gallicus - Sabbia e Bronzo",
-  "date": "2026-10-21",
+  "date": "2026-11-01",
   "method": "recordings from tools/audio/sources.json (CC0 and CC-BY 3.0) picked, pitched, layered, looped and mixed offline by tools/audio/compose.py; no neural audio model",
   "credits": "docs/audio_credits.md",
   "assets": [
@@ -70,6 +70,32 @@
       "sha256": "4dfaaade591e02bcca97a1facdab67c897daa951930f2a97e19eae6979332da1"
     },
     {
+      "path": "res://assets/audio/score/inscription_ombra.ogg",
+      "role": "music",
+      "recipe": "risk layer under the seal: ground, A-Bb-A lament on bass recorder, heartbeat, low timpani rolls",
+      "seconds": 80.0,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": true,
+      "bpm": 72.0,
+      "lufs": -22.0,
+      "peak_dbfs": -7.82,
+      "sha256": "b4d9e3eeeee5fe4051c1cd97d9458fbeccbcc1b85987375bb67f10bda50be393"
+    },
+    {
+      "path": "res://assets/audio/score/racconto.ogg",
+      "role": "music",
+      "recipe": "dialogues and seat sheets: Lauro's lyre (plucked psaltery), the theme at two thirds speed, torches",
+      "seconds": 80.0,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": true,
+      "bpm": 72.0,
+      "lufs": -18.0,
+      "peak_dbfs": -1.9,
+      "sha256": "74a05426037c331cffe16168e04aa170ef9ac0ed9319ef974443b12ef1733da4"
+    },
+    {
       "path": "res://assets/audio/score/registry.ogg",
       "role": "music",
       "recipe": "arena and patto: flowing harp, frame drum and darbuka, the theme",
@@ -83,6 +109,19 @@
       "sha256": "309a12cc17a78e779e44a0c1c80e2c769624cdeaa96c584ba7d8c33f1e03f280"
     },
     {
+      "path": "res://assets/audio/score/registry_ombra.ogg",
+      "role": "music",
+      "recipe": "risk layer under the arena: low bowed ground, dark drone, heartbeat every two bars",
+      "seconds": 80.0,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": true,
+      "bpm": 72.0,
+      "lufs": -22.0,
+      "peak_dbfs": -6.72,
+      "sha256": "af90116f1053f7d56533cc50051258e4d893e28e848da931f7c7f4449f77e05b"
+    },
+    {
       "path": "res://assets/audio/score/threshold.ogg",
       "role": "music",
       "recipe": "SPINGI LA SORTE: full ostinato, stomps and claps of the gradinata, theme an octave up",
@@ -94,6 +133,19 @@
       "lufs": -18.01,
       "peak_dbfs": -1.54,
       "sha256": "98190e49b598c7c71a510437b9df0492f1d16ce149500fbb8a42d75143a3d87a"
+    },
+    {
+      "path": "res://assets/audio/score/threshold_ombra.ogg",
+      "role": "music",
+      "recipe": "risk layer under SPINGI LA SORTE: quickened heartbeat, anvil toll, lament, gong scrapes",
+      "seconds": 80.0,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": true,
+      "bpm": 72.0,
+      "lufs": -22.0,
+      "peak_dbfs": -6.19,
+      "sha256": "1a2b5eecb9d3023b7754e5fa3a186f8ef4716015055dbe96c6cc2706f8aa68d7"
     },
     {
       "path": "res://assets/audio/sfx/arena_gesture_placa.wav",
@@ -130,6 +182,18 @@
       "lufs": -17.12,
       "peak_dbfs": -5.16,
       "sha256": "59ec5db0abb1eae4ea75aaa7a133791a507d771ad40052d2367e6c64dd06aeec"
+    },
+    {
+      "path": "res://assets/audio/sfx/banco_purchase.wav",
+      "role": "sfx",
+      "family": "ritual",
+      "recipe": "Banco: coins counted onto Vessa's wooden counter, receipt slip, stamp",
+      "seconds": 1.0,
+      "sample_rate": 44100,
+      "channels": 1,
+      "lufs": -15.96,
+      "peak_dbfs": -5.18,
+      "sha256": "c8072a4f84f6171168ef1bd49d95edfa21681838fc7ba9945df32c88f91c67c9"
     },
     {
       "path": "res://assets/audio/sfx/bando_closed.wav",
@@ -286,6 +350,18 @@
       "lufs": -24.37,
       "peak_dbfs": -3.04,
       "sha256": "0dba9f289859867ff2d4d3533789900686097caa1bd4a23e10269fd806f69ec6"
+    },
+    {
+      "path": "res://assets/audio/sfx/final_sheet_open.wav",
+      "role": "sfx",
+      "family": "ritual",
+      "recipe": "the last Era's sheet: one low bell an octave down, slow paper, nobody in the stands",
+      "seconds": 3.4901,
+      "sample_rate": 44100,
+      "channels": 1,
+      "lufs": -19.81,
+      "peak_dbfs": -10.45,
+      "sha256": "be94b1360b14a330fa92b930a54cbc0311482e68195b2ebc3c428f98523ae46d"
     },
     {
       "path": "res://assets/audio/sfx/game_over.wav",
@@ -468,6 +544,30 @@
       "sha256": "f098c491c79d0de1c52207924c7677d172c987b80337c86c6159c798a39a5ec0"
     },
     {
+      "path": "res://assets/audio/sfx/seat_choice_mark.wav",
+      "role": "sfx",
+      "family": "ritual",
+      "recipe": "an answer for the seat: stylus dragged through wax, wooden tap",
+      "seconds": 0.75,
+      "sample_rate": 44100,
+      "channels": 1,
+      "lufs": -19.28,
+      "peak_dbfs": -3.08,
+      "sha256": "6ae6ce362b0aacc945edeab36085d4b173d43c0ef924665cd5fe0c298a726d71"
+    },
+    {
+      "path": "res://assets/audio/sfx/seat_sheet_open.wav",
+      "role": "sfx",
+      "family": "ritual",
+      "recipe": "the posto vuoto: sheet laid on the stone step, the front row hushes, low bell",
+      "seconds": 2.656,
+      "sample_rate": 44100,
+      "channels": 1,
+      "lufs": -18.03,
+      "peak_dbfs": -5.48,
+      "sha256": "eecfc22ef5959c436a316bb3c151869c9285b174ec3b278a2b0c3fae20822f3e"
+    },
+    {
       "path": "res://assets/audio/sfx/stage_complete.wav",
       "role": "sfx",
       "family": "ritual",
@@ -478,6 +578,30 @@
       "lufs": -20.46,
       "peak_dbfs": -4.91,
       "sha256": "820742a891c4803eb9fa24c61f7043079670438834239f30ae737d147867902f"
+    },
+    {
+      "path": "res://assets/audio/sfx/story_close.wav",
+      "role": "sfx",
+      "family": "ritual",
+      "recipe": "back to the rite: Lauro's lyre strummed down A-F-D-A, soft frame drum",
+      "seconds": 1.878,
+      "sample_rate": 44100,
+      "channels": 1,
+      "lufs": -16.92,
+      "peak_dbfs": -7.14,
+      "sha256": "a62758900f5186e5db46f407d5d576e6c2cbc2e373841801bb65bb97aec625c8"
+    },
+    {
+      "path": "res://assets/audio/sfx/story_page.wav",
+      "role": "sfx",
+      "family": "confirm",
+      "recipe": "dialogue goes on: heavy page turned, one note of Lauro's lyre on A",
+      "seconds": 0.8,
+      "sample_rate": 44100,
+      "channels": 1,
+      "lufs": -23.48,
+      "peak_dbfs": -9.76,
+      "sha256": "4f11c339eed541ace453d0029bd32470d54d9f908b0d244017f1a958e640917a"
     },
     {
       "path": "res://assets/audio/sfx/terminal_heartbeat.wav",

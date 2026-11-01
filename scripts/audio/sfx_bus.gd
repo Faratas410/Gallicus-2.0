@@ -38,6 +38,12 @@ const CUE_VOLUME_DB: Dictionary = {
 	&"coins_gain": -12.0,
 	&"coins_loss": -12.0,
 	&"bando_closed": -11.0,
+	&"story_page": -12.0,
+	&"story_close": -11.0,
+	&"seat_sheet_open": -11.0,
+	&"seat_choice_mark": -11.0,
+	&"final_sheet_open": -11.0,
+	&"banco_purchase": -11.0,
 }
 const SFX_PATHS: Dictionary = {
 	&"button_hover": "res://assets/audio/sfx/button_hover.wav",
@@ -72,6 +78,12 @@ const SFX_PATHS: Dictionary = {
 	&"coins_gain": "res://assets/audio/sfx/coins_gain.wav",
 	&"coins_loss": "res://assets/audio/sfx/coins_loss.wav",
 	&"bando_closed": "res://assets/audio/sfx/bando_closed.wav",
+	&"story_page": "res://assets/audio/sfx/story_page.wav",
+	&"story_close": "res://assets/audio/sfx/story_close.wav",
+	&"seat_sheet_open": "res://assets/audio/sfx/seat_sheet_open.wav",
+	&"seat_choice_mark": "res://assets/audio/sfx/seat_choice_mark.wav",
+	&"final_sheet_open": "res://assets/audio/sfx/final_sheet_open.wav",
+	&"banco_purchase": "res://assets/audio/sfx/banco_purchase.wav",
 }
 # Repeated gestures should not sound identical: a small random pitch per play.
 const CUE_PITCH_JITTER: Dictionary = {
@@ -80,6 +92,8 @@ const CUE_PITCH_JITTER: Dictionary = {
 	&"registry_judgment_seal_strike": 0.04,
 	&"coins_gain": 0.05,
 	&"coins_loss": 0.04,
+	&"story_page": 0.03,
+	&"seat_choice_mark": 0.03,
 }
 # The gradinata answers a little after the gesture that moved it.
 const CROWD_REACTION_DELAY: float = 0.35
@@ -259,8 +273,8 @@ func _on_ledger_changed(payload: Dictionary) -> void:
 	var delta: int = int(payload.get("delta", 0))
 	if delta == 0:
 		return
-	# The quietanza and the bando already ring their own coins.
-	if _played_recently([&"registry_receipt_take", &"bando_closed"], COIN_COOLDOWN_MS):
+	# The quietanza, the bando and the Banco already ring their own coins.
+	if _played_recently([&"registry_receipt_take", &"bando_closed", &"banco_purchase"], COIN_COOLDOWN_MS):
 		return
 	play_cue(&"coins_gain" if delta > 0 else &"coins_loss")
 

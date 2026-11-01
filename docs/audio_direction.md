@@ -84,8 +84,8 @@ Nessuna azione importante puo' essere muta senza una ragione documentata.
 - Il Silenzio sottrae layer prima di introdurre qualsiasi nuovo elemento.
 - L'Assenza non usa una traccia celebrativa.
 
-Le tracce esistenti con naming o mood demoniaco/action devono essere valutate
-per uso reale, rinominate se adottate oppure rimosse dalle superfici finali.
+Le tracce con naming o mood demoniaco/action non sono ammesse. I 30 MP3
+legacy di questo tipo sono stati rimossi dal repository il 1 novembre 2026.
 
 ## Mix
 
@@ -128,8 +128,8 @@ per uso reale, rinominate se adottate oppure rimosse dalle superfici finali.
   deterministici e normalizzati a -3 dBFS.
 - L'adozione richiede ascolto su cuffie e speaker, verifica del seam, decisione
   esplicita sui diritti e mastering umano.
-- Gli MP3 legacy senza provenienza documentata restano candidati `REPLACE` o
-  `REMOVE`, anche quando sono gia' collegati a `MusicDirector`.
+- Gli MP3 legacy senza provenienza documentata erano candidati `REPLACE` o
+  `REMOVE`; sostituiti nel consumer e rimossi dal repository il 1 novembre 2026.
 
 ## Accettazione
 
@@ -169,8 +169,8 @@ formato, durata e livelli. Musica PCM16 stereo 22,05 kHz, SFX PCM16 mono
 44,1 kHz; il battito conserva doppio impulso e periodo di tre secondi a 24 kHz.
 Gli import Godot usano QOA; il WAV originale resta la sorgente di produzione.
 I nomi cue legacy rimangono alias di contratto, con nuovi suoni privi di
-semantica action/combat. I vecchi MP3 rimangono sorgenti storiche escluse
-esplicitamente dall'export; nessun consumer runtime li carica.
+semantica action/combat. I vecchi MP3 erano rimasti come sorgenti storiche
+escluse dall'export; sono stati rimossi il 1 novembre 2026.
 
 Musica: timbri morbidi di corda e risonanza minerale, armonia aperta D/A,
 frasi rade, nessun drone subgrave o riser. Cinque stati usano lo stesso
@@ -281,3 +281,103 @@ grana della carta, coda della bruciatura, voci lontane della folla) sono
 sintetizzati e sempre posati sotto un livello registrato. Restano gate umani:
 ascolto su cuffie e speaker, fatica lungo una campagna, credibilita' delle
 voci della gradinata.
+
+## Racconto, posto vuoto e Banco - 1 novembre 2026
+
+Su richiesta dell'utente ("musiche e suoni in stile coerente e sempre
+gratuiti") la raccolta **Sabbia e Bronzo** si estende agli oggetti rimasti
+muti o con cue presi in prestito. Stesso linguaggio e stesse fonti: re dorico,
+72 BPM, griglia da 80 s, solo registrazioni gia' fissate in
+`tools/audio/sources.json` (CC0 1.0 e CC BY 3.0), nessuna licenza nuova e
+nessun modello neurale audio. Crediti invariati.
+
+Musica: `racconto` (`assets/audio/score/racconto.ogg`, sezione `story` di
+MusicDirector). La lira di Lauro e' il salterio pizzicato: arpeggio rapido su
+ogni battuta e una breve figura cantata; arpa grave sulle fondamentali, il
+tema di Gallicus sul flauto a due terzi della velocita' in due strofe (battute
+4 e 14), salterio ad arco, tamburo a cornice ogni due battute, cimbalini
+all'inizio delle strofe, torce vicine. Nessuna folla: la gradinata tace mentre
+si racconta. Master a -18 LUFS come le altre sezioni.
+
+Il racconto suona mentre e' visibile un dialogo della campagna
+(`OpeningPrologue`) o un foglio del posto vuoto (`SeatCase`, compresi i fogli
+dell'ultima Era). Le due superfici lo "tengono" con
+`MusicDirector.set_story_overlay(holder, open)`: quando un dialogo passa al
+foglio del posto, o un esito apre il seguito, la musica non torna al rito nel
+mezzo. Gli eventi di sezione che arrivano durante il racconto aggiornano solo
+la sezione di ritorno. Menu, inizio percorso, Silenzio e Assenza azzerano i
+supporti; la sezione resta sulla stessa griglia, quindi il crossfade conserva
+la battuta.
+
+Cue nuovi, mono PCM16 44,1 kHz, picco massimo -3 dBFS:
+
+| Cue | Oggetto e materiale | Uso |
+| --- | --- | --- |
+| `story_page` | pagina pesante, una nota della lira su La | ASCOLTA nel dialogo, passaggi interni del foglio |
+| `story_close` | lira discendente La-Fa-Re-La, tamburo a cornice | ritorno al rito da dialogo o foglio |
+| `seat_sheet_open` | foglio sul gradone, prima fila che tace, campana grave | apertura di caso, tracce e copia del posto |
+| `seat_choice_mark` | stilo trascinato nella cera, tocco di legno | ogni risposta sul foglio, rinvio compreso |
+| `final_sheet_open` | una campana un'ottava sotto, carta lenta, nessuna folla | L'ULTIMA CIFRA e L'ULTIMO FOGLIO |
+| `banco_purchase` | monete contate sul banco di legno, ricevuta, timbro | acquisto al Banco, al posto di `registry_table_open` |
+
+`banco_purchase` entra nella finestra che salta `coins_loss` dopo un cue con
+monete proprie. `story_page` e `seat_choice_mark` hanno una piccola variazione
+d'intonazione come hover e monete.
+
+Produzione: `tools/audio/compose.py --names <nomi>` scrive soltanto i brani o
+cue indicati e conserva i file gia' spediti, perche' versioni diverse di
+NumPy/SciPy cambiano gli ultimi bit di un render. Comando usato:
+`python tools/audio/compose.py --names racconto,story_page,story_close,seat_sheet_open,seat_choice_mark,final_sheet_open,banco_purchase`.
+Il manifest elenca ora 47 asset (8 loop, 39 cue). Analisi del loop: picco
+-1,2 dBFS, re e la come classi dominanti e quota fuori modo pari a `dossier`.
+Restano gate umani: ascolto su cuffie e speaker, giunzione del loop,
+fatica della lira lungo i dialoghi di una campagna.
+
+### Ombra: strati di rischio
+
+Direzione approvata dall'utente, con una richiesta in piu': tracce piu' cupe
+secondo il tipo di percorso, quasi situazionali in base al rischio. La sezione
+musicale non cambia; sotto di lei sale uno strato scuro sulla stessa griglia.
+
+| Sezione | Strato | Materiale |
+| --- | --- | --- |
+| `safe` (arena e patto) | `registry_ombra.ogg` | fondo di salterio ad arco due ottave sotto, bordone abbassato di un'ottava, battito doppio ogni due battute |
+| `tense` (sigillo e rito) | `inscription_ombra.ogg` | fondo, lamento del flauto basso La-Si bemolle-La sulle battute di re minore, battito a ogni battuta, rulli gravi di timpano, gong strisciato |
+| `climax` (SPINGI LA SORTE) | `threshold_ombra.ogg` | battito su 1 e 3, rintocco d'incudine ogni due battute, lamento, gong strisciato |
+
+Solo fondamentali e quinte della progressione condivisa: lo strato non
+contrasta l'arpa. Il buio viene dal registro, dalla sesta minore su re minore
+e dal battito doppio, lo stesso con cui finira' l'Assenza, qui ancora lontano.
+Strati masterizzati a -22 LUFS; baricentro spettrale 650-870 Hz contro
+1600-2100 Hz delle sezioni.
+
+Rischio, solo presentazione e solo da cio' che il giocatore vede gia':
+
+- famiglia del patto firmato (`rank` in `BetCatalog.PACT_FAMILY_PROFILES`,
+  da "Regge spesso" a "Regge di rado"), peso 0,45: e' il tipo di percorso;
+- Pressione, peso 0,35;
+- debito, +0,10;
+- Segni, +0,05 ciascuno fino a tre.
+
+Sotto 0,2 lo strato tace; da 0,2 a 1 sale da -18 dB al livello nominale della
+musica, e la sezione cede fino a 3 dB. Dissolvenze di 3 s, avvio alla stessa
+posizione della sezione. Menu, racconto e fascicolo non hanno strato; Silenzio
+e Assenza lo fermano; la ramp del Registro (`material_fade`) lo attenua come
+il resto. `MusicDirector` legge il `rank` dal catalogo dei contenuti su
+`bet_placed`: nessuna regola o esito cambia. Limite noto: dopo una ripresa da
+salvataggio il `rank` torna a 0 finche' non si firma il patto successivo;
+Pressione, debito e Segni restano attivi.
+
+Comando: `python tools/audio/compose.py --only music --names registry_ombra,inscription_ombra,threshold_ombra`.
+Il manifest elenca 50 asset (11 loop, 39 cue). Il contratto AV verifica che
+il rischio alzi soltanto lo strato della sezione corrente, che debito e Segni
+lo scuriscano, che un patto reale imposti il `rank` e che il Silenzio lo
+fermi; il calcolo dell'headroom include uno strato a pieno rischio. Restano
+umani: soglia e pesi del rischio, leggibilita' sopra i cue, fatica del battito.
+
+Pulizia dello stesso giorno, su richiesta dell'utente: rimossi i 30 MP3 legacy
+in `assets/audio/` (nomi e mood demoniaco/action, provenienza mai
+documentata, 67,7 MB con gli `.import`). Nessun consumer runtime li caricava.
+Il preset continua a escludere `assets/audio/*.mp3` e
+`scripts/ci/inspect_export_assets.gd` rifiuta ogni MP3 nel pack, cosi' non
+possono rientrare per errore.

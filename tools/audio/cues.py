@@ -402,6 +402,57 @@ def build_cues(rng_for):
         b.add(applause(1.6, rng, density=18), 0.5, -8, 0, -2)
         return b.render(arena)
 
+    # --- the racconto, the posto vuoto and the Banco ------------------------
+
+    @cue("story_page", "confirm", "dialogue goes on: heavy page turned, one note of Lauro's lyre on A")
+    def _(rng):
+        b = Bus(0.9)
+        b.add(paper(0.2, rng, density=90), 0, -4, -0.1, -16)
+        b.add(dsp.cut(dsp.pitch(hit("psaltery_pluck_D4"), -5), 0.6, 0.3), 0.08, -6, 0.15, -10)
+        return b.render(room)
+
+    @cue("story_close", "ritual", "back to the rite: Lauro's lyre strummed down A-F-D-A, soft frame drum")
+    def _(rng):
+        b = Bus(1.8)
+        for index, semis in enumerate((7, 3, 0, -5)):
+            b.add(dsp.cut(dsp.pitch(hit("psaltery_pluck_D4"), semis), 1.0, 0.5), index * 0.06, -2 - 1.5 * index, 0.3 - 0.2 * index, -8)
+        b.add(dsp.cut(hit("frame_HDrumL_Hit_v2_rr1"), 0.6, 0.3), 0.24, -8, 0, -10)
+        return b.render(room)
+
+    @cue("seat_sheet_open", "ritual", "the posto vuoto: sheet laid on the stone step, the front row hushes, low bell")
+    def _(rng):
+        b = Bus(1.8)
+        b.add(paper(0.26, rng, density=70), 0, -4, 0, -14)
+        b.add(dsp.lowpass(hit("slapstick_quiet_rr1"), 2400), 0.18, -6, 0, -12)
+        b.add(voices(1.1, rng, rise=False, count=8), 0.05, -14, 0, -2)
+        b.add(dsp.cut(dsp.pitch(hit("handbell_HB_3"), -12), 1.0, 0.5), 0.2, -12, 0.2, -6)
+        return b.render(arena)
+
+    @cue("seat_choice_mark", "ritual", "an answer for the seat: stylus dragged through wax, wooden tap")
+    def _(rng):
+        b = Bus(0.9)
+        b.add(scrape("guiro_Guiro_Med_rr1_Mid", 0.05, 0.24, 4, 1800, 8000), 0, -1, -0.1, -14)
+        b.add(dsp.cut(dsp.pitch(hit("woodblock_wood_click3_vl1"), -5), 0.2), 0.26, -5, 0, -12)
+        b.add(dsp.cut(hit("frame_HDrumS_HitMuted_v2_rr1"), 0.2), 0.26, -9, 0, -12)
+        return b.render(room)
+
+    @cue("final_sheet_open", "ritual", "the last Era's sheet: one low bell an octave down, slow paper, nobody in the stands")
+    def _(rng):
+        b = Bus(2.6)
+        b.add(dsp.cut(dsp.pitch(hit("tubular_chimes_D3_pp_rr3"), -12), 2.2, 1.0), 0, -2, 0, -6)
+        b.add(paper(0.4, rng, density=50), 0.3, -10, 0, -14)
+        b.add(dsp.cut(dsp.lowpass(hit("bassdrum_bassdrum_hit_pp1"), 120), 0.8, 0.4), 0, -8, 0, -12)
+        return b.render(room)
+
+    @cue("banco_purchase", "ritual", "Banco: coins counted onto Vessa's wooden counter, receipt slip, stamp")
+    def _(rng):
+        b = Bus(1.3)
+        b.add(coins(5, 0.3, rng, darker=True), 0, -2, 0, -16)
+        b.add(dsp.cut(dsp.pitch(hit("slit_LogDrumHi_MedM_v2_rr1"), -3), 0.25), 0.04, -9, 0, -14)
+        b.add(paper(0.14, rng, density=120), 0.34, -9, 0.1, -14)
+        b.add(dsp.cut(dsp.pitch(hit("woodblock_wood_click_f_rr1"), -8), 0.2), 0.5, -5, 0, -12)
+        return b.render(room)
+
     @cue("terminal_heartbeat", "terminal", "Assenza: one double heartbeat from a soft bass drum, every 3 s")
     def _(rng):
         out = dsp.silence(3.0)
@@ -425,4 +476,6 @@ MAX_SECONDS = {
     "registry_pact_validate": 0.78, "arena_gesture_placa": 0.82, "arena_gesture_provoca": 0.82,
     "registry_judgment_seal_strike": 0.72, "registry_judgment_seal_resolve": 0.82,
     "registry_dossier_update": 0.68, "registry_dossier_close": 0.78, "registry_dossier_route": 0.72,
+    # Reading and answering repeat often: the lyre and the wax stay short.
+    "story_page": 0.8, "seat_choice_mark": 0.75, "banco_purchase": 1.0,
 }

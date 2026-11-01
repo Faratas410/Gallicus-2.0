@@ -1,11 +1,12 @@
 extends Node
 
 const RunPhaseContractScript = preload("res://scripts/contracts/run_phase_contract.gd")
+const BetCatalogScript = preload("res://scripts/content/bet_catalog.gd")
 const SILENT_DB: float = -60.0
 const FADE_SECONDS: float = 2.2
 const MUSIC_BUS_NAME: String = "Music"
 const AMBIENCE_BUS_NAME: String = "Ambience"
-# Five loops of the same length, tempo and mode (80 s, 72 BPM, D Dorian):
+# Six loops of the same length, tempo and mode (80 s, 72 BPM, D Dorian):
 # a section change keeps the beat by starting at the outgoing position.
 const TRACKS: Dictionary = {
 	"menu": "res://assets/audio/score/atrium.ogg",
@@ -13,7 +14,9 @@ const TRACKS: Dictionary = {
 	"tense": "res://assets/audio/score/inscription.ogg",
 	"climax": "res://assets/audio/score/threshold.ogg",
 	"ending": "res://assets/audio/score/dossier.ogg",
+	"story": "res://assets/audio/score/racconto.ogg",
 }
+const STORY_KEY: String = "story"
 # The gradinata: talk at rest, stomps and claps on the score's grid when it presses.
 const CROWD_TRACKS: Dictionary = {
 	"murmur": "res://assets/audio/score/gradinata_murmur.ogg",
@@ -22,6 +25,24 @@ const CROWD_TRACKS: Dictionary = {
 const CROWD_SECTIONS: Array[String] = ["safe", "tense", "climax"]
 const CROWD_FADE_SECONDS: float = 1.8
 const TARGET_DB: float = -14.0
+# The ombra: one dark layer per rite section, on the same grid, played in sync
+# underneath. It rises with the run's risk; the section itself never changes.
+const OMBRA_TRACKS: Dictionary = {
+	"safe": "res://assets/audio/score/registry_ombra.ogg",
+	"tense": "res://assets/audio/score/inscription_ombra.ogg",
+	"climax": "res://assets/audio/score/threshold_ombra.ogg",
+}
+const OMBRA_FLOOR: float = 0.2
+const OMBRA_RANGE_DB: float = 18.0
+const OMBRA_DUCK_DB: float = 3.0
+const OMBRA_FADE_SECONDS: float = 3.0
+# Risk weights, all read from what the player already sees: the pact family's
+# rank ("Regge spesso" .. "Regge di rado"), Pressione, debt and Segni.
+const RISK_PATH_WEIGHT: float = 0.45
+const RISK_PRESSURE_WEIGHT: float = 0.35
+const RISK_DEBT: float = 0.1
+const RISK_PER_SCAR: float = 0.05
+const RISK_SCAR_CAP: int = 3
 
 @export var menu_player_path: NodePath = NodePath("../MenuLayer/MenuThemePlayer")
 @export var run_player_path: NodePath = NodePath("../RunThemePlayer")
@@ -40,8 +61,19 @@ var _crowd: Dictionary = {}
 var _crowd_targets: Dictionary = {}
 var _crowd_tween: Tween
 var _pressure: float = 0.0
+# Dialogue and seat sheets hold the racconto; the rite's section waits underneath.
+var _story_holders: Dictionary = {}
+var _story_return: String = ""
+var _ombra: Dictionary = {}
+var _ombra_targets: Dictionary = {}
+var _ombra_tween: Tween
+var _path_rank: int = 0
+var _in_debt: bool = false
+var _scar_count: int = 0
+var _risk: float = 0.0
 
 func _ready() -> void:
+	add_to_group("music_director")
 	_port = RunManagerUiPort.new(get_tree())
 	_players = [get_node(menu_player_path) as AudioStreamPlayer, get_node(run_player_path) as AudioStreamPlayer]
 	_music_bus_index = AudioServer.get_bus_index(MUSIC_BUS_NAME)
@@ -65,6 +97,15 @@ func _ready() -> void:
 		add_child(crowd_player)
 		_crowd[key] = crowd_player
 		_crowd_targets[key] = SILENT_DB
+	for key: String in OMBRA_TRACKS:
+		var shadow: AudioStreamPlayer = AudioStreamPlayer.new()
+		shadow.name = "Ombra_" + key
+		shadow.bus = MUSIC_BUS_NAME
+		shadow.volume_db = SILENT_DB
+		shadow.stream = _load_loop(OMBRA_TRACKS[key])
+		add_child(shadow)
+		_ombra[key] = shadow
+		_ombra_targets[key] = SILENT_DB
 	GameEvents.run_phase_changed.connect(_on_run_phase_changed)
 	GameEvents.run_started.connect(_on_run_started)
 	GameEvents.betting_opened.connect(_on_score_section.bind("safe"))
@@ -74,6 +115,9 @@ func _ready() -> void:
 	GameEvents.run_ended.connect(_on_registry_run_ended)
 	GameEvents.settings_changed.connect(_on_settings_changed)
 	GameEvents.escalation_changed.connect(_on_escalation_changed)
+	GameEvents.bet_placed.connect(_on_bet_placed)
+	GameEvents.ledger_changed.connect(_on_ledger_changed)
+	GameEvents.scars_updated.connect(_on_scars_updated)
 	_apply_music_volume_linear(SaveManager.get_music_volume())
 	if _port.can_start_run():
 		_transition("menu")
@@ -85,8 +129,27 @@ func _on_run_phase_changed(phase: int) -> void:
 		_on_score_section("ending")
 
 func _on_score_section(key: String) -> void:
+	if not _story_holders.is_empty():
+		_story_return = key
+		return
 	if not _registry_silent and _port.can_start_run():
 		_transition(key)
+
+# Presentation overlays (dialogue, seat sheets) hold the racconto while visible.
+# Holders let one overlay hand over to the next without returning in between.
+func set_story_overlay(holder: StringName, open: bool) -> void:
+	if open:
+		if _story_holders.is_empty() and _active_key != STORY_KEY:
+			_story_return = _active_key
+		_story_holders[holder] = true
+		if not _registry_silent and _port.can_start_run():
+			_transition(STORY_KEY)
+		return
+	if not _story_holders.has(holder):
+		return
+	_story_holders.erase(holder)
+	if _story_holders.is_empty() and _active_key == STORY_KEY:
+		_on_score_section(_story_return if _story_return != "" else "safe")
 
 func _on_ritual_opened(_payload: Dictionary) -> void:
 	_on_score_section("tense")
@@ -101,10 +164,15 @@ func apply_run_ui_payload(payload: RunUiPayload) -> void:
 
 func _on_run_started() -> void:
 	_registry_silent = false
+	_story_holders.clear()
+	# A new path has no pact yet; Pressione, debt and Segni arrive by their own events.
+	_path_rank = 0
+	_update_risk()
 	if _port.can_start_run():
 		_transition("safe")
 
 func _on_request_show_main_menu() -> void:
+	_story_holders.clear()
 	if not _port.can_start_run():
 		return
 	_registry_silent = false
@@ -114,26 +182,59 @@ func _on_registry_run_ended(reason: String, _summary: Dictionary) -> void:
 	if reason not in ["REGISTRY_SILENCE", "REGISTRY_ABSENCE"]:
 		return
 	_registry_silent = true
+	_story_holders.clear()
 	_kill_fade()
 	for player: AudioStreamPlayer in _players:
 		player.stop()
 		player.volume_db = SILENT_DB
 	_active_key = ""
 	_stop_crowd()
+	_stop_ombra()
 
 func _on_escalation_changed(level: int, max_value: int) -> void:
 	_pressure = clampf(float(level) / float(maxi(max_value, 1)), 0.0, 1.0)
 	_update_crowd()
+	_update_risk()
+
+func _on_bet_placed(bet_id: String, _stake: int, _odds: float) -> void:
+	# Only signed pacts have a family; intro and cash-out choices leave the rank alone.
+	var id: StringName = StringName(bet_id)
+	if BetCatalogScript.get_path_tag_for_bet_id(id) == BetCatalogScript.PATH_UNKNOWN:
+		return
+	_path_rank = int(BetCatalogScript.get_pact_family_profile(id).get("rank", 0))
+	_update_risk()
+
+func _on_ledger_changed(payload: Dictionary) -> void:
+	_in_debt = int(payload.get("denari", 0)) < 0
+	_update_risk()
+
+func _on_scars_updated(scars: Array) -> void:
+	_scar_count = scars.size()
+	_update_risk()
+
+func _update_risk() -> void:
+	var scars: float = RISK_PER_SCAR * float(mini(_scar_count, RISK_SCAR_CAP))
+	_risk = clampf(RISK_PATH_WEIGHT * float(_path_rank) / 3.0 + RISK_PRESSURE_WEIGHT * _pressure + (RISK_DEBT if _in_debt else 0.0) + scars, 0.0, 1.0)
+	_update_ombra()
+
+func _ombra_level() -> float:
+	return clampf((_risk - OMBRA_FLOOR) / (1.0 - OMBRA_FLOOR), 0.0, 1.0)
+
+func _music_target_db(key: String) -> float:
+	# The section gives way a little to its shadow at full risk.
+	var duck: float = OMBRA_DUCK_DB * _ombra_level() if OMBRA_TRACKS.has(key) else 0.0
+	return TARGET_DB - _campaign_attenuation - duck
 
 func _transition(key: String) -> void:
 	# Use the same gradual environmental presentation as the chamber. Never
 	# change the SFX bus: critical gestures keep their original intelligibility.
 	_campaign_attenuation = float(_port.get_registry_presentation().get("material_fade", 0.0)) * 28.0
-	var target_db: float = TARGET_DB - _campaign_attenuation
+	var target_db: float = _music_target_db(key)
 	if key == _active_key and _players[_active].playing:
 		if _fade_tween == null or not _fade_tween.is_running():
 			_players[_active].volume_db = target_db
 		_update_crowd()
+		_update_ombra()
 		return
 	_kill_fade()
 	# Alternate players for every change, including transitions within a run.
@@ -146,6 +247,7 @@ func _transition(key: String) -> void:
 	incoming.play(_beat_position(outgoing, incoming.stream))
 	_active_key = key
 	_update_crowd()
+	_update_ombra()
 	_fade_tween = create_tween()
 	_fade_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_fade_tween.tween_property(incoming, "volume_db", target_db, fade_seconds)
@@ -214,6 +316,48 @@ func _stop_silent_crowd() -> void:
 		if float(_crowd_targets[key]) <= SILENT_DB:
 			(_crowd[key] as AudioStreamPlayer).stop()
 
+func _update_ombra() -> void:
+	if _ombra.is_empty():
+		return
+	var level: float = _ombra_level()
+	var targets: Dictionary = {}
+	for key: String in _ombra:
+		var present: bool = not _registry_silent and key == _active_key and level > 0.0
+		targets[key] = TARGET_DB - _campaign_attenuation - OMBRA_RANGE_DB * (1.0 - level) if present else SILENT_DB
+	if targets == _ombra_targets:
+		return
+	_ombra_targets = targets
+	if _ombra_tween != null and _ombra_tween.is_valid():
+		_ombra_tween.kill()
+	_ombra_tween = create_tween().set_parallel(true)
+	_ombra_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	for key: String in _ombra:
+		var player: AudioStreamPlayer = _ombra[key]
+		var target: float = float(targets[key])
+		if target > SILENT_DB and not player.playing:
+			player.volume_db = SILENT_DB
+			player.play(_beat_position(_players[_active], player.stream))
+		if player.playing:
+			_ombra_tween.tween_property(player, "volume_db", target, OMBRA_FADE_SECONDS)
+	var section: AudioStreamPlayer = _players[_active]
+	if OMBRA_TRACKS.has(_active_key) and section.playing and (_fade_tween == null or not _fade_tween.is_running()):
+		_ombra_tween.tween_property(section, "volume_db", _music_target_db(_active_key), OMBRA_FADE_SECONDS)
+	_ombra_tween.chain().tween_callback(_stop_silent_ombra)
+
+func _stop_silent_ombra() -> void:
+	for key: String in _ombra:
+		if float(_ombra_targets[key]) <= SILENT_DB:
+			(_ombra[key] as AudioStreamPlayer).stop()
+
+func _stop_ombra() -> void:
+	if _ombra_tween != null and _ombra_tween.is_valid():
+		_ombra_tween.kill()
+	for key: String in _ombra:
+		var player: AudioStreamPlayer = _ombra[key]
+		player.stop()
+		player.volume_db = SILENT_DB
+		_ombra_targets[key] = SILENT_DB
+
 func _stop_crowd() -> void:
 	if _crowd_tween != null and _crowd_tween.is_valid():
 		_crowd_tween.kill()
@@ -240,6 +384,7 @@ func _kill_fade() -> void:
 func _exit_tree() -> void:
 	_kill_fade()
 	_stop_crowd()
+	_stop_ombra()
 	for player: AudioStreamPlayer in _players:
 		if is_instance_valid(player):
 			player.stop()

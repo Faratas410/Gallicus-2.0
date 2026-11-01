@@ -39,6 +39,13 @@ nuova meccanica dei Denari prima della prova umana, simulatore senza errori di
 chiusura, registro locale del tempo attivo pronto per la sessione cronometrata.
 Prossimo passo, umano: almeno una campagna cronometrata da profilo pulito
 secondo `docs/playtest_guide.md`; poi checkpoint Linux sul candidato.
+1 novembre: audio esteso nella stessa raccolta gratuita Sabbia e Bronzo:
+loop `racconto` (la lira di Lauro) per dialoghi e fogli del posto, sei cue per
+racconto, posto vuoto, ultima Era e Banco. Dettagli in
+`docs/audio_direction.md`; l'ascolto umano resta aperto. Rimossi anche i 30
+MP3 legacy demoniaci, mai caricati dal runtime. Direzione approvata; aggiunti
+tre strati Ombra che scuriscono arena, sigillo e SPINGI LA SORTE secondo il
+rischio del percorso (famiglia del patto, Pressione, debito, Segni).
 
 Proposta preparata per la ripresa: economia e ritmo prima dell'espansione,
 con metodo e gate in `docs/support/prossimo_goal_10_ore_2026-10-29.md`.

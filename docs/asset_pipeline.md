@@ -200,8 +200,9 @@ La raccolta audio procedurale del 6 settembre e' stata sostituita il 21 ottobre
 con hash e' `assets/audio/manifest.json` e i crediti sono in
 `docs/audio_credits.md`. Budget source audio: meno di 32 MiB.
 
-Gli MP3 precedenti sono esclusi dal preset. Il controllo pack carica i 40
-stream del manifest e rifiuta MP3 residui.
+Gli MP3 precedenti sono stati rimossi dal repository il 1 novembre 2026; il
+preset continua a escluderli. Il controllo pack carica i 50 stream del
+manifest e rifiuta MP3 residui.
 
 ## Congedo del Registro - 12 settembre 2026
 

@@ -358,7 +358,7 @@ func _on_ledger_changed(payload: Dictionary) -> void:
 func _on_banco_pressed(item_id: String) -> void:
 	if not bool(_banco_view.get("open", false)):
 		return
-	_play_sfx(&"registry_table_open")
+	_play_sfx(&"banco_purchase")
 	if GameEvents != null and GameEvents.has_signal("request_banco_purchase"):
 		GameEvents.request_banco_purchase.emit(item_id)
 

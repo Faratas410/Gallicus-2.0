@@ -7,12 +7,13 @@ import re
 import sys
 import wave
 ROOT = Path(__file__).resolve().parents[2]
-SCORE = ["atrium", "registry", "inscription", "threshold", "dossier", "gradinata_murmur", "gradinata_rhythm"]
+SCORE = ["atrium", "registry", "inscription", "threshold", "dossier", "racconto", "gradinata_murmur", "gradinata_rhythm",
+         "registry_ombra", "inscription_ombra", "threshold_ombra"]
 
 def main():
     manifest=json.loads((ROOT/"assets/audio/manifest.json").read_text(encoding="utf-8"))
     entries=manifest["assets"]
-    assert len(entries)==40, len(entries)
+    assert len(entries)==50, len(entries)
     assert (ROOT/manifest["credits"]).exists(), "audio credits missing"
     paths={entry["path"] for entry in entries}
     total=0
@@ -41,10 +42,11 @@ def main():
     for name in SCORE:
         assert f"res://assets/audio/score/{name}.ogg" in paths, name
     assert total < 32*1024*1024, "audio source budget exceeded"
-    # Conservative coincident peaks: six cues at their gain, two score voices and two gradinata beds.
+    # Conservative coincident peaks: six cues at their gain, two score voices,
+    # one ombra layer at full risk and two gradinata beds.
     sfx=(ROOT/'scripts/audio/sfx_bus.gd').read_text(encoding='utf-8').split('const CUE_VOLUME_DB: Dictionary = {',1)[1].split('}',1)[0]
     highest_gain=max(float(x) for x in re.findall(r': (-[0-9.]+)',sfx))
-    rms_sum=6*10**((-13.5+highest_gain)/10)+2*10**((-18-14)/10)+2*10**((-22-8)/10)
+    rms_sum=6*10**((-13.5+highest_gain)/10)+2*10**((-18-14)/10)+10**((-22-14)/10)+2*10**((-22-8)/10)
     assert rms_sum < 10**(-6/10), 'mix headroom exhausted'
 
     for file in ['scripts/audio/music_director.gd','scripts/audio/sfx_bus.gd','scripts/ui/registry_terminal_view.gd']:
@@ -62,6 +64,6 @@ def main():
     assert 'assets/audio/*.mp3' in (ROOT/'export_presets.cfg').read_text(encoding='utf-8')
     texture_import=(ROOT/'assets/ui/generated/ritual_dust.png.import').read_text(encoding='utf-8')
     assert 'process/size_limit=256' in texture_import
-    print('[OK][AV_ASSET_CONTRACT] 7 score loops and 33 cues; hashes, format, loudness, licences, credits and headroom')
+    print('[OK][AV_ASSET_CONTRACT] 11 score loops and 39 cues; hashes, format, loudness, licences, credits and headroom')
 
 if __name__=='__main__': main()

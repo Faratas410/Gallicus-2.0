@@ -48,7 +48,7 @@ func _inspect() -> void:
 				audio_count += 1
 	else:
 		_failures.append("Export has no valid audio manifest")
-	if audio_count != 40:
+	if audio_count != 50:
 		_failures.append("Audio inventory is incomplete")
 	for path: String in _paths:
 		if path.ends_with(".mp3") or path.ends_with(".mp3.import") or path.ends_with(".mp3str"):

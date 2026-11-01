@@ -120,6 +120,7 @@ func try_open() -> bool:
 		active = true
 		mode = "ledger" if not ledger_view.is_empty() else "final_copy"
 		show()
+		_announce(&"final_sheet_open")
 		if mode == "ledger":
 			_render_final_ledger(ledger_view)
 		else:
@@ -139,6 +140,7 @@ func try_open() -> bool:
 			active = true
 			mode = "copy"
 			show()
+			_announce(&"seat_sheet_open")
 			_render_copy(copy_view)
 			witness.grab_focus()
 			call_deferred("_restore_focus_if_needed")
@@ -146,6 +148,7 @@ func try_open() -> bool:
 		active = true
 		mode = "inquiry"
 		show()
+		_announce(&"seat_sheet_open")
 		_render_inquiry()
 		reserve.grab_focus()
 		call_deferred("_restore_focus_if_needed")
@@ -153,6 +156,7 @@ func try_open() -> bool:
 	active = true
 	mode = "case"
 	show()
+	_announce(&"seat_sheet_open")
 	title.text = tr("IL POSTO MISURATO")
 	evidence.text = "%s\n\n%s" % [tr("Vessa misura la fila per venderla. Dima indica il posto vuoto; Nerio mostra una copia che si ferma prima di quel posto. Come lo difendi?"), tr("Conto %d Denari") % int(view.get("denari", 0))]
 	reserve.text = tr("RISERVA IL POSTO · 6 Denari\nVessa ferma la vendita. Il conto diminuisce subito.")
@@ -198,40 +202,50 @@ func _choose(choice: String) -> void:
 		var in_debt := not defer_button.visible
 		var ledger_choice := ("voice" if in_debt else "lauro") if choice == "reserve" else ("debt" if in_debt else "crowd") if choice == "witness" else "vessa" if choice == "defer" and not in_debt else ""
 		if ledger_choice != "":
+			_play_sfx(&"seat_choice_mark")
 			GameEvents.request_final_ledger_choice.emit(ledger_choice)
 		return
 	if mode == "final_copy":
 		var copy_choice := "seat" if choice == "reserve" else "gesta" if choice == "witness" else "scars" if choice == "defer" else ""
 		if copy_choice != "":
+			_play_sfx(&"seat_choice_mark")
 			GameEvents.request_final_copy_choice.emit(copy_choice)
 		return
 	if mode == "inquiry":
 		if choice == "continue" and int(inquiry.get("seen", 0)) == 3:
+			_play_sfx(&"story_page")
 			mode = "question"
 			_render_question(false)
 			return
 		var action: String = "inspect_copy" if choice == "reserve" else "inspect_trace" if choice == "witness" else "defer" if choice == "defer" else ""
 		if action != "":
+			_play_sfx(&"seat_choice_mark")
 			GameEvents.request_seat_inquiry_action.emit(action)
 		return
 	if mode == "question":
 		if choice == "continue":
+			_play_sfx(&"story_page")
 			mode = "inquiry"
 			_render_inquiry()
 			reserve.grab_focus()
 			return
 		var action: String = "conclude_copy" if choice == "reserve" else "infer_identity" if choice == "witness" else "defer" if choice == "defer" else ""
 		if action != "":
+			_play_sfx(&"seat_choice_mark")
 			GameEvents.request_seat_inquiry_action.emit(action)
 		return
 	if mode == "copy":
 		var copy_choice := "copy" if choice == "reserve" else "keep" if choice == "witness" else "defer" if choice == "defer" else ""
 		if copy_choice != "":
+			_play_sfx(&"seat_choice_mark")
 			GameEvents.request_seat_copy_choice.emit(copy_choice)
 		return
 	if choice == "continue":
-		_close(mode in ["case_result", "inquiry_result", "copy_result"])
+		var followup: bool = mode in ["case_result", "inquiry_result", "copy_result"]
+		_play_sfx(&"story_page" if followup else &"story_close")
+		_close(followup)
 		return
+	_play_sfx(&"seat_choice_mark")
 	GameEvents.request_seat_case_choice.emit(choice)
 
 func _set_wide_third(wide: bool) -> void:
@@ -474,13 +488,34 @@ func _close(open_followup: bool = false) -> void:
 	hide()
 	if open_followup:
 		get_parent().call_deferred("_try_open")
+		# Released after the follow-up had its chance to hold the racconto.
+		call_deferred("_release_story_if_closed")
 		return
+	_hold_story(false)
 	var registry := get_node_or_null("../../UI/UI_RunRoot/BettingCircle/CenterContainer/BookFrame/ClosedIntro/Btn_Open_Book") as Control
 	if registry != null and registry.is_visible_in_tree():
 		registry.grab_focus()
 
 func _on_run_ended(_reason: String, _summary: Dictionary) -> void:
 	_close()
+
+func _announce(cue: StringName) -> void:
+	_play_sfx(cue)
+	_hold_story(true)
+
+func _release_story_if_closed() -> void:
+	if not active:
+		_hold_story(false)
+
+func _hold_story(open: bool) -> void:
+	var score: Node = get_tree().get_first_node_in_group("music_director") if is_inside_tree() else null
+	if score != null:
+		score.call("set_story_overlay", &"seat", open)
+
+func _play_sfx(cue: StringName) -> void:
+	var sfx_bus: Node = get_node_or_null("/root/SfxBus")
+	if sfx_bus != null and sfx_bus.has_method("play_cue"):
+		sfx_bus.call("play_cue", cue)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if active and event.is_action_pressed("ui_cancel"):

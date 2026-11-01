@@ -13,19 +13,10 @@ on:
           - full
   push:
     branches: [main]
-    paths:
-      - ".github/ci/full_suite_checkpoint.txt"
-      - ".github/workflows/godot_smoke_runtime.yml"
-      - "project.godot"
-      - "scripts/systems/game_events.gd"
-      - "scripts/systems/run_manager.gd"
-      - "scripts/systems/save_manager.gd"
-      - "scripts/systems/run/**"
-      - "scripts/contracts/**"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.profile || 'lean' }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_id }}
+  cancel-in-progress: false
 
 env:
   GODOT_VERSION: "4.7.2-stable"
@@ -34,7 +25,35 @@ env:
   GODOT_DOWNLOAD_URL: "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip"
 
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.select.outputs.mode }}
+      groups: ${{ steps.select.outputs.groups }}
+      runtime: ${{ steps.select.outputs.runtime }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Select checks from the entire push
+        id: select
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          EVENT: ${{ github.event_name }}
+          PROFILE: ${{ inputs.profile || 'lean' }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            echo "mode=$PROFILE" >> "$GITHUB_OUTPUT"
+            echo "groups=" >> "$GITHUB_OUTPUT"
+            echo "runtime=true" >> "$GITHUB_OUTPUT"
+          else
+            python3 scripts/ci/contextual_ci.py plan --base "$BEFORE" --head "$AFTER"
+          fi
+
   static_contracts:
+    needs: plan
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -42,13 +61,26 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+          fetch-depth: 0
 
       - name: Run the canonical static playbook once
+        if: needs.plan.outputs.mode != 'contextual'
         run: |
           set -euo pipefail
           python3 scripts/ci/run_testing_playbook.py \
             --skip-import \
             --output-dir artifacts/static_contracts
+
+      - name: Run contextual static checks
+        if: needs.plan.outputs.mode == 'contextual'
+        env:
+          GROUPS: ${{ needs.plan.outputs.groups }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git diff --check "$BEFORE" "$AFTER"
+          python3 scripts/ci/contextual_ci.py static --groups "$GROUPS"
 
       - name: Upload static diagnostics
         if: failure()
@@ -60,7 +92,8 @@ jobs:
 
   runtime_routes:
     timeout-minutes: 15
-    needs: static_contracts
+    needs: [plan, static_contracts]
+    if: needs.plan.outputs.mode != 'contextual' || needs.plan.outputs.runtime == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -87,6 +120,7 @@ jobs:
           tail -n 200 "$LOG_DIR/import.log" || true
 
       - name: Run isolated CP-02 persistence contract
+        if: needs.plan.outputs.mode != 'contextual'
         run: |
           set -euo pipefail
           python3 scripts/ci/run_cp02_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
@@ -94,10 +128,21 @@ jobs:
           python3 scripts/ci/run_av_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME"
           python3 scripts/ci/run_campaign_runtime_contract.py --godot-bin "./tools/godot/$GODOT_BIN_NAME" --output-dir artifacts/runtime_routes/campaign
 
+      - name: Run contextual runtime contracts
+        if: needs.plan.outputs.mode == 'contextual'
+        env:
+          GROUPS: ${{ needs.plan.outputs.groups }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/runtime_routes
+          python3 scripts/ci/contextual_ci.py runtime --groups "$GROUPS" --godot-bin "./tools/godot/$GODOT_BIN_NAME" 2>&1 | tee artifacts/runtime_routes/contextual.log
+
       - name: Run route bundle
+        if: needs.plan.outputs.mode != 'contextual'
+        env:
+          PROFILE: ${{ needs.plan.outputs.mode }}
         run: |
           set -uo pipefail
-          PROFILE="${{ inputs.profile || 'lean' }}"
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           LEAN_SCENARIOS=(KEYBOARD_FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
           FULL_SCENARIOS=(BET_PRESENT FULL_RUN KEYBOARD_FULL_RUN ROUTE_CASHOUT ROUTE_DOUBLE ROUTE_CONDANNA ROUTE_REGISTER_FINAL CORE_CONTINUITY)
@@ -145,7 +190,8 @@ jobs:
 
   visual_stage:
     timeout-minutes: 15
-    needs: static_contracts
+    needs: [plan, static_contracts]
+    if: needs.plan.outputs.mode != 'contextual'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -169,9 +215,10 @@ jobs:
           python3 scripts/ci/run_godot_import.py --godot-bin "$GODOT_BIN"
 
       - name: Capture stage or full visual QA
+        env:
+          PROFILE: ${{ needs.plan.outputs.mode }}
         run: |
           set -euo pipefail
-          PROFILE="${{ inputs.profile || 'lean' }}"
           GODOT_BIN=./tools/godot/$GODOT_BIN_NAME
           rm -rf artifacts/visual_qa
           if [ "$PROFILE" = "full" ]; then

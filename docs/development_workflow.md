@@ -50,7 +50,11 @@ concorrenti sui medesimi file e piu' pacchetti runtime aperti.
 4. **Verificare il risultato reale.** Applicare `docs/testing.md`. Per UI
    controllare schermate renderizzate e input; per save attraversare anche
    scrittura, chiusura e ripresa dal gioco. I test dei soli helper non
-   dimostrano l'integrazione. Per asset seguire `docs/asset_pipeline.md`.
+   dimostrano l'integrazione. Selezionare i test locali secondo il comportamento
+   cambiato e le dipendenze effettive; non eseguire l'intero playbook per
+   default. Il planner CI usa un mapping prudente e fa fallback ai gate
+   cumulativi per i cambi non riconosciuti. I checkpoint CI e i gate di rilascio restano invariati. Per asset
+   seguire `docs/asset_pipeline.md`.
 5. **Rileggere la patch.** Cercare regressioni, contratti alterati, copie
    IT/EN/ES divergenti, perdita di dati e dipendenze fuori scope. Un test
    fallito va risolto o riportato come blocker, mai coperto abbassando il gate.

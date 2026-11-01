@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guard the lean three-job checkpoint cadence and manual full profile."""
+"""Guard contextual selection and the three-job cumulative checkpoint."""
 
 from __future__ import annotations
 
@@ -26,16 +26,6 @@ CHECKPOINTS = (
     "CONTENT-LOCK",
     "AUDIOVISUAL-LOCK",
     "RELEASE-LOCK",
-)
-RISK_PATHS = (
-    ".github/ci/full_suite_checkpoint.txt",
-    ".github/workflows/godot_smoke_runtime.yml",
-    "project.godot",
-    "scripts/systems/game_events.gd",
-    "scripts/systems/run_manager.gd",
-    "scripts/systems/save_manager.gd",
-    "scripts/systems/run/**",
-    "scripts/contracts/**",
 )
 STATIC_TESTS = tuple(sorted(path.name for path in (ROOT / "scripts/ci").glob("test_*.py")))
 STATIC_CHECKS = (
@@ -197,15 +187,23 @@ def _assert_workflow() -> None:
             raise AssertionError(f"workflow profile is incomplete: {token}")
     if "pull_request:" in workflow:
         raise AssertionError("direct-main workflow must not run automatically for pull requests")
-    if "branches: [main]" not in workflow or "paths:" not in workflow:
-        raise AssertionError("automatic CI must remain a path-filtered main push trigger")
-    for risk_path in RISK_PATHS:
-        if f'"{risk_path}"' not in workflow:
-            raise AssertionError(f"workflow missing checkpoint/risk trigger path: {risk_path}")
+    if "branches: [main]" not in workflow:
+        raise AssertionError("automatic CI must run for main pushes")
+    push_block = workflow.split('  push:', 1)[1].split('\nconcurrency:', 1)[0]
+    if 'paths:' in push_block or 'paths-ignore:' in push_block:
+        raise AssertionError('every main push must reach the contextual planner')
+    if '${{ github.run_id }}' not in workflow.split('env:', 1)[0] or 'cancel-in-progress: false' not in workflow:
+        raise AssertionError('a later push must not cancel checks for an earlier push')
 
     job_names = re.findall(r"(?m)^  ([a-zA-Z0-9_]+):\n", workflow.split("jobs:\n", 1)[1])
-    if job_names != ["static_contracts", "runtime_routes", "visual_stage"]:
-        raise AssertionError(f"lean checkpoint must expose exactly three jobs, got {job_names}")
+    if job_names != ["plan", "static_contracts", "runtime_routes", "visual_stage"]:
+        raise AssertionError(f"CI must plan before its three validation jobs, got {job_names}")
+
+    plan_block = _job_block(workflow, "plan")
+    for token in ('fetch-depth: 0', 'github.event.before', 'github.sha',
+                  'contextual_ci.py plan', 'workflow_dispatch', 'mode=$PROFILE'):
+        if token not in plan_block:
+            raise AssertionError(f'planner missing push range or manual fallback: {token}')
 
     static_block = _job_block(workflow, "static_contracts")
     runtime_block = _job_block(workflow, "runtime_routes")
@@ -213,6 +211,10 @@ def _assert_workflow() -> None:
     _assert_visual_artifact_contract(visual_block)
     if static_block.count("python3 scripts/ci/run_testing_playbook.py") != 1:
         raise AssertionError("static_contracts must call the canonical playbook exactly once")
+    if 'contextual_ci.py static' not in static_block or "needs.plan.outputs.mode == 'contextual'" not in static_block:
+        raise AssertionError('contextual static checks must be explicitly gated')
+    if 'git diff --check "$BEFORE" "$AFTER"' not in static_block or 'fetch-depth: 0' not in static_block:
+        raise AssertionError('contextual checks need the exact push range and whitespace validation')
     for test_name in STATIC_TESTS + STATIC_CHECKS:
         if playbook.count(test_name) != 1:
             raise AssertionError(f"canonical playbook must contain static contract exactly once: {test_name}")
@@ -220,14 +222,21 @@ def _assert_workflow() -> None:
             raise AssertionError(f"workflow must not duplicate playbook contract: {test_name}")
 
     for downstream in (runtime_block, visual_block):
-        if "needs: static_contracts" not in downstream:
-            raise AssertionError("runtime and visual jobs must depend on static_contracts")
+        if "needs: [plan, static_contracts]" not in downstream:
+            raise AssertionError("runtime and visual jobs must depend on plan and static_contracts")
         if downstream.count("bash scripts/ci/bootstrap_linux_godot.sh") != 1:
             raise AssertionError("each Godot job must use the shared bounded bootstrap")
     if workflow.count("Import project assets once") != 2:
         raise AssertionError("lean checkpoint must perform exactly two Godot imports")
     if "apt-get update" in workflow:
         raise AssertionError("workflow must not run apt-get update unconditionally")
+    if 'contextual_ci.py runtime' not in runtime_block or "needs.plan.outputs.runtime == 'true'" not in runtime_block:
+        raise AssertionError('focused runtime must be selected without unrelated routes')
+    for name in ('Run isolated CP-02 persistence contract', 'Run route bundle'):
+        if not re.search(rf'(?m)^      - name: {re.escape(name)}\n        if: needs\.plan\.outputs\.mode != \'contextual\'$', runtime_block):
+            raise AssertionError(f'checkpoint-only step must not run in contextual mode: {name}')
+    if "if: needs.plan.outputs.mode != 'contextual'" not in visual_block:
+        raise AssertionError('contextual checks must not run checkpoint visual matrix')
 
     for scenario in ("ROUTE_CASHOUT", "ROUTE_DOUBLE", "ROUTE_CONDANNA", "ROUTE_REGISTER_FINAL"):
         if scenario not in runtime_block:
@@ -281,7 +290,7 @@ def main() -> int:
     _assert_marker()
     _assert_workflow()
     _assert_documentation()
-    print("[OK][CI_CHECKPOINT_CONTRACT] lean three-job cadence and full profile passed")
+    print("[OK][CI_CHECKPOINT_CONTRACT] contextual planner and cumulative profiles passed")
     return 0
 
 

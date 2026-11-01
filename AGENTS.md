@@ -61,6 +61,15 @@ These rules apply to all coding agents working in this repository.
 
 ## Verification Before Finalizing
 
+- Select local automated checks from the changed behavior and its real
+  dependencies, not the filename alone. Run the focused contract and the
+  smallest relevant integration path; combine checks for mixed changes.
+- Use the mapping and escalation rules in `docs/testing.md`. A routine patch
+  does not require the full playbook or a complete campaign by default. Keep
+  the existing checkpoint, CI, release and human-acceptance gates intact.
+- Record what was run, what was not run and why; do not report focused local
+  checks as full CI or release signoff. Retest after changes that invalidate
+  prior evidence, and broaden on failure or unresolved cross-domain risk.
 - Run a repository scan for mojibake markers on text files before final response.
 - Suggested command:
   - `rg -n -P "\\x{00C3}|\\x{00C2}|\\x{FFFD}" .`

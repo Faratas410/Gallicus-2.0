@@ -210,7 +210,7 @@ precedente non devono cambiare le offerte di quello successivo; i salvataggi
 personali non vengono usati. CORE_CONTINUITY conserva il proprio profilo
 all'interno dello stesso processo. Il validator prova l'isolamento fra invocazioni.
 
-La verifica cresce con il rischio della patch:
+La verifica locale segue il comportamento modificato e il rischio della patch:
 
 1. controlli statici e path;
 2. import Godot;
@@ -220,7 +220,77 @@ La verifica cresce con il rischio della patch:
 6. playtest della campagna;
 7. export e clean-install.
 
-Un livello non sostituisce quello successivo.
+Questi livelli non sono una sequenza obbligatoria per ogni intervento. Scegliere
+quelli necessari al cambiamento e alle dipendenze; ai checkpoint i gate previsti
+restano obbligatori. Un controllo eseguito non sostituisce un gate non eseguito.
+
+## Selezione contestuale dei test locali
+
+Prima di eseguire, annotare comportamento cambiato, punto di ingresso reale,
+dipendenze, rischio e controllo minimo. Partire dalla riga pertinente e
+combinare le righe se una patch attraversa piu' domini. Una modifica piccola
+in un file condiviso non richiede automaticamente tutti i test delle sue altre
+funzioni; seguire chiamanti, segnali, dati e superfici effettivamente coinvolti.
+Se il perimetro non e' dimostrabile, usare il controllo di integrazione piu'
+vicino che copre l'incertezza e motivarlo.
+
+| Cambia | Controlli locali da scegliere | Aggiungere quando pertinente |
+| --- | --- | --- |
+| Solo documentazione | `python scripts/ci/check_docs_active_refs.py`, `python scripts/ci/test_no_mojibake.py`, `git diff --check` | Contratto del dominio o workflow se il testo modifica un requisito operativo verificato da quel contratto. |
+| Prezzi, quietanza o debito | `python scripts/ci/test_ledger_economy_contract.py` e contratto runtime mirato del percorso interessato | `python scripts/ci/test_bando_ladder_contract.py` se cambia l'interazione col bando; scenario di ripresa se il saldo o la scelta attraversano il save. |
+| Bando, quote o ricompense | `python scripts/ci/test_bando_ladder_contract.py` e il percorso di chiusura o scadenza coinvolto | Quietanza/debito, sblocchi o contenuti solo se toccati; campagna completa solo se serve verificare progressione fino al termine. |
+| Una scena o scelta del posto | Il contratto `seat_case`, `seat_inquiry`, `seat_memory`, `seat_copy`, `seat_copy_echo` o `seat_steps_era` coinvolto, piu' il suo ingresso reale | Profilo isolato e resume/reset quando cambia stato persistente; ordine e congedo quando cambia l'eleggibilita'; controlli IT/EN/ES e catture per testo o layout modificati. |
+| UI, asset o animazione di una fase | Contratto statico dell'oggetto o fase e verifica renderizzata degli stati toccati | Import se cambiano risorse o binding; focus/input e localizzazione quando interessati; una route smoke che attraversa la fase se cambia il collegamento al flow. |
+| Audio o cue | `python scripts/ci/test_av_asset_contract.py` per asset/manifest e contratto runtime del cue o lifecycle interessato | Ascolto umano per mix e qualita'; chiusura durante playback se cambia il pool; import per nuovi asset. |
+| Testo o traduzione | `python scripts/ci/test_i18n_contract.py` e verifica della stringa o superficie modificata | Reimport delle risorse compilate e controllo di layout nelle lingue e dimensioni supportate quando cambia il testo visualizzato. |
+| Flow, segnali o save | Contratto specifico del boundary e percorso reale che lo attraversa | Vecchi profili, scrittura/lettura, interruzione, resume e reset per dati persistenti; controlli delle route coinvolte se cambiano transizioni o payload. |
+| Test runner, CI o preset di export | Test del runner/validator o contratto di configurazione interessato | `python scripts/ci/test_ci_checkpoint_contract.py` per workflow/cadenza; controlli packaging e piattaforme per modifiche che toccano l'export. |
+
+Esempi di route mirate: `BET_PRESENT` per accesso alla promessa;
+`ROUTE_CASHOUT`, `ROUTE_DOUBLE` o `ROUTE_CONDANNA` per la route cambiata;
+`CORE_CONTINUITY` solo se serve attraversare piu' run o persistenza. Gli
+scenari si avviano con `scripts/ci/run_headless_smoke.py --scenario <nome>
+--godot-bin <Godot 4.7.2>`; ciascuno usa il proprio profilo temporaneo.
+I contratti Godot `scripts/ci/*_contract.gd` si possono eseguire singolarmente
+con `--headless --audio-driver Dummy --path . --script res://scripts/ci/<file>`
+e profilo di test isolato: non riutilizzare i salvataggi personali. Un contratto
+diretto non esegue automaticamente gli altri controlli del runner di campagna.
+
+Ampliare la verifica se un test fallisce, se il cambiamento coinvolge realmente
+altre route, ownership, segnali, schema/migrazione save, engine o workflow, o
+se il rischio non e' coperto. Ripetere solo cio' la cui evidenza e' invalidata
+dalle modifiche successive. Registrare PASS/FAIL/NOT_RUN/BLOCKED, comando,
+candidato e motivo dei controlli omessi. La suite completa e' richiesta ai
+checkpoint e per i gate sotto indicati, non come default di ogni patch.
+
+La selezione automatica GitHub usa `scripts/ci/contextual_ci.py` sull'intero
+intervallo del push, non solo sull'ultimo commit. Attualmente riconosce:
+documentazione, pool SFX, `scripts/ui/seat_case.gd`, `_pick_crowd_intent` e
+`_settle_ledger_at_run_end` in `RunManager`. Combina i controlli dei domini
+coinvolti e non avvia route o campagne estranee. Il piano e' visibile nei log;
+ogni contratto Godot usa un profilo isolato e controlla anche gli errori di
+chiusura. Il mapping CI e' deliberatamente piu' ristretto della tabella locale.
+Per i documenti canonici e i contratti documentali che sono letti da test
+automatici, il planner aggiunge i rispettivi controlli: per esempio UI canon
+attiva i contratti di pressione, contatore, stile e motion; il contratto
+GameEvents attiva il validatore dei segnali e il controllo del bando.
+Un push successivo non cancella la verifica del push precedente: ogni run ha un
+gruppo di concorrenza distinto, cosi' nessun intervallo resta senza controlli.
+
+File non riconosciuti ricadono nel profilo lean. Range non disponibile, checkout
+diverso dalla testa, nuovo branch o push non fast-forward richiedono full.
+Modifiche non riconosciute a
+`RunManager`, save, `GameEvents`, contratti/run systems o `project.godot`
+richiedono il profilo full. In un push misto prevale il rischio piu' alto,
+indipendentemente dall'ordine dei file. La modifica del marker di checkpoint o
+del workflow mantiene il gate cumulativo; `workflow_dispatch` continua a
+eseguire esplicitamente lean o full. Non interpretare un successo contestuale
+come checkpoint Linux cumulativo, accettazione umana o release.
+Per le funzioni mappate, cambi a chiamate di save, segnali, serializzazione o
+alle firme richiedono comunque full; lo stesso vale per i file audio e posto
+mappati. Per questi ultimi anche modifiche alle dichiarazioni al livello del
+file o chiamate dinamiche richiedono full. Il riconoscimento non sostituisce
+la review: la selezione non dimostra l'assenza di effetti indiretti.
 
 ## Classificazione patch
 
@@ -228,12 +298,14 @@ Un livello non sostituisce quello successivo.
 - **Tooling:** unit/static test e workflow contract.
 - **Data/content:** content contract, determinismo, localizzazione.
 - **UI/asset/audio:** import, smoke, screenshot/ascolto.
-- **Flow/save:** suite completa, tutti gli smoke, resume e CI Linux.
+- **Flow/save:** contratto e route interessati; resume/reset e migrazione se
+  coinvolti. CI e suite cumulativa secondo rischio e checkpoint qui sotto.
 - **Campagna:** save pulito, Ere/Silenzi, durata e stato terminale.
 
 ## Cadenza automatica
 
-La suite Linux automatica e' lean e non parte per ogni feature.
+Ogni push su `main` avvia il planner Linux; esegue solo la selezione riconosciuta
+o, in caso di perimetro non mappato, il profilo cumulativo prudente.
 
 - **Per feature:** eseguire contratto specifico, import Godot quando cambiano
   runtime/scene/asset, QA visuale o audio rappresentativa, docs refs,
@@ -241,11 +313,10 @@ La suite Linux automatica e' lean e non parte per ogni feature.
 - **Checkpoint:** dopo lo storico Object-First, i gate programmati sono
   `CP-03`, `CS-04`, Content Lock, Audiovisual Lock e Release Lock. Il marker
   resta `OF-11` fino a `CP-03`.
-- **Eccezione ad alto rischio:** modifiche a `RunManager`, `GameEvents`, save,
-  contratti/run systems, `project.godot` o workflow avviano subito il profilo
-  lean senza spostare il checkpoint programmato. Il profilo `full` immediato
-  resta obbligatorio soltanto se cambiano ownership, segnali, shape pubbliche o
-  schema save.
+- **Rischio alto:** i boundary di `RunManager` non esplicitamente mappati,
+  `GameEvents`, save, contratti/run systems e `project.godot` avviano il
+  profilo full; modifiche al workflow e al marker attivano almeno lean. Nessuno
+  di questi sposta il checkpoint programmato.
 - **Manuale:** `workflow_dispatch` espone `lean` e `full`. Il secondo conserva
   gli scenari storici e il visual QA cumulativo per i checkpoint programmati
   e le diagnosi straordinarie.
@@ -281,7 +352,7 @@ python scripts/ci/run_testing_playbook.py --skip-import
 ```
 
 Per diagnosi si puo' eseguire anche il singolo test focalizzato. Il signoff
-statico, pero', usa sempre il playbook completo e comprende:
+statico di checkpoint, pero', usa sempre il playbook completo e comprende:
 
 - phase identity o save flow;
 - GameEvents;
@@ -342,7 +413,7 @@ python scripts/ci/run_headless_smoke.py --scenario ROUTE_CASHOUT --godot-bin ".\
 - `END_RUN_FINAL ending_key=`.
 
 Workflow canonico: `.github/workflows/godot_smoke_runtime.yml`.
-Nei checkpoint il workflow espone esattamente tre job:
+Il job `plan` seleziona i controlli; nei checkpoint seguono tre job:
 
 - `static_contracts` chiama una sola volta il playbook, fonte unica dei test;
 - `runtime_routes` importa Godot una volta e percorre in sequenza cashout,

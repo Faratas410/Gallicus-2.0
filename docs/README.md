@@ -1,5 +1,11 @@
 # Gallicus Documentation Operating System
 
+Due patch dopo il confronto sui test automatici del 3 novembre:
+[test di sigillo e movimento](support/patch_test_semantici_2026-11-03.md), poi
+[apertura e conferma dell'offerta](support/patch_offerta_autorevole_2026-11-03.md).
+Entrambe implementate localmente: test e wiring CI nella patch 1, apertura
+unica e selezione diretta nel manager nella patch 2. Evidenze e limiti nelle schede.
+
 Identita' e direzione per l'espansione: [l'anima di Gallicus](support/anima_gallicus_2026-10-29.md).
 
 Obiettivo delle dieci ore ripreso: [baseline di economia e ritmo, decisioni aperte](support/baseline_economia_ritmo_2026-10-29.md).

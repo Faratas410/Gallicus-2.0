@@ -1824,8 +1824,17 @@ func start_arena() -> void:
 	_open_level3_bet_ui()
 
 func select_bet(bet_id: StringName) -> void:
-	if not _waiting_for_bet or _phase != RunPhase.BET_PRESENT:
-		push_error("RunManager: select_bet in wrong phase %s" % [_phase_to_name(_phase)])
+	if not _guard_request_phase("select_bet", [RunPhase.BET_PRESENT]):
+		return
+	if not _waiting_for_bet or _run_state.run_is_over or _is_game_over:
+		return
+	var offered: bool = false
+	for entry: Dictionary in _run_state.level3_current_offer:
+		if StringName(str(entry.get("id", ""))) == bet_id and bet_id != &"":
+			offered = true
+			break
+	if not offered:
+		push_error("RunManager: select_bet invalid offer id '%s'" % String(bet_id))
 		return
 	_confirm_pact_with_bet_id(bet_id)
 
@@ -2128,13 +2137,11 @@ func _open_bet_ui(_from_victory: bool = false) -> void:
 func _open_level3_bet_ui() -> void:
 	if _run_state.run_is_over or _is_game_over:
 		return
-	_set_phase(RunPhase.BET_PRESENT, "open_level3_bet_ui")
 	_waiting_for_bet = true
 	_waiting_for_push_luck = false
 	_resolve_ritual_reward_applied = false
 	_set_runtime_gate_phase(RunPhase.PREP)
 	_update_arena_visual_only()
-	GameEvents.betting_opened.emit()
 	var offer: Array[Dictionary] = _build_level3_bet_offer()
 	for offer_entry: Dictionary in offer:
 		# The Registry page prints what a held seal would add in this arena.
@@ -2142,6 +2149,9 @@ func _open_level3_bet_ui() -> void:
 		# The family's odds are a profile; this says what today's conditions add.
 		offer_entry["seal_conditions"] = _seal_conditions()
 	_run_state.level3_current_offer = offer.duplicate(true)
+	# Phase entry is metadata-only. All consumers see the complete offer and gates.
+	_set_phase(RunPhase.BET_PRESENT, "open_level3_bet_ui")
+	GameEvents.betting_opened.emit()
 	var offer_payload: Dictionary = _betting_payload_factory.build_bet_offer_payload({"offer": offer})
 	var emitted_offer: Array[Dictionary] = offer_payload.get("offer", []) as Array[Dictionary]
 	_emit_crowd_favor("", "")
@@ -3233,19 +3243,6 @@ func _mut_pyl_double(_step: Dictionary) -> void:
 func _mut_pyl_condanna(_step: Dictionary) -> void:
 	_handle_push_luck_condanna()
 
-func _mut_betp_place_bet(step: Dictionary) -> void:
-	if not step.has("bet_id"):
-		_report_mutation_executor_error("BETP_PLACE_BET missing bet_id")
-		return
-	var bet_id: String = str(step.get("bet_id", ""))
-	select_bet(StringName(bet_id))
-
-func _mut_intro_select_bet(step: Dictionary) -> void:
-	if not step.has("bet_id"):
-		_report_mutation_executor_error("INTRO_SELECT_BET missing bet_id")
-		return
-	_apply_intro_select_bet_request(str(step.get("bet_id", "")))
-
 func _mut_intro_confirm(_step: Dictionary) -> void:
 	request_confirm_pact()
 
@@ -3391,28 +3388,8 @@ func _on_request_show_main_menu() -> void:
 
 func _on_request_intro_select_bet(bet_id: String) -> void:
 	_touch_request_activity("request_intro_select_bet(bet_id=%s)" % bet_id)
-	_route_guarded_phase_request("request_place_bet", [RunPhase.BET_PRESENT], _phase_bet_present_handler, {"bet_id": bet_id})
+	select_bet(StringName(bet_id))
 	return
-
-func _apply_intro_select_bet_request(bet_id: String) -> void:
-	if not _waiting_for_bet:
-		push_error("RunManager: request_intro_select_bet in wrong phase %s" % [_phase_to_name(_phase)])
-		return
-	var selected_bet_id: StringName = StringName(bet_id.strip_edges())
-	if selected_bet_id == &"":
-		push_error("RunManager: request_intro_select_bet missing bet id")
-		return
-	var offer_has_bet: bool = false
-	for offer_value in _run_state.level3_current_offer:
-		var offer_entry: Dictionary = offer_value as Dictionary
-		if StringName(str(offer_entry.get("id", ""))) == selected_bet_id:
-			offer_has_bet = true
-			break
-	if not offer_has_bet:
-		push_error("RunManager: request_intro_select_bet invalid bet '%s'" % bet_id)
-		return
-	_run_state.last_selected_bet_id = selected_bet_id
-	_enter_bet_present()
 
 func _on_request_intro_confirm() -> void:
 	_touch_request_activity("request_intro_confirm()")
@@ -3459,7 +3436,7 @@ func _on_request_end_run_quit() -> void:
 	return
 
 func _on_request_place_bet(bet_id: String, _stake: int) -> void:
-	_route_guarded_phase_request("request_place_bet", [RunPhase.BET_PRESENT], _phase_bet_present_handler, {"bet_id": bet_id})
+	select_bet(StringName(bet_id))
 	return
 
 func _on_request_ritual_advance(kind: String) -> void:
@@ -5328,15 +5305,8 @@ func _enter_intro() -> void:
 	_emit_ui(ui_payload)
 
 func _enter_bet_present() -> void:
+	# The opening operation publishes the prepared offer, including same-phase reopen.
 	_smoke_mark("BET_PRESENT")
-	var view: Dictionary = _phase_bet_present_handler.build_view(_run_state, {})
-	var offer: Array[Dictionary] = []
-	var raw_offer: Variant = view.get("offer", null)
-	if raw_offer is Array:
-		for offer_value in raw_offer:
-			if offer_value is Dictionary:
-				offer.append(offer_value as Dictionary)
-	GameEvents.bet_ui_opened.emit(offer)
 
 func _enter_bet_committed() -> void:
 	_emit_ui(_build_phase_ui_payload(RunPhase.BET_COMMITTED, "PATTO SIGILLATO"))

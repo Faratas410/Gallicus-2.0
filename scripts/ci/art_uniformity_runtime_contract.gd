@@ -27,7 +27,14 @@ func _run() -> void:
 	var menu: Node = scene.get_node("MenuLayer/MainMenu")
 	var manager: Node = scene.get_node("RunManager")
 	var save: Node = root.get_node("SaveManager")
-	menu.get("new_game_button").pressed.emit()
+	var menu_button: Button = menu.get("new_game_button")
+	var menu_rect := menu_button.get_global_rect()
+	menu_button.mouse_entered.emit()
+	menu_button.grab_focus()
+	await settle(0.2)
+	check(menu_button.get_global_rect() == menu_rect, "hover/focus changed menu target geometry")
+	menu_button.mouse_exited.emit()
+	menu_button.pressed.emit()
 	await settle(0.6)
 	scene.get_node("OpeningPrologue").call("_finish")
 	var circle: Node = ui.get_node("UI_RunRoot/BettingCircle")
@@ -121,6 +128,7 @@ func _run() -> void:
 	var portrait := Image.load_from_file(ProjectSettings.globalize_path("res://assets/ui/generated/dialogue_lauro_cutout.png"))
 	check(portrait != null and portrait.get_pixel(0, 0).a == 0, "Lauro lacks transparent background")
 	check(portrait.get_height() > portrait.get_width(), "Lauro portrait aspect changed")
+	await _check_immediate_intents(ui, manager, menu, bet)
 	scene.get_node("MusicDirector").call("_on_registry_run_ended", "REGISTRY_ABSENCE", {})
 	root.get_node("SfxBus").call("_on_run_ended", "REGISTRY_ABSENCE", {})
 	await settle(1.5)
@@ -128,3 +136,37 @@ func _run() -> void:
 	await settle(0.3)
 	print("ART_UNIFORMITY_CONTRACT ", checks, " checks; ", failures.size(), " failures")
 	quit(0 if failures.is_empty() else 1)
+
+func _check_immediate_intents(ui: Node, manager: Node, menu: Node, bet: StringName) -> void:
+	# Isolate presentation intents only. The judgment fixture separately keeps
+	# RunManager connected and observes the actual authoritative response.
+	var events: Node = root.get_node("GameEvents")
+	ui.call("_set_intermediate_choice_modal", false)
+	for reduced: bool in [false, true]:
+		menu.call("_on_reduced_motion_toggled", reduced)
+		for action: String in ["cashout", "condanna", "double"]:
+			var signal_name := StringName("request_pyl_" + action)
+			var receivers: Array[Callable] = []
+			for connection: Dictionary in events.get_signal_connection_list(signal_name):
+				var callback: Callable = connection["callable"]
+				if callback.get_object() == manager:
+					receivers.append(callback)
+					events.disconnect(signal_name, callback)
+			var received: Array[String] = []
+			var observer := func() -> void: received.append(action)
+			events.connect(signal_name, observer)
+			var payload: Dictionary = manager.call("_build_push_luck_payload", bet)
+			payload["cashout_locked"] = action == "condanna"
+			payload["double_locked"] = false
+			ui.call("_on_push_luck_opened", payload)
+			await settle(0.5)
+			var button: Button = ui.get("push_luck_" + action + "_button")
+			check(button.is_visible_in_tree() and not button.disabled, "unavailable intent action " + action)
+			button.pressed.emit()
+			check(received == [action], "animation delayed or lost immediate intent " + action)
+			button.pressed.emit()
+			check(received == [action], "decision lock allowed duplicate intent " + action)
+			ui.call("_on_push_luck_closed")
+			events.disconnect(signal_name, observer)
+			for callback: Callable in receivers:
+				events.connect(signal_name, callback)

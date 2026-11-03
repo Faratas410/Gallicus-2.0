@@ -1,5 +1,20 @@
 # UI Boundary Model — Level 3
 
+## Apertura autorevole del Registro del 3 novembre 2026
+
+`bet_ui_opened` contiene l'offerta completa del manager e apre il Registro
+una sola volta. `betting_opened` resta un evento di lifecycle, consumato anche
+dall'audio, e non apre una seconda vista UI con pagine vuote. I due intenti
+`request_place_bet` e `request_intro_select_bet` mantengono la firma immediata
+tramite RunManager; la UI non decide esito o fase.
+
+Prima del primo payload, il catalogo puo' alimentare un'anteprima di boot o
+campionario. Dopo `set_offers`, solo le pagine ricevute sono firmabili: un
+array vuoto, un ID assente o sconosciuto lascia i comandi disabilitati e una
+diagnostica. Reset, riapertura e cambio lingua non devono ricostruire pagine
+autorevoli dal catalogo. Lock, apertura confermata, scrittura, focus e gesto
+della firma restano invariati.
+
 ## Il posto misurato - 28 ottobre 2026
 
 Un foglio riprende la carta del Banco e contiene le due testimonianze, il

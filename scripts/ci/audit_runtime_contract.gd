@@ -165,6 +165,8 @@ func _check_terminal() -> void:
 	await create_timer(0.3).timeout
 	var manager: Node = scene.get_node("RunManager")
 	await _check_contract_readability(scene)
+	await _check_offer_publication(scene)
+	await _check_bet_commit_flow(scene)
 	await _check_menu_continue(scene)
 	_check_applied_loss_scars(scene.get_node("RunManager"))
 	var save: Node = root.get_node("SaveManager")
@@ -323,3 +325,153 @@ func _check_contract_readability(scene: Node) -> void:
 				_expect(not label.text.contains("CONDANNA") and not label.text.contains("CONDIZIONE"), "contract sections were not translated")
 	TranslationServer.set_locale(old_locale)
 	label.text = old_text
+
+func _check_offer_publication(scene: Node) -> void:
+	var manager: Node = scene.get_node("RunManager")
+	var events: Node = root.get_node("GameEvents")
+	var offers: Array[Array] = []
+	var lifecycle: Array[String] = []
+	var begin_observer := func() -> void:
+		lifecycle.append("begin")
+		_expect(not manager.get("_run_state").level3_current_offer.is_empty() and bool(manager.get("_waiting_for_bet")), "lifecycle began before complete offer/gate")
+	var end_observer := func() -> void: lifecycle.append("end")
+	events.betting_opened.connect(begin_observer)
+	events.bet_opened.connect(end_observer)
+	var modal_opens: Array[String] = []
+	var modal_observer := func(kind: String) -> void:
+		if kind == "betting_circle": modal_opens.append(kind)
+	events.modal_opened.connect(modal_observer)
+	var observer := func(value: Array[Dictionary]) -> void:
+		lifecycle.append("offer")
+		offers.append(value.duplicate(true))
+		_expect(not value.is_empty(), "published intermediate empty offer")
+		_expect(value == manager.get("_run_state").level3_current_offer, "published offer differs from manager state")
+		_expect(bool(manager.get("_waiting_for_bet")), "offer published before request gate was ready")
+		for entry: Dictionary in value:
+			_expect(entry.has("stake_gain") and entry.has("seal_conditions"), "published incomplete Registry terms")
+	events.bet_ui_opened.connect(observer)
+	scene.get_node("MenuLayer/MainMenu").get("new_game_button").pressed.emit()
+	_expect(offers.size() == 1, "new run must publish one offer, got %d" % offers.size())
+	_expect(modal_opens.size() == 1, "new run reset the Registry more than once")
+	_expect(lifecycle == ["begin", "offer", "end"], "offer lifecycle duplicated or reordered")
+	var first: Array = manager.get("_run_state").level3_current_offer.duplicate(true)
+	offers.clear()
+	manager.call("_open_level3_bet_ui")
+	_expect(offers.size() == 1 and offers[0] == first, "same-phase reopen changed or duplicated the offer")
+	manager.request_quit_to_menu()
+	await process_frame
+	offers.clear()
+	scene.get_node("MenuLayer/MainMenu").get("continue_button").pressed.emit()
+	_expect(offers.size() == 1 and offers[0] == first, "BET_OFFER Continue changed or duplicated the offer")
+	events.bet_ui_opened.disconnect(observer)
+	events.modal_opened.disconnect(modal_observer)
+	events.betting_opened.disconnect(begin_observer)
+	events.bet_opened.disconnect(end_observer)
+	manager.request_quit_to_menu()
+	await process_frame
+	print("AUDIT_OFFER_PUBLICATION_OK")
+
+func _check_bet_commit_flow(scene: Node) -> void:
+	var manager: Node = scene.get_node("RunManager")
+	var events: Node = root.get_node("GameEvents")
+	var save: Node = root.get_node("SaveManager")
+	var menu: Node = scene.get_node("MenuLayer/MainMenu")
+	var circle: Node = scene.get_node("UI/UI_RunRoot/BettingCircle")
+	var accepted: Array[String] = []
+	var rituals: Array[int] = []
+	var accepted_observer := func(id: String, _stake: int, _odds: float) -> void: accepted.append(id)
+	var ritual_observer := func() -> void: rituals.append(1)
+	events.bet_placed.connect(accepted_observer)
+	events.pact_sealed_opened.connect(ritual_observer)
+	var previous_motion: bool = save.get_reduced_motion()
+	save.set_reduced_motion(true)
+	for input: String in ["mouse", "keyboard", "intro_alias"]:
+		menu.get("new_game_button").pressed.emit()
+		await create_timer(0.7).timeout
+		scene.get_node("OpeningPrologue").call("_finish")
+		await process_frame
+		var state: RunState = manager.get("_run_state")
+		var snapshot: Dictionary = state.to_dict().duplicate(true)
+		# Expected rejected requests: suppress only their diagnostics, then
+		# restore logging before assertions so actual test failures remain visible.
+		var print_errors: bool = Engine.print_error_messages
+		Engine.print_error_messages = false
+		events.request_place_bet.emit("NOT_AN_OFFER", 0)
+		events.request_intro_select_bet.emit("")
+		state.run_is_over = true
+		events.request_place_bet.emit(str(state.level3_current_offer[0].id), 0)
+		state.run_is_over = false
+		Engine.print_error_messages = print_errors
+		_expect(state.to_dict() == snapshot, "rejected selection mutated run state")
+		_expect(str(manager.get("_last_request")) == "select_bet", "selection lost phase diagnostic context")
+		var offer: Array[Dictionary] = state.level3_current_offer.duplicate(true)
+		Engine.print_error_messages = false
+		circle.set_offers([] as Array[Dictionary])
+		circle.open()
+		circle.open_book_button.pressed.emit()
+		Engine.print_error_messages = print_errors
+		await process_frame
+		_expect(circle.selected_bet_id == &"" and circle.left_sign_button.disabled and circle.right_sign_button.disabled, "empty authoritative offer became signable")
+		circle.left_sign_button.pressed.emit()
+		_expect(accepted.is_empty(), "invalid offer emitted a commit")
+		var malformed: Array[Dictionary] = [{"id": "NOT_AN_OFFER", "name": "Not a pact"}, {"name": "Missing id"}]
+		Engine.print_error_messages = false
+		circle.set_offers(malformed)
+		circle.reset()
+		Engine.print_error_messages = print_errors
+		_expect(circle.selected_bet_id == &"" and circle.left_sign_button.disabled and circle.right_sign_button.disabled, "malformed offer or reset invented a signable page")
+		circle.set_offers(offer)
+		circle.open()
+		circle.open_book_button.pressed.emit()
+		await create_timer(0.4).timeout
+		var id: String = str(circle.selected_bet_id)
+		var history_before: int = state.bets_history.size()
+		var pacts_before: int = state.pacts_log.size()
+		if input == "intro_alias":
+			events.request_intro_select_bet.emit(id)
+		else:
+			var button: Button = circle.left_sign_button
+			button.grab_focus()
+			_expect(button.is_visible_in_tree() and not button.disabled, "native signature target unavailable: " + input)
+			if input == "mouse":
+				for down: bool in [true, false]:
+					var click := InputEventMouseButton.new()
+					click.position = button.get_global_rect().get_center()
+					click.global_position = click.position
+					click.button_index = MOUSE_BUTTON_LEFT
+					click.pressed = down
+					root.push_input(click, true)
+			else:
+				for down: bool in [true, false]:
+					var key := InputEventKey.new()
+					key.keycode = KEY_ENTER
+					key.pressed = down
+					root.push_input(key, true)
+		_expect(accepted == [id] and rituals.size() == 1, "signature did not commit once: " + input)
+		_expect(state.active_bet_id == StringName(id) and state.bets_history.size() == history_before + 1 and state.pacts_log.size() == pacts_before + 1, "signature history changed more than once: " + input)
+		var disk: Dictionary = manager.get("_save_system").load_run_payload()
+		_expect(str(disk.get("run_state", {}).get("run_save_flow_step", "")) == "BET_SIGNED", "signature did not persist BET_SIGNED")
+		snapshot = state.to_dict().duplicate(true)
+		Engine.print_error_messages = false
+		events.request_place_bet.emit(id, 0)
+		events.request_intro_select_bet.emit(id)
+		Engine.print_error_messages = print_errors
+		_expect(state.to_dict() == snapshot and accepted.size() == 1 and rituals.size() == 1, "duplicate signature changed run or replayed ritual")
+		manager.request_quit_to_menu()
+		await process_frame
+		Engine.print_error_messages = false
+		events.request_place_bet.emit(id, 0)
+		Engine.print_error_messages = print_errors
+		_expect(accepted.size() == 1, "menu accepted an out-of-phase signature")
+		menu.get("continue_button").pressed.emit()
+		_expect(accepted.size() == 1 and rituals.size() == 2, "BET_SIGNED Continue signed again or failed to resume pact")
+		var resumed: RunState = manager.get("_run_state")
+		_expect(resumed.active_bet_id == StringName(id) and resumed.bets_history.size() == history_before + 1 and resumed.pacts_log.size() == pacts_before + 1, "signed Continue changed identity or history")
+		manager.request_quit_to_menu()
+		await process_frame
+		accepted.clear()
+		rituals.clear()
+	save.set_reduced_motion(previous_motion)
+	events.bet_placed.disconnect(accepted_observer)
+	events.pact_sealed_opened.disconnect(ritual_observer)
+	print("AUDIT_BET_COMMIT_FLOW_OK")

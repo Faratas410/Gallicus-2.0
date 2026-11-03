@@ -89,6 +89,24 @@ def test_betting_and_localization():
     assert ci.select([('M', ui), ('M', 'scripts/systems/save_manager.gd')], reader)['mode'] == 'full'
 
 
+def test_ui_behavior_replacements():
+    from types import SimpleNamespace
+    from unittest.mock import patch
+    # Execute selection through the runner: mixed UI/locale/docs changes must
+    # keep their replacement behaviors and must not execute them three times.
+    markers = '\n'.join(marker for group in ('betting_ui', 'localization', 'doc_ui')
+                        for _, marker in ci.RUNTIME[group])
+    result = SimpleNamespace(returncode=0, stdout=markers, stderr='')
+    with patch.object(ci.subprocess, 'run', return_value=result) as run:
+        ci.run_runtime(['betting_ui', 'localization', 'doc_ui'], 'fixture-godot')
+    scripts = [call.args[0][call.args[0].index('--script') + 1] for call in run.call_args_list]
+    for name in ('judgment_runtime_contract.gd', 'art_uniformity_runtime_contract.gd',
+                 'audit_runtime_contract.gd'):
+        assert scripts.count('res://scripts/ci/' + name) == 1, scripts
+    profiles = [call.kwargs['env']['APPDATA'] for call in run.call_args_list]
+    assert len(profiles) == len(set(profiles)), 'runtime contracts reused a profile'
+
+
 def test_real_push_range():
     with tempfile.TemporaryDirectory(prefix='gallicus_ci_plan_') as temp:
         path = Path(temp)
@@ -158,5 +176,6 @@ if __name__ == '__main__':
     test_function_selection()
     test_fail_closed()
     test_betting_and_localization()
+    test_ui_behavior_replacements()
     test_real_push_range()
     print('[OK][CONTEXTUAL_CI]')

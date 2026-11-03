@@ -68,6 +68,22 @@ creare documenti, test speculari o cicli di audit aggiuntivi senza utilita'.
 Una volta soddisfatto il criterio di chiusura, consegnare; le nuove idee
 entrano nel backlog con priorita', senza estendere da sole il pacchetto.
 
+## Criteri per i test
+
+Ogni nuovo controllo deve proteggere un requisito stabile o una regressione
+concreta e attraversare il sistema autorevole. Riutilizzare prima fixture e
+runner esistenti. Nomi privati, ID locali delle risorse, easing, coordinate e
+copy esatto richiedono una motivazione nel canon o una regressione documentata;
+la sola presenza nel codice non e' un requisito. Il test puo' misurare target
+utilizzabili, geometria stabile, segnali emessi una volta e risultato del manager.
+
+Quando si rimuove un guard testuale, indicare il sostituto o la ragione della
+rimozione e conservarne il wiring nei profili CI che lo eseguivano. Una cattura
+manuale non sostituisce un gate automatico. Contare separatamente scenari,
+assert, combinazioni di lingua/risoluzione e immagini effettivamente ispezionate.
+Un seed o una risposta iniettata qualificano la prova come fixture; il percorso
+con RunManager collegato dimostra separatamente l'integrazione.
+
 ## Evidenza e decisioni
 
 - Registrare commit e presenza di modifiche locali; per un export, manifest

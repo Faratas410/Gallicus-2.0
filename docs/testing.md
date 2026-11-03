@@ -224,6 +224,67 @@ Questi livelli non sono una sequenza obbligatoria per ogni intervento. Scegliere
 quelli necessari al cambiamento e alle dipendenze; ai checkpoint i gate previsti
 restano obbligatori. Un controllo eseguito non sostituisce un gate non eseguito.
 
+## Sigillo e movimento dopo la revisione del 3 novembre 2026
+
+I gruppi statici `judgment_seal_object` e `ui_motion` conservano i nomi del
+playbook. Il primo verifica manifest/asset, binding risolti per percorso,
+audio, chiavi uniche e valori non vuoti IT/EN/ES, placeholder e segnali pubblici.
+Il copy esatto resta soltanto per la CTA del sigillo specificata dal canon.
+Il secondo conserva il guard degli anchor del Registro: protegge il difetto
+storico della scena binaria esportata. Easing, nomi degli helper, lista dei
+creatori di tween e parole nei documenti non sono criteri di correttezza.
+
+`scripts/ci/judgment_runtime_contract.gd` riusa la matrice di
+`tools/counter_layout_capture.gd`, senza immagini in headless. Copre dodici
+combinazioni di IT/EN/ES, 720p/1080p e motion normale/ridotto: invio immediato
+con click/Invio, ripetizione, lock, recovery, risposte sul bus, riapertura,
+contesto tradotto e target stabile. Verifica anche il cue attivo prima
+dell'intento. La matrice scollega il manager soltanto per le risposte di
+presentazione; il percorso nativo successivo mantiene il manager collegato,
+osserva un intento e una risposta al primo colpo e arriva alla posta.
+
+`art_uniformity_runtime_contract.gd` conserva cancellazione degli effetti,
+geometria canvas e Movimento ridotto e aggiunge hover/focus del menu e invio
+sincrono singolo delle tre azioni della posta, con e senza animazioni.
+Il runner `scripts/ci/run_art_uniformity_contract.py --godot-bin <Godot>`
+esegue entrambi i contratti in profili isolati. E' collegato al playbook e
+ai profili cumulativi Linux lean/full. I gruppi contestuali `betting_ui`,
+`localization` e `doc_ui` eseguono gli stessi due contratti, una volta ciascuno
+anche quando i gruppi sono combinati. Il budget dei job resta invariato.
+
+Per le immagini usare `tools/counter_layout_capture.gd` con renderer reale,
+`-- --judgment-contract --all-languages --capture-dir=res://artifacts/<cartella>`
+e profilo isolato. `--no-capture` mantiene le asserzioni senza PNG;
+`--judgment-only` esclude il percorso col manager. Gli input sintetici non
+provano focus della finestra OS o controller fisico. Affiancare
+`KEYBOARD_FULL_RUN`; screenshot e smoke non chiudono accettazione umana.
+Handoff e inventario delle protezioni sostituite:
+`docs/support/patch_test_semantici_2026-11-03.md`.
+
+## Apertura e firma del Registro del 3 novembre 2026
+
+L'audit runtime osserva GameEvents prima dell'ingresso reale dal menu: una
+sola offerta completa, identica allo stato, gate pronto e una sola apertura
+del Registro. Copre riapertura nella stessa fase e Continue da BET_OFFER.
+La regressione falliva sul candidato precedente con due emissioni, di cui
+una vuota prima del gate.
+
+Lo stesso audit firma con mouse, tastiera e alias intro; osserva un commit,
+una registrazione nella cronologia e nel log patti, un checkpoint BET_SIGNED
+su disco e l'apertura del patto. Doppio invio, fase errata, ID non offerto e
+run terminata non devono mutare lo stato. Continue da BET_SIGNED riprende il
+rito senza firmare di nuovo. Le diagnostiche delle sole richieste negative
+volute sono soppresse nel test e il logging viene ripristinato prima degli
+assert; gli altri errori restano bloccanti.
+
+L'offerta autorevole vuota resta non firmabile anche dopo open/reset. Il
+catalogo per boot/preview resta separato. Affiancare CP-02, BET_PRESENT,
+KEYBOARD_FULL_RUN e ROUTE_DOUBLE, i contratti del posto/ultima Era e il
+capture Registro per le dipendenze attraversate. Il planner continua a
+richiedere full per queste modifiche a RunManager; non e' stato ampliato
+per rendere la patch contestuale. Handoff:
+`docs/support/patch_offerta_autorevole_2026-11-03.md`.
+
 ## Selezione contestuale dei test locali
 
 Prima di eseguire, annotare comportamento cambiato, punto di ingresso reale,

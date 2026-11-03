@@ -237,7 +237,10 @@ All changes to systems described here must update this document in the same PR.
 - `PhaseResult` (`res://scripts/systems/run/phase_handlers/phase_result.gd`) is the standardized non-authoritative handler return contract (`handled`, `action`, optional payload/event intent metadata) interpreted by RunManager.
 - `PhasePushYourLuckHandler.handle_request(...)` currently supports delegated intent classification for `request_pyl_cashout` and `request_pyl_double`; RunManager remains responsible for executing state mutation, event emission, and phase/end-run sequencing.
 - `PhaseIntermediateChoiceHandler.handle_request(...)` currently supports delegated intent classification for `request_mid_choice_select`; RunManager remains responsible for applying gesture selection state mutation/autosave/phase progression.
-- `PhaseBetPresentHandler.handle_request(...)` currently supports delegated intent classification for `request_place_bet`; RunManager remains responsible for bet selection/commit flow, autosave, ritual sequencing, and event emission ordering.
+- `request_place_bet` and `request_intro_select_bet` both call RunManager's `select_bet` directly. It guards BET_PRESENT once, checks the waiting/live gates and membership in the current offer, then commits through the existing pact operation. The intro request preserves its active-runtime confirmation semantics; it is not a preview-only selection.
+- `PhaseBetPresentHandler.handle_request(...)` retains only `request_intro_confirm`; the unused BETP_PLACE_BET and INTRO_SELECT_BET mutation adapters are removed. Other phase handlers and the shared executor/router keep their existing roles.
+- `_open_level3_bet_ui` prepares the complete offer (including stake gain and seal conditions), request gates and state before entering BET_PRESENT. It is the only publisher of `bet_ui_opened`, once per opening, including same-phase reopen and BET_OFFER Continue. `_enter_bet_present` records the phase marker without emitting an intermediate offer.
+- `betting_opened` and `bet_opened` remain public lifecycle events. They do not independently open a Registry view; the UI opens from the prepared `bet_ui_opened` payload. Save names, timing and schema remain unchanged.
 - `PhaseMainMenuHandler.handle_request(...)` currently supports delegated intent classification for `request_new_run`, `request_continue_run`, and `request_show_main_menu`; RunManager remains responsible for run reset/continue/menu-return authority, phase progression, and event emission ordering.
 - `RunManager` resolves request handlers via an internal phase-handler map (`RunPhase` -> handler) and `_dispatch_phase_request(...)`; routing stays non-authoritative and includes a MAIN_MENU-handler fallback for menu-intent requests (`request_new_run`, `request_continue_run`, `request_show_main_menu`) when current-phase handler does not classify them.
 - For phase payload handlers requiring runtime values outside `RunState` (for example `coins`), `RunManager` passes explicit primitive inputs into `build_ui_payload(...)`; handlers remain non-authoritative and do not read scene tree or mutate flow.
@@ -306,7 +309,7 @@ Canonical Level 3 post-bet sequence (active flow authority):
   - Data lookup only.
   - No flow decisions.
   - Bet definitions (IDs + UI copy metadata) are centralized in `res://scripts/content/bet_catalog.gd` and must not be duplicated in RunManager, UI, or outcome systems.
-- Active Level 3 runtime BET_PRESENT offer set is fixed to 2 bet IDs from BetCatalog authority: `CASH_OUT`, `DOUBLE_OR_DIE`.
+- Active Level 3 BET_PRESENT offers come from the current BetCatalog identities and RunManager eligibility filters through BettingPolicy. The Registry displays the first two offered pages; it does not hardcode two legacy behavior IDs.
 - `res://scripts/ui/run_ui_payload.gd` = UI projection contract.
   - `RunManager` builds payloads.
   - UI consumes payloads reactively.

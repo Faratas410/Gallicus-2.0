@@ -148,7 +148,6 @@ const _GAME_EVENT_WIRING_REQUIRED: Array[Dictionary] = [
 	{"signal": &"bet_ui_opened", "handler": &"_on_bet_ui_opened"},
 	{"signal": &"bet_ui_closed", "handler": &"_on_bet_ui_closed"},
 	{"signal": &"arena_started", "handler": &"_on_arena_started"},
-	{"signal": &"betting_opened", "handler": &"_on_betting_opened"},
 	{"signal": &"countdown_requested", "handler": &"_on_countdown_requested"},
 ]
 const _GAME_EVENT_WIRING_GUARDED: Array[Dictionary] = [
@@ -2021,14 +2020,6 @@ func _apply_visual_tier(_tier: int) -> void:
 	if torch_flicker_overlay != null:
 		torch_flicker_overlay.modulate.a = 0.0
 	_apply_campaign_environment()
-
-func _on_betting_opened() -> void:
-	if game_over_panel != null and game_over_panel.visible:
-		_set_bet_modal(false)
-		return
-	if push_luck_panel != null and push_luck_panel.visible:
-		return
-	open_bet_circle([] as Array[Dictionary])
 
 func _on_arena_started(arena_index: int) -> void:
 	if not _special_arena_payload.is_empty():

@@ -70,10 +70,16 @@ RUNTIME = {
              ('seat_memory_runtime_contract.gd', 'SEAT_MEMORY_RUNTIME_CONTRACT_OK'),
              ('seat_copy_runtime_contract.gd', 'SEAT_COPY_RUNTIME_CONTRACT_OK'),
              ('seat_steps_era_contract.gd', 'SEAT_STEPS_ERA_CONTRACT_OK')),
-    'betting_ui': (('audit_runtime_contract.gd', 'AUDIT_RUNTIME_CONTRACT_OK'),),
+    'betting_ui': (('audit_runtime_contract.gd', 'AUDIT_RUNTIME_CONTRACT_OK'),
+                   ('art_uniformity_runtime_contract.gd', 'ART_UNIFORMITY_CONTRACT'),
+                   ('judgment_runtime_contract.gd', 'COUNTER_LAYOUT_OK')),
+    'doc_ui': (('art_uniformity_runtime_contract.gd', 'ART_UNIFORMITY_CONTRACT'),
+               ('judgment_runtime_contract.gd', 'COUNTER_LAYOUT_OK')),
     # Every runtime contract that lean ran and that reads translated text:
     # exact strings, untranslated keys or localized presentation.
     'localization': (('audit_runtime_contract.gd', 'AUDIT_RUNTIME_CONTRACT_OK'),
+                     ('art_uniformity_runtime_contract.gd', 'ART_UNIFORMITY_CONTRACT'),
+                     ('judgment_runtime_contract.gd', 'COUNTER_LAYOUT_OK'),
                      ('av_runtime_contract.gd', 'AV_RUNTIME_CONTRACT_OK'),
                      ('character_runtime_contract.gd', 'CHARACTER_RUNTIME_CONTRACT_OK'),
                      ('illustrated_dialogue_contract.gd', 'ILLUSTRATED_DIALOGUE_CONTRACT_OK'),
@@ -83,7 +89,7 @@ RUNTIME = {
 }
 RUNTIME_TIMEOUT = 90
 # Longer contracts keep the limits of their own runners.
-RUNTIME_TIMEOUTS = {'illustrated_dialogue_contract.gd': 150}
+RUNTIME_TIMEOUTS = {'illustrated_dialogue_contract.gd': 150, 'judgment_runtime_contract.gd': 150}
 
 
 def _function_lines(text: str) -> list[str | None]:

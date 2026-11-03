@@ -14,14 +14,21 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix='gallicus_art_') as temp:
         env = os.environ.copy()
         env['APPDATA'] = str(Path(temp)/'appdata')
+        env['LOCALAPPDATA'] = str(Path(temp)/'localappdata')
         env['XDG_DATA_HOME'] = str(Path(temp)/'xdg')
         result = subprocess.run([str(Path(args.godot_bin).resolve()), '--headless',
             '--audio-driver', 'Dummy', '--path', str(ROOT), '--script',
             'res://scripts/ci/art_uniformity_runtime_contract.gd'], cwd=ROOT,
-            env=env, capture_output=True, text=True, timeout=90)
-    output = result.stdout + result.stderr
+            env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=90)
+        env.update(APPDATA=str(Path(temp)/'judgment'), LOCALAPPDATA=str(Path(temp)/'judgment'),
+                   XDG_DATA_HOME=str(Path(temp)/'judgment_xdg'))
+        judgment = subprocess.run([str(Path(args.godot_bin).resolve()), '--headless',
+            '--audio-driver', 'Dummy', '--path', str(ROOT), '--script',
+            'res://scripts/ci/judgment_runtime_contract.gd'], cwd=ROOT,
+            env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=150)
+    output = result.stdout + result.stderr + judgment.stdout + judgment.stderr
     print(output, end='')
-    return 0 if result.returncode == 0 and 'ART_UNIFORMITY_CONTRACT' in output and 'ERROR:' not in output and 'WARNING:' not in output else 1
+    return 0 if result.returncode == 0 and judgment.returncode == 0 and 'COUNTER_LAYOUT_OK' in judgment.stdout and 'ART_UNIFORMITY_CONTRACT' in result.stdout and 'ERROR:' not in output and 'WARNING:' not in output else 1
 
 if __name__ == '__main__':
     raise SystemExit(main())

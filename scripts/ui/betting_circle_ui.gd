@@ -68,6 +68,7 @@ const PAGE_IDLE_DRIFT_PIXELS: float = 1.4
 
 var selected_bet_id: StringName = &""
 var _betting_circle_options: Array[Dictionary] = []
+var _has_authoritative_offer: bool = false
 var _submit_locked: bool = false
 var _opening_locked: bool = false
 var _idle_time: float = 0.0
@@ -398,6 +399,7 @@ func _render_banco() -> void:
 		banco_note.text = note
 
 func set_offers(bets: Array[Dictionary]) -> void:
+	_has_authoritative_offer = true
 	var reopen: bool = visible and _nodes_ready
 	if _open_tween != null and _open_tween.is_valid():
 		_open_tween.kill()
@@ -410,11 +412,11 @@ func set_offers(bets: Array[Dictionary]) -> void:
 		var mapped: Dictionary = _map_offer_for_display(bet)
 		if mapped.is_empty():
 			continue
-		if str(mapped.get("id", "")).strip_edges() == "":
-			mapped["id"] = StringName("offer_%d" % _betting_circle_options.size())
+		if not BetCatalog.level3_active_bet_ids().has(StringName(str(mapped.get("id", "")))):
+			continue
 		_betting_circle_options.append(mapped)
 	if _betting_circle_options.is_empty():
-		_refresh_from_catalog_if_empty()
+		push_warning("Registry: authoritative offer is empty; signature unavailable")
 	_reset_interaction_lock()
 	_apply_default_selection()
 	_render_pages()
@@ -934,7 +936,8 @@ func _apply_page(offer: Dictionary, contract_label: RichTextLabel) -> void:
 		contract_label.text = str(localized.get("contract", EMPTY_PAGE_BODY))
 
 func _refresh_from_catalog_if_empty() -> void:
-	if not _betting_circle_options.is_empty():
+	# Catalog-only previews are allowed until the first authoritative payload.
+	if _has_authoritative_offer or not _betting_circle_options.is_empty():
 		return
 	_rebuild_options_from_catalog()
 

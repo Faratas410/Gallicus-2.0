@@ -14,6 +14,18 @@ non un'accettazione umana del tono o del coinvolgimento.
 
 ## Stato corrente
 
+3 novembre: patch 1 sui test di sigillo e movimento implementata nel candidato
+locale, senza modifiche al runtime di produzione. Contratti statici limitati a
+risorse, localizzazione, segnali e regressione degli anchor; input, lock,
+risposte e movimento verificati da Godot e collegati alla CI esistente.
+Perimetro, candidato e risultati in
+`docs/support/patch_test_semantici_2026-11-03.md`. La patch 2 e' implementata localmente:
+apertura unica dell'offerta completa, selezione diretta nel manager e firma
+bloccata se il payload autorevole e' vuoto o invalido. Handoff e prove in
+`docs/support/patch_offerta_autorevole_2026-11-03.md`.
+Core Playable Candidate invariato; campagna umana cronometrata, checkpoint
+Linux del candidato e gate di pubblicazione restano aperti.
+
 29-30 ottobre: obiettivo delle dieci ore ripreso su richiesta dell'utente.
 Primo pacchetto eseguito senza cambi di gameplay: baseline economica su 24
 campagne simulate, mappa degli eventi e proposta per l'arco del posto in

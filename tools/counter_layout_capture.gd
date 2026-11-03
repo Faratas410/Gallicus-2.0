@@ -11,6 +11,11 @@ var registry_only: bool = false
 var pact_crowd_only: bool = false
 var pact_crowd_flow_only: bool = false
 var judgment_only: bool = false
+var judgment_contract: bool = false
+var save_captures: bool = true
+var checks: int = 0
+var scenarios: Array[String] = []
+var judgment_replies: Array[Dictionary] = []
 var judgment_intents: Array[String] = []
 var sign_intents: int = 0
 var bank_intents: int = 0
@@ -26,6 +31,10 @@ func _initialize() -> void:
 			pact_crowd_only = true
 		elif argument == "--pact-crowd-flow-only":
 			pact_crowd_flow_only = true
+		elif argument == "--judgment-contract":
+			judgment_contract = true
+		elif argument == "--no-capture":
+			save_captures = false
 		elif argument == "--judgment-only":
 			judgment_only = true
 		elif argument.begins_with("--capture-dir="):
@@ -48,6 +57,7 @@ func _mouse_button(position: Vector2, down: bool) -> void:
 	root.push_input(event, true)
 
 func _check(ok: bool, message: String) -> void:
+	checks += 1
 	if not ok:
 		failures.append(message)
 		push_error(message)
@@ -58,8 +68,10 @@ func _capture(label: String) -> void:
 	# translated text and container minimum sizes settle before capture.
 	for frame: int in range(3):
 		await process_frame
-	await RenderingServer.frame_post_draw
 	_validate_layout(label)
+	if not save_captures:
+		return
+	await RenderingServer.frame_post_draw
 	var picture := root.get_texture().get_image()
 	_check(picture.get_size() == root.size, "unexpected image dimensions: " + label)
 	picture.save_png(output + "/" + label + ".png")
@@ -144,8 +156,10 @@ func _run() -> void:
 	var ui: Node = scene.get_node("UI")
 	var manager: Node = scene.get_node("RunManager")
 	root.get_node("SaveManager").set_reduced_motion(true)
-	if judgment_only:
+	if judgment_only or judgment_contract:
 		await _run_judgment_matrix(menu, circle, dialogue, ui, manager)
+		if judgment_contract:
+			await _run_pact_crowd_flow(menu, circle, dialogue, ui, manager)
 		await _finish_capture()
 		return
 	if pact_crowd_only or pact_crowd_flow_only:
@@ -530,79 +544,93 @@ func _run_judgment_matrix(menu: Node, circle: Node, dialogue: Node, ui: Node, ma
 	var events: Node = root.get_node("GameEvents")
 	var receiver := Callable(manager, "_on_request_ritual_advance")
 	events.request_ritual_advance.disconnect(receiver)
-	var observer := func(kind: String) -> void: judgment_intents.append(kind)
+	var observer := Callable(self, "_observe_judgment_intent")
 	events.request_ritual_advance.connect(observer)
-	menu.call("_on_language_selected", 0)
-	for dimensions: Vector2i in [Vector2i(1280, 720), Vector2i(1920, 1080)]:
-		root.content_scale_size = dimensions
-		root.size = dimensions
-		DisplayServer.window_set_size(dimensions)
-		for reduced: bool in [true, false]:
-			root.get_node("SaveManager").set_reduced_motion(reduced)
-			var suffix: String = "%dx%d_%s" % [dimensions.x, dimensions.y, "reduced" if reduced else "motion"]
-			events.request_show_main_menu.emit()
-			menu.get("new_game_button").pressed.emit()
-			await create_timer(0.6).timeout
-			dialogue.call("_finish")
-			await process_frame
-			circle.close()
-			ui.set("_pending_resolution_context_line", "Il tuo gesto li irrita. Ora vogliono il prezzo.")
-			ui.call("_on_resolve_ritual_opened", {"doom_short": "Pressione +1"})
-			await create_timer(0.8).timeout
-			var seal: Button = ui.get("resolve_ritual_strike_button")
-			var advance: Button = ui.get("resolve_ritual_advance_button")
-			await _capture("judgment_focus_" + suffix)
-			var stable: Rect2 = seal.get_global_rect()
-			seal.release_focus()
-			_pointer(Vector2(10, 10))
-			await _capture("judgment_normal_" + suffix)
-			_pointer(stable.get_center())
-			await _capture("judgment_hover_" + suffix)
-			_mouse_button(stable.get_center(), true)
-			await _capture("judgment_pressed_" + suffix)
-			_pointer(Vector2(10, 10), true)
-			_mouse_button(Vector2(10, 10), false)
-			judgment_intents.clear()
-			_enter(seal)
-			ui.call("_on_resolve_ritual_strike_pressed")
-			_check(judgment_intents == ["strike"], "repeated strike bypassed lock: " + suffix)
-			await _capture("judgment_locked_" + suffix)
-			ui.call("_recover_judgment_seal_request_lock")
-			_check(not seal.disabled, "first strike recovery kept lock: " + suffix)
-			for strike: int in [1, 2]:
-				ui.call("_on_seal_strike_resolved", {"strike": strike, "held": true, "held_gain": strike + 1, "can_strike_again": true, "next_odds": "RISCHIOSO", "next_gain": 3, "bando_strike": true, "chain": 2, "chain_multiplier": 1.5})
+	for language: int in languages:
+		menu.call("_on_language_selected", language)
+		for dimensions: Vector2i in [Vector2i(1280, 720), Vector2i(1920, 1080)]:
+			root.content_scale_size = dimensions
+			root.size = dimensions
+			DisplayServer.window_set_size(dimensions)
+			for reduced: bool in [true, false]:
+				root.get_node("SaveManager").set_reduced_motion(reduced)
+				var suffix: String = "%s_%dx%d_%s" % [TranslationServer.get_locale(), dimensions.x, dimensions.y, "reduced" if reduced else "motion"]
+				events.request_show_main_menu.emit()
+				menu.get("new_game_button").pressed.emit()
+				await create_timer(0.6).timeout
+				dialogue.call("_finish")
+				await process_frame
+				circle.close()
+				events.audience_context_line_emitted.emit("Il tuo gesto li irrita. Ora vogliono il prezzo.")
+				ui.call("_on_resolve_ritual_opened", {"doom_short": "Pressione +1"})
+				await create_timer(0.8).timeout
+				var seal: Button = ui.get("resolve_ritual_strike_button")
+				var advance: Button = ui.get("resolve_ritual_advance_button")
+				scenarios.append("seal presentation " + suffix)
+				_check(seal.text == TranslationServer.translate("COLPISCI"), "seal CTA not localized: " + suffix)
+				_check(str(ui.get("resolve_ritual_subtitle").text).contains(TranslationServer.translate("Il tuo gesto li irrita. Ora vogliono il prezzo.")), "judgment context not localized at render: " + suffix)
+				_check(not seal.disabled and not advance.visible, "opening did not reset available actions: " + suffix)
+				await _capture("judgment_focus_" + suffix)
+				var stable: Rect2 = seal.get_global_rect()
+				seal.release_focus()
+				_pointer(Vector2(10, 10))
+				await _capture("judgment_normal_" + suffix)
+				_pointer(stable.get_center())
+				await _capture("judgment_hover_" + suffix)
+				_mouse_button(stable.get_center(), true)
+				await _capture("judgment_pressed_" + suffix)
+				_pointer(Vector2(10, 10), true)
+				_mouse_button(Vector2(10, 10), false)
+				judgment_intents.clear()
+				_enter(seal)
+				_repeat_enter()
+				_check(judgment_intents == ["strike"], "repeated strike bypassed lock: " + suffix)
+				await _capture("judgment_locked_" + suffix)
+				ui.call("_recover_judgment_seal_request_lock")
+				_check(not seal.disabled, "first strike recovery kept lock: " + suffix)
+				judgment_intents.clear()
+				_mouse_button(seal.get_global_rect().get_center(), true)
+				_mouse_button(seal.get_global_rect().get_center(), false)
+				_repeat_enter()
+				_check(judgment_intents == ["strike"], "mouse activation or lock failed: " + suffix)
+				_check(seal.get_global_rect() == stable, "hover/press moved seal target: " + suffix)
+				for strike: int in [1, 2]:
+					events.seal_strike_resolved.emit({"strike": strike, "held": true, "held_gain": strike + 1, "can_strike_again": true, "next_odds": "RISCHIOSO", "next_gain": 3, "bando_strike": true, "chain": 2, "chain_multiplier": 1.5})
+					await create_timer(0.3).timeout
+					await _capture("judgment_held_%d_" % strike + suffix)
+					_check(seal.get_global_rect() == stable, "seal target moved after strike: " + suffix)
+				advance.grab_focus()
+				await _capture("judgment_stop_focus_" + suffix)
+				judgment_intents.clear()
+				_enter(advance)
+				_repeat_enter()
+				_check(judgment_intents == ["resolve"], "stop did not emit one resolve: %s %s" % [suffix, judgment_intents])
+				await _capture("judgment_stopped_" + suffix)
+				ui.call("_recover_judgment_seal_request_lock")
+				_check(not seal.disabled and not advance.disabled, "held recovery kept lock: " + suffix)
+				_check(int(seal.get_meta("registry_judgment_seal_state", -1)) == 2, "recovery cleared wax: " + suffix)
+				events.seal_strike_resolved.emit({"strike": 3, "held": true, "held_gain": 4})
 				await create_timer(0.3).timeout
-				await _capture("judgment_held_%d_" % strike + suffix)
-				_check(seal.get_global_rect() == stable, "seal target moved after strike: " + suffix)
-			advance.grab_focus()
-			await _capture("judgment_stop_focus_" + suffix)
-			judgment_intents.clear()
-			_enter(advance)
-			ui.call("_on_resolve_ritual_next_pressed")
-			_check(judgment_intents == ["resolve"], "stop did not emit one resolve: %s %s" % [suffix, judgment_intents])
-			await _capture("judgment_stopped_" + suffix)
-			ui.call("_recover_judgment_seal_request_lock")
-			_check(not seal.disabled and not advance.disabled, "held recovery kept lock: " + suffix)
-			_check(int(seal.get_meta("registry_judgment_seal_state", -1)) == 2, "recovery cleared wax: " + suffix)
-			ui.call("_on_seal_strike_resolved", {"strike": 3, "held": true, "held_gain": 4})
-			await create_timer(0.3).timeout
-			await _capture("judgment_full_" + suffix)
-			ui.call("_reset_resolution_ritual_interaction")
-			ui.call("_on_seal_strike_resolved", {"strike": 1, "held": false, "can_show_scar": true})
-			await create_timer(0.3).timeout
-			await _capture("judgment_scar_offer_" + suffix)
-			judgment_intents.clear()
-			_enter(advance)
-			ui.call("_on_resolve_ritual_next_pressed")
-			_check(judgment_intents == ["show_scar"], "Segno did not emit one show_scar: %s %s" % [suffix, judgment_intents])
-			ui.call("_on_seal_strike_resolved", {"strike": 1, "held": true, "held_gain": 2, "scar_shown": true})
-			await create_timer(0.3).timeout
-			await _capture("judgment_scar_shown_" + suffix)
-			ui.call("_reset_resolution_ritual_interaction")
-			ui.call("_on_seal_strike_resolved", {"strike": 1, "held": false})
-			await create_timer(0.3).timeout
-			await _capture("judgment_cracked_" + suffix)
-			ui.call("_on_resolve_ritual_closed")
+				await _capture("judgment_full_" + suffix)
+				ui.call("_reset_resolution_ritual_interaction")
+				events.seal_strike_resolved.emit({"strike": 1, "held": false, "can_show_scar": true})
+				await create_timer(0.3).timeout
+				await _capture("judgment_scar_offer_" + suffix)
+				judgment_intents.clear()
+				_enter(advance)
+				_repeat_enter()
+				_check(judgment_intents == ["show_scar"], "Segno did not emit one show_scar: %s %s" % [suffix, judgment_intents])
+				events.seal_strike_resolved.emit({"strike": 1, "held": true, "held_gain": 2, "scar_shown": true})
+				await create_timer(0.3).timeout
+				await _capture("judgment_scar_shown_" + suffix)
+				ui.call("_reset_resolution_ritual_interaction")
+				events.seal_strike_resolved.emit({"strike": 1, "held": false})
+				await create_timer(0.3).timeout
+				await _capture("judgment_cracked_" + suffix)
+				ui.call("_on_resolve_ritual_closed")
+				ui.call("_on_resolve_ritual_opened", {})
+				_check(not seal.disabled and not advance.visible, "reopen retained seal lock/state: " + suffix)
+				ui.call("_on_resolve_ritual_closed")
 	events.request_ritual_advance.disconnect(observer)
 	events.request_ritual_advance.connect(receiver)
 
@@ -622,6 +650,27 @@ func _enter(button: Button) -> void:
 	event.keycode = KEY_ENTER
 	root.push_input(event, true)
 
+func _observe_judgment_intent(kind: String) -> void:
+	judgment_intents.append(kind)
+	if kind not in ["strike", "resolve"]:
+		return
+	var cue: String = "registry_judgment_seal_" + kind + ".wav"
+	var playing: bool = false
+	for player: Node in root.get_node("SfxBus").get_children():
+		if player is AudioStreamPlayer and player.playing and player.stream != null:
+			playing = playing or player.stream.resource_path.ends_with(cue)
+	_check(playing, "seal cue missing before immediate intent: " + kind)
+
+func _repeat_enter() -> void:
+	var event := InputEventKey.new()
+	event.keycode = KEY_ENTER
+	event.pressed = true
+	event.echo = true
+	root.push_input(event, true)
+	event = InputEventKey.new()
+	event.keycode = KEY_ENTER
+	root.push_input(event, true)
+
 func _wait_visible(control: Control, seconds: float = 8.0) -> bool:
 	var end: int = Time.get_ticks_msec() + int(seconds * 1000)
 	while not control.is_visible_in_tree() and Time.get_ticks_msec() < end:
@@ -631,15 +680,36 @@ func _wait_visible(control: Control, seconds: float = 8.0) -> bool:
 func _run_pact_crowd_flow(menu: Node, circle: Node, dialogue: Node, ui: Node, manager: Node) -> void:
 	# Isolated scenario: the special arena falls on the first arena. All phase
 	# transitions and three exchange resolutions still belong to RunManager.
+	var events: Node = root.get_node("GameEvents")
+	var intent_observer := Callable(self, "_observe_judgment_intent")
+	var reply_observer := func(payload: Dictionary) -> void: judgment_replies.append(payload.duplicate(true))
+	events.request_ritual_advance.connect(intent_observer)
+	events.seal_strike_resolved.connect(reply_observer)
+	scenarios.append("native signature -> pact -> three exchanges -> judgment -> posta")
 	root.get_node("GameEvents").request_show_main_menu.emit()
+	# Reproducible real offer; restore the environment before any smoke driver tick.
+	var previous_environment: Dictionary = {}
+	for key: String in ["GALLICUS_SMOKE", "GALLICUS_SMOKE_SEED"]:
+		if OS.has_environment(key): previous_environment[key] = OS.get_environment(key)
+	OS.set_environment("GALLICUS_SMOKE", "1")
+	OS.set_environment("GALLICUS_SMOKE_SEED", "1782373819")
 	menu.get("new_game_button").pressed.emit()
+	for key: String in ["GALLICUS_SMOKE", "GALLICUS_SMOKE_SEED"]:
+		if previous_environment.has(key): OS.set_environment(key, previous_environment[key])
+		else: OS.unset_environment(key)
 	await create_timer(0.6).timeout
 	dialogue.call("_finish")
 	await process_frame
 	manager.get("_run_state").set("special_arena_index", 1)
+	# This route verifies the posta, so do not choose a pact whose legitimate
+	# failed seal ends the run. Select only a page actually present in the UI.
+	var left_id: StringName = circle.call("_offer_id_at", 0)
+	var sign: Button = circle.get("right_sign_button" if BetCatalog.map_level3_behavior(left_id) == BetCatalog.BET_DOUBLE_OR_DIE else "left_sign_button")
+	_check(not sign.is_visible_in_tree() or sign.disabled, "Registry exposed signing before player opened it")
 	circle.call("_on_open_book_pressed")
+	_check(not sign.is_visible_in_tree() or sign.disabled, "Registry allowed signing before writing completed")
 	await create_timer(1.4).timeout
-	_enter(circle.get("left_sign_button"))
+	_enter(sign)
 	_check(await _wait_visible(ui.get("pact_sealed_panel")), "live signing did not reach pact")
 	await _capture("live_signature_to_pact")
 	var pact: Button = ui.get("pact_sealed_advance_button")
@@ -659,7 +729,13 @@ func _run_pact_crowd_flow(menu: Node, circle: Node, dialogue: Node, ui: Node, ma
 	_check(await _wait_visible(ui.get("resolve_ritual_panel")), "live exchanges did not reach judgment")
 	await create_timer(0.7).timeout
 	await _capture("live_crowd_to_judgment")
+	judgment_intents.clear()
+	judgment_replies.clear()
 	_enter(ui.get("resolve_ritual_strike_button"))
+	_check(judgment_intents == ["strike"], "live Enter did not send one immediate strike")
+	_check(judgment_replies.size() == 1, "RunManager did not answer exactly once")
+	if judgment_replies.size() == 1:
+		_check(int(judgment_replies[0].get("strike", 0)) == 1, "first live strike applied more than once")
 	# A crack may close itself, or offer a Segno before raising the hand.
 	# Never send Enter to an invisible action and accidentally activate its
 	# successor: the authoritative seal result decides which choice exists.
@@ -672,10 +748,15 @@ func _run_pact_crowd_flow(menu: Node, circle: Node, dialogue: Node, ui: Node, ma
 	_check(await _wait_visible(ui.get("push_luck_panel")), "live judgment did not reach posta")
 	await create_timer(0.8).timeout
 	await _capture("live_judgment_to_posta")
+	_check(not ui.get("resolve_ritual_panel").is_visible_in_tree(), "manager left judgment open after advancing")
+	if judgment_replies.size() == 1 and bool(judgment_replies[0].get("can_strike_again", false)):
+		_check(judgment_intents == ["strike", "resolve"], "native stop duplicated a strike or resolution")
+	events.request_ritual_advance.disconnect(intent_observer)
+	events.seal_strike_resolved.disconnect(reply_observer)
 
 func _finish_capture() -> void:
 	var report := FileAccess.open(output + "/summary.json", FileAccess.WRITE)
-	report.store_string(JSON.stringify({"fixture": true, "captures": captures, "failures": failures, "metrics": metrics}, "\t"))
+	report.store_string(JSON.stringify({"fixture": true, "captures": captures, "failures": failures, "metrics": metrics, "scenarios": scenarios, "checks": checks, "screenshots_enabled": save_captures}, "\t"))
 	report.close()
 	scene.get_node("MusicDirector").call("_on_registry_run_ended", "REGISTRY_ABSENCE", {})
 	root.get_node("SfxBus").call("_on_run_ended", "REGISTRY_ABSENCE", {})
